@@ -20,7 +20,7 @@ from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
-_VERSION = "1.0.3"
+_VERSION = "1.0.4"
 _REPO = "Community-Access/quill-cast"
 
 
@@ -693,6 +693,17 @@ class PodcastsAppFrame(
         ffmpeg_id = wx.NewIdRef()
         help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
+        help_menu.AppendSeparator()
+        guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(guide_id, "&User Guide")
+        help_menu.Append(notes_id, "&Release Notes")
+        help_menu.Append(prd_id, "&Product Requirements...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("userguide"), id=guide_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._open_podcasts_doc("release-notes-1.0"), id=notes_id
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("prd"), id=prd_id)
+        help_menu.AppendSeparator()
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -737,9 +748,24 @@ class PodcastsAppFrame(
             palette_id,
             bug_id,
             ffmpeg_id,
+            guide_id,
+            notes_id,
+            prd_id,
             redeem_id,
             updates_id,
             about_id,
+        )
+
+    def _open_podcasts_doc(self, stem: str) -> None:
+        titles = {
+            "userguide": "QUILL Cast User Guide",
+            "release-notes-1.0": "QUILL Cast Release Notes",
+            "prd": "QUILL Cast Product Requirements",
+        }
+        self.open_app_document(
+            self._doc_candidates("quill-cast", stem),
+            title=titles.get(stem, stem),
+            cache_name="app-docs",
         )
 
     def _new_library_folder(self) -> None:

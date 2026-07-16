@@ -254,3 +254,52 @@ def test_app_update_check_due_true_after_interval():
 def test_app_update_check_due_true_on_unparseable_timestamp():
     shell = _bare_shell()
     assert shell._app_update_check_due("not-a-date") is True
+
+
+def test_open_app_document_opens_html_candidate_directly(tmp_path, monkeypatch):
+    import webbrowser
+
+    html = tmp_path / "userguide.html"
+    html.write_text("<html><body>hi</body></html>", encoding="utf-8")
+    opened: list[str] = []
+    monkeypatch.setattr(webbrowser, "open", lambda uri: opened.append(uri) or True)
+    shell = _bare_shell()
+    shell._announce = lambda _msg: None
+    shell.open_app_document([html], title="Test Guide", cache_name="app-docs-test")
+    assert opened == [html.as_uri()]
+
+
+def test_open_app_document_renders_markdown_candidate(tmp_path, monkeypatch):
+    import webbrowser
+
+    import quill.core.paths as paths_module
+
+    md = tmp_path / "release-notes-1.0.md"
+    md.write_text("# Release Notes\n\nSomething shipped.", encoding="utf-8")
+    monkeypatch.setattr(paths_module, "app_data_dir", lambda: tmp_path / "appdata")
+    opened: list[str] = []
+    monkeypatch.setattr(webbrowser, "open", lambda uri: opened.append(uri) or True)
+    shell = _bare_shell()
+    shell._announce = lambda _msg: None
+    shell.open_app_document([md], title="Test Notes", cache_name="app-docs-test")
+    assert len(opened) == 1
+    cached = tmp_path / "appdata" / "app-docs-test" / "release-notes-1.0.html"
+    assert cached.is_file()
+    assert opened == [cached.as_uri()]
+
+
+def test_open_app_document_missing_announces_not_found(tmp_path):
+    announced: list[str] = []
+    shell = _bare_shell()
+    shell._announce = announced.append
+    shell.open_app_document([tmp_path / "nope.html"], title="Ghost Doc", cache_name="app-docs-test")
+    assert announced == ["Ghost Doc was not found in this build."]
+
+
+def test_doc_candidates_prefers_html_over_markdown():
+    shell = _bare_shell()
+    candidates = shell._doc_candidates("quill-radio", "userguide")
+    # Dev-mode candidates only (the test process is never frozen): html
+    # before md, from the sibling repo -- see _doc_candidates' docstring.
+    assert candidates[0].name == "userguide.html"
+    assert candidates[1].name == "userguide.md"

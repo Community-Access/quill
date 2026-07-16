@@ -18,6 +18,7 @@ from __future__ import annotations
 import subprocess
 import sys
 from collections.abc import Callable
+from pathlib import Path
 
 import wx
 import wx.adv
@@ -290,6 +291,79 @@ class AppShellFrame:
         self._task_manager.submit(
             "app-ffmpeg-install", _install, on_success=_done, on_failure=_failed
         )
+
+    # -- bundled documentation (Help > User Guide / Release Notes / PRD) --------
+
+    def open_app_document(self, candidates: list[Path], *, title: str, cache_name: str) -> None:
+        """Open a bundled doc in the system browser: the first *candidates*
+        path that exists on disk wins, tried in order. A ``.html`` candidate
+        opens directly (the standalone apps' own build ships pre-rendered
+        HTML next to the exe, mirroring QUILL's docs-artifact pipeline); a
+        ``.md`` candidate is rendered through the same markdown renderer
+        QUILL's own ``open_user_guide`` uses and cached under
+        ``app_data_dir()/cache_name`` so repeat opens don't re-render.
+        Missing entirely (a dev checkout with no sibling doc repo, or a
+        stripped-down build) is a quiet announcement, never an error dialog.
+        """
+        import webbrowser
+
+        path: Path | None = None
+        for candidate in candidates:
+            try:
+                if candidate.is_file():
+                    path = candidate
+                    break
+            except OSError:
+                continue
+        if path is None:
+            self._announce(f"{title} was not found in this build.")
+            return
+        if path.suffix.lower() == ".html":
+            target = path
+        else:
+            import os
+
+            from quill.core.paths import app_data_dir
+
+            try:
+                text = path.read_text(encoding="utf-8")
+            except OSError as error:
+                self._announce(f"Could not read {title}: {error}")
+                return
+            from quill.core.browser_preview import render_preview_html
+
+            html_content = render_preview_html(title, text, "markdown")
+            target_dir = app_data_dir() / cache_name
+            try:
+                target_dir.mkdir(parents=True, exist_ok=True)
+                target = target_dir / f"{path.stem}.html"
+                temp_path = target.with_suffix(".tmp")
+                temp_path.write_text(html_content, encoding="utf-8")
+                os.replace(temp_path, target)
+            except OSError as error:
+                self._announce(f"Could not write {title}: {error}")
+                return
+        if webbrowser.open(target.as_uri()):
+            self._announce(f"Opened {title} in browser")
+        else:
+            self._announce(f"{title} saved to {target}")
+
+    def _doc_candidates(self, repo_dir_name: str, stem: str) -> list[Path]:
+        """Where *stem* (``"userguide"``, ``"release-notes-1.0"``, ``"prd"``)
+        might live: a packaged build's own ``docs\\`` folder next to the exe
+        (HTML preferred, Markdown as a fallback -- see ``build_release.ps1``
+        in the app's own repo), or a dev checkout's sibling doc repo
+        (``S:\\quill-radio``/``S:\\quill-cast`` next to ``S:\\QUILL`` --
+        best-effort only, silently absent everywhere else)."""
+        candidates: list[Path] = []
+        if getattr(sys, "frozen", False):
+            exe_dir = Path(sys.executable).resolve().parent
+            candidates.append(exe_dir / "docs" / f"{stem}.html")
+            candidates.append(exe_dir / "docs" / f"{stem}.md")
+        sibling_docs = Path(__file__).resolve().parents[3] / repo_dir_name / "docs"
+        candidates.append(sibling_docs / f"{stem}.html")
+        candidates.append(sibling_docs / f"{stem}.md")
+        return candidates
 
     # -- report a bug ------------------------------------------------------------
 
