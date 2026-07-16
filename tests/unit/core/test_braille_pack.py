@@ -123,7 +123,12 @@ def test_ui_wiring_present() -> None:
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[3]
-    speech = (root / "quill" / "ui" / "main_frame_speech.py").read_text(encoding="utf-8")
+    # SpeechCommandsMixin was split into main_frame_speech{,_downloads,_voice}.py
+    # (CQ-1); download_braille_pack + the hub dispatch live in the downloads half.
+    ui = root / "quill" / "ui"
+    speech = "\n".join(
+        p.read_text(encoding="utf-8") for p in sorted(ui.glob("main_frame_speech*.py"))
+    )
     assert "def download_braille_pack" in speech
     # The hub dispatches braille to the download handler, passing the reopen-hub
     # callback so the user lands back in the hub afterwards (stay-in-hub).

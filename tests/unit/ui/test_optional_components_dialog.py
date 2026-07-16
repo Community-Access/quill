@@ -14,6 +14,12 @@ _UI = Path(__file__).resolve().parents[3] / "quill" / "ui"
 
 
 def _src(name: str) -> str:
+    # SpeechCommandsMixin was split into main_frame_speech{,_downloads,_voice}.py
+    # (CQ-1); scan all three so contract pins survive wherever a handler landed.
+    if name == "main_frame_speech.py":
+        return "\n".join(
+            p.read_text(encoding="utf-8") for p in sorted(_UI.glob("main_frame_speech*.py"))
+        )
     return (_UI / name).read_text(encoding="utf-8")
 
 
