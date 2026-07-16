@@ -23,6 +23,19 @@ class PreferenceCheckbox:
 
 
 @dataclass(slots=True)
+class PreferenceAction:
+    """One utility button (e.g. Quill Radio's "Reset All Stations' Sound
+    Enhancements..."): ``name`` carries the ``&`` mnemonic and is the visible
+    label, ``help_text`` is the accessible description, ``on_click`` fires
+    immediately on click -- independent of Save/Cancel, so it neither waits
+    on nor is bundled with whatever else this Preferences visit is editing."""
+
+    name: str
+    help_text: str
+    on_click: Callable[[], None]
+
+
+@dataclass(slots=True)
 class PreferenceChoice:
     """One labeled combo box row: for a small closed set of options a
     checkbox can't represent (e.g. Radio's "When closing the window").
@@ -47,6 +60,7 @@ class PreferencesDialog:
         app_title: str,
         checkboxes: list[PreferenceCheckbox],
         choices: list[PreferenceChoice] | None = None,
+        actions: list[PreferenceAction] | None = None,
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
@@ -56,6 +70,7 @@ class PreferencesDialog:
         self._result: tuple[list[bool], list[int]] | None = None
         self._checks: list[wx.CheckBox] = []
         self._choice_controls: list[wx.Choice] = []
+        self._action_buttons: list[wx.Button] = []
 
         self.dialog = wx.Dialog(
             parent, title=f"{app_title} Preferences", style=wx.DEFAULT_DIALOG_STYLE
@@ -83,6 +98,13 @@ class PreferencesDialog:
             check.SetValue(spec.value)
             root.Add(check, 0, wx.ALL, 8)
             self._checks.append(check)
+
+        for action_spec in actions or []:
+            action_btn = wx.Button(self.dialog, label=action_spec.name)
+            action_btn.SetName(action_spec.help_text)
+            action_btn.Bind(wx.EVT_BUTTON, lambda _e, cb=action_spec.on_click: cb())
+            root.Add(action_btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            self._action_buttons.append(action_btn)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         save_btn = wx.Button(self.dialog, wx.ID_OK, "&Save")

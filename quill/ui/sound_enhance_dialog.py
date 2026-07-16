@@ -46,12 +46,14 @@ class SoundEnhanceDialog:
         show_smart_speed: bool = False,
         smart_speed_enabled: bool = False,
         announce_cb: Callable[[str], None] | None = None,
+        on_reset: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._show_smart_speed = show_smart_speed
+        self._on_reset = on_reset
         self._result: tuple[float, float, float, bool, bool] | None = None
         # wx.Window.SetName() is inert for MSAA/UIA on Windows (see
         # quill.ui.accessible_names) -- screen readers there normally infer a
@@ -120,6 +122,13 @@ class SoundEnhanceDialog:
             root.Add(self._smart_speed_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self._reset_btn: wx.Button | None = None
+        if on_reset is not None:
+            self._reset_btn = wx.Button(self.dialog, label="&Reset to Default")
+            self._reset_btn.SetName(
+                "Reset to Default -- stop overriding this station, follow the shared default"
+            )
+            buttons.Add(self._reset_btn, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "&Apply")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
@@ -129,6 +138,8 @@ class SoundEnhanceDialog:
         self.dialog.SetSizerAndFit(root)
 
         ok_btn.Bind(wx.EVT_BUTTON, self._on_apply)
+        if self._reset_btn is not None:
+            self._reset_btn.Bind(wx.EVT_BUTTON, self._on_reset_click)
 
     def _add_band_slider(self, root: object, label: str, value_db: float):
         wx = self._wx
@@ -196,6 +207,11 @@ class SoundEnhanceDialog:
             return self._result if answer == wx.ID_OK else None
         finally:
             self.dialog.Destroy()
+
+    def _on_reset_click(self, _event: object) -> None:
+        if self._on_reset is not None:
+            self._on_reset()
+        self.dialog.EndModal(self._wx.ID_CANCEL)
 
     def _on_apply(self, _event: object) -> None:
         bass, mid, treble = self._current_band_values()

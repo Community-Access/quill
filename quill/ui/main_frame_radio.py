@@ -756,6 +756,26 @@ class RadioMixin:
                 history.eq_treble_db,
                 history.compressor_enabled,
             )
+        on_reset = None
+        if favorite is not None and favorite.has_sound_enhancement_override:
+
+            def on_reset(favorite: FavoriteStation = favorite) -> None:
+                self._radio_favorites.clear_enhancement_override(favorite.key)
+                self._save_radio_favorites()
+                state = self._radio_controller.state
+                if state.station is not None and (
+                    state.station.station_uuid or state.station.stream_url
+                ) == favorite.key:
+                    self._radio_controller.set_enhancement(
+                        bass_db=history.eq_bass_db,
+                        mid_db=history.eq_mid_db,
+                        treble_db=history.eq_treble_db,
+                        compressor_enabled=history.compressor_enabled,
+                    )
+                self._announce(
+                    f"Sound Enhancements for {favorite.display_label}: back to the shared default."
+                )
+
         dialog = SoundEnhanceDialog(
             self.frame,
             bass_db=bass,
@@ -764,6 +784,7 @@ class RadioMixin:
             compressor_enabled=compressor,
             subject=favorite.display_label if favorite is not None else "station",
             announce_cb=self._announce,
+            on_reset=on_reset,
         )
         result = dialog.show()
         if result is None:

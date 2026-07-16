@@ -648,6 +648,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
         from quill.ui.app_preferences_dialog import (
+            PreferenceAction,
             PreferenceCheckbox,
             PreferenceChoice,
             PreferencesDialog,
@@ -683,6 +684,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     close_action_index,
                 ),
             ],
+            actions=[
+                PreferenceAction(
+                    "Reset &All Stations' Sound Enhancements...",
+                    "Reset all stations' Sound Enhancements to the shared default",
+                    self._reset_all_sound_enhancements,
+                ),
+            ],
             announce_cb=self._announce,
         )
         result = dialog.show()
@@ -700,6 +708,50 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         if menu_bar is not None:
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
         self._announce("Preferences saved")
+
+    def _reset_all_sound_enhancements(self) -> None:
+        """Preferences > Reset All Stations' Sound Enhancements...: clear
+        every favorite's override in one pass, the bulk counterpart to the
+        Sound Enhancements dialog's own per-station Reset to Default."""
+        overridden = [
+            favorite
+            for favorite in self._radio_favorites.favorites
+            if favorite.has_sound_enhancement_override
+        ]
+        if not overridden:
+            self._announce("No stations have their own Sound Enhancements to reset.")
+            return
+        count = len(overridden)
+        plural = "" if count == 1 else "s"
+        answer = self._show_message_box(
+            f"{count} station{plural} have their own Sound Enhancements. "
+            "Reset all of them to the shared default?",
+            "Reset All Stations' Sound Enhancements",
+            wx.ICON_QUESTION | wx.YES_NO,
+        )
+        if answer != wx.YES:
+            return
+        history = self._radio_history
+        playing_station = self._radio_controller.state.station
+        playing_key = (
+            (playing_station.station_uuid or playing_station.stream_url)
+            if playing_station is not None
+            else None
+        )
+        reset_playing = False
+        for favorite in overridden:
+            self._radio_favorites.clear_enhancement_override(favorite.key)
+            if favorite.key == playing_key:
+                reset_playing = True
+        self._save_radio_favorites()
+        if reset_playing:
+            self._radio_controller.set_enhancement(
+                bass_db=history.eq_bass_db,
+                mid_db=history.eq_mid_db,
+                treble_db=history.eq_treble_db,
+                compressor_enabled=history.compressor_enabled,
+            )
+        self._announce(f"Reset {count} station{plural} to the shared default.")
 
     def _maybe_resume_last_station(self) -> None:
         """Radio as an appliance: launch, and your station is already on."""
