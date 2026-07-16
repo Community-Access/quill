@@ -160,11 +160,6 @@ from quill.core.language_profile import (
     get_profile_by_name,
     get_profile_for_path,
 )
-from quill.core.lexical import (
-    build_lookup_items,
-    default_service,
-    render_lookup,
-)
 from quill.core.lexical_preload import start_lexical_preload
 from quill.core.links import build_link_text, find_link_at_cursor, infer_markup_kind
 from quill.core.locations import LocationRing
@@ -1175,7 +1170,10 @@ class MainFrame(
         self._announcement_error_reported = ""
         self._read_aloud = ReadAloudController()
         self._dictation = DictationController()
-        self._lexical_service = default_service(include_online=True)
+        # Built lazily on first lookup: constructing the online providers pulls
+        # the urllib request stack and the lexical provider tree, none of which
+        # an empty editor needs at startup. See _get_lexical_service().
+        self._lexical_service: object | None = None
         self._external_change_watcher: ExternalChangeWatcher | None = None
         self._external_change_timer: object | None = None
         self._watch_service = WatchService(
@@ -2905,6 +2903,19 @@ class MainFrame(
 
         return tuple(menu_items)
 
+    def _get_lexical_service(self) -> object:
+        """The lexical (dictionary/thesaurus) service, built on first use.
+
+        Deferred out of ``__init__`` so the online providers and their urllib
+        request stack stay off the cold-start path; the first Look Up builds
+        the service once and caches it.
+        """
+        if self._lexical_service is None:
+            from quill.core.lexical import default_service
+
+            self._lexical_service = default_service(include_online=True)
+        return self._lexical_service
+
     def show_lookup_dialog(self, word: str) -> None:
         """Show the DICT-2 Look Up dialog for ``word``."""
         wx = self._wx
@@ -2912,10 +2923,12 @@ class MainFrame(
             self._set_status("Dictionary feature is disabled.")
             return
 
+        from quill.core.lexical import build_lookup_items, render_lookup
+
         # Query the lexical service (consent is per-feature, so online is enabled
         # if the user has consented to network lookups).
         online = self._feature_enabled("core.dictionary")
-        result = self._lexical_service.lookup(word, online=online)
+        result = self._get_lexical_service().lookup(word, online=online)
 
         # Render the result for screen-reader paging.
         text = render_lookup(result)
