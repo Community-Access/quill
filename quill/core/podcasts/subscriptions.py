@@ -11,6 +11,7 @@ state. wx-free, strict-typed.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import uuid
 from dataclasses import dataclass, field
@@ -155,6 +156,22 @@ class PodcastLibrary:
         elsewhere. Phase 1 only stores whole-record overrides (no per-field
         merge yet), so this is currently just "show's or global's"."""
         return show.settings if show.settings is not None else self.settings
+
+    def apply_show_override(self, show: PodcastShow, **updates: object) -> PodcastSettings:
+        """Set field(s) on *show*'s own settings override, cloning from
+        whatever is currently effective for it (its own override if it
+        already has one, else the library default) so any other override
+        this show already carries survives -- never resets sibling fields
+        to the class defaults. The one correct way to write a per-show
+        override; every settings field works this way (speed, sort order,
+        etc.), not just the field being changed right now."""
+        base = self.effective_settings(show)
+        # dataclasses.replace's overload can't verify heterogeneous **kwargs
+        # against each field's own type; the caller passing a genuine
+        # PodcastSettings field name/value is on them, same as **kwargs
+        # anywhere else in the codebase that fans out into a typed callee.
+        show.settings = dataclasses.replace(base, **updates)  # type: ignore[arg-type]
+        return show.settings
 
 
 def merge_episodes(show: PodcastShow, fetched: list[PodcastEpisode]) -> int:

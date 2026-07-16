@@ -76,6 +76,26 @@ class PodcastSettings:
     reconnect_enabled: bool = True
     reconnect_max_attempts: int = 5
     reconnect_wait_seconds: int = 10
+    #: How a cross-show episode list (Inbox, New Episodes, Continue
+    #: Listening, Favorites) presents multiple shows at once. "flat": one
+    #: stream sorted by episode_sort_mode across every show (per-show sort
+    #: overrides below do not apply -- there is no single well-defined
+    #: order once different shows compare by different keys). "grouped":
+    #: the same flat list, but each show's episodes cluster together
+    #: (shows ordered by title), each group sorted by that show's own
+    #: effective sort mode. "folders": the same per-show grouping as
+    #: "grouped", presented as real expandable tree nodes, one per show,
+    #: instead of a flat list -- see manager_phase4.py. Global only (does
+    #: not make sense per-show: a single show has no "grouped vs flat"
+    #: shape of its own).
+    episode_list_view_mode: str = "grouped"  # "flat" | "grouped" | "folders"
+    #: How one show's own episode list (or its slice of a "grouped"/
+    #: "folders" cross-show view) is ordered -- one of
+    #: podcasts.sorting.EPISODE_SORT_MODES. Global default; a show
+    #: overrides it the same way it overrides speed (PodcastLibrary.
+    #: apply_show_override), so "oldest-first to clear a backlog" can
+    #: differ per podcast while everything else stays on the shared default.
+    episode_sort_mode: str = "date_newest"
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -91,11 +111,15 @@ class PodcastSettings:
             "reconnect_enabled": self.reconnect_enabled,
             "reconnect_max_attempts": self.reconnect_max_attempts,
             "reconnect_wait_seconds": self.reconnect_wait_seconds,
+            "episode_list_view_mode": self.episode_list_view_mode,
+            "episode_sort_mode": self.episode_sort_mode,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, object]) -> PodcastSettings:
         delete_policy = str(data.get("delete_files_on_remove", "ask"))
+        view_mode = str(data.get("episode_list_view_mode", "grouped"))
+        sort_mode = str(data.get("episode_sort_mode", "date_newest"))
         return cls(
             playback_mode=str(data.get("playback_mode", "download")),
             retention=str(data.get("retention", "keep_all")),
@@ -111,6 +135,10 @@ class PodcastSettings:
             reconnect_enabled=bool(data.get("reconnect_enabled", True)),
             reconnect_max_attempts=max(0, _coerce_int(data.get("reconnect_max_attempts"), 5)),
             reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
+            episode_list_view_mode=view_mode
+            if view_mode in ("flat", "grouped", "folders")
+            else "grouped",
+            episode_sort_mode=sort_mode,
         )
 
 

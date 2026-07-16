@@ -87,6 +87,28 @@ def test_effective_settings_prefers_show_override() -> None:
     assert library.effective_settings(show_without_override).speed == 1.0
 
 
+def test_apply_show_override_creates_an_override_from_the_global_default() -> None:
+    library = PodcastLibrary(settings=PodcastSettings(speed=1.0, episode_sort_mode="date_newest"))
+    show = PodcastShow(id="s1", title="S")
+    library.apply_show_override(show, episode_sort_mode="date_oldest")
+    assert show.settings is not None
+    assert show.settings.episode_sort_mode == "date_oldest"
+    # Every other field carried over from the global default, not reset.
+    assert show.settings.speed == 1.0
+
+
+def test_apply_show_override_preserves_an_existing_override_field() -> None:
+    """A show that already overrides speed must keep that override when a
+    *different* field (sort mode) is changed -- the historical bug this
+    replaces silently reset every unlisted field back to class defaults."""
+    library = PodcastLibrary(settings=PodcastSettings())
+    show = PodcastShow(id="s1", title="S", settings=PodcastSettings(speed=2.0))
+    library.apply_show_override(show, episode_sort_mode="date_oldest")
+    assert show.settings is not None
+    assert show.settings.speed == 2.0
+    assert show.settings.episode_sort_mode == "date_oldest"
+
+
 def test_merge_episodes_adds_new_and_updates_existing_metadata() -> None:
     existing = PodcastEpisode(
         guid="g1", title="Old Title", audio_url="https://x/e1.mp3", played=True, position_ms=5000

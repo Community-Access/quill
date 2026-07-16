@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from quill.core.podcasts.models import PodcastEpisode, PodcastShow
-from quill.core.podcasts.sorting import sort_episodes, sort_shows
+from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
+from quill.core.podcasts.sorting import sort_episodes, sort_pairs, sort_shows
+from quill.core.podcasts.subscriptions import PodcastLibrary
 
 _OLD = "Wed, 01 Jul 2026 00:00:00 GMT"
 _MID = "Wed, 08 Jul 2026 00:00:00 GMT"
@@ -110,3 +111,92 @@ def test_sort_shows_recently_updated_show_with_no_episodes_sorts_last() -> None:
     has_episodes = _show("s2", title="Has", episodes=[_episode("e1", title="e1", published=_NEW)])
     result = sort_shows([empty, has_episodes], "recently_updated")
     assert [s.id for s in result] == ["s2", "s1"]
+
+
+# -- sort_pairs (cross-show views: Inbox, New Episodes, Continue Listening) --
+
+
+def test_sort_pairs_grouped_keeps_shows_contiguous_sorted_by_title() -> None:
+    banana = _show("s1", title="Banana Cast")
+    apple = _show("s2", title="Apple Hour")
+    library = PodcastLibrary(shows=[banana, apple])
+    pairs = [
+        (banana, _episode("b1", title="B1", published=_OLD)),
+        (apple, _episode("a1", title="A1", published=_OLD)),
+        (banana, _episode("b2", title="B2", published=_NEW)),
+        (apple, _episode("a2", title="A2", published=_NEW)),
+    ]
+    result = sort_pairs(library, pairs, view_mode="grouped")
+    assert [show.title for show, _e in result] == [
+        "Apple Hour",
+        "Apple Hour",
+        "Banana Cast",
+        "Banana Cast",
+    ]
+    # Within each show's group, still sorted by the (global default) episode
+    # mode, date_newest.
+    apple_group = [e.guid for show, e in result if show.title == "Apple Hour"]
+    assert apple_group == ["a2", "a1"]
+
+
+def test_sort_pairs_flat_is_one_chronological_stream() -> None:
+    show_a = _show("s1", title="A")
+    show_b = _show("s2", title="B")
+    library = PodcastLibrary(shows=[show_a, show_b])
+    pairs = [
+        (show_a, _episode("a1", title="A1", published=_OLD)),
+        (show_b, _episode("b1", title="B1", published=_NEW)),
+        (show_a, _episode("a2", title="A2", published=_MID)),
+    ]
+    result = sort_pairs(library, pairs, view_mode="flat")
+    assert [e.guid for _show, e in result] == ["b1", "a2", "a1"]
+
+
+def test_sort_pairs_grouped_respects_the_library_default_sort_mode() -> None:
+    show = _show("s1", title="Only Show")
+    library = PodcastLibrary(
+        shows=[show], settings=PodcastSettings(episode_sort_mode="date_oldest")
+    )
+    pairs = [
+        (show, _episode("new", title="New", published=_NEW)),
+        (show, _episode("old", title="Old", published=_OLD)),
+    ]
+    result = sort_pairs(library, pairs, view_mode="grouped")
+    assert [e.guid for _show, e in result] == ["old", "new"]
+
+
+def test_sort_pairs_grouped_respects_a_per_show_sort_override() -> None:
+    """Two shows, each with a different effective sort mode: one show's own
+    override wins for its own episodes without touching the other show's."""
+    oldest_first_show = _show("s1", title="Oldest First Show")
+    oldest_first_show.settings = PodcastSettings(episode_sort_mode="date_oldest")
+    newest_first_show = _show("s2", title="Zzz Newest First Show")  # sorts after s1 by title
+    library = PodcastLibrary(shows=[oldest_first_show, newest_first_show])
+    pairs = [
+        (oldest_first_show, _episode("s1-new", title="New", published=_NEW)),
+        (oldest_first_show, _episode("s1-old", title="Old", published=_OLD)),
+        (newest_first_show, _episode("s2-new", title="New", published=_NEW)),
+        (newest_first_show, _episode("s2-old", title="Old", published=_OLD)),
+    ]
+    result = sort_pairs(library, pairs, view_mode="grouped")
+    assert [e.guid for _show, e in result] == ["s1-old", "s1-new", "s2-new", "s2-old"]
+
+
+def test_sort_pairs_flat_ignores_per_show_sort_overrides() -> None:
+    """A per-show sort override only applies within that show's own group
+    (grouped/folders); "flat" always uses the single global sort mode."""
+    show = _show("s1", title="Only Show")
+    show.settings = PodcastSettings(episode_sort_mode="date_oldest")
+    library = PodcastLibrary(shows=[show])  # global default stays date_newest
+    pairs = [
+        (show, _episode("new", title="New", published=_NEW)),
+        (show, _episode("old", title="Old", published=_OLD)),
+    ]
+    result = sort_pairs(library, pairs, view_mode="flat")
+    assert [e.guid for _show, e in result] == ["new", "old"]
+
+
+def test_sort_pairs_empty_list() -> None:
+    library = PodcastLibrary()
+    assert sort_pairs(library, [], view_mode="grouped") == []
+    assert sort_pairs(library, [], view_mode="flat") == []
