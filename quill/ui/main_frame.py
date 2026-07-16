@@ -448,6 +448,8 @@ from quill.ui.main_frame_selection import SelectionMarksMixin
 from quill.ui.main_frame_sessions import SessionsMixin
 from quill.ui.main_frame_simple_open import SimpleOpenMixin
 from quill.ui.main_frame_speech import SpeechCommandsMixin
+from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
+from quill.ui.main_frame_speech_voice import VoiceInteractionMixin
 from quill.ui.main_frame_spellcheck import SpellcheckCommandsMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
@@ -764,6 +766,8 @@ class MainFrame(
     MediaSleepTimerMixin,
     FormatCodesMixin,
     SpeechCommandsMixin,
+    SpeechDownloadsMixin,
+    VoiceInteractionMixin,
     VerbosityCommandsMixin,
     LanguageDetectMixin,
     BrailleProofingCommandsMixin,
