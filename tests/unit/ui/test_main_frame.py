@@ -125,8 +125,9 @@ def test_about_dialog_open_handler_calls_show_about_quill() -> None:
     # show_about_quill_native asserting isinstance(about_info, AboutInfo).
     # The handler wired to the Help ▸ About Quill menu must be show_about_quill
     # — the shim that gathers AboutInfo correctly — not a stale pre-#260 path.
-    menu_src = (
-        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_menu.py"
+    _ui = Path(__file__).resolve().parents[3] / "quill" / "ui"
+    menu_src = (_ui / "main_frame_menu.py").read_text(encoding="utf-8") + (
+        _ui / "main_frame_menu_bindings.py"
     ).read_text(encoding="utf-8")
     assert "_id_about_quill" in menu_src
     assert "show_about_quill" in menu_src

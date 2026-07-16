@@ -22,6 +22,8 @@ from pathlib import Path
 _UI = Path(__file__).resolve().parents[3] / "quill" / "ui"
 _MODULES = [
     _UI / "main_frame_menu.py",
+    # EVT_MENU bindings were split out of _build_menu (CQ-1).
+    _UI / "main_frame_menu_bindings.py",
     _UI / "main_frame.py",
     _UI / "main_frame_github.py",
     _UI / "main_frame_devtools.py",

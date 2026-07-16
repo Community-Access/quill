@@ -423,6 +423,7 @@ from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
+from quill.ui.main_frame_menu_bindings import MenuBindingsMixin
 from quill.ui.main_frame_menu_editor import (
     _TOP_MENU_DEFS,
     MenuEditorMixin,
@@ -779,6 +780,7 @@ class MainFrame(
     ImageCaptureMixin,
     BrowseModeMixin,
     MenuBuilderMixin,
+    MenuBindingsMixin,
     NotebookUIMixin,
     QuillKeyMixin,
     RichModeMixin,

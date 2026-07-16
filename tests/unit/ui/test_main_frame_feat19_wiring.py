@@ -77,7 +77,9 @@ def test_feat19_reload_uses_document_encoding() -> None:
 
 def test_feat19_menu_item_wired() -> None:
     """The 'Check for External Changes' menu item must exist in main_frame_menu."""
-    menu_src = Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8")
+    menu_src = Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8") + Path(
+        "quill/ui/main_frame_menu_bindings.py"
+    ).read_text(encoding="utf-8")
     assert "_id_check_external_changes" in menu_src
     assert "check_external_changes_now" in menu_src
     assert "Check for E" in menu_src

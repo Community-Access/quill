@@ -168,8 +168,9 @@ def test_move_section_menu_ids_are_appended_and_bound() -> None:
     were declared and fed into the accelerator table, but never ``Append``-ed
     to a real menu nor ``Bind``-ed to a handler, leaving the documented
     Alt+Shift+Up/Down accelerator silently inert outside the context menu."""
-    source = (
-        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_menu.py"
+    _ui = Path(__file__).resolve().parents[3] / "quill" / "ui"
+    source = (_ui / "main_frame_menu.py").read_text(encoding="utf-8") + (
+        _ui / "main_frame_menu_bindings.py"
     ).read_text(encoding="utf-8")
     for attr in ("_id_move_section_up", "_id_move_section_down"):
         assert f"self.{attr},\n" in source, f"{attr} is never Append-ed to a real menu"

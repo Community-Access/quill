@@ -137,6 +137,8 @@ def test_shell2_handle_shell_request_passes_structured_for_structured_verb() -> 
         (_ui / "main_frame.py").read_text(encoding="utf-8")
         + "\n"
         + (_ui / "main_frame_menu.py").read_text(encoding="utf-8")
+        + "\n"
+        + (_ui / "main_frame_menu_bindings.py").read_text(encoding="utf-8")
     )
 
     assert 'structured=action == "ocr-structured"' in main_frame
@@ -163,6 +165,8 @@ def test_ocr3_commands_are_wired_in_main_frame() -> None:
         + (_ui / "main_frame_commands.py").read_text(encoding="utf-8")
         + "\n"
         + (_ui / "main_frame_menu.py").read_text(encoding="utf-8")
+        + "\n"
+        + (_ui / "main_frame_menu_bindings.py").read_text(encoding="utf-8")
     )
 
     # Command registration

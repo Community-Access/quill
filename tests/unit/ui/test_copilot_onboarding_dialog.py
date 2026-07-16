@@ -67,5 +67,7 @@ def test_setup_is_reachable_from_the_hub_engines_tab() -> None:
     engines = Path("quill/ui/ai_hub_engines_panel.py").read_text(encoding="utf-8")
     assert "CopilotOnboardingDialog(" in engines
     assert 'harness_id == "copilot"' in engines
-    menu = Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8")
+    menu = Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8") + Path(
+        "quill/ui/main_frame_menu_bindings.py"
+    ).read_text(encoding="utf-8")
     assert "open_copilot_onboarding()" in menu

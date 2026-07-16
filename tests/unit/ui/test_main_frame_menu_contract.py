@@ -11,6 +11,9 @@ def _menu_source() -> str:
         + "\n"
         + (ui / "main_frame_menu.py").read_text(encoding="utf-8")
         + "\n"
+        # EVT_MENU bindings were split out of _build_menu (CQ-1).
+        + (ui / "main_frame_menu_bindings.py").read_text(encoding="utf-8")
+        + "\n"
         + (ui / "main_frame_ssh.py").read_text(encoding="utf-8")
         + "\n"
         + (ui / "main_frame_github.py").read_text(encoding="utf-8")

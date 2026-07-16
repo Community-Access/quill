@@ -9,6 +9,8 @@ def _source() -> str:
         (ui / "main_frame.py").read_text(encoding="utf-8")
         + "\n"
         + (ui / "main_frame_menu.py").read_text(encoding="utf-8")
+        + "\n"
+        + (ui / "main_frame_menu_bindings.py").read_text(encoding="utf-8")
     )
 
 
