@@ -5,8 +5,12 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-    encoding="utf-8"
+# MainFrame is composed from main_frame.py plus extracted mixin modules
+# (CQ-1); wiring assertions scan the composite source.
+_UI = Path(__file__).resolve().parents[3] / "quill" / "ui"
+SOURCE = "\n".join(
+    (_UI / name).read_text(encoding="utf-8")
+    for name in ("main_frame.py", "main_frame_commands.py", "main_frame_publishing.py")
 )
 
 

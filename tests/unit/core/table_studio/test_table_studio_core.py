@@ -230,7 +230,11 @@ def test_commands_registered_and_gated() -> None:
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[4]
-    mf = (root / "quill" / "ui" / "main_frame.py").read_text(encoding="utf-8")
+    # Command registration lives in main_frame_commands.py (extracted from
+    # main_frame.py, CQ-1); the launchers stay in main_frame.py.
+    mf = (root / "quill" / "ui" / "main_frame.py").read_text(encoding="utf-8") + "\n" + (
+        root / "quill" / "ui" / "main_frame_commands.py"
+    ).read_text(encoding="utf-8")
     assert '"tools.table_studio"' in mf and '"tools.csv_studio"' in mf
     assert "def open_table_studio" in mf and "def open_csv_studio" in mf
     # Both entry points are gated behind the single Table Studio flag; CSV was

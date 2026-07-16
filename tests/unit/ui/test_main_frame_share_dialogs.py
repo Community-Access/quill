@@ -8,6 +8,10 @@ def _source() -> str:
     return (
         (ui / "main_frame.py").read_text(encoding="utf-8")
         + "\n"
+        + (ui / "main_frame_commands.py").read_text(encoding="utf-8")
+        + "\n"
+        + (ui / "main_frame_keymap_io.py").read_text(encoding="utf-8")
+        + "\n"
         + (ui / "main_frame_menu.py").read_text(encoding="utf-8")
     )
 

@@ -32,8 +32,8 @@ def test_conversation_uses_varied_prompts() -> None:
 
 
 def test_voice_status_command_registered_and_menued() -> None:
-    assert '"tools.voice_status"' in _src("quill/ui/main_frame.py")
-    assert "self.speak_voice_status" in _src("quill/ui/main_frame.py")
+    assert '"tools.voice_status"' in _src("quill/ui/main_frame_commands.py")
+    assert "self.speak_voice_status" in _src("quill/ui/main_frame_commands.py")
     menu = _src("quill/ui/main_frame_menu.py")
     idx = menu.index('_("Speak Voice &Status")')
     line_start = menu.rfind("\n", 0, idx) + 1

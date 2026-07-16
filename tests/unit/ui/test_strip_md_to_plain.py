@@ -19,9 +19,9 @@ import pytest
 
 from quill.core.text_utils import strip_md_to_plain
 
-MAIN_FRAME = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-    encoding="utf-8"
-)
+MAIN_FRAME = (
+    Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_updates.py"
+).read_text(encoding="utf-8")
 INFO_PAGES = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "info_pages.py").read_text(
     encoding="utf-8"
 )

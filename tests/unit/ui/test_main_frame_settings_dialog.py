@@ -152,7 +152,7 @@ def _build_frame() -> MainFrame:
 def test_apply_refresh_saves_and_runs_side_effects(monkeypatch) -> None:
     frame = _build_frame()
     saved: list[Settings] = []
-    monkeypatch.setattr("quill.ui.main_frame.save_settings", lambda s: saved.append(s))
+    monkeypatch.setattr("quill.ui.main_frame_preferences.save_settings", lambda s: saved.append(s))
 
     frame._settings_dialog_apply_refresh("Updated settings")
 

@@ -85,7 +85,11 @@ def test_master_label_covers_all_experimental_features() -> None:
 
 
 def _main_frame_source() -> str:
-    return Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    # MainFrame is composed from main_frame.py plus extracted mixin modules
+    # (CQ-1); scan the composite so the gate pins survive extraction moves.
+    return "\n".join(
+        path.read_text(encoding="utf-8") for path in sorted(Path("quill/ui").glob("main_frame*.py"))
+    )
 
 
 def test_feature_enabled_applies_the_experimental_gates() -> None:

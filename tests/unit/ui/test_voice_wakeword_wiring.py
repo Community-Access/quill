@@ -13,7 +13,7 @@ def _src(rel: str) -> str:
 
 
 def test_command_registered_under_voice_feature() -> None:
-    src = _src("quill/ui/main_frame.py")
+    src = _src("quill/ui/main_frame_commands.py")
     assert '"tools.voice_wakeword"' in src
     assert "self.voice_wakeword_toggle" in src
     idx = src.index('"tools.voice_wakeword"')

@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 import quill.ui.main_frame as main_frame_module
+import quill.ui.main_frame_spellcheck as main_frame_spellcheck_module
 from quill.core.a11y_regions import RegionTracker
 from quill.core.document import Document
 from quill.core.epub import EpubBook, EpubChapter, EpubHeading
@@ -352,7 +353,7 @@ def test_misspellings_behind_message_counts_the_other_direction(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from quill.core.spellcheck import Misspelling
-    from quill.ui import main_frame as mf
+    from quill.ui import main_frame_spellcheck as mf
 
     # The unit env has no real spell backend, so drive the message logic with a
     # single known misspelling at [0, 5) (a stand-in for "teest good").
@@ -376,7 +377,7 @@ def test_misspellings_behind_message_counts_the_other_direction(
 def test_misspellings_behind_message_reports_none_when_clean(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from quill.ui import main_frame as mf
+    from quill.ui import main_frame_spellcheck as mf
 
     monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [])
     monkeypatch.setattr(mf, "find_next_misspelling", lambda _t, _c, _d: None)
@@ -1035,7 +1036,7 @@ def test_open_misspelling_list_jumps_to_selected_occurrence(
     frame._spell_dictionary = lambda: {"hello", "word"}  # type: ignore[method-assign]
     frame._show_tree_navigator = lambda **_kwargs: item  # type: ignore[method-assign]
     monkeypatch.setattr(
-        "quill.ui.main_frame.list_misspellings",
+        "quill.ui.main_frame_spellcheck.list_misspellings",
         lambda _text, _dictionary: [item],
     )
 
@@ -1516,12 +1517,12 @@ def test_spellcheck_hint_bell_debounces_same_word(monkeypatch: pytest.MonkeyPatc
     frame._last_live_misspelling_feedback_at = 0.0
     frame._spell_dictionary = lambda: {"alpha"}  # type: ignore[method-assign]
     monkeypatch.setattr(
-        main_frame_module,
+        main_frame_spellcheck_module,
         "find_next_misspelling",
         lambda *_args, **_kwargs: Misspelling("wrng", 6, 10),
     )
     ticks = iter([10.0, 10.1, 11.2])
-    monkeypatch.setattr(main_frame_module.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(main_frame_spellcheck_module.time, "monotonic", lambda: next(ticks))
 
     frame._announce_spellcheck_hint()
     frame._announce_spellcheck_hint()
@@ -2573,7 +2574,9 @@ def test_offer_post_download_actions_offers_extract_for_zip_not_install() -> Non
     # Source-contract check (real wx.Dialog construction needs a live wx.App,
     # which this headless suite doesn't run): a .zip target must be treated
     # as extractable, never as a runnable installer, and vice versa.
-    src = Path(main_frame_module.__file__).read_text(encoding="utf-8")
+    src = Path(main_frame_module.__file__).with_name("main_frame_updates.py").read_text(
+        encoding="utf-8"
+    )
     assert 'extractable = target.suffix.lower() == ".zip"' in src
     assert '"Extract now"' in src
     assert "_extract_and_reveal_portable_update(release, target)" in src

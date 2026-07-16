@@ -97,7 +97,11 @@ def test_border_uncheck_warns_at_decision_time() -> None:
     # re-check unless the user explicitly confirms.
     from pathlib import Path
 
-    source = Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    # MainFrame is composed from main_frame.py plus extracted mixin modules
+    # (CQ-1); scan the composite so this pin survives extraction moves.
+    source = "\n".join(
+        path.read_text(encoding="utf-8") for path in sorted(Path("quill/ui").glob("main_frame*.py"))
+    )
     start = source.index("def _confirm_show_editor_border(self")
     body = source[start : source.index("\n    def ", start + 1)]
     assert "breaks braille cell alignment" in body

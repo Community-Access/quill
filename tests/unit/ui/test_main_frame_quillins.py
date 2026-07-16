@@ -13,11 +13,13 @@ from __future__ import annotations
 from pathlib import Path
 
 import quill.ui.main_frame as main_frame_module
+import quill.ui.main_frame_commands as main_frame_commands_module
 import quill.ui.main_frame_menu as main_frame_menu_module
 import quill.ui.main_frame_quillins as quillins_module
 
 _QUILLINS = Path(quillins_module.__file__).read_text(encoding="utf-8")
 _MENU = Path(main_frame_menu_module.__file__).read_text(encoding="utf-8")
+_COMMANDS = Path(main_frame_commands_module.__file__).read_text(encoding="utf-8")
 _MAIN = Path(main_frame_module.__file__).read_text(encoding="utf-8")
 
 
@@ -27,7 +29,7 @@ def test_mixin_is_a_main_frame_base() -> None:
 
 
 def test_manager_command_is_registered() -> None:
-    assert "self._register_quillins_commands()" in _MAIN
+    assert "self._register_quillins_commands()" in _COMMANDS
     register = _QUILLINS[_QUILLINS.index("def _register_quillins_commands") :][:500]
     assert "self.commands.register(" in register
     assert "_QUILLINS_MANAGER_COMMAND" in register

@@ -20,7 +20,7 @@ def test_mixin_in_main_frame_mro() -> None:
 
 
 def test_verbosity_commands_registered() -> None:
-    src = _src("quill/ui/main_frame.py")
+    src = _src("quill/ui/main_frame_commands.py")
     for cmd in (
         "verbosity.toggle_quiet",
         "verbosity.toggle_meeting",

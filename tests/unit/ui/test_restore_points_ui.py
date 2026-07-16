@@ -16,7 +16,9 @@ from quill.ui.main_frame_restore_points import (
 )
 
 _ROOT = Path(__file__).resolve().parents[3]
-_SOURCE = (_ROOT / "quill" / "ui" / "main_frame.py").read_text(encoding="utf-8")
+_SOURCE = (_ROOT / "quill" / "ui" / "main_frame.py").read_text(encoding="utf-8") + "\n" + (
+    _ROOT / "quill" / "ui" / "main_frame_commands.py"
+).read_text(encoding="utf-8")
 _MENU_SOURCE = (_ROOT / "quill" / "ui" / "main_frame_menu.py").read_text(encoding="utf-8")
 
 
