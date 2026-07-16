@@ -94,6 +94,7 @@ class RadioPlayerController:
         on_enhance_error: Callable[[str], None] | None = None,
         resolve_enhancement: Callable[[RadioStation], tuple[float, float, float, bool]]
         | None = None,
+        resolve_volume: Callable[[RadioStation], int] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -113,6 +114,13 @@ class RadioPlayerController:
         #: through every play_station call site (station browser, favorites
         #: tree, tray, recent/favorites submenus, ...).
         self._resolve_enhancement = resolve_enhancement
+        #: Resolves the memorized volume (0-100) for the station about to
+        #: play, or -1 for "no preference recorded" -- the host looks up
+        #: that station's RadioFavoritesStore.volume_percent. Mirrors
+        #: resolve_enhancement's injection point. When -1, play_station
+        #: leaves the current volume alone rather than forcing a default,
+        #: so a volume set just before pressing play is honored.
+        self._resolve_volume = resolve_volume
         self._engine = WxMediaEngine(
             parent,
             on_loaded=self._on_loaded,
@@ -155,6 +163,11 @@ class RadioPlayerController:
                 self._compressor_enabled,
             ) = self._resolve_enhancement(station)
         self._state.station = station
+        if self._resolve_volume is not None:
+            memorized = self._resolve_volume(station)
+            if memorized >= 0:
+                self._state.volume_percent = max(0, min(100, int(memorized)))
+                self._state.muted = self._state.volume_percent == 0
         self._set_state(RadioPlayerState.CONNECTING, message="")
         url = self._resolve_playback_url(station)
         if not self._engine.load(url):
@@ -263,7 +276,7 @@ class RadioPlayerController:
     def _on_loaded(self, _length_ms: int) -> None:
         self._engine.set_volume(0 if self._state.muted else self._state.volume_percent)
         self._engine.play()
-        self._set_state(RadioPlayerState.PLAYING, message="", keep_volume=True)
+        self._set_state(RadioPlayerState.PLAYING, message="")
         station = self._state.station
         if station is not None and station.station_uuid and self._on_register_click:
             uuid = station.station_uuid
@@ -271,12 +284,10 @@ class RadioPlayerController:
 
     def _on_finished(self) -> None:
         # A live stream reaching "finished" means the connection dropped.
-        self._set_state(
-            RadioPlayerState.STOPPED, message="The stream ended or disconnected.", keep_volume=True
-        )
+        self._set_state(RadioPlayerState.STOPPED, message="The stream ended or disconnected.")
 
     def _on_error(self, message: str) -> None:
-        self._set_state(RadioPlayerState.ERROR, message=message, keep_volume=True)
+        self._set_state(RadioPlayerState.ERROR, message=message)
 
     # -- internal -----------------------------------------------------------
 
@@ -286,14 +297,11 @@ class RadioPlayerController:
         *,
         station: RadioStation | None | Ellipsis = ...,  # type: ignore[valid-type]
         message: str = "",
-        keep_volume: bool = False,
     ) -> None:
         if station is not ...:
             self._state.station = station
         self._state.state = state
         self._state.message = message
-        if not keep_volume:
-            self._state.volume_percent = 100
         self._notify()
 
     def _notify(self) -> None:

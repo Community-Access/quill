@@ -157,7 +157,8 @@ class RecordingSettingsDialog:
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        save_btn = wx.Button(self.dialog, wx.ID_OK, "&Save")
+        save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
+        save_btn.SetName("Save these recording settings")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         btn_row.AddStretchSpacer()
         btn_row.Add(save_btn, 0, wx.RIGHT, 6)
@@ -174,7 +175,7 @@ class RecordingSettingsDialog:
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._wx.ID_OK,
-            affirmative_label="Save",
+            affirmative_label="OK",
             cancel_id=self._wx.ID_CANCEL,
             escape_id=self._wx.ID_CANCEL,
         )

@@ -72,6 +72,7 @@ class RadioMixin:
             before_play=self._stop_podcast_before_radio,
             on_enhance_error=self._on_radio_enhance_error,
             resolve_enhancement=self._radio_resolve_enhancement,
+            resolve_volume=self._radio_resolve_volume,
         )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
@@ -240,7 +241,8 @@ class RadioMixin:
         """Two memories, updated on every playback state change: the
         recently-played history (a newly started station moves to its front)
         and the per-station volume (a favorite remembers the volume you set
-        while it plays, and gets it back the next time it starts)."""
+        while it plays -- restoring it on the way back in is
+        RadioPlayerController's own job, via resolve_volume)."""
         station = state.station
         if station is None:
             self._radio_history_key = ""
@@ -252,10 +254,6 @@ class RadioMixin:
             self._radio_history_key = key
             self._radio_history.record(station)
             radio_history.save_history(app_data_dir(), self._radio_history)
-            if favorite is not None and favorite.volume_percent >= 0:
-                controller = self._radio_controller
-                if state.volume_percent != favorite.volume_percent:
-                    controller.set_volume(favorite.volume_percent)
             return
         if (
             favorite is not None
@@ -719,6 +717,17 @@ class RadioMixin:
             history.eq_treble_db,
             history.compressor_enabled,
         )
+
+    def _radio_resolve_volume(self, station: RadioStation) -> int:
+        """The memorized volume (0-100) for *station*, or -1 when it's not a
+        favorite or has none recorded yet -- called by RadioPlayerController
+        on every play_station. A -1 tells the controller to leave the
+        current volume alone rather than force a default."""
+        key = station.station_uuid or station.stream_url
+        favorite = self._radio_favorites.find(key)
+        if favorite is not None and favorite.volume_percent >= 0:
+            return favorite.volume_percent
+        return -1
 
     def _radio_enhance_context_favorite(self) -> FavoriteStation | None:
         """The favorite Sound Enhancements edits right now: the currently

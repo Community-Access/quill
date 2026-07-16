@@ -76,7 +76,7 @@ class AddStationDialog:
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         test_btn = wx.Button(self.dialog, label="&Test")
         test_btn.SetName("Play this stream link now, before saving, to check it works")
-        save_btn = wx.Button(self.dialog, wx.ID_OK, "&Save")
+        save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         save_btn.SetName("Save this custom station")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         cancel_btn.SetName("Cancel")
@@ -96,7 +96,7 @@ class AddStationDialog:
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._wx.ID_OK,
-            affirmative_label="Save",
+            affirmative_label="OK",
             cancel_id=self._wx.ID_CANCEL,
             escape_id=self._wx.ID_CANCEL,
         )

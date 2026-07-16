@@ -92,7 +92,8 @@ class WakeUpTimerDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
-        save_btn = wx.Button(self.dialog, wx.ID_OK, "&Save")
+        save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
+        save_btn.SetName("Save this wake-up timer")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         buttons.Add(save_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
@@ -107,7 +108,7 @@ class WakeUpTimerDialog:
         apply_modal_ids(
             self.dialog,
             affirmative_id=wx.ID_OK,
-            affirmative_label="Save",
+            affirmative_label="OK",
             cancel_id=wx.ID_CANCEL,
             escape_id=wx.ID_CANCEL,
         )
