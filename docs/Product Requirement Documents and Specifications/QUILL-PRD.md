@@ -4083,18 +4083,29 @@ Record Now/Schedule Recording/Recording Settings items are hidden outright
 gap from the original Phase 1 ship where recording did not yet exist to gate.
 
 **Sound Enhancements (`quill/core/audio_enhance.py`, shared with Podcasts
-§5.84g).** An equalizer preset (Flat/Bass Boost/Voice Clarity/Podcast) and a
-compressor, applied live via an ffmpeg filter graph relayed to the existing
-playback engine over a loopback-only local HTTP server — not a new audio
-backend (BASS/BASS_FX, FastPlay's approach, needs a paid commercial license
-for a non-revenue app; ffmpeg is a dependency Radio's recorder already
-requires and QUILL never bundles or redistributes). Off by default; the
-engine loads the station's own URL directly until the user opts in, so
-normal playback never spawns the relay. `RecordingSettings.
-apply_sound_enhancements` (off by default) optionally threads the same
-filter graph into `build_record_command`, so a recording can capture the
-filtered audio instead of an unfiltered archival copy, for every recording
-method (Record Now, Record Station, and scheduled recordings).
+§5.84g).** A three-band equalizer (Bass/Mid/Treble sliders, -12 to +12 dB
+each, `EQ_BAND_MIN_DB`/`MAX_DB`, freely adjustable — the original four named
+presets, Flat/Bass Boost/Voice Clarity/Podcast, survive only as a "Quick
+preset" shortcut that sets all three sliders at once) and a compressor,
+applied live via an ffmpeg filter graph relayed to the existing playback
+engine over a loopback-only local HTTP server — not a new audio backend
+(BASS/BASS_FX, FastPlay's approach, needs a paid commercial license for a
+non-revenue app; ffmpeg is a dependency Radio's recorder already requires
+and QUILL never bundles or redistributes). Off by default; the engine loads
+the station's own URL directly until the user opts in, so normal playback
+never spawns the relay. **Remembered per favorite station**
+(`core/radio/favorites.py::FavoriteStation.has_sound_enhancement_override` +
+`eq_bass_db`/`eq_mid_db`/`eq_treble_db`/`compressor_enabled`, a whole-record
+override mirroring Podcasts' own per-show override below): opening Sound
+Enhancements while a favorite plays edits that station's own settings;
+`RadioPlayerController` resolves which applies via an injected
+`resolve_enhancement` callback at the top of every `play_station`, rather
+than threading the choice through each of the 11+ places a station can start
+playing. `RecordingSettings.apply_sound_enhancements` (off by default)
+optionally threads the same filter graph into `build_record_command`, so a
+recording can capture the filtered audio instead of an unfiltered archival
+copy, for every recording method (Record Now, Record Station, and scheduled
+recordings).
 
 **Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
 `requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
@@ -4361,8 +4372,10 @@ it, with the one real wrinkle Radio doesn't have: episodes support seeking
 and a duration/scrub bar, which a live one-way ffmpeg relay has neither of
 natively. Full parity was built, not a degraded no-seek mode.
 
-- **EQ preset + compressor.** Same as Radio: an equalizer preset plus a
-  compressor, applied live via the shared relay. Off by default.
+- **Three-band EQ + compressor.** Same as Radio (§5.84f): Bass/Mid/Treble
+  sliders plus a compressor, applied live via the shared relay. Off by
+  default; a "Quick preset" shortcut still sets all three sliders at once
+  from the four original named presets.
 - **Smart Speed (podcasts only).** A ``silenceremove`` filter trims silence
   anywhere in the audio (not just leading/trailing), for the gaps between
   sentences a spoken-word episode is full of -- reversible and live, not the
@@ -4442,6 +4455,82 @@ per-show override, not a global-only toggle.
   ``_add_virtual_view_show_children`` builds the Folders mode's per-podcast
   tree nodes fresh on every ``refresh_tree()`` -- auto-generated, never
   persisted, distinct from the existing manual freeform Inbox folder tree.
+
+#### Phase 8 (shipped): per-podcast Sound Enhancements, Skip Forward/Back, auto-skip intro/outro
+
+A competitive pass against Downcast/Overcast/Pocket Casts/Castro surfaced two
+gaps: Sound Enhancements (Phase 5, above) was global-only, and there was no
+skip-by-N-seconds command at all (only absolute chapter-boundary seeks).
+
+- **Per-podcast Sound Enhancements.** ``PodcastSettings`` gained
+  ``eq_bass_db``/``eq_mid_db``/``eq_treble_db``/``compressor_enabled``/
+  ``smart_speed_enabled``, per-show overridable via ``apply_show_override``
+  exactly like ``episode_sort_mode`` (Phase 7). Opening Sound Enhancements
+  while an episode is playing edits that show's own override; with nothing
+  playing, it edits the shared default. Every ``play_episode`` call site (6,
+  across the Manager, the Play Queue, Recently Played, and both standalone
+  apps) resolves ``effective_settings(show)`` and passes the result through
+  new optional ``bass_db``/``mid_db``/``treble_db``/``compressor_enabled``/
+  ``smart_speed_enabled`` kwargs.
+- **Skip Forward / Skip Back.** ``PodcastSettings.skip_forward_seconds``/
+  ``skip_back_seconds`` (global default + per-show override, 30/15 by
+  default) back two new commands (``podcasts.skip_forward``/``skip_back``,
+  Episode-menu items, default chords) that jump the player controller's
+  position by that many seconds, clamped to ``[0, length_ms]``.
+- **Auto-skip intro/outro** (``auto_skip_intro_seconds``/
+  ``auto_skip_outro_seconds``, per-show only -- a global "skip N seconds of
+  every podcast" default isn't a thing anyone wants). Intro-skip applies
+  once, only on a fresh start (``resume_ms <= 0``) -- a checkpointed
+  position is never jumped past. Outro-skip is a new 1-second
+  ``PodcastPlayerController`` position poll that ends the episode early
+  through the exact same ``_on_finished`` path a natural end uses, so
+  auto-advance and delete-after-play still fire.
+- **New context-aware Skip Settings... dialog** (``skip_settings_dialog.py``)
+  mirrors Sound Enhancements exactly: edits the currently-loaded show's
+  override, or the shared default with the intro/outro fields hidden
+  entirely when nothing is loaded (they have no meaningful global value).
+- Also fixed a real bug found while touching ``PodcastSettingsDialog``:
+  ``_on_save`` built a fresh ``PodcastSettings(...)`` that silently reset 7
+  unedited fields (view mode, sort mode, EQ, smart speed) to class defaults
+  on every save. Now ``dataclasses.replace(self._settings, **edits)``, the
+  same pattern ``apply_show_override`` already uses.
+
+#### Phase 9 (shipped): saved Playlists -- Smart (rule-based) and manual
+
+The other half of the same competitive pass: no way to save a curated or
+rule-based cross-show episode list, only the four fixed pinned views and the
+transient Play Queue -- a real gap against Pocket Casts' Smart Playlists/
+Filters and curated Playlists.
+
+- **``Playlist``/``PlaylistRules``** (``models.py``, mirrors ``QueueItem``'s
+  own data-class-in-``models.py``/operations-in-a-sibling-module split).
+  ``kind="smart"`` resolves live against ``rules`` every time it's opened
+  (which shows -- empty means every show, episode status, published-within-
+  days, min/max duration, sort mode, reusing ``sorting.py``'s own sort-key
+  builder so results order exactly like every other episode list in the
+  app); ``kind="manual"`` is a named, ordered, persistent list of specific
+  episode references (``QueueItem``s) -- the saved counterpart to the
+  transient Play Queue, self-healing against a since-unsubscribed show or
+  vanished episode the same way the Play Queue already does.
+  ``core/podcasts/playlists.py::resolve_playlist`` is pure and fully unit
+  tested.
+- **``PodcastLibrary.playlists``** + find/add/remove/rename CRUD, persisted
+  the same hand-rolled-dict way ``queue``/``inbox_folders`` already are.
+- **Tree integration** (``manager_phase4.py``) mirrors the existing
+  pinned-views/Inbox-folder pattern exactly: a "Playlists" node (context
+  menu: New Smart Playlist.../New Playlist...), one child per saved
+  playlist showing its live-resolved count, Edit Rules.../Rename/Delete on
+  each, F2 rename support, and the episode list fills via
+  ``resolve_playlist`` the same way a virtual view fills via
+  ``virtual_view_pairs``.
+- **New ``playlist_rules_dialog.py``** (the Smart Playlist rule editor) uses
+  individual ``wx.CheckBox`` controls in a ``wx.ScrolledWindow`` for the show
+  picker, not ``wx.CheckListBox`` -- caught by the banned-patterns gate
+  (A11Y-SR-1: screen readers do not announce ``CheckListBox`` item checked
+  state as it's navigated, only the label text).
+- Episode context menu gained "Add to Playlist..." (a native
+  ``wx.SingleChoiceDialog`` among existing manual playlists, or create one
+  inline).
 
 ---
 

@@ -30721,6 +30721,25 @@ FLAC, or WAV), bitrate, destination folder, a filename pattern using
 placeholders, and a maximum recording length that acts as a safety cap
 even if you forget a recording is running.</li>
 </ul>
+<h3 id="sound-enhancements">Sound Enhancements</h3>
+<p><strong>Playback &gt; Sound Enhancements...</strong> applies a
+three-band equalizer (Bass, Mid, Treble sliders, -12 to +12 dB each,
+freely adjustable) and a compressor ("Even Out Volume") to whatever
+station is playing, filtered live through FFmpeg — needs the same FFmpeg
+component recording does. A "Quick preset" combo box (Flat, Bass Boost,
+Voice Clarity, Podcast) sets all three sliders at once as a starting
+point; move any slider afterward and it becomes Custom. Off by default;
+turning anything on reconnects the stream instantly (live radio has no
+position to lose).</p>
+<p>Sound Enhancements is remembered <strong>per favorite
+station</strong>: open it while a favorite is playing to give that
+station its own EQ and compressor, separate from the shared default — a
+jazz station and a talk station no longer have to sound the same. Open
+it with nothing playing (or a non-favorite station on) to change the
+shared default every other station follows. <strong>Recording
+Settings...</strong> has a matching <strong>Apply Sound Enhancements to
+recordings</strong> checkbox (off by default) if you'd rather your
+recordings capture the filtered audio too.</p>
 <h3 id="whats-not-in-internet-radio">What's not in Internet Radio</h3>
 <p>TuneIn and iHeartRadio are not supported — both are undocumented,
 reverse-engineered commercial APIs with no public terms, and
@@ -30820,6 +30839,43 @@ whether or not that episode is already playing. <strong>Podcasts: Next
 Chapter</strong> and <strong>Podcasts: Previous Chapter</strong>, in the
 Command Palette, jump between chapter boundaries in whatever episode is
 currently playing, from anywhere in QUILL.</p>
+<h3 id="sound-enhancements-1">Sound Enhancements</h3>
+<p><strong>Episode &gt; Sound Enhancements...</strong> applies live, on
+top of whatever is playing: a three-band equalizer (Bass, Mid, Treble
+sliders, -12 to +12 dB each) plus a "Quick preset" shortcut (Flat, Bass
+Boost, Voice Clarity, Podcast) that sets all three at once, a compressor
+("Even Out Volume"), and <strong>Smart Speed</strong> (trims silence
+between words and sentences, distinct from the one-time leading/trailing
+silence trim Downloads can already do to the saved file — Smart Speed is
+reversible and live, on any episode, any time). All of it needs FFmpeg;
+if it's missing, playback continues unfiltered and QUILL tells you why.
+Turning anything on or off, or scrubbing the seek bar while enhanced,
+briefly reconnects — QUILL restarts the filter at your exact position,
+so you never lose your place, and pausing/resuming works normally
+throughout.</p>
+<p>Every setting here is <strong>per-podcast</strong>: open Sound
+Enhancements while an episode is playing to set that show's own sound,
+or with nothing playing to set the shared default every other show
+follows.</p>
+<h3 id="skip-forward-skip-back-and-auto-skip-introoutro">Skip Forward,
+Skip Back, and auto-skip intro/outro</h3>
+<p><strong>Episode &gt; Skip Forward</strong> and <strong>Skip
+Back</strong> jump the current episode by a configurable number of
+seconds (30 forward, 15 back, by default) — different from Next/Previous
+Chapter, which jump to the nearest chapter boundary instead of a fixed
+distance. <strong>Episode &gt; Skip Settings...</strong> edits how far
+each jumps: open it while an episode is playing to set that show's own
+skip distance, or with nothing playing to set the shared default.</p>
+<p>The same dialog also offers, only when a podcast is loaded,
+<strong>auto-skip intro</strong> and <strong>auto-skip outro</strong> (0
+= off, per podcast only — a global "skip N seconds of every show"
+default isn't something anyone wants). Auto-skip intro jumps forward
+that many seconds automatically the moment an episode starts fresh —
+never when resuming a checkpointed position, so you never lose your
+place. Auto-skip outro ends the episode that many seconds before its own
+true end, exactly as if it had finished naturally: auto-advance to the
+next queued episode, delete-after-play, and everything else that happens
+when an episode finishes still happens.</p>
 <h3 id="sorting-and-finding-whats-unheard">Sorting and finding what's
 unheard</h3>
 <p><strong>Sort episodes</strong>, above the episode list, offers newest
@@ -30913,6 +30969,35 @@ where you want it relative to the selection — the same accessible
 reordering pattern as Interactive Rebase's commit list. Queued episodes
 that disappear (an unsubscribed show, a pruned episode) simply skip;
 nothing crashes. The queue survives restarts.</p>
+<h3 id="playlists">Playlists</h3>
+<p>Below the Play Queue in the Podcast Manager's tree sits
+<strong>Playlists</strong> — saved, named episode lists, distinct from
+the transient Play Queue (which empties as it plays) and the four fixed
+pinned views (which you can't customize). Right-click
+<strong>Playlists</strong> for two kinds:</p>
+<ul>
+<li><strong>New Playlist...</strong> creates a manually curated list.
+Build it from any episode's context menu: <strong>Add to
+Playlist...</strong> picks an existing playlist (or lets you create one
+on the spot) and appends that episode. Order is exactly how you added
+things; a playlist keeps working even if you later unsubscribe from one
+of its shows or an episode disappears — that one entry just drops
+out.</li>
+<li><strong>New Smart Playlist...</strong> creates a rule-based list
+that re-resolves live every time you open it — the same idea as New
+Episodes or Continue Listening, but with rules you set: which shows
+(leave none checked for every show), episode status (any, unplayed, in
+progress, played), how recently published, a minimum and maximum length,
+and how to sort the result. <strong>Edit Rules...</strong> on any Smart
+Playlist's context menu reopens the same dialog to change them
+later.</li>
+</ul>
+<p>Selecting a playlist in the tree fills the episode list exactly like
+a pinned view does, with each row's episode and show name both visible.
+<strong>Rename Playlist...</strong> (also F2) and <strong>Delete
+Playlist...</strong> round out the context menu; deleting a playlist
+never deletes or unsubscribes anything, it only forgets the saved list
+itself.</p>
 <h3 id="filters-and-search-everywhere">Filters and Search
 Everywhere</h3>
 <p>Above the manager's tree: an <strong>Episodes</strong> filter (All,
