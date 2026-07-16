@@ -23,6 +23,12 @@ _TITLE = "Quill Radio"
 _VERSION = "1.0.3"
 _REPO = "Community-Access/quill-radio"
 
+#: RadioHistory.close_action's Preferences combo box (see also
+#: RadioCloseConfirmDialog, which writes this same field via "Don't ask me
+#: again").
+_CLOSE_ACTION_LABELS = ("Ask every time", "Exit", "Minimize to Tray")
+_CLOSE_ACTION_VALUES = ("ask", "exit", "minimize")
+
 
 class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -598,9 +604,14 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     def _open_preferences(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
-        from quill.ui.app_preferences_dialog import PreferenceCheckbox, PreferencesDialog
+        from quill.ui.app_preferences_dialog import (
+            PreferenceCheckbox,
+            PreferenceChoice,
+            PreferencesDialog,
+        )
 
         history = self._radio_history
+        close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
         dialog = PreferencesDialog(
             self.frame,
             app_title=_TITLE,
@@ -616,12 +627,22 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     history.check_updates_on_startup,
                 ),
             ],
+            choices=[
+                PreferenceChoice(
+                    "When &closing the window:",
+                    "When closing the window",
+                    list(_CLOSE_ACTION_LABELS),
+                    close_action_index,
+                ),
+            ],
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
-        history.resume_on_launch, history.check_updates_on_startup = result
+        checkbox_values, choice_indices = result
+        history.resume_on_launch, history.check_updates_on_startup = checkbox_values
+        history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
         radio_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
@@ -689,15 +710,38 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     # -- lifecycle --------------------------------------------------------------
 
     def _on_radio_app_close(self, event: wx.CloseEvent) -> None:
-        for action in (
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        action = history.close_action
+        if action == "ask":
+            from quill.ui.radio.close_confirm_dialog import RadioCloseConfirmDialog
+
+            recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
+            result = RadioCloseConfirmDialog(
+                self.frame, recording_active=recording_active, announce_cb=self._announce
+            ).show()
+            if result is None:
+                event.Veto()
+                return
+            action, dont_ask_again = result
+            if dont_ask_again:
+                history.close_action = action
+                radio_history.save_history(app_data_dir(), history)
+        if action == "minimize":
+            event.Veto()
+            self._send_to_tray()
+            return
+        for shutdown_fn in (
             getattr(self._radio_controller, "shutdown", None),
             getattr(self._radio_recorder, "shutdown", None),
             getattr(self._radio_scheduler, "shutdown", None),
         ):
-            if action is None:
+            if shutdown_fn is None:
                 continue
             try:
-                action()
+                shutdown_fn()
             except Exception:  # noqa: BLE001 - shutdown must never block exit
                 pass
         self._task_manager.shutdown(wait=False)
