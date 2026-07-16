@@ -431,7 +431,13 @@ class AppShellFrame:
                 newest = stable[0] if stable else None
                 if newest is None or not is_newer_version(current_version, newest.version):
                     if not silent_no_update:
-                        self._announce(f"You are up to date ({current_version}).")
+                        # A manual check deserves a real dialog, not just a spoken
+                        # announcement that's easy to miss over other app noise.
+                        self._show_message_box(
+                            f"You are up to date ({current_version}).",
+                            "Check for Updates",
+                            wx.ICON_INFORMATION | wx.OK,
+                        )
                     return
                 title = self.frame.GetTitle()
                 answer = self._show_message_box(

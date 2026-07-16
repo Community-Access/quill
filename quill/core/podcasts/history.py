@@ -63,6 +63,12 @@ class PodcastHistory:
     #: ISO timestamp of the last update check (manual or automatic), so the
     #: startup check only hits the network once a day, not on every launch.
     last_update_check: str = ""
+    #: Speak "Entered/Exited X dialog" around every modal dialog. Off by
+    #: default, matching QUILL's own Settings.announce_dialog_transitions --
+    #: the standalone apps previously never wired this policy at all, so
+    #: dialog_contract.show_modal_dialog's "no policy set" fallback always
+    #: spoke it, unlike full QUILL where it is opt-in.
+    announce_dialog_transitions: bool = False
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -102,6 +108,7 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
+        history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -121,6 +128,7 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "resume_on_launch": history.resume_on_launch,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
+            "announce_dialog_transitions": history.announce_dialog_transitions,
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )

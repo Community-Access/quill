@@ -34,6 +34,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_radio()
+        from quill.ui.dialog_contract import set_transition_announcement_policy
+
+        set_transition_announcement_policy(lambda: self._radio_history.announce_dialog_transitions)
         self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
@@ -626,6 +629,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     "Check for updates automatically on launch",
                     history.check_updates_on_startup,
                 ),
+                PreferenceCheckbox(
+                    "&Announce dialog transitions (more spoken detail)",
+                    "Announce dialog transitions -- off by default to reduce alert noise",
+                    history.announce_dialog_transitions,
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -641,7 +649,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         if result is None:
             return
         checkbox_values, choice_indices = result
-        history.resume_on_launch, history.check_updates_on_startup = checkbox_values
+        (
+            history.resume_on_launch,
+            history.check_updates_on_startup,
+            history.announce_dialog_transitions,
+        ) = checkbox_values
         history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
         radio_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()

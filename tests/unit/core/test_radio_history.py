@@ -119,3 +119,14 @@ def test_close_action_rejects_unknown_value(tmp_path: Path) -> None:
     )
     loaded = load_history(tmp_path)
     assert loaded.close_action == "ask"
+
+
+def test_announce_dialog_transitions_defaults_off() -> None:
+    assert RadioHistory().announce_dialog_transitions is False
+
+
+def test_announce_dialog_transitions_round_trips(tmp_path: Path) -> None:
+    history = RadioHistory(announce_dialog_transitions=True)
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.announce_dialog_transitions is True

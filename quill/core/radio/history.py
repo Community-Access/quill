@@ -64,6 +64,12 @@ class RadioHistory:
     #: "exit"/"minimize" skip straight to that action. Preferences (Ctrl+,)
     #: can always set it back to "ask".
     close_action: str = "ask"
+    #: Speak "Entered/Exited X dialog" around every modal dialog. Off by
+    #: default, matching QUILL's own Settings.announce_dialog_transitions --
+    #: the standalone apps previously never wired this policy at all, so
+    #: dialog_contract.show_modal_dialog's "no policy set" fallback always
+    #: spoke it, unlike full QUILL where it is opt-in.
+    announce_dialog_transitions: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -107,6 +113,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.close_action = (
             close_action if close_action in ("ask", "exit", "minimize") else "ask"
         )
+        history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -134,6 +141,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "eq_treble_db": history.eq_treble_db,
             "compressor_enabled": history.compressor_enabled,
             "close_action": history.close_action,
+            "announce_dialog_transitions": history.announce_dialog_transitions,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

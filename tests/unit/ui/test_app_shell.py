@@ -166,7 +166,10 @@ def test_silent_update_check_says_nothing_when_up_to_date(monkeypatch):
     assert announced == []
 
 
-def test_manual_update_check_still_announces_up_to_date(monkeypatch):
+def test_manual_update_check_shows_dialog_when_up_to_date(monkeypatch):
+    """A manual check (Help > Check for Updates) that finds nothing newer
+    must show a real dialog, not just a spoken announcement that's easy to
+    miss over other app noise."""
     import quill.core.updates as updates
     import quill.ui.app_shell as app_shell_module
 
@@ -174,13 +177,15 @@ def test_manual_update_check_still_announces_up_to_date(monkeypatch):
     release = type("R", (), {"prerelease": False, "version": "1.0.0"})()
     monkeypatch.setattr(updates, "fetch_releases", lambda url, **_kw: [release])
     announced: list[str] = []
+    boxes: list[str] = []
     shell = _bare_shell()
     shell._announce = announced.append
+    shell._show_message_box = lambda *a, **k: boxes.append(a[0])
     shell._running_portable_build = lambda: False
     shell._task_manager = _TaskManagerRoutingCallbacks()
     shell.check_for_app_updates(repo_slug="Community-Access/quill-radio", current_version="1.0.0")
     assert "Checking for updates" in announced
-    assert any("up to date" in msg for msg in announced)
+    assert len(boxes) == 1 and "up to date" in boxes[0]
 
 
 def test_silent_update_check_failure_shows_no_dialog(monkeypatch):

@@ -61,3 +61,14 @@ def test_check_updates_on_startup_missing_from_file_defaults_on(tmp_path: Path) 
     loaded = load_history(tmp_path)
     assert loaded.check_updates_on_startup is True
     assert loaded.last_update_check == ""
+
+
+def test_announce_dialog_transitions_defaults_off() -> None:
+    assert PodcastHistory().announce_dialog_transitions is False
+
+
+def test_announce_dialog_transitions_round_trips(tmp_path: Path) -> None:
+    history = PodcastHistory(announce_dialog_transitions=True)
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.announce_dialog_transitions is True

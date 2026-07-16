@@ -30,6 +30,11 @@ class PodcastsAppFrame(
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_podcasts()
+        from quill.ui.dialog_contract import set_transition_announcement_policy
+
+        set_transition_announcement_policy(
+            lambda: self._podcast_history.announce_dialog_transitions
+        )
         self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
@@ -492,6 +497,11 @@ class PodcastsAppFrame(
                     "Check for updates automatically on launch",
                     history.check_updates_on_startup,
                 ),
+                PreferenceCheckbox(
+                    "&Announce dialog transitions (more spoken detail)",
+                    "Announce dialog transitions -- off by default to reduce alert noise",
+                    history.announce_dialog_transitions,
+                ),
             ],
             announce_cb=self._announce,
         )
@@ -499,7 +509,11 @@ class PodcastsAppFrame(
         if result is None:
             return
         checkbox_values, _choice_indices = result
-        history.resume_on_launch, history.check_updates_on_startup = checkbox_values
+        (
+            history.resume_on_launch,
+            history.check_updates_on_startup,
+            history.announce_dialog_transitions,
+        ) = checkbox_values
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
