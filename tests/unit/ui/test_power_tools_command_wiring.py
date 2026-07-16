@@ -25,9 +25,9 @@ from quill.ui.main_frame_power_tools_menu import POWER_TOOLS_COMMANDS, POWER_TOO
 _SOURCE = (
     Path(main_frame_module.__file__).read_text(encoding="utf-8")
     + "\n"
-    + Path(main_frame_module.__file__).with_name("main_frame_commands.py").read_text(
-        encoding="utf-8"
-    )
+    + Path(main_frame_module.__file__)
+    .with_name("main_frame_commands.py")
+    .read_text(encoding="utf-8")
     + "\n"
     + Path(main_frame_menu_module.__file__).read_text(encoding="utf-8")
 )

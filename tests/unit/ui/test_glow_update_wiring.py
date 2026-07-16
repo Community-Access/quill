@@ -13,9 +13,7 @@ def _main_frame_source() -> str:
     # MainFrame is composed from main_frame.py plus extracted mixin modules
     # (CQ-1); scan the composite so wiring stays pinned wherever it lives.
     ui = Path("quill/ui")
-    return "\n".join(
-        path.read_text(encoding="utf-8") for path in sorted(ui.glob("main_frame*.py"))
-    )
+    return "\n".join(path.read_text(encoding="utf-8") for path in sorted(ui.glob("main_frame*.py")))
 
 
 def _menu_source() -> str:

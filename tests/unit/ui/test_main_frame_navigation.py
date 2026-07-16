@@ -2574,8 +2574,10 @@ def test_offer_post_download_actions_offers_extract_for_zip_not_install() -> Non
     # Source-contract check (real wx.Dialog construction needs a live wx.App,
     # which this headless suite doesn't run): a .zip target must be treated
     # as extractable, never as a runnable installer, and vice versa.
-    src = Path(main_frame_module.__file__).with_name("main_frame_updates.py").read_text(
-        encoding="utf-8"
+    src = (
+        Path(main_frame_module.__file__)
+        .with_name("main_frame_updates.py")
+        .read_text(encoding="utf-8")
     )
     assert 'extractable = target.suffix.lower() == ".zip"' in src
     assert '"Extract now"' in src

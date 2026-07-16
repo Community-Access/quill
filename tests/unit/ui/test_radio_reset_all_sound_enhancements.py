@@ -21,7 +21,9 @@ from quill.ui.radio.player_controller import RadioPlayerState
 
 
 def _station(key_suffix: str = "1") -> RadioStation:
-    return RadioStation(name=f"Station {key_suffix}", stream_url=f"https://example.com/{key_suffix}")
+    return RadioStation(
+        name=f"Station {key_suffix}", stream_url=f"https://example.com/{key_suffix}"
+    )
 
 
 def _frame(*, playing: RadioStation | None = None) -> Any:
@@ -142,9 +144,7 @@ class _FakePreferencesDialog:
 
 def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPatch) -> None:
     _FakePreferencesDialog.instances = []
-    monkeypatch.setattr(
-        app_preferences_dialog_module, "PreferencesDialog", _FakePreferencesDialog
-    )
+    monkeypatch.setattr(app_preferences_dialog_module, "PreferencesDialog", _FakePreferencesDialog)
     frame = _frame()
     frame._radio_history.close_action = "ask"
     frame._radio_history.resume_on_launch = False

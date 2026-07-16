@@ -12,9 +12,9 @@ from pathlib import Path
 
 # _prompt_search lives in the SearchCommandsMixin module (extracted from
 # main_frame.py, CQ-1).
-SOURCE = (
-    Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_search.py"
-).read_text(encoding="utf-8")
+SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_search.py").read_text(
+    encoding="utf-8"
+)
 
 
 def test_prompt_search_imports_show_web_form() -> None:

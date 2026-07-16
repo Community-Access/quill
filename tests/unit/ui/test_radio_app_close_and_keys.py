@@ -163,9 +163,7 @@ def _close_frame(
     )
     monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
     saved: list[tuple[object, object]] = []
-    monkeypatch.setattr(
-        radio_history_module, "save_history", lambda d, h: saved.append((d, h))
-    )
+    monkeypatch.setattr(radio_history_module, "save_history", lambda d, h: saved.append((d, h)))
 
     calls: list[str] = []
     frame = RadioAppFrame.__new__(RadioAppFrame)
