@@ -92,6 +92,8 @@ class RadioPlayerController:
         on_register_click: Callable[[str], None] | None = None,
         before_play: Callable[[], None] | None = None,
         on_enhance_error: Callable[[str], None] | None = None,
+        resolve_enhancement: Callable[[RadioStation], tuple[float, float, float, bool]]
+        | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -104,6 +106,13 @@ class RadioPlayerController:
         #: could not start) so the host can announce it; playback still
         #: proceeds unenhanced rather than failing outright.
         self._on_enhance_error = on_enhance_error
+        #: Resolves (bass_db, mid_db, treble_db, compressor_enabled) for the
+        #: station about to play -- the host looks up that station's own
+        #: RadioFavoritesStore override if it has one, else RadioHistory's
+        #: shared default. One injection point instead of threading these
+        #: through every play_station call site (station browser, favorites
+        #: tree, tray, recent/favorites submenus, ...).
+        self._resolve_enhancement = resolve_enhancement
         self._engine = WxMediaEngine(
             parent,
             on_loaded=self._on_loaded,
@@ -138,6 +147,13 @@ class RadioPlayerController:
                 self._before_play()
             except Exception:  # noqa: BLE001 - a sibling-stop must never block play
                 pass
+        if self._resolve_enhancement is not None:
+            (
+                self._eq_bass_db,
+                self._eq_mid_db,
+                self._eq_treble_db,
+                self._compressor_enabled,
+            ) = self._resolve_enhancement(station)
         self._state.station = station
         self._set_state(RadioPlayerState.CONNECTING, message="")
         url = self._resolve_playback_url(station)

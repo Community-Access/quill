@@ -201,6 +201,52 @@ def test_per_station_volume_clamps_and_round_trips(tmp_path: Path) -> None:
     assert bare is not None and bare.volume_percent == -1 and bare.custom_name == ""
 
 
+def test_set_enhancement_creates_and_round_trips_an_override(tmp_path: Path) -> None:
+    store = _store_abc()
+    favorite = store.find("uuid-a")
+    assert favorite is not None and favorite.has_sound_enhancement_override is False
+    assert (
+        store.set_enhancement(
+            "uuid-a", bass_db=-4.0, mid_db=3.0, treble_db=0.0, compressor_enabled=True
+        )
+        is True
+    )
+    assert favorite.has_sound_enhancement_override is True
+    assert (favorite.eq_bass_db, favorite.eq_mid_db, favorite.eq_treble_db) == (-4.0, 3.0, 0.0)
+    assert favorite.compressor_enabled is True
+    save_favorites(tmp_path, store)
+    loaded = load_favorites(tmp_path).find("uuid-a")
+    assert loaded is not None
+    assert loaded.has_sound_enhancement_override is True
+    assert (loaded.eq_bass_db, loaded.eq_mid_db, loaded.eq_treble_db) == (-4.0, 3.0, 0.0)
+    assert loaded.compressor_enabled is True
+    # Legacy entries without the new keys read as no override.
+    bare = load_favorites(tmp_path).find("https://b.example.com")
+    assert bare is not None and bare.has_sound_enhancement_override is False
+
+
+def test_set_enhancement_missing_key_returns_false() -> None:
+    store = _store_abc()
+    assert (
+        store.set_enhancement(
+            "nope", bass_db=0.0, mid_db=0.0, treble_db=0.0, compressor_enabled=False
+        )
+        is False
+    )
+
+
+def test_clear_enhancement_override_restores_the_shared_default() -> None:
+    store = _store_abc()
+    store.set_enhancement(
+        "uuid-a", bass_db=-4.0, mid_db=3.0, treble_db=0.0, compressor_enabled=True
+    )
+    assert store.clear_enhancement_override("uuid-a") is True
+    favorite = store.find("uuid-a")
+    assert favorite is not None and favorite.has_sound_enhancement_override is False
+    # Nothing to clear the second time.
+    assert store.clear_enhancement_override("uuid-a") is False
+
+
 def test_explicit_folders_exist_without_stations_and_round_trip(tmp_path: Path) -> None:
     store = _store_abc()
     assert store.add_folder("News/Morning") is True

@@ -17,6 +17,7 @@ from quill.core.paths import app_data_dir
 from quill.core.radio import favorites as radio_favorites
 from quill.core.radio import history as radio_history
 from quill.core.radio import radio_browser, wake_timer
+from quill.core.radio.favorites import FavoriteStation
 from quill.core.radio.models import RadioStation
 from quill.core.radio.recording import (
     RadioRecorder,
@@ -70,6 +71,7 @@ class RadioMixin:
             on_register_click=self._radio_register_click,
             before_play=self._stop_podcast_before_radio,
             on_enhance_error=self._on_radio_enhance_error,
+            resolve_enhancement=self._radio_resolve_enhancement,
         )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
@@ -696,31 +698,94 @@ class RadioMixin:
         blocking dialog."""
         self._announce(f"Sound Enhancements: {message} Playing without it.")
 
+    def _radio_resolve_enhancement(self, station: RadioStation) -> tuple[float, float, float, bool]:
+        """(bass_db, mid_db, treble_db, compressor_enabled) for *station*:
+        its own remembered Sound Enhancements if it's a favorite with an
+        override, else the shared default -- called by RadioPlayerController
+        on every play_station."""
+        key = station.station_uuid or station.stream_url
+        favorite = self._radio_favorites.find(key)
+        if favorite is not None and favorite.has_sound_enhancement_override:
+            return (
+                favorite.eq_bass_db,
+                favorite.eq_mid_db,
+                favorite.eq_treble_db,
+                favorite.compressor_enabled,
+            )
+        history = self._radio_history
+        return (
+            history.eq_bass_db,
+            history.eq_mid_db,
+            history.eq_treble_db,
+            history.compressor_enabled,
+        )
+
+    def _radio_enhance_context_favorite(self) -> FavoriteStation | None:
+        """The favorite Sound Enhancements edits right now: the currently
+        playing station, if it's a favorite -- None means edit the shared
+        default instead (mirrors PodcastManagerDialog._sort_context_show)."""
+        station = self._radio_controller.state.station
+        if station is None:
+            return None
+        key = station.station_uuid or station.stream_url
+        return self._radio_favorites.find(key)
+
     # -- dialogs ------------------------------------------------------------
 
     def open_sound_enhancements(self) -> None:
-        """Playback > Sound Enhancements...: a three-band EQ + a compressor."""
+        """Playback > Sound Enhancements...: a three-band EQ + a compressor.
+        Edits the currently-playing station's own override if it's a
+        favorite, otherwise the shared default -- see
+        RadioFavoritesStore.set_enhancement."""
         from quill.core.radio import history as radio_history
         from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
 
         history = self._radio_history
+        favorite = self._radio_enhance_context_favorite()
+        if favorite is not None and favorite.has_sound_enhancement_override:
+            bass, mid, treble, compressor = (
+                favorite.eq_bass_db,
+                favorite.eq_mid_db,
+                favorite.eq_treble_db,
+                favorite.compressor_enabled,
+            )
+        else:
+            bass, mid, treble, compressor = (
+                history.eq_bass_db,
+                history.eq_mid_db,
+                history.eq_treble_db,
+                history.compressor_enabled,
+            )
         dialog = SoundEnhanceDialog(
             self.frame,
-            bass_db=history.eq_bass_db,
-            mid_db=history.eq_mid_db,
-            treble_db=history.eq_treble_db,
-            compressor_enabled=history.compressor_enabled,
+            bass_db=bass,
+            mid_db=mid,
+            treble_db=treble,
+            compressor_enabled=compressor,
+            subject=favorite.display_label if favorite is not None else "station",
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
         bass_db, mid_db, treble_db, compressor_enabled, _smart_speed_not_applicable = result
-        history.eq_bass_db = bass_db
-        history.eq_mid_db = mid_db
-        history.eq_treble_db = treble_db
-        history.compressor_enabled = compressor_enabled
-        radio_history.save_history(app_data_dir(), history)
+        if favorite is not None:
+            self._radio_favorites.set_enhancement(
+                favorite.key,
+                bass_db=bass_db,
+                mid_db=mid_db,
+                treble_db=treble_db,
+                compressor_enabled=compressor_enabled,
+            )
+            self._save_radio_favorites()
+            target = favorite.display_label
+        else:
+            history.eq_bass_db = bass_db
+            history.eq_mid_db = mid_db
+            history.eq_treble_db = treble_db
+            history.compressor_enabled = compressor_enabled
+            radio_history.save_history(app_data_dir(), history)
+            target = "the shared default"
         self._radio_controller.set_enhancement(
             bass_db=bass_db,
             mid_db=mid_db,
@@ -728,8 +793,8 @@ class RadioMixin:
             compressor_enabled=compressor_enabled,
         )
         self._announce(
-            f"Sound Enhancements: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, Treble {treble_db:+.0f}"
-            + (", Even Out Volume on" if compressor_enabled else "")
+            f"Sound Enhancements for {target}: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, "
+            f"Treble {treble_db:+.0f}" + (", Even Out Volume on" if compressor_enabled else "")
         )
 
     def open_manage_radio_favorites(self) -> None:

@@ -16,9 +16,23 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.radio.models import RadioStation
 
 _FILE_NAME = "radio_favorites.json"
+
+
+def _coerce_float(value: object, default: float) -> float:
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value) if value.strip() else default
+        except ValueError:
+            return default
+    return default
 
 
 @dataclass(slots=True)
@@ -39,6 +53,17 @@ class FavoriteStation:
     #: Remembered per-station volume (stations are mastered wildly
     #: differently); -1 means "no preference recorded yet".
     volume_percent: int = -1
+    #: Sound Enhancements (Playback > Sound Enhancements...), remembered per
+    #: station the same way volume is: a whole-record override, on only when
+    #: has_sound_enhancement_override is True (mirrors PodcastSettings'
+    #: whole-record show override -- see PodcastLibrary.apply_show_override).
+    #: While False the fields below are unused; the station follows
+    #: RadioHistory's shared eq_bass_db/mid/treble/compressor_enabled.
+    has_sound_enhancement_override: bool = False
+    eq_bass_db: float = 0.0
+    eq_mid_db: float = 0.0
+    eq_treble_db: float = 0.0
+    compressor_enabled: bool = False
 
     @property
     def key(self) -> str:
@@ -147,6 +172,36 @@ class RadioFavoritesStore:
         if favorite is None:
             return False
         favorite.volume_percent = max(0, min(100, int(volume_percent)))
+        return True
+
+    def set_enhancement(
+        self,
+        key: str,
+        *,
+        bass_db: float,
+        mid_db: float,
+        treble_db: float,
+        compressor_enabled: bool,
+    ) -> bool:
+        """Give this station its own Sound Enhancements, overriding the
+        shared default (RadioHistory.eq_bass_db/mid/treble/compressor_enabled)
+        for this station only."""
+        favorite = self.find(key)
+        if favorite is None:
+            return False
+        favorite.has_sound_enhancement_override = True
+        favorite.eq_bass_db = bass_db
+        favorite.eq_mid_db = mid_db
+        favorite.eq_treble_db = treble_db
+        favorite.compressor_enabled = compressor_enabled
+        return True
+
+    def clear_enhancement_override(self, key: str) -> bool:
+        """Go back to following the shared default for this station."""
+        favorite = self.find(key)
+        if favorite is None or not favorite.has_sound_enhancement_override:
+            return False
+        favorite.has_sound_enhancement_override = False
         return True
 
     def add_folder(self, path: str) -> bool:
@@ -274,6 +329,13 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
                 custom=bool(entry.get("custom", False)),
                 custom_name=str(entry.get("custom_name", "")),
                 volume_percent=volume if 0 <= volume <= 100 else -1,
+                has_sound_enhancement_override=bool(
+                    entry.get("has_sound_enhancement_override", False)
+                ),
+                eq_bass_db=clamp_eq_gain(_coerce_float(entry.get("eq_bass_db"), 0.0)),
+                eq_mid_db=clamp_eq_gain(_coerce_float(entry.get("eq_mid_db"), 0.0)),
+                eq_treble_db=clamp_eq_gain(_coerce_float(entry.get("eq_treble_db"), 0.0)),
+                compressor_enabled=bool(entry.get("compressor_enabled", False)),
             )
         )
     return store
@@ -294,6 +356,11 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                     "custom": favorite.custom,
                     "custom_name": favorite.custom_name,
                     "volume_percent": favorite.volume_percent,
+                    "has_sound_enhancement_override": favorite.has_sound_enhancement_override,
+                    "eq_bass_db": favorite.eq_bass_db,
+                    "eq_mid_db": favorite.eq_mid_db,
+                    "eq_treble_db": favorite.eq_treble_db,
+                    "compressor_enabled": favorite.compressor_enabled,
                 }
                 for favorite in store.favorites
             ],
