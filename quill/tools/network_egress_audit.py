@@ -162,6 +162,16 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "HTTPS-only over a verified TLS context with a bounded timeout. "
         "Disabled in Safe Mode via radio_browser.refuse_in_safe_mode."
     ),
+    "core/radio/soma_fm.py::_http_text": (
+        "Single egress site for the SomaFM station source (a free, keyless, "
+        "curated directory), blended into the same Browse Stations search "
+        "results as RadioBrowser -- fetches the channel list, and, only for "
+        "channels matching the user's search text, resolves that channel's "
+        ".pls playlist to a real stream URL. Reached only by an explicit "
+        "search box submit, never a background poll. HTTPS-only over a "
+        "verified TLS context with a bounded timeout. Disabled in Safe Mode "
+        "via soma_fm.refuse_in_safe_mode."
+    ),
     "core/mastodon/client.py::_http_json": (
         "Single egress site for the 'Post to Mastodon' feature. Reached only by an "
         "explicit user action -- adding an account (app registration + OAuth token "
