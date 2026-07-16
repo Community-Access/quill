@@ -142,6 +142,18 @@ class PodcastPlayerController:
         self._state = PodcastPlaybackState(
             state=PodcastPlayerState.STOPPED, show_id=None, episode_guid=None, title=""
         )
+        #: Auto-skip outro (PodcastSettings.auto_skip_outro_seconds, per-show):
+        #: ends the episode that many ms before its own true end, exactly as
+        #: if it had finished naturally (auto-advance, delete-after-play, ...
+        #: all still fire via the same _on_finished path). A 1-second poll,
+        #: not an engine event -- neither backend has a "N ms before the end"
+        #: notification. _outro_fired guards against polling past the point
+        #: _on_finished has already reset state for this episode.
+        self._auto_skip_outro_ms = 0
+        self._outro_fired = False
+        self._outro_poll_timer = wx.Timer(parent)
+        parent.Bind(wx.EVT_TIMER, self._on_outro_poll, self._outro_poll_timer)
+        self._outro_poll_timer.Start(1000)
 
     @property
     def state(self) -> PodcastPlaybackState:
@@ -161,6 +173,8 @@ class PodcastPlayerController:
         treble_db: float | None = None,
         compressor_enabled: bool | None = None,
         smart_speed_enabled: bool | None = None,
+        auto_skip_intro_ms: int = 0,
+        auto_skip_outro_ms: int = 0,
     ) -> None:
         """Start (or switch to) playing one episode; replaces whatever this
         controller was already playing, so only one thing ever plays. The
@@ -169,7 +183,9 @@ class PodcastPlayerController:
         (callers resolve them from ``PodcastLibrary.effective_settings``),
         make this show's own Sound Enhancements take effect for this
         episode -- omitted, playback keeps whatever ``set_enhancement`` last
-        applied."""
+        applied. ``auto_skip_intro_ms`` only applies to a fresh start
+        (``resume_ms <= 0``) -- resuming a checkpointed position must never
+        jump past where you actually left off."""
         if self._before_play is not None:
             try:
                 self._before_play()
@@ -194,7 +210,12 @@ class PodcastPlayerController:
         self._set_state(PodcastPlayerState.LOADING)
         self._enhanced_source = source
         self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
-        self._start_load(source, start_ms=max(0, int(resume_ms)))
+        self._auto_skip_outro_ms = max(0, int(auto_skip_outro_ms))
+        self._outro_fired = False
+        start_ms = max(0, int(resume_ms))
+        if start_ms <= 0 and auto_skip_intro_ms > 0:
+            start_ms = int(auto_skip_intro_ms)
+        self._start_load(source, start_ms=start_ms)
 
     def _start_load(self, source: str, *, start_ms: int) -> None:
         self._resume_ms = start_ms
@@ -369,6 +390,7 @@ class PodcastPlayerController:
             self._enhance_relay.shutdown()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("podcast enhancement relay shutdown failed")
+        self._outro_poll_timer.Stop()
 
     def _checkpoint_current(self) -> None:
         """Report the current episode's position to the checkpoint callback
@@ -379,6 +401,23 @@ class PodcastPlayerController:
         if not show_id or not episode_guid or self._engine is None:
             return
         self._on_position_checkpoint(show_id, episode_guid, self.position_ms())
+
+    def _on_outro_poll(self, _event: object) -> None:
+        """Auto-skip outro: ends the episode auto_skip_outro_ms early, exactly
+        as if it had reached its own true end -- see play_episode's
+        auto_skip_outro_ms docstring."""
+        if self._outro_fired or self._auto_skip_outro_ms <= 0:
+            return
+        if self._state.state is not PodcastPlayerState.PLAYING:
+            return
+        length = self.length_ms()
+        if length <= 0 or self.position_ms() < length - self._auto_skip_outro_ms:
+            return
+        self._outro_fired = True
+        if self._engine is not None:
+            self._engine.close()
+        self._enhance_relay.stop()
+        self._on_finished()
 
     # -- engine callbacks -------------------------------------------------
 

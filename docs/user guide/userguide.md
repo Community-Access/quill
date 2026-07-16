@@ -7690,6 +7690,12 @@ Recording needs the **FFmpeg** optional component — the same one the Audio Stu
 - **Schedule Recording...** queues a recording for later without you needing QUILL open right at that moment to press Record — just QUILL running somewhere. Choose **Once** (a specific date and time), **Daily**, or **Weekly** (a chosen day of the week), a station name and stream URL, and how many minutes to record. There is no catch-up: if QUILL isn't running when the scheduled time arrives, that occurrence is simply missed.
 - **Recording Settings...** sets the format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern using `{station}`, `{date}`, and `{time}` placeholders, and a maximum recording length that acts as a safety cap even if you forget a recording is running.
 
+### Sound Enhancements
+
+**Playback > Sound Enhancements...** applies a three-band equalizer (Bass, Mid, Treble sliders, -12 to +12 dB each, freely adjustable) and a compressor ("Even Out Volume") to whatever station is playing, filtered live through FFmpeg — needs the same FFmpeg component recording does. A "Quick preset" combo box (Flat, Bass Boost, Voice Clarity, Podcast) sets all three sliders at once as a starting point; move any slider afterward and it becomes Custom. Off by default; turning anything on reconnects the stream instantly (live radio has no position to lose).
+
+Sound Enhancements is remembered **per favorite station**: open it while a favorite is playing to give that station its own EQ and compressor, separate from the shared default — a jazz station and a talk station no longer have to sound the same. Open it with nothing playing (or a non-favorite station on) to change the shared default every other station follows. **Recording Settings...** has a matching **Apply Sound Enhancements to recordings** checkbox (off by default) if you'd rather your recordings capture the filtered audio too.
+
 ### What's not in Internet Radio
 
 TuneIn and iHeartRadio are not supported — both are undocumented, reverse-engineered commercial APIs with no public terms, and RadioBrowser covers the same need without that risk. YouTube audio is not supported either. Podcasts, described next, are a separate feature that ships alongside Internet Radio.
@@ -7741,6 +7747,18 @@ A **Speed** control on the Podcasts dialog's player row sets playback rate for t
 
 If an episode carries Podcasting 2.0 chapter data, its **Chapters...** button is enabled. Press it to see a list of chapter markers by name and timestamp; select one and press **Jump To Chapter** to go straight there — this works whether or not that episode is already playing. **Podcasts: Next Chapter** and **Podcasts: Previous Chapter**, in the Command Palette, jump between chapter boundaries in whatever episode is currently playing, from anywhere in QUILL.
 
+### Sound Enhancements
+
+**Episode > Sound Enhancements...** applies live, on top of whatever is playing: a three-band equalizer (Bass, Mid, Treble sliders, -12 to +12 dB each) plus a "Quick preset" shortcut (Flat, Bass Boost, Voice Clarity, Podcast) that sets all three at once, a compressor ("Even Out Volume"), and **Smart Speed** (trims silence between words and sentences, distinct from the one-time leading/trailing silence trim Downloads can already do to the saved file — Smart Speed is reversible and live, on any episode, any time). All of it needs FFmpeg; if it's missing, playback continues unfiltered and QUILL tells you why. Turning anything on or off, or scrubbing the seek bar while enhanced, briefly reconnects — QUILL restarts the filter at your exact position, so you never lose your place, and pausing/resuming works normally throughout.
+
+Every setting here is **per-podcast**: open Sound Enhancements while an episode is playing to set that show's own sound, or with nothing playing to set the shared default every other show follows.
+
+### Skip Forward, Skip Back, and auto-skip intro/outro
+
+**Episode > Skip Forward** and **Skip Back** jump the current episode by a configurable number of seconds (30 forward, 15 back, by default) — different from Next/Previous Chapter, which jump to the nearest chapter boundary instead of a fixed distance. **Episode > Skip Settings...** edits how far each jumps: open it while an episode is playing to set that show's own skip distance, or with nothing playing to set the shared default.
+
+The same dialog also offers, only when a podcast is loaded, **auto-skip intro** and **auto-skip outro** (0 = off, per podcast only — a global "skip N seconds of every show" default isn't something anyone wants). Auto-skip intro jumps forward that many seconds automatically the moment an episode starts fresh — never when resuming a checkpointed position, so you never lose your place. Auto-skip outro ends the episode that many seconds before its own true end, exactly as if it had finished naturally: auto-advance to the next queued episode, delete-after-play, and everything else that happens when an episode finishes still happens.
+
 ### Sorting and finding what's unheard
 
 **Sort episodes**, above the episode list, offers newest first, oldest first, title A-Z, longest first, shortest first, or unplayed first. **Sort shows**, above the folder tree, offers title A-Z, most unheard first, or recently updated first. Every folder and show name in the tree also shows its own unheard-episode count in parentheses, so you can see where you're behind without opening each show.
@@ -7777,6 +7795,15 @@ The Inbox organizes *episodes*, cutting across your library folders entirely. Ri
 ### The Play Queue
 
 Any episode's right-click menu offers **Play Next** (front of the queue) and **Add to Queue** (back). When an episode finishes, the queue's next episode starts automatically — including across different shows. The **Play Queue...** button opens the queue itself: Enter or **Play Now** plays the selected item immediately, **Move Up/Down** nudges one slot, and for long moves, **Mark for Move** then **Move Marked Above/Below** places the marked item exactly where you want it relative to the selection — the same accessible reordering pattern as Interactive Rebase's commit list. Queued episodes that disappear (an unsubscribed show, a pruned episode) simply skip; nothing crashes. The queue survives restarts.
+
+### Playlists
+
+Below the Play Queue in the Podcast Manager's tree sits **Playlists** — saved, named episode lists, distinct from the transient Play Queue (which empties as it plays) and the four fixed pinned views (which you can't customize). Right-click **Playlists** for two kinds:
+
+- **New Playlist...** creates a manually curated list. Build it from any episode's context menu: **Add to Playlist...** picks an existing playlist (or lets you create one on the spot) and appends that episode. Order is exactly how you added things; a playlist keeps working even if you later unsubscribe from one of its shows or an episode disappears — that one entry just drops out.
+- **New Smart Playlist...** creates a rule-based list that re-resolves live every time you open it — the same idea as New Episodes or Continue Listening, but with rules you set: which shows (leave none checked for every show), episode status (any, unplayed, in progress, played), how recently published, a minimum and maximum length, and how to sort the result. **Edit Rules...** on any Smart Playlist's context menu reopens the same dialog to change them later.
+
+Selecting a playlist in the tree fills the episode list exactly like a pinned view does, with each row's episode and show name both visible. **Rename Playlist...** (also F2) and **Delete Playlist...** round out the context menu; deleting a playlist never deletes or unsubscribes anything, it only forgets the saved list itself.
 
 ### Filters and Search Everywhere
 

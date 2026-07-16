@@ -17,7 +17,7 @@ from quill.core.podcasts import history as podcast_history
 from quill.core.podcasts import opml as opml_module
 from quill.core.podcasts import retention
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
-from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
     load_library,
@@ -220,6 +220,8 @@ class PodcastsMixin:
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
         self._announce(f"Up next from the queue: {next_episode.title}")
 
@@ -335,6 +337,8 @@ class PodcastsMixin:
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
 
     def _open_play_queue(self) -> None:
@@ -363,6 +367,8 @@ class PodcastsMixin:
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
@@ -499,6 +505,52 @@ class PodcastsMixin:
             + (", Smart Speed on" if smart_speed_enabled else "")
         )
 
+    def open_podcast_skip_settings(self) -> None:
+        """Episode > Skip Settings...: Skip Forward/Back seconds, plus (only
+        when a show is loaded) auto-skip intro/outro. Edits the currently
+        loaded show's own override if one is loaded, otherwise the shared
+        default -- see PodcastLibrary.apply_show_override. Mirrors
+        open_podcast_sound_enhancements exactly."""
+        from quill.ui.podcasts.skip_settings_dialog import SkipSettingsDialog
+
+        show = self._podcast_enhance_context_show()
+        settings = (
+            self._podcast_library.effective_settings(show)
+            if show
+            else self._podcast_library.settings
+        )
+        dialog = SkipSettingsDialog(
+            self.frame,
+            skip_forward_seconds=settings.skip_forward_seconds,
+            skip_back_seconds=settings.skip_back_seconds,
+            auto_skip_intro_seconds=settings.auto_skip_intro_seconds,
+            auto_skip_outro_seconds=settings.auto_skip_outro_seconds,
+            show_title=show.title if show is not None else None,
+            announce_cb=self._announce,
+        )
+        result = dialog.show()
+        if result is None:
+            return
+        forward_seconds, back_seconds, intro_seconds, outro_seconds = result
+        if show is not None:
+            self._podcast_library.apply_show_override(
+                show,
+                skip_forward_seconds=forward_seconds,
+                skip_back_seconds=back_seconds,
+                auto_skip_intro_seconds=intro_seconds,
+                auto_skip_outro_seconds=outro_seconds,
+            )
+            self._save_podcast_library()
+            target = show.title
+        else:
+            self._podcast_library.settings.skip_forward_seconds = forward_seconds
+            self._podcast_library.settings.skip_back_seconds = back_seconds
+            self._save_podcast_library()
+            target = "the shared default"
+        self._announce(
+            f"Skip Settings for {target}: forward {forward_seconds}s, back {back_seconds}s"
+        )
+
     def podcast_next_chapter(self) -> None:
         from quill.core.podcasts.chapters import next_chapter
 
@@ -528,6 +580,41 @@ class PodcastsMixin:
             return
         self._podcast_controller.seek(target.start_ms)
         self._announce(f"Chapter: {target.title}")
+
+    def _podcast_skip_settings(self) -> PodcastSettings:
+        """The effective skip settings for whatever is playing (that show's
+        own override if it has one, else the shared default) -- mirrors
+        _podcast_enhance_context_show's resolution, read-only here since
+        skip distance has no per-command editor of its own (Podcast
+        Settings... and the per-show override both write PodcastSettings
+        directly)."""
+        show_id = self._podcast_controller.state.show_id
+        show = self._podcast_library.find_show(show_id) if show_id else None
+        return (
+            self._podcast_library.effective_settings(show)
+            if show is not None
+            else self._podcast_library.settings
+        )
+
+    def podcast_skip_forward(self) -> None:
+        controller = self._podcast_controller
+        if controller.state.show_id is None:
+            self._announce("Nothing is playing.")
+            return
+        seconds = self._podcast_skip_settings().skip_forward_seconds
+        target_ms = min(controller.length_ms(), controller.position_ms() + seconds * 1000)
+        controller.seek(target_ms)
+        self._announce(f"Forward {seconds} seconds")
+
+    def podcast_skip_back(self) -> None:
+        controller = self._podcast_controller
+        if controller.state.show_id is None:
+            self._announce("Nothing is playing.")
+            return
+        seconds = self._podcast_skip_settings().skip_back_seconds
+        target_ms = max(0, controller.position_ms() - seconds * 1000)
+        controller.seek(target_ms)
+        self._announce(f"Back {seconds} seconds")
 
     def podcast_pause_all_downloads(self) -> None:
         self._podcast_download_queue.pause_all()
@@ -895,6 +982,13 @@ class PodcastsMixin:
                 "podcasts.previous_chapter",
                 "Podcasts: Previous Chapter",
                 self.podcast_previous_chapter,
+            ),
+            ("podcasts.skip_forward", "Podcasts: Skip Forward", self.podcast_skip_forward),
+            ("podcasts.skip_back", "Podcasts: Skip Back", self.podcast_skip_back),
+            (
+                "podcasts.skip_settings",
+                "Podcasts: Skip Settings...",
+                self.open_podcast_skip_settings,
             ),
         ):
             self.commands.try_register(

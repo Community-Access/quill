@@ -481,7 +481,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             self._on_unsubscribe(event)
             return
         if event.GetKeyCode() == self._wx.WXK_F2:
-            # F2 renames whatever is selected: a folder or a show.
+            # F2 renames whatever is selected: a folder, a show, or a playlist.
             folder_id = self._selected_folder_id()
             if folder_id:
                 folder = self._library.find_folder(folder_id)
@@ -492,6 +492,10 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             show = self._library.find_show(show_id) if show_id else None
             if show is not None:
                 self._on_rename_show(show)
+                return
+            playlist = self._selected_playlist()
+            if playlist is not None:
+                self._on_rename_playlist(playlist)
             return
         event.Skip()
 
@@ -704,6 +708,29 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             menu.AppendSeparator()
             unsubscribe_item = menu.Append(wx.ID_ANY, "&Unsubscribe")
             menu.Bind(wx.EVT_MENU, self._on_unsubscribe, unsubscribe_item)
+        elif self._selected_playlists_root():
+            smart_item = menu.Append(wx.ID_ANY, "New &Smart Playlist...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_new_smart_playlist(), smart_item)
+            manual_item = menu.Append(wx.ID_ANY, "New Play&list...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_new_manual_playlist(), manual_item)
+        elif (playlist := self._selected_playlist()) is not None:
+            if playlist.kind == "smart":
+                rules_item = menu.Append(wx.ID_ANY, "Edit R&ules...")
+                menu.Bind(
+                    wx.EVT_MENU, lambda _e, p=playlist: self._on_edit_playlist_rules(p), rules_item
+                )
+            rename_playlist_item = menu.Append(wx.ID_ANY, "Rena&me Playlist...\tF2")
+            menu.Bind(
+                wx.EVT_MENU,
+                lambda _e, p=playlist: self._on_rename_playlist(p),
+                rename_playlist_item,
+            )
+            delete_playlist_item = menu.Append(wx.ID_ANY, "&Delete Playlist...")
+            menu.Bind(
+                wx.EVT_MENU,
+                lambda _e, p=playlist: self._on_delete_playlist(p),
+                delete_playlist_item,
+            )
         else:
             folder_id = self._selected_folder_id()
             folder = self._library.find_folder(folder_id) if folder_id else None
@@ -864,6 +891,8 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
         self._update_now_playing()
         self._announce(f"Playing {episode.title}")

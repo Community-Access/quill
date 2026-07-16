@@ -53,6 +53,101 @@ class QueueItem:
         return cls(show_id=show_id, episode_guid=episode_guid)
 
 
+#: PlaylistRules.episode_status.
+PLAYLIST_STATUS_MODES = ("any", "unplayed", "in_progress", "played")
+
+
+@dataclass(slots=True)
+class PlaylistRules:
+    """A Smart Playlist's matching criteria (Phase 5 §Playlists). Every
+    field is a filter; its "no restriction" value (an empty list, 0, or
+    "any") means that field doesn't narrow the result at all -- an
+    all-defaults record matches every episode of every subscribed show."""
+
+    #: Empty = every subscribed show.
+    show_ids: list[str] = field(default_factory=list)
+    episode_status: str = "any"  # one of PLAYLIST_STATUS_MODES
+    published_within_days: int = 0  # 0 = no limit
+    min_duration_minutes: int = 0  # 0 = no limit
+    max_duration_minutes: int = 0  # 0 = no limit
+    sort_mode: str = "date_newest"  # one of podcasts.sorting.EPISODE_SORT_MODES
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "show_ids": list(self.show_ids),
+            "episode_status": self.episode_status,
+            "published_within_days": self.published_within_days,
+            "min_duration_minutes": self.min_duration_minutes,
+            "max_duration_minutes": self.max_duration_minutes,
+            "sort_mode": self.sort_mode,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, object]) -> PlaylistRules:
+        raw_show_ids = data.get("show_ids")
+        status = str(data.get("episode_status", "any"))
+        return cls(
+            show_ids=[str(s) for s in raw_show_ids] if isinstance(raw_show_ids, list) else [],
+            episode_status=status if status in PLAYLIST_STATUS_MODES else "any",
+            published_within_days=max(0, _coerce_int(data.get("published_within_days"), 0)),
+            min_duration_minutes=max(0, _coerce_int(data.get("min_duration_minutes"), 0)),
+            max_duration_minutes=max(0, _coerce_int(data.get("max_duration_minutes"), 0)),
+            sort_mode=str(data.get("sort_mode", "date_newest")),
+        )
+
+
+@dataclass(slots=True)
+class Playlist:
+    """A saved, named collection of episodes (Phase 5 §Playlists) -- either
+    a rule-based "Smart Playlist" (``kind="smart"``, auto-updating, resolved
+    live from ``rules`` every time it's opened, the user-configurable
+    counterpart to the built-in pinned views) or a manually curated
+    "Playlist" (``kind="manual"``, an ordered list of specific episode
+    references, the saved counterpart to the transient Play Queue)."""
+
+    id: str
+    name: str
+    kind: str = "manual"  # "smart" | "manual"
+    rules: PlaylistRules = field(default_factory=PlaylistRules)  # smart only
+    items: list[QueueItem] = field(default_factory=list)  # manual only
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "kind": self.kind,
+            "rules": self.rules.to_dict(),
+            "items": [item.to_dict() for item in self.items],
+        }
+
+    @classmethod
+    def from_dict(cls, data: object) -> Playlist | None:
+        if not isinstance(data, dict):
+            return None
+        playlist_id = str(data.get("id", "")).strip()
+        name = str(data.get("name", "")).strip()
+        if not playlist_id or not name:
+            return None
+        kind = str(data.get("kind", "manual"))
+        rules_data = data.get("rules")
+        items_raw = data.get("items")
+        items: list[QueueItem] = []
+        for entry in items_raw if isinstance(items_raw, list) else []:
+            item = QueueItem.from_dict(entry)
+            if item is not None:
+                items.append(item)
+        rules = (
+            PlaylistRules.from_dict(rules_data) if isinstance(rules_data, dict) else PlaylistRules()
+        )
+        return cls(
+            id=playlist_id,
+            name=name,
+            kind=kind if kind in ("smart", "manual") else "manual",
+            rules=rules,
+            items=items,
+        )
+
+
 @dataclass(slots=True)
 class PodcastSettings:
     """One global defaults record; a show's own ``PodcastShow.settings`` only
@@ -109,6 +204,20 @@ class PodcastSettings:
     eq_treble_db: float = 0.0
     compressor_enabled: bool = False
     smart_speed_enabled: bool = False
+    #: Skip Forward/Back (Episode menu): how far each command jumps.
+    #: Per-show overridable the same way speed is.
+    skip_forward_seconds: int = 30
+    skip_back_seconds: int = 15
+    #: Auto-skip (per-show only -- a global default would be a strange
+    #: "skip N seconds of every podcast" behavior nobody wants): 0 = off.
+    #: auto_skip_intro_seconds jumps forward once when an episode starts
+    #: fresh (never on resume, so a checkpointed position is never lost
+    #: under it). auto_skip_outro_seconds ends playback that many seconds
+    #: before the episode's own end, checked by a position poll -- treated
+    #: exactly like the episode finishing naturally (auto-advance,
+    #: delete-after-play, etc. all still fire).
+    auto_skip_intro_seconds: int = 0
+    auto_skip_outro_seconds: int = 0
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -131,6 +240,10 @@ class PodcastSettings:
             "eq_treble_db": self.eq_treble_db,
             "compressor_enabled": self.compressor_enabled,
             "smart_speed_enabled": self.smart_speed_enabled,
+            "skip_forward_seconds": self.skip_forward_seconds,
+            "skip_back_seconds": self.skip_back_seconds,
+            "auto_skip_intro_seconds": self.auto_skip_intro_seconds,
+            "auto_skip_outro_seconds": self.auto_skip_outro_seconds,
         }
 
     @classmethod
@@ -162,6 +275,10 @@ class PodcastSettings:
             eq_treble_db=clamp_eq_gain(_coerce_float(data.get("eq_treble_db"), 0.0)),
             compressor_enabled=bool(data.get("compressor_enabled", False)),
             smart_speed_enabled=bool(data.get("smart_speed_enabled", False)),
+            skip_forward_seconds=max(1, _coerce_int(data.get("skip_forward_seconds"), 30)),
+            skip_back_seconds=max(1, _coerce_int(data.get("skip_back_seconds"), 15)),
+            auto_skip_intro_seconds=max(0, _coerce_int(data.get("auto_skip_intro_seconds"), 0)),
+            auto_skip_outro_seconds=max(0, _coerce_int(data.get("auto_skip_outro_seconds"), 0)),
         )
 
 

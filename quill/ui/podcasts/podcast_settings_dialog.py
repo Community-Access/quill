@@ -6,6 +6,7 @@ when you unsubscribe from a show).
 
 from __future__ import annotations
 
+import dataclasses
 from collections.abc import Callable
 
 from quill.core.podcasts.models import PodcastSettings
@@ -39,6 +40,12 @@ class PodcastSettingsDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._result: PodcastSettings | None = None
+        #: The starting record, so Save can dataclasses.replace() the fields
+        #: this dialog actually edits and carry every other field through
+        #: unchanged (view mode, sort mode, EQ, skip seconds, ...) instead of
+        #: constructing a fresh PodcastSettings() that silently resets them
+        #: to their class defaults.
+        self._settings = settings
 
         self.dialog = wx.Dialog(
             parent, title="Podcast Settings", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -254,7 +261,8 @@ class PodcastSettingsDialog:
         retention_index = self._retention_choice.GetSelection()
         speed_index = self._speed_choice.GetSelection()
         delete_index = self._delete_choice.GetSelection()
-        self._result = PodcastSettings(
+        self._result = dataclasses.replace(
+            self._settings,
             playback_mode=_PLAYBACK_MODES[playback_index] if playback_index >= 0 else "download",
             retention=_RETENTION_MODES[retention_index] if retention_index >= 0 else "keep_all",
             retention_count=self._retention_count_ctrl.GetValue(),

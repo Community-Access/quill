@@ -18,6 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.podcasts.models import (
+    Playlist,
     PodcastEpisode,
     PodcastFolder,
     PodcastSettings,
@@ -49,6 +50,10 @@ class PodcastLibrary:
     #: Manual Inbox filings: inbox_key(show, episode) -> folder id ("" =
     #: explicitly unfiled at the Inbox top level).
     inbox_assignments: dict[str, str] = field(default_factory=dict)
+    #: Saved playlists (Phase 5) -- Smart (rule-based, auto-updating) and
+    #: manual (a curated, ordered episode list). Operations live in
+    #: podcasts.playlists.
+    playlists: list[Playlist] = field(default_factory=list)
 
     def queue_episode(self, show_id: str, episode_guid: str) -> bool:
         """Append an episode to the Play Queue (False when already queued).
@@ -173,6 +178,30 @@ class PodcastLibrary:
         show.settings = dataclasses.replace(base, **updates)  # type: ignore[arg-type]
         return show.settings
 
+    def find_playlist(self, playlist_id: str) -> Playlist | None:
+        for playlist in self.playlists:
+            if playlist.id == playlist_id:
+                return playlist
+        return None
+
+    def add_playlist(self, playlist: Playlist) -> None:
+        self.playlists.append(playlist)
+
+    def remove_playlist(self, playlist_id: str) -> bool:
+        before = len(self.playlists)
+        self.playlists = [p for p in self.playlists if p.id != playlist_id]
+        return len(self.playlists) != before
+
+    def rename_playlist(self, playlist_id: str, name: str) -> bool:
+        playlist = self.find_playlist(playlist_id)
+        if playlist is None:
+            return False
+        cleaned = name.strip()
+        if not cleaned:
+            return False
+        playlist.name = cleaned
+        return True
+
 
 def merge_episodes(show: PodcastShow, fetched: list[PodcastEpisode]) -> int:
     """Merge freshly-fetched episodes into *show* in place; returns the
@@ -273,6 +302,11 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         if isinstance(assignments_raw, dict)
         else {}
     )
+    playlists: list[Playlist] = []
+    for entry in raw.get("playlists", []) if isinstance(raw.get("playlists"), list) else []:
+        playlist = Playlist.from_dict(entry)
+        if playlist is not None:
+            playlists.append(playlist)
     return PodcastLibrary(
         shows=shows,
         folders=folders,
@@ -280,6 +314,7 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         queue=queue,
         inbox_folders=inbox_folders,
         inbox_assignments=inbox_assignments,
+        playlists=playlists,
     )
 
 
@@ -302,5 +337,6 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
                 for f in library.inbox_folders
             ],
             "inbox_assignments": dict(library.inbox_assignments),
+            "playlists": [p.to_dict() for p in library.playlists],
         },
     )

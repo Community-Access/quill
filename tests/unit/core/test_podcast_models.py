@@ -91,6 +91,36 @@ def test_settings_sound_enhancements_clamped_on_load() -> None:
     assert settings.eq_treble_db == -12.0
 
 
+def test_settings_skip_seconds_defaults() -> None:
+    settings = PodcastSettings.from_dict({})
+    assert settings.skip_forward_seconds == 30
+    assert settings.skip_back_seconds == 15
+    assert settings.auto_skip_intro_seconds == 0
+    assert settings.auto_skip_outro_seconds == 0
+
+
+def test_settings_skip_seconds_round_trip() -> None:
+    original = PodcastSettings(
+        skip_forward_seconds=45,
+        skip_back_seconds=10,
+        auto_skip_intro_seconds=20,
+        auto_skip_outro_seconds=5,
+    )
+    restored = PodcastSettings.from_dict(original.to_dict())
+    assert restored == original
+
+
+def test_settings_skip_seconds_floor_on_load() -> None:
+    settings = PodcastSettings.from_dict({
+        "skip_forward_seconds": 0,
+        "skip_back_seconds": -5,
+        "auto_skip_intro_seconds": -3,
+    })
+    assert settings.skip_forward_seconds == 1
+    assert settings.skip_back_seconds == 1
+    assert settings.auto_skip_intro_seconds == 0
+
+
 def test_episode_from_dict_requires_guid_title_and_audio_url() -> None:
     assert PodcastEpisode.from_dict({"title": "X", "audio_url": "https://x"}) is None
     assert PodcastEpisode.from_dict({"guid": "g", "audio_url": "https://x"}) is None

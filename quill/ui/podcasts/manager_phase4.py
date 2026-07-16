@@ -23,7 +23,7 @@ from quill.core.podcasts.filtering import (
     filter_shows,
     search_everywhere,
 )
-from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
 
 _EPISODE_FILTER_LABELS = ("All", "Unplayed", "Played", "Downloaded", "Not downloaded")
@@ -126,6 +126,43 @@ class ManagerPhase4Mixin:
                 self._add_inbox_folder_children(item, None)
             if self._library.settings.episode_list_view_mode == "folders":
                 self._add_virtual_view_show_children(item, view_id)
+        self._add_playlist_nodes(root)
+
+    # -- saved playlists (Phase 5) ----------------------------------------------
+
+    def _add_playlist_nodes(self, root: object) -> None:
+        """Playlists sit below the pinned views: one "Playlists" parent
+        (its own context menu offers New Smart Playlist.../New
+        Playlist...), one child per saved playlist -- Smart or manual
+        alike, each showing its currently resolved episode count."""
+        from quill.core.podcasts.playlists import resolve_playlist
+
+        self._tree_item_playlists_root: int | None = None
+        self._tree_item_playlist: dict[int, str] = {}
+        parent = self._tree.AppendItem(root, "Playlists")
+        parent_key = parent.GetID() if hasattr(parent, "GetID") else id(parent)
+        self._tree_item_playlists_root = parent_key
+        for playlist in sorted(self._library.playlists, key=lambda p: p.name.casefold()):
+            count = len(resolve_playlist(self._library, playlist))
+            kind_suffix = " (Smart)" if playlist.kind == "smart" else ""
+            item = self._tree.AppendItem(parent, f"{playlist.name}{kind_suffix} ({count})")
+            key = item.GetID() if hasattr(item, "GetID") else id(item)
+            self._tree_item_playlist[key] = playlist.id
+
+    def _selected_playlists_root(self) -> bool:
+        item = self._tree.GetSelection()
+        if not item.IsOk():
+            return False
+        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        return key == getattr(self, "_tree_item_playlists_root", None)
+
+    def _selected_playlist(self) -> Playlist | None:
+        item = self._tree.GetSelection()
+        if not item.IsOk():
+            return None
+        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        playlist_id = getattr(self, "_tree_item_playlist", {}).get(key)
+        return self._library.find_playlist(playlist_id) if playlist_id else None
 
     def _add_virtual_view_show_children(self, parent_item: object, view_id: str) -> None:
         """Folders view mode: one child node per podcast that has at least
@@ -263,6 +300,17 @@ class ManagerPhase4Mixin:
             ]
             self._fill_episodes_from_pairs(pairs, view_label=virtual_show.title)
             return True
+        if self._selected_playlists_root():
+            self._fill_episodes_from_pairs([], view_label="Playlists")
+            return True
+        playlist = self._selected_playlist()
+        if playlist is not None:
+            from quill.core.podcasts.playlists import resolve_playlist
+
+            self._fill_episodes_from_pairs(
+                resolve_playlist(self._library, playlist), view_label=playlist.name
+            )
+            return True
         return False
 
     def _show_for_selected_episode(self, index: int) -> PodcastShow | None:
@@ -346,6 +394,8 @@ class ManagerPhase4Mixin:
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
 
     # -- context-menu additions -----------------------------------------------
@@ -387,6 +437,8 @@ class ManagerPhase4Mixin:
         menu.Bind(
             wx.EVT_MENU, lambda _e: self._on_file_to_inbox_folder(show, episode), file_inbox_item
         )
+        playlist_item = menu.Append(wx.ID_ANY, "Add to &Playlist...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_add_to_playlist(show, episode), playlist_item)
         rename_item = menu.Append(wx.ID_ANY, "Rena&me...\tF2")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_rename_episode(episode), rename_item)
 
@@ -468,6 +520,132 @@ class ManagerPhase4Mixin:
             )
         else:
             self._announce(f"Filed {episode.title}")
+
+    # -- saved playlists (Phase 5) ------------------------------------------------
+
+    def _on_add_to_playlist(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        from quill.core.podcasts.models import Playlist, QueueItem
+        from quill.core.podcasts.playlists import new_playlist_id
+
+        wx = self._wx
+        manual = sorted(
+            (p for p in self._library.playlists if p.kind == "manual"),
+            key=lambda p: p.name.casefold(),
+        )
+        choices = [*[p.name for p in manual], "New Playlist..."]
+        with wx.SingleChoiceDialog(  # dialog_button_contract: exempt
+            self.dialog, f"Add {episode.title} to which playlist?", "Add to Playlist", choices
+        ) as picker:
+            if picker.ShowModal() != wx.ID_OK:
+                return
+            index = picker.GetSelection()
+        if index == len(manual):
+            name = self._prompt_playlist_name("New Playlist")
+            if name is None:
+                return
+            playlist = Playlist(id=new_playlist_id(), name=name, kind="manual")
+            self._library.add_playlist(playlist)
+        else:
+            playlist = manual[index]
+        if any(
+            item.show_id == show.id and item.episode_guid == episode.guid for item in playlist.items
+        ):
+            self._announce(f"{episode.title} is already in {playlist.name}")
+            return
+        playlist.items.append(QueueItem(show_id=show.id, episode_guid=episode.guid))
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Added {episode.title} to {playlist.name}")
+
+    def _prompt_playlist_name(self, title: str, *, initial: str = "") -> str | None:
+        wx = self._wx
+        with wx.TextEntryDialog(  # dialog_button_contract: exempt
+            self.dialog, "Playlist name:", title, initial
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return None
+            name = dialog.GetValue().strip()
+        return name or None
+
+    def _on_new_smart_playlist(self) -> None:
+        from quill.core.podcasts.models import Playlist, PlaylistRules
+        from quill.core.podcasts.playlists import new_playlist_id
+        from quill.ui.podcasts.playlist_rules_dialog import PlaylistRulesDialog
+
+        name = self._prompt_playlist_name("New Smart Playlist")
+        if name is None:
+            return
+        dialog = PlaylistRulesDialog(
+            self.dialog,
+            shows=list(self._library.shows),
+            rules=PlaylistRules(),
+            announce_cb=self._announce,
+        )
+        rules = dialog.show()
+        if rules is None:
+            return
+        self._library.add_playlist(
+            Playlist(id=new_playlist_id(), name=name, kind="smart", rules=rules)
+        )
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Created Smart Playlist {name}")
+
+    def _on_new_manual_playlist(self) -> None:
+        from quill.core.podcasts.models import Playlist
+        from quill.core.podcasts.playlists import new_playlist_id
+
+        name = self._prompt_playlist_name("New Playlist")
+        if name is None:
+            return
+        self._library.add_playlist(Playlist(id=new_playlist_id(), name=name, kind="manual"))
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Created playlist {name}")
+
+    def _on_edit_playlist_rules(self, playlist: Playlist) -> None:
+        from quill.ui.podcasts.playlist_rules_dialog import PlaylistRulesDialog
+
+        dialog = PlaylistRulesDialog(
+            self.dialog,
+            shows=list(self._library.shows),
+            rules=playlist.rules,
+            announce_cb=self._announce,
+        )
+        rules = dialog.show()
+        if rules is None:
+            return
+        playlist.rules = rules
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Updated rules for {playlist.name}")
+
+    def _on_rename_playlist(self, playlist: Playlist) -> None:
+        name = self._prompt_playlist_name("Rename Playlist", initial=playlist.name)
+        if name is None:
+            return
+        self._library.rename_playlist(playlist.id, name)
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Renamed playlist to {name}")
+
+    def _on_delete_playlist(self, playlist: Playlist) -> None:
+        from quill.ui.dialog_contract import show_message_box
+
+        wx = self._wx
+        confirm = show_message_box(
+            f'Delete the playlist "{playlist.name}"? Its episodes stay in your library either way.',
+            "Delete Playlist",
+            wx.YES_NO | wx.ICON_QUESTION,
+            self.dialog,
+            announce=self._announce,
+        )
+        if confirm != wx.YES:
+            return
+        self._library.remove_playlist(playlist.id)
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Deleted playlist {playlist.name}")
 
     # -- episode notes ------------------------------------------------------------
 
