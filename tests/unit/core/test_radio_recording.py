@@ -81,6 +81,39 @@ def test_build_record_command_flac_has_no_bitrate_flag() -> None:
     assert "192k" not in args
 
 
+def test_build_record_command_omits_af_flag_by_default() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+    )
+    assert "-af" not in args
+
+
+def test_build_record_command_includes_af_flag_when_filter_graph_given() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        filter_graph="acompressor=threshold=-18dB",
+    )
+    af_index = args.index("-af")
+    assert args[af_index + 1] == "acompressor=threshold=-18dB"
+    assert args.index("-i") < af_index  # -af belongs to the output side, after -i
+
+
+def test_apply_sound_enhancements_defaults_off_and_round_trips() -> None:
+    assert RecordingSettings().apply_sound_enhancements is False
+    settings = RecordingSettings(apply_sound_enhancements=True)
+    assert RecordingSettings.from_dict(settings.to_dict()).apply_sound_enhancements is True
+
+
 def test_save_and_load_settings_round_trip(tmp_path: Path) -> None:
     settings = RecordingSettings(format="ogg", bitrate_kbps=128)
     save_recording_settings(tmp_path, settings)
@@ -164,6 +197,28 @@ def test_start_launches_and_reports_state(monkeypatch: pytest.MonkeyPatch, tmp_p
     recorder.stop()
     time.sleep(0.05)
     assert recorder.is_recording is False
+
+
+def test_start_threads_filter_graph_into_the_ffmpeg_command(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    captured: list[list[str]] = []
+
+    def _fake_popen(args: list[str], **_kw: object) -> _FakeProcess:
+        captured.append(args)
+        return _FakeProcess()
+
+    monkeypatch.setattr(recording.subprocess, "Popen", _fake_popen)
+    recorder = RadioRecorder()
+    recorder.start(
+        station_name="WXYZ",
+        stream_url="https://example.com/stream",
+        settings=RecordingSettings(destination_root=str(tmp_path)),
+        filter_graph="acompressor=threshold=-18dB",
+    )
+    recorder.stop()
+    assert "-af" in captured[0]
+    assert "acompressor=threshold=-18dB" in captured[0]
 
 
 def test_start_refuses_when_already_recording(

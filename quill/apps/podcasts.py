@@ -20,7 +20,7 @@ from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
-_VERSION = "1.0.1"
+_VERSION = "1.0.2"
 _REPO = "Community-Access/quill-cast"
 
 
@@ -236,6 +236,8 @@ class PodcastsAppFrame(
                 ("&Stop" if playing else "&Play Next Episode", self._on_library_play_stop_context),
                 (fav_label, self._on_library_favorite_toggle_context),
                 ("&Move to Folder...", self._on_library_move_to_folder),
+                ("Download &All Episodes", self._on_library_download_all_episodes),
+                ("&Remove All Episodes...", self._on_library_remove_all_episodes),
                 ("&Unsubscribe...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
                 ("Open &Manager...", lambda: self.open_podcast_manager()),
@@ -279,6 +281,30 @@ class PodcastsAppFrame(
         toggle_favorite(self._podcast_library, show, announce=self._announce)
         self._save_podcast_library()
         self._refresh_transport_controls()
+
+    def _on_library_download_all_episodes(self) -> None:
+        from quill.ui.podcasts.show_actions import download_all_episodes
+
+        show = self._selected_show()
+        if show is None:
+            return
+        download_all_episodes(
+            self._podcast_download_queue,
+            self._podcast_download_root(),
+            show,
+            announce=self._announce,
+        )
+
+    def _on_library_remove_all_episodes(self) -> None:
+        from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
+
+        show = self._selected_show()
+        if show is None:
+            return
+        if remove_all_episodes_prompt(
+            self.frame, self._podcast_download_queue, show, announce=self._announce
+        ):
+            self._save_podcast_library()
 
     def _on_library_move_to_folder(self) -> None:
         from quill.ui.podcasts.show_actions import move_show_to_folder
@@ -591,6 +617,12 @@ class PodcastsAppFrame(
         sleep_id = wx.NewIdRef()
         episode_menu.Append(sleep_id, "Sleep &Timer...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
+        episode_menu.AppendSeparator()
+        enhance_id = wx.NewIdRef()
+        episode_menu.Append(enhance_id, "Sound &Enhancements...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)
@@ -674,6 +706,7 @@ class PodcastsAppFrame(
             note_id,
             queue_id,
             sleep_id,
+            enhance_id,
             pause_all_id,
             resume_all_id,
             palette_id,

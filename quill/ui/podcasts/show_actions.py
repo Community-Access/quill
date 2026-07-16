@@ -14,6 +14,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+from quill.core.podcasts.download_queue import PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
@@ -226,4 +227,95 @@ def unsubscribe_show_prompt(
         announce(f"Unsubscribed from {show.title} and deleted its downloaded episodes")
     else:
         announce(f"Unsubscribed from {show.title}")
+    return True
+
+
+def download_all_episodes(
+    download_queue: PodcastDownloadQueue,
+    download_root: Path,
+    show: PodcastShow,
+    *,
+    announce: Callable[[str], None],
+) -> int:
+    """Queue every not-yet-downloaded, not-already-queued episode of *show*.
+
+    Purely additive, like the existing single-episode Download action -- no
+    confirmation prompt. Returns the number of episodes queued.
+    """
+    from quill.ui.podcasts.manager_dialog import episode_destination
+
+    queued = 0
+    for episode in show.episodes:
+        if episode.downloaded_path or download_queue.get(episode.guid) is not None:
+            continue
+        destination = episode_destination(download_root, show, episode)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        download_queue.enqueue(
+            episode.guid,
+            show_id=show.id,
+            episode_guid=episode.guid,
+            url=episode.audio_url,
+            destination=destination,
+        )
+        queued += 1
+    if queued:
+        announce(f"Queued {queued} episode(s) of {show.title} for download")
+    else:
+        announce(f"Nothing to download for {show.title} -- already downloaded or in progress")
+    return queued
+
+
+def remove_all_episodes_prompt(
+    parent: object,
+    download_queue: PodcastDownloadQueue,
+    show: PodcastShow,
+    *,
+    announce: Callable[[str], None],
+) -> bool:
+    """Confirm, then clear every episode from *show*'s list -- optionally
+    deleting downloaded media too, asked as its own follow-up question (same
+    two-step shape as :func:`unsubscribe_show_prompt`).
+
+    The show stays subscribed; a future feed refresh can repopulate its
+    episode list from the feed itself, unlike Unsubscribe.
+    """
+    import wx
+
+    if not show.episodes:
+        announce(f"{show.title} has no episodes to remove")
+        return False
+    downloaded = [e for e in show.episodes if e.downloaded_path]
+    answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
+        f"Remove all {len(show.episodes)} episode(s) of {show.title}? The show "
+        "stays subscribed -- a future feed refresh can bring episodes back.",
+        "Remove All Episodes",
+        wx.ICON_QUESTION | wx.YES_NO,
+        parent,
+    )
+    if answer != wx.YES:
+        return False
+    delete_files = False
+    if downloaded:
+        delete_files = (
+            wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
+                f"Also delete the {len(downloaded)} downloaded episode file(s)?",
+                "Delete Downloaded Files",
+                wx.ICON_QUESTION | wx.YES_NO,
+                parent,
+            )
+            == wx.YES
+        )
+    for episode in show.episodes:
+        download_queue.cancel_item(episode.guid)
+    if delete_files:
+        for episode in downloaded:
+            path = Path(episode.downloaded_path)
+            if path.exists():
+                path.unlink(missing_ok=True)
+    count = len(show.episodes)
+    show.episodes = []
+    if delete_files and downloaded:
+        announce(f"Removed {count} episode(s) of {show.title} and deleted their downloaded files")
+    else:
+        announce(f"Removed {count} episode(s) of {show.title}")
     return True

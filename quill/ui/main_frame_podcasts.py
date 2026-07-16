@@ -52,6 +52,12 @@ class PodcastsMixin:
             on_episode_finished=self._on_podcast_episode_finished,
             on_position_checkpoint=self._on_podcast_position_checkpoint,
             before_play=self._stop_radio_before_podcast,
+            on_enhance_error=self._on_podcast_enhance_error,
+        )
+        self._podcast_controller.set_enhancement(
+            self._podcast_history.eq_preset,
+            compressor_enabled=self._podcast_history.compressor_enabled,
+            smart_speed_enabled=self._podcast_history.smart_speed_enabled,
         )
         settings = self._podcast_library.settings
         self._podcast_download_queue = PodcastDownloadQueue(
@@ -400,6 +406,44 @@ class PodcastsMixin:
     def podcast_mute_toggle(self) -> None:
         self._podcast_controller.toggle_mute()
         self._announce("Podcasts muted" if self._podcast_controller.muted else "Podcasts unmuted")
+
+    def _on_podcast_enhance_error(self, message: str) -> None:
+        """Sound Enhancements couldn't start (ffmpeg missing, relay failed);
+        playback still proceeds unenhanced, so this is an announcement, not a
+        blocking dialog."""
+        self._announce(f"Sound Enhancements: {message} Playing without it.")
+
+    def open_podcast_sound_enhancements(self) -> None:
+        """Playback > Sound Enhancements...: an EQ preset + a compressor +
+        Smart Speed."""
+        from quill.core.podcasts import history as podcast_history
+        from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
+
+        history = self._podcast_history
+        dialog = SoundEnhanceDialog(
+            self.frame,
+            eq_preset=history.eq_preset,
+            compressor_enabled=history.compressor_enabled,
+            subject="episode",
+            show_smart_speed=True,
+            smart_speed_enabled=history.smart_speed_enabled,
+            announce_cb=self._announce,
+        )
+        result = dialog.show()
+        if result is None:
+            return
+        history.eq_preset, history.compressor_enabled, history.smart_speed_enabled = result
+        podcast_history.save_history(app_data_dir(), history)
+        self._podcast_controller.set_enhancement(
+            history.eq_preset,
+            compressor_enabled=history.compressor_enabled,
+            smart_speed_enabled=history.smart_speed_enabled,
+        )
+        self._announce(
+            f"Sound Enhancements: {history.eq_preset}"
+            + (", Even Out Volume on" if history.compressor_enabled else "")
+            + (", Smart Speed on" if history.smart_speed_enabled else "")
+        )
 
     def podcast_next_chapter(self) -> None:
         from quill.core.podcasts.chapters import next_chapter
@@ -763,6 +807,11 @@ class PodcastsMixin:
             ("podcasts.play_pause", "Podcasts: Play/Pause", self.podcast_toggle_play_pause),
             ("podcasts.stop", "Podcasts: Stop", self.podcast_stop),
             ("podcasts.mute", "Podcasts: Mute/Unmute", self.podcast_mute_toggle),
+            (
+                "podcasts.sound_enhancements",
+                "Podcasts: Sound Enhancements...",
+                self.open_podcast_sound_enhancements,
+            ),
             ("podcasts.open_queue", "Podcasts: Play Queue...", self._open_play_queue),
             (
                 "podcasts.pause_all_downloads",

@@ -12,6 +12,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.audio_enhance import DEFAULT_EQ_PRESET
 from quill.core.radio.models import RadioStation
 
 _FILE_NAME = "radio_history.json"
@@ -36,6 +37,12 @@ class RadioHistory:
     #: ISO timestamp of the last update check (manual or automatic), so the
     #: startup check only hits the network once a day, not on every launch.
     last_update_check: str = ""
+    #: Sound Enhancements (Playback menu): an EQ preset name from
+    #: ``audio_enhance.EQ_PRESETS`` and whether the compressor is on. Both
+    #: default to off/Flat -- normal playback never touches the ffmpeg relay
+    #: unless the user opts in.
+    eq_preset: str = DEFAULT_EQ_PRESET
+    compressor_enabled: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -65,6 +72,8 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
+        history.eq_preset = str(raw.get("eq_preset") or DEFAULT_EQ_PRESET)
+        history.compressor_enabled = bool(raw.get("compressor_enabled", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -87,6 +96,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "announce_track_titles": history.announce_track_titles,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
+            "eq_preset": history.eq_preset,
+            "compressor_enabled": history.compressor_enabled,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

@@ -34,6 +34,12 @@ from enum import Enum, auto
 
 import wx
 
+from quill.core.audio_enhance import (
+    DEFAULT_EQ_PRESET,
+    EnhanceError,
+    EnhanceRelay,
+    is_enhancement_active,
+)
 from quill.core.radio.models import RadioStation
 from quill.ui.audio_studio.audio_engine import WxMediaEngine
 
@@ -86,6 +92,7 @@ class RadioPlayerController:
         on_state_changed: Callable[[RadioPlaybackState], None] | None = None,
         on_register_click: Callable[[str], None] | None = None,
         before_play: Callable[[], None] | None = None,
+        on_enhance_error: Callable[[str], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -94,12 +101,21 @@ class RadioPlayerController:
         #: Runs before every play_station: the host stops sibling media (the
         #: podcast player) here so two streams never play over each other.
         self._before_play = before_play
+        #: Told about a Sound Enhancements failure (ffmpeg missing, relay
+        #: could not start) so the host can announce it; playback still
+        #: proceeds unenhanced rather than failing outright.
+        self._on_enhance_error = on_enhance_error
         self._engine = WxMediaEngine(
             parent,
             on_loaded=self._on_loaded,
             on_finished=self._on_finished,
             on_error=self._on_error,
         )
+        #: Sound Enhancements (EQ preset + compressor): off by default, so
+        #: normal playback never spawns the ffmpeg relay. See set_enhancement.
+        self._enhance_relay = EnhanceRelay()
+        self._eq_preset = DEFAULT_EQ_PRESET
+        self._compressor_enabled = False
         self._pre_mute_volume = 100
         self._state = RadioPlaybackState(
             state=RadioPlayerState.STOPPED, station=None, muted=False, volume_percent=100
@@ -123,8 +139,40 @@ class RadioPlayerController:
                 pass
         self._state.station = station
         self._set_state(RadioPlayerState.CONNECTING, message="")
-        if not self._engine.load(station.stream_url):
+        url = self._resolve_playback_url(station)
+        if not self._engine.load(url):
             self._set_state(RadioPlayerState.ERROR, message="That stream could not be opened.")
+
+    def _resolve_playback_url(self, station: RadioStation) -> str:
+        """The URL the engine should load: the station's own URL, or a local
+        relay URL when Sound Enhancements (EQ/compressor) is active."""
+        self._enhance_relay.stop()
+        if not is_enhancement_active(self._eq_preset, compressor_enabled=self._compressor_enabled):
+            return station.stream_url
+        try:
+            return self._enhance_relay.start(
+                station.stream_url,
+                eq_preset=self._eq_preset,
+                compressor_enabled=self._compressor_enabled,
+            )
+        except EnhanceError as error:
+            if self._on_enhance_error is not None:
+                self._on_enhance_error(str(error))
+            return station.stream_url
+
+    def set_enhancement(self, eq_preset: str, *, compressor_enabled: bool) -> None:
+        """Change the EQ preset / compressor and, if something is playing,
+        reconnect through the new setting. Live radio has no position to
+        lose, so a reconnect is the whole cost of switching."""
+        self._eq_preset = eq_preset
+        self._compressor_enabled = compressor_enabled
+        station = self._state.station
+        if station is not None and self._state.state in (
+            RadioPlayerState.PLAYING,
+            RadioPlayerState.CONNECTING,
+            RadioPlayerState.PAUSED,
+        ):
+            self.play_station(station)
 
     def toggle_play_pause(self) -> None:
         if self._state.state is RadioPlayerState.PLAYING:
@@ -138,6 +186,7 @@ class RadioPlayerController:
 
     def stop(self) -> None:
         self._engine.close()
+        self._enhance_relay.stop()
         self._set_state(RadioPlayerState.STOPPED, message="")
 
     def toggle_mute(self) -> None:
@@ -176,6 +225,10 @@ class RadioPlayerController:
             self._engine.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("radio engine close failed during shutdown")
+        try:
+            self._enhance_relay.shutdown()
+        except Exception:  # noqa: BLE001 - never block app close
+            _log.exception("radio enhancement relay shutdown failed")
 
     # -- engine callbacks -------------------------------------------------
 
