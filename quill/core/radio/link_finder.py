@@ -207,6 +207,14 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     one level deep (station sites commonly embed a third-party player rather
     than linking a stream directly); a failed iframe fetch is skipped, not
     fatal to the overall scan.
+
+    JavaScript players (Triton Digital / StreamTheWorld, the whole
+    ``player.listenlive.co`` network) compute their stream URL at runtime, so
+    it is never a literal string in the HTML. For those, the callsign the page
+    *does* advertise (in the Triton PWA's own asset URLs) is resolved to a real
+    playable stream through Triton's JS-free provisioning API -- see
+    :mod:`quill.core.radio.triton`. This is the only way the visible Play
+    button on such a page can be surfaced without running JavaScript.
     """
     refuse_in_safe_mode(safe_mode)
     normalized = normalize_page_url(url)
@@ -233,6 +241,8 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
                 )
             )
 
+    all_candidates.extend(_triton_candidates(normalized, html_text, safe_mode=safe_mode))
+
     # De-duplicate by URL, preserving first-seen order and reason.
     seen: dict[str, PageStreamCandidate] = {}
     for candidate in all_candidates:
@@ -242,3 +252,37 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
         favicon_url=parser.favicon,
         candidates=list(seen.values()),
     )
+
+
+def _triton_candidates(
+    url: str, html: str, *, safe_mode: bool
+) -> list[PageStreamCandidate]:
+    """Resolve a Triton Digital / StreamTheWorld player page to stream
+    candidates, or ``[]`` when the page is not a Triton player.
+
+    A Triton player's stream is JS-computed and absent from the HTML, so the
+    static parser above finds nothing on it. When the page looks like a Triton
+    player and advertises a callsign, this resolves it through Triton's JS-free
+    provisioning API and offers the real mount(s) as candidates. Any failure
+    (not a Triton page, no callsign, API unreachable, Safe Mode) degrades to an
+    empty list so it never breaks the rest of the scan.
+    """
+    from quill.core.radio import triton
+
+    if not triton.page_is_triton_player(url, html):
+        return []
+    callsign = triton.callsign_from_page(url, html)
+    if not callsign:
+        return []
+    try:
+        streams = triton.resolve_station_streams(callsign, safe_mode=safe_mode)
+    except triton.TritonResolverError:
+        return []
+    return [
+        PageStreamCandidate(
+            url=stream.url,
+            reason=f"{stream.codec} stream from the station's player ({stream.mount})",
+            label=stream.mount,
+        )
+        for stream in streams
+    ]

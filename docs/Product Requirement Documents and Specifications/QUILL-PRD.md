@@ -4026,6 +4026,44 @@ chosen over Shoutcast (revocable Developer-ID-gated API) and Live365
 (`html.parser`, no embedded browser) for stream-shaped links, for stations
 not in RadioBrowser's directory.
 
+**JavaScript players — the Triton Digital / StreamTheWorld resolver
+(`core/radio/triton.py`).** A large class of broadcast stations (thousands of
+US AM/FM stations, and the entire `player.listenlive.co` network) put their
+"Listen Live" button behind a Triton Digital web player. That player is a
+JavaScript PWA: the actual stream URL is *never* in the page HTML — it is
+computed at runtime when the player's JS calls Triton's provisioning API. So
+the plain-HTML scanner above finds nothing on those pages, even though a Play
+button is plainly visible. This was a real, reported gap
+(`player.listenlive.co/34461`, "Magic 104.1"/KMGL).
+
+The stream is nonetheless fully derivable **without running any JavaScript**,
+from two static facts the page already exposes:
+
+1. The station **callsign** (mount name) appears verbatim in the Triton PWA's
+   own asset URLs — the station-logo image is served from
+   `pwaimg.listenlive.co/<CALLSIGN>_<id>_config_station_logo_image_….png`
+   (`callsign_from_page`, with a `station=<callsign>` query fallback).
+2. Triton's **provisioning API** answers a plain HTTPS GET
+   (`playerservices.streamtheworld.com/api/livestream?station=<CALLSIGN>&transports=http&version=1.9`)
+   with an XML `<live_stream_config>` document listing every mountpoint (one
+   per codec — MP3, HE-AAC — MP3 first) and its CDN servers. A playable URL is
+   simply `https://<server>/<mount>` (`parse_livestream_config` →
+   `resolve_station_streams`, parsed through the hardened `core/safe_xml` so a
+   crafted response cannot mount an entity-expansion attack).
+
+The scan only takes this path when the page *looks* like a Triton player
+(`page_is_triton_player`) and advertises a callsign the API validates
+(status 200), so a non-Triton page or a bad guess degrades to "nothing found",
+never a wrong stream. It surfaces the resolved mount(s) as ordinary scan
+candidates labelled "*MP3/AAC* stream from the station's player (*mount*)".
+The one follow-on egress (`triton.py::_fetch_api`) is a reviewed entry in
+`network_egress_audit.py`, reached only from the same explicit **Scan** button,
+HTTPS-only, and disabled in Safe Mode via `triton.refuse_in_safe_mode`. This
+also generically improves every Triton/StreamTheWorld station, not just the
+one that prompted it. It cannot solve a fully generic JS player with no static
+callsign hint — QUILL deliberately has no embedded arbitrary-site browser — but
+Triton/listenlive.co is the large, tractable case.
+
 **Playback (`quill/ui/radio/player_controller.py`).** One
 `RadioPlayerController`, owned by `MainFrame` for the process's lifetime,
 wraps the Audio Studio's `WxMediaEngine` (never libmpv — `MpvAudioEngine`'s

@@ -136,6 +136,70 @@ def test_scan_page_for_streams_skips_iframe_that_fails_to_fetch(
     assert result.candidates == []
 
 
+def test_scan_resolves_triton_player_stream(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A Triton/listenlive player page: no stream in the HTML, but a callsign in
+    # the logo asset name. The scan must resolve it via the Triton API and
+    # surface the real mount as a candidate.
+    import quill.core.radio.triton as triton
+    from quill.core.radio.triton import TritonStream
+
+    html = (
+        "<html><head><title>Magic 104.1</title></head><body>"
+        "Powered by Triton Digital"
+        '<img src="//pwaimg.listenlive.co/'
+        'KMGLFM_1115091_config_station_logo_image_1514560282.png">'
+        "</body></html>"
+    )
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: html)
+    monkeypatch.setattr(
+        triton,
+        "resolve_station_streams",
+        lambda callsign, *, safe_mode=False: [
+            TritonStream(
+                url="https://29306.live.streamtheworld.com/KMGLFM",
+                mount="KMGLFM",
+                codec="MP3",
+                bitrate=64000,
+            )
+        ],
+    )
+    result = scan_page_for_streams("https://player.listenlive.co/34461")
+    urls = [c.url for c in result.candidates]
+    assert "https://29306.live.streamtheworld.com/KMGLFM" in urls
+    candidate = next(c for c in result.candidates if "streamtheworld" in c.url)
+    assert "MP3 stream from the station's player" in candidate.reason
+
+
+def test_scan_ignores_triton_resolution_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A Triton API failure must degrade to the normal (empty) scan result, not
+    # break the whole scan.
+    import quill.core.radio.triton as triton
+    from quill.core.radio.triton import TritonResolverError
+
+    html = 'Triton Digital<img src="//pwaimg.listenlive.co/KMGLFM_1_config_station_logo_x.png">'
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: html)
+
+    def _boom(callsign: str, *, safe_mode: bool = False):
+        raise TritonResolverError("offline")
+
+    monkeypatch.setattr(triton, "resolve_station_streams", _boom)
+    result = scan_page_for_streams("https://player.listenlive.co/34461")
+    assert result.candidates == []
+
+
+def test_scan_does_not_call_triton_for_a_normal_site(monkeypatch: pytest.MonkeyPatch) -> None:
+    import quill.core.radio.triton as triton
+
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: "<html><body>plain site</body></html>")
+    monkeypatch.setattr(
+        triton,
+        "resolve_station_streams",
+        lambda *a, **k: pytest.fail("must not hit Triton for a non-Triton page"),
+    )
+    result = scan_page_for_streams("https://example.com")
+    assert result.candidates == []
+
+
 def test_scan_page_for_streams_caps_iframes_followed(monkeypatch: pytest.MonkeyPatch) -> None:
     main_html = "".join(
         f'<iframe src="https://player{i}.example.com/embed"></iframe>' for i in range(5)
