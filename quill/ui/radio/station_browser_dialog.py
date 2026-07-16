@@ -185,6 +185,14 @@ class StationBrowserDialog:
         link_finder_btn.Bind(wx.EVT_BUTTON, self._on_link_finder)
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute_toggle)
+        # #1070: Ctrl+Up/Ctrl+Down (Volume Up/Down) must work while browsing.
+        # This is a modal dialog, so the frame's Playback-menu accelerators
+        # never fire here; and the results ListCtrl (the default focus after a
+        # search) claims bare Up/Down for its own row navigation. A dialog-wide
+        # CHAR_HOOK catches the Ctrl chord before any child control sees it,
+        # regardless of where focus sits (list, slider, buttons), and leaves
+        # bare Up/Down untouched so list navigation and the slider still work.
+        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         state = getattr(self._controller, "state", None)
         if state is not None:
@@ -388,6 +396,39 @@ class StationBrowserDialog:
             self._controller.play_station(station)
             self._announce(f"Playing {station.name}")
         self._refresh_play_button()
+
+    def _on_char_hook(self, event: object) -> None:
+        """Handle Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the
+        dialog (#1070); everything else passes through untouched."""
+        wx = self._wx
+        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
+            code = event.GetKeyCode()
+            if code == wx.WXK_UP:
+                self._adjust_volume(up=True)
+                return
+            if code == wx.WXK_DOWN:
+                self._adjust_volume(up=False)
+                return
+        event.Skip()
+
+    def _adjust_volume(self, *, up: bool) -> None:
+        """Step the radio volume and keep the dialog's own slider/mute in sync.
+
+        Goes through the controller (the single source of truth every surface
+        shares), then mirrors the new level onto this dialog's slider and mute
+        button and announces it, matching the wording of the Playback menu's
+        Volume Up/Down.
+        """
+        if up:
+            self._controller.volume_up()
+        else:
+            self._controller.volume_down()
+        state = getattr(self._controller, "state", None)
+        if state is None:
+            return
+        self._volume_slider.SetValue(state.volume_percent)
+        self._mute_btn.SetValue(state.muted)
+        self._announce(f"Radio volume {state.volume_percent}")
 
     def _on_volume_slider(self, _event: object) -> None:
         self._controller.set_volume(self._volume_slider.GetValue())
