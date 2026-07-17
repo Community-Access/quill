@@ -12,10 +12,19 @@ from typing import Any
 
 from quill.core.radio.models import RadioStation
 from quill.ui.radio.station_browser_dialog import (
+    _ANY_COUNTRY,
     _SEARCH_LIMIT,
     StationBrowserDialog,
     _search_result_summary,
+    country_query,
 )
+
+
+def test_country_query_maps_any_to_no_filter() -> None:
+    # quill-radio #2: the "(Any country)" dropdown sentinel means no filter.
+    assert country_query(_ANY_COUNTRY) == ""
+    assert country_query("") == ""
+    assert country_query("  Canada  ") == "Canada"
 
 
 def _station(name: str) -> RadioStation:
