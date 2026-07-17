@@ -111,6 +111,23 @@ def test_build_probe_codec_command_includes_user_agent_for_http() -> None:
     assert args[-1] == "https://example.com/stream"
 
 
+def test_default_dir_is_a_visible_folder_under_music(tmp_path) -> None:
+    # quill-radio #4: recordings default to ~/Music/Quill Radio Recordings, not
+    # a buried AppData folder.
+    from quill.core.radio.recording import _default_dir
+
+    (tmp_path / "Music").mkdir()
+    result = _default_dir(home=tmp_path)
+    assert result == tmp_path / "Music" / "Quill Radio Recordings"
+
+
+def test_default_dir_falls_back_to_home_without_music(tmp_path) -> None:
+    from quill.core.radio.recording import _default_dir
+
+    result = _default_dir(home=tmp_path)  # no Music folder
+    assert result == tmp_path / "Quill Radio Recordings"
+
+
 def test_build_record_command_flac_has_no_bitrate_flag() -> None:
     args = build_record_command(
         "ffmpeg",
