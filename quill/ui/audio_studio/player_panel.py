@@ -283,7 +283,8 @@ class PlayerPanel(wx.Panel):
 
     # -- transport ---------------------------------------------------------------
 
-    def _on_play_pause(self) -> None:
+    def play_pause(self) -> None:
+        """Toggle play/pause (the media-key and host-facing transport entry)."""
         if self._engine is None:
             return
         if self._engine.is_playing():
@@ -293,26 +294,45 @@ class PlayerPanel(wx.Panel):
             self._timer.Start(_TICK_MS)
         self._sync_play_label()
 
-    def _on_stop(self) -> None:
+    def stop_playback(self) -> None:
+        """Stop and reset the announced-chapter tracker (host-facing)."""
         if self._engine is not None:
             self._engine.stop()
             self._announced_chapter = -1
             self._sync_play_label()
             self._update_status()
 
-    def _on_prev(self) -> None:
+    def next_chapter(self) -> None:
+        """Jump to the next chapter, or announce at the last."""
+        idx = self._chapter_at(self.playhead_ms())
+        if idx + 1 < len(self._chapters):
+            self.play_chapter(idx + 1)
+        else:
+            self._announce(_("This is the last chapter"))
+
+    def previous_chapter(self) -> None:
+        """Jump to the previous chapter (first-seconds rule applies)."""
         idx = self._chapter_at(self.playhead_ms())
         # Within the first seconds of a chapter, previous means the one before.
         if idx > 0 and self.playhead_ms() - self._chapters[idx].start_ms < 3_000:
             idx -= 1
         self.play_chapter(max(0, idx))
 
+    def apply_book_prefs(self, book_prefs: BookPrefs | None) -> None:
+        """Apply remembered per-book volume + mute (host-facing wrapper)."""
+        self._apply_book_prefs(book_prefs)
+
+    def _on_play_pause(self) -> None:
+        self.play_pause()
+
+    def _on_stop(self) -> None:
+        self.stop_playback()
+
+    def _on_prev(self) -> None:
+        self.previous_chapter()
+
     def _on_next(self) -> None:
-        idx = self._chapter_at(self.playhead_ms())
-        if idx + 1 < len(self._chapters):
-            self.play_chapter(idx + 1)
-        else:
-            self._announce(_("This is the last chapter"))
+        self.next_chapter()
 
     def _on_where_am_i(self) -> None:
         """Speak book, chapter, position, and remaining time — the audible glance."""
