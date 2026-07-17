@@ -687,6 +687,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     "Announce dialog transitions -- off by default to reduce alert noise",
                     history.announce_dialog_transitions,
                 ),
+                PreferenceCheckbox(
+                    "&Recover failed streams from the station's website",
+                    "When a station's stream won't play, scan the station's own "
+                    "website for a working one -- on by default",
+                    history.recover_from_website,
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -720,6 +726,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             history.resume_on_launch,
             history.check_updates_on_startup,
             history.announce_dialog_transitions,
+            history.recover_from_website,
         ) = checkbox_values
         history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
         new_template = text_values[0].strip()

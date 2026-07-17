@@ -4064,6 +4064,37 @@ one that prompted it. It cannot solve a fully generic JS player with no static
 callsign hint — QUILL deliberately has no embedded arbitrary-site browser — but
 Triton/listenlive.co is the large, tractable case.
 
+**Self-healing stream recovery (`core/radio/recovery.py`, #1065).** A directory
+station's listed stream can be dead even though the station is perfectly live —
+usually because the real stream is behind a Triton/JavaScript player, so the URL
+the directory carries (or one a user copied off the site's play button) is a
+web-player address, not a stream. Rather than just failing, on a playback error
+QUILL runs a confidence-ordered recovery ladder off-thread (`recover_stream`),
+one attempt per station per session:
+
+1. **Re-resolve a StreamTheWorld mount (high, always on).** If the failed URL is
+   `*.streamtheworld.com/<MOUNT>`, that mount is re-resolved through Triton's API
+   to its current server — deterministic, same station and provider.
+2. **Refresh from the directory (high).** If the station has a RadioBrowser id,
+   its current URL is re-fetched; a genuinely different URL is the directory
+   self-healing (this subsumes the older byuuid-only fallback).
+3. **Scan the station's website (opt-in, default on, off in Safe Mode).** The
+   station's homepage — and the failed URL itself, when it is a web page — is
+   scanned with the same Triton + "Listen Live" link-following logic Find Streams
+   uses (`link_finder` now follows a bounded allowlist of listen/live/play/tune-in
+   `<a>` links one level deep, since most homepages *link* to the player rather
+   than hosting it). A single unambiguous result — a resolved Triton player, or
+   exactly one stream candidate — is played automatically and self-heals the
+   saved favorite; several candidates are announced so the user can pick them up
+   in Find Streams, never auto-played.
+
+Confident recoveries are announced and self-heal the favorite so the next play
+starts from the good URL. Strategy 3 is a single opt-out
+(`RadioHistory.recover_from_website`, Preferences) because it adds one homepage
+fetch on failure; strategies 1–2 always run. All network goes through the
+already-reviewed egress sites (`triton._fetch_api`, `radio_browser`,
+`link_finder._fetch_html`); `recovery.py` itself makes no direct network call.
+
 **Playback (`quill/ui/radio/player_controller.py`).** One
 `RadioPlayerController`, owned by `MainFrame` for the process's lifetime,
 wraps the Audio Studio's `WxMediaEngine` (never libmpv — `MpvAudioEngine`'s

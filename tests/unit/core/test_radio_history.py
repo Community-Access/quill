@@ -143,3 +143,14 @@ def test_now_playing_template_defaults_when_absent(tmp_path: Path) -> None:
     # A file saved before this field existed (or with a blank value) loads the
     # clean default rather than an empty template.
     assert load_history(tmp_path).now_playing_template == "{title}[ by {artist}]"
+
+
+def test_recover_from_website_round_trips(tmp_path: Path) -> None:
+    save_history(tmp_path, RadioHistory(recover_from_website=False))
+    assert load_history(tmp_path).recover_from_website is False
+    save_history(tmp_path, RadioHistory(recover_from_website=True))
+    assert load_history(tmp_path).recover_from_website is True
+
+
+def test_recover_from_website_defaults_on(tmp_path: Path) -> None:
+    assert load_history(tmp_path).recover_from_website is True

@@ -200,6 +200,54 @@ def test_scan_does_not_call_triton_for_a_normal_site(monkeypatch: pytest.MonkeyP
     assert result.candidates == []
 
 
+def test_scan_follows_a_listen_live_link_when_page_is_empty(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #1065: a homepage that only *links* to its player. The scan should follow
+    # the "Listen Live" link one level and find the stream on that page.
+    home = '<html><body><a href="/player">Listen Live</a></body></html>'
+    player = '<html><body><audio src="/live/stream.mp3"></audio></body></html>'
+    pages = {
+        "https://station.example.com": home,
+        "https://station.example.com/player": player,
+    }
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    result = scan_page_for_streams("station.example.com")
+    urls = [c.url for c in result.candidates]
+    assert "https://station.example.com/live/stream.mp3" in urls
+    candidate = next(c for c in result.candidates if c.url.endswith("stream.mp3"))
+    assert "Listen link" in candidate.reason
+
+
+def test_scan_does_not_follow_listen_links_when_a_direct_stream_exists(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # If the page already yields a stream, don't waste fetches chasing links.
+    fetched: list[str] = []
+
+    def fake_fetch(url: str) -> str:
+        fetched.append(url)
+        return '<audio src="/s.mp3"></audio><a href="/player">Listen Live</a>'
+
+    monkeypatch.setattr(lf, "_fetch_html", fake_fetch)
+    scan_page_for_streams("station.example.com")
+    assert fetched == ["https://station.example.com"]  # the Listen link was not followed
+
+
+def test_scan_ignores_ordinary_links(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A normal "About" link is not a listen link and must not be followed.
+    fetched: list[str] = []
+
+    def fake_fetch(url: str) -> str:
+        fetched.append(url)
+        return '<html><body><a href="/about">About Us</a></body></html>'
+
+    monkeypatch.setattr(lf, "_fetch_html", fake_fetch)
+    result = scan_page_for_streams("station.example.com")
+    assert fetched == ["https://station.example.com"]
+    assert result.candidates == []
+
+
 def test_scan_page_for_streams_caps_iframes_followed(monkeypatch: pytest.MonkeyPatch) -> None:
     main_html = "".join(
         f'<iframe src="https://player{i}.example.com/embed"></iframe>' for i in range(5)

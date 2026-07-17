@@ -76,6 +76,13 @@ class RadioHistory:
     #: instead of a wall of key="value" noise); a listener can retune it with
     #: {title}/{artist}/{raw} tokens and [optional] segments in Preferences.
     now_playing_template: str = "{title}[ by {artist}]"
+    #: When a station's stream fails, scan the station's own website for a
+    #: working one (quill.core.radio.recovery Strategy C, #1065). The always-on
+    #: strategies -- re-resolving a moved StreamTheWorld mount and refreshing
+    #: from the directory -- run regardless; this gates only the extra
+    #: website-scan step (a network fetch of the station's homepage on failure),
+    #: so it is a single opt-out in Preferences. On by default; off in Safe Mode.
+    recover_from_website: bool = True
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -123,6 +130,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         template = raw.get("now_playing_template")
         if isinstance(template, str) and template.strip():
             history.now_playing_template = template
+        history.recover_from_website = bool(raw.get("recover_from_website", True))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -152,6 +160,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "close_action": history.close_action,
             "announce_dialog_transitions": history.announce_dialog_transitions,
             "now_playing_template": history.now_playing_template,
+            "recover_from_website": history.recover_from_website,
             "stations": [station.to_dict() for station in history.stations],
         },
     )
