@@ -21,8 +21,8 @@
             <details class="nav-dropdown">
               <summary>Download Quill Radio</summary>
               <ul>
-                <li><a href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Setup-1.0.2.exe">Windows: System Installer</a></li>
-                <li><a href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Portable-1.0.2.zip">Windows: Portable ZIP</a></li>
+                <li><a href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Setup-1.1.0.exe">Windows: System Installer</a></li>
+                <li><a href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Portable-1.1.0.zip">Windows: Portable ZIP</a></li>
               </ul>
             </details>
           </li>
@@ -50,8 +50,8 @@
           Built the way a screen reader user would build it.
         </p>
         <div class="cta">
-          <a class="btn" href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Setup-1.0.2.exe">Download Quill Radio 1.0.2 - Windows Installer</a>
-          <a class="btn" href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Portable-1.0.2.zip">Download Quill Radio 1.0.2 - Windows Portable</a>
+          <a class="btn" href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Setup-1.1.0.exe">Download Quill Radio 1.1.0 - Windows Installer</a>
+          <a class="btn" href="https://github.com/Community-Access/quill-radio/releases/latest/download/Quill-Radio-Portable-1.1.0.zip">Download Quill Radio 1.1.0 - Windows Portable</a>
           <a class="btn secondary" href="/docs/radio-userguide.html">Read the user guide</a>
           <a class="btn secondary" href="/docs/radio-pr.html">Read the press release</a>
         </div>
@@ -61,13 +61,14 @@
 
     <section class="band" aria-labelledby="whats-new-h">
       <div class="wrap">
-        <h2 id="whats-new-h">What's new in 1.0.2</h2>
+        <h2 id="whats-new-h">What's new in 1.1.0</h2>
         <ul class="intro">
-          <li><strong>Volume that actually stays put.</strong> Starting a stream - or just pausing and resuming one - could silently reset the volume to 100, even overwriting a favorite station's own remembered volume. A favorite now reliably comes back at the volume you left it, and a volume you set before playing something with no memory of its own yet stays exactly where you put it.</li>
-          <li><strong>A real three-band equalizer.</strong> Sound Enhancements gained Bass, Mid, and Treble sliders (-12 to +12 dB each), remembered per station, plus a one-click "Reset to Default."</li>
-          <li><strong>Quieter, more standard dialogs.</strong> Closing the app now asks Exit, Minimize to Tray, or Cancel only when something's actually playing or recording, and Recording Settings, the Wake-Up Timer, and Add Station now say "OK" instead of "Save," matching standard Windows convention.</li>
+          <li><strong>A new heart: the mpv playback engine.</strong> Quill Radio now ships a second audio engine and uses it automatically - and it changes what the radio can do. Every stream format in real-world use now plays (MP3, AAC and AAC+, Ogg Vorbis, Opus, FLAC, HLS), and a station one engine can't open is quietly retried on the other before you ever hear an error. Prefer the old behavior? "Windows Media (classic)" in Preferences is exactly the pre-1.1 engine.</li>
+          <li><strong>Pause and rewind live radio.</strong> A rolling buffer (roughly 45 minutes) means you can pause for the doorbell and resume where you left off, jump back 30 seconds for a missed sentence, and leap straight back to live - each move announcing how far behind live you are.</li>
+          <li><strong>Send the radio to a second sound card.</strong> The classic radio setup: route just the radio to a USB headset or second card while your screen reader stays on the main one. Plus Volume Boost for quiet stations (up to 50% past full), mono downmix and Night mode in Sound Enhancements, and changes that apply live with no reconnect.</li>
+          <li><strong>Record the raw stream, exactly as sent.</strong> A new lossless recording mode copies the station's own audio packets straight to disk - bit-for-bit what the server broadcast, named by its real format - for your own editing or conversion. And stations that used to just fail now heal themselves, digging the working stream out of the station's own website.</li>
         </ul>
-        <p><a href="/docs/radio-release-notes.html">Read the full 1.0.2 release notes</a>.</p>
+        <p><a href="/docs/radio-release-notes.html">Read the full 1.1.0 release notes</a>.</p>
       </div>
     </section>
 
