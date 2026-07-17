@@ -86,6 +86,80 @@ def test_build_record_command_includes_user_agent_before_input() -> None:
     assert ua_index < args.index("-i")
 
 
+def test_build_record_command_default_loglevel_is_error() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+    )
+    assert args[args.index("-loglevel") + 1] == "error"
+
+
+def test_build_record_command_debug_uses_verbose_loglevel() -> None:
+    # quill-radio #5: debug mode records at -loglevel verbose so the connection
+    # and codec decisions land in the log.
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        loglevel="verbose",
+    )
+    assert args[args.index("-loglevel") + 1] == "verbose"
+
+
+def test_build_record_command_unknown_loglevel_falls_back_to_error() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        loglevel="chatty",
+    )
+    assert args[args.index("-loglevel") + 1] == "error"
+
+
+def test_drain_stderr_logs_lines_redacted_and_by_severity(caplog: pytest.LogCaptureFixture) -> None:
+    # quill-radio #4/#5: ffmpeg's live stderr is drained to the log so it can
+    # never stall the pipe, error-shaped lines at WARNING, the rest at DEBUG,
+    # and a stream token in a URL is redacted.
+    class _FakeStderr:
+        def __init__(self, lines: list[bytes]) -> None:
+            self._lines = iter(lines)
+
+        def readline(self) -> bytes:
+            return next(self._lines, b"")
+
+        def close(self) -> None:
+            pass
+
+    class _FakeProcess:
+        def __init__(self, lines: list[bytes]) -> None:
+            self.stderr = _FakeStderr(lines)
+
+    lines = [
+        b"Opening 'https://cdn.example.com/s?token=a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2'\n",
+        b"Failed to reconnect to server\n",
+        b"",
+    ]
+    recorder = RadioRecorder()
+    with caplog.at_level("DEBUG", logger="quill.core.radio.recording"):
+        recorder._drain_stderr(_FakeProcess(lines), "WQXR")  # type: ignore[arg-type]
+    warnings = [r for r in caplog.records if r.levelname == "WARNING"]
+    debugs = [r for r in caplog.records if r.levelname == "DEBUG"]
+    assert any("Failed to reconnect" in r.getMessage() for r in warnings)
+    assert any("Opening" in r.getMessage() for r in debugs)
+    assert not any("a1b2c3d4e5f6" in r.getMessage() for r in caplog.records)
+    assert any("[TOKEN]" in r.getMessage() for r in debugs)
+
+
 def test_build_record_command_no_user_agent_for_non_http_input() -> None:
     args = build_record_command(
         "ffmpeg",
@@ -273,6 +347,8 @@ class _FakeProcess:
         self._alive = threading.Event()
         self._alive.set()
         self.stdin = _FakeStdin(self)
+        self.stderr = None  # a real Popen has this; the drain thread reads it
+        self.returncode = 0  # a real Popen exposes this; _monitor reads it post-wait
         self.terminated = False
 
     def poll(self) -> int | None:

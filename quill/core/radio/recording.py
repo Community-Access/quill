@@ -32,10 +32,20 @@ from pathlib import Path
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
+from quill.core.radio import radio_logging
 from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg, find_ffprobe
-from quill.stability.redaction import format_args_for_log
+from quill.stability.redaction import format_args_for_log, redact_source_tokens
 
 logger = logging.getLogger(__name__)
+
+#: ffmpeg ``-loglevel`` values Quill Radio will pass through (quill-radio #5);
+#: anything else falls back to ``"error"``. Debug mode uses ``"verbose"``.
+_FFMPEG_LOGLEVELS = frozenset({"quiet", "error", "warning", "info", "verbose", "debug"})
+#: A captured ffmpeg stderr line matching this is logged at WARNING (a real
+#: problem worth seeing without debug mode); everything else logs at DEBUG.
+_STDERR_ERROR_RE = re.compile(
+    r"(?i)\b(error|failed|invalid|unable|no such|not found|denied|refused|timed out)\b"
+)
 
 #: Formats a live stream can be recorded to. The first four re-encode the
 #: decoded audio to a chosen codec. ``"copy"`` is the raw-capture mode
@@ -186,6 +196,7 @@ def build_record_command(
     reconnect_delay_max: int = 0,
     filter_graph: str = "",
     user_agent: str = "",
+    loglevel: str = "error",
 ) -> list[str]:
     """Build the ffmpeg argv that records *stream_url* to *out_path*.
 
@@ -205,8 +216,14 @@ def build_record_command(
     meaningless with no re-encode and are ignored (Sound Enhancements cannot
     apply to a raw copy). The output container is chosen by ``out_path``'s
     extension, which the caller resolves from the stream's own codec.
+
+    ``loglevel`` sets ffmpeg's own ``-loglevel`` (quill-radio #5). The default
+    ``"error"`` keeps the captured stderr quiet; debug mode passes ``"verbose"``
+    so the recording's connection and codec decisions land in ``quill.log``. An
+    unrecognized value falls back to ``"error"``.
     """
-    args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
+    level = loglevel if loglevel in _FFMPEG_LOGLEVELS else "error"
+    args = [ffmpeg, "-hide_banner", "-loglevel", level]
     is_http = stream_url.lower().startswith(("http://", "https://"))
     if user_agent and is_http:
         # Identify as Quill Radio in the station's listener logs instead of the
@@ -385,17 +402,22 @@ class RadioRecorder:
                 ),
                 filter_graph=record_filter,
                 user_agent=http_client.user_agent(),
+                loglevel="verbose" if radio_logging.radio_debug_enabled() else "error",
             )
             extra_kwargs: dict = {}
             if os.name == "nt":
                 extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
             logger.info("Starting radio recording: %s", format_args_for_log(args))
             try:
+                # stderr is a PIPE (not DEVNULL) so a drain thread can log
+                # ffmpeg's own diagnostics (quill-radio #4/#5) -- and so the OS
+                # pipe buffer can never fill and stall ffmpeg, the reader always
+                # runs. stdout stays discarded (audio goes to the file).
                 process = subprocess.Popen(
                     args,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
+                    stderr=subprocess.PIPE,
                     **extra_kwargs,
                 )
             except OSError as exc:
@@ -418,7 +440,44 @@ class RadioRecorder:
         threading.Thread(
             target=self._monitor, args=(process,), daemon=True, name="quill-radio-record-monitor"
         ).start()
+        threading.Thread(
+            target=self._drain_stderr,
+            args=(process, station_name),
+            daemon=True,
+            name="quill-radio-record-stderr",
+        ).start()
         return destination
+
+    def _drain_stderr(self, process: subprocess.Popen[bytes], station_name: str) -> None:
+        """Log ffmpeg's live stderr for *process* (quill-radio #4/#5).
+
+        Always runs so the OS pipe buffer cannot fill and stall ffmpeg. Each
+        line is redacted (a stream URL can carry a token) and logged at DEBUG,
+        except lines that look like a real error, which log at WARNING so a
+        failing recording leaves a trail without debug mode. In debug mode
+        ffmpeg runs at ``-loglevel verbose``, so the whole connection/codec
+        story lands in ``quill.log``.
+        """
+        stream = getattr(process, "stderr", None)
+        if stream is None:
+            return
+        try:
+            for raw in iter(stream.readline, b""):
+                line = raw.decode("utf-8", "replace").rstrip()
+                if not line:
+                    continue
+                safe = redact_source_tokens(line)
+                if _STDERR_ERROR_RE.search(line):
+                    logger.warning("ffmpeg recording %s: %s", station_name, safe)
+                else:
+                    logger.debug("ffmpeg recording %s: %s", station_name, safe)
+        except (OSError, ValueError):
+            pass
+        finally:
+            try:
+                stream.close()
+            except OSError:
+                pass
 
     def _monitor(self, process: subprocess.Popen[bytes]) -> None:
         process.wait()
