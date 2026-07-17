@@ -29,6 +29,17 @@ _REPO = "Community-Access/quill-radio"
 _CLOSE_ACTION_LABELS = ("Ask every time", "Exit", "Minimize to Tray")
 _CLOSE_ACTION_VALUES = ("ask", "exit", "minimize")
 
+#: The What's Playing (Ctrl+T) announcement template and its accessible help,
+#: shown as a text field in Preferences (#1068). Blank restores the default.
+_DEFAULT_NOW_PLAYING_TEMPLATE = "{title}[ by {artist}]"
+_NOW_PLAYING_HELP = (
+    "How What's Playing (Ctrl+T) reads a track. Use {title} and {artist}; "
+    "put optional wording in [square brackets] to hide it when that field is "
+    "empty (the default {title}[ by {artist}] drops the ' by' when there is no "
+    "artist). {raw} is the stream's exact original text. Leave blank to restore "
+    "the default."
+)
+
 
 class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -652,6 +663,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             PreferenceCheckbox,
             PreferenceChoice,
             PreferencesDialog,
+            PreferenceText,
         )
 
         history = self._radio_history
@@ -684,6 +696,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     close_action_index,
                 ),
             ],
+            texts=[
+                PreferenceText(
+                    "&What's Playing announcement:",
+                    _NOW_PLAYING_HELP,
+                    history.now_playing_template,
+                ),
+            ],
             actions=[
                 PreferenceAction(
                     "Reset &All Stations' Sound Enhancements...",
@@ -696,13 +715,15 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         result = dialog.show()
         if result is None:
             return
-        checkbox_values, choice_indices = result
+        checkbox_values, choice_indices, text_values = result
         (
             history.resume_on_launch,
             history.check_updates_on_startup,
             history.announce_dialog_transitions,
         ) = checkbox_values
         history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
+        new_template = text_values[0].strip()
+        history.now_playing_template = new_template or _DEFAULT_NOW_PLAYING_TEMPLATE
         radio_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:

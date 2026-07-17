@@ -130,3 +130,16 @@ def test_announce_dialog_transitions_round_trips(tmp_path: Path) -> None:
     save_history(tmp_path, history)
     loaded = load_history(tmp_path)
     assert loaded.announce_dialog_transitions is True
+
+
+def test_now_playing_template_round_trips(tmp_path: Path) -> None:
+    history = RadioHistory(now_playing_template="{artist}: {title}")
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.now_playing_template == "{artist}: {title}"
+
+
+def test_now_playing_template_defaults_when_absent(tmp_path: Path) -> None:
+    # A file saved before this field existed (or with a blank value) loads the
+    # clean default rather than an empty template.
+    assert load_history(tmp_path).now_playing_template == "{title}[ by {artist}]"

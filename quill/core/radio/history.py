@@ -70,6 +70,12 @@ class RadioHistory:
     #: dialog_contract.show_modal_dialog's "no policy set" fallback always
     #: spoke it, unlike full QUILL where it is opt-in.
     announce_dialog_transitions: bool = False
+    #: How "What's Playing" (Ctrl+T) reads a track, as a token template over
+    #: quill.core.radio.now_playing (#1068). The default cleans up the raw
+    #: broadcast metadata some stations send ("YOUR SONG by Elton John"
+    #: instead of a wall of key="value" noise); a listener can retune it with
+    #: {title}/{artist}/{raw} tokens and [optional] segments in Preferences.
+    now_playing_template: str = "{title}[ by {artist}]"
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -114,6 +120,9 @@ def load_history(data_dir: Path) -> RadioHistory:
             close_action if close_action in ("ask", "exit", "minimize") else "ask"
         )
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
+        template = raw.get("now_playing_template")
+        if isinstance(template, str) and template.strip():
+            history.now_playing_template = template
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -142,6 +151,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "compressor_enabled": history.compressor_enabled,
             "close_action": history.close_action,
             "announce_dialog_transitions": history.announce_dialog_transitions,
+            "now_playing_template": history.now_playing_template,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

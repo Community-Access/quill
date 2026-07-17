@@ -15,6 +15,7 @@ from quill.ui.app_preferences_dialog import (
     PreferenceAction,
     PreferenceCheckbox,
     PreferencesDialog,
+    PreferenceText,
 )
 
 
@@ -97,4 +98,39 @@ def test_two_actions_are_independent(wx_app) -> None:
     )
 
     assert calls == ["second"]
+    dialog.dialog.Destroy()
+
+
+def test_text_field_starts_with_its_value_and_is_named(wx_app) -> None:
+    dialog = _dialog(
+        wx_app,
+        texts=[PreferenceText("&Template:", "The announcement template", "{title}")],
+    )
+    assert len(dialog._text_controls) == 1
+    assert dialog._text_controls[0].GetValue() == "{title}"
+    assert dialog._text_controls[0].GetName() == "The announcement template"
+    dialog.dialog.Destroy()
+
+
+def test_save_returns_text_values_as_the_third_element(wx_app) -> None:
+    # Save now yields (checkbox_values, choice_indices, text_values); an edited
+    # text field must come back in text_values.
+    dialog = _dialog(
+        wx_app,
+        texts=[PreferenceText("&Template:", "The announcement template", "{title}")],
+    )
+    dialog._text_controls[0].SetValue("{artist}: {title}")
+    dialog._capture_result()
+    checkbox_values, choice_indices, text_values = dialog._result
+    assert text_values == ["{artist}: {title}"]
+    assert checkbox_values == [True]  # the one checkbox _dialog always adds
+    assert choice_indices == []
+    dialog.dialog.Destroy()
+
+
+def test_result_is_a_three_tuple_even_without_text_fields(wx_app) -> None:
+    dialog = _dialog(wx_app)
+    dialog._capture_result()
+    checkbox_values, choice_indices, text_values = dialog._result
+    assert text_values == []
     dialog.dialog.Destroy()

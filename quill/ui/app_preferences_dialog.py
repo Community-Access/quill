@@ -36,6 +36,19 @@ class PreferenceAction:
 
 
 @dataclass(slots=True)
+class PreferenceText:
+    """One labeled single-line text field: for a free-form value a checkbox or
+    a closed choice can't hold (e.g. Quill Radio's "What's Playing"
+    announcement template). ``name`` is the field's label (with its ``&``
+    mnemonic), ``help_text`` the fuller accessible description set via
+    ``SetName``, ``value`` the starting text."""
+
+    name: str
+    help_text: str
+    value: str
+
+
+@dataclass(slots=True)
 class PreferenceChoice:
     """One labeled combo box row: for a small closed set of options a
     checkbox can't represent (e.g. Radio's "When closing the window").
@@ -50,8 +63,9 @@ class PreferenceChoice:
 
 
 class PreferencesDialog:
-    """Returns ``(checkbox_values, choice_indices)`` -- each a list in the
-    same order as the input specs -- or ``None`` on Cancel."""
+    """Returns ``(checkbox_values, choice_indices, text_values)`` -- each a
+    list in the same order as the input specs (``text_values`` is empty when no
+    text fields were supplied) -- or ``None`` on Cancel."""
 
     def __init__(
         self,
@@ -60,6 +74,7 @@ class PreferencesDialog:
         app_title: str,
         checkboxes: list[PreferenceCheckbox],
         choices: list[PreferenceChoice] | None = None,
+        texts: list[PreferenceText] | None = None,
         actions: list[PreferenceAction] | None = None,
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
@@ -67,9 +82,10 @@ class PreferencesDialog:
 
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
-        self._result: tuple[list[bool], list[int]] | None = None
+        self._result: tuple[list[bool], list[int], list[str]] | None = None
         self._checks: list[wx.CheckBox] = []
         self._choice_controls: list[wx.Choice] = []
+        self._text_controls: list[wx.TextCtrl] = []
         self._action_buttons: list[wx.Button] = []
 
         self.dialog = wx.Dialog(
@@ -99,6 +115,18 @@ class PreferencesDialog:
             root.Add(check, 0, wx.ALL, 8)
             self._checks.append(check)
 
+        for text_spec in texts or []:
+            root.Add(
+                wx.StaticText(self.dialog, label=text_spec.name),
+                0,
+                wx.LEFT | wx.RIGHT | wx.TOP,
+                8,
+            )
+            text_ctrl = wx.TextCtrl(self.dialog, value=text_spec.value)
+            text_ctrl.SetName(text_spec.help_text)
+            root.Add(text_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            self._text_controls.append(text_ctrl)
+
         for action_spec in actions or []:
             action_btn = wx.Button(self.dialog, label=action_spec.name)
             action_btn.SetName(action_spec.help_text)
@@ -118,14 +146,21 @@ class PreferencesDialog:
         root.Fit(self.dialog)
         save_btn.Bind(wx.EVT_BUTTON, self._on_save)
 
-    def _on_save(self, _event: object) -> None:
+    def _capture_result(self) -> None:
+        """Snapshot every control's value into ``self._result`` (the returned
+        tuple). Split from :meth:`_on_save` so the capture is unit-testable
+        without a live modal loop."""
         self._result = (
             [check.GetValue() for check in self._checks],
             [choice.GetSelection() for choice in self._choice_controls],
+            [text.GetValue() for text in self._text_controls],
         )
+
+    def _on_save(self, _event: object) -> None:
+        self._capture_result()
         self.dialog.EndModal(self._wx.ID_OK)
 
-    def show(self) -> tuple[list[bool], list[int]] | None:
+    def show(self) -> tuple[list[bool], list[int], list[str]] | None:
         from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
         self.dialog.CentreOnParent()

@@ -510,7 +510,7 @@ class PodcastsAppFrame(
         result = dialog.show()
         if result is None:
             return
-        checkbox_values, _choice_indices = result
+        checkbox_values, _choice_indices, _text_values = result
         (
             history.resume_on_launch,
             history.check_updates_on_startup,

@@ -310,22 +310,37 @@ class RadioMixin:
             on_failure=lambda *_a: None,
         )
 
+    def _radio_now_playing_phrase(self, title: str) -> str:
+        """Render a raw stream title into the spoken announcement (#1068).
+
+        Cleans up the raw broadcast metadata some stations send and applies the
+        user's ``now_playing_template`` (see quill.core.radio.now_playing), so
+        a wall of ``key="value"`` noise becomes "Now playing: YOUR SONG by
+        Elton John"."""
+        from quill.core.radio.now_playing import render_now_playing
+
+        template = getattr(self._radio_history, "now_playing_template", "") or None
+        phrase = render_now_playing(title, template) if template else render_now_playing(title)
+        return f"Now playing: {phrase}"
+
     def _radio_apply_track_title(self, title: str, announce_result: bool) -> None:
         changed = bool(title) and title != self._radio_track_title
         if title:
             self._radio_track_title = title
         if announce_result:
             self._announce(
-                f"Now playing: {title}" if title else "This stream doesn't share track titles."
+                self._radio_now_playing_phrase(title)
+                if title
+                else "This stream doesn't share track titles."
             )
             return
         if changed and self._radio_history.announce_track_titles:
-            self._announce(f"Now playing: {title}")
+            self._announce(self._radio_now_playing_phrase(title))
 
     def radio_whats_playing(self) -> None:
         """Speak the current track title on demand."""
         if self._radio_track_title:
-            self._announce(f"Now playing: {self._radio_track_title}")
+            self._announce(self._radio_now_playing_phrase(self._radio_track_title))
             return
         self._radio_fetch_track_title(announce_result=True)
 

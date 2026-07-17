@@ -32,7 +32,11 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
     frame.frame = object()
     frame._announce = lambda _msg: None
     frame._radio_history = SimpleNamespace(
-        eq_bass_db=1.0, eq_mid_db=2.0, eq_treble_db=3.0, compressor_enabled=True
+        eq_bass_db=1.0,
+        eq_mid_db=2.0,
+        eq_treble_db=3.0,
+        compressor_enabled=True,
+        now_playing_template="{title}[ by {artist}]",
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
