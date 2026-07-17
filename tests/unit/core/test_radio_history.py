@@ -164,3 +164,10 @@ def test_output_device_round_trips(tmp_path: Path) -> None:
 def test_output_device_defaults_to_system_default(tmp_path: Path) -> None:
     # "" = system default = the wx.media engine, byte-for-byte today's path.
     assert load_history(tmp_path).output_device == ""
+
+
+def test_alt_f4_to_tray_round_trips_and_defaults_off(tmp_path: Path) -> None:
+    # Off by default: Alt+F4 keeps its Windows-wide meaning unless opted in.
+    assert load_history(tmp_path).alt_f4_to_tray is False
+    save_history(tmp_path, RadioHistory(alt_f4_to_tray=True))
+    assert load_history(tmp_path).alt_f4_to_tray is True

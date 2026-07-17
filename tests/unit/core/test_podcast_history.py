@@ -72,3 +72,10 @@ def test_announce_dialog_transitions_round_trips(tmp_path: Path) -> None:
     save_history(tmp_path, history)
     loaded = load_history(tmp_path)
     assert loaded.announce_dialog_transitions is True
+
+
+def test_alt_f4_to_tray_round_trips_and_defaults_off(tmp_path: Path) -> None:
+    # Off by default: Alt+F4 keeps its Windows-wide meaning unless opted in.
+    assert load_history(tmp_path).alt_f4_to_tray is False
+    save_history(tmp_path, PodcastHistory(alt_f4_to_tray=True))
+    assert load_history(tmp_path).alt_f4_to_tray is True
