@@ -8410,7 +8410,24 @@ closes properly rather than a hard kill truncating it. `RecordingSettings`
 (format, bitrate, destination, filename pattern, and a `max_duration_minutes`
 safety cap applied via ffmpeg&#39;s own `-t` flag, so a forgotten recording
 cannot grow unbounded even if `stop()` is never called) is a global,
-persisted default. `RecordingScheduler` is an in-process polling thread
+persisted default. Alongside the re-encoding formats (mp3/ogg/flac/wav)
+the format list offers **Raw stream — exactly as sent, no re-encoding
+(lossless)** (`format=&quot;copy&quot;`, a community request): `build_record_command`
+stream-copies the server&#39;s audio packets with `-c:a copy` — no decode, no
+re-encode — so the saved file is bit-for-bit the original broadcast, the
+most faithful capture possible for a listener who wants to do their own
+lossless editing/conversion. Because nothing is decoded, a bitrate and any
+Sound Enhancements filter graph are meaningless and are dropped in this mode.
+The output container matches the stream&#39;s own codec: `RadioRecorder.start`
+runs a bounded `ffprobe` (`build_probe_codec_command`/`parse_probe_codec`,
+`_PROBE_TIMEOUT_SECONDS`) once to read the first audio stream&#39;s codec and
+picks its natural extension (`raw_capture_extension`: mp3→`.mp3`, aac→`.aac`,
+vorbis→`.ogg`, opus→`.opus`, flac→`.flac`, …), falling back to Matroska audio
+(`.mka`) for any unrecognized codec — a universal container that stream-copies
+anything losslessly. The probed extension is resolved once and reused across
+auto-reconnect continuation files (stored in `_active_params`) so a resumed
+recording never re-probes or switches container; a missing/failed `ffprobe`
+degrades to `.mka` rather than blocking the recording. `RecordingScheduler` is an in-process polling thread
 (`_POLL_SECONDS = 20`) — deliberately not an OS-level scheduled task; &quot;while
 QUILL is running&quot; is the explicit, simpler scope requested, with no
 catch-up if QUILL wasn&#39;t open at the scheduled moment. Schedule entries
