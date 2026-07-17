@@ -41,36 +41,28 @@ def test_toggle_favorite_unknown_path_returns_false() -> None:
 
 
 def test_view_query_favorites() -> None:
-    s = _state(
-        [BookEntry(path="a", title="A"), BookEntry(path="b", title="B", favorite=True)]
-    )
+    s = _state([BookEntry(path="a", title="A"), BookEntry(path="b", title="B", favorite=True)])
     assert [e.path for e in view_query(s, "Favorites")] == ["b"]
 
 
 def test_view_query_recently_played_orders_by_last_played() -> None:
-    s = _state(
-        [
-            BookEntry(path="a", title="A", last_played_at=10),
-            BookEntry(path="b", title="B", last_played_at=30),
-        ]
-    )
+    s = _state([
+        BookEntry(path="a", title="A", last_played_at=10),
+        BookEntry(path="b", title="B", last_played_at=30),
+    ])
     assert [e.path for e in view_query(s, "Recently Played")] == ["b", "a"]
 
 
 def test_view_query_recently_played_excludes_unplayed() -> None:
-    s = _state(
-        [BookEntry(path="a", title="A"), BookEntry(path="b", title="B", last_played_at=5)]
-    )
+    s = _state([BookEntry(path="a", title="A"), BookEntry(path="b", title="B", last_played_at=5)])
     assert [e.path for e in view_query(s, "Recently Played")] == ["b"]
 
 
 def test_view_query_in_progress_includes_started() -> None:
-    s = _state(
-        [
-            BookEntry(path="a", title="A"),
-            BookEntry(path="b", title="B", last_played_at=5),
-        ]
-    )
+    s = _state([
+        BookEntry(path="a", title="A"),
+        BookEntry(path="b", title="B", last_played_at=5),
+    ])
     assert [e.path for e in view_query(s, "In Progress")] == ["b"]
 
 

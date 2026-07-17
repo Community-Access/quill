@@ -56,9 +56,7 @@ class SleepTimerDialog(wx.Dialog):
         delay_row.Add(self._minutes, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         sizer.Add(delay_row, 0, wx.EXPAND | wx.BOTTOM, 8)
 
-        self._end_of_chapter = wx.CheckBox(
-            self, label=str(_("Stop at end of &chapter instead"))
-        )
+        self._end_of_chapter = wx.CheckBox(self, label=str(_("Stop at end of &chapter instead")))
         self._end_of_chapter.SetValue(setting.end_of_chapter)
         sizer.Add(self._end_of_chapter, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 

@@ -164,9 +164,7 @@ class LibraryTreeActions:
         finally:
             picker.Destroy()
         if choice == NEW_FOLDER_CHOICE:
-            if not LibraryTreeActions.new_folder(
-                parent, store, announce=lambda _m: None
-            ):
+            if not LibraryTreeActions.new_folder(parent, store, announce=lambda _m: None):
                 return False
             choice = store.folders[-1]
         if choice == TOP_LEVEL_CHOICE:

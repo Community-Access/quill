@@ -104,9 +104,7 @@ class SleepTimerWatcher:
         self._started_at = 0.0
         self._setting: SleepTimerSetting | None = None
         self._fired = False
-        self._thread = threading.Thread(
-            target=self._run, daemon=True, name="quill-as-sleep-timer"
-        )
+        self._thread = threading.Thread(target=self._run, daemon=True, name="quill-as-sleep-timer")
         self._thread.start()
 
     def start(self, setting: SleepTimerSetting, *, now: float) -> None:

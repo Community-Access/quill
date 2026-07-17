@@ -61,9 +61,7 @@ class AudioStudioHistory:
     #: On by default -- the Studio's common case is "pick up where I left off".
     resume_on_launch: bool = True
 
-    def record(
-        self, path: str, *, title: str, position_ms: int = 0, chapter: int = 0
-    ) -> None:
+    def record(self, path: str, *, title: str, position_ms: int = 0, chapter: int = 0) -> None:
         """Note that this book just started/continued playing; moves to front."""
         if not path:
             return

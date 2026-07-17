@@ -32,9 +32,7 @@ from quill.core.audio_studio.play_queue import (
 from quill.core.i18n import _
 from quill.ui.dialog_contract import apply_modal_ids
 
-_BOOK_WILDCARD = (
-    "Audiobooks (*.m4b;*.mp3;*.m4a)|*.m4b;*.mp3;*.m4a|All files (*.*)|*.*"
-)
+_BOOK_WILDCARD = "Audiobooks (*.m4b;*.mp3;*.m4a)|*.m4b;*.mp3;*.m4a|All files (*.*)|*.*"
 
 
 class PlayQueueDialog(wx.Dialog):
