@@ -529,10 +529,18 @@ def _probe_capture_extension(stream_url: str) -> str:
     return raw_capture_extension(parse_probe_codec(completed.stdout))
 
 
-def _default_dir() -> Path:
-    from quill.core.paths import app_data_dir
+def _default_dir(home: Path | None = None) -> Path:
+    """The default recordings folder -- a user-visible one (quill-radio #4).
 
-    return app_data_dir() / "radio_recordings"
+    Recordings used to land in ``app_data_dir()/radio_recordings`` (buried in
+    AppData with no way to find them). They now default to
+    ``~/Music/Quill Radio Recordings``, falling back to the home folder itself
+    when a Music folder does not exist. ``home`` is injectable for tests.
+    """
+    base = home or Path.home()
+    music = base / "Music"
+    parent = music if music.is_dir() else base
+    return parent / "Quill Radio Recordings"
 
 
 def _store_path(data_dir: Path) -> Path:
