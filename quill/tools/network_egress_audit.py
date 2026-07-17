@@ -170,6 +170,31 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "HTTPS-only over a verified TLS context, bounded timeout and response "
         "size. Disabled in Safe Mode via triton.refuse_in_safe_mode."
     ),
+    "core/radio/tunein.py::_fetch": (
+        "Single egress site for the TuneIn directory source (via RadioTime's "
+        "open OPML endpoints opml.radiotime.com): search, browse, and resolving "
+        "a station guide id to its playable stream. Reached only by explicit "
+        "user actions (a TuneIn search/browse in the station browser, or playing "
+        "a TuneIn result) -- never a background poll. No API key or auth; "
+        "partnerId=RadioTime is the web player's own public partner string. "
+        "Returns only what the user searched for / a page already advertises, "
+        "the same shape as the Triton provisioning API above. HTTPS-only over a "
+        "verified TLS context, bounded timeout and response size. Disabled in "
+        "Safe Mode via tunein.refuse_in_safe_mode. (Reverses the prior TuneIn "
+        "non-goal; approved 2026-07-17, PRD §5.84f.)"
+    ),
+    "core/radio/iheart.py::_fetch": (
+        "Single egress site for the iHeart directory source: the public XML "
+        "sitemap (www.iheart.com/sitemap.xml + its livestations sub-sitemap, two "
+        "GETs to refresh the station list) and a lazy per-station page GET to "
+        "extract the stream the page already embeds (revma.ihrhls.com HLS or a "
+        "StreamTheWorld redirect). No API key or auth; robots permits /sitemap/ "
+        "and /live/. Reached only by an explicit Refresh directory action or "
+        "playing an iHeart station -- never a background poll, and never a bulk "
+        "crawl (streams resolve one at a time, on play). HTTPS-only over a "
+        "verified TLS context, bounded timeout and response size. Disabled in "
+        "Safe Mode via iheart.refuse_in_safe_mode."
+    ),
     "core/radio/radio_browser.py::_http_json": (
         "Single egress site for the Internet Radio feature: station search, "
         "tag/country lists, and click-through vote registration against "

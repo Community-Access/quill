@@ -8551,7 +8551,22 @@ optional component of the product, adds no licensing exposure, and touches
 nothing but radio playback: earcons and every other product sound stay on
 winsound and the system default device.)
 
-**Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
+**Non-goals reversed 2026-07-17 — TuneIn and iHeart are now in scope.** The
+original non-goal left TuneIn and iHeartRadio out for lack of public API terms
+QUILL could safely depend on. That was reversed with explicit approval on
+2026-07-17: both are now supported through their own no-auth, open endpoints —
+TuneIn via RadioTime&#39;s OPML API (`opml.radiotime.com` search/browse/`Tune.ashx`
+resolve; `partnerId=RadioTime` is the web player&#39;s own public string) in
+`quill/core/radio/tunein.py`, and iHeart via its public XML sitemap
+(`iheart.com/sitemap.xml` → livestations sub-sitemap; per-station stream URLs
+extracted lazily from the page the sitemap points to) in
+`quill/core/radio/iheart.py`. Both return only what the user searched for or
+what a page already advertises — the same shape as the Triton provisioning
+resolver QUILL already ships — and neither scrapes a competitor&#39;s data files
+(per the no-competitor-data stance). Each funnels through one reviewed egress
+site, HTTPS-only over a verified TLS context, and is refused in Safe Mode.
+
+**Non-goals (deliberate).** YouTube audio (any form) —
 `requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
 the installed surface small, and this feature does not reopen that call. A
 full DSP effects rack in FastPlay&#39;s sense — reverb, tempo/pitch/rate,

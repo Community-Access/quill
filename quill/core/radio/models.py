@@ -41,6 +41,11 @@ class RadioStation:
     codec: str = ""
     bitrate_kbps: int = 0
     votes: int = 0
+    #: Which directory this station came from ("RadioBrowser", "iHeart",
+    #: "TuneIn", "SomaFM", "ACB Media", "Website"), for the unified Find
+    #: Stations source badge/filter. Empty for stations loaded before this
+    #: field existed (back-compat).
+    source: str = ""
 
     @property
     def display_name(self) -> str:
