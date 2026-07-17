@@ -120,6 +120,28 @@ def apply_listbox_activation(listbox: object, handler: Callable[[object], None])
     listbox.Bind(wx.EVT_KEY_DOWN, _on_key)
 
 
+def dialog_alive(dialog: object) -> bool:
+    """Return True when *dialog* is still safe to touch from a UI callback.
+
+    Background threads in several AI dialogs (AI Hub auto-probe / list-models /
+    test-connection, Thesaurus lookup, Document Q&A ask, Model Panel download)
+    post their result back to the UI thread via ``wx.CallAfter``. If the user
+    closed the dialog before the background work finished, the queued callback
+    would touch a destroyed ``wx.StaticText`` / ``wx.Button`` and raise
+    ``RuntimeError: wrapped C/C++ object of type StaticText has been deleted``
+    (#1067). Call this at the top of each such callback and no-op when False --
+    the result is no longer relevant once the dialog is gone.
+
+    Mirrors ``status_dialog.is_alive``. Best-effort: any failure to read the
+    window state is treated as "not alive" so a torn-down window never crashes
+    the callback that was trying to be careful.
+    """
+    try:
+        return bool(dialog) and not dialog.IsBeingDeleted()
+    except Exception:  # noqa: BLE001 - liveness check must never raise
+        return False
+
+
 def _selected_book_page(control: object) -> object | None:
     """Return the currently selected page of a *book* control, else ``None``.
 

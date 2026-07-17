@@ -20,6 +20,8 @@
 
 ### Fixes
 
+- **AI Hub (and sibling AI dialogs) no longer crash if closed while a background probe is in flight (#1067).** The AI Hub's Ollama auto-probe, List-models, and Test-Connection actions run on a background thread and post their result back to the UI via `wx.CallAfter`. If you closed the dialog before the probe finished, the queued callback touched a `StaticText`/`Button` that wx had already torn down and raised `RuntimeError: wrapped C/C++ object of type StaticText has been deleted`. Those callbacks (and the same-shaped ones in AI Thesaurus lookup, AI Document Q&A ask, and the AI Model download) now check a shared `dialog_alive` guard and no-op when the dialog is gone. No behavior change when the dialog stays open; the result simply isn't shown for a dialog you've already closed.
+
 - **AI agent result and AI thesaurus dialogs no longer crash on open (#1091, #1094, #1097).** Both `AI > AI Thesaurus...` and the agent/writing-assistant result dialog called QUILL's modal-dialog gate without the `label` argument that names the modal region for screen readers -- so either dialog crashed with `TypeError: MainFrame._show_modal_dialog() missing 1 required positional argument: 'label'` the moment it tried to appear, reported independently by three testers. Both now pass their dialog title as the label, matching the AI Hub and AI Model dialogs that already did. No behavior change beyond the crash going away; the dialogs were always meant to open.
 
 ## 0.9.0 Beta 3

@@ -27,7 +27,7 @@ from quill.core.ai.model_tiers import (
     load_tiers,
     switch_active_tier,
 )
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
 
 
 def _uses_foundation_models() -> bool:
@@ -276,6 +276,8 @@ class AIModelDialog:
         ).start()
 
     def _after_download(self, message: str) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the download finished (#1067)
         self.download_button.Enable(True)
         self.status.SetLabel(message)
         self._announce("Download finished")

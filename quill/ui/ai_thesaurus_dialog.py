@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
 
 
 class AIThesaurusDialog:
@@ -161,6 +161,8 @@ class AIThesaurusDialog:
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
 
     def _on_results(self, entries: list) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the lookup finished (#1067)
         self._entries = entries
         self._list.DeleteAllItems()
         for i, entry in enumerate(entries):
@@ -181,6 +183,8 @@ class AIThesaurusDialog:
         self._lookup_btn.Enable(True)
 
     def _on_error(self, message: str) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the lookup finished (#1067)
         self._status_label.SetLabel(f"Error: {message}")
         self._working = False
         self._lookup_btn.Enable(True)
