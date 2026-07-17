@@ -2,10 +2,13 @@
 
 RadioBrowser (radio-browser.info) is a community-run, open-data directory of
 internet radio streams with no API key and no commercial terms to violate --
-the one FastPlay backend (of its three: RadioBrowser, TuneIn, iHeartRadio)
-that is fully documented and safe to depend on long-term. TuneIn and
-iHeartRadio were deliberately left out (no public API terms QUILL could
-safely depend on); see PRD §5.84f's "Non-goals".
+the original station source and still the default. TuneIn and iHeart were once
+left out here as a stated non-goal, but that decision was reversed (approved
+2026-07-17; PRD §5.84f): both are now supported through their own no-auth,
+open endpoints in :mod:`quill.core.radio.tunein` (RadioTime OPML) and
+:mod:`quill.core.radio.iheart` (public sitemap), each returning only what the
+user searched for or what a page already advertises -- the same shape as the
+Triton provisioning resolver, not a scrape of a competitor's data files.
 
 The service round-robins across community-hosted mirrors; per its own docs,
 resolving ``all.api.radio-browser.info`` to a concrete mirror host once per
