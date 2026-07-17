@@ -17,6 +17,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import acb_media, radio_browser, soma_fm
+from quill.core.radio.directory_search import iheart_search_stations, tunein_search_stations
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
@@ -89,7 +90,13 @@ class StationBrowserDialog:
         # RadioBrowser rows, the next page's offset, and whether the last page
         # was full (so more may exist).
         self._search_rb: list[RadioStation] = []
-        self._search_soma: list[RadioStation] = []
+        #: SomaFM + TuneIn + iHeart results, blended after the RadioBrowser page
+        #: and kept at the end across "More Stations" paging (which pages only
+        #: RadioBrowser).
+        self._search_extras: list[RadioStation] = []
+        #: The iHeart sitemap station index, fetched once per dialog session on
+        #: the first search that needs it (2 GETs), then filtered in-process.
+        self._iheart_index_cache: list[Any] | None = None
         self._search_query = ""
         self._search_tag = ""
         self._search_country = ""
@@ -267,7 +274,12 @@ class StationBrowserDialog:
         self._current_results = stations
         self._results.DeleteAllItems()
         for row, station in enumerate(stations):
-            self._results.InsertItem(row, station.display_name)
+            # Blended non-RadioBrowser sources name themselves in the row so a
+            # listener can tell where a station came from (iHeart, TuneIn, ...).
+            label = station.display_name
+            if station.source and station.source != "RadioBrowser":
+                label = f"{label} - via {station.source}"
+            self._results.InsertItem(row, label)
             self._results.SetItem(row, 1, station.country)
             bitrate = f"{station.bitrate_kbps}k" if station.bitrate_kbps else ""
             fmt = " ".join(part for part in (station.codec, bitrate) if part)
@@ -333,20 +345,25 @@ class StationBrowserDialog:
             radio = radio_browser.search_stations(
                 name, tag=tag, country=country, limit=_SEARCH_LIMIT, safe_mode=self._safe_mode
             )
-            # Blended in, not a separate category: SomaFM has no country data
-            # of its own, so a country-only search skips it rather than
-            # returning irrelevant results. A SomaFM hiccup never fails the
-            # whole search -- RadioBrowser's results still come back. SomaFM's
-            # ~30-channel list has no pages of its own, so it rides along with
-            # the first RadioBrowser page only; "More Stations" pages
+            # Blended in after the RadioBrowser page, each failure-tolerant so
+            # one down source never blanks the list. Name/tag searches only:
+            # these directories have no country field of their own, so a
+            # country-only query skips them rather than returning noise. They
+            # ride along with the first RadioBrowser page; "More Stations" pages
             # RadioBrowser alone.
-            soma: list[RadioStation] = []
-            if name or tag:
+            extras: list[RadioStation] = []
+            query = name or tag
+            if query:
                 try:
-                    soma = soma_fm.search_stations(name or tag, safe_mode=self._safe_mode)
+                    extras += soma_fm.search_stations(query, safe_mode=self._safe_mode)
                 except soma_fm.SomaFmError:
-                    soma = []
-            return radio, soma
+                    pass
+                extras += tunein_search_stations(query, safe_mode=self._safe_mode)
+            if name:
+                extras += iheart_search_stations(
+                    self._iheart_index(), name, safe_mode=self._safe_mode
+                )
+            return radio, extras
 
         self._task_manager.submit(
             "radio-search",
@@ -354,6 +371,22 @@ class StationBrowserDialog:
             on_success=lambda _op, payload: self._on_search_done(payload, None),
             on_failure=lambda _op, exc: self._on_search_done(([], []), exc),
         )
+
+    def _iheart_index(self) -> list[Any]:
+        """The iHeart sitemap station index, fetched once per session (2 GETs).
+
+        Runs inside the off-thread search worker. A fetch failure caches an
+        empty list so a broken/blocked iHeart never re-hammers the network on
+        every keystroke's search.
+        """
+        if self._iheart_index_cache is None:
+            from quill.core.radio import iheart
+
+            try:
+                self._iheart_index_cache = iheart.fetch_station_index(safe_mode=self._safe_mode)
+            except iheart.IHeartError:
+                self._iheart_index_cache = []
+        return self._iheart_index_cache
 
     def _on_search_done(
         self,
@@ -364,10 +397,10 @@ class StationBrowserDialog:
         if error is not None:
             self._status.SetLabel(f"Search failed: {error}")
             return
-        radio, soma = payload
+        radio, extras = payload
         self._search_rb = radio
-        self._search_soma = soma
-        self._search_results = radio + soma
+        self._search_extras = extras
+        self._search_results = radio + extras
         self._search_offset = len(radio)
         self._search_more_available = len(radio) >= _SEARCH_LIMIT
         self._more_btn.Enable(self._search_more_available)
@@ -409,7 +442,7 @@ class StationBrowserDialog:
             return
         first_new_index = len(self._search_results)
         self._search_rb = self._search_rb + stations
-        self._search_results = self._search_rb + self._search_soma
+        self._search_results = self._search_rb + self._search_extras
         self._search_offset += len(stations)
         self._search_more_available = len(stations) >= _SEARCH_LIMIT
         self._more_btn.Enable(self._search_more_available)
