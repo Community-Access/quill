@@ -5,12 +5,20 @@ while QUILL is running (Tools > Media > Internet Radio).
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import datetime, timedelta
+from zoneinfo import available_timezones
 
 from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id
+from quill.core.radio.wake_timer import parse_time_of_day
 from quill.ui.dialog_contract import apply_modal_ids
 
 _WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+#: The timezone dropdown: "(local time)" (an empty entry.timezone) followed by
+#: every IANA zone, so a Pacific user can pin an Eastern show to Eastern time.
+_LOCAL_TIME_LABEL = "(local time)"
+_TIMEZONE_CHOICES = (_LOCAL_TIME_LABEL, *sorted(available_timezones()))
 
 
 def _entry_summary(entry: RecordingScheduleEntry) -> str:
@@ -26,8 +34,64 @@ def _entry_summary(entry: RecordingScheduleEntry) -> str:
     else:
         weekday = _WEEKDAYS[entry.weekday] if 0 <= entry.weekday < 7 else "?"
         when = f"every {weekday} at {time_text}"
+    zone = f" {entry.timezone}" if entry.timezone else ""
     state = "" if entry.enabled else " (disabled)"
-    return f"{entry.station_name} -- {when}, {entry.duration_minutes} min{state}"
+    return f"{entry.station_name} -- {when}{zone}, {entry.duration_minutes} min{state}"
+
+
+def build_schedule_entry(
+    *,
+    name: str,
+    url: str,
+    recurrence_index: int,
+    time_text: str,
+    date_text: str,
+    weekday_index: int,
+    timezone_name: str,
+    duration_minutes: int,
+    editing_id: str | None = None,
+    now: datetime | None = None,
+) -> tuple[RecordingScheduleEntry | None, str | None]:
+    """Validate form values and build an entry (wx-free, so it is unit-testable).
+
+    Returns ``(entry, None)`` on success or ``(None, message)`` on the first
+    validation failure. ``time_text`` accepts 12-hour (``7:30 PM``) or 24-hour
+    (``19:30``) via :func:`parse_time_of_day`; ``timezone_name`` empty means
+    local time. A naive-local one-time recording must be in the future; a zoned
+    one-time is judged in its own zone at fire time, so the future guard is
+    skipped for it. ``editing_id`` reuses that id (edit in place) instead of
+    minting a new one.
+    """
+    name = name.strip()
+    url = url.strip()
+    if not name or not url:
+        return None, "A station name and a stream URL are both required."
+    recurrence = ("once", "daily", "weekly")[recurrence_index if recurrence_index >= 0 else 0]
+    normalized_time = parse_time_of_day(time_text)
+    if not normalized_time:
+        return None, "Time must be like 7:30 PM or 19:30."
+    hour, minute = (int(part) for part in normalized_time.split(":", 1))
+    if recurrence == "once":
+        try:
+            run_at = datetime.fromisoformat(f"{date_text.strip()}T{hour:02d}:{minute:02d}:00")
+        except ValueError:
+            return None, "Date must be in YYYY-MM-DD format."
+        if not timezone_name and run_at <= (now or datetime.now()):
+            return None, "Choose a date and time in the future."
+        run_at_text = run_at.isoformat()
+    else:
+        run_at_text = f"2026-01-01T{hour:02d}:{minute:02d}:00"
+    entry = RecordingScheduleEntry(
+        id=editing_id or new_id(),
+        station_name=name,
+        stream_url=url,
+        recurrence=recurrence,  # type: ignore[arg-type]
+        run_at=run_at_text,
+        weekday=weekday_index if recurrence == "weekly" else -1,
+        duration_minutes=duration_minutes,
+        timezone=timezone_name,
+    )
+    return entry, None
 
 
 class ScheduleRecordingDialog:
@@ -42,6 +106,7 @@ class ScheduleRecordingDialog:
         default_stream_url: str = "",
         on_add: Callable[[RecordingScheduleEntry], None],
         on_remove: Callable[[str], bool],
+        on_update: Callable[[RecordingScheduleEntry], bool] | None = None,
         favorites: object | None = None,
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
@@ -51,8 +116,12 @@ class ScheduleRecordingDialog:
         self._entries = list(entries)
         self._on_add = on_add
         self._on_remove = on_remove
+        self._on_update = on_update or (lambda _entry: False)
         self._favorites = favorites
         self._announce = announce_cb or (lambda _m: None)
+        #: When set, the form is editing this existing entry in place (Save
+        #: Changes) rather than adding a new one.
+        self._editing_id: str | None = None
 
         self.dialog = wx.Dialog(
             parent, title="Schedule Recording", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -67,10 +136,22 @@ class ScheduleRecordingDialog:
         )
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
 
+        list_btns = wx.BoxSizer(wx.HORIZONTAL)
+        self._edit_btn = wx.Button(self.dialog, label="&Edit")
+        self._edit_btn.SetName("Edit the selected schedule")
+        self._edit_btn.Enable(False)
+        self._duplicate_btn = wx.Button(self.dialog, label="D&uplicate")
+        self._duplicate_btn.SetName("Duplicate the selected schedule for a quick variation")
+        self._duplicate_btn.Enable(False)
+        self._toggle_btn = wx.Button(self.dialog, label="Disab&le")
+        self._toggle_btn.SetName("Enable or disable the selected schedule")
+        self._toggle_btn.Enable(False)
         self._remove_btn = wx.Button(self.dialog, label="&Remove")
         self._remove_btn.SetName("Remove the selected schedule")
         self._remove_btn.Enable(False)
-        root.Add(self._remove_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        for btn in (self._edit_btn, self._duplicate_btn, self._toggle_btn, self._remove_btn):
+            list_btns.Add(btn, 0, wx.RIGHT, 6)
+        root.Add(list_btns, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         root.Add(wx.StaticLine(self.dialog), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         root.Add(wx.StaticText(self.dialog, label="Add a new schedule"), 0, wx.ALL, 10)
@@ -138,11 +219,22 @@ class ScheduleRecordingDialog:
         grid.Add(self._date_ctrl, 0)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="&Time (24-hour HH:MM):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self.dialog, label="&Time (7:30 PM or 19:30):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
         )
         self._time_ctrl = wx.TextCtrl(self.dialog, value=default_date.strftime("%H:%M"))
-        self._time_ctrl.SetName("Time of day, as HH:MM in 24-hour time")
+        self._time_ctrl.SetName("Time of day; accepts 12-hour like 7:30 PM or 24-hour like 19:30")
         grid.Add(self._time_ctrl, 0)
+
+        grid.Add(wx.StaticText(self.dialog, label="Time &zone:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._timezone_choice = wx.Choice(self.dialog, choices=list(_TIMEZONE_CHOICES))
+        self._timezone_choice.SetName(
+            "Time zone for this recording; local time by default. Choose a zone to record a "
+            "show in another region at its own local time"
+        )
+        self._timezone_choice.SetSelection(0)
+        grid.Add(self._timezone_choice, 0)
 
         grid.Add(
             wx.StaticText(self.dialog, label="&Duration (minutes):"), 0, wx.ALIGN_CENTER_VERTICAL
@@ -159,9 +251,13 @@ class ScheduleRecordingDialog:
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        add_btn = wx.Button(self.dialog, label="&Add Schedule")
+        self._add_btn = wx.Button(self.dialog, label="&Add Schedule")
+        self._new_btn = wx.Button(self.dialog, label="Ne&w")
+        self._new_btn.SetName("Clear the form and stop editing")
+        self._new_btn.Enable(False)
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
-        btn_row.Add(add_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._new_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
@@ -169,24 +265,49 @@ class ScheduleRecordingDialog:
         self.dialog.SetSizer(root)
 
         self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove_click)
-        add_btn.Bind(wx.EVT_BUTTON, self._on_add_click)
+        self._edit_btn.Bind(wx.EVT_BUTTON, self._on_edit_click)
+        self._duplicate_btn.Bind(wx.EVT_BUTTON, self._on_duplicate_click)
+        self._toggle_btn.Bind(wx.EVT_BUTTON, self._on_toggle_click)
+        self._add_btn.Bind(wx.EVT_BUTTON, self._on_add_click)
+        self._new_btn.Bind(wx.EVT_BUTTON, lambda _e: self._reset_form())
         self._list.Bind(wx.EVT_LISTBOX, lambda _e: self._refresh_remove_button())
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
         self._list.Bind(wx.EVT_CONTEXT_MENU, self._on_list_context_menu)
         self._refresh_list()
 
-    def _refresh_remove_button(self) -> None:
-        """The Remove button names its target and dims when there is none."""
+    def _selected_entry(self) -> RecordingScheduleEntry | None:
         index = self._list.GetSelection()
         if 0 <= index < len(self._entries):
-            name = self._entries[index].station_name
+            return self._entries[index]
+        return None
+
+    def _refresh_remove_button(self) -> None:
+        """Name each list action for its target and dim them when there is none."""
+        entry = self._selected_entry()
+        if entry is not None:
+            name = entry.station_name
             self._remove_btn.SetLabel(f"&Remove {name}")
             self._remove_btn.SetName(f"Remove the {name} schedule")
             self._remove_btn.Enable(True)
+            self._edit_btn.Enable(True)
+            self._edit_btn.SetName(f"Edit the {name} schedule")
+            self._duplicate_btn.Enable(True)
+            self._duplicate_btn.SetName(f"Duplicate the {name} schedule")
+            self._toggle_btn.Enable(True)
+            if entry.enabled:
+                self._toggle_btn.SetLabel("Disab&le")
+                self._toggle_btn.SetName(f"Disable the {name} schedule")
+            else:
+                self._toggle_btn.SetLabel("Enab&le")
+                self._toggle_btn.SetName(f"Enable the {name} schedule")
         else:
             self._remove_btn.SetLabel("&Remove")
             self._remove_btn.SetName("Remove the selected schedule")
             self._remove_btn.Enable(False)
+            self._edit_btn.Enable(False)
+            self._duplicate_btn.Enable(False)
+            self._toggle_btn.Enable(False)
+            self._toggle_btn.SetLabel("Disab&le")
 
     def _on_list_key(self, event: object) -> None:
         wx = self._wx
@@ -200,11 +321,22 @@ class ScheduleRecordingDialog:
         index = self._list.GetSelection()
         if not (0 <= index < len(self._entries)):
             return
+        entry = self._entries[index]
         menu = wx.Menu()
+        edit_id = wx.NewIdRef()
+        duplicate_id = wx.NewIdRef()
+        toggle_id = wx.NewIdRef()
         delete_id = wx.NewIdRef()
-        menu.Append(delete_id, f"&Delete {self._entries[index].station_name}\tDelete")
+        menu.Append(edit_id, "&Edit")
+        menu.Append(duplicate_id, "D&uplicate")
+        menu.Append(toggle_id, "Enab&le" if not entry.enabled else "Disab&le")
+        menu.Append(delete_id, f"&Delete {entry.station_name}\tDelete")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_edit_click(None), id=edit_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_duplicate_click(None), id=duplicate_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_click(None), id=toggle_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_remove_click(None), id=delete_id)
-        self._context_menu_id_refs = [delete_id]  # pinned while the popup can fire
+        # pinned while the popup can fire
+        self._context_menu_id_refs = [edit_id, duplicate_id, toggle_id, delete_id]
         self._list.PopupMenu(menu)
         menu.Destroy()
 
@@ -218,12 +350,18 @@ class ScheduleRecordingDialog:
         finally:
             self.dialog.Destroy()
 
-    def _refresh_list(self) -> None:
+    def _refresh_list(self, keep_id: str | None = None) -> None:
         self._list.Clear()
         for entry in self._entries:
             self._list.Append(_entry_summary(entry), entry.id)
+        selected = 0
+        if keep_id is not None:
+            for index, entry in enumerate(self._entries):
+                if entry.id == keep_id:
+                    selected = index
+                    break
         if self._entries:
-            self._list.SetSelection(0)
+            self._list.SetSelection(selected)
         self._refresh_remove_button()
 
     def _on_remove_click(self, _event: object) -> None:
@@ -233,51 +371,115 @@ class ScheduleRecordingDialog:
         entry_id = self._list.GetClientData(index)
         if self._on_remove(entry_id):
             self._entries = [e for e in self._entries if e.id != entry_id]
+            if self._editing_id == entry_id:
+                self._reset_form()
             self._refresh_list()
             self._announce("Removed scheduled recording")
 
-    def _on_add_click(self, _event: object) -> None:
-        name = self._name_ctrl.GetValue().strip()
-        url = self._url_ctrl.GetValue().strip()
-        if not name or not url:
-            self._status.SetLabel("A station name and a stream URL are both required.")
-            return
-        recurrence_index = self._recurrence_choice.GetSelection()
-        recurrence = ("once", "daily", "weekly")[recurrence_index if recurrence_index >= 0 else 0]
-        time_text = self._time_ctrl.GetValue().strip()
-        try:
-            hour, minute = (int(part) for part in time_text.split(":", 1))
-            if not (0 <= hour < 24 and 0 <= minute < 60):
-                raise ValueError
-        except ValueError:
-            self._status.SetLabel("Time must be in 24-hour HH:MM format, e.g. 08:00.")
-            return
-        weekday = self._weekday_choice.GetSelection()
-        if recurrence == "once":
-            date_text = self._date_ctrl.GetValue().strip()
-            try:
-                run_at = datetime.fromisoformat(f"{date_text}T{hour:02d}:{minute:02d}:00")
-            except ValueError:
-                self._status.SetLabel("Date must be in YYYY-MM-DD format.")
-                return
-            if run_at <= datetime.now():
-                self._status.SetLabel("Choose a date and time in the future.")
-                return
-            run_at_text = run_at.isoformat()
-        else:
-            run_at_text = f"2026-01-01T{hour:02d}:{minute:02d}:00"
+    def _enter_add_mode(self) -> None:
+        """Leave edit mode: the primary button adds a new schedule again."""
+        self._editing_id = None
+        self._add_btn.SetLabel("&Add Schedule")
+        self._new_btn.Enable(False)
 
-        entry = RecordingScheduleEntry(
-            id=new_id(),
-            station_name=name,
-            stream_url=url,
-            recurrence=recurrence,  # type: ignore[arg-type]
-            run_at=run_at_text,
-            weekday=weekday if recurrence == "weekly" else -1,
-            duration_minutes=self._duration_ctrl.GetValue(),
+    def _reset_form(self) -> None:
+        """Clear the inputs and return to add mode (the New button)."""
+        self._name_ctrl.SetValue("")
+        self._url_ctrl.SetValue("")
+        self._recurrence_choice.SetSelection(0)
+        self._weekday_choice.SetSelection(0)
+        self._timezone_choice.SetSelection(0)
+        self._duration_ctrl.SetValue(60)
+        self._status.SetLabel("")
+        self._enter_add_mode()
+
+    def _load_entry_into_form(self, entry: RecordingScheduleEntry) -> None:
+        """Populate the form fields from an existing entry (edit/duplicate)."""
+        self._name_ctrl.SetValue(entry.station_name)
+        self._url_ctrl.SetValue(entry.stream_url)
+        self._recurrence_choice.SetSelection(("once", "daily", "weekly").index(entry.recurrence))
+        if 0 <= entry.weekday < 7:
+            self._weekday_choice.SetSelection(entry.weekday)
+        try:
+            moment = datetime.fromisoformat(entry.run_at)
+            self._time_ctrl.SetValue(moment.strftime("%H:%M"))
+            if entry.recurrence == "once":
+                self._date_ctrl.SetValue(moment.strftime("%Y-%m-%d"))
+        except ValueError:
+            pass
+        self._duration_ctrl.SetValue(entry.duration_minutes)
+        if entry.timezone and entry.timezone in _TIMEZONE_CHOICES:
+            self._timezone_choice.SetSelection(_TIMEZONE_CHOICES.index(entry.timezone))
+        else:
+            self._timezone_choice.SetSelection(0)
+
+    def _on_edit_click(self, _event: object) -> None:
+        entry = self._selected_entry()
+        if entry is None:
+            return
+        self._load_entry_into_form(entry)
+        self._editing_id = entry.id
+        self._add_btn.SetLabel("&Save Changes")
+        self._new_btn.Enable(True)
+        self._status.SetLabel(
+            f"Editing {entry.station_name}. Change the fields, then choose Save Changes."
         )
+        self._name_ctrl.SetFocus()
+
+    def _on_duplicate_click(self, _event: object) -> None:
+        entry = self._selected_entry()
+        if entry is None:
+            return
+        self._load_entry_into_form(entry)
+        self._enter_add_mode()  # a duplicate is a new entry, not an edit
+        self._name_ctrl.SetValue(f"{entry.station_name} (copy)")
+        self._status.SetLabel("Duplicated. Adjust the fields, then choose Add Schedule.")
+        self._name_ctrl.SetFocus()
+
+    def _on_toggle_click(self, _event: object) -> None:
+        entry = self._selected_entry()
+        if entry is None:
+            return
+        updated = replace(entry, enabled=not entry.enabled)
+        if self._on_update(updated):
+            self._entries = [updated if e.id == updated.id else e for e in self._entries]
+            self._refresh_list(keep_id=updated.id)
+            state = "enabled" if updated.enabled else "disabled"
+            self._announce(f"{updated.station_name} {state}")
+
+    def _build_entry_from_form(self) -> RecordingScheduleEntry | None:
+        """Read the controls, validate via the pure builder, show any error."""
+        tz_index = self._timezone_choice.GetSelection()
+        entry, error = build_schedule_entry(
+            name=self._name_ctrl.GetValue(),
+            url=self._url_ctrl.GetValue(),
+            recurrence_index=self._recurrence_choice.GetSelection(),
+            time_text=self._time_ctrl.GetValue(),
+            date_text=self._date_ctrl.GetValue(),
+            weekday_index=self._weekday_choice.GetSelection(),
+            timezone_name="" if tz_index <= 0 else _TIMEZONE_CHOICES[tz_index],
+            duration_minutes=self._duration_ctrl.GetValue(),
+            editing_id=self._editing_id,
+        )
+        if error:
+            self._status.SetLabel(error)
+            return None
+        return entry
+
+    def _on_add_click(self, _event: object) -> None:
+        entry = self._build_entry_from_form()
+        if entry is None:
+            return
+        if self._editing_id:
+            if self._on_update(entry):
+                self._entries = [entry if e.id == entry.id else e for e in self._entries]
+                self._enter_add_mode()
+                self._refresh_list(keep_id=entry.id)
+                self._status.SetLabel(f"Saved: {_entry_summary(entry)}")
+                self._announce(f"Saved changes to {entry.station_name}")
+            return
         self._on_add(entry)
         self._entries.append(entry)
-        self._refresh_list()
+        self._refresh_list(keep_id=entry.id)
         self._status.SetLabel(f"Added: {_entry_summary(entry)}")
-        self._announce(f"Scheduled recording added for {name}")
+        self._announce(f"Scheduled recording added for {entry.station_name}")
