@@ -210,14 +210,25 @@ def running_portable() -> bool:
     """True when this QUILL is a verified portable bundle (not an installed copy).
 
     A portable user updates by replacing the bundle, so they should be handed the
-    portable .zip rather than the installer. Best-effort: any failure (or a
-    non-portable install) reports False so asset selection falls back to the
-    installer as before.
+    portable .zip rather than the installer. Best-effort: any failure reports
+    False so asset selection falls back to the installer as before.
+
+    #1100: an installed build can also keep data under ``{app}\\data``, which
+    ``portable_root_dir()``'s ``quill.exe`` + ``data/`` heuristic misreads as
+    portable. An Inno install always drops its uninstaller (``unins000``) beside
+    the app and a portable extracted zip never has one, so its presence is the
+    definitive "installed, not portable" marker (as the standalone apps use).
     """
     try:
         from quill.core.storage_mode import portable_root_dir
 
-        return portable_root_dir() is not None
+        root = portable_root_dir()
+        if root is None:
+            return False
+        anchor = root.parent  # portable_root_dir() returns <app root>/data
+        return not (
+            (anchor / "unins000.exe").is_file() or (anchor / "unins000.dat").is_file()
+        )
     except Exception:  # noqa: BLE001 - detection must never break update checks
         return False
 
