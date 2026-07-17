@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixes
+
+- **Find Streams from a Website now resolves iHeart (and TuneIn) station pages to a playable stream instead of returning the page URL (#1087).** Scanning a site that links to an iHeart `/live/...` player page used to hand back the iHeart page URL itself — which does nothing when you press play — because `/live` is a stream-shaped path hint that short-circuited the scanner before it followed the link. iHeart/TuneIn portal page links are now followed one level deep like any "Listen Live" link, so the real stream embedded in the page's inline player (an `stream.revma.ihrhls.com/.../hls.m3u8` HLS URL, for instance) is extracted and offered instead. A station's own `/live/` path on its own domain is unaffected.
+
 ### Improved
 
 - **Scheduled radio recordings: 12-hour times, Edit/Duplicate/Enable, and per-entry time zones (quill-radio #7).** The Schedule Recording dialog now accepts a friendly time like `7:30 PM` as well as `19:30`; you can **Edit** a schedule in place, **Duplicate** one as the starting point for a variation (the ACB-convention "same show, several days" case), and **Enable/Disable** a schedule without deleting it — from buttons or the list's context menu. Each schedule can also carry its own **time zone**, so a Pacific listener can pin an Eastern show to Eastern time and it records at the right local moment (DST handled automatically); leaving the zone as "(local time)" keeps the previous behavior. Existing schedules load unchanged (no zone = local). This is radio source shared with the standalone Quill Radio.

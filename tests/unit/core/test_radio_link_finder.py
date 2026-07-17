@@ -352,3 +352,69 @@ def test_http_listen_link_is_followed_not_dropped(monkeypatch: pytest.MonkeyPatc
 
 def test_listenlive_href_matches_even_with_an_image_only_label() -> None:
     assert lf._looks_like_listen_link("http://player.listenlive.co/34461", "")
+
+
+# -- iHeart/TuneIn portal pages: follow, don't offer the page URL (issue #1087) --
+
+
+def test_iheart_live_link_is_followed_not_offered_as_a_stream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #1087: delilah.com links to an iHeart /live/ page. Because /live is a
+    # stream-path hint, the scanner used to offer the iHeart *page* URL as a
+    # stream (unplayable) and never fetch it. It must instead follow the portal
+    # page one level deep and surface the real HLS stream embedded in it.
+    home = (
+        "<html><body>"
+        '<a href="https://www.iheart.com/live/delilah-4846/?autoplay=true">Listen</a>'
+        "</body></html>"
+    )
+    # The iHeart page embeds the real stream as an escaped quoted string in an
+    # inline player-config <script> (the shape verified against the live page).
+    iheart = (
+        "<html><body><script>"
+        'var cfg = {"streams":{"secure_hls_stream":'
+        '"https://stream.revma.ihrhls.com/zc4846/hls.m3u8"}};'
+        "</script></body></html>"
+    )
+    pages = {
+        "https://delilah.com": home,
+        "https://www.iheart.com/live/delilah-4846/?autoplay=true": iheart,
+    }
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    result = scan_page_for_streams("delilah.com")
+    urls = [c.url for c in result.candidates]
+    assert "https://stream.revma.ihrhls.com/zc4846/hls.m3u8" in urls
+    # The iHeart page URL itself must NOT be offered as a playable stream.
+    assert not any("iheart.com/live" in u for u in urls)
+
+
+def test_tunein_radio_link_is_followed_not_offered_as_a_stream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A TuneIn /radio/ station page is a portal page too: follow it, don't
+    # offer the tunein.com page URL as a stream candidate.
+    home = (
+        "<html><body>"
+        '<a href="https://tunein.com/radio/BBC-Radio-1-s24939/">BBC Radio 1</a>'
+        "</body></html>"
+    )
+    tunein = '<html><body><audio src="https://cdn.example.com/bbc.mp3"></audio></body></html>'
+    pages = {
+        "https://directory.example.com": home,
+        "https://tunein.com/radio/BBC-Radio-1-s24939/": tunein,
+    }
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    result = scan_page_for_streams("directory.example.com")
+    urls = [c.url for c in result.candidates]
+    assert "https://cdn.example.com/bbc.mp3" in urls
+    assert not any("tunein.com/radio" in u for u in urls)
+
+
+def test_is_portal_page_url_matches_hosts_and_paths() -> None:
+    assert lf._is_portal_page_url("https://www.iheart.com/live/delilah-4846/")
+    assert lf._is_portal_page_url("https://tunein.com/radio/BBC-Radio-1-s24939/")
+    # Same path fragment on a station's own domain is NOT a portal page.
+    assert not lf._is_portal_page_url("https://station.example.com/live/stream.mp3")
+    # An iHeart URL that isn't a station page path is not a portal page.
+    assert not lf._is_portal_page_url("https://www.iheart.com/news/")
