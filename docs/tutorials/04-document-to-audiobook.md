@@ -141,6 +141,17 @@ plain-words loudness verdict before you submit anywhere.
 Saving is honest about physics: an MP3 saves **in place** (tags only, audio
 untouched); an M4B saves as a new file via a lossless re-mux.
 
+The Workbench player also gained a **Mute** button, and its transport
+(play/pause, stop, next/previous chapter) is now exposed for a host to drive.
+In the standalone **QUILL Audio Studio** product those power media keys, a
+per-book volume and mute memory, a sleep timer, and a play queue that
+auto-advances to the next book when one finishes — all built on shared
+`quill/` modules (`book_prefs`, `history`, `library`, `play_queue`,
+`sleep_timer`) that the embedded QUILL workbench exposes only as the Mute
+button. Your library there is a tree (Favorites, In Progress, Recently
+Played, Inbox, plus your own folders), and the Studio can resume the last
+book at its saved position when you launch it.
+
 ## 7. Publish it
 
 The Workbench's **Publish...** button offers explicit, consent-first paths:
