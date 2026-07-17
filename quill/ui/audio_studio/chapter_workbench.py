@@ -70,6 +70,11 @@ class ChapterWorkbenchDialog(wx.Dialog):
         run_background: Callable[..., None] | None = None,
         on_publish: Callable[[BookFile], None] | None = None,
         ask_ai: Callable[[str], str] | None = None,
+        on_player_ready: Callable[[PlayerPanel, str], None] | None = None,
+        on_finished: Callable[[str], None] | None = None,
+        on_volume: Callable[[str, int], None] | None = None,
+        on_mute: Callable[[str, bool], None] | None = None,
+        on_closed: Callable[[str, int, int], None] | None = None,
     ) -> None:
         super().__init__(
             parent,
@@ -86,6 +91,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
         self._run_background = run_background
         self._on_publish_cb = on_publish
         self._ask_ai = ask_ai
+        book_path = str(book.path)
+        self._on_closed_cb = on_closed
         self._dirty = False
 
         root = wx.BoxSizer(wx.VERTICAL)
@@ -179,7 +186,13 @@ class ChapterWorkbenchDialog(wx.Dialog):
         io_row.Add(episodes_btn, 0)
         root.Add(io_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
-        self.player = PlayerPanel(self, announce=announce)
+        self.player = PlayerPanel(
+            self,
+            announce=announce,
+            on_volume=lambda pct: on_volume(book_path, pct) if on_volume else None,
+            on_mute=lambda muted: on_mute(book_path, muted) if on_mute else None,
+            on_finished=lambda: on_finished(book_path) if on_finished else None,
+        )
         root.Add(self.player, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         root.Add(wx.StaticText(self, label=_("Book details:")), 0, wx.LEFT | wx.TOP, 10)
@@ -226,6 +239,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
             book.chapters,
             resume_ms=load_position_ms(app_data_dir(), book.path),
         )
+        if on_player_ready is not None:
+            on_player_ready(self.player, str(book.path))
 
     # -- helpers ---------------------------------------------------------------
 
@@ -721,6 +736,10 @@ class ChapterWorkbenchDialog(wx.Dialog):
         position = self.player.playhead_ms()
         if position > 0:
             save_position_ms(app_data_dir(), self._book.path, position)
+        if self._on_closed_cb is not None:
+            self._on_closed_cb(
+                str(self._book.path), position, self.player.current_chapter_index()
+            )
         self.player.shutdown()
         evt.Skip()
 
@@ -847,8 +866,23 @@ class AcxResultDialog(wx.Dialog):
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 
 
-def open_book_in_workbench(frame: object, path: Path) -> None:
-    """Read *path* and open the Workbench on it (the journey-C entry point)."""
+def open_book_in_workbench(
+    frame: object,
+    path: Path,
+    *,
+    on_player_ready: Callable[[PlayerPanel, str], None] | None = None,
+    on_finished: Callable[[str], None] | None = None,
+    on_volume: Callable[[str, int], None] | None = None,
+    on_mute: Callable[[str, bool], None] | None = None,
+    on_closed: Callable[[str, int, int], None] | None = None,
+) -> None:
+    """Read *path* and open the Workbench on it (the journey-C entry point).
+
+    The optional ``on_*`` callbacks let a host observe the workbench's player
+    lifecycle (media-key routing, per-book prefs, queue auto-advance, history
+    position-stamping). Embedded QUILL passes none; the standalone Studio
+    shell wires them. All are best-effort and marshalled by the host as needed.
+    """
     from quill.core.speech.book_file import BookReadError, read_book
 
     # Remember this book so the second time the user opens the edit
@@ -892,6 +926,11 @@ def open_book_in_workbench(frame: object, path: Path) -> None:
         run_background=getattr(frame, "_run_background_task", None),
         on_publish=on_publish,
         ask_ai=ask_ai,
+        on_player_ready=on_player_ready,
+        on_finished=on_finished,
+        on_volume=on_volume,
+        on_mute=on_mute,
+        on_closed=on_closed,
     )
     try:
         frame._show_modal_dialog(dlg, str(_("Chapter Workbench")))  # type: ignore[attr-defined]

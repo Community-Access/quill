@@ -92,3 +92,33 @@ def test_toggle_mute_restores_volume(app) -> None:
     assert p._engine.volume_calls[-1] == 42  # type: ignore[attr-defined]
     p.toggle_mute()  # mute again -> 0
     assert p._engine.volume_calls[-1] == 0  # type: ignore[attr-defined]
+
+
+def test_callbacks_fire_on_volume_mute_finished(app) -> None:
+    import wx
+
+    parent = wx.Frame(None)
+    volumes: list[int] = []
+    mutes: list[bool] = []
+    finished: list[bool] = []
+    p = PlayerPanel(
+        parent,
+        on_volume=volumes.append,
+        on_mute=mutes.append,
+        on_finished=lambda: finished.append(True),
+    )
+    p._engine = _FakeEngine()  # type: ignore[assignment]
+    p.load("dummy.mp3", chapters=[], book_prefs=None)
+    # Simulate a volume-slider drag.
+    p._volume.SetValue(55)
+    p._on_volume(wx.CommandEvent())
+    assert volumes[-1] == 55
+    # Mute + unmute fire the mute callback.
+    p.toggle_mute()
+    assert mutes[-1] is True
+    p.toggle_mute()
+    assert mutes[-1] is False
+    # Engine finish fires the finished callback.
+    p._on_engine_finished()
+    assert finished == [True]
+    parent.Destroy()
