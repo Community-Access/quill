@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Improved
+
+- **Browse Stations: Country and Tag/genre are now dropdowns, not free text (quill-radio #2).** The Country field is a pickable list (with an "Any country" default) and Tag/genre is an editable combo box — both filled from RadioBrowser's own most-popular lists (fetched once per session, in the background) so you no longer have to guess the exact spelling of a country or genre. Tag stays editable so a rare custom tag still works, the station name stays free text, and picking a country or tag runs the search right away.
+
 ### New
 
 - **Browse Stations now searches iHeart and TuneIn too.** A station search in the Browse Stations dialog fans out to iHeart and TuneIn alongside RadioBrowser and SomaFM and blends the results into one list, each non-RadioBrowser row naming where it came from ("… - via iHeart"/"via TuneIn"). TuneIn results resolve their real stream on the fly; iHeart matches come from its sitemap directory (fetched once per session) with each match's stream resolved lazily, so a search stays cheap. Both are bounded to a handful of resolved results per search and are failure-tolerant — a down source never blanks the list — and both are off entirely in Safe Mode. Builds on the iHeart/TuneIn core clients above; the wx-free blend helpers live in `quill/core/radio/directory_search.py`.
