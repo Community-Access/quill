@@ -243,6 +243,7 @@ from quill.core.recent import (
 )
 from quill.core.recovery import (
     begin_session,
+    latest_crash_report,
     mark_clean_exit,
     mark_recovery_offer_dismissed,
     mark_recovery_offer_recovered,
@@ -3878,12 +3879,13 @@ class MainFrame(
             sound_manager.shutdown()
 
         # #210: persist critical state FIRST, before any teardown step that can
-        # block (ssh socket, sound backend). If a later step wedges and the
-        # hard-exit watchdog fires, settings, undo history, and the clean-exit
-        # marker are already written, so the fast exit loses nothing.
+        # block (ssh socket, sound backend). The clean-exit marker goes first of
+        # all: the close is committed, so if save-settings/undo-flush block past
+        # the watchdog timeout the exit is still a committed close, not a crash,
+        # and must not false-offer "unclean exit" next launch (Group D).
+        _safely("clean-exit marker", lambda: mark_clean_exit(self.session_id))
         _safely("save settings", lambda: save_settings(self.settings))
         _safely("persistent undo flush", self.flush_persistent_undo)
-        _safely("clean-exit marker", lambda: mark_clean_exit(self.session_id))
         # H-3-ui: destroy the modeless Watch Queue Monitor so it does not
         # outlive the main frame and leak a window reference.
         if self._watch_queue_monitor is not None:
@@ -4132,9 +4134,23 @@ class MainFrame(
         evidence_section = (
             f"Error evidence that triggered this offer:\n{evidence}\n\n" if evidence else ""
         )
+        # Group D (#1079/#1085/#1095): stitch the real traceback from the last
+        # crash-*.txt (top-level excepthook) so the report is actionable, not
+        # log-only. Bounded near the crashed session's snapshot mtime so an
+        # ancient crash is never attached.
+        snapshot = getattr(offer, "snapshot", None)
+        try:
+            floor = snapshot.stat().st_mtime - 300 if snapshot is not None else None
+        except OSError:
+            floor = None
+        crash_report = latest_crash_report(app_data_dir() / "crash-reports", min_mtime=floor)
+        crash_section = (
+            f"Last local crash report (full traceback):\n{crash_report}\n\n" if crash_report else ""
+        )
         body = (
             "Quill offered crash recovery after an unclean exit. Submitted "
             "automatically from the Crash Recovery dialog.\n\n"
+            + crash_section
             + evidence_section
             + build_log_summary(logs_path)
         )

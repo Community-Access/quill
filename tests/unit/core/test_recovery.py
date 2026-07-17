@@ -153,6 +153,90 @@ def test_begin_session_suppresses_offer_when_log_has_no_error_evidence(
     assert offers == []
 
 
+def test_begin_session_suppresses_offer_when_only_evidence_is_the_hard_exit_watchdog(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # Group D (#1079/#1085/#1095): the #210 hard-exit watchdog logs its
+    # force-exit at ERROR on a slow-but-committed shutdown. That is not a crash,
+    # so it must not surface "Quill detected an unclean exit" with only the
+    # watchdog line behind it.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous, current = str(uuid4()), str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(parents=True)
+    (logs_dir / "quill.log").write_text(
+        "2026-07-17 15:39:00 INFO quill.ui.main_frame: "
+        "Close committed; arming hard-exit watchdog (#210)\n"
+        "2026-07-17 15:39:05 ERROR quill.stability.shutdown_watchdog: "
+        "Graceful shutdown did not finish within 5.0s; forcing exit (#210)\n",
+        encoding="utf-8",
+    )
+    begin_session(previous)
+    assert begin_session(current) == []
+
+
+def test_begin_session_still_offers_when_a_real_error_accompanies_the_watchdog(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A genuine error alongside the benign watchdog line must still offer.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous, current = str(uuid4()), str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(parents=True)
+    (logs_dir / "quill.log").write_text(
+        "2026-07-17 15:39:00 ERROR quill.ui.main_frame: TypeError: unhashable type\n"
+        "2026-07-17 15:39:05 ERROR quill.stability.shutdown_watchdog: "
+        "Graceful shutdown did not finish within 5.0s; forcing exit (#210)\n",
+        encoding="utf-8",
+    )
+    begin_session(previous)
+    assert len(begin_session(current)) == 1
+
+
+def test_find_error_evidence_skips_the_hard_exit_watchdog_line(tmp_path: Path) -> None:
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(parents=True)
+    (logs_dir / "quill.log").write_text(
+        "2026-07-17 15:39:05 ERROR quill.stability.shutdown_watchdog: "
+        "Graceful shutdown did not finish within 5.0s; forcing exit (#210)\n",
+        encoding="utf-8",
+    )
+    assert find_error_evidence(logs_dir) is None
+
+
+def test_latest_crash_report_returns_newest_and_respects_min_mtime(tmp_path: Path) -> None:
+    import os
+
+    from quill.core.recovery import latest_crash_report
+
+    crash_dir = tmp_path / "crash-reports"
+    crash_dir.mkdir()
+    assert latest_crash_report(crash_dir) is None  # empty dir
+    old = crash_dir / "crash-20260717-100000.txt"
+    old.write_text("old traceback", encoding="utf-8")
+    os.utime(old, (1000, 1000))
+    new = crash_dir / "crash-20260717-140000.txt"
+    new.write_text("Traceback (most recent call last):\nValueError: boom\n", encoding="utf-8")
+    os.utime(new, (2000, 2000))
+    result = latest_crash_report(crash_dir)
+    assert result is not None and "ValueError: boom" in result
+    # min_mtime excludes reports older than the cutoff.
+    assert latest_crash_report(crash_dir, min_mtime=1500) is not None  # the new one survives
+    assert latest_crash_report(crash_dir, min_mtime=3000) is None  # both too old
+
+
+def test_latest_crash_report_none_for_missing_dir(tmp_path: Path) -> None:
+    from quill.core.recovery import latest_crash_report
+
+    assert latest_crash_report(tmp_path / "does-not-exist") is None
+
+
 def test_begin_session_still_offers_when_log_has_a_traceback(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
