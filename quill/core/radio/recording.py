@@ -31,16 +31,49 @@ from datetime import datetime
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
-from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg
+from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg, find_ffprobe
 from quill.stability.redaction import format_args_for_log
 
 logger = logging.getLogger(__name__)
 
-#: Formats a live stream can be recorded to. All are streamable containers
-#: (no trailing index atom like MP4/M4A), so even an unclean stop leaves a
-#: playable file up to the last flushed frame.
-RECORD_FORMATS = ("mp3", "ogg", "flac", "wav")
+#: Formats a live stream can be recorded to. The first four re-encode the
+#: decoded audio to a chosen codec. ``"copy"`` is the raw-capture mode
+#: (feature request): ffmpeg stream-copies the server's audio packets with no
+#: re-encoding, so the saved file is bit-for-bit the original stream -- the
+#: most lossless capture possible, for a listener who wants to edit/convert it
+#: themselves. All are streamable containers (no trailing index atom like
+#: MP4/M4A), so even an unclean stop leaves a playable file up to the last
+#: flushed frame.
+RECORD_FORMATS = ("mp3", "ogg", "flac", "wav", "copy")
+#: Human labels for the Recording Settings format dropdown.
+RECORD_FORMAT_LABELS: dict[str, str] = {
+    "mp3": "MP3",
+    "ogg": "OGG Vorbis",
+    "flac": "FLAC (lossless, re-encoded)",
+    "wav": "WAV (lossless, re-encoded)",
+    "copy": "Raw stream -- exactly as sent, no re-encoding (lossless)",
+}
 _CODECS = {"mp3": "libmp3lame", "ogg": "libvorbis", "flac": "flac", "wav": "pcm_s16le"}
+
+#: The raw-capture container extension for a probed source codec. Common codecs
+#: get their natural elementary-stream extension so the file opens anywhere;
+#: anything else falls back to Matroska audio (``.mka``), which stream-copies
+#: any codec losslessly into one file the user can extract from later.
+_RAW_EXT_BY_CODEC: dict[str, str] = {
+    "mp3": "mp3",
+    "aac": "aac",
+    "aac_latm": "aac",
+    "vorbis": "ogg",
+    "opus": "opus",
+    "flac": "flac",
+    "alac": "m4a",
+    "ac3": "ac3",
+    "wav": "wav",
+    "pcm_s16le": "wav",
+}
+#: Universal lossless fallback container for stream-copy of an unknown codec.
+_RAW_FALLBACK_EXT = "mka"
+_PROBE_TIMEOUT_SECONDS = 10.0
 _DEFAULT_BITRATE_KBPS = 192
 _DEFAULT_MAX_DURATION_MINUTES = 180
 _DEFAULT_FILENAME_PATTERN = "{station} - {date} {time}"
@@ -163,8 +196,14 @@ def build_record_command(
     ``core.audio_enhance.build_filter_graph``, this module stays decoupled
     from that one) records the *filtered* audio -- Sound Enhancements applied
     to the archival copy, not just live playback.
+
+    ``format="copy"`` is the raw-capture mode: ffmpeg stream-copies the
+    server's audio packets (``-c:a copy``) with no decode/re-encode, so the
+    file is bit-for-bit the original. A bitrate and a filter graph are
+    meaningless with no re-encode and are ignored (Sound Enhancements cannot
+    apply to a raw copy). The output container is chosen by ``out_path``'s
+    extension, which the caller resolves from the stream's own codec.
     """
-    codec = _CODECS.get(format, "libmp3lame")
     args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
     if reconnect_delay_max > 0 and stream_url.lower().startswith(("http://", "https://")):
         args.extend([
@@ -176,16 +215,56 @@ def build_record_command(
             str(reconnect_delay_max),
         ])
     args.extend(["-i", stream_url, "-vn"])
-    if filter_graph:
-        args.extend(["-af", filter_graph])
-    args.extend([
-        "-c:a",
-        codec,
-    ])
-    if format in ("mp3", "ogg"):
-        args.extend(["-b:a", f"{max(32, bitrate_kbps)}k"])
+    if format == "copy":
+        # Raw capture: copy packets verbatim -- no filter (nothing is decoded),
+        # no bitrate (no re-encode).
+        args.extend(["-c:a", "copy"])
+    else:
+        if filter_graph:
+            args.extend(["-af", filter_graph])
+        args.extend(["-c:a", _CODECS.get(format, "libmp3lame")])
+        if format in ("mp3", "ogg"):
+            args.extend(["-b:a", f"{max(32, bitrate_kbps)}k"])
     args.extend(["-t", str(max(1, duration_seconds)), "-y", str(out_path)])
     return args
+
+
+def build_probe_codec_command(ffprobe: str, stream_url: str) -> list[str]:
+    """ffprobe argv that prints the first audio stream's codec name (pure).
+
+    Raw-capture mode uses this to pick a natural output extension for the
+    server's actual codec; a probe failure just falls back to Matroska.
+    """
+    return [
+        ffprobe,
+        "-v",
+        "error",
+        "-select_streams",
+        "a:0",
+        "-show_entries",
+        "stream=codec_name",
+        "-of",
+        "default=nokey=1:noprint_wrappers=1",
+        stream_url,
+    ]
+
+
+def parse_probe_codec(output: str) -> str:
+    """The codec name from ``build_probe_codec_command`` output (pure)."""
+    for line in output.splitlines():
+        name = line.strip()
+        if name:
+            return name.lower()
+    return ""
+
+
+def raw_capture_extension(codec: str) -> str:
+    """The lossless container extension for a raw stream-copy of *codec* (pure).
+
+    Common codecs get their natural extension; anything else falls back to
+    Matroska audio (``.mka``), which stream-copies any codec losslessly.
+    """
+    return _RAW_EXT_BY_CODEC.get(codec.strip().lower(), _RAW_FALLBACK_EXT)
 
 
 class RadioRecorder:
@@ -214,11 +293,12 @@ class RadioRecorder:
         self._station_name: str = ""
         self._user_stopped = False
         self._reconnect_attempt = 0
-        #: (station_name, stream_url, settings, duration_minutes, filter_graph)
-        #: of the active recording, kept so a reconnect can restart with the
-        #: same shape (including any Sound Enhancements filter) into a
-        #: continuation file.
-        self._active_params: tuple[str, str, RecordingSettings, int, str] | None = None
+        #: (station_name, stream_url, settings, duration_minutes, filter_graph,
+        #: resolved_extension) of the active recording, kept so a reconnect can
+        #: restart with the same shape -- including any Sound Enhancements filter
+        #: and, for raw-capture mode, the extension resolved on the first probe
+        #: so a continuation file never re-probes or changes container.
+        self._active_params: tuple[str, str, RecordingSettings, int, str, str] | None = None
 
     @property
     def is_recording(self) -> bool:
@@ -244,11 +324,14 @@ class RadioRecorder:
         duration_minutes: int | None = None,
         filter_graph: str = "",
         _continuation_part: int = 0,
+        _forced_extension: str = "",
     ) -> Path:
         """Start recording *stream_url*; raises :class:`RecordingError` if
         ffmpeg is unavailable or a recording is already in progress. A
         non-empty ``filter_graph`` records the Sound-Enhancements-filtered
-        audio instead of a raw archival copy (see ``build_record_command``)."""
+        audio instead of a raw archival copy (see ``build_record_command``).
+        Raw-capture mode (``settings.format == "copy"``) ignores the filter and
+        writes a container matching the stream's own codec."""
         with self._lock:
             if self._process is not None and self._process.poll() is None:
                 raise RecordingError("A recording is already in progress.")
@@ -264,7 +347,17 @@ class RadioRecorder:
             )
             if _continuation_part > 0:
                 filename = f"{filename} (part {_continuation_part + 1})"
-            destination = dest_root / f"{filename}.{settings.format}"
+            # Raw capture: the file extension follows the server's own codec
+            # (probed once, reused across continuations); a filter is impossible
+            # without decoding, so it is dropped. Re-encode formats keep their
+            # format name as the extension and honor the filter.
+            if settings.format == "copy":
+                extension = _forced_extension or _probe_capture_extension(stream_url)
+                record_filter = ""
+            else:
+                extension = settings.format
+                record_filter = filter_graph
+            destination = dest_root / f"{filename}.{extension}"
             minutes = (
                 duration_minutes if duration_minutes is not None else settings.max_duration_minutes
             )
@@ -278,7 +371,7 @@ class RadioRecorder:
                 reconnect_delay_max=(
                     settings.reconnect_wait_seconds if settings.reconnect_enabled else 0
                 ),
-                filter_graph=filter_graph,
+                filter_graph=record_filter,
             )
             extra_kwargs: dict = {}
             if os.name == "nt":
@@ -300,7 +393,14 @@ class RadioRecorder:
             self._user_stopped = False
             if _continuation_part == 0:
                 self._reconnect_attempt = 0
-            self._active_params = (station_name, stream_url, settings, minutes, filter_graph)
+            self._active_params = (
+                station_name,
+                stream_url,
+                settings,
+                minutes,
+                record_filter,
+                extension,
+            )
         self._on_state_changed(True, destination)
         threading.Thread(
             target=self._monitor, args=(process,), daemon=True, name="quill-radio-record-monitor"
@@ -324,10 +424,10 @@ class RadioRecorder:
         if failed and params is not None:
             self._maybe_reconnect(params)
 
-    def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int, str]) -> None:
+    def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int, str, str]) -> None:
         """A recording died without being asked to stop: wait, then resume
         into a continuation file, up to the configured attempt budget."""
-        station_name, stream_url, settings, minutes, filter_graph = params
+        station_name, stream_url, settings, minutes, filter_graph, extension = params
         if not settings.reconnect_enabled:
             return
         with self._lock:
@@ -361,6 +461,7 @@ class RadioRecorder:
                 duration_minutes=minutes,
                 filter_graph=filter_graph,
                 _continuation_part=attempt,
+                _forced_extension=extension,
             )
         except RecordingError as error:
             logger.warning("Reconnect attempt %d could not start: %s", attempt, error)
@@ -386,6 +487,33 @@ class RadioRecorder:
     def shutdown(self) -> None:
         """Called once, from the frame's close path."""
         self.stop()
+
+
+def _probe_capture_extension(stream_url: str) -> str:
+    """Probe *stream_url*'s audio codec and return the raw-capture extension.
+
+    Best-effort: a missing ffprobe, a probe error, or a timeout all fall back
+    to Matroska audio (``.mka``), the universal lossless copy container, so
+    raw capture always has a valid destination.
+    """
+    ffprobe = find_ffprobe()
+    if ffprobe is None:
+        return _RAW_FALLBACK_EXT
+    extra_kwargs: dict = {}
+    if os.name == "nt":
+        extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+    try:
+        completed = subprocess.run(
+            build_probe_codec_command(ffprobe, stream_url),
+            capture_output=True,
+            text=True,
+            timeout=_PROBE_TIMEOUT_SECONDS,
+            check=False,
+            **extra_kwargs,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return _RAW_FALLBACK_EXT
+    return raw_capture_extension(parse_probe_codec(completed.stdout))
 
 
 def _default_dir() -> Path:

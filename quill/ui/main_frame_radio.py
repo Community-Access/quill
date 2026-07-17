@@ -310,22 +310,37 @@ class RadioMixin:
             on_failure=lambda *_a: None,
         )
 
+    def _radio_now_playing_phrase(self, title: str) -> str:
+        """Render a raw stream title into the spoken announcement (#1068).
+
+        Cleans up the raw broadcast metadata some stations send and applies the
+        user's ``now_playing_template`` (see quill.core.radio.now_playing), so
+        a wall of ``key="value"`` noise becomes "Now playing: YOUR SONG by
+        Elton John"."""
+        from quill.core.radio.now_playing import render_now_playing
+
+        template = getattr(self._radio_history, "now_playing_template", "") or None
+        phrase = render_now_playing(title, template) if template else render_now_playing(title)
+        return f"Now playing: {phrase}"
+
     def _radio_apply_track_title(self, title: str, announce_result: bool) -> None:
         changed = bool(title) and title != self._radio_track_title
         if title:
             self._radio_track_title = title
         if announce_result:
             self._announce(
-                f"Now playing: {title}" if title else "This stream doesn't share track titles."
+                self._radio_now_playing_phrase(title)
+                if title
+                else "This stream doesn't share track titles."
             )
             return
         if changed and self._radio_history.announce_track_titles:
-            self._announce(f"Now playing: {title}")
+            self._announce(self._radio_now_playing_phrase(title))
 
     def radio_whats_playing(self) -> None:
         """Speak the current track title on demand."""
         if self._radio_track_title:
-            self._announce(f"Now playing: {self._radio_track_title}")
+            self._announce(self._radio_now_playing_phrase(self._radio_track_title))
             return
         self._radio_fetch_track_title(announce_result=True)
 
@@ -339,47 +354,65 @@ class RadioMixin:
             else "Track title announcements turned off."
         )
 
-    # -- stream fallback --------------------------------------------------------
+    # -- self-healing stream recovery (#1065) -----------------------------------
 
     def _radio_maybe_try_fallback_url(self, state: RadioPlaybackState) -> None:
-        """A dead favorite heals itself: on a playback error for a station the
-        RadioBrowser directory knows, fetch its current URL and retry once."""
+        """A station whose stream fails heals itself (#1065).
+
+        On a playback error, run the recovery ladder off-thread: re-resolve a
+        moved StreamTheWorld mount, refresh from the directory, and -- unless
+        the user turned it off -- scan the station's own website (Triton players
+        and "Listen Live" links included). A confident hit is played
+        automatically; anything ambiguous is announced so the user can pick it
+        up in Find Streams. One attempt per station per session, so a truly dead
+        station never loops."""
         from quill.ui.radio.player_controller import RadioPlayerState
 
         station = state.station
-        if state.state is not RadioPlayerState.ERROR or station is None:
+        if state.state is not RadioPlayerState.ERROR or station is None or self._safe_mode:
             return
-        uuid = station.station_uuid
-        key = uuid or station.stream_url
-        if not uuid or self._safe_mode or self._radio_fallback_tried == key:
+        key = station.station_uuid or station.stream_url
+        if self._radio_fallback_tried == key:
             return
         self._radio_fallback_tried = key
-        old_url = station.stream_url
+        allow_website = bool(getattr(self._radio_history, "recover_from_website", True))
 
-        def _fetch(**_kwargs: object) -> object:
-            return radio_browser.lookup_station(uuid, safe_mode=self._safe_mode)
+        def _recover(**_kwargs: object) -> object:
+            from quill.core.radio.recovery import recover_stream
 
-        def _done(_op: str, fresh: object) -> None:
-            self._wx.CallAfter(self._radio_apply_fallback, fresh, old_url)
+            return recover_stream(station, allow_website=allow_website, safe_mode=self._safe_mode)
+
+        def _done(_op: str, result: object) -> None:
+            self._wx.CallAfter(self._radio_apply_recovery, result)
 
         self._task_manager.submit(
-            "radio-stream-fallback",
-            _fetch,
+            "radio-stream-recovery",
+            _recover,
             on_success=_done,
             on_failure=lambda *_a: None,
         )
 
-    def _radio_apply_fallback(self, fresh: object, old_url: str) -> None:
-        station = fresh if isinstance(fresh, RadioStation) else None
-        if station is None or station.stream_url == old_url:
+    def _radio_apply_recovery(self, result: object) -> None:
+        from quill.core.radio.recovery import RecoveryResult
+
+        if not isinstance(result, RecoveryResult):
             return
-        self._announce("That stream has moved; trying its current address.")
-        # Self-heal the saved favorite so the next play starts from the good URL.
-        favorite = self._radio_favorites.find(station.station_uuid)
-        if favorite is not None:
-            favorite.station = station
-            self._save_radio_favorites()
-        self._radio_controller.play_station(station)
+        if result.station is not None:
+            self._announce(result.message)
+            # Self-heal the saved favorite so the next play starts from the good
+            # URL, then play the healed station.
+            favorite = self._radio_favorites.find(
+                result.station.station_uuid or result.station.stream_url
+            )
+            if favorite is not None:
+                favorite.station = result.station
+                self._save_radio_favorites()
+            self._radio_controller.play_station(result.station)
+            return
+        # No confident stream -- announce whatever we learned (candidates to
+        # try via Find Streams, or simply that nothing was found).
+        if result.message:
+            self._announce(result.message)
 
     # -- wake-up timer ------------------------------------------------------------
 

@@ -75,6 +75,7 @@
   "quill/ui/ai_translation_dialog.py::AITranslationDialog._build_ui::wx.TextCtrl": "named",
   "quill/ui/ai_translation_dialog.py::AITranslationDialog._build_ui::wx.TextCtrl#2": "named",
   "quill/ui/app_preferences_dialog.py::PreferencesDialog.__init__::wx.Choice": "named",
+  "quill/ui/app_preferences_dialog.py::PreferencesDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/app_shell.py::AppShellFrame._offer_app_update_install::wx.TextCtrl": "named",
   "quill/ui/assistant_panel.py::AskQuillChatDialog.__init__::wx.Choice": "named",
   "quill/ui/assistant_panel.py::AskQuillChatDialog.__init__::wx.Choice#2": "named",

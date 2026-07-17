@@ -8297,6 +8297,75 @@ chosen over Shoutcast (revocable Developer-ID-gated API) and Live365
 (`html.parser`, no embedded browser) for stream-shaped links, for stations
 not in RadioBrowser&#39;s directory.
 
+**JavaScript players — the Triton Digital / StreamTheWorld resolver
+(`core/radio/triton.py`).** A large class of broadcast stations (thousands of
+US AM/FM stations, and the entire `player.listenlive.co` network) put their
+&quot;Listen Live&quot; button behind a Triton Digital web player. That player is a
+JavaScript PWA: the actual stream URL is *never* in the page HTML — it is
+computed at runtime when the player&#39;s JS calls Triton&#39;s provisioning API. So
+the plain-HTML scanner above finds nothing on those pages, even though a Play
+button is plainly visible. This was a real, reported gap
+(`player.listenlive.co/34461`, &quot;Magic 104.1&quot;/KMGL).
+
+The stream is nonetheless fully derivable **without running any JavaScript**,
+from two static facts the page already exposes:
+
+1. The station **callsign** (mount name) appears verbatim in the Triton PWA&#39;s
+   own asset URLs — the station-logo image is served from
+   `pwaimg.listenlive.co/&lt;CALLSIGN&gt;_&lt;id&gt;_config_station_logo_image_….png`
+   (`callsign_from_page`, with a `station=&lt;callsign&gt;` query fallback).
+2. Triton&#39;s **provisioning API** answers a plain HTTPS GET
+   (`playerservices.streamtheworld.com/api/livestream?station=&lt;CALLSIGN&gt;&amp;transports=http&amp;version=1.9`)
+   with an XML `&lt;live_stream_config&gt;` document listing every mountpoint (one
+   per codec — MP3, HE-AAC — MP3 first) and its CDN servers. A playable URL is
+   simply `https://&lt;server&gt;/&lt;mount&gt;` (`parse_livestream_config` →
+   `resolve_station_streams`, parsed through the hardened `core/safe_xml` so a
+   crafted response cannot mount an entity-expansion attack).
+
+The scan only takes this path when the page *looks* like a Triton player
+(`page_is_triton_player`) and advertises a callsign the API validates
+(status 200), so a non-Triton page or a bad guess degrades to &quot;nothing found&quot;,
+never a wrong stream. It surfaces the resolved mount(s) as ordinary scan
+candidates labelled &quot;*MP3/AAC* stream from the station&#39;s player (*mount*)&quot;.
+The one follow-on egress (`triton.py::_fetch_api`) is a reviewed entry in
+`network_egress_audit.py`, reached only from the same explicit **Scan** button,
+HTTPS-only, and disabled in Safe Mode via `triton.refuse_in_safe_mode`. This
+also generically improves every Triton/StreamTheWorld station, not just the
+one that prompted it. It cannot solve a fully generic JS player with no static
+callsign hint — QUILL deliberately has no embedded arbitrary-site browser — but
+Triton/listenlive.co is the large, tractable case.
+
+**Self-healing stream recovery (`core/radio/recovery.py`, #1065).** A directory
+station&#39;s listed stream can be dead even though the station is perfectly live —
+usually because the real stream is behind a Triton/JavaScript player, so the URL
+the directory carries (or one a user copied off the site&#39;s play button) is a
+web-player address, not a stream. Rather than just failing, on a playback error
+QUILL runs a confidence-ordered recovery ladder off-thread (`recover_stream`),
+one attempt per station per session:
+
+1. **Re-resolve a StreamTheWorld mount (high, always on).** If the failed URL is
+   `*.streamtheworld.com/&lt;MOUNT&gt;`, that mount is re-resolved through Triton&#39;s API
+   to its current server — deterministic, same station and provider.
+2. **Refresh from the directory (high).** If the station has a RadioBrowser id,
+   its current URL is re-fetched; a genuinely different URL is the directory
+   self-healing (this subsumes the older byuuid-only fallback).
+3. **Scan the station&#39;s website (opt-in, default on, off in Safe Mode).** The
+   station&#39;s homepage — and the failed URL itself, when it is a web page — is
+   scanned with the same Triton + &quot;Listen Live&quot; link-following logic Find Streams
+   uses (`link_finder` now follows a bounded allowlist of listen/live/play/tune-in
+   `&lt;a&gt;` links one level deep, since most homepages *link* to the player rather
+   than hosting it). A single unambiguous result — a resolved Triton player, or
+   exactly one stream candidate — is played automatically and self-heals the
+   saved favorite; several candidates are announced so the user can pick them up
+   in Find Streams, never auto-played.
+
+Confident recoveries are announced and self-heal the favorite so the next play
+starts from the good URL. Strategy 3 is a single opt-out
+(`RadioHistory.recover_from_website`, Preferences) because it adds one homepage
+fetch on failure; strategies 1–2 always run. All network goes through the
+already-reviewed egress sites (`triton._fetch_api`, `radio_browser`,
+`link_finder._fetch_html`); `recovery.py` itself makes no direct network call.
+
 **Playback (`quill/ui/radio/player_controller.py`).** One
 `RadioPlayerController`, owned by `MainFrame` for the process&#39;s lifetime,
 wraps the Audio Studio&#39;s `WxMediaEngine` (never libmpv — `MpvAudioEngine`&#39;s
@@ -8341,7 +8410,24 @@ closes properly rather than a hard kill truncating it. `RecordingSettings`
 (format, bitrate, destination, filename pattern, and a `max_duration_minutes`
 safety cap applied via ffmpeg&#39;s own `-t` flag, so a forgotten recording
 cannot grow unbounded even if `stop()` is never called) is a global,
-persisted default. `RecordingScheduler` is an in-process polling thread
+persisted default. Alongside the re-encoding formats (mp3/ogg/flac/wav)
+the format list offers **Raw stream — exactly as sent, no re-encoding
+(lossless)** (`format=&quot;copy&quot;`, a community request): `build_record_command`
+stream-copies the server&#39;s audio packets with `-c:a copy` — no decode, no
+re-encode — so the saved file is bit-for-bit the original broadcast, the
+most faithful capture possible for a listener who wants to do their own
+lossless editing/conversion. Because nothing is decoded, a bitrate and any
+Sound Enhancements filter graph are meaningless and are dropped in this mode.
+The output container matches the stream&#39;s own codec: `RadioRecorder.start`
+runs a bounded `ffprobe` (`build_probe_codec_command`/`parse_probe_codec`,
+`_PROBE_TIMEOUT_SECONDS`) once to read the first audio stream&#39;s codec and
+picks its natural extension (`raw_capture_extension`: mp3→`.mp3`, aac→`.aac`,
+vorbis→`.ogg`, opus→`.opus`, flac→`.flac`, …), falling back to Matroska audio
+(`.mka`) for any unrecognized codec — a universal container that stream-copies
+anything losslessly. The probed extension is resolved once and reused across
+auto-reconnect continuation files (stored in `_active_params`) so a resumed
+recording never re-probes or switches container; a missing/failed `ffprobe`
+degrades to `.mka` rather than blocking the recording. `RecordingScheduler` is an in-process polling thread
 (`_POLL_SECONDS = 20`) — deliberately not an OS-level scheduled task; &quot;while
 QUILL is running&quot; is the explicit, simpler scope requested, with no
 catch-up if QUILL wasn&#39;t open at the scheduled moment. Schedule entries

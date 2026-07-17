@@ -102,6 +102,35 @@ def test_search_stations_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(stations) == 1 and stations[0].name == "WXYZ"
 
 
+def test_search_stations_passes_limit_and_offset(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1064 pagination: a caller can ask for a page beyond the first.
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+
+    def fake_urlopen(request, *a, **k):
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        return _FakeResponse(b"[]")
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    search_stations("news", limit=200, offset=200)
+    assert "limit=200" in seen["url"]
+    assert "offset=200" in seen["url"]
+
+
+def test_search_stations_clamps_limit_and_offset(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+
+    def fake_urlopen(request, *a, **k):
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        return _FakeResponse(b"[]")
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    search_stations("news", limit=9999, offset=-5)  # over the API cap / negative
+    assert "limit=200" in seen["url"]  # capped at the API max
+    assert "offset=0" in seen["url"]  # never negative
+
+
 def test_http_json_fails_over_to_next_mirror(monkeypatch: pytest.MonkeyPatch) -> None:
     _stub_mirrors(monkeypatch, ["bad.example.com", "good.example.com"])
     payload = json.dumps([{"name": "OK", "url": "https://example.com/stream"}]).encode()

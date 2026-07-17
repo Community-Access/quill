@@ -54,6 +54,29 @@ _STREAM_PATH_HINTS = ("/stream", "/listen", "/live", "icecast", "shoutcast", ";s
 _SCRIPT_STRING_URL_RE = re.compile(r"""['"](https?://[^'"\s]+)['"]""")
 _MAX_IFRAMES_TO_FOLLOW = 3
 
+#: Words in a link's visible text or its href that mark it as the station's
+#: "Listen Live"/"Play"/"Tune In" entry point. Many station homepages don't
+#: embed the player on the front page -- they link to it -- so following such a
+#: link one level deep and scanning *that* page is often what actually reaches
+#: the stream (issue #1065). Kept deliberately small and specific to avoid
+#: wandering off into unrelated navigation.
+_LISTEN_LINK_HINTS = (
+    "listen live",
+    "listen now",
+    "listen online",
+    "live stream",
+    "livestream",
+    "tune in",
+    "tunein",
+    "play live",
+    "listen-live",
+    "/listen",
+    "/live",
+    "/player",
+    "/stream",
+)
+_MAX_LISTEN_LINKS_TO_FOLLOW = 3
+
 
 class LinkFinderError(CodedError):
     """A website scan failed (network, or Safe Mode refusal)."""
@@ -108,6 +131,9 @@ class _StreamLinkParser(HTMLParser):
         self.candidates: list[PageStreamCandidate] = []
         #: <iframe src="..."> URLs found, followed one level deep by the caller.
         self.iframe_urls: list[str] = []
+        #: "Listen Live"/"Play"-shaped <a href> URLs, followed one level deep
+        #: by the caller when the page itself yielded no direct candidate.
+        self.listen_urls: list[str] = []
         self._in_title = False
         self._in_script = False
         self._pending_href: str | None = None
@@ -171,6 +197,22 @@ class _StreamLinkParser(HTMLParser):
                 self.candidates.append(
                     PageStreamCandidate(url=url, reason="stream-shaped link", label=label)
                 )
+            elif _looks_like_listen_link(lowered, label):
+                url = urllib.parse.urljoin(self._base_url, href)
+                if url.startswith("https://"):
+                    self.listen_urls.append(url)
+
+
+def _looks_like_listen_link(lowered_href: str, label: str) -> bool:
+    """True when an ``<a>`` is a "Listen Live"/"Play"/"Tune In" entry point.
+
+    Matches the small :data:`_LISTEN_LINK_HINTS` allowlist against the link's
+    visible text or its href, so the scanner can follow it one level deeper to
+    the page that actually hosts the player (issue #1065). Deliberately narrow
+    so a scan never wanders off into unrelated site navigation.
+    """
+    haystack = f"{label.lower()} {lowered_href}"
+    return any(hint in haystack for hint in _LISTEN_LINK_HINTS)
 
 
 def _fetch_html(url: str) -> str:
@@ -205,8 +247,19 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
 
     Follows up to :data:`_MAX_IFRAMES_TO_FOLLOW` embedded ``<iframe>`` pages
     one level deep (station sites commonly embed a third-party player rather
-    than linking a stream directly); a failed iframe fetch is skipped, not
-    fatal to the overall scan.
+    than linking a stream directly), and up to
+    :data:`_MAX_LISTEN_LINKS_TO_FOLLOW` "Listen Live"/"Play"/"Tune In" ``<a>``
+    links one level deep when the page itself yielded no direct candidate
+    (many homepages *link* to the player rather than hosting it -- issue
+    #1065). A failed sub-fetch is skipped, not fatal to the overall scan.
+
+    JavaScript players (Triton Digital / StreamTheWorld, the whole
+    ``player.listenlive.co`` network) compute their stream URL at runtime, so
+    it is never a literal string in the HTML. For those, the callsign the page
+    *does* advertise (in the Triton PWA's own asset URLs) is resolved to a real
+    playable stream through Triton's JS-free provisioning API -- see
+    :mod:`quill.core.radio.triton`. This is the only way the visible Play
+    button on such a page can be surfaced without running JavaScript.
     """
     refuse_in_safe_mode(safe_mode)
     normalized = normalize_page_url(url)
@@ -217,21 +270,24 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     parser.feed(html_text)
 
     all_candidates = list(parser.candidates)
-    for iframe_url in parser.iframe_urls[:_MAX_IFRAMES_TO_FOLLOW]:
-        try:
-            iframe_html = _fetch_html(iframe_url)
-        except LinkFinderError:
-            continue
-        iframe_parser = _StreamLinkParser(iframe_url)
-        iframe_parser.feed(iframe_html)
-        for candidate in iframe_parser.candidates:
-            all_candidates.append(
-                PageStreamCandidate(
-                    url=candidate.url,
-                    reason=f"{candidate.reason} (found via embedded iframe)",
-                    label=candidate.label,
-                )
+    all_candidates.extend(
+        _follow_pages(parser.iframe_urls, _MAX_IFRAMES_TO_FOLLOW, "embedded iframe")
+    )
+    all_candidates.extend(_triton_candidates(normalized, html_text, safe_mode=safe_mode))
+
+    # Only chase "Listen Live"/"Play" links when the page and its iframes gave
+    # us nothing directly -- following them otherwise just adds noise and extra
+    # fetches when a stream was already in hand.
+    if not all_candidates:
+        all_candidates.extend(
+            _follow_pages(
+                parser.listen_urls,
+                _MAX_LISTEN_LINKS_TO_FOLLOW,
+                "Listen link",
+                normalized,
+                safe_mode=safe_mode,
             )
+        )
 
     # De-duplicate by URL, preserving first-seen order and reason.
     seen: dict[str, PageStreamCandidate] = {}
@@ -242,3 +298,79 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
         favicon_url=parser.favicon,
         candidates=list(seen.values()),
     )
+
+
+def _follow_pages(
+    urls: list[str],
+    cap: int,
+    reason_suffix: str,
+    base: str = "",
+    *,
+    safe_mode: bool = False,
+) -> list[PageStreamCandidate]:
+    """Fetch up to *cap* sub-pages and return their candidates, each tagged
+    ``(found via <reason_suffix>)``.
+
+    Used for both embedded ``<iframe>`` pages and followed "Listen Live" links.
+    For the latter, each sub-page is *also* run through the Triton resolver
+    (``base`` non-empty), since a station's linked player page is exactly where
+    a Triton/StreamTheWorld player tends to live. A failed sub-fetch is skipped.
+    """
+    out: list[PageStreamCandidate] = []
+    for sub_url in urls[:cap]:
+        try:
+            sub_html = _fetch_html(sub_url)
+        except LinkFinderError:
+            continue
+        sub_parser = _StreamLinkParser(sub_url)
+        sub_parser.feed(sub_html)
+        for candidate in sub_parser.candidates:
+            out.append(
+                PageStreamCandidate(
+                    url=candidate.url,
+                    reason=f"{candidate.reason} (found via {reason_suffix})",
+                    label=candidate.label,
+                )
+            )
+        if base:  # a followed Listen link may itself be a Triton player page
+            for candidate in _triton_candidates(sub_url, sub_html, safe_mode=safe_mode):
+                out.append(
+                    PageStreamCandidate(
+                        url=candidate.url,
+                        reason=f"{candidate.reason} (found via {reason_suffix})",
+                        label=candidate.label,
+                    )
+                )
+    return out
+
+
+def _triton_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
+    """Resolve a Triton Digital / StreamTheWorld player page to stream
+    candidates, or ``[]`` when the page is not a Triton player.
+
+    A Triton player's stream is JS-computed and absent from the HTML, so the
+    static parser above finds nothing on it. When the page looks like a Triton
+    player and advertises a callsign, this resolves it through Triton's JS-free
+    provisioning API and offers the real mount(s) as candidates. Any failure
+    (not a Triton page, no callsign, API unreachable, Safe Mode) degrades to an
+    empty list so it never breaks the rest of the scan.
+    """
+    from quill.core.radio import triton
+
+    if not triton.page_is_triton_player(url, html):
+        return []
+    callsign = triton.callsign_from_page(url, html)
+    if not callsign:
+        return []
+    try:
+        streams = triton.resolve_station_streams(callsign, safe_mode=safe_mode)
+    except triton.TritonResolverError:
+        return []
+    return [
+        PageStreamCandidate(
+            url=stream.url,
+            reason=f"{stream.codec} stream from the station's player ({stream.mount})",
+            label=stream.mount,
+        )
+        for stream in streams
+    ]

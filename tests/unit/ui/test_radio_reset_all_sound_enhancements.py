@@ -32,7 +32,11 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
     frame.frame = object()
     frame._announce = lambda _msg: None
     frame._radio_history = SimpleNamespace(
-        eq_bass_db=1.0, eq_mid_db=2.0, eq_treble_db=3.0, compressor_enabled=True
+        eq_bass_db=1.0,
+        eq_mid_db=2.0,
+        eq_treble_db=3.0,
+        compressor_enabled=True,
+        now_playing_template="{title}[ by {artist}]",
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
@@ -150,6 +154,7 @@ def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPa
     frame._radio_history.resume_on_launch = False
     frame._radio_history.check_updates_on_startup = False
     frame._radio_history.announce_dialog_transitions = False
+    frame._radio_history.recover_from_website = True
 
     RadioAppFrame._open_preferences(frame)
 

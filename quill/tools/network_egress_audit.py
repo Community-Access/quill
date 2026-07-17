@@ -153,6 +153,18 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "HTTPS-only over a verified TLS context, bounded timeout and response "
         "size. Disabled in Safe Mode via link_finder.refuse_in_safe_mode."
     ),
+    "core/radio/triton.py::_fetch_api": (
+        "Follow-on egress for 'Find Streams from a Website...' when the scanned "
+        "page is a Triton Digital / StreamTheWorld web player (e.g. the "
+        "player.listenlive.co network). Such players compute their stream URL "
+        "in JavaScript, so it never appears in the page HTML; this resolves the "
+        "callsign the page advertises to a real playable mount through Triton's "
+        "JS-free provisioning API (playerservices.streamtheworld.com). One "
+        "HTTPS GET, reached only from the same explicit Scan button and only "
+        "for pages that look like Triton players (triton.page_is_triton_player). "
+        "HTTPS-only over a verified TLS context, bounded timeout and response "
+        "size. Disabled in Safe Mode via triton.refuse_in_safe_mode."
+    ),
     "core/radio/radio_browser.py::_http_json": (
         "Single egress site for the Internet Radio feature: station search, "
         "tag/country lists, and click-through vote registration against "

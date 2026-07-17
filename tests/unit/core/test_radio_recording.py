@@ -108,6 +108,83 @@ def test_build_record_command_includes_af_flag_when_filter_graph_given() -> None
     assert args.index("-i") < af_index  # -af belongs to the output side, after -i
 
 
+def test_build_record_command_copy_streams_verbatim() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mka"),
+        format="copy",
+        bitrate_kbps=192,
+        duration_seconds=3600,
+    )
+    # -c:a copy, no re-encode, no bitrate, and still duration-capped.
+    assert args[args.index("-c:a") + 1] == "copy"
+    assert "192k" not in args
+    assert "libmp3lame" not in args
+    assert "-t" in args
+
+
+def test_build_record_command_copy_ignores_filter_graph() -> None:
+    # Nothing is decoded in a raw copy, so a Sound Enhancements filter can't
+    # apply and must be dropped rather than produce a broken command.
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mka"),
+        format="copy",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        filter_graph="acompressor=threshold=-18dB",
+    )
+    assert "-af" not in args
+    assert args[args.index("-c:a") + 1] == "copy"
+
+
+def test_build_probe_codec_command_targets_first_audio_stream() -> None:
+    args = recording.build_probe_codec_command("ffprobe", "https://example.com/stream")
+    assert args[0] == "ffprobe"
+    assert "a:0" in args
+    assert "stream=codec_name" in args
+    assert args[-1] == "https://example.com/stream"
+
+
+def test_parse_probe_codec_reads_first_nonblank_line_lowercased() -> None:
+    assert recording.parse_probe_codec("\nMP3\n") == "mp3"
+    assert recording.parse_probe_codec("") == ""
+
+
+def test_raw_capture_extension_maps_known_codecs_and_falls_back() -> None:
+    assert recording.raw_capture_extension("mp3") == "mp3"
+    assert recording.raw_capture_extension("aac") == "aac"
+    assert recording.raw_capture_extension("vorbis") == "ogg"
+    assert recording.raw_capture_extension("opus") == "opus"
+    assert recording.raw_capture_extension("flac") == "flac"
+    # Unknown codec -> Matroska audio, the universal lossless copy container.
+    assert recording.raw_capture_extension("some_new_codec") == "mka"
+
+
+def test_record_format_labels_cover_every_format() -> None:
+    from quill.core.radio.recording import RECORD_FORMAT_LABELS, RECORD_FORMATS
+
+    assert set(RECORD_FORMAT_LABELS) == set(RECORD_FORMATS)
+
+
+def test_start_copy_probes_extension_and_names_file_by_codec(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
+    # Stand in for the ffprobe subprocess: the stream is AAC.
+    monkeypatch.setattr(recording, "_probe_capture_extension", lambda _url: "aac")
+    recorder = RadioRecorder()
+    dest = recorder.start(
+        station_name="WXYZ",
+        stream_url="https://example.com/stream",
+        settings=RecordingSettings(format="copy", destination_root=str(tmp_path)),
+    )
+    assert dest.suffix == ".aac"
+    recorder.stop()
+
+
 def test_apply_sound_enhancements_defaults_off_and_round_trips() -> None:
     assert RecordingSettings().apply_sound_enhancements is False
     settings = RecordingSettings(apply_sound_enhancements=True)

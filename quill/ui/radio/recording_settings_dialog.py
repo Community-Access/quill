@@ -6,7 +6,11 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.radio.recording import RECORD_FORMATS, RecordingSettings
+from quill.core.radio.recording import (
+    RECORD_FORMAT_LABELS,
+    RECORD_FORMATS,
+    RecordingSettings,
+)
 from quill.ui.dialog_contract import apply_modal_ids
 
 _BITRATE_CHOICES = (96, 128, 160, 192, 256, 320)
@@ -40,8 +44,14 @@ class RecordingSettingsDialog:
         grid.AddGrowableCol(1, 1)
 
         grid.Add(wx.StaticText(self.dialog, label="&Format:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._format_choice = wx.Choice(self.dialog, choices=list(RECORD_FORMATS))
-        self._format_choice.SetName("Audio format for recordings")
+        self._format_choice = wx.Choice(
+            self.dialog, choices=[RECORD_FORMAT_LABELS[f] for f in RECORD_FORMATS]
+        )
+        self._format_choice.SetName(
+            "Audio format for recordings. Raw stream saves exactly what the "
+            "station sends, with no re-encoding -- the most lossless capture, "
+            "for your own editing"
+        )
         if settings.format in RECORD_FORMATS:
             self._format_choice.SetSelection(RECORD_FORMATS.index(settings.format))
         grid.Add(self._format_choice, 1, wx.EXPAND)

@@ -26,6 +26,33 @@ _ACB_MEDIA = acb_media.CATEGORY_LABEL
 _SEARCH_RESULTS = "Search Results"
 _CATEGORIES = (_FAVORITES, _ACB_MEDIA, _SEARCH_RESULTS)
 
+#: How many stations a search returns (#1064). RadioBrowser's own API caps a
+#: single request at 200; we ask for all of it (ordered most-listened first)
+#: instead of the library default of 50, which was quietly hiding the long
+#: tail of a broad search like "news". When a result set actually reaches the
+#: cap, the dialog says so and suggests narrowing, rather than pretending the
+#: 200th station is the last one that exists.
+_SEARCH_LIMIT = 200
+
+
+def _search_result_summary(count: int, *, more: bool = False) -> str:
+    """The spoken/visible summary of a finished search (#1064).
+
+    Pure so it's unit-testable without wx. When *more* is set (the last page
+    filled, so the directory has further matches), it points the listener at
+    the More Stations button and at narrowing -- so a broad search like "news"
+    no longer looks like the 200th station is the last one in the world.
+    """
+    if count == 0:
+        return "No stations found. Try a different name, tag, or country."
+    plural = "" if count == 1 else "s"
+    if more:
+        return (
+            f"{count} stations, most-listened first -- press More Stations for the "
+            "next page, or add a tag or country to narrow the list."
+        )
+    return f"{count} station{plural} found."
+
 
 class StationBrowserDialog:
     """Browse/search/play/favorite internet radio stations."""
@@ -57,6 +84,17 @@ class StationBrowserDialog:
 
         self._current_results: list[RadioStation] = []
         self._search_results: list[RadioStation] = []
+        # Pagination state for #1064: the query behind the current results, the
+        # RadioBrowser and SomaFM halves kept apart so paging appends only more
+        # RadioBrowser rows, the next page's offset, and whether the last page
+        # was full (so more may exist).
+        self._search_rb: list[RadioStation] = []
+        self._search_soma: list[RadioStation] = []
+        self._search_query = ""
+        self._search_tag = ""
+        self._search_country = ""
+        self._search_offset = 0
+        self._search_more_available = False
 
         self.dialog = wx.Dialog(
             parent, title="Internet Radio", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -155,6 +193,9 @@ class StationBrowserDialog:
         self._favorite_btn = wx.Button(self.dialog, label="Add to &Favorites")
         self._favorite_btn.SetName("Add or remove the selected station from Favorites")
         self._favorite_btn.Enable(False)
+        self._more_btn = wx.Button(self.dialog, label="&More Stations")
+        self._more_btn.SetName("Load the next page of search results")
+        self._more_btn.Enable(False)
         add_custom_btn = wx.Button(self.dialog, label="Add &Custom Station...")
         add_custom_btn.SetName("Add a station by typing its own stream link")
         link_finder_btn = wx.Button(self.dialog, label="Find Streams from a &Website...")
@@ -163,6 +204,7 @@ class StationBrowserDialog:
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._more_btn, 0, wx.RIGHT, 6)
         btn_row.Add(add_custom_btn, 0, wx.RIGHT, 6)
         btn_row.Add(link_finder_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
@@ -181,10 +223,19 @@ class StationBrowserDialog:
         self._results.Bind(wx.EVT_CONTEXT_MENU, self._on_results_context_menu)
         self._play_btn.Bind(wx.EVT_BUTTON, self._on_play)
         self._favorite_btn.Bind(wx.EVT_BUTTON, self._on_toggle_favorite)
+        self._more_btn.Bind(wx.EVT_BUTTON, self._on_more_stations)
         add_custom_btn.Bind(wx.EVT_BUTTON, self._on_add_custom)
         link_finder_btn.Bind(wx.EVT_BUTTON, self._on_link_finder)
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute_toggle)
+        # #1070: Ctrl+Up/Ctrl+Down (Volume Up/Down) must work while browsing.
+        # This is a modal dialog, so the frame's Playback-menu accelerators
+        # never fire here; and the results ListCtrl (the default focus after a
+        # search) claims bare Up/Down for its own row navigation. A dialog-wide
+        # CHAR_HOOK catches the Ctrl chord before any child control sees it,
+        # regardless of where focus sits (list, slider, buttons), and leaves
+        # bare Up/Down untouched so list navigation and the slider still work.
+        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         state = getattr(self._controller, "state", None)
         if state is not None:
@@ -247,7 +298,7 @@ class StationBrowserDialog:
             self._fill_results(stations, status=status)
         else:
             status = (
-                f"{len(self._search_results)} search result(s)."
+                _search_result_summary(len(self._search_results), more=self._search_more_available)
                 if self._search_results
                 else "Search above to see results here."
             )
@@ -273,39 +324,107 @@ class StationBrowserDialog:
             return
         self._status.SetLabel("Searching stations...")
         self._search_btn.Enable(False)
+        self._more_btn.Enable(False)
+        # Remember the query so "More Stations" can page the same search.
+        self._search_query, self._search_tag, self._search_country = name, tag, country
+        self._search_offset = 0
 
-        def _do_search(**_kwargs: Any) -> list[RadioStation]:
-            stations = radio_browser.search_stations(
-                name, tag=tag, country=country, safe_mode=self._safe_mode
+        def _do_search(**_kwargs: Any) -> tuple[list[RadioStation], list[RadioStation]]:
+            radio = radio_browser.search_stations(
+                name, tag=tag, country=country, limit=_SEARCH_LIMIT, safe_mode=self._safe_mode
             )
             # Blended in, not a separate category: SomaFM has no country data
             # of its own, so a country-only search skips it rather than
             # returning irrelevant results. A SomaFM hiccup never fails the
-            # whole search -- RadioBrowser's results still come back.
+            # whole search -- RadioBrowser's results still come back. SomaFM's
+            # ~30-channel list has no pages of its own, so it rides along with
+            # the first RadioBrowser page only; "More Stations" pages
+            # RadioBrowser alone.
+            soma: list[RadioStation] = []
             if name or tag:
                 try:
-                    stations = stations + soma_fm.search_stations(
-                        name or tag, safe_mode=self._safe_mode
-                    )
+                    soma = soma_fm.search_stations(name or tag, safe_mode=self._safe_mode)
                 except soma_fm.SomaFmError:
-                    pass
-            return stations
+                    soma = []
+            return radio, soma
 
         self._task_manager.submit(
             "radio-search",
             _do_search,
-            on_success=lambda _op, stations: self._on_search_done(stations, None),
-            on_failure=lambda _op, exc: self._on_search_done([], exc),
+            on_success=lambda _op, payload: self._on_search_done(payload, None),
+            on_failure=lambda _op, exc: self._on_search_done(([], []), exc),
         )
 
-    def _on_search_done(self, stations: list[RadioStation], error: BaseException | None) -> None:
+    def _on_search_done(
+        self,
+        payload: tuple[list[RadioStation], list[RadioStation]],
+        error: BaseException | None,
+    ) -> None:
         self._search_btn.Enable(True)
-        self._search_results = stations
         if error is not None:
             self._status.SetLabel(f"Search failed: {error}")
             return
+        radio, soma = payload
+        self._search_rb = radio
+        self._search_soma = soma
+        self._search_results = radio + soma
+        self._search_offset = len(radio)
+        self._search_more_available = len(radio) >= _SEARCH_LIMIT
+        self._more_btn.Enable(self._search_more_available)
         self._show_category(_SEARCH_RESULTS)
-        self._announce(f"{len(stations)} search results")
+        self._announce(
+            _search_result_summary(len(self._search_results), more=self._search_more_available)
+        )
+
+    def _on_more_stations(self, _event: object) -> None:
+        """Fetch and append the next page of RadioBrowser results (#1064)."""
+        if not self._search_more_available:
+            return
+        self._more_btn.Enable(False)
+        self._status.SetLabel("Loading more stations...")
+        offset = self._search_offset
+        name, tag, country = self._search_query, self._search_tag, self._search_country
+
+        def _do_more(**_kwargs: Any) -> list[RadioStation]:
+            return radio_browser.search_stations(
+                name,
+                tag=tag,
+                country=country,
+                limit=_SEARCH_LIMIT,
+                offset=offset,
+                safe_mode=self._safe_mode,
+            )
+
+        self._task_manager.submit(
+            "radio-search-more",
+            _do_more,
+            on_success=lambda _op, stations: self._on_more_done(stations, None),
+            on_failure=lambda _op, exc: self._on_more_done([], exc),
+        )
+
+    def _on_more_done(self, stations: list[RadioStation], error: BaseException | None) -> None:
+        if error is not None:
+            self._status.SetLabel(f"Could not load more: {error}")
+            self._more_btn.Enable(True)  # let the user try again
+            return
+        first_new_index = len(self._search_results)
+        self._search_rb = self._search_rb + stations
+        self._search_results = self._search_rb + self._search_soma
+        self._search_offset += len(stations)
+        self._search_more_available = len(stations) >= _SEARCH_LIMIT
+        self._more_btn.Enable(self._search_more_available)
+        self._show_category(_SEARCH_RESULTS)
+        # Land focus on the first newly added station so the reader picks up
+        # right where the previous page ended, not back at the top.
+        if stations and first_new_index < len(self._current_results):
+            self._results.Select(first_new_index)
+            self._results.Focus(first_new_index)
+            self._results.EnsureVisible(first_new_index)
+        self._announce(
+            f"Added {len(stations)} more; {len(self._search_results)} stations now."
+            if stations
+            else "No more stations."
+        )
 
     def _on_result_selected(self, event: object) -> None:
         index = event.GetIndex()
@@ -388,6 +507,39 @@ class StationBrowserDialog:
             self._controller.play_station(station)
             self._announce(f"Playing {station.name}")
         self._refresh_play_button()
+
+    def _on_char_hook(self, event: object) -> None:
+        """Handle Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the
+        dialog (#1070); everything else passes through untouched."""
+        wx = self._wx
+        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
+            code = event.GetKeyCode()
+            if code == wx.WXK_UP:
+                self._adjust_volume(up=True)
+                return
+            if code == wx.WXK_DOWN:
+                self._adjust_volume(up=False)
+                return
+        event.Skip()
+
+    def _adjust_volume(self, *, up: bool) -> None:
+        """Step the radio volume and keep the dialog's own slider/mute in sync.
+
+        Goes through the controller (the single source of truth every surface
+        shares), then mirrors the new level onto this dialog's slider and mute
+        button and announces it, matching the wording of the Playback menu's
+        Volume Up/Down.
+        """
+        if up:
+            self._controller.volume_up()
+        else:
+            self._controller.volume_down()
+        state = getattr(self._controller, "state", None)
+        if state is None:
+            return
+        self._volume_slider.SetValue(state.volume_percent)
+        self._mute_btn.SetValue(state.muted)
+        self._announce(f"Radio volume {state.volume_percent}")
 
     def _on_volume_slider(self, _event: object) -> None:
         self._controller.set_volume(self._volume_slider.GetValue())
