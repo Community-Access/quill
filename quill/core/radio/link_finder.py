@@ -80,6 +80,17 @@ _LISTEN_LINK_HINTS = (
 )
 _MAX_LISTEN_LINKS_TO_FOLLOW = 3
 
+#: Known third-party station directories/portals. A *page* URL on one of these
+#: hosts (an iHeart ``/live/<slug>-<id>/`` or a TuneIn ``/radio/<name>-s<id>/``
+#: landing page) is never itself a playable stream -- the real stream is
+#: embedded in the page's inline player. Such links are followed one level deep
+#: (like a "Listen Live" link) so the embedded stream is extracted, instead of
+#: being offered as a bogus stream candidate. Without this, iHeart ``/live``
+#: links were flagged as "stream-shaped" (``/live`` is a path hint) and the
+#: unplayable portal page URL was handed to the user (issue #1087).
+_PORTAL_HOSTS = ("iheart.com", "tunein.com")
+_PORTAL_PAGE_PATH_HINTS = ("/live/", "/radio/", "/podcast/")
+
 
 class LinkFinderError(CodedError):
     """A website scan failed (network, or Safe Mode refusal)."""
@@ -192,6 +203,15 @@ class _StreamLinkParser(HTMLParser):
             lowered = href.lower()
             if lowered.startswith(("mailto:", "javascript:", "#")):
                 return
+            joined = urllib.parse.urljoin(self._base_url, href)
+            if joined.startswith(("https://", "http://")) and _is_portal_page_url(joined):
+                # issue #1087: a known portal/directory page (iHeart /live,
+                # TuneIn /radio) is a player landing page, never a direct
+                # stream. Follow it one level deep so the real embedded stream
+                # URL is pulled from its inline player, instead of offering the
+                # unplayable portal page URL as a candidate.
+                self.listen_urls.append(joined)
+                return
             if lowered.endswith(_STREAM_EXTENSIONS):
                 url = urllib.parse.urljoin(self._base_url, href)
                 self.candidates.append(
@@ -219,6 +239,23 @@ def _looks_like_listen_link(lowered_href: str, label: str) -> bool:
     """
     haystack = f"{label.lower()} {lowered_href}"
     return any(hint in haystack for hint in _LISTEN_LINK_HINTS)
+
+
+def _is_portal_page_url(url: str) -> bool:
+    """True when *url* is a known station-directory portal page (iHeart/TuneIn).
+
+    Such a page is a player/landing page, never a direct stream, so the scanner
+    follows it one level deep to extract the real embedded stream rather than
+    offering the portal page URL itself as a candidate (issue #1087). Matching
+    is host + path scoped: the same ``/live/`` path fragment on a station's own
+    domain is unaffected, only true portal hosts are treated this way.
+    """
+    parsed = urllib.parse.urlsplit(url)
+    host = (parsed.hostname or "").lower()
+    if not any(host == portal or host.endswith("." + portal) for portal in _PORTAL_HOSTS):
+        return False
+    path = parsed.path.lower()
+    return any(hint in path for hint in _PORTAL_PAGE_PATH_HINTS)
 
 
 _FETCH_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError)

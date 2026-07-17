@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixes
+
+- **Find Streams from a Website now resolves iHeart (and TuneIn) station pages to a playable stream instead of returning the page URL (#1087).** Scanning a site that links to an iHeart `/live/...` player page used to hand back the iHeart page URL itself — which does nothing when you press play — because `/live` is a stream-shaped path hint that short-circuited the scanner before it followed the link. iHeart/TuneIn portal page links are now followed one level deep like any "Listen Live" link, so the real stream embedded in the page's inline player (an `stream.revma.ihrhls.com/.../hls.m3u8` HLS URL, for instance) is extracted and offered instead. A station's own `/live/` path on its own domain is unaffected.
+
 ### Improved
 
 - **Manage Favorites: Move Up/Down now says where the station landed (quill-radio #1).** Reordering a favorite used to announce a bare "Moved down" with no context. It now names the neighbor it now sits next to — "Moved down, now above Delilah Stream" — reusing the same station labels the Mark-and-Move path already speaks. At a folder edge it names the other neighbor instead, so there's always a reference point.
