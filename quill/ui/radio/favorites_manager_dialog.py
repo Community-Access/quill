@@ -25,6 +25,25 @@ _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
 _NEW_FOLDER_CHOICE = "(New folder...)"
 
 
+def move_announcement(store: RadioFavoritesStore, key: str, delta: int) -> str:
+    """Spoken result of a Move Up/Down, naming the neighbor it now sits next to.
+
+    wx-free so it is unit-testable. Reports the station now on the side the
+    entry moved toward ("Moved down, now above X"); at a folder edge it names
+    the other neighbor instead, so the announcement always has a reference
+    point when one exists (quill-radio #1)."""
+    direction = "down" if delta > 0 else "up"
+    toward = store.neighbor_in_folder(key, 1 if delta > 0 else -1)
+    if toward is not None:
+        side = "above" if delta > 0 else "below"
+        return f"Moved {direction}, now {side} {toward.display_label}"
+    away = store.neighbor_in_folder(key, -1 if delta > 0 else 1)
+    if away is not None:
+        side = "below" if delta > 0 else "above"
+        return f"Moved {direction}, now {side} {away.display_label}"
+    return f"Moved {direction}"
+
+
 class FavoritesManagerDialog:
     """Search, play, remove, reorder, and file favorite stations."""
 
@@ -324,7 +343,7 @@ class FavoritesManagerDialog:
             self._announce("Already at the edge of its folder.")
             return
         self._changed(keep_key=favorite.key)
-        self._announce(f"Moved {'down' if delta > 0 else 'up'}")
+        self._announce(move_announcement(self._store, favorite.key, delta))
 
     def _on_mark(self) -> None:
         favorite = self._selected_favorite()
