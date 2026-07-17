@@ -93,7 +93,7 @@ class RecordingSettings:
 
     format: str = "mp3"  # one of RECORD_FORMATS
     bitrate_kbps: int = _DEFAULT_BITRATE_KBPS  # ignored for flac/wav (lossless)
-    destination_root: str = ""  # "" = default (<data_dir>/radio_recordings)
+    destination_root: str = ""  # "" = default (~/Music/Quill Radio Recordings)
     filename_pattern: str = _DEFAULT_FILENAME_PATTERN  # tokens: {station} {date} {time}
     max_duration_minutes: int = _DEFAULT_MAX_DURATION_MINUTES  # safety cap on every recording
     # Auto-reconnect: when the internet hiccups mid-recording, ffmpeg first
