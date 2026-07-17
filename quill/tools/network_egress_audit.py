@@ -212,6 +212,16 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "playback-driven cadence or the explicit What's Playing command; "
         "callers are blocked in Safe Mode with the rest of Internet Radio."
     ),
+    "core/radio/station_status.py::_http_get_text": (
+        "What's Playing free fallback (#1111): reads the current track from the "
+        "station server's own Icecast/SHOUTcast status endpoint "
+        "(/status-json.xsl, /stats, /7.html) on the SAME host the user is "
+        "already streaming (no third party). Reached only when the ICY tap and "
+        "the player's in-band title both gave nothing; runs off-thread on the "
+        "same playback-driven cadence / What's Playing command as the ICY read, "
+        "reads one small bounded response, and is refused in Safe Mode via "
+        "read_server_now_playing's safe_mode guard."
+    ),
     "core/updates.py::fetch_update_manifest": (
         "Update check; gated by the user's update-check setting and shown in the "
         "update UI. Verified TLS."

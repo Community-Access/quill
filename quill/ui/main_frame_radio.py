@@ -317,10 +317,37 @@ class RadioMixin:
                 # Engine-native fallback (mpv media-title): some hosts
                 # reject the out-of-band ICY tap, and HLS has no ICY at all.
                 resolved = controller.engine_track_title()
+            if not resolved:
+                # Free tier-1 fallback (#1111): the station's own Icecast/
+                # SHOUTcast status endpoint, off-thread. Only reached when both
+                # ICY and the player gave nothing, so HLS streams (which the
+                # player already titles) never make these extra requests.
+                self._radio_fetch_server_now_playing(url, announce_result)
+                return
             self._wx.CallAfter(self._radio_apply_track_title, resolved, announce_result)
 
         self._task_manager.submit(
             "radio-track-title",
+            _fetch,
+            on_success=_done,
+            on_failure=lambda *_a: None,
+        )
+
+    def _radio_fetch_server_now_playing(self, url: str, announce_result: bool) -> None:
+        """Free #1111 fallback: read the current track from the station server's
+        own status endpoint (Icecast/SHOUTcast) off-thread when ICY and the
+        player exposed no title."""
+
+        def _fetch(**_kwargs: object) -> str:
+            from quill.core.radio.station_status import read_server_now_playing
+
+            return read_server_now_playing(url, safe_mode=self._safe_mode)
+
+        def _done(_op: str, title: object) -> None:
+            self._wx.CallAfter(self._radio_apply_track_title, str(title or ""), announce_result)
+
+        self._task_manager.submit(
+            "radio-now-playing",
             _fetch,
             on_success=_done,
             on_failure=lambda *_a: None,
