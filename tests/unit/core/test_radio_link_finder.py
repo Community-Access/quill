@@ -264,3 +264,91 @@ def test_scan_page_for_streams_caps_iframes_followed(monkeypatch: pytest.MonkeyP
     scan_page_for_streams("example.com")
     # One fetch for the main page, plus at most _MAX_IFRAMES_TO_FOLLOW iframes.
     assert len(fetched) == 1 + lf._MAX_IFRAMES_TO_FOLLOW
+
+
+# -- certificate-mismatch fallback + http listen links (the magic104.com case) --
+
+
+def test_www_variant_toggles_the_host() -> None:
+    assert lf._www_variant("https://www.magic104.com/") == "https://magic104.com/"
+    assert lf._www_variant("https://magic104.com/x") == "https://www.magic104.com/x"
+
+
+def test_fetch_retries_www_variant_on_certificate_hostname_mismatch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # www.magic104.com's certificate names only magic104.com: the https
+    # fetch of the typed host fails verification, and the www-toggled
+    # variant (fully verified) must be tried before giving up.
+    import ssl as ssl_module
+
+    calls: list[str] = []
+
+    def fake_get(url: str) -> str:
+        calls.append(url)
+        if url == "https://www.magic104.com/":
+            raise ssl_module.SSLCertVerificationError("hostname mismatch")
+        return "<html><title>ok</title></html>"
+
+    monkeypatch.setattr(lf, "_http_get_text", fake_get)
+    html = lf._fetch_html("https://www.magic104.com/")
+    assert "ok" in html
+    assert calls == ["https://www.magic104.com/", "https://magic104.com/"]
+
+
+def test_fetch_falls_back_to_plain_http_when_both_https_hosts_fail(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ssl as ssl_module
+
+    calls: list[str] = []
+
+    def fake_get(url: str) -> str:
+        calls.append(url)
+        if url.startswith("https://"):
+            raise ssl_module.SSLCertVerificationError("hostname mismatch")
+        return "<html>plain</html>"
+
+    monkeypatch.setattr(lf, "_http_get_text", fake_get)
+    html = lf._fetch_html("https://www.example.com/")
+    assert "plain" in html
+    assert calls[-1] == "http://www.example.com/"
+
+
+def test_fetch_does_not_retry_on_non_certificate_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Only a certificate hostname failure earns the fallback; a plain
+    # network error must not multiply into three fetch attempts.
+    calls: list[str] = []
+
+    def fake_get(url: str) -> str:
+        calls.append(url)
+        raise TimeoutError("no route")
+
+    monkeypatch.setattr(lf, "_http_get_text", fake_get)
+    with pytest.raises(lf.LinkFinderError):
+        lf._fetch_html("https://station.example.com/")
+    assert calls == ["https://station.example.com/"]
+
+
+def test_http_listen_link_is_followed_not_dropped(monkeypatch: pytest.MonkeyPatch) -> None:
+    # magic104.com writes its player link as http://player.listenlive.co/...;
+    # it must be followed (upgraded by _fetch_html), not silently dropped.
+    home = (
+        "<html><body>"
+        '<a href="http://player.listenlive.co/34461"><span>Listen Live</span></a>'
+        "</body></html>"
+    )
+    player = '<html><body><audio src="/live/kmgl.mp3"></audio></body></html>'
+    pages = {
+        "https://station.example.com": home,
+        "http://player.listenlive.co/34461": player,
+    }
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    result = scan_page_for_streams("station.example.com")
+    assert any("kmgl.mp3" in c.url for c in result.candidates)
+
+
+def test_listenlive_href_matches_even_with_an_image_only_label() -> None:
+    assert lf._looks_like_listen_link("http://player.listenlive.co/34461", "")

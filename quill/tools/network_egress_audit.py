@@ -145,13 +145,18 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "a bounded timeout. Disabled in Safe Mode via "
         "itunes_search.refuse_in_safe_mode."
     ),
-    "core/radio/link_finder.py::_fetch_html": (
+    "core/radio/link_finder.py::_http_get_text": (
         "Single egress site for 'Find Streams from a Website...': fetches the "
         "one page the user typed to look for a station's own stream link "
         "(audio/source tags, playlist-shaped hrefs). Reached only by the "
         "explicit Scan button, which states the exact URL before fetching. "
-        "HTTPS-only over a verified TLS context, bounded timeout and response "
-        "size. Disabled in Safe Mode via link_finder.refuse_in_safe_mode."
+        "HTTPS-first over a verified TLS context, bounded timeout and "
+        "response size; on a certificate *hostname* failure only, _fetch_html "
+        "retries the www-toggled host (still fully verified) and then the "
+        "plain-http entry point so the server's own redirect can land on its "
+        "valid https home (the www.magic104.com case) -- verification is "
+        "never relaxed. Disabled in Safe Mode via "
+        "link_finder.refuse_in_safe_mode."
     ),
     "core/radio/triton.py::_fetch_api": (
         "Follow-on egress for 'Find Streams from a Website...' when the scanned "
