@@ -53,6 +53,10 @@ class RadioMixin:
         # or startup dies with AttributeError('frame').
         self._radio_favorites = radio_favorites.load_favorites(app_data_dir())
         self._radio_history = radio_history.load_history(app_data_dir())
+        # Apply the persisted verbose-logging preference (quill-radio #5).
+        from quill.core.radio.radio_logging import set_radio_debug
+
+        set_radio_debug(self._radio_history.debug_mode)
         self._radio_history_key = ""
         self._radio_track_title = ""
         self._radio_fallback_tried = ""

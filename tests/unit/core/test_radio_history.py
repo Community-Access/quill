@@ -58,6 +58,17 @@ def test_check_updates_on_startup_round_trips(tmp_path: Path) -> None:
     assert loaded.last_update_check == "2026-07-16T00:00:00"
 
 
+def test_debug_mode_round_trips_and_defaults_off(tmp_path: Path) -> None:
+    # quill-radio #5: the verbose-logging preference persists; absent = off.
+    assert load_history(tmp_path).debug_mode is False
+    save_history(tmp_path, RadioHistory(debug_mode=True))
+    assert load_history(tmp_path).debug_mode is True
+    (tmp_path / "radio_history.json").write_text(
+        '{"resume_on_launch": true, "stations": []}', encoding="utf-8"
+    )
+    assert load_history(tmp_path).debug_mode is False
+
+
 def test_check_updates_on_startup_missing_from_file_defaults_on(tmp_path: Path) -> None:
     (tmp_path / "radio_history.json").write_text(
         '{"resume_on_launch": true, "stations": []}', encoding="utf-8"

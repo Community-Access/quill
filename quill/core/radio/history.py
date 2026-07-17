@@ -111,6 +111,13 @@ class RadioHistory:
     #: keyboard close tucks the radio away while the deliberate exits still
     #: exit (or ask, per close_action).
     alt_f4_to_tray: bool = False
+    #: Verbose radio logging (quill-radio #5). When on, the radio logger
+    #: subtrees drop to DEBUG (via radio_logging.set_radio_debug) and recording
+    #: runs ffmpeg at -loglevel verbose, so a hard-to-reproduce playback or
+    #: recording problem leaves a full trail in quill.log. Off by default (it is
+    #: chatty); one checkbox in Preferences (Ctrl+,) turns it on. Applied when
+    #: history loads and whenever the checkbox changes.
+    debug_mode: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -166,6 +173,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.mono_enabled = bool(raw.get("mono_enabled", False))
         history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
+        history.debug_mode = bool(raw.get("debug_mode", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -202,6 +210,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "mono_enabled": history.mono_enabled,
             "night_mode_enabled": history.night_mode_enabled,
             "alt_f4_to_tray": history.alt_f4_to_tray,
+            "debug_mode": history.debug_mode,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

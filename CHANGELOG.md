@@ -4,6 +4,8 @@
 
 ### Improved
 
+- **Radio recordings now write ffmpeg's diagnostics to the log (quill-radio #4/#5).** A recording's ffmpeg process used to send its stderr to the void (`stderr=DEVNULL`), so when a recording failed or produced an odd file there was nothing to look at. Its live stderr is now drained to `quill.log` on a dedicated reader thread (so it can never fill the pipe buffer and stall ffmpeg): error-shaped lines are logged at WARNING so a failing recording leaves a trail even without debug mode, everything else at DEBUG, and every line is redacted first in case a stream URL carries a token. With radio debug mode on, the recording also runs at ffmpeg's `-loglevel verbose`, so the whole connection-and-codec story lands in the log. Groundwork toward the fuller scheduled-recordings and observable-radio work still in progress.
+
 - **Radio recordings: a visible folder by default, and the list stays readable (quill-radio #4).** New recordings now go to **~/Music/Quill Radio Recordings** (falling back to your home folder) instead of a buried AppData path you had to go hunting for. The Recordings list also stops auto-rebuilding while you're reading it -- the 2-second live refresh pauses whenever the list has keyboard focus and resumes when you move off it, so a screen reader no longer gets yanked back to the top mid-read (the Refresh button still updates on demand).
 
 - **Low-vision: the favorites tree is legible again (quill-radio #3).** The saved-stations tree (on the Quill Radio main page and in Manage Favorites) now pins itself to your desktop's system window and text colours, so it honours your theme and Windows High Contrast mode instead of a bare default that could render near-invisibly. This is a contrast fix, not a dark-mode or theme setting.
@@ -11,6 +13,8 @@
 - **Browse Stations: Country and Tag/genre are now dropdowns, not free text (quill-radio #2).** The Country field is a pickable list (with an "Any country" default) and Tag/genre is an editable combo box — both filled from RadioBrowser's own most-popular lists (fetched once per session, in the background) so you no longer have to guess the exact spelling of a country or genre. Tag stays editable so a rare custom tag still works, the station name stays free text, and picking a country or tag runs the search right away.
 
 ### New
+
+- **Radio verbose logging is now a Preferences checkbox (quill-radio #5).** The debug-mode logging control shipped as a foundation with no way to turn it on; standalone Quill Radio's **Preferences (Ctrl+,)** now has a **Verbose logging (debug mode)** checkbox. Turn it on and the radio logger subtrees drop to DEBUG and recording runs ffmpeg at `-loglevel verbose`, so a hard-to-reproduce playback, recording, or stream-recovery problem leaves a full trail in `quill.log`; it takes effect immediately (not just next launch) and persists across launches. Off by default (it is chatty).
 
 - **Observable radio: a debug-mode logging control (quill-radio #5, foundation).** New `quill/core/radio/radio_logging.set_radio_debug()` raises just the radio logger subtrees (`quill.core.radio`/`quill.ui.radio`) to DEBUG, never the root, so verbose radio diagnostics compose cleanly when Quill Radio is embedded in full QUILL and land in the existing rotating `quill.log`. The raw-capture codec probe also now records ffprobe's own (redacted) stderr when it can't read a codec, instead of silently falling back. (Settable temp/log paths and full per-module logging coverage are follow-on work.)
 

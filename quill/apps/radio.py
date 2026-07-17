@@ -781,6 +781,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     "Exit keep the 'When closing the window' behavior",
                     history.alt_f4_to_tray,
                 ),
+                PreferenceCheckbox(
+                    "Verbose logging (&debug mode)",
+                    "Write detailed radio diagnostics -- playback, recording, and "
+                    "stream recovery -- to quill.log, for tracking down a "
+                    "hard-to-reproduce problem. Off by default (it is chatty)",
+                    history.debug_mode,
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -828,7 +835,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             history.announce_dialog_transitions,
             history.recover_from_website,
             history.alt_f4_to_tray,
+            history.debug_mode,
         ) = checkbox_values
+        # Apply verbose logging immediately (quill-radio #5) so it takes effect
+        # this session, not just the next launch.
+        from quill.core.radio.radio_logging import set_radio_debug
+
+        set_radio_debug(history.debug_mode)
         history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
         chosen_engine = _ENGINE_VALUES[choice_indices[1]]
         if chosen_engine != history.playback_engine:

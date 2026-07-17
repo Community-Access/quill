@@ -37,6 +37,7 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
         eq_treble_db=3.0,
         compressor_enabled=True,
         now_playing_template="{title}[ by {artist}]",
+        debug_mode=False,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
