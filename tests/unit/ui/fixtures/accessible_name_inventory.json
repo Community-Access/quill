@@ -521,6 +521,8 @@
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.TextCtrl#3": "named",
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.TextCtrl#4": "named",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__._labeled_field::wx.TextCtrl": "named",
+  "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Choice": "named",
+  "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.ComboBox": "named",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.ListBox": "named",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.ListCtrl": "named",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Slider": "named",

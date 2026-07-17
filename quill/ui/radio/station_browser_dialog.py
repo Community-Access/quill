@@ -55,6 +55,25 @@ def _search_result_summary(count: int, *, more: bool = False) -> str:
     return f"{count} station{plural} found."
 
 
+#: The "no country filter" entry shown first in the Country dropdown (#2 /
+#: quill-radio #2 -- country/genre are now pickable, not typo-prone free text).
+_ANY_COUNTRY = "(Any country)"
+
+#: Session cache of RadioBrowser's country/tag lists, so re-opening Browse
+#: Stations doesn't refetch them. Populated off-thread on first open.
+_directory_choices_cache: tuple[list[str], list[str]] | None = None
+
+
+def country_query(choice_label: str) -> str:
+    """The RadioBrowser country filter for a Country-dropdown label (pure).
+
+    The "(Any country)" sentinel means no filter; every other label is the
+    country name itself. Testable without wx.
+    """
+    label = choice_label.strip()
+    return "" if label in ("", _ANY_COUNTRY) else label
+
+
 class StationBrowserDialog:
     """Browse/search/play/favorite internet radio stations."""
 
@@ -124,14 +143,30 @@ class StationBrowserDialog:
         self._name_ctrl = _labeled_field(
             "Station &name:", accessible_name="Station name to search for"
         )
-        self._tag_ctrl = _labeled_field(
-            "&Tag/genre (optional):",
-            accessible_name="Optional tag or genre to narrow the search, e.g. jazz",
+        # Tag/genre and Country are pickable dropdowns (quill-radio #2), filled
+        # off-thread from RadioBrowser's own lists so they are not typo-prone
+        # free text. Tag stays an editable combo so a rare custom tag still
+        # works; Country is a plain choice with an "Any" default.
+        search_grid.Add(
+            wx.StaticText(self.dialog, label="&Tag/genre (optional):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
         )
-        self._country_ctrl = _labeled_field(
-            "&Country (optional):",
-            accessible_name="Optional country to narrow the search, e.g. Canada",
+        self._tag_ctrl = wx.ComboBox(self.dialog, style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
+        self._tag_ctrl.SetName(
+            "Tag or genre to narrow the search; pick one from the list or type your own, e.g. jazz"
         )
+        search_grid.Add(self._tag_ctrl, 1, wx.EXPAND)
+
+        search_grid.Add(
+            wx.StaticText(self.dialog, label="&Country (optional):"), 0, wx.ALIGN_CENTER_VERTICAL
+        )
+        self._country_ctrl = wx.Choice(self.dialog, choices=[_ANY_COUNTRY])
+        self._country_ctrl.SetName(
+            "Country to narrow the search; choose from the list, or leave as Any country"
+        )
+        self._country_ctrl.SetSelection(0)
+        search_grid.Add(self._country_ctrl, 1, wx.EXPAND)
         search_box.Add(search_grid, 1, wx.EXPAND | wx.ALL, 6)
         search_col = wx.BoxSizer(wx.VERTICAL)
         self._search_btn = wx.Button(self.dialog, label="&Search")
@@ -222,7 +257,10 @@ class StationBrowserDialog:
 
         self._name_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         self._tag_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
-        self._country_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+        # Picking a tag or a country fires the search immediately (as well as
+        # the Search button), so the dropdowns feel like filters.
+        self._tag_ctrl.Bind(wx.EVT_COMBOBOX, self._on_search)
+        self._country_ctrl.Bind(wx.EVT_CHOICE, self._on_search)
         self._search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         self._category_list.Bind(wx.EVT_LISTBOX, self._on_category_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
@@ -250,6 +288,54 @@ class StationBrowserDialog:
             self._mute_btn.SetValue(state.muted)
 
         self._show_category(_FAVORITES)
+        self._populate_directory_choices()
+
+    def _populate_directory_choices(self) -> None:
+        """Fill the Tag and Country dropdowns from RadioBrowser, off-thread.
+
+        Cached for the session so re-opening the dialog is instant; skipped in
+        Safe Mode (no network). A fetch failure just leaves the dropdowns with
+        their defaults -- the user can still type a tag and search without a
+        country filter."""
+        global _directory_choices_cache
+        if self._safe_mode:
+            return
+        if _directory_choices_cache is not None:
+            self._apply_directory_choices(*_directory_choices_cache)
+            return
+
+        def _fetch(**_kwargs: Any) -> tuple[list[str], list[str]]:
+            try:
+                countries = radio_browser.list_countries(safe_mode=self._safe_mode)
+            except radio_browser.RadioBrowserError:
+                countries = []
+            try:
+                tags = radio_browser.list_tags(safe_mode=self._safe_mode)
+            except radio_browser.RadioBrowserError:
+                tags = []
+            return countries, tags
+
+        def _done(_op: str, payload: tuple[list[str], list[str]]) -> None:
+            global _directory_choices_cache
+            _directory_choices_cache = payload
+            self._wx.CallAfter(self._apply_directory_choices, *payload)
+
+        self._task_manager.submit(
+            "radio-directory-choices", _fetch, on_success=_done, on_failure=lambda *_a: None
+        )
+
+    def _apply_directory_choices(self, countries: list[str], tags: list[str]) -> None:
+        """Populate the Country choice and Tag combo (UI thread), preserving the
+        current selection/text."""
+        if countries and self._country_ctrl.GetCount() <= 1:
+            current = self._country_ctrl.GetStringSelection()
+            self._country_ctrl.Set([_ANY_COUNTRY, *countries])
+            index = self._country_ctrl.FindString(current) if current else 0
+            self._country_ctrl.SetSelection(index if index != self._wx.NOT_FOUND else 0)
+        if tags and self._tag_ctrl.GetCount() == 0:
+            typed = self._tag_ctrl.GetValue()
+            self._tag_ctrl.Set(tags)
+            self._tag_ctrl.SetValue(typed)
 
     # ------------------------------------------------------------------
 
@@ -327,7 +413,7 @@ class StationBrowserDialog:
     def _on_search(self, _event: object) -> None:
         name = self._name_ctrl.GetValue().strip()
         tag = self._tag_ctrl.GetValue().strip()
-        country = self._country_ctrl.GetValue().strip()
+        country = country_query(self._country_ctrl.GetStringSelection())
         if not (name or tag or country):
             self._status.SetLabel("Type a station name, tag, or country to search.")
             return
