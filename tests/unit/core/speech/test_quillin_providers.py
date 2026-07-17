@@ -6,6 +6,13 @@ from pathlib import Path
 
 import pytest
 
+# These tests build real TranscriptionProviderContribution dataclass instances
+# from quill.core.quillins.model and exercise the Quillin provider wiring, so they
+# require Quillins. The standalone Audio Studio ships without Quillins, where the
+# host adapter module still imports (its type reference is guarded) but there is no
+# contribution dataclass to construct.
+pytest.importorskip("quill.core.quillins")
+
 from quill.core.quillins.model import TranscriptionProviderContribution
 from quill.core.speech import quillin_providers as qp
 from quill.core.speech.provider import SpeechError, TranscriptionRequest

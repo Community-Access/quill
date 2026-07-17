@@ -109,8 +109,10 @@ def _size_text(mb: int) -> str:
 
 def detect_has_gpu() -> bool:
     """True when a CUDA GPU is present (reuses the BITS Whisperer probe, wx-free)."""
-    from quill.core.bw_speech import has_nvidia_gpu
-
+    try:
+        from quill.core.bw_speech import has_nvidia_gpu
+    except ImportError:  # bw_speech absent (standalone Audio Studio): no CUDA probe.
+        return False
     return has_nvidia_gpu()
 
 
@@ -188,8 +190,10 @@ def required_ram_gb(size_mb: int) -> int:
 
 def detect_total_ram_gb() -> float:
     """Total physical RAM in GB (reuses the BITS Whisperer detector, wx-free)."""
-    from quill.core.bw_speech import total_ram_gb
-
+    try:
+        from quill.core.bw_speech import total_ram_gb
+    except ImportError:  # bw_speech absent (standalone Audio Studio): unknown RAM.
+        return 0.0
     return total_ram_gb()
 
 

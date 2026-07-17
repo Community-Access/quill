@@ -61,6 +61,16 @@ class RestSpec:
     max_file_mb: float = 25.0
 
 
+#: Host-implemented transcription provider "kinds". The host knows how to talk to
+#: each vetted endpoint; a Quillin may only *declare* a provider of a known kind,
+#: so a manifest can never point the host at an arbitrary URL. Add a new kind here
+#: (and a host adapter in ``quill/core/speech/quillin_providers.py``) only after it
+#: is vetted into the network-egress audit. Lives in this host module (not in
+#: ``quill.core.quillins``) so the standalone Audio Studio, which ships without
+#: Quillins, still has the canonical list; ``quill.core.quillins.model`` re-exports
+#: it for back-compat with QUILL's Quillin validation.
+TRANSCRIPTION_PROVIDER_KINDS: tuple[str, ...] = ("openai_whisper", "groq", "elevenlabs")
+
 #: Vetted synchronous-REST cloud kinds. Hosts here are reflected in the egress audit.
 CLOUD_REST_SPECS: dict[str, RestSpec] = {
     "groq": RestSpec(

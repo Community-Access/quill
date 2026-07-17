@@ -21,7 +21,10 @@ import logging
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
-from quill.core.quillins.model import TranscriptionProviderContribution
+try:
+    from quill.core.quillins.model import TranscriptionProviderContribution
+except ImportError:  # Quillins absent (standalone Audio Studio): no Quillin-contributed providers.
+    TranscriptionProviderContribution = None  # type: ignore[assignment,misc]
 
 from .provider import (
     InstalledSpeechModel,

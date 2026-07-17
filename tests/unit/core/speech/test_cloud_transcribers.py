@@ -7,8 +7,8 @@ from urllib.error import HTTPError
 
 import pytest
 
-from quill.core.quillins.model import TRANSCRIPTION_PROVIDER_KINDS
 from quill.core.speech import cloud_transcribers as ct
+from quill.core.speech.cloud_transcribers import TRANSCRIPTION_PROVIDER_KINDS
 
 
 class _FakeResponse:
