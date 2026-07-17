@@ -524,9 +524,17 @@ def _probe_capture_extension(stream_url: str) -> str:
             check=False,
             **extra_kwargs,
         )
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.debug("ffprobe failed for raw-capture probe: %s", exc)
         return _RAW_FALLBACK_EXT
-    return raw_capture_extension(parse_probe_codec(completed.stdout))
+    codec = parse_probe_codec(completed.stdout)
+    if not codec:
+        # #5 observability: the probe ran but gave us no codec. ffprobe's own
+        # stderr (redacted) says why -- previously captured but never logged, so
+        # a "why did my recording become .mka?" question had no answer in the log.
+        stderr = format_args_for_log((completed.stderr or "").strip().splitlines()[-3:])
+        logger.debug("ffprobe returned no codec (falling back to .mka); stderr: %s", stderr)
+    return raw_capture_extension(codec)
 
 
 def _default_dir() -> Path:
