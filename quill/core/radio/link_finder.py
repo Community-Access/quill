@@ -254,9 +254,7 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     )
 
 
-def _triton_candidates(
-    url: str, html: str, *, safe_mode: bool
-) -> list[PageStreamCandidate]:
+def _triton_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
     """Resolve a Triton Digital / StreamTheWorld player page to stream
     candidates, or ``[]`` when the page is not a Triton player.
 
