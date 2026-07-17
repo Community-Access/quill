@@ -30669,7 +30669,11 @@ point), each with a plain-language reason. Select a candidate,
 <strong>Test</strong> to preview it, then <strong>Use This
 Link...</strong> to carry the guessed name and URL straight into Add
 Custom Station. This fetches and reads one page you explicitly typed —
-it does not open an interactive browser inside QUILL.</li>
+it does not open an interactive browser inside QUILL. If you paste (or
+the page links to) an <strong>iHeart or TuneIn station page</strong>,
+Find Streams now follows that player page and pulls out the real
+underlying stream, instead of handing back the unplayable directory page
+URL.</li>
 </ul>
 <h3 id="controlling-playback-without-opening-a-dialog">Controlling
 playback without opening a dialog</h3>
@@ -30691,6 +30695,13 @@ Stations controls, plus a Now Playing line.</li>
 then <strong>9</strong> mutes. Like every QUILL Key chord, these are
 remappable in <strong>Preferences &gt; Keyboard Shortcuts</strong>.</li>
 </ul>
+<p><strong>What's playing.</strong> QUILL reports the current track —
+artist and title — from the stream's own broadcast metadata, and can
+announce it automatically each time the song changes. When a stream
+sends no title of its own and the player has none to offer, QUILL now
+falls back to the station server's own now-playing information (its
+Icecast or Shoutcast status page, on the same host you're already
+streaming), so more stations tell you what's on.</p>
 <h3 id="volume">Volume</h3>
 <p>The Browse Stations dialog has its own <strong>Radio volume</strong>
 slider and a <strong>Mute</strong> button. This volume is entirely
@@ -30713,8 +30724,17 @@ without you needing QUILL open right at that moment to press Record —
 just QUILL running somewhere. Choose <strong>Once</strong> (a specific
 date and time), <strong>Daily</strong>, or <strong>Weekly</strong> (a
 chosen day of the week), a station name and stream URL, and how many
-minutes to record. There is no catch-up: if QUILL isn't running when the
-scheduled time arrives, that occurrence is simply missed.</li>
+minutes to record. The time field accepts a friendly
+<strong>12-hour</strong> time like <code>7:30 PM</code> as well as
+24-hour <code>19:30</code>, and each schedule can carry its own
+<strong>time zone</strong> — so you can record an Eastern show at its
+Eastern time even from the Pacific coast, and daylight saving is handled
+for you. Existing schedules can be <strong>Edited</strong> in place,
+<strong>Duplicated</strong> as the starting point for a variation (handy
+for the same show on several days), or <strong>Enabled/Disabled</strong>
+without deleting them, from buttons or the list's context menu. There is
+no catch-up: if QUILL isn't running when the scheduled time arrives,
+that occurrence is simply missed.</li>
 <li><strong>Recording Settings...</strong> sets the format (MP3, OGG,
 FLAC, or WAV), bitrate, destination folder, a filename pattern using
 <code>{station}</code>, <code>{date}</code>, and <code>{time}</code>

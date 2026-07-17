@@ -7668,7 +7668,7 @@ Closing the Browse Stations dialog does not stop playback — the station keeps 
 Not every station is in RadioBrowser's directory. Two more buttons in the Browse Stations dialog cover that:
 
 - **Add Custom Station...** takes a name and any http or https stream URL directly, plus an optional homepage and tags. A **Test** button plays the link right there so you can confirm it works before pressing **Save**.
-- **Find Streams from a Website...** takes a website address you type, fetches that one page, and lists every stream-shaped link it finds on it (an audio tag, a `.pls`/`.m3u` playlist link, a URL that looks like a Shoutcast or Icecast mount point), each with a plain-language reason. Select a candidate, **Test** to preview it, then **Use This Link...** to carry the guessed name and URL straight into Add Custom Station. This fetches and reads one page you explicitly typed — it does not open an interactive browser inside QUILL.
+- **Find Streams from a Website...** takes a website address you type, fetches that one page, and lists every stream-shaped link it finds on it (an audio tag, a `.pls`/`.m3u` playlist link, a URL that looks like a Shoutcast or Icecast mount point), each with a plain-language reason. Select a candidate, **Test** to preview it, then **Use This Link...** to carry the guessed name and URL straight into Add Custom Station. This fetches and reads one page you explicitly typed — it does not open an interactive browser inside QUILL. If you paste (or the page links to) an **iHeart or TuneIn station page**, Find Streams now follows that player page and pulls out the real underlying stream, instead of handing back the unplayable directory page URL.
 
 ### Controlling playback without opening a dialog
 
@@ -7677,6 +7677,8 @@ Once something is playing, three ways to control it without opening Browse Stati
 - **The status bar.** A **Radio** cell appears showing the station and state (hidden until you first play something). Press Enter on it, or click it, to play or pause. Its context menu (right-click, or Menu/Shift+F10) adds Stop, Mute/Unmute, a **Favorite Stations** quick-switch submenu, and a shortcut back to Browse Stations.
 - **The system tray.** Minimize QUILL to the tray and its right-click menu carries the same Play/Pause, Stop, Mute, and Favorite Stations controls, plus a Now Playing line.
 - **Keyboard shortcuts.** With QUILL focused, **Ctrl+Shift+Grave** (the QUILL Key), then **N**, toggles play/pause; then **0** stops; then **9** mutes. Like every QUILL Key chord, these are remappable in **Preferences > Keyboard Shortcuts**.
+
+**What's playing.** QUILL reports the current track — artist and title — from the stream's own broadcast metadata, and can announce it automatically each time the song changes. When a stream sends no title of its own and the player has none to offer, QUILL now falls back to the station server's own now-playing information (its Icecast or Shoutcast status page, on the same host you're already streaming), so more stations tell you what's on.
 
 ### Volume
 
@@ -7687,7 +7689,7 @@ The Browse Stations dialog has its own **Radio volume** slider and a **Mute** bu
 Recording needs the **FFmpeg** optional component — the same one the Audio Studio uses for compressed audio exports. If it isn't installed yet, the recording commands are simply not there; install it from **Help > Download Optional Components** (the "Audio: export, playback & chapters" entry) and they appear.
 
 - **Record Now** (Tools > Media > Internet Radio, the Radio status bar cell's context menu, or the tray) starts recording whatever station is currently playing. Choosing it again, or **Stop Recording**, ends the recording.
-- **Schedule Recording...** queues a recording for later without you needing QUILL open right at that moment to press Record — just QUILL running somewhere. Choose **Once** (a specific date and time), **Daily**, or **Weekly** (a chosen day of the week), a station name and stream URL, and how many minutes to record. There is no catch-up: if QUILL isn't running when the scheduled time arrives, that occurrence is simply missed.
+- **Schedule Recording...** queues a recording for later without you needing QUILL open right at that moment to press Record — just QUILL running somewhere. Choose **Once** (a specific date and time), **Daily**, or **Weekly** (a chosen day of the week), a station name and stream URL, and how many minutes to record. The time field accepts a friendly **12-hour** time like `7:30 PM` as well as 24-hour `19:30`, and each schedule can carry its own **time zone** — so you can record an Eastern show at its Eastern time even from the Pacific coast, and daylight saving is handled for you. Existing schedules can be **Edited** in place, **Duplicated** as the starting point for a variation (handy for the same show on several days), or **Enabled/Disabled** without deleting them, from buttons or the list's context menu. There is no catch-up: if QUILL isn't running when the scheduled time arrives, that occurrence is simply missed.
 - **Recording Settings...** sets the format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern using `{station}`, `{date}`, and `{time}` placeholders, and a maximum recording length that acts as a safety cap even if you forget a recording is running.
 
 ### Sound Enhancements
