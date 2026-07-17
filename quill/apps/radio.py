@@ -12,6 +12,7 @@ import sys
 
 import wx
 
+from quill.core import http_client
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_adp import AdpMixin
@@ -22,6 +23,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 _TITLE = "Quill Radio"
 _VERSION = "1.1.0"
 _REPO = "Community-Access/quill-radio"
+http_client.set_product_identity(_TITLE, _VERSION)  # radio User-Agent identity (#6)
 
 #: RadioHistory.close_action's Preferences combo box (see also
 #: RadioCloseConfirmDialog, which writes this same field via "Don't ask me
