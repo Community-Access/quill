@@ -76,7 +76,13 @@ def test_keymap_pack_profiles_parse_and_include_batch_export() -> None:
     a profile. Empty string in profile_minimal is correct — the minimal
     pack has no Audio Studio entry by design.
     """
-    pack_dir = Path("quill/core/keymap")
+    # Resolve the keymap pack dir from the imported keymap module: the profiles
+    # live in a sibling data directory named ``keymap`` next to ``keymap.py`` (it
+    # is a data dir, not a package). Works in QUILL (quill.core.keymap) and the
+    # vendored standalone (quillas.core.keymap) alike.
+    import quill.core.keymap as _keymap_pkg
+
+    pack_dir = Path(_keymap_pkg.__file__).resolve().parent / "keymap"
     profiles = ("profile_default.json", "profile_minimal.json", "profile_sr_friendly.json")
     seen: dict[str, str] = {}
     for name in profiles:

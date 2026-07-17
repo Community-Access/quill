@@ -315,12 +315,13 @@ class FileTypeContribution:
     description: str = ""
 
 
-#: Host-implemented transcription provider "kinds". The host knows how to talk to
-#: each vetted endpoint; a Quillin may only *declare* a provider of a known kind,
-#: so a manifest can never point the host at an arbitrary URL. Add a new kind here
-#: (and a host adapter in ``quill/core/speech/quillin_providers.py``) only after it
-#: is vetted into the network-egress audit.
-TRANSCRIPTION_PROVIDER_KINDS: tuple[str, ...] = ("openai_whisper", "groq", "elevenlabs")
+#: Host-implemented transcription provider "kinds". The canonical definition lives
+#: in ``quill.core.speech.cloud_transcribers`` (the host module present in both QUILL
+#: and the standalone Audio Studio, which ships without Quillins); re-exported here
+#: so existing Quillin validation imports keep working unchanged.
+from quill.core.speech.cloud_transcribers import (  # noqa: E402,F401 - re-export for Quillin validation
+    TRANSCRIPTION_PROVIDER_KINDS,
+)
 
 
 @dataclass(frozen=True, slots=True)
