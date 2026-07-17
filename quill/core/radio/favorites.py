@@ -128,6 +128,24 @@ class RadioFavoritesStore:
             target += step
         return False
 
+    def neighbor_in_folder(self, key: str, step: int) -> FavoriteStation | None:
+        """The nearest favorite in the same folder at direction *step* (+1 =
+        below, -1 = above) from *key*, or None at the folder edge.
+
+        Used to give a Move Up/Down a spoken point of reference ("now above
+        Delilah Stream") instead of a bare "Moved down" (quill-radio #1)."""
+        index = next((i for i, f in enumerate(self.favorites) if f.key == key), -1)
+        if index < 0 or step == 0:
+            return None
+        folder = self.favorites[index].folder
+        direction = 1 if step > 0 else -1
+        target = index + direction
+        while 0 <= target < len(self.favorites):
+            if self.favorites[target].folder == folder:
+                return self.favorites[target]
+            target += direction
+        return None
+
     def move_relative_to(self, key: str, target_key: str, *, before: bool) -> bool:
         """Place *key* directly above (*before*) or below the target favorite.
 
