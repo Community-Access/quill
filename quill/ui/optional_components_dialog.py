@@ -59,6 +59,14 @@ class ComponentsController(Protocol):
     def is_previewable(self, component_id: str) -> bool:
         """True when test() reports state changes (a voice component)."""
 
+    def can_set_default(self, component_id: str) -> bool:
+        """True when this component is a Read Aloud voice engine that can be
+        made the default from the hub."""
+
+    def set_default(self, component_id: str) -> None:
+        """Make this voice engine (and a chosen voice) the Read Aloud default;
+        announces and stays in place. Ignored for non-voice components."""
+
     def manage(self, component_id: str) -> None:
         """Open the component's own management dialog (models / voices)."""
 
@@ -166,7 +174,7 @@ def show_optional_components_picker(
         scans, which stall the dialog if done on open; doing them on a worker lets
         the window appear immediately with a brief "Loading…" state."""
         detail.SetValue("Loading components…")
-        for btn in (download_btn, test_btn, remove_btn):
+        for btn in (download_btn, test_btn, set_default_btn, remove_btn):
             btn.Enable(False)
 
         def _work() -> None:
@@ -182,7 +190,7 @@ def show_optional_components_picker(
         comp = _selected()
         if comp is None:
             detail.SetValue("")
-            for btn in (download_btn, test_btn, manage_btn, remove_btn):
+            for btn in (download_btn, test_btn, set_default_btn, manage_btn, remove_btn):
                 btn.Enable(False)
             return
         detail.SetValue(describe_component(comp))
@@ -208,6 +216,11 @@ def show_optional_components_picker(
         test_btn.Enable(ready or testing["active"])
         if not testing["active"]:
             test_btn.SetLabel("&Test")
+        # Set as Default: only a ready voice engine can become the Read Aloud
+        # default, and never mid-preview (the buttons share the row's focus).
+        set_default_btn.Enable(
+            ready and not testing["active"] and controller.can_set_default(comp.component_id)
+        )
         remove_btn.Enable(comp.installed and controller.removable(comp.component_id))
         # Manage routes to the component's own models/voices dialog when relevant.
         target = manage_target(comp.component_id)
@@ -243,6 +256,16 @@ def show_optional_components_picker(
             controller.test(comp.component_id, on_state_change=_on_state_change)
         else:
             controller.test(comp.component_id)  # announces its own result
+
+    def _on_set_default(_evt: Any = None) -> None:
+        comp = _selected()
+        if (
+            comp is None
+            or not comp.effective_ready
+            or not controller.can_set_default(comp.component_id)
+        ):
+            return
+        controller.set_default(comp.component_id)  # announces; the hub stays open
 
     def _on_remove(_evt: Any = None) -> None:
         comp = _selected()
@@ -280,16 +303,20 @@ def show_optional_components_picker(
         dialog, wx.ID_OK, label="&Download", name="optional_components_download"
     )
     test_btn = wx.Button(dialog, label="&Test", name="optional_components_test")
+    set_default_btn = wx.Button(
+        dialog, label="Set as De&fault", name="optional_components_set_default"
+    )
     manage_btn = wx.Button(dialog, label="&Manage…", name="optional_components_manage")
     remove_btn = wx.Button(dialog, label="&Remove", name="optional_components_remove")
     close_btn = wx.Button(dialog, wx.ID_CANCEL, label="&Close")
     close_btn.SetDefault()
     download_btn.Bind(wx.EVT_BUTTON, _on_download)
     test_btn.Bind(wx.EVT_BUTTON, _on_test)
+    set_default_btn.Bind(wx.EVT_BUTTON, _on_set_default)
     manage_btn.Bind(wx.EVT_BUTTON, _on_manage)
     remove_btn.Bind(wx.EVT_BUTTON, _on_remove)
     btns.AddStretchSpacer()
-    for btn in (download_btn, test_btn, manage_btn, remove_btn, close_btn):
+    for btn in (download_btn, test_btn, set_default_btn, manage_btn, remove_btn, close_btn):
         btns.Add(btn, 0, wx.RIGHT, 8)
     sizer.Add(btns, 0, wx.EXPAND | wx.ALL, 10)
 

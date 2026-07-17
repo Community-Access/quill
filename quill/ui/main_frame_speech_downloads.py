@@ -203,6 +203,14 @@ class SpeechDownloadsMixin:
 
                 return oc.read_aloud_engine_for_component(component_id) is not None
 
+            def can_set_default(self, component_id: str) -> bool:
+                from quill.core import optional_components as oc
+
+                return oc.read_aloud_engine_for_component(component_id) is not None
+
+            def set_default(self, component_id: str) -> None:
+                frame._set_default_voice_component(component_id)
+
             def manage(self, component_id: str) -> None:
                 frame._manage_component_models_or_voices(component_id)
 
@@ -335,26 +343,105 @@ class SpeechDownloadsMixin:
 
         self._run_background_task(f"Testing {component_id}", _work, _done)
 
-    def _choose_voice_to_preview(self, engine: str, voices: list) -> object | None:
+    def _choose_voice_to_preview(
+        self,
+        engine: str,
+        voices: list,
+        *,
+        title: str = "Choose a Voice to Hear",
+        prompt: str | None = None,
+    ) -> object | None:
         """Accessible single-select voice picker; returns the choice, or None.
 
         Native ``wx.SingleChoiceDialog`` (screen-reader friendly, keyboard
         navigable) through the standard modal contract. Voice enumeration and
         label text are wx-free in ``optional_components`` so they stay testable.
+        ``title``/``prompt`` let callers reuse it for picking a default voice,
+        not only a voice to hear.
         """
         from quill.core import optional_components as oc
 
         wx = self._wx
-        title = "Choose a Voice to Hear"
         labels = [oc.voice_pick_label(v) for v in voices]
         with wx.SingleChoiceDialog(
-            self.frame, f"Pick a {engine} voice to hear:", title, labels
+            self.frame, prompt or f"Pick a {engine} voice to hear:", title, labels
         ) as dlg:
             dlg.SetSelection(0)
             if self._show_modal_dialog(dlg, title) != wx.ID_OK:
                 return None
             index = dlg.GetSelection()
         return voices[index] if 0 <= index < len(voices) else None
+
+    def _apply_read_aloud_default(self, engine: str, voice_id: str) -> bool:
+        """Point Read Aloud at ``engine`` + ``voice_id``, mapping the engine to
+        its per-engine voice setting (mirrors the Manage Voices 'select' path).
+
+        Returns False without changing the active engine when a Piper voice file
+        is not actually present, so the caller can bail cleanly."""
+        wx = self._wx
+        if engine == "piper":
+            from quill.core.read_aloud import default_piper_model_dir
+
+            onnx_path = default_piper_model_dir() / f"{voice_id}.onnx"
+            if not onnx_path.exists():
+                self._show_message_box(
+                    f"'{voice_id}' is not downloaded yet. Use Manage Voices to fetch it first.",
+                    "Set as Default",
+                    wx.ICON_INFORMATION | wx.OK,
+                )
+                return False
+            self.settings.read_aloud_piper_model = str(onnx_path)
+        elif engine == "dectalk":
+            self.settings.read_aloud_dectalk_voice = voice_id
+        elif engine == "kokoro":
+            self.settings.read_aloud_kokoro_voice = voice_id
+        elif engine == "espeak":
+            self.settings.read_aloud_espeak_voice = voice_id
+        elif engine == "macos":
+            self.settings.read_aloud_macos_voice = voice_id
+        else:
+            self.settings.read_aloud_voice = voice_id
+        self.settings.read_aloud_engine = engine
+        return True
+
+    def _set_default_voice_component(self, component_id: str) -> None:
+        """Make an installed voice engine (and a chosen voice) the Read Aloud
+        default straight from the hub -- no trip through Manage Voices.
+
+        With one installed voice it applies immediately; with several it offers
+        the same accessible picker Test uses. Persists settings and announces.
+        Voice engines only; a no-op for tool/model components."""
+        from quill.core import optional_components as oc
+        from quill.core.settings import save_settings
+
+        engine = oc.read_aloud_engine_for_component(component_id)
+        if engine is None:
+            return
+        voices = oc.available_live_voices(engine)
+        if not voices:
+            self._set_status(
+                f"No {engine} voice is downloaded yet -- opening Manage Voices to get one."
+            )
+            self._manage_component_models_or_voices(component_id)
+            return
+        chosen = voices[0]
+        if len(voices) > 1:
+            picked = self._choose_voice_to_preview(
+                engine,
+                voices,
+                title="Choose the Default Voice",
+                prompt=f"Pick the {engine} voice to make your Read Aloud default:",
+            )
+            if picked is None:
+                self._set_status("Set as default cancelled.")
+                return
+            chosen = picked
+        if not self._apply_read_aloud_default(engine, str(getattr(chosen, "id", "") or "")):
+            return
+        save_settings(self.settings)
+        label = str(getattr(chosen, "name", "") or getattr(chosen, "id", "") or engine)
+        self._announce(f"{label} is now your Read Aloud default voice.")
+        self._set_status(f"Default voice set: {label} ({engine}).")
 
     def _manage_component_models_or_voices(self, component_id: str) -> None:
         """Route the hub's Manage button to the component's own dialog: offline
@@ -1561,6 +1648,65 @@ class SpeechDownloadsMixin:
         threading.Thread(  # GATE-40-OK: eSpeak-NG download worker.
             target=_run, daemon=True
         ).start()
+
+    def _download_kokoro_models(self, *, on_done: Callable[[bool], None] | None = None) -> None:
+        """Download the Kokoro model pack (~114 MB) -- all voices in one file.
+
+        The Manage Voices "Download Kokoro" button and the Optional Components
+        "kokoro" row both call this. It fetches the pinned, SHA-256-verified
+        ``kokoro`` release asset (``kokoro-v1.0.int8.onnx`` + ``voices-v1.0.bin``)
+        into the user-writable data dir, on a worker thread with live progress,
+        blocked in Safe Mode. The Kokoro ONNX Python package is a separate,
+        smaller install handled by :meth:`download_kokoro_engine`.
+        """
+        from quill.core.paths import app_data_dir
+        from quill.core.read_aloud import kokoro_onnx_ready
+
+        wx = self._wx
+        if bool(getattr(self, "_safe_mode", False)):
+            self._announce("Downloading components is disabled in Safe Mode.")
+            return
+        target = app_data_dir() / "kokoro-models"
+        if kokoro_onnx_ready(target):
+            self._show_message_box(
+                "The Kokoro voices are already downloaded. Choose a Kokoro voice in Manage Voices.",
+                "Download Kokoro Voices",
+                wx.ICON_INFORMATION | wx.OK,
+            )
+            if on_done is not None:
+                on_done(True)
+            return
+        proceed = self._show_message_box(
+            "Download the Kokoro voice pack (about 114 MB)? This is a single "
+            "download that provides every Kokoro voice. QUILL verifies it after "
+            "downloading. Continue?",
+            "Download Kokoro Voices",
+            wx.ICON_QUESTION | wx.YES_NO,
+        )
+        if proceed != wx.YES:
+            return
+
+        def _work(progress):
+            from quill.core.release_assets import fetch_component
+
+            fetch_component(
+                "kokoro",
+                target,
+                progress=lambda fraction, message: progress(message, int(fraction * 100), 100),
+                label="Downloading Kokoro voices...",
+            )
+            return True
+
+        def _finished(result: object) -> None:
+            ok = bool(result)
+            if ok:
+                self._announce("Kokoro voices installed. Choose a Kokoro voice in Manage Voices.")
+            else:
+                self._announce("The Kokoro voices could not be installed.")
+            if on_done is not None:
+                on_done(ok)
+
+        self._run_background_task("Downloading Kokoro voices", _work, _finished)
 
     def download_kokoro_engine(self, *, skip_confirm: bool = False) -> None:
         """Install the optional Kokoro ONNX engine packages on demand.

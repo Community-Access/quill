@@ -57,7 +57,7 @@ def test_second_preview_supersedes_the_first(wx_app, monkeypatch) -> None:
     monkeypatch.setattr(frame, "_set_status", lambda *a, **k: calls.append(f"status:{a[0]}"))
     monkeypatch.setattr(frame, "_announce", lambda *a, **k: calls.append(f"announce:{a[0]}"))
 
-    def fake_play(_self, path):
+    def fake_play(_self, path, still_current=None):
         calls.append(f"play:{path}")
 
     monkeypatch.setattr(MainFrame, "_play_preview_asset", fake_play)
