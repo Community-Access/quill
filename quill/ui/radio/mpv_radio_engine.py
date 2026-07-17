@@ -218,6 +218,11 @@ class MpvRadioEngine:
             raise OSError("libmpv is not installed")
         self._mpv = _MpvClient(dll_path)
         self._mpv.set_str("network-timeout", str(_NETWORK_TIMEOUT_SECONDS))
+        # Identify as Quill Radio (not the default "libmpv") in station logs
+        # (quill-radio #6).
+        from quill.core import http_client
+
+        self._mpv.set_str("user-agent", http_client.user_agent())
         # The DVR buffer: a seekable demuxer cache large enough to pause a
         # live show or rewind it (see rewind_seconds / jump_to_live).
         self._mpv.set_str("cache", "yes")

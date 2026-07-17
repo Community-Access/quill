@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg, find_ffprobe
 from quill.stability.redaction import format_args_for_log
@@ -184,6 +185,7 @@ def build_record_command(
     duration_seconds: int,
     reconnect_delay_max: int = 0,
     filter_graph: str = "",
+    user_agent: str = "",
 ) -> list[str]:
     """Build the ffmpeg argv that records *stream_url* to *out_path*.
 
@@ -205,6 +207,11 @@ def build_record_command(
     extension, which the caller resolves from the stream's own codec.
     """
     args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
+    is_http = stream_url.lower().startswith(("http://", "https://"))
+    if user_agent and is_http:
+        # Identify as Quill Radio in the station's listener logs instead of the
+        # default "Lavf" (quill-radio #6). Input option, so it goes before -i.
+        args.extend(["-user_agent", user_agent])
     if reconnect_delay_max > 0 and stream_url.lower().startswith(("http://", "https://")):
         args.extend([
             "-reconnect",
@@ -229,14 +236,18 @@ def build_record_command(
     return args
 
 
-def build_probe_codec_command(ffprobe: str, stream_url: str) -> list[str]:
+def build_probe_codec_command(ffprobe: str, stream_url: str, *, user_agent: str = "") -> list[str]:
     """ffprobe argv that prints the first audio stream's codec name (pure).
 
     Raw-capture mode uses this to pick a natural output extension for the
-    server's actual codec; a probe failure just falls back to Matroska.
+    server's actual codec; a probe failure just falls back to Matroska. A
+    non-empty ``user_agent`` identifies the probe as Quill Radio on http(s)
+    inputs (quill-radio #6).
     """
-    return [
-        ffprobe,
+    args = [ffprobe]
+    if user_agent and stream_url.lower().startswith(("http://", "https://")):
+        args.extend(["-user_agent", user_agent])
+    args.extend([
         "-v",
         "error",
         "-select_streams",
@@ -246,7 +257,8 @@ def build_probe_codec_command(ffprobe: str, stream_url: str) -> list[str]:
         "-of",
         "default=nokey=1:noprint_wrappers=1",
         stream_url,
-    ]
+    ])
+    return args
 
 
 def parse_probe_codec(output: str) -> str:
@@ -372,6 +384,7 @@ class RadioRecorder:
                     settings.reconnect_wait_seconds if settings.reconnect_enabled else 0
                 ),
                 filter_graph=record_filter,
+                user_agent=http_client.user_agent(),
             )
             extra_kwargs: dict = {}
             if os.name == "nt":
@@ -504,7 +517,7 @@ def _probe_capture_extension(stream_url: str) -> str:
         extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
     try:
         completed = subprocess.run(
-            build_probe_codec_command(ffprobe, stream_url),
+            build_probe_codec_command(ffprobe, stream_url, user_agent=http_client.user_agent()),
             capture_output=True,
             text=True,
             timeout=_PROBE_TIMEOUT_SECONDS,

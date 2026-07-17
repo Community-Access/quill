@@ -23,6 +23,12 @@ _TITLE = "Quill Radio"
 _VERSION = "1.1.0"
 _REPO = "Community-Access/quill-radio"
 
+# Report the standalone app's own version in the radio User-Agent (mpv/ffmpeg),
+# rather than the embedded quill.__version__ (quill-radio #6).
+from quill.core import http_client as _http_client  # noqa: E402
+
+_http_client.set_product_identity(_TITLE, _VERSION)
+
 #: RadioHistory.close_action's Preferences combo box (see also
 #: RadioCloseConfirmDialog, which writes this same field via "Don't ask me
 #: again").
