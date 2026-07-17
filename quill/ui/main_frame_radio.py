@@ -220,17 +220,17 @@ class RadioMixin:
     def _radio_open_schedule_recording(self) -> None:
         controller = getattr(self, "_radio_controller", None)
         station = controller.state.station if controller is not None else None
-        dialog = ScheduleRecordingDialog(
+        ScheduleRecordingDialog(
             self.frame,
             entries=self._radio_scheduler.entries,
             default_station_name=station.name if station is not None else "",
             default_stream_url=station.stream_url if station is not None else "",
             on_add=self._radio_scheduler.add,
             on_remove=self._radio_scheduler.remove,
+            on_update=self._radio_scheduler.update,
             favorites=self._radio_favorites,
             announce_cb=self._announce,
-        )
-        dialog.show()
+        ).show()
 
     def _on_radio_state_changed(self, state: RadioPlaybackState) -> None:
         from quill.core.settings import save_settings
