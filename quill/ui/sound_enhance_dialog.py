@@ -10,9 +10,10 @@ exact values flips the combo to "Custom", which is a status readout, not a
 selectable target of its own. All apply through the host player controller's
 ``set_enhancement`` (see ``core/audio_enhance.py`` for why -- ffmpeg relay,
 no new audio backend, no live per-drag-tick preview: the relay can only be
-restarted, not tweaked in place, so changes take effect on Apply, not on
-every slider movement). Turning anything on reconnects what's currently
-playing through the filtered relay. Smart Speed (silence trimming) only
+restarted, not tweaked in place, so changes take effect on OK, not on
+every slider movement; the mpv engine applies the same graph live with no
+reconnect at all). Turning anything on makes what's currently playing
+heard through the new settings. Smart Speed (silence trimming) only
 makes sense for bounded, spoken-word content -- ``show_smart_speed`` gates
 whether that checkbox exists at all (Radio never passes it; a hidden-but-
 present control would be a worse screen-reader experience than one that
@@ -155,7 +156,7 @@ class SoundEnhanceDialog:
             )
             buttons.Add(self._reset_btn, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&Apply")
+        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         buttons.Add(ok_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
@@ -223,7 +224,7 @@ class SoundEnhanceDialog:
         apply_modal_ids(
             self.dialog,
             affirmative_id=wx.ID_OK,
-            affirmative_label="Apply",
+            affirmative_label="OK",
             cancel_id=wx.ID_CANCEL,
             escape_id=wx.ID_CANCEL,
         )
