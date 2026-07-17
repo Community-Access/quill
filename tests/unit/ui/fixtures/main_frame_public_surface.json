@@ -524,6 +524,7 @@
   "quill_key_selection_actions",
   "quote_lines",
   "radio_forward",
+  "radio_import_stations",
   "radio_jump_to_live",
   "radio_mute_toggle",
   "radio_play_last",

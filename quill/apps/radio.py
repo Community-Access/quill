@@ -457,6 +457,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         station_menu.Append(find_id, "Find &Streams from a Website...")
         manage_id = wx.NewIdRef()
         station_menu.Append(manage_id, "&Manage Favorites...")
+        import_id = wx.NewIdRef()
+        station_menu.Append(import_id, "&Import Stations...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_import_stations(), id=import_id)
         new_folder_id = wx.NewIdRef()
         station_menu.Append(new_folder_id, "New F&older...\tCtrl+Shift+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_new_folder(), id=new_folder_id)
@@ -629,6 +632,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             add_id,
             find_id,
             manage_id,
+            import_id,
             new_folder_id,
             play_last_id,
             self._resume_menu_item_id,

@@ -353,6 +353,47 @@ class RadioMixin:
         if changed and self._radio_history.announce_track_titles:
             self._announce(self._radio_now_playing_phrase(title))
 
+    def radio_import_stations(self) -> None:
+        """Import Stations... (JSON): merge a station-list file into favorites.
+
+        Reads the shapes accessible radio products and hand-built lists use
+        (see quill.core.radio.station_import); categories become favorites
+        folders; existing favorites are never duplicated or overwritten."""
+        wx = self._wx
+        with wx.FileDialog(
+            self.frame,
+            "Import Stations",
+            wildcard="Station lists (*.json)|*.json|All files (*.*)|*.*",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:  # GATE-42-OK: native file picker
+                return
+            path = dialog.GetPath()
+        from pathlib import Path
+
+        from quill.core.radio.station_import import (
+            StationImportError,
+            merge_stations,
+            parse_stations_json,
+        )
+
+        try:
+            stations = parse_stations_json(Path(path).read_text(encoding="utf-8-sig"))
+        except (OSError, StationImportError) as error:
+            self._announce(f"Import failed: {error}")
+            return
+        result = merge_stations(self._radio_favorites, stations)
+        self._save_radio_favorites()
+        reload_tree = getattr(self, "_reload_favorites_tree", None)
+        if callable(reload_tree):  # the standalone app's main-window tree
+            reload_tree()
+        message = f"Imported {result.added} station{'' if result.added == 1 else 's'}"
+        if result.folders:
+            message += f" into {result.folders} folder{'' if result.folders == 1 else 's'}"
+        if result.skipped_duplicates:
+            message += f"; {result.skipped_duplicates} already in favorites"
+        self._announce(message + ".")
+
     def radio_whats_playing(self) -> None:
         """Speak the current track title on demand."""
         if self._radio_track_title:
@@ -1067,6 +1108,11 @@ class RadioMixin:
                 "radio.manage_favorites",
                 "Internet Radio: Manage Favorites...",
                 self.open_manage_radio_favorites,
+            ),
+            (
+                "radio.import_stations",
+                "Internet Radio: Import Stations...",
+                self.radio_import_stations,
             ),
             (
                 "radio.play_last",

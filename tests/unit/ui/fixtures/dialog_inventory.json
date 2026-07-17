@@ -342,6 +342,7 @@
   "quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager.on_remove::wx.MessageDialog": "native",
   "quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_quillins_host.py::_EditorHostServices.show_choices::wx.SingleChoiceDialog": "native",
+  "quill/ui/main_frame_radio.py::RadioMixin.radio_import_stations::wx.FileDialog": "native",
   "quill/ui/main_frame_restore_points.py::RestorePointsMixin.restore_previous_version::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_rich_mode.py::RichModeMixin._confirm_lossy_format_switch::wx.MessageDialog": "native",
   "quill/ui/main_frame_rich_mode.py::RichModeMixin._offer_docx_rich_choice::wx.SingleChoiceDialog": "native",
