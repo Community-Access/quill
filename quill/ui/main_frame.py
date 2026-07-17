@@ -526,6 +526,47 @@ def _sapi5_voice_short_name(voice_id: str) -> str:
     return last.lower()
 
 
+def _wav_duration_seconds(path: Path, *, fallback: float = 12.0) -> float:
+    """Length of a PCM wav in seconds; a safe cap when it cannot be read so the
+    preview wait loop never blocks the worker indefinitely."""
+    try:
+        import wave
+
+        with wave.open(str(path), "rb") as handle:
+            frames = handle.getnframes()
+            rate = handle.getframerate()
+            if rate:
+                return frames / float(rate)
+    except Exception:  # noqa: BLE001 - an unreadable header degrades to the cap
+        pass
+    return fallback
+
+
+def _await_playback(
+    *,
+    duration: float,
+    still_current: Callable[[], bool],
+    purge: Callable[[], None],
+    sleep: Callable[[float], None],
+    now: Callable[[], float],
+    poll: float = 0.05,
+) -> bool:
+    """Wait out an asynchronously-playing preview clip, cutting it short the
+    moment it is superseded.
+
+    Returns True if playback was interrupted (Stop pressed / a newer preview
+    started): ``purge`` is called to cut the audio. Returns False when the clip
+    plays to its natural end. Pure (time and sleep are injected) so the
+    interruption logic is unit-tested without winsound or real threads."""
+    deadline = now() + duration
+    while now() < deadline:
+        if not still_current():
+            purge()
+            return True
+        sleep(poll)
+    return False
+
+
 @dataclass(slots=True)
 class _DocumentTab:
     panel: object
@@ -11917,13 +11958,33 @@ class MainFrame(
         if getattr(self.settings, "voice_preview_announce_generating", True):
             self._announce("Generating preview, please wait.")
 
-    def _play_preview_asset(self, sample_path: Path) -> None:
+    def _play_preview_asset(
+        self, sample_path: Path, still_current: Callable[[], bool] | None = None
+    ) -> None:
+        """Play a preview clip so Stop can cut it mid-phrase.
+
+        Playback is asynchronous and this method returns only when the clip
+        finishes or ``still_current`` reports the preview was superseded -- at
+        which point it purges the audio. A blocking play (the old behavior)
+        could not be interrupted: Stop's SND_PURGE only cancels async sounds,
+        so speech ran to the end regardless of Stop."""
+        import time as _time
+
+        current = still_current if still_current is not None else (lambda: True)
         suffix = sample_path.suffix.lower()
         if suffix == ".wav" and _winsound is not None:
-            _winsound.PlaySound(str(sample_path), _winsound.SND_FILENAME)
+            _winsound.PlaySound(str(sample_path), _winsound.SND_FILENAME | _winsound.SND_ASYNC)
+            _await_playback(
+                duration=_wav_duration_seconds(sample_path),
+                still_current=current,
+                purge=self._purge_preview_playback,
+                sleep=_time.sleep,
+                now=_time.monotonic,
+            )
             return
-        # MP3 and other formats: use Windows MCI for in-process synchronous playback.
-        # This avoids opening an external media player.
+        # MP3 and other formats: use Windows MCI for in-process playback (async
+        # + polling so a superseding Stop takes effect immediately, not after
+        # the whole clip). This avoids opening an external media player.
         try:
             import ctypes as _ct
 
@@ -11932,7 +11993,15 @@ class MainFrame(
             _path = str(sample_path).replace('"', "")
             _winmm.mciSendStringW(f'open "{_path}" type mpegvideo alias {_alias}', None, 0, None)
             try:
-                _winmm.mciSendStringW(f"play {_alias} wait", None, 0, None)
+                _winmm.mciSendStringW(f"play {_alias}", None, 0, None)
+                buf = _ct.create_unicode_buffer(64)
+                while True:
+                    if not current():
+                        break
+                    _winmm.mciSendStringW(f"status {_alias} mode", buf, 64, None)
+                    if buf.value != "playing":
+                        break
+                    _time.sleep(0.05)
             finally:
                 _winmm.mciSendStringW(f"close {_alias}", None, 0, None)
             return
@@ -11996,7 +12065,7 @@ class MainFrame(
             def _play_sample(_progress: Callable[[str, int, int], None]) -> object:
                 _report("playing")
                 try:
-                    self._play_preview_asset(preview_sample)
+                    self._play_preview_asset(preview_sample, _still_current)
                 except Exception:
                     _report("idle")
                     raise
@@ -12109,7 +12178,7 @@ class MainFrame(
                 else:
                     raise ReadAloudUnavailableError(f"Unknown engine: {engine}")
                 _report("playing")
-                self._play_preview_asset(wav)
+                self._play_preview_asset(wav, _still_current)
             except Exception:
                 _report("idle")
                 raise
