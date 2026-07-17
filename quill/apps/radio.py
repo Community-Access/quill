@@ -87,6 +87,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         })
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
+        # Alt+F4-to-tray (opt-in preference): intercepted at the char hook,
+        # before Windows turns it into a close, so the window tucks away with
+        # playback running. The titlebar X and Exit keep close_action.
+        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_radio_char_hook)
         self._maybe_resume_last_station()
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
@@ -700,6 +704,19 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             else "Resume on launch turned off."
         )
 
+    def _on_radio_char_hook(self, event: wx.KeyEvent) -> None:
+        """Alt+F4 -> system tray when the preference is on (still playing);
+        every other key -- and Alt+F4 with the preference off -- flows
+        through untouched."""
+        if (
+            event.GetKeyCode() == wx.WXK_F4
+            and event.AltDown()
+            and getattr(self._radio_history, "alt_f4_to_tray", False)
+        ):
+            self._send_to_tray()
+            return
+        event.Skip()
+
     def _on_volume_boost_menu(self) -> None:
         """The Playback menu's Volume Boost check item: toggle, then pin the
         checkmark to the persisted truth."""
@@ -750,6 +767,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     "website for a working one -- on by default",
                     history.recover_from_website,
                 ),
+                PreferenceCheckbox(
+                    "Alt+F&4 minimizes to the system tray",
+                    "When on, Alt+F4 sends Quill Radio to the system tray, still "
+                    "playing, instead of closing the window. The titlebar X and "
+                    "Exit keep the 'When closing the window' behavior",
+                    history.alt_f4_to_tray,
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -796,6 +820,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             history.check_updates_on_startup,
             history.announce_dialog_transitions,
             history.recover_from_website,
+            history.alt_f4_to_tray,
         ) = checkbox_values
         history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
         chosen_engine = _ENGINE_VALUES[choice_indices[1]]

@@ -51,6 +51,10 @@ class PodcastsAppFrame(
         })
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
+        # Alt+F4-to-tray (opt-in preference): intercepted at the char hook,
+        # before Windows turns it into a close, so the window tucks away
+        # with playback running.
+        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_cast_char_hook)
         self._maybe_resume_last_episode()
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
@@ -504,6 +508,12 @@ class PodcastsAppFrame(
                     "Announce dialog transitions -- off by default to reduce alert noise",
                     history.announce_dialog_transitions,
                 ),
+                PreferenceCheckbox(
+                    "Alt+F&4 minimizes to the system tray",
+                    "When on, Alt+F4 sends QUILL Cast to the system tray, still "
+                    "playing, instead of closing the window",
+                    history.alt_f4_to_tray,
+                ),
             ],
             announce_cb=self._announce,
         )
@@ -515,6 +525,7 @@ class PodcastsAppFrame(
             history.resume_on_launch,
             history.check_updates_on_startup,
             history.announce_dialog_transitions,
+            history.alt_f4_to_tray,
         ) = checkbox_values
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
@@ -804,6 +815,19 @@ class PodcastsAppFrame(
     def _send_to_tray(self) -> None:
         self.frame.Hide()
         self._announce("QUILL Cast is still running in the system tray.")
+
+    def _on_cast_char_hook(self, event: wx.KeyEvent) -> None:
+        """Alt+F4 -> system tray when the preference is on (still playing);
+        every other key -- and Alt+F4 with the preference off -- flows
+        through untouched."""
+        if (
+            event.GetKeyCode() == wx.WXK_F4
+            and event.AltDown()
+            and getattr(self._podcast_history, "alt_f4_to_tray", False)
+        ):
+            self._send_to_tray()
+            return
+        event.Skip()
 
     def _show_about(self) -> None:
         self._show_message_box(

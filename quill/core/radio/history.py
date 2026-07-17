@@ -104,6 +104,13 @@ class RadioHistory:
     #: Night mode -- real-time loudness normalization (lifts quiet program
     #: material), the complement to the compressor's "tame the loud parts".
     night_mode_enabled: bool = False
+    #: Alt+F4 sends the app to the system tray (still playing) instead of
+    #: closing the window. Off by default -- Alt+F4 keeps its Windows-wide
+    #: meaning unless the listener opts in. Separate from close_action,
+    #: which governs the titlebar X and Exit: with this on, the reflexive
+    #: keyboard close tucks the radio away while the deliberate exits still
+    #: exit (or ask, per close_action).
+    alt_f4_to_tray: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -158,6 +165,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.volume_boost = bool(raw.get("volume_boost", False))
         history.mono_enabled = bool(raw.get("mono_enabled", False))
         history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
+        history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -193,6 +201,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "volume_boost": history.volume_boost,
             "mono_enabled": history.mono_enabled,
             "night_mode_enabled": history.night_mode_enabled,
+            "alt_f4_to_tray": history.alt_f4_to_tray,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

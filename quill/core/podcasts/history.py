@@ -69,6 +69,10 @@ class PodcastHistory:
     #: dialog_contract.show_modal_dialog's "no policy set" fallback always
     #: spoke it, unlike full QUILL where it is opt-in.
     announce_dialog_transitions: bool = False
+    #: Alt+F4 sends QUILL Cast to the system tray (still playing) instead
+    #: of closing the window. Off by default; mirrors Quill Radio's
+    #: RadioHistory.alt_f4_to_tray.
+    alt_f4_to_tray: bool = False
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -109,6 +113,7 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
+        history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -129,6 +134,7 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
             "announce_dialog_transitions": history.announce_dialog_transitions,
+            "alt_f4_to_tray": history.alt_f4_to_tray,
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )
