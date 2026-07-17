@@ -117,6 +117,8 @@ def _is_actionable_error_line(line: str) -> bool:
     if not any(marker in line for marker in _LOG_ERROR_MARKERS):
         return False
     return not any(benign in line for benign in _BENIGN_ERROR_SUBSTRINGS)
+
+
 # How much of the tail of quill.log to scan for error evidence (#940/#948):
 # routine idle-sweep entries run every few minutes, so a few hundred KB
 # comfortably covers the final minutes before an unclean exit without
