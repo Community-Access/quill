@@ -14,6 +14,7 @@ from quill.core.updates import (
     is_newer_version,
     manifest_signature,
     parse_update_manifest,
+    running_portable,
     select_latest,
 )
 
@@ -76,6 +77,55 @@ def test_pick_asset_never_returns_a_foreign_platform_asset(monkeypatch) -> None:
     assets = [{"name": "Quill.dmg", "browser_download_url": "https://example.test/Quill.dmg"}]
     assert _pick_asset(assets, prefer_portable=False) == ""
     assert _pick_asset(assets, prefer_portable=True) == ""
+
+
+# -- #1100: an installed build must never be misread as portable ---------------
+
+
+def _portable_layout(root, *, installed: bool) -> None:
+    (root / "quill.exe").write_bytes(b"")
+    (root / "data").mkdir()
+    if installed:
+        # Inno Setup always drops its uninstaller beside the app.
+        (root / "unins000.exe").write_bytes(b"")
+
+
+def test_running_portable_true_for_extracted_portable_bundle(tmp_path, monkeypatch) -> None:
+    _portable_layout(tmp_path, installed=False)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert running_portable() is True
+
+
+def test_running_portable_false_for_inno_installed_even_with_data_folder(
+    tmp_path, monkeypatch
+) -> None:
+    # #1100: an installed build can also keep data under {app}\data; its
+    # unins000 uninstaller marks it installed, so it is NOT portable.
+    _portable_layout(tmp_path, installed=True)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert running_portable() is False
+
+
+def test_running_portable_false_without_portable_evidence(tmp_path, monkeypatch) -> None:
+    (tmp_path / "quill.exe").write_bytes(b"")  # no data/, no run-quill.cmd
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert running_portable() is False
+
+
+def test_pick_asset_installed_build_with_data_folder_gets_installer(tmp_path, monkeypatch) -> None:
+    # End to end through running_portable(): the exact #1100 report -- an
+    # installed build handed the portable .zip -- now gets the installer .exe.
+    _force_windows_suffixes(monkeypatch)
+    _portable_layout(tmp_path, installed=True)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    url = _pick_asset(_release_assets())  # prefer_portable=None -> running_portable()
+    assert url == "https://example.test/Quill-for-All-Setup-0.8.0.exe"
+
+
+def test_pick_asset_portable_bundle_gets_zip_via_detection(tmp_path, monkeypatch) -> None:
+    _portable_layout(tmp_path, installed=False)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert _pick_asset(_release_assets()) == "https://example.test/Quill-Portable-v0.8.0.zip"
 
 
 def test_select_latest_skips_release_with_no_platform_asset() -> None:
