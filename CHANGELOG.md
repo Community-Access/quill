@@ -4,6 +4,8 @@
 
 ### Improved
 
+- **Low-vision: the favorites tree is legible again (quill-radio #3).** The saved-stations tree (on the Quill Radio main page and in Manage Favorites) now pins itself to your desktop's system window and text colours, so it honours your theme and Windows High Contrast mode instead of a bare default that could render near-invisibly. This is a contrast fix, not a dark-mode or theme setting.
+
 - **Browse Stations: Country and Tag/genre are now dropdowns, not free text (quill-radio #2).** The Country field is a pickable list (with an "Any country" default) and Tag/genre is an editable combo box — both filled from RadioBrowser's own most-popular lists (fetched once per session, in the background) so you no longer have to guess the exact spelling of a country or genre. Tag stays editable so a rare custom tag still works, the station name stays free text, and picking a country or tag runs the search right away.
 
 ### New
