@@ -223,5 +223,6 @@ class AIThesaurusDialog:
         self._status_label.SetLabel(f'Copied "{synonym}" to clipboard.')
 
     def show(self) -> None:
-        self._show_modal(self.dialog)
+        # the label is required (it names the modal region for screen readers).
+        self._show_modal(self.dialog, "AI Thesaurus")
         self.dialog.Destroy()

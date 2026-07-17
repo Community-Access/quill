@@ -50,6 +50,9 @@ class AIAgentResultDialog:
         self._on_replace = on_replace_selection
         self._on_rerun = on_rerun
         self._show_modal = show_modal_dialog
+        # Stored so show() can hand it to _show_modal_dialog; the label is
+        # required (it names the modal region for screen readers).
+        self._title = title
 
         self.dialog = wx.Dialog(
             parent,
@@ -163,6 +166,6 @@ class AIAgentResultDialog:
             self._on_rerun()
 
     def show(self) -> int:
-        result = self._show_modal(self.dialog)
+        result = self._show_modal(self.dialog, self._title)
         self.dialog.Destroy()
         return result
