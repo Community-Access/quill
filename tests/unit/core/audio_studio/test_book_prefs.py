@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.audio_studio.book_prefs import (
-    BookPrefs,
     BookPrefsStore,
     get_prefs,
     load_prefs,

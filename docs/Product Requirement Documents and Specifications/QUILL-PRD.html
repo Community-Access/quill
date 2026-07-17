@@ -5194,6 +5194,44 @@ chapter-list import/export and in-place tag editing. Saving: MP3
 <strong>lossless <code>-c copy</code> re-mux</strong>
 (<code>save_m4b_book_as</code>; in-place is refused with a speakable
 message). Long saves run on the background pool.</li>
+<li><strong>Audio Studio shared listening modules + workbench
+player-observation contract (shipped, surfaced by the
+standalone).</strong> The Workbench player
+(<code>player_panel.py</code>) gained a <strong>Mute</strong> button
+(caches the pre-mute volume, restores on unmute, announces the state),
+public transport
+(<code>play_pause</code>/<code>stop_playback</code>/<code>next_chapter</code>/<code>previous_chapter</code>/<code>apply_book_prefs</code>),
+and per-book volume/mute applied on load via <code>BookPrefs</code>
+(<code>quill/core/audio_studio/book_prefs.py</code>).
+<code>open_book_in_workbench</code> and
+<code>ChapterWorkbenchDialog</code> now thread optional host callbacks —
+<code>on_player_ready(player, path)</code>,
+<code>on_finished(path)</code>, <code>on_volume(path, pct)</code>,
+<code>on_mute(path, muted)</code>,
+<code>on_closed(path, position_ms, chapter)</code> — down to
+<code>PlayerPanel</code>; embedded QUILL passes none (fully backward
+compatible — its single call site is unchanged), and the standalone
+QUILL-AS Studio shell wires them to route media keys (Play/Pause, Stop,
+Next/Previous chapter via <code>RegisterHotKey</code>), persist per-book
+volume/mute, stamp Recently Played history, and auto-advance the play
+queue on finish-then-close. New wx-free stores in
+<code>quill/core/audio_studio/</code>: <code>library.py</code> (book
+entries + user folders), <code>history.py</code> (Recently Played),
+<code>play_queue.py</code> (ordered queue + <code>next_entry</code>),
+<code>sleep_timer.py</code> (<code>SleepTimerSetting</code> +
+<code>SleepTimerWatcher</code>). New shared UI:
+<code>library_tree.py</code> (Favorites / In Progress / Recently Played
+/ Inbox groups + folders + a keyboard-complete context menu),
+<code>play_queue_dialog.py</code>, <code>sleep_timer_dialog.py</code>.
+All are vendored into QUILL-AS; each <code>save_*</code> site is
+classified <code>content</code> in the persistence audit, every
+focusable control carries an accessible name (audited by
+<code>accessible_name_audit</code>), and each new dialog is registered
+in the dialog inventory. The two Workbench helper dialogs
+(<code>SilenceParamsDialog</code>, <code>AcxResultDialog</code>) moved
+to <code>chapter_workbench_dialogs.py</code> to keep
+<code>chapter_workbench.py</code> within the GATE-11 size ratchet (the
+ratchet only decreases).</li>
 <li><strong>Chapter power tools (core).</strong>
 <code>quill/core/speech/chapter_io.py</code> imports/exports chapter
 lists in five formats (Audacity labels, plain timestamps, CUE,

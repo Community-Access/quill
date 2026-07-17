@@ -246,5 +246,61 @@ already-shipped libmpv backend (Help &gt; Download Optional Components
 <p><strong>Outcome:</strong> File-format correctness is proven
 end-to-end with real tools; only the subjective "does it play and seek
 well by ear" question remains.</p>
+<h2
+id="tier-2--phase-2-port-in-validation-shared-modules-standalone-surfaced">Tier
+2 — Phase 2 port-in validation (shared modules,
+standalone-surfaced)</h2>
+<p>The Phase 2 port-in adds shared <code>quill/</code> modules
+(<code>core/audio_studio/{book_prefs,history,library,play_queue,sleep_timer}</code>)
+and UIs (<code>library_tree</code>, <code>play_queue_dialog</code>,
+<code>sleep_timer_dialog</code>) that the standalone QUILL-AS Studio
+shell surfaces (library tree, resume-on-launch, Recently Played, media
+keys, sleep timer, per-book volume/mute, play queue + auto-advance).
+Embedded QUILL exposes only the Workbench <strong>Mute</strong> button
+from this round. The unit suites (QUILL
+<code>tests/unit/{core,ui}/audio_studio/</code>, QUILL-AS
+<code>tests/unit/ui/test_studio_shell_*</code>) cover the headless
+behavior; these items are the live, ears-on checks.</p>
+<h3 id="3-per-book-volumemute-and-media-keys--needs-jeff">3. Per-book
+volume/mute and media keys — needs Jeff</h3>
+<p><strong>What:</strong> In the standalone Studio, open a book, set
+volume to about 40%, mute (Ctrl+M), unmute — confirm volume restores to
+40. Close and reopen the same book — confirm it remembers 40% and the
+mute state. With the book playing, press the media Play/Pause, Stop, and
+Next/Previous keys — confirm they route to the Workbench player.</p>
+<p><strong>Why an agent can't do this:</strong> media-key hotkeys and
+audible volume need a real desktop session; the headless tests only
+assert the callbacks delegate and the prefs round-trip to JSON.</p>
+<p><strong>Outcome:</strong> per-book prefs persist across launches and
+media keys drive the active player — the two pieces of shell-only
+behavior the contract exists to enable.</p>
+<h3 id="4-play-queue-auto-advance--sleep-timer--needs-jeff">4. Play
+queue auto-advance + sleep timer — needs Jeff</h3>
+<p><strong>What:</strong> Add two books to the Play Queue (Book Tools
+&gt; Play Queue), open the first, let it finish (or seek to the end) —
+confirm the Studio announces the next and opens it on close. Set Book
+Tools &gt; Sleep Timer to one minute (or end of chapter) — confirm
+playback stops on cue and the status announces it.</p>
+<p><strong>Why an agent can't do this:</strong> end-of-book and the
+timer fire against a live player pumping the message loop; the headless
+test only asserts <code>wx.CallAfter(open_book, next)</code> is
+scheduled on finish-then-close and the watcher calls
+<code>on_sleep</code> once.</p>
+<p><strong>Outcome:</strong> queue auto-advance and the sleep timer
+behave by ear, not just in the unit oracle.</p>
+<h3 id="5-library-tree--resume-on-launch--needs-jeff">5. Library tree +
+resume-on-launch — needs Jeff</h3>
+<p><strong>What:</strong> Add books, mark one Favorite, move one into a
+new folder, and confirm the tree (Favorites / In Progress / Recently
+Played / Inbox + your folders) reads correctly with JAWS/NVDA and the
+context menu (Open / Reveal / Favorite / Move / New Folder / Remove) is
+keyboard-complete. Toggle Studio &gt; Resume on launch, close
+mid-chapter, relaunch — confirm it reopens at the saved position.</p>
+<p><strong>Why an agent can't do this:</strong> tree navigation and
+resume-on-launch need a live app and screen reader; the headless tests
+assert the tree builds from <code>library.py</code> and the resume flag
+persists.</p>
+<p><strong>Outcome:</strong> the library tree is screen-reader-navigable
+and resume-on-launch lands you where you stopped.</p>
 </body>
 </html>
