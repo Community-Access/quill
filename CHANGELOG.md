@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Improved
+
+- **Radio recordings: a visible folder by default, and the list stays readable (quill-radio #4).** New recordings now go to **~/Music/Quill Radio Recordings** (falling back to your home folder) instead of a buried AppData path you had to go hunting for. The Recordings list also stops auto-rebuilding while you're reading it -- the 2-second live refresh pauses whenever the list has keyboard focus and resumes when you move off it, so a screen reader no longer gets yanked back to the top mid-read (the Refresh button still updates on demand).
+
+- **Low-vision: the favorites tree is legible again (quill-radio #3).** The saved-stations tree (on the Quill Radio main page and in Manage Favorites) now pins itself to your desktop's system window and text colours, so it honours your theme and Windows High Contrast mode instead of a bare default that could render near-invisibly. This is a contrast fix, not a dark-mode or theme setting.
+
+- **Browse Stations: Country and Tag/genre are now dropdowns, not free text (quill-radio #2).** The Country field is a pickable list (with an "Any country" default) and Tag/genre is an editable combo box — both filled from RadioBrowser's own most-popular lists (fetched once per session, in the background) so you no longer have to guess the exact spelling of a country or genre. Tag stays editable so a rare custom tag still works, the station name stays free text, and picking a country or tag runs the search right away.
+
 ### New
 
 - **Browse Stations now searches iHeart and TuneIn too.** A station search in the Browse Stations dialog fans out to iHeart and TuneIn alongside RadioBrowser and SomaFM and blends the results into one list, each non-RadioBrowser row naming where it came from ("… - via iHeart"/"via TuneIn"). TuneIn results resolve their real stream on the fly; iHeart matches come from its sitemap directory (fetched once per session) with each match's stream resolved lazily, so a search stays cheap. Both are bounded to a handful of resolved results per search and are failure-tolerant — a down source never blanks the list — and both are off entirely in Safe Mode. Builds on the iHeart/TuneIn core clients above; the wx-free blend helpers live in `quill/core/radio/directory_search.py`.
@@ -21,8 +29,6 @@
 - **Find Streams from a Website now resolves iHeart (and TuneIn) station pages to a playable stream instead of returning the page URL (#1087).** Scanning a site that links to an iHeart `/live/...` player page used to hand back the iHeart page URL itself — which does nothing when you press play — because `/live` is a stream-shaped path hint that short-circuited the scanner before it followed the link. iHeart/TuneIn portal page links are now followed one level deep like any "Listen Live" link, so the real stream embedded in the page's inline player (an `stream.revma.ihrhls.com/.../hls.m3u8` HLS URL, for instance) is extracted and offered instead. A station's own `/live/` path on its own domain is unaffected.
 
 ### Improved
-
-- **Radio recordings: a visible folder by default, and the list stays readable (quill-radio #4).** New recordings now go to **~/Music/Quill Radio Recordings** (falling back to your home folder) instead of a buried AppData path you had to go hunting for. The Recordings list also stops auto-rebuilding while you're reading it -- the 2-second live refresh pauses whenever the list has keyboard focus and resumes when you move off it, so a screen reader no longer gets yanked back to the top mid-read (the Refresh button still updates on demand).
 
 - **What's Playing now falls back to the station's own now-playing endpoint when the stream sends no title (quill-radio #1111).** Some stations send no ICY `StreamTitle` and expose no in-band title, so "What's Playing" (Ctrl+T) and announce-on-track-change had nothing to report. When both of those come up empty, Quill Radio now reads the current track from the station server's own Icecast/SHOUTcast status endpoint (`/status-json.xsl`, `/stats`, `/7.html`) on the same host it's already streaming — no third party, no cost, refused in Safe Mode. This is the free tier of the recognition request; an optional acoustic-fingerprinting tier (a paid/BYO-key service like ACRCloud or AudD) is tracked separately. A literal Shazam integration isn't possible on Windows (ShazamKit is Apple/Android-only).
 
