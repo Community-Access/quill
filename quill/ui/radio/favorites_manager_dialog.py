@@ -25,6 +25,23 @@ _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
 _NEW_FOLDER_CHOICE = "(New folder...)"
 
 
+def apply_readable_tree_colours(tree: Any) -> None:
+    """Force a favorites ``wx.TreeCtrl`` to the system window/text colours (#3).
+
+    Some Windows configurations render a bare ``wx.TreeCtrl`` with a background
+    that ignores the desktop theme, leaving it near-invisible for low-vision
+    users. Setting the colours explicitly from ``wx.SystemSettings`` makes the
+    tree honour the active theme and Windows High Contrast mode. This is a
+    contrast/legibility fix only -- NOT a dark-mode or theme preference (no
+    hard-coded colours, no toggle): it just pins the tree to the same
+    theme-resolved colours every other native control already uses.
+    """
+    import wx
+
+    tree.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+    tree.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
+
+
 def move_announcement(store: RadioFavoritesStore, key: str, delta: int) -> str:
     """Spoken result of a Move Up/Down, naming the neighbor it now sits next to.
 
@@ -97,6 +114,7 @@ class FavoritesManagerDialog:
             "Favorite stations, organized in folders; Enter plays, Delete removes, "
             "Shift+F10 opens all actions"
         )
+        apply_readable_tree_colours(self._tree)  # low-vision legibility (#3)
         root.Add(self._tree, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._status = wx.StaticText(self.dialog, label="")

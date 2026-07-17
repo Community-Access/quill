@@ -125,6 +125,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             "Favorite stations, organized in your folders; Enter plays, Delete "
             "removes, F2 renames, Shift+F10 opens all actions",
         )
+        # Low-vision legibility (#3): pin the tree to the theme-resolved system
+        # colours so it is never near-invisible on a mismatched default.
+        from quill.ui.radio.favorites_manager_dialog import apply_readable_tree_colours
+
+        apply_readable_tree_colours(self._favorites_tree)
         root.Add(self._favorites_tree, 1, wx.EXPAND | wx.ALL, 8)
         self._favorites_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_favorites_activated)
         self._favorites_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_favorites_context_menu)
