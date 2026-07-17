@@ -61,7 +61,7 @@ def _dialog() -> Any:
     d._current_results = []
     d._search_results = []
     d._search_rb = []
-    d._search_soma = []
+    d._search_extras = []
     d._search_offset = 0
     d._search_more_available = False
     d._announced: list[str] = []
