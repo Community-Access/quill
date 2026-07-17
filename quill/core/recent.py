@@ -114,6 +114,21 @@ def add_recent_audiobook_file(path: Path, limit: int = 10) -> list[Path]:
     return _add_to_path_list(_audiobook_files_path(), path, limit=limit)
 
 
+def remove_recent_audiobook_file(path: Path) -> list[Path]:
+    """Drop one entry from the audiobook MRU (the file itself is untouched).
+
+    Lets a library list/tree tidy away a finished or moved book without clearing
+    the whole list. The standalone Studio's home-page library binds Delete to
+    this; it is a general utility, so it lives here for both embedded and
+    standalone.
+    """
+    store = _audiobook_files_path()
+    normalized = path.resolve()
+    remaining = [entry for entry in _load_path_list(store) if entry.resolve() != normalized]
+    _save_path_list(store, remaining)
+    return remaining
+
+
 def clear_recent_audiobook_files() -> None:
     _save_path_list(_audiobook_files_path(), [])
 

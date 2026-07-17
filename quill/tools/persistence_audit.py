@@ -89,6 +89,16 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # incremental-rebuild fingerprints are regenerable.
     "core/publish/destinations.py::save_destinations": "content",
     "core/publish/feed_folder.py::save_feed_config": "content",
+    # Audio Studio Phase 2 (standalone port-in): per-book volume/mute prefs,
+    # the user's book library (folders/favorites), the Recently Played history,
+    # the play queue, and the sleep timer setting -- all user-created,
+    # additive-shaped stores with tolerant loaders (a corrupt file degrades to
+    # empty/default), same shape as the radio/podcasts stores above.
+    "core/audio_studio/book_prefs.py::save_prefs": "content",
+    "core/audio_studio/history.py::save_history": "content",
+    "core/audio_studio/library.py::save_library": "content",
+    "core/audio_studio/play_queue.py::save_queue": "content",
+    "core/audio_studio/sleep_timer.py::save_sleep_setting": "content",
     "core/radio/favorites.py::save_favorites": "content",
     "core/radio/history.py::save_history": "content",
     "core/radio/wake_timer.py::save_wake_setting": "content",

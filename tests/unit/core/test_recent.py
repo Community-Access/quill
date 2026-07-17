@@ -6,10 +6,13 @@ import pytest
 
 from quill.core import recent as recent_module
 from quill.core.recent import (
+    add_recent_audiobook_file,
     add_recent_file,
     clear_recent_files,
     load_recent_files,
     prune_missing_recent_files,
+    recent_audiobook_files,
+    remove_recent_audiobook_file,
 )
 
 
@@ -51,6 +54,37 @@ def test_clear_recent_files(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> 
     add_recent_file(one, limit=10)
     clear_recent_files()
     assert load_recent_files() == []
+
+
+def test_remove_recent_audiobook_file_drops_one_entry(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    one = tmp_path / "one.m4b"
+    two = tmp_path / "two.m4b"
+    one.write_bytes(b"1")
+    two.write_bytes(b"2")
+    add_recent_audiobook_file(one, limit=10)
+    add_recent_audiobook_file(two, limit=10)
+
+    remaining = remove_recent_audiobook_file(one)
+
+    assert one.resolve() not in [p.resolve() for p in remaining]
+    assert two.resolve() in [p.resolve() for p in remaining]
+    assert recent_audiobook_files() == remaining
+
+
+def test_remove_recent_audiobook_file_missing_path_is_noop(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    one = tmp_path / "one.m4b"
+    one.write_bytes(b"1")
+    add_recent_audiobook_file(one, limit=10)
+
+    remaining = remove_recent_audiobook_file(tmp_path / "absent.m4b")
+
+    assert [p.resolve() for p in remaining] == [one.resolve()]
 
 
 def test_prune_missing_disabled_is_noop(tmp_path: Path) -> None:

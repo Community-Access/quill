@@ -17,6 +17,7 @@ from collections.abc import Callable
 
 import wx
 
+from quill.core.audio_studio.book_prefs import BookPrefs
 from quill.core.i18n import _
 from quill.core.speech.chapter_io import format_timestamp
 from quill.core.speech.chapters import Chapter
@@ -37,15 +38,23 @@ class PlayerPanel(wx.Panel):
         *,
         announce: Callable[[str], None] | None = None,
         skip_step_ms: int = 10_000,
+        on_volume: Callable[[int], None] | None = None,
+        on_mute: Callable[[bool], None] | None = None,
+        on_finished: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(parent)
         self.SetName(_("Player"))
         self._announce_fn = announce
+        self._on_volume_cb = on_volume
+        self._on_mute_cb = on_mute
+        self._on_finished_cb = on_finished
         self._skip_step_ms = max(1_000, int(skip_step_ms))
         self._chapters: list[Chapter] = []
         self._length_ms = 0
         self._loaded = False
         self._announced_chapter = -1
+        self._muted = False
+        self._pre_mute_volume = 100
         self._engine: AudioEngine | None = create_engine(
             self,
             on_loaded=self._on_engine_loaded,
@@ -81,6 +90,9 @@ class PlayerPanel(wx.Panel):
         set_accessible_name(self._volume, _("Volume"))
         self._volume.Bind(wx.EVT_SLIDER, self._on_volume)
         slider_row.Add(self._volume, 1, wx.EXPAND)
+        self._mute_btn = wx.Button(self, label=_("M&ute"), name="player.mute")
+        self._mute_btn.Bind(wx.EVT_BUTTON, lambda _e: self.toggle_mute())
+        slider_row.Add(self._mute_btn, 0, wx.LEFT, 6)
         sizer.Add(slider_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
         self._status = wx.StaticText(self, label=_("No file loaded."), name="player.status")
@@ -93,11 +105,20 @@ class PlayerPanel(wx.Panel):
 
     # -- public API -------------------------------------------------------------
 
-    def load(self, path: str, chapters: list[Chapter], *, resume_ms: int = 0) -> bool:
+    def load(
+        self,
+        path: str,
+        chapters: list[Chapter],
+        *,
+        resume_ms: int = 0,
+        book_prefs: BookPrefs | None = None,
+    ) -> bool:
         """Begin loading *path*; chapter navigation uses *chapters*.
 
         A positive *resume_ms* parks the playhead there once loading finishes
-        (paused) — the remembered listening position.
+        (paused) — the remembered listening position. When *book_prefs* is
+        supplied, the remembered per-book volume (and mute state) is applied
+        before the first play; an unset volume (``-1``) falls back to 100%.
         """
         self._chapters = list(chapters)
         self._loaded = False
@@ -105,6 +126,7 @@ class PlayerPanel(wx.Panel):
         self._resume_ms = max(0, int(resume_ms))
         if self._engine is None:
             return False
+        self._apply_book_prefs(book_prefs)
         self._status.SetLabel(_("Loading {name}...").format(name=path))
         return self._engine.load(path)
 
@@ -116,6 +138,10 @@ class PlayerPanel(wx.Panel):
     def playhead_ms(self) -> int:
         """The current position — the anchor for split-at-playhead and retiming."""
         return self._engine.position_ms() if self._engine is not None else 0
+
+    def current_chapter_index(self) -> int:
+        """The chapter the playhead is in (-1 when no chapters loaded)."""
+        return self._chapter_at(self.playhead_ms())
 
     def play_chapter(self, index: int) -> None:
         """Jump to chapter *index* and play it."""
@@ -135,6 +161,23 @@ class PlayerPanel(wx.Panel):
 
     def has_media(self) -> bool:
         return self._loaded
+
+    def toggle_mute(self) -> None:
+        """Flip mute; unmuting restores the pre-mute engine volume."""
+        if self._engine is None:
+            return
+        if self._muted:
+            self._muted = False
+            self._engine.set_volume(self._pre_mute_volume)
+            self._mute_btn.SetLabel(_("M&ute"))
+        else:
+            self._pre_mute_volume = self._volume.GetValue()
+            self._muted = True
+            self._engine.set_volume(0)
+            self._mute_btn.SetLabel(_("Un&mute"))
+        self._announce(_("Muted") if self._muted else _("Unmuted"))
+        if self._on_mute_cb is not None:
+            self._on_mute_cb(self._muted)
 
     # -- helpers ----------------------------------------------------------------
 
@@ -231,6 +274,8 @@ class PlayerPanel(wx.Panel):
     def _on_engine_finished(self) -> None:
         self._sync_play_label()
         self._announce(_("End of book"))
+        if self._on_finished_cb is not None:
+            self._on_finished_cb()
 
     def _on_engine_error(self, message: str) -> None:
         self._status.SetLabel(message)
@@ -238,7 +283,8 @@ class PlayerPanel(wx.Panel):
 
     # -- transport ---------------------------------------------------------------
 
-    def _on_play_pause(self) -> None:
+    def play_pause(self) -> None:
+        """Toggle play/pause (the media-key and host-facing transport entry)."""
         if self._engine is None:
             return
         if self._engine.is_playing():
@@ -248,26 +294,45 @@ class PlayerPanel(wx.Panel):
             self._timer.Start(_TICK_MS)
         self._sync_play_label()
 
-    def _on_stop(self) -> None:
+    def stop_playback(self) -> None:
+        """Stop and reset the announced-chapter tracker (host-facing)."""
         if self._engine is not None:
             self._engine.stop()
             self._announced_chapter = -1
             self._sync_play_label()
             self._update_status()
 
-    def _on_prev(self) -> None:
+    def next_chapter(self) -> None:
+        """Jump to the next chapter, or announce at the last."""
+        idx = self._chapter_at(self.playhead_ms())
+        if idx + 1 < len(self._chapters):
+            self.play_chapter(idx + 1)
+        else:
+            self._announce(_("This is the last chapter"))
+
+    def previous_chapter(self) -> None:
+        """Jump to the previous chapter (first-seconds rule applies)."""
         idx = self._chapter_at(self.playhead_ms())
         # Within the first seconds of a chapter, previous means the one before.
         if idx > 0 and self.playhead_ms() - self._chapters[idx].start_ms < 3_000:
             idx -= 1
         self.play_chapter(max(0, idx))
 
+    def apply_book_prefs(self, book_prefs: BookPrefs | None) -> None:
+        """Apply remembered per-book volume + mute (host-facing wrapper)."""
+        self._apply_book_prefs(book_prefs)
+
+    def _on_play_pause(self) -> None:
+        self.play_pause()
+
+    def _on_stop(self) -> None:
+        self.stop_playback()
+
+    def _on_prev(self) -> None:
+        self.previous_chapter()
+
     def _on_next(self) -> None:
-        idx = self._chapter_at(self.playhead_ms())
-        if idx + 1 < len(self._chapters):
-            self.play_chapter(idx + 1)
-        else:
-            self._announce(_("This is the last chapter"))
+        self.next_chapter()
 
     def _on_where_am_i(self) -> None:
         """Speak book, chapter, position, and remaining time — the audible glance."""
@@ -327,7 +392,27 @@ class PlayerPanel(wx.Panel):
 
     def _on_volume(self, _evt: wx.Event) -> None:
         if self._engine is not None:
-            self._engine.set_volume(self._volume.GetValue())
+            value = self._volume.GetValue()
+            self._engine.set_volume(value)
+            # A manual volume change exits the muted state (slider is the
+            # source of truth for the level we restored to).
+            if self._muted and value > 0:
+                self._muted = False
+                self._pre_mute_volume = value
+                self._mute_btn.SetLabel(_("M&ute"))
+            if self._on_volume_cb is not None:
+                self._on_volume_cb(value)
+
+    def _apply_book_prefs(self, book_prefs: BookPrefs | None) -> None:
+        """Apply remembered per-book volume + mute to the slider and engine."""
+        vp = book_prefs.volume_percent if book_prefs and book_prefs.volume_percent >= 0 else 100
+        muted = bool(book_prefs and book_prefs.muted)
+        self._volume.SetValue(vp)
+        self._pre_mute_volume = vp
+        self._muted = muted
+        self._mute_btn.SetLabel(_("Un&mute") if muted else _("M&ute"))
+        if self._engine is not None:
+            self._engine.set_volume(0 if muted else vp)
 
     def _on_tick(self) -> None:
         if not self._loaded:

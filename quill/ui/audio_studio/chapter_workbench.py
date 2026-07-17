@@ -39,6 +39,10 @@ from quill.core.speech.chapters import (
     set_chapter_start,
     split_chapter,
 )
+from quill.ui.audio_studio.chapter_workbench_dialogs import (
+    AcxResultDialog,
+    SilenceParamsDialog,
+)
 from quill.ui.audio_studio.player_panel import PlayerPanel
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
@@ -70,6 +74,11 @@ class ChapterWorkbenchDialog(wx.Dialog):
         run_background: Callable[..., None] | None = None,
         on_publish: Callable[[BookFile], None] | None = None,
         ask_ai: Callable[[str], str] | None = None,
+        on_player_ready: Callable[[PlayerPanel, str], None] | None = None,
+        on_finished: Callable[[str], None] | None = None,
+        on_volume: Callable[[str, int], None] | None = None,
+        on_mute: Callable[[str, bool], None] | None = None,
+        on_closed: Callable[[str, int, int], None] | None = None,
     ) -> None:
         super().__init__(
             parent,
@@ -86,6 +95,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
         self._run_background = run_background
         self._on_publish_cb = on_publish
         self._ask_ai = ask_ai
+        book_path = str(book.path)
+        self._on_closed_cb = on_closed
         self._dirty = False
 
         root = wx.BoxSizer(wx.VERTICAL)
@@ -179,7 +190,13 @@ class ChapterWorkbenchDialog(wx.Dialog):
         io_row.Add(episodes_btn, 0)
         root.Add(io_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
-        self.player = PlayerPanel(self, announce=announce)
+        self.player = PlayerPanel(
+            self,
+            announce=announce,
+            on_volume=lambda pct: on_volume(book_path, pct) if on_volume else None,
+            on_mute=lambda muted: on_mute(book_path, muted) if on_mute else None,
+            on_finished=lambda: on_finished(book_path) if on_finished else None,
+        )
         root.Add(self.player, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         root.Add(wx.StaticText(self, label=_("Book details:")), 0, wx.LEFT | wx.TOP, 10)
@@ -226,6 +243,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
             book.chapters,
             resume_ms=load_position_ms(app_data_dir(), book.path),
         )
+        if on_player_ready is not None:
+            on_player_ready(self.player, str(book.path))
 
     # -- helpers ---------------------------------------------------------------
 
@@ -721,134 +740,29 @@ class ChapterWorkbenchDialog(wx.Dialog):
         position = self.player.playhead_ms()
         if position > 0:
             save_position_ms(app_data_dir(), self._book.path, position)
+        if self._on_closed_cb is not None:
+            self._on_closed_cb(str(self._book.path), position, self.player.current_chapter_index())
         self.player.shutdown()
         evt.Skip()
 
 
-class SilenceParamsDialog(wx.Dialog):
-    """Modal that asks for the two ffmpeg silencedetect knobs.
+def open_book_in_workbench(
+    frame: object,
+    path: Path,
+    *,
+    on_player_ready: Callable[[PlayerPanel, str], None] | None = None,
+    on_finished: Callable[[str], None] | None = None,
+    on_volume: Callable[[str, int], None] | None = None,
+    on_mute: Callable[[str, bool], None] | None = None,
+    on_closed: Callable[[str, int, int], None] | None = None,
+) -> None:
+    """Read *path* and open the Workbench on it (the journey-C entry point).
 
-    Returns ``(noise_db, min_silence_s)`` on OK. The defaults match
-    :func:`quill.core.speech.silence.detect_silence_chapters` so a brand-new
-    user gets the same result the core ships; lowering noise_db makes the
-    scan more sensitive, raising min_silence_s only counts real pauses.
+    The optional ``on_*`` callbacks let a host observe the workbench's player
+    lifecycle (media-key routing, per-book prefs, queue auto-advance, history
+    position-stamping). Embedded QUILL passes none; the standalone Studio
+    shell wires them. All are best-effort and marshalled by the host as needed.
     """
-
-    def __init__(self, parent: wx.Window) -> None:
-        super().__init__(
-            parent,
-            title=str(_("Propose chapters from silences")),
-            style=wx.DEFAULT_DIALOG_STYLE,
-            name="audio_studio.workbench_silence_params",
-        )
-        from quill.ui.audio_studio.pages_base import set_accessible_name
-
-        root = wx.BoxSizer(wx.VERTICAL)
-        intro = wx.StaticText(
-            self,
-            label=str(
-                _(
-                    "ffmpeg will scan the recording for silences and propose chapter "
-                    "boundaries at the silence midpoints. The proposal lands in the "
-                    "Workbench list for review; nothing is applied blind."
-                )
-            ),
-        )
-        intro.Wrap(420)
-        root.Add(intro, 0, wx.ALL, 12)
-        grid = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
-        grid.Add(
-            wx.StaticText(self, label=str(_("Noise threshold (dB):"))),
-            0,
-            wx.ALIGN_CENTER_VERTICAL,
-        )
-        self._noise = wx.SpinCtrlDouble(self, min=-60.0, max=-10.0, inc=1.0, initial=-30.0)
-        set_accessible_name(self._noise, str(_("Noise threshold (dB)")))
-        grid.Add(self._noise, 0)
-        grid.Add(
-            wx.StaticText(self, label=str(_("Minimum silence (seconds):"))),
-            0,
-            wx.ALIGN_CENTER_VERTICAL,
-        )
-        self._min_silence = wx.SpinCtrlDouble(self, min=0.1, max=5.0, inc=0.1, initial=0.8)
-        set_accessible_name(self._min_silence, str(_("Minimum silence (seconds)")))
-        grid.Add(self._min_silence, 0)
-        root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
-        buttons = self.CreateButtonSizer(wx.OK | wx.CANCEL)
-        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
-        self.SetSizer(root)
-        self.Fit()
-        self.CentreOnParent()
-        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-        self._noise.SetFocus()
-
-    def values(self) -> tuple[float, float]:
-        return float(self._noise.GetValue()), float(self._min_silence.GetValue())
-
-
-class AcxResultDialog(wx.Dialog):
-    """Read-only modal that shows the ACX check verdict and any recommendations.
-
-    The verdict is announced when the measurement finishes (the caller fires
-    that announce), so the user can dismiss the dialog with Escape and the
-    message still reaches them. The dialog exists so the recommendations are
-    in front of them, not just spoken once.
-    """
-
-    def __init__(self, parent: wx.Window, *, check: object | None) -> None:
-        super().__init__(
-            parent,
-            title=str(_("ACX check")),
-            style=wx.DEFAULT_DIALOG_STYLE,
-            name="audio_studio.workbench_acx_result",
-        )
-        from quill.core.speech.loudness import AcxCheck
-
-        root = wx.BoxSizer(wx.VERTICAL)
-        if check is None:
-            text = wx.StaticText(
-                self,
-                label=str(
-                    _(
-                        "The ACX check could not run. Make sure ffmpeg is installed "
-                        "and the book file is still on disk."
-                    )
-                ),
-            )
-        else:
-            assert isinstance(check, AcxCheck)
-            verdict = _("passes") if check.ok else _("fails")
-            lines: list[str] = [
-                _("ACX verdict: {verdict}.").format(verdict=verdict),
-                "",
-                _(
-                    "Integrated loudness: {lufs:.1f} LUFS (target {target} plus or minus {rng})"
-                ).format(lufs=check.integrated_lufs, target=-20.0, rng=3.0),
-                _("True peak: {peak:.1f} dBFS (max {max})").format(
-                    peak=check.true_peak_db, max=-3.0
-                ),
-                _("Noise floor: {noise:.1f} dBFS (max {max})").format(
-                    noise=check.noise_floor_db, max=-60.0
-                ),
-            ]
-            recs = check.recommendations()
-            if recs:
-                lines.append("")
-                lines.append(_("What to fix:"))
-                lines.extend(f"- {r}" for r in recs)
-            text = wx.StaticText(self, label="\n".join(lines))
-        text.Wrap(480)
-        root.Add(text, 1, wx.EXPAND | wx.ALL, 12)
-        buttons = self.CreateButtonSizer(wx.OK)
-        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
-        self.SetSizer(root)
-        self.Fit()
-        self.CentreOnParent()
-        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-
-
-def open_book_in_workbench(frame: object, path: Path) -> None:
-    """Read *path* and open the Workbench on it (the journey-C entry point)."""
     from quill.core.speech.book_file import BookReadError, read_book
 
     # Remember this book so the second time the user opens the edit
@@ -892,6 +806,11 @@ def open_book_in_workbench(frame: object, path: Path) -> None:
         run_background=getattr(frame, "_run_background_task", None),
         on_publish=on_publish,
         ask_ai=ask_ai,
+        on_player_ready=on_player_ready,
+        on_finished=on_finished,
+        on_volume=on_volume,
+        on_mute=on_mute,
+        on_closed=on_closed,
     )
     try:
         frame._show_modal_dialog(dlg, str(_("Chapter Workbench")))  # type: ignore[attr-defined]
