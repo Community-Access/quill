@@ -64,6 +64,9 @@ _LISTEN_LINK_HINTS = (
     "listen live",
     "listen now",
     "listen online",
+    # The Triton player network's own hostname (player.listenlive.co) --
+    # matches by href alone when the anchor's label is only an image.
+    "listenlive",
     "live stream",
     "livestream",
     "tune in",
@@ -150,7 +153,9 @@ class _StreamLinkParser(HTMLParser):
             self.candidates.append(PageStreamCandidate(url=url, reason=f"<{tag}> tag"))
         elif tag == "iframe" and attr_map.get("src"):
             url = urllib.parse.urljoin(self._base_url, attr_map["src"])
-            if url.startswith("https://"):
+            # http:// is fine here: _fetch_html upgrades it to https before
+            # any request is made (stations commonly still write http links).
+            if url.startswith(("https://", "http://")):
                 self.iframe_urls.append(url)
         elif tag == "link" and "icon" in attr_map.get("rel", "").lower() and attr_map.get("href"):
             self.favicon = urllib.parse.urljoin(self._base_url, attr_map["href"])
@@ -199,7 +204,8 @@ class _StreamLinkParser(HTMLParser):
                 )
             elif _looks_like_listen_link(lowered, label):
                 url = urllib.parse.urljoin(self._base_url, href)
-                if url.startswith("https://"):
+                # http:// is fine: _fetch_html upgrades before any request.
+                if url.startswith(("https://", "http://")):
                     self.listen_urls.append(url)
 
 
@@ -215,18 +221,72 @@ def _looks_like_listen_link(lowered_href: str, label: str) -> bool:
     return any(hint in haystack for hint in _LISTEN_LINK_HINTS)
 
 
-def _fetch_html(url: str) -> str:
-    """One HTTPS GET returning decoded text -- the reviewed egress site."""
-    if not url.startswith("https://"):
-        raise LinkFinderError("Only https:// pages can be scanned.")
+_FETCH_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError)
+
+
+def _http_get_text(url: str) -> str:
+    """One GET returning decoded text, certificates always fully verified."""
     request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
     context = ssl.create_default_context()
-    try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
-            payload: bytes = resp.read(_MAX_BYTES)
-    except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
-        raise LinkFinderError(f"Could not reach that page: {error}") from error
+    with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
+        payload: bytes = resp.read(_MAX_BYTES)
     return payload.decode("utf-8", errors="replace")
+
+
+def _is_cert_verification_failure(error: Exception) -> bool:
+    reason = getattr(error, "reason", error)
+    return isinstance(reason, ssl.SSLCertVerificationError) or isinstance(
+        error, ssl.SSLCertVerificationError
+    )
+
+
+def _www_variant(url: str) -> str:
+    """The same https URL with ``www.`` toggled on the host ("" if no host)."""
+    parsed = urllib.parse.urlsplit(url)
+    host = parsed.hostname or ""
+    if not host:
+        return ""
+    swapped = host.removeprefix("www.") if host.startswith("www.") else f"www.{host}"
+    netloc = swapped if parsed.port is None else f"{swapped}:{parsed.port}"
+    return urllib.parse.urlunsplit(parsed._replace(netloc=netloc))
+
+
+def _fetch_html(url: str) -> str:
+    """GET *url* returning decoded text -- the reviewed egress site.
+
+    HTTPS-first, always: an ``http://`` URL (a relative link joined against
+    an http base, or a typed one) is upgraded before fetching. Some station
+    sites carry a certificate that does not cover the exact host the
+    listener typed -- www.magic104.com's cert names only magic104.com. On a
+    certificate hostname failure (and only that failure) two safe retries
+    run in order: the ``www.``-toggled variant of the same host over https
+    (fully verified like any other fetch), then the plain-http entry point,
+    following the server's own redirect to wherever its valid https home
+    is. Certificate verification itself is never relaxed at any step; a
+    site that stays on plain http merely has its public HTML read, which is
+    all this scanner ever does.
+    """
+    if url.startswith("http://"):
+        url = "https://" + url.removeprefix("http://")
+    if not url.startswith("https://"):
+        raise LinkFinderError("Only http(s):// pages can be scanned.")
+    try:
+        return _http_get_text(url)
+    except _FETCH_ERRORS as error:
+        if not _is_cert_verification_failure(error):
+            raise LinkFinderError(f"Could not reach that page: {error}") from error
+        first_error = error
+    variant = _www_variant(url)
+    if variant:
+        try:
+            return _http_get_text(variant)
+        except _FETCH_ERRORS:
+            pass
+    fallback = "http://" + url.removeprefix("https://")
+    try:
+        return _http_get_text(fallback)
+    except _FETCH_ERRORS:
+        raise LinkFinderError(f"Could not reach that page: {first_error}") from first_error
 
 
 def normalize_page_url(text: str) -> str:
@@ -324,7 +384,14 @@ def _follow_pages(
             continue
         sub_parser = _StreamLinkParser(sub_url)
         sub_parser.feed(sub_html)
-        for candidate in sub_parser.candidates:
+        # Triton-resolved streams first: they are API-validated, playable
+        # mounts, while a player page's other links (its own help articles,
+        # for instance) are only stream-*shaped*.
+        page_candidates: list[PageStreamCandidate] = []
+        if base:  # a followed Listen link may itself be a Triton player page
+            page_candidates.extend(_triton_candidates(sub_url, sub_html, safe_mode=safe_mode))
+        page_candidates.extend(sub_parser.candidates)
+        for candidate in page_candidates:
             out.append(
                 PageStreamCandidate(
                     url=candidate.url,
@@ -332,15 +399,6 @@ def _follow_pages(
                     label=candidate.label,
                 )
             )
-        if base:  # a followed Listen link may itself be a Triton player page
-            for candidate in _triton_candidates(sub_url, sub_html, safe_mode=safe_mode):
-                out.append(
-                    PageStreamCandidate(
-                        url=candidate.url,
-                        reason=f"{candidate.reason} (found via {reason_suffix})",
-                        label=candidate.label,
-                    )
-                )
     return out
 
 
