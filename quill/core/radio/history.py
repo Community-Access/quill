@@ -83,6 +83,27 @@ class RadioHistory:
     #: website-scan step (a network fetch of the station's homepage on failure),
     #: so it is a single opt-out in Preferences. On by default; off in Safe Mode.
     recover_from_website: bool = True
+    #: The mpv audio-device name radio playback routes to (#1076), e.g.
+    #: "wasapi/{guid}". "" = system default. Set from the Preferences
+    #: "Radio output device" dropdown; needs the mpv engine (ignored, with
+    #: a spoken fallback, when libmpv is not installed).
+    output_device: str = ""
+    #: Which playback engine radio uses: "auto" (mpv when installed --
+    #: device routing, pause/rewind live, volume boost, wider codec/HLS
+    #: support -- else wx.media), "wx" (classic Windows Media, the escape
+    #: hatch), or "mpv" (insist; falls back with an announcement if absent).
+    playback_engine: str = "auto"
+    #: Volume Boost (mpv engine): amplify up to 50% past 100 for quiet
+    #: streams. No effect on the wx.media engine, which caps at 100.
+    volume_boost: bool = False
+    #: Sound options (listener-level, so global rather than per-station):
+    #: mono downmix -- both channels blended into one, for single-sided
+    #: hearing or a single earbud, where hard-panned stereo content simply
+    #: disappears otherwise.
+    mono_enabled: bool = False
+    #: Night mode -- real-time loudness normalization (lifts quiet program
+    #: material), the complement to the compressor's "tame the loud parts".
+    night_mode_enabled: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -131,6 +152,12 @@ def load_history(data_dir: Path) -> RadioHistory:
         if isinstance(template, str) and template.strip():
             history.now_playing_template = template
         history.recover_from_website = bool(raw.get("recover_from_website", True))
+        history.output_device = str(raw.get("output_device", ""))
+        engine = str(raw.get("playback_engine", "auto"))
+        history.playback_engine = engine if engine in ("auto", "wx", "mpv") else "auto"
+        history.volume_boost = bool(raw.get("volume_boost", False))
+        history.mono_enabled = bool(raw.get("mono_enabled", False))
+        history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -161,6 +188,11 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "announce_dialog_transitions": history.announce_dialog_transitions,
             "now_playing_template": history.now_playing_template,
             "recover_from_website": history.recover_from_website,
+            "output_device": history.output_device,
+            "playback_engine": history.playback_engine,
+            "volume_boost": history.volume_boost,
+            "mono_enabled": history.mono_enabled,
+            "night_mode_enabled": history.night_mode_enabled,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

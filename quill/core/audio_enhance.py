@@ -56,6 +56,12 @@ EQ_PRESETS: dict[str, tuple[float, float, float]] = {
     "Bass Boost": (7.0, 0.0, 1.0),
     "Voice Clarity": (-3.0, 4.0, 2.0),
     "Podcast": (-4.0, 3.0, 0.0),
+    # Compensates small laptop/phone-dock speakers that physically cannot
+    # reproduce lows: lift the bass they starve, brighten slightly.
+    "Small Speakers": (6.0, 0.0, 2.0),
+    # Softer top end for late-night listening at low volume (pairs well
+    # with Even Out Loudness, but that toggle stays the listener's call).
+    "Late Night": (2.0, 0.0, -3.0),
 }
 _EQ_BAND_FREQUENCIES = (100, 1000, 8000)
 #: Slider range for each band, in dB. wx.Slider is integer-only, so gains
@@ -82,6 +88,17 @@ _COMPRESSOR_FILTER = "acompressor=threshold=-18dB:ratio=3:attack=20:release=250:
 # music is often intentional.
 _SMART_SPEED_FILTER = "silenceremove=stop_periods=-1:stop_duration=0.5:stop_threshold=-40dB"
 
+# Mono downmix: both channels blended equally into a single channel -- an
+# accessibility option for single-sided hearing (or a single earbud), where
+# hard-panned stereo content simply disappears otherwise.
+_MONO_FILTER = "pan=mono|c0=0.5*c0+0.5*c1"
+
+# Night mode: real-time loudness normalization (dynaudnorm) -- lifts quiet
+# program material toward a consistent level, the "boost the quiet parts"
+# complement to the compressor's "tame the loud parts". frame length /
+# gaussian window tuned for music-safe smoothing without audible pumping.
+_NIGHT_MODE_FILTER = "dynaudnorm=f=250:g=15:p=0.9"
+
 _RELAY_READ_CHUNK = 4096
 
 
@@ -98,9 +115,17 @@ def is_enhancement_active(
     *,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
+    mono_enabled: bool = False,
+    night_mode_enabled: bool = False,
 ) -> bool:
     """True when these settings would change the audio at all."""
-    return bool(bass_db or mid_db or treble_db) or compressor_enabled or smart_speed_enabled
+    return (
+        bool(bass_db or mid_db or treble_db)
+        or compressor_enabled
+        or smart_speed_enabled
+        or mono_enabled
+        or night_mode_enabled
+    )
 
 
 def build_filter_graph(
@@ -110,17 +135,29 @@ def build_filter_graph(
     *,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
+    mono_enabled: bool = False,
+    night_mode_enabled: bool = False,
 ) -> str:
     """Build the ffmpeg ``-af`` filter graph for the three-band equalizer
     (Bass/Mid/Treble, in dB, each clamped to ``EQ_BAND_MIN_DB``..
     ``EQ_BAND_MAX_DB``) + the compressor + Smart Speed (silence trimming,
-    podcasts only -- radio callers never pass ``smart_speed_enabled=True``).
+    podcasts only -- radio callers never pass ``smart_speed_enabled=True``)
+    + mono downmix + night mode (loudness normalization).
+
+    Filter order matters and is deliberate: mono first (everything after
+    hears the blended signal), then EQ, then the compressor, then night
+    mode last so it levels the already-shaped result.
 
     Pure and unit-tested. Returns ``""`` when nothing is engaged (a caller
     should treat that as "play the stream directly, no relay needed").
+    The same graph drives all three delivery paths -- the ffmpeg relay
+    (wx.media playback), mpv's native ``af`` (no relay needed), and
+    recordings with "Apply Sound Enhancements" -- so every option behaves
+    identically everywhere.
     """
     gains = (clamp_eq_gain(bass_db), clamp_eq_gain(mid_db), clamp_eq_gain(treble_db))
-    filters = [
+    filters = [_MONO_FILTER] if mono_enabled else []
+    filters += [
         f"equalizer=f={freq}:t=q:w=1:g={gain}"
         for freq, gain in zip(_EQ_BAND_FREQUENCIES, gains, strict=True)
         if gain
@@ -129,6 +166,8 @@ def build_filter_graph(
         filters.append(_COMPRESSOR_FILTER)
     if smart_speed_enabled:
         filters.append(_SMART_SPEED_FILTER)
+    if night_mode_enabled:
+        filters.append(_NIGHT_MODE_FILTER)
     return ",".join(filters)
 
 
@@ -141,6 +180,8 @@ def build_relay_command(
     treble_db: float,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
+    mono_enabled: bool = False,
+    night_mode_enabled: bool = False,
     start_seconds: float = 0.0,
 ) -> list[str]:
     """Build the ffmpeg argv that filters *stream_url* and writes MP3 to stdout.
@@ -164,6 +205,8 @@ def build_relay_command(
         treble_db,
         compressor_enabled=compressor_enabled,
         smart_speed_enabled=smart_speed_enabled,
+        mono_enabled=mono_enabled,
+        night_mode_enabled=night_mode_enabled,
     )
     if filter_graph:
         args.extend(["-af", filter_graph])
@@ -277,6 +320,8 @@ class EnhanceRelay:
         treble_db: float = 0.0,
         compressor_enabled: bool,
         smart_speed_enabled: bool = False,
+        mono_enabled: bool = False,
+        night_mode_enabled: bool = False,
         start_seconds: float = 0.0,
     ) -> str:
         """Start relaying *stream_url* through the filter graph; returns the
@@ -299,6 +344,8 @@ class EnhanceRelay:
             treble_db=treble_db,
             compressor_enabled=compressor_enabled,
             smart_speed_enabled=smart_speed_enabled,
+            mono_enabled=mono_enabled,
+            night_mode_enabled=night_mode_enabled,
             start_seconds=start_seconds,
         )
         extra_kwargs: dict = {}

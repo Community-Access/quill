@@ -40,12 +40,18 @@ def _frame(monkeypatch: pytest.MonkeyPatch, *, playing: RadioStation | None) -> 
     frame.frame = object()
     frame._announce = lambda _msg: None
     frame._radio_history = SimpleNamespace(
-        eq_bass_db=1.0, eq_mid_db=2.0, eq_treble_db=3.0, compressor_enabled=True
+        eq_bass_db=1.0,
+        eq_mid_db=2.0,
+        eq_treble_db=3.0,
+        compressor_enabled=True,
+        mono_enabled=False,
+        night_mode_enabled=False,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
         state=SimpleNamespace(station=playing, state=RadioPlayerState.PLAYING),
         set_enhancement=lambda **kw: calls.append(("set_enhancement", kw)),
+        set_sound_options=lambda **kw: calls.append(("set_sound_options", kw)),
     )
     frame._save_radio_favorites = lambda: saved.append(True)
     calls: list[tuple[str, dict]] = []

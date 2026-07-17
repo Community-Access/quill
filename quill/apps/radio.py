@@ -40,6 +40,31 @@ _NOW_PLAYING_HELP = (
     "the default."
 )
 
+#: The Preferences "Radio output device" dropdown (#1076): "" (System
+#: default) plays to the default device; a device name routes just the
+#: radio there (needs the mpv engine). Earcons and your screen reader stay
+#: on the system default device.
+_OUTPUT_DEVICE_HELP = (
+    "The sound card radio playback comes out of. System default keeps "
+    "everything as it is today; choosing a device sends just the radio "
+    "there -- your screen reader and Quill Radio's own sounds stay on the "
+    "system default device."
+)
+
+#: RadioHistory.playback_engine's Preferences combo box. Automatic = mpv
+#: when installed (device routing, pause/rewind live, Volume Boost, more
+#: station formats), else Windows Media; the explicit entries are the
+#: escape hatch / insist options.
+_ENGINE_LABELS = ("Automatic (recommended)", "Windows Media (classic)", "mpv")
+_ENGINE_VALUES = ("auto", "wx", "mpv")
+_ENGINE_HELP = (
+    "Which audio engine plays the radio. Automatic uses mpv when it is "
+    "installed -- that is what enables the output device choice, pausing "
+    "and rewinding live radio, Volume Boost, and stations in more formats "
+    "-- and Windows Media otherwise. Windows Media (classic) is exactly "
+    "the pre-1.1 behavior."
+)
+
 
 class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -473,6 +498,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         playback_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
         playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
         playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        self._volume_boost_item_id = wx.NewIdRef()
+        playback_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
+        playback_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
+        playback_menu.AppendSeparator()
+        # Live DVR (mpv engine): pause is the Play/Stop item; these move
+        # within the buffered live window.
+        rewind_id, forward_id, live_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        playback_menu.Append(rewind_id, "Re&wind 30 Seconds\tCtrl+Shift+Left")
+        playback_menu.Append(forward_id, "&Forward 30 Seconds\tCtrl+Shift+Right")
+        playback_menu.Append(live_id, "Back to &Live\tCtrl+Shift+L")
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
@@ -492,6 +527,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._on_volume_boost_menu(), id=self._volume_boost_item_id
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_rewind(), id=rewind_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_forward(), id=forward_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_jump_to_live(), id=live_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_whats_playing(), id=whats_playing_id)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -595,6 +636,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             mute_id,
             vol_up_id,
             vol_down_id,
+            self._volume_boost_item_id,
+            rewind_id,
+            forward_id,
+            live_id,
             whats_playing_id,
             self._announce_titles_item_id,
             sleep_id,
@@ -655,6 +700,14 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             else "Resume on launch turned off."
         )
 
+    def _on_volume_boost_menu(self) -> None:
+        """The Playback menu's Volume Boost check item: toggle, then pin the
+        checkmark to the persisted truth."""
+        self.radio_toggle_volume_boost()
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._volume_boost_item_id), self._radio_history.volume_boost)
+
     def _open_preferences(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
@@ -665,9 +718,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             PreferencesDialog,
             PreferenceText,
         )
+        from quill.ui.radio.mpv_radio_engine import list_audio_devices, output_device_choices
 
         history = self._radio_history
         close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
+        device_labels, device_names, device_index = output_device_choices(
+            list_audio_devices(), history.output_device
+        )
         dialog = PreferencesDialog(
             self.frame,
             app_title=_TITLE,
@@ -701,6 +758,18 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     list(_CLOSE_ACTION_LABELS),
                     close_action_index,
                 ),
+                PreferenceChoice(
+                    "Playback &engine:",
+                    _ENGINE_HELP,
+                    list(_ENGINE_LABELS),
+                    _ENGINE_VALUES.index(history.playback_engine),
+                ),
+                PreferenceChoice(
+                    "Radio &output device:",
+                    _OUTPUT_DEVICE_HELP,
+                    device_labels,
+                    device_index,
+                ),
             ],
             texts=[
                 PreferenceText(
@@ -729,6 +798,17 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             history.recover_from_website,
         ) = checkbox_values
         history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
+        chosen_engine = _ENGINE_VALUES[choice_indices[1]]
+        if chosen_engine != history.playback_engine:
+            history.playback_engine = chosen_engine
+            # A playing station reconnects through the newly chosen backend.
+            self._radio_controller.set_playback_engine(chosen_engine)
+        chosen_device = device_names[choice_indices[2]]
+        if chosen_device != history.output_device:
+            history.output_device = chosen_device
+            # Reconnects a playing station through the right engine; a
+            # station already on air moves to the new device immediately.
+            self._radio_controller.set_output_device(chosen_device)
         new_template = text_values[0].strip()
         history.now_playing_template = new_template or _DEFAULT_NOW_PLAYING_TEMPLATE
         radio_history.save_history(app_data_dir(), history)

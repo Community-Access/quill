@@ -1,5 +1,6 @@
 """Playback > Sound Enhancements... -- a three-band EQ (Bass/Mid/Treble
-sliders), a compressor, and (podcasts only) Smart Speed.
+sliders), a compressor, (podcasts only) Smart Speed, and (radio) the
+listener-level sound options: mono downmix and night mode.
 
 Shared by Radio and Podcasts (both standalone apps and MainFrame). Sliders,
 not a single named preset: the Quick Preset combo box is a shortcut that sets
@@ -45,6 +46,9 @@ class SoundEnhanceDialog:
         subject: str = "station",
         show_smart_speed: bool = False,
         smart_speed_enabled: bool = False,
+        show_sound_options: bool = False,
+        mono_enabled: bool = False,
+        night_mode_enabled: bool = False,
         announce_cb: Callable[[str], None] | None = None,
         on_reset: Callable[[], None] | None = None,
     ) -> None:
@@ -55,6 +59,7 @@ class SoundEnhanceDialog:
         self._show_smart_speed = show_smart_speed
         self._on_reset = on_reset
         self._result: tuple[float, float, float, bool, bool] | None = None
+        self._sound_options: tuple[bool, bool] = (mono_enabled, night_mode_enabled)
         # wx.Window.SetName() is inert for MSAA/UIA on Windows (see
         # quill.ui.accessible_names) -- screen readers there normally infer a
         # name from the adjacent wx.StaticText instead, but that inference
@@ -120,6 +125,26 @@ class SoundEnhanceDialog:
             )
             self._smart_speed_check.SetValue(smart_speed_enabled)
             root.Add(self._smart_speed_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        # Listener-level sound options (radio: shared, not per-station --
+        # they describe the listener's ears and situation, not a station).
+        self._mono_check: wx.CheckBox | None = None
+        self._night_mode_check: wx.CheckBox | None = None
+        if show_sound_options:
+            self._mono_check = wx.CheckBox(self.dialog, label="Com&bine channels into mono")
+            self._mono_check.SetName(
+                "Combine channels into mono -- both stereo channels blended into "
+                "one, so nothing is lost with single-sided hearing or one earbud"
+            )
+            self._mono_check.SetValue(mono_enabled)
+            root.Add(self._mono_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+            self._night_mode_check = wx.CheckBox(self.dialog, label="&Night mode (even loudness)")
+            self._night_mode_check.SetName(
+                "Night mode -- automatically lifts quiet passages toward a "
+                "consistent loudness, for low-volume listening"
+            )
+            self._night_mode_check.SetValue(night_mode_enabled)
+            root.Add(self._night_mode_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._reset_btn: wx.Button | None = None
@@ -213,8 +238,20 @@ class SoundEnhanceDialog:
             self._on_reset()
         self.dialog.EndModal(self._wx.ID_CANCEL)
 
+    @property
+    def sound_options(self) -> tuple[bool, bool]:
+        """(mono_enabled, night_mode_enabled) as applied -- only meaningful
+        after an OK ``show`` with ``show_sound_options=True``. A separate
+        property (not part of the ``show`` tuple) so existing callers'
+        5-tuple contract is untouched."""
+        return self._sound_options
+
     def _on_apply(self, _event: object) -> None:
         bass, mid, treble = self._current_band_values()
         smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
         self._result = (bass, mid, treble, self._compressor_check.GetValue(), smart_speed)
+        self._sound_options = (
+            bool(self._mono_check.GetValue()) if self._mono_check else False,
+            bool(self._night_mode_check.GetValue()) if self._night_mode_check else False,
+        )
         self.dialog.EndModal(self._wx.ID_OK)
