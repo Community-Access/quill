@@ -226,9 +226,7 @@ def running_portable() -> bool:
         if root is None:
             return False
         anchor = root.parent  # portable_root_dir() returns <app root>/data
-        return not (
-            (anchor / "unins000.exe").is_file() or (anchor / "unins000.dat").is_file()
-        )
+        return not ((anchor / "unins000.exe").is_file() or (anchor / "unins000.dat").is_file())
     except Exception:  # noqa: BLE001 - detection must never break update checks
         return False
 
