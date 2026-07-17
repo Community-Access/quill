@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from quill.core.radio.recording import RadioRecorder, RecordingError, RecordingSettings
 
@@ -42,9 +43,12 @@ class RecordingScheduleEntry:
 
     ``run_at`` is an ISO ``YYYY-MM-DDTHH:MM`` moment for ``"once"``; for
     ``"daily"``/``"weekly"`` only its ``HH:MM`` time-of-day is read. ``weekday``
-    (0=Monday..6=Sunday) only matters for ``"weekly"``. ``last_fired_date``
-    (an ISO date) guards against firing more than once for the same
-    occurrence -- for ``"once"`` it also means "already used."
+    (0=Monday..6=Sunday) only matters for ``"weekly"``. ``timezone`` is an IANA
+    zone name (e.g. ``"America/New_York"``); empty means the machine's local
+    time, and the entry's wall-clock time is interpreted in that zone so a
+    Pacific user can record an Eastern show at the right local moment.
+    ``last_fired_date`` (an ISO date) guards against firing more than once for
+    the same occurrence -- for ``"once"`` it also means "already used."
     """
 
     id: str
@@ -54,6 +58,7 @@ class RecordingScheduleEntry:
     run_at: str
     weekday: int = -1
     duration_minutes: int = 60
+    timezone: str = ""
     enabled: bool = True
     last_fired_date: str = ""
 
@@ -66,6 +71,7 @@ class RecordingScheduleEntry:
             "run_at": self.run_at,
             "weekday": self.weekday,
             "duration_minutes": self.duration_minutes,
+            "timezone": self.timezone,
             "enabled": self.enabled,
             "last_fired_date": self.last_fired_date,
         }
@@ -91,6 +97,7 @@ class RecordingScheduleEntry:
             run_at=run_at,
             weekday=int(weekday) if isinstance(weekday, (int, float)) else -1,
             duration_minutes=int(duration) if isinstance(duration, (int, float)) else 60,
+            timezone=str(data.get("timezone", "")).strip(),
             enabled=bool(data.get("enabled", True)),
             last_fired_date=str(data.get("last_fired_date", "")),
         )
@@ -105,11 +112,39 @@ def _time_of_day(run_at: str) -> tuple[int, int] | None:
     return parsed.hour, parsed.minute
 
 
+def _entry_zone(entry: RecordingScheduleEntry) -> ZoneInfo | None:
+    """The entry's IANA zone, or ``None`` for local time / an unknown name.
+
+    An empty ``timezone`` means "local", and a bad name degrades to local too
+    so a corrupt record can never crash the scheduler thread.
+    """
+    if not entry.timezone:
+        return None
+    try:
+        return ZoneInfo(entry.timezone)
+    except (ZoneInfoNotFoundError, ValueError):
+        return None
+
+
 def is_due(entry: RecordingScheduleEntry, now: datetime) -> bool:
-    """Pure, testable: would *entry* fire right now?"""
+    """Pure, testable: would *entry* fire right now?
+
+    With ``entry.timezone`` empty (the default) *now* is compared as-is, the
+    original naive-local behavior. With a zone set, the entry's wall-clock time
+    is interpreted in that zone: *now* is converted into the zone (a naive
+    *now* is taken as system-local first), so an ``America/New_York`` 19:00
+    daily entry fires at 16:00 for a Pacific listener.
+    """
     if not entry.enabled:
         return False
-    today = now.date().isoformat()
+    zone = _entry_zone(entry)
+    if zone is not None:
+        now_absolute = now if now.tzinfo is not None else now.astimezone()
+        local_now = now_absolute.astimezone(zone)
+    else:
+        now_absolute = now
+        local_now = now
+    today = local_now.date().isoformat()
     if entry.recurrence == "once":
         if entry.last_fired_date:
             return False
@@ -117,18 +152,34 @@ def is_due(entry: RecordingScheduleEntry, now: datetime) -> bool:
             target = datetime.fromisoformat(entry.run_at)
         except ValueError:
             return False
-        return now >= target
+        if zone is not None and target.tzinfo is None:
+            target = target.replace(tzinfo=zone)
+        return now_absolute >= target
     if entry.last_fired_date == today:
         return False
     time_of_day = _time_of_day(entry.run_at)
     if time_of_day is None:
         return False
     hour, minute = time_of_day
-    if now.hour != hour or now.minute != minute:
+    if local_now.hour != hour or local_now.minute != minute:
         return False
-    if entry.recurrence == "weekly" and now.weekday() != entry.weekday:
+    if entry.recurrence == "weekly" and local_now.weekday() != entry.weekday:
         return False
     return True
+
+
+def _today_in_zone(entry: RecordingScheduleEntry, now: datetime) -> str:
+    """ISO date of *now* in the entry's effective zone (local when unset).
+
+    Used to stamp ``last_fired_date`` in the same frame of reference ``is_due``
+    reads it, so the once-per-day guard is correct for a zoned entry even when
+    the machine's local date differs from the entry-zone date at that instant.
+    """
+    zone = _entry_zone(entry)
+    if zone is not None:
+        now_absolute = now if now.tzinfo is not None else now.astimezone()
+        return now_absolute.astimezone(zone).date().isoformat()
+    return now.date().isoformat()
 
 
 def due_entries(
@@ -202,6 +253,15 @@ class RecordingScheduler:
         self.entries.append(entry)
         save_schedule(self._data_dir, self.entries)
 
+    def update(self, entry: RecordingScheduleEntry) -> bool:
+        """Replace the entry with the same id in place; ``False`` if absent."""
+        for index, existing in enumerate(self.entries):
+            if existing.id == entry.id:
+                self.entries[index] = entry
+                save_schedule(self._data_dir, self.entries)
+                return True
+        return False
+
     def remove(self, entry_id: str) -> bool:
         before = len(self.entries)
         self.entries = [e for e in self.entries if e.id != entry_id]
@@ -229,7 +289,7 @@ class RecordingScheduler:
         except RecordingError as exc:
             error = str(exc)
             logger.warning("Scheduled radio recording %s could not start: %s", entry.id, exc)
-        entry.last_fired_date = now.date().isoformat()
+        entry.last_fired_date = _today_in_zone(entry, now)
         save_schedule(self._data_dir, self.entries)
         self._on_fired(entry, error)
 

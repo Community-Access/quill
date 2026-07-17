@@ -227,6 +227,7 @@ class RadioMixin:
             default_stream_url=station.stream_url if station is not None else "",
             on_add=self._radio_scheduler.add,
             on_remove=self._radio_scheduler.remove,
+            on_update=self._radio_scheduler.update,
             favorites=self._radio_favorites,
             announce_cb=self._announce,
         )
