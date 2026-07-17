@@ -115,6 +115,12 @@ class RecordingsManagerDialog:
         self._timer = wx.Timer(self.dialog)
         self.dialog.Bind(wx.EVT_TIMER, lambda _e: self._refresh(keep_selection=True))
         self._timer.Start(_REFRESH_MS)
+        # quill-radio #4: pause the auto-refresh while the list has focus, so it
+        # never rebuilds out from under a screen reader mid-read. It resumes when
+        # focus leaves the list (onto a button, or away from the dialog); the
+        # Refresh button covers a manual update while reading.
+        self._list.Bind(wx.EVT_SET_FOCUS, self._on_list_focus)
+        self._list.Bind(wx.EVT_KILL_FOCUS, self._on_list_blur)
         self.dialog.Bind(wx.EVT_CLOSE, self._on_close)
 
         self._refresh()
@@ -136,6 +142,17 @@ class RecordingsManagerDialog:
         finally:
             self._timer.Stop()
             self.dialog.Destroy()
+
+    def _on_list_focus(self, event: Any) -> None:
+        """Pause the auto-refresh while the list is being read (#4)."""
+        self._timer.Stop()
+        event.Skip()
+
+    def _on_list_blur(self, event: Any) -> None:
+        """Resume the auto-refresh once focus leaves the list (#4)."""
+        if self._timer is not None:
+            self._timer.Start(_REFRESH_MS)
+        event.Skip()
 
     def _on_close(self, event: Any) -> None:
         self._timer.Stop()
