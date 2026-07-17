@@ -181,7 +181,7 @@
 </header>
 <h1 id="quill-radio----product-requirements">Quill Radio -- Product
 Requirements</h1>
-<p>Version 1.0</p>
+<p>Version 1.1</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>Quill Radio is QUILL's internet radio, shipped as its own small
 Windows app for people who want the radio on without loading a full
@@ -216,9 +216,53 @@ from QUILL's keymap so nothing collides with editor shortcuts.</li>
 <li>Station browser over the RadioBrowser directory (search, tag/country
 filters, test-play, favorite); bundled ACB Media directory; custom
 stream URLs; website stream finder with a Test/Stop Test toggle.</li>
+<li>JavaScript-player resolution in the website stream finder (upstream
+<code>core/radio/triton.py</code>): Triton Digital / StreamTheWorld
+players (the <code>player.listenlive.co</code> network and thousands of
+broadcast stations) compute their stream URL in JavaScript, so it never
+appears in the page HTML and a plain-HTML scan finds nothing. Quill
+Radio detects the player, reads the station callsign from the Triton
+PWA's own logo asset name, and resolves it to a real playable mount
+through Triton's JS-free provisioning API
+(<code>playerservices.streamtheworld.com</code>), offering both the MP3
+and AAC streams. Gated to pages that actually are Triton players and to
+a callsign the API validates, so it never surfaces a wrong stream; the
+response is parsed through the hardened <code>core/safe_xml</code>
+wrapper. One added egress, inventoried in QUILL's network-egress audit
+(§N-1), reached only from the same explicit Scan button and disabled in
+Safe Mode.</li>
 <li>One transport control (Play becomes Stop), mute, volume with
 per-station memory, single-player rule (starting any stream silences
 sibling media, radio or podcast, in every app).</li>
+<li>What's Playing (Ctrl+T) with a clean, configurable announcement
+(upstream <code>core/radio/now_playing.py</code>, #1068): parses the
+<code>key="value"</code> broadcast-automation metadata some stations
+pack into their ICY StreamTitle (and the plain "Artist - Title"
+convention) into title/artist fields, and renders them through a
+user-set token template
+(<code>{title}</code>/<code>{artist}</code>/<code>{raw}</code> with
+<code>[optional]</code> segments) stored in
+<code>RadioHistory.now_playing_template</code> and edited in Preferences
+(Ctrl+,). Default <code>{title}[ by {artist}]</code>.</li>
+<li>Paged station search (upstream
+<code>radio_browser.search_stations</code> offset + the Browse Stations
+dialog, #1064): 200 most-listened-first results per request (was 50)
+plus a More Stations button that pages the RadioBrowser directory beyond
+the first page; a finished search states when more exist and suggests
+narrowing.</li>
+<li>Self-healing stream recovery (upstream
+<code>core/radio/recovery.py</code>, #1065): on a playback error, a
+confidence-ordered ladder runs off-thread -- re-resolve a moved
+StreamTheWorld mount, refresh the URL from the directory, then (opt-in,
+<code>RadioHistory.recover_from_website</code>, default on, off in Safe
+Mode) scan the station's website with the shared Triton + "Listen Live"
+link-following scanner. A single unambiguous result auto-plays and
+self-heals the favorite; multiple candidates are announced for the user
+to pick in Find Streams. One attempt per station per session; all egress
+via the already-reviewed sites. <code>link_finder</code> also now
+follows a bounded allowlist of listen/live/play/tune-in
+<code>&lt;a&gt;</code> links one level deep, benefiting the manual Find
+Streams too.</li>
 <li>Recently Played (capped, de-duplicated), Play Last Station, optional
 resume-on-launch.</li>
 <li>What's Playing: ICY track titles on demand and optional
@@ -245,8 +289,26 @@ auto-refresh.</li>
 <li>Auto-reconnect: ffmpeg HTTP reconnect flags plus process-level retry
 into numbered part files; enabled/attempts/spacing configurable; user
 stops and duration-cap finishes never retry.</li>
-<li>Settings: format (mp3/ogg/flac/wav), bitrate, destination, filename
-pattern with tokens, max-duration safety cap.</li>
+<li>Settings: format (mp3/ogg/flac/wav, plus a raw stream-copy mode),
+bitrate, destination, filename pattern with tokens, max-duration safety
+cap.</li>
+<li>Raw/lossless capture (upstream <code>core/radio/recording.py</code>,
+listener request): a "Raw stream -- exactly as sent, no re-encoding
+(lossless)" format (<code>format="copy"</code>) stream-copies the
+server's audio packets with ffmpeg's <code>-c:a copy</code> -- no
+decode, no re-encode -- so the saved file is bit-for-bit the original
+broadcast, the most faithful capture for a listener who wants to do
+their own lossless editing/conversion. Bitrate and Sound Enhancements
+are meaningless with no re-encode and are dropped. The output container
+follows the stream's own codec, chosen from a one-time bounded
+<code>ffprobe</code> of the first audio stream
+(mp3-&gt;<code>.mp3</code>, aac-&gt;<code>.aac</code>,
+vorbis-&gt;<code>.ogg</code>, opus-&gt;<code>.opus</code>,
+flac-&gt;<code>.flac</code>, ...), falling back to Matroska audio
+(<code>.mka</code>) for anything unrecognized -- a universal lossless
+copy container; a missing/failed probe degrades to <code>.mka</code>
+rather than blocking the recording, and the resolved extension is reused
+across auto-reconnect continuation files.</li>
 </ul>
 <p><strong>Timers</strong></p>
 <ul>
@@ -292,10 +354,11 @@ installer with its own AppId installing to {autopf}\Quill Radio,
 per-user by default.</li>
 <li>P-2. Everything bundled, nothing downloaded at install or runtime:
 the onedir build carries the whole quill package and data; ffmpeg
-installs to {app}\tools\ffmpeg, found via the wrapper exporting
-QUILL_APP_ROOT. A portable zip ships the same onedir build plus a
-<code>data\</code> folder that switches storage to travel with the
-app.</li>
+installs to {app}\tools\ffmpeg and libmpv (the mpv playback engine, with
+its GPL license texts and source-offer note) to {app}\tools\mpv, both
+found via the wrapper exporting QUILL_APP_ROOT. A portable zip ships the
+same onedir build plus a <code>data\</code> folder that switches storage
+to travel with the app.</li>
 <li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> -- QUILL
 or QUILL Cast may still use it.</li>
 <li>P-4. Release artifacts:
@@ -307,7 +370,9 @@ compares against and downloads.</li>
 <ul>
 <li>N-1. Every outbound surface is inventoried in QUILL's network-egress
 audit: RadioBrowser and SomaFM (search/tags/countries/click-votes/byuuid
-fallback), the user-typed page for Find Streams, the playing stream
+fallback), the user-typed page for Find Streams (plus, for a
+Triton/StreamTheWorld player page, one follow-on call to Triton's
+provisioning API to resolve the JS-computed stream), the playing stream
 itself for ICY titles, and this repository's GitHub releases for the
 update check. No telemetry of any kind. (Sound Enhancements' local
 relay, §8, is loopback-only and never reaches the network itself -- it
@@ -323,18 +388,49 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>The mpv playback engine (1.1.0, upstream
+<code>quill/ui/radio/mpv_radio_engine.py</code> +
+<code>player_controller.py</code>, #1076).</strong> A second, preferred
+audio backend: libmpv, live-stream-aware (readiness from
+<code>core-idle</code>, not the duration a live stream never reports),
+bundled at <code>{app}\tools\mpv</code>.
+<code>RadioHistory.playback_engine</code> = auto (mpv when present) / wx
+("Windows Media (classic)", the byte-for-byte pre-1.1 escape hatch) /
+mpv; one silent cross-engine rescue per play attempt in either
+direction. Combined stream-format coverage is effectively complete: MP3,
+AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) --
+Ogg Vorbis/Opus/HLS were undecodable by WMP. The engine delivers:
+<strong>Radio output device</strong> (Preferences;
+<code>RadioHistory.output_device</code>; screen reader and app sounds
+stay on the system default; unplugged devices remembered, spoken
+fallback when unusable); <strong>live DVR</strong> (a seekable
+~45-minute demuxer cache: pause/resume live radio, Rewind/Forward 30
+Seconds, Back to Live, each announcing how far behind live);
+<strong>Volume Boost</strong> (up to 150% for quiet stations; the 0-100
+scale, per-station volumes, and mute untouched); <strong>engine-native
+What's Playing fallback</strong> (mpv <code>media-title</code> when the
+ICY side-tap gets nothing or the stream is HLS); and
+<strong>"Buffering..." announcements</strong> on mid-stream stalls.</li>
 <li><strong>Sound Enhancements</strong> (Playback &gt; Sound
 Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12
 to +12 dB) and a compressor, applied live via an ffmpeg filter graph
-relayed to the playback engine over a loopback-only local HTTP server.
-Off by default. A "Quick preset" shortcut sets all three sliders at
-once. Remembered per favorite station (a whole-record override on
-<code>FavoriteStation</code>, mirroring QUILL Cast's per-podcast
-override) as well as a shared default in <code>RadioHistory</code>;
-<code>RadioPlayerController</code> resolves which applies via an
-injected callback at the top of every <code>play_station</code>.
-Recording Settings' "Apply Sound Enhancements to recordings" (off by
-default) optionally records the filtered audio too.</li>
+relayed to the playback engine over a loopback-only local HTTP server --
+or, on the mpv engine (1.1.0), natively inside the player with no relay
+and with changes heard live, no reconnect. Off by default. 1.1.0 adds
+two listener-level (deliberately global, not per-station) options riding
+the same shared graph everywhere including recordings: <strong>mono
+downmix</strong> (single-sided hearing / one earbud -- hard-panned
+content never disappears) and <strong>night mode</strong> (real-time
+loudness normalization lifting quiet passages), plus the Small Speakers
+and Late Night quick presets. A "Quick preset" shortcut sets all three
+sliders at once. Remembered per favorite station (a whole-record
+override on <code>FavoriteStation</code>, mirroring QUILL Cast's
+per-podcast override) as well as a shared default in
+<code>RadioHistory</code>; <code>RadioPlayerController</code> resolves
+which applies via an injected callback at the top of every
+<code>play_station</code>. Recording Settings' "Apply Sound Enhancements
+to recordings" (off by default) optionally records the filtered audio
+too.</li>
 <li><strong>SomaFM</strong>, a second free, keyless station directory,
 blended into Browse Stations search alongside RadioBrowser.</li>
 <li><strong>Exit/Minimize to Tray confirmation</strong>: closing the

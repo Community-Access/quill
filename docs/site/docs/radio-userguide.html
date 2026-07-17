@@ -180,7 +180,7 @@
 <h1 class="title">Quill Radio - userguide</h1>
 </header>
 <h1 id="quill-radio-user-guide">Quill Radio User Guide</h1>
-<p>Version 1.0</p>
+<p>Version 1.1</p>
 <p>Quill Radio is internet radio the way a screen reader user would
 design it: a small window whose favorites tree has focus the instant it
 opens, menus that say everything they do, spoken feedback for every
@@ -250,12 +250,42 @@ Stations...</strong></li>
 <ul>
 <li><strong>Browse Stations...</strong> -- the full station browser:
 search RadioBrowser's live directory, filter by tag or country,
-test-play, favorite.</li>
+test-play, favorite. A search shows up to 200 stations at once,
+most-listened first; when there are still more, a <strong>More
+Stations</strong> button loads the next page and puts your cursor on the
+first newly added station. The status line tells you when more can be
+loaded and suggests adding a tag or country to narrow a very broad
+search.</li>
 <li><strong>Add Custom Station...</strong> -- paste any stream URL and
 name it yourself.</li>
+<li><strong>When a station won't play, Quill Radio tries to fix it for
+you.</strong> Some stations are listed in the directory but their stream
+address is dead -- often because the real stream is behind a player on
+the station's website. Instead of just failing, Quill Radio works down a
+short ladder: it re-resolves the address (for StreamTheWorld-style
+players that moved servers), refreshes the address from the directory,
+and -- if the setting is on -- scans the station's own website,
+following a "Listen Live"/"Play"/"Tune In" link into the player and
+recognizing Triton players there. If it finds one clear stream it plays
+it and remembers it for that favorite; if it finds several it tells you
+the count and you can open Find Streams to choose. The website step is
+the "Recover failed streams from the station's website" checkbox in
+Station &gt; Preferences (Ctrl+,), on by default and off in Safe Mode.
+It only tries once per station per session.</li>
 <li><strong>Find Streams from a Website...</strong> -- give it a website
 address; it scans that one page for stream links, with a Test button
-that toggles to Stop Test while a candidate plays.</li>
+that toggles to Stop Test while a candidate plays. This now also works
+for many stations whose "Listen Live" button is a modern JavaScript
+player (Triton Digital / StreamTheWorld, including the whole
+<code>player.listenlive.co</code> network -- for example
+<code>player.listenlive.co/34461</code>). Those players build their
+stream address in code, so it is not written anywhere in the page for a
+scanner to read; Quill Radio recognizes the player, reads the station's
+call letters from the page, and looks the real stream up through the
+station provider's own public address service -- no browser, no
+guessing. Both the MP3 and the AAC stream are offered when a station
+publishes both. If a page is not one of these players, or does not name
+its station, the scan simply behaves as before.</li>
 <li><strong>Manage Favorites...</strong> -- the favorites, made
 organizable. See "The Favorites Manager" below.</li>
 <li><strong>New Folder...</strong> (Ctrl+Shift+E) -- create a folder
@@ -274,16 +304,34 @@ directory, playable inline.</li>
 appliance switch.</li>
 <li><strong>Preferences...</strong> (Ctrl+,) -- Resume Last Station on
 Launch, automatic Check for Updates, Announce dialog transitions (off by
-default -- turn on for more spoken detail around every dialog), and When
-closing the window (Ask every time / Exit / Minimize to Tray), all in
-one small dialog. Every setting takes effect the moment you save.</li>
+default -- turn on for more spoken detail around every dialog), When
+closing the window (Ask every time / Exit / Minimize to Tray -- governs
+the titlebar X, Station &gt; Exit, and by default Alt+F4 too),
+<strong>Alt+F4 minimizes to the system tray</strong> (off by default:
+turn it on and Alt+F4 alone tucks the radio into the tray, still
+playing, while X and Exit keep the setting above -- the reflexive close
+stops meaning quit), <strong>Playback engine</strong> (Automatic --
+recommended -- uses the bundled mpv engine, which powers the output
+device choice, pausing and rewinding live radio, Volume Boost, and
+stations in more formats; "Windows Media (classic)" is exactly the
+pre-1.1 behavior if you ever want it back), and <strong>Radio output
+device</strong> (route just the radio to a second sound card or USB
+headset -- your screen reader and Quill Radio's own sounds stay on the
+system default device; an unplugged device is remembered, not reset, and
+if it can't be used the radio plays through the default and says so).
+Every setting takes effect the moment you save -- switching engine or
+device mid-song reconnects the station right where it matters: on the
+new engine or device.</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) -- hide the window; playback
 continues from the notification area.</li>
 <li><strong>Exit</strong> -- quit Quill Radio. Closing the window this
 way, from the titlebar X, or with Alt+F4 all ask first (unless you've
 told it not to, or set a fixed answer in Preferences): Exit, Minimize to
 Tray, or Cancel, with a "Don't ask me again" checkbox. Recording in
-progress is called out in the message, since exiting stops it.</li>
+progress is called out in the message, since exiting stops it. And if
+"Alt+F4 minimizes to the system tray" is on in Preferences, Alt+F4 skips
+all of this and simply tucks the radio into the tray, still
+playing.</li>
 </ul>
 <h3 id="playback-altp">Playback (Alt+P)</h3>
 <ul>
@@ -297,8 +345,30 @@ the panel button.</li>
 remembers the volume you set while it plays and gets it back the next
 time it starts -- stations are mastered wildly differently, and you
 should only have to fix that once per station.</li>
+<li><strong>Volume Boost</strong> (Ctrl+Shift+B, check item) --
+amplifies up to 50% past full volume for stations that just broadcast
+quiet. Your 0-100 volume scale, per-station volume memories, and mute
+all behave exactly as before; the boost is applied on top. Needs the mpv
+playback engine (the default -- see Preferences below).</li>
+<li><strong>Rewind 30 Seconds</strong> (Ctrl+Shift+Left),
+<strong>Forward 30 Seconds</strong> (Ctrl+Shift+Right), <strong>Back to
+Live</strong> (Ctrl+Shift+L) -- live radio you can move around in. Quill
+Radio keeps a rolling buffer of the stream (roughly 45 minutes at
+typical bitrates): pause with Play/Stop and resume where you left off,
+jump back to catch a missed sentence, then work your way forward or leap
+straight back to live. Every move announces how far behind live you are.
+Needs the mpv playback engine.</li>
 <li><strong>What's Playing?</strong> (Ctrl+T) -- speaks the current
-track or show title straight from the stream's own metadata.</li>
+track or show title straight from the stream's own metadata. When a
+station sends messy broadcast metadata (a string of catalog codes rather
+than a clean "Artist - Title"), Quill Radio finds the title and artist
+in it and reads just those. You control the wording in Station &gt;
+Preferences (Ctrl+,) with a small template: <code>{title}</code> and
+<code>{artist}</code> tokens, <code>[square brackets]</code> around
+optional wording that disappears when a field is empty (the default
+<code>{title}[ by {artist}]</code> drops the " by" when there's no
+artist), and <code>{raw}</code> for the stream's exact original text.
+Leave it blank to restore the default.</li>
 <li><strong>Announce Track Titles</strong> (check item) -- when on,
 title changes are announced as they happen. Off by default.</li>
 <li><strong>Sleep Timer...</strong> -- fade out and stop after a set
@@ -307,19 +377,27 @@ time, restoring your volume.</li>
 favorite, a time, once or every day, and the station starts playing by
 itself. Quill Radio must be running (the tray counts).</li>
 <li><strong>Sound Enhancements...</strong> -- a three-band equalizer
-(Bass, Mid, Treble sliders, -12 to +12 dB each, freely adjustable) plus
-a compressor ("Even Out Volume", boosts quiet passages and tames loud
-ones). A "Quick preset" combo box (Flat, Bass Boost, Voice Clarity,
-Podcast) sets all three sliders at once as a starting point -- move any
-slider afterward and it becomes Custom. Off by default; turning anything
-on filters the currently playing station live through FFmpeg (needs Help
-&gt; Get FFmpeg...) and reconnects on Apply -- there is no playback
-position to lose on a live stream, so that reconnect is instant. If
-FFmpeg is missing, playback continues unfiltered and Quill Radio tells
-you why. <strong>Remembered per station</strong>: open it while a
-favorite is playing to set that station's own sound; with nothing
-playing (or a non-favorite on), you're setting the shared default every
-other station follows.</li>
+(Bass, Mid, Treble sliders, -12 to +12 dB each, freely adjustable), a
+compressor ("Even Out Volume", boosts quiet passages and tames loud
+ones), and two listener options: <strong>Combine channels into
+mono</strong> (both stereo channels blended into one -- with
+single-sided hearing or a single earbud, a station that hard-pans a
+voice to the other channel simply loses it; mono means nothing
+disappears) and <strong>Night mode</strong> (evens loudness in real time
+by lifting quiet passages -- the complement to Even Out Volume taming
+loud ones; ideal for low-volume late-night listening). A "Quick preset"
+combo box (Flat, Bass Boost, Voice Clarity, Podcast, Small Speakers,
+Late Night) sets all three sliders at once as a starting point -- move
+any slider afterward and it becomes Custom. Off by default. On the mpv
+playback engine (the default), changes apply <strong>live, with no
+interruption at all</strong>; on the Windows Media engine they filter
+through FFmpeg (needs Help &gt; Get FFmpeg...) and reconnect on OK --
+instant, since a live stream has no position to lose. The EQ and
+compressor are <strong>remembered per station</strong>: open the dialog
+while a favorite is playing to set that station's own sound; with
+nothing playing (or a non-favorite on), you're setting the shared
+default every other station follows. Mono and Night mode are always
+shared -- they describe your ears and your evening, not a station.</li>
 </ul>
 <h3 id="record-altr">Record (Alt+R)</h3>
 <ul>
@@ -338,15 +416,36 @@ list.</li>
 <li><strong>Recordings...</strong> -- everything you have recorded,
 live. See "The Recordings list" below.</li>
 <li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
-WAV), bitrate, destination folder, filename pattern, a maximum-length
-safety cap, the <strong>If the connection drops</strong> section
-(reconnect on/off, how many attempts, and how many seconds between
-them), and <strong>Apply Sound Enhancements to recordings</strong> --
-off by default, so recordings stay an unfiltered archival copy even with
-Sound Enhancements on for live listening; turn it on to record the
-filtered (EQ/compressor) audio instead, for every recording method
-(Record Now, Record Station, and scheduled recordings alike).</li>
+WAV, or <strong>Raw stream</strong> -- see below), bitrate, destination
+folder, filename pattern, a maximum-length safety cap, the <strong>If
+the connection drops</strong> section (reconnect on/off, how many
+attempts, and how many seconds between them), and <strong>Apply Sound
+Enhancements to recordings</strong> -- off by default, so recordings
+stay an unfiltered archival copy even with Sound Enhancements on for
+live listening; turn it on to record the filtered (EQ/compressor) audio
+instead, for every recording method (Record Now, Record Station, and
+scheduled recordings alike).</li>
 </ul>
+<h3 id="raw-stream-recording-lossless-capture">Raw stream recording
+(lossless capture)</h3>
+<p>The <strong>Raw stream -- exactly as sent, no re-encoding
+(lossless)</strong> format in Recording Settings saves a recording that
+is bit-for-bit identical to what the station broadcasts. The
+MP3/OGG/FLAC/WAV formats decode the incoming audio and re-encode it to
+your chosen format; the raw option skips all of that and copies the
+station's own audio packets straight to disk, untouched. Choose it when
+you want the cleanest possible source to edit or convert yourself, with
+no quality lost to a second encoding.</p>
+<p>Quill Radio picks the file type for you from the stream's own format:
+an MP3 stream is saved as a <code>.mp3</code> file, AAC as
+<code>.aac</code>, Ogg Vorbis as <code>.ogg</code>, Opus as
+<code>.opus</code>, FLAC as <code>.flac</code>. Anything unusual is
+saved into a Matroska <code>.mka</code> file, a container that holds any
+kind of audio losslessly and opens in players like VLC. Because nothing
+is being re-encoded, the Bitrate setting and Apply Sound Enhancements
+have no effect on a raw recording and are simply ignored. If a recording
+is interrupted and continues into a "(part 2)" file, that part keeps the
+same file type as the recording it continues.</p>
 <h3 id="help-alth">Help (Alt+H)</h3>
 <ul>
 <li><strong>Command Palette...</strong> (Ctrl+Shift+P) -- every Quill
@@ -445,23 +544,38 @@ QUILL's radio; the wake-up timer you set in QUILL fires here.
 Uninstalling Quill Radio never deletes that shared data.</p>
 <h2 id="dependencies-honestly-stated">Dependencies, honestly stated</h2>
 <ul>
-<li><strong>Playback</strong> uses the Windows Media Player engine built
-into Windows -- nothing to install.</li>
-<li><strong>Recording</strong>, <strong>Sound Enhancements</strong>, and
-(when "Apply Sound Enhancements to recordings" is on) recording's own
-filtering all use <strong>ffmpeg</strong>, which the installer bundles
-at <code>tools\ffmpeg</code> inside the install folder. Nothing
-downloads at runtime. Sound Enhancements plays through a small local
-relay (ffmpeg filters the stream, a loopback-only web server on your own
-machine hands the filtered audio to the player) -- nothing about it is
-reachable off your computer.</li>
+<li><strong>Playback</strong> uses the bundled <strong>mpv</strong>
+engine (<code>tools\mpv</code> inside the install folder -- license
+texts and source note ship right next to it) with the Windows Media
+Player engine built into Windows as automatic fallback and as the
+"classic" choice in Preferences. Nothing to install, nothing downloads
+at runtime. Between the two engines, effectively every stream format in
+real-world use plays: <strong>MP3, AAC and HE-AAC (AAC+), Ogg Vorbis,
+Opus, FLAC streams, and HLS (m3u8)</strong> -- and a station one engine
+can't open is quietly retried on the other before you ever hear an
+error.</li>
+<li><strong>Recording</strong>, <strong>Sound Enhancements</strong> on
+the classic engine, and (when "Apply Sound Enhancements to recordings"
+is on) recording's own filtering all use <strong>ffmpeg</strong>, which
+the installer bundles at <code>tools\ffmpeg</code> inside the install
+folder. Nothing downloads at runtime. On the classic engine, Sound
+Enhancements plays through a small local relay (ffmpeg filters the
+stream, a loopback-only web server on your own machine hands the
+filtered audio to the player) -- nothing about it is reachable off your
+computer; on the mpv engine the same filters run inside the player
+itself, no relay at all.</li>
 <li><strong>Station search</strong> talks to the community
 <strong>RadioBrowser</strong> directory and the free, keyless
 <strong>SomaFM</strong> directory, blended into one results list;
-<strong>Find Streams</strong> fetches only the one page you type;
-<strong>What's Playing</strong> reads metadata from the stream you are
-already playing. No other network calls exist, and every one of them is
-inventoried in QUILL's network-egress audit.</li>
+<strong>Find Streams</strong> fetches only the one page you type
+(following its "Listen Live" link one level and, if it's a
+Triton/StreamTheWorld player, one lookup to the station provider's own
+public address service); <strong>stream recovery</strong> does the same
+lookups against a failing station's own website only when a stream won't
+play (and only if you leave the setting on); <strong>What's
+Playing</strong> reads metadata from the stream you are already playing.
+No other network calls exist, and every one of them is inventoried in
+QUILL's network-egress audit.</li>
 <li>The <strong>ACB Media</strong> directory is bundled -- no network
 needed to browse it.</li>
 </ul>
@@ -489,6 +603,18 @@ needed to browse it.</li>
 <tr>
 <td>Volume up / down</td>
 <td>Ctrl+Up / Ctrl+Down</td>
+</tr>
+<tr>
+<td>Volume Boost</td>
+<td>Ctrl+Shift+B</td>
+</tr>
+<tr>
+<td>Rewind / Forward 30 seconds</td>
+<td>Ctrl+Shift+Left / Ctrl+Shift+Right</td>
+</tr>
+<tr>
+<td>Back to Live</td>
+<td>Ctrl+Shift+L</td>
 </tr>
 <tr>
 <td>What's Playing?</td>
@@ -547,7 +673,10 @@ from QUILL's keymap, so nothing here collides with editor shortcuts.</p>
 <li><strong>A station will not play.</strong> Streams move. If the
 station came from the directory, Quill Radio automatically fetches its
 current address and retries once; if it still fails, search for it again
-in Browse Stations, or re-add it as a custom station.</li>
+in Browse Stations, or re-add it as a custom station. (Format problems
+are largely history as of 1.1.0: the two engines together play MP3,
+AAC/HE-AAC, Ogg Vorbis, Opus, FLAC, and HLS, and a stream one engine
+can't open is retried on the other automatically.)</li>
 <li><strong>No sound but the app says playing.</strong> Check Mute
 (Ctrl+M), the per-station volume (Ctrl+Up), and the Windows volume mixer
 entry for Quill Radio.</li>
@@ -562,6 +691,15 @@ time stays silent until the next occurrence.</li>
 <li><strong>The tray icon is gone.</strong> Check the taskbar overflow
 area, or set Quill Radio to "always show" in Windows taskbar
 settings.</li>
+<li><strong>Rewind, Volume Boost, or the output device "needs the mpv
+playback engine."</strong> Preferences (Ctrl+,) &gt; Playback engine is
+set to Windows Media (classic), or the bundled engine is missing. Set it
+back to Automatic; these features live in the mpv engine.</li>
+<li><strong>Playback sounds different since 1.1.0.</strong> It shouldn't
+-- but if anything about the new engine bothers you, Preferences
+(Ctrl+,) &gt; Playback engine &gt; "Windows Media (classic)" is exactly
+the old behavior. Please report what you heard either way (Help &gt;
+Report a Bug...).</li>
 </ul>
 </body>
 </html>
