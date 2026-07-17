@@ -45,3 +45,39 @@ def test_show_tree_navigator_does_not_crash_on_hidden_root(wx_app) -> None:
     finally:
         frame.frame.Destroy()
     assert result is None
+
+
+def test_show_tree_navigator_accepts_unhashable_payloads(wx_app) -> None:
+    # #1109: "Go to Entry in Notebook" builds nodes whose payload is a
+    # NotebookEntry -- an unhashable dataclass. The navigator used to key an
+    # internal dict by node.payload, so opening it raised
+    # "TypeError: unhashable type: 'NotebookEntry'". A dict payload stands in
+    # for any unhashable object here.
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = wx
+    frame.frame = wx.Frame(None)
+    frame._show_modal_dialog = lambda dialog, title, **_kwargs: wx.ID_CANCEL  # type: ignore[method-assign]
+    nodes = [
+        main_frame_module._NavigatorNode(
+            label="Entry A",
+            preview="entry A body",
+            payload={"entry": "A"},  # unhashable, like a NotebookEntry
+            action_label="Go to Entry",
+            children=[
+                main_frame_module._NavigatorNode(
+                    label="Entry A.1",
+                    preview="child body",
+                    payload={"entry": "A.1"},
+                    action_label="Go to Entry",
+                    children=[],
+                )
+            ],
+        )
+    ]
+    try:
+        result = frame._show_tree_navigator(
+            title="Go to Entry in Notebook", root_label="Notebook", nodes=nodes
+        )
+    finally:
+        frame.frame.Destroy()
+    assert result is None

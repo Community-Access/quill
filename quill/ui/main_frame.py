@@ -11053,14 +11053,18 @@ class MainFrame(
         splitter.SplitVertically(tree, preview, 300)
         splitter.SetMinimumPaneSize(200)
 
-        item_payloads: dict[object, object] = {}
+        # Keyed by the wx tree item (always hashable), NOT by node.payload:
+        # a payload can be an unhashable object (e.g. a NotebookEntry), and
+        # using it as a dict key raised "TypeError: unhashable type" on open
+        # (#1109). The tree item already uniquely identifies its node.
+        item_to_node: dict[object, _NavigatorNode] = {}
         root = tree.AddRoot(root_label)
 
         def append_nodes(parent: object, children: list[_NavigatorNode]) -> object | None:
             first_item = None
             for node in children:
                 item = tree.AppendItem(parent, node.label)
-                item_payloads[item] = node.payload
+                item_to_node[item] = node
                 if first_item is None:
                     first_item = item
                 append_nodes(item, node.children)
@@ -11084,25 +11088,15 @@ class MainFrame(
             layout.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         dialog.SetSizer(layout)
 
-        node_by_payload: dict[object, _NavigatorNode] = {}
-
-        def collect(children: list[_NavigatorNode]) -> None:
-            for node in children:
-                node_by_payload[node.payload] = node
-                collect(node.children)
-
-        collect(nodes)
         selected_payload = nodes[0].payload if nodes else None
         if ok_button is not None and nodes:
             ok_button.SetLabel(nodes[0].action_label)
 
         def on_select(event: object) -> None:
             nonlocal selected_payload
-            item = event.GetItem()
-            payload = item_payloads.get(item)
-            if payload in node_by_payload:
-                selected_payload = payload
-                node = node_by_payload[payload]
+            node = item_to_node.get(event.GetItem())
+            if node is not None:
+                selected_payload = node.payload
                 preview.ChangeValue(node.preview)
                 if ok_button is not None:
                     ok_button.SetLabel(node.action_label)

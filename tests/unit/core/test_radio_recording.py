@@ -68,6 +68,49 @@ def test_build_record_command_mp3_includes_bitrate_and_duration_cap() -> None:
     assert "-t" in args
 
 
+def test_build_record_command_includes_user_agent_before_input() -> None:
+    # quill-radio #6: the recorder identifies as Quill Radio, and the UA is an
+    # input option, so it must sit before -i.
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        user_agent="Quill Radio/1.1.0 (+https://example)",
+    )
+    assert "-user_agent" in args
+    ua_index = args.index("-user_agent")
+    assert args[ua_index + 1] == "Quill Radio/1.1.0 (+https://example)"
+    assert ua_index < args.index("-i")
+
+
+def test_build_record_command_no_user_agent_for_non_http_input() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "file:///tmp/local.mp3",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        user_agent="Quill Radio/1.1.0 (+https://example)",
+    )
+    assert "-user_agent" not in args
+
+
+def test_build_probe_codec_command_includes_user_agent_for_http() -> None:
+    from quill.core.radio.recording import build_probe_codec_command
+
+    args = build_probe_codec_command(
+        "ffprobe", "https://example.com/stream", user_agent="Quill Radio/1.1.0 (+u)"
+    )
+    assert "-user_agent" in args
+    assert args[args.index("-user_agent") + 1] == "Quill Radio/1.1.0 (+u)"
+    # The URL stays the last argument.
+    assert args[-1] == "https://example.com/stream"
+
+
 def test_build_record_command_flac_has_no_bitrate_flag() -> None:
     args = build_record_command(
         "ffmpeg",
