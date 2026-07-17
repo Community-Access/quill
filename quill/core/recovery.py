@@ -103,6 +103,20 @@ def _release_file_lock(fd: int) -> None:
 
 
 _LOG_ERROR_MARKERS = ("ERROR", "CRITICAL", "Traceback (most recent call last):")
+# Lines that match an error marker but are NOT an actionable crash. QUILL's own
+# #210 hard-exit watchdog logs its force-exit at ERROR level, so a slow-but-
+# committed shutdown that the watchdog finished off would otherwise read as a
+# crash and produce a log-only "unclean exit" recovery report with nothing but
+# the watchdog line behind it (the Group D noise, #1079/#1085/#1095). A line
+# containing one of these substrings is discounted.
+_BENIGN_ERROR_SUBSTRINGS = ("forcing exit (#210)",)
+
+
+def _is_actionable_error_line(line: str) -> bool:
+    """True when *line* is real crash evidence, not a benign shutdown line."""
+    if not any(marker in line for marker in _LOG_ERROR_MARKERS):
+        return False
+    return not any(benign in line for benign in _BENIGN_ERROR_SUBSTRINGS)
 # How much of the tail of quill.log to scan for error evidence (#940/#948):
 # routine idle-sweep entries run every few minutes, so a few hundred KB
 # comfortably covers the final minutes before an unclean exit without
@@ -144,7 +158,7 @@ def _log_shows_actionable_error(logs_dir: Path) -> bool:
         # offering recovery rather than silently discarding a real crash
         # whose log write failed.
         return True
-    return any(marker in tail for marker in _LOG_ERROR_MARKERS)
+    return any(_is_actionable_error_line(line) for line in tail.splitlines())
 
 
 def find_error_evidence(logs_dir: Path, *, context_lines: int = 3) -> str | None:
@@ -165,7 +179,7 @@ def find_error_evidence(logs_dir: Path, *, context_lines: int = 3) -> str | None
     if tail is None:
         return None
     lines = tail.splitlines()
-    hit_indexes = [i for i, line in enumerate(lines) if any(m in line for m in _LOG_ERROR_MARKERS)]
+    hit_indexes = [i for i, line in enumerate(lines) if _is_actionable_error_line(line)]
     if not hit_indexes:
         return None
     ranges: list[list[int]] = []
@@ -176,6 +190,38 @@ def find_error_evidence(logs_dir: Path, *, context_lines: int = 3) -> str | None
         else:
             ranges.append([start, end])
     return "\n...\n".join("\n".join(lines[start:end]) for start, end in ranges)
+
+
+def latest_crash_report(crash_dir: Path, *, min_mtime: float | None = None) -> str | None:
+    """Contents of the most recent ``crash-*.txt`` in *crash_dir*, or ``None``.
+
+    The top-level excepthook writes a full traceback to
+    ``app_data_dir()/crash-reports/crash-<ts>.txt`` on a real unhandled
+    exception. Stitching the newest one into a crash-recovery report turns a
+    log-only "unclean exit" into an actionable report with the real traceback.
+    ``min_mtime`` (a POSIX timestamp) drops reports older than the current
+    session so a stale crash from weeks ago is never attached. Best-effort:
+    any read error yields ``None`` rather than raising.
+    """
+    if not crash_dir.is_dir():
+        return None
+    candidates: list[tuple[float, Path]] = []
+    for path in crash_dir.glob("crash-*.txt"):
+        try:
+            mtime = path.stat().st_mtime
+        except OSError:
+            continue
+        if min_mtime is not None and mtime < min_mtime:
+            continue
+        candidates.append((mtime, path))
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    try:
+        text = candidates[0][1].read_text(encoding="utf-8", errors="replace").strip()
+    except OSError:
+        return None
+    return text or None
 
 
 def begin_session(session_id: str) -> list[RecoveryOffer]:
