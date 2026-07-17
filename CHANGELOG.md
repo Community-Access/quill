@@ -4,6 +4,10 @@
 
 - **Audio Studio: shared listening modules + workbench player contract.** The Chapter Workbench player gained a **Mute** button (Ctrl+M in the standalone shell) and public transport (play/pause, stop, next/previous chapter) so a host can drive it. `open_book_in_workbench` now accepts optional `on_player_ready` / `on_finished` / `on_volume` / `on_mute` / `on_closed` callbacks threaded through to `PlayerPanel` — embedded QUILL passes none (unchanged), and the standalone QUILL-AS Audio Studio shell wires them to route media keys, persist per-book volume/mute, stamp Recently Played, and auto-advance a play queue on finish-then-close. The new wx-free stores `quill/core/audio_studio/{book_prefs,history,library,play_queue,sleep_timer}.py` and the shared `library_tree`, `play_queue_dialog`, and `sleep_timer_dialog` UIs live in `quill/` and are vendored into QUILL-AS; each `save_*` site is classified in the persistence audit and every focusable control carries an accessible name. The two Workbench helper dialogs (silence params, ACX result) moved to `chapter_workbench_dialogs.py` to keep `chapter_workbench.py` within the GATE-11 size ratchet.
 
+### Fixes
+
+- **AI agent result and AI thesaurus dialogs no longer crash on open (#1091, #1094, #1097).** Both `AI > AI Thesaurus...` and the agent/writing-assistant result dialog called QUILL's modal-dialog gate without the `label` argument that names the modal region for screen readers -- so either dialog crashed with `TypeError: MainFrame._show_modal_dialog() missing 1 required positional argument: 'label'` the moment it tried to appear, reported independently by three testers. Both now pass their dialog title as the label, matching the AI Hub and AI Model dialogs that already did. No behavior change beyond the crash going away; the dialogs were always meant to open.
+
 ## 0.9.0 Beta 3
 
 The headline: **One Editor, Every Format** — the braille fix is on for everyone by default, and QUILL gains true rich text editing. Plus bug fixes driven by beta 2 community reports and eight small accessibility-first features. Rolls up on top of 0.9.0 Beta 2 (below).
