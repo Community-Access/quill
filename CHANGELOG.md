@@ -4,6 +4,8 @@
 
 ### Fixes
 
+- **"Go to Entry in Notebook" no longer crashes (#1109).** Opening the notebook entry navigator raised `TypeError: unhashable type: 'NotebookEntry'` — the tree navigator kept an internal lookup keyed by each node's payload, which fails when the payload is an unhashable object like a notebook entry. It now keys that lookup by the tree item itself (always hashable), so any payload type works. Affects every navigator that carries object payloads, not just notebooks.
+
 - **Find Streams from a Website now resolves iHeart (and TuneIn) station pages to a playable stream instead of returning the page URL (#1087).** Scanning a site that links to an iHeart `/live/...` player page used to hand back the iHeart page URL itself — which does nothing when you press play — because `/live` is a stream-shaped path hint that short-circuited the scanner before it followed the link. iHeart/TuneIn portal page links are now followed one level deep like any "Listen Live" link, so the real stream embedded in the page's inline player (an `stream.revma.ihrhls.com/.../hls.m3u8` HLS URL, for instance) is extracted and offered instead. A station's own `/live/` path on its own domain is unaffected.
 
 ### Improved
