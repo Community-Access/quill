@@ -168,13 +168,20 @@ def search_stations(
     tag: str = "",
     country: str = "",
     limit: int = _DEFAULT_LIMIT,
+    offset: int = 0,
     safe_mode: bool = False,
 ) -> list[RadioStation]:
     """Stations matching *query* (name search), optionally narrowed by tag or
-    country; ordered by community click count (most-listened first)."""
+    country; ordered by community click count (most-listened first).
+
+    *offset* skips that many results before returning *limit* of them, so a
+    caller can page through a large result set (RadioBrowser caps a single
+    request at 200); the stable ``clickcount`` order keeps paging consistent.
+    """
     refuse_in_safe_mode(safe_mode)
     params: dict[str, object] = {
         "limit": max(1, min(limit, 200)),
+        "offset": max(0, offset),
         "hidebroken": "true",
         "order": "clickcount",
         "reverse": "true",
