@@ -8464,7 +8464,9 @@ radio and Rewind/Forward 30 Seconds/Back to Live real commands
 `volume-max=150` — up to 50% past unity for quiet streams; the 0-100 user
 scale is untouched, the boost is applied on the way to the engine, and the
 wx engine clamps at 100 so it is safe everywhere); **wider station support**
-— WMP cannot decode Ogg Vorbis, Opus, or HLS at all, and either direction
+— effectively every stream format in real-world use now plays: MP3, AAC
+and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) — WMP
+cannot decode Ogg Vorbis, Opus, or HLS at all — and either direction
 gets one silent **cross-engine rescue** per play attempt (a stream the
 current engine cannot open is retried once on the other before an error is
 declared); **engine-native track titles** (mpv `media-title` as the
