@@ -2339,6 +2339,33 @@ class MenuBuilderMixin:
             media_menu.Append(
                 id_radio_volume_down, self._menu_label(_("Volume &Down"), "radio.volume_down")
             )
+            id_radio_volume_boost = wx.NewIdRef()
+            media_menu.AppendCheckItem(
+                id_radio_volume_boost,
+                self._menu_label(_("Volume &Boost"), "radio.volume_boost"),
+            )
+            media_menu.Check(id_radio_volume_boost, self._radio_history.volume_boost)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.radio_toggle_volume_boost(),
+                id=id_radio_volume_boost,
+            )
+            # Live DVR (mpv engine): move within the buffered live window.
+            id_radio_rewind = wx.NewIdRef()
+            id_radio_forward = wx.NewIdRef()
+            id_radio_live = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_rewind, self._menu_label(_("Re&wind 30 Seconds"), "radio.rewind")
+            )
+            media_menu.Append(
+                id_radio_forward, self._menu_label(_("&Forward 30 Seconds"), "radio.forward")
+            )
+            media_menu.Append(
+                id_radio_live, self._menu_label(_("Back to &Live"), "radio.jump_to_live")
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_rewind(), id=id_radio_rewind)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_forward(), id=id_radio_forward)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_jump_to_live(), id=id_radio_live)
             from quill.core.speech.ffmpeg import ffmpeg_available
 
             if ffmpeg_available():

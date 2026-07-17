@@ -154,3 +154,13 @@ def test_recover_from_website_round_trips(tmp_path: Path) -> None:
 
 def test_recover_from_website_defaults_on(tmp_path: Path) -> None:
     assert load_history(tmp_path).recover_from_website is True
+
+
+def test_output_device_round_trips(tmp_path: Path) -> None:
+    save_history(tmp_path, RadioHistory(output_device="wasapi/{some-guid}"))
+    assert load_history(tmp_path).output_device == "wasapi/{some-guid}"
+
+
+def test_output_device_defaults_to_system_default(tmp_path: Path) -> None:
+    # "" = system default = the wx.media engine, byte-for-byte today's path.
+    assert load_history(tmp_path).output_device == ""

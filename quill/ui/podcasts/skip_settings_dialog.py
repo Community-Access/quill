@@ -98,7 +98,7 @@ class SkipSettingsDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&Save")
+        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         buttons.Add(ok_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
@@ -113,7 +113,7 @@ class SkipSettingsDialog:
         apply_modal_ids(
             self.dialog,
             affirmative_id=wx.ID_OK,
-            affirmative_label="Save",
+            affirmative_label="OK",
             cancel_id=wx.ID_CANCEL,
             escape_id=wx.ID_CANCEL,
         )

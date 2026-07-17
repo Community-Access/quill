@@ -43,8 +43,12 @@ class _FakeEngine:
 
 def _make_controller(*, resolve_volume=None) -> tuple[RadioPlayerController, _FakeEngine]:
     frame = wx.Frame(None)
-    controller = RadioPlayerController(frame, resolve_volume=resolve_volume)
+    # playback_engine="wx": pin the classic engine so the injected fake is
+    # used even on a dev machine where libmpv is installed ("auto" would
+    # switch to a real MpvRadioEngine). Volume logic is engine-agnostic.
+    controller = RadioPlayerController(frame, resolve_volume=resolve_volume, playback_engine="wx")
     fake = _FakeEngine()
+    controller._wx_engine = fake
     controller._engine = fake
     return controller, fake
 

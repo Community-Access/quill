@@ -350,3 +350,64 @@ def test_relay_handler_rejects_a_second_concurrent_connection() -> None:
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
+
+
+# -- mono downmix + night mode (1.1.0 sound options) ---------------------------
+
+
+def test_is_enhancement_active_true_for_mono_or_night_mode_alone() -> None:
+    from quill.core.audio_enhance import is_enhancement_active
+
+    assert is_enhancement_active(0, 0, 0, compressor_enabled=False, mono_enabled=True)
+    assert is_enhancement_active(0, 0, 0, compressor_enabled=False, night_mode_enabled=True)
+
+
+def test_filter_graph_orders_mono_first_and_night_mode_last() -> None:
+    from quill.core.audio_enhance import build_filter_graph
+
+    graph = build_filter_graph(
+        6.0, 0.0, 2.0, compressor_enabled=True, mono_enabled=True, night_mode_enabled=True
+    )
+    # mono feeds everything downstream; night mode levels the shaped result.
+    assert graph.startswith("pan=mono")
+    assert graph.endswith("p=0.9")
+    assert graph.index("pan=mono") < graph.index("equalizer")
+    assert graph.index("acompressor") < graph.index("dynaudnorm")
+
+
+def test_filter_graph_empty_when_nothing_engaged_including_new_options() -> None:
+    from quill.core.audio_enhance import build_filter_graph
+
+    assert (
+        build_filter_graph(
+            0.0, 0.0, 0.0, compressor_enabled=False, mono_enabled=False, night_mode_enabled=False
+        )
+        == ""
+    )
+
+
+def test_relay_command_threads_mono_and_night_mode_into_the_graph() -> None:
+    from quill.core.audio_enhance import build_relay_command
+
+    args = build_relay_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        bass_db=0.0,
+        mid_db=0.0,
+        treble_db=0.0,
+        compressor_enabled=False,
+        mono_enabled=True,
+        night_mode_enabled=True,
+    )
+    graph = args[args.index("-af") + 1]
+    assert "pan=mono" in graph
+    assert "dynaudnorm" in graph
+
+
+def test_new_presets_exist_and_stay_within_slider_range() -> None:
+    from quill.core.audio_enhance import EQ_BAND_MAX_DB, EQ_BAND_MIN_DB, EQ_PRESETS
+
+    for name in ("Small Speakers", "Late Night"):
+        assert name in EQ_PRESETS
+        for gain in EQ_PRESETS[name]:
+            assert EQ_BAND_MIN_DB <= gain <= EQ_BAND_MAX_DB

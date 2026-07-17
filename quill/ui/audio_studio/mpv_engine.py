@@ -36,6 +36,7 @@ _DLL_NAMES = ("libmpv-2.dll", "mpv-2.dll", "libmpv.dll")
 _POLL_MS = 200
 
 # libmpv client API constants (client.h).
+_MPV_FORMAT_STRING = 1
 _MPV_FORMAT_FLAG = 3
 _MPV_FORMAT_DOUBLE = 5
 
@@ -104,6 +105,8 @@ class _MpvClient:
             ctypes.c_int,
             ctypes.c_void_p,
         ]
+        lib.mpv_free.restype = None
+        lib.mpv_free.argtypes = [ctypes.c_void_p]
         self._lib = lib
         handle = lib.mpv_create()
         if not handle:
@@ -151,6 +154,23 @@ class _MpvClient:
             self._handle, name.encode(), _MPV_FORMAT_FLAG, ctypes.byref(out)
         )
         return bool(out.value) if status >= 0 else None
+
+    def get_str(self, name: str) -> str | None:
+        """A property as text (mpv formats list properties as JSON), or None.
+
+        The returned C string is owned by libmpv and must be released with
+        ``mpv_free`` -- copied out before freeing.
+        """
+        out = ctypes.c_char_p(None)
+        status = self._lib.mpv_get_property(
+            self._handle, name.encode(), _MPV_FORMAT_STRING, ctypes.byref(out)
+        )
+        if status < 0 or out.value is None:
+            return None
+        try:
+            return out.value.decode("utf-8", "replace")
+        finally:
+            self._lib.mpv_free(out)
 
 
 class MpvAudioEngine:

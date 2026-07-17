@@ -8439,30 +8439,79 @@ Record Now/Schedule Recording/Recording Settings items are hidden outright
 (not merely disabled) when `ffmpeg_available()` is false — closing a
 gap from the original Phase 1 ship where recording did not yet exist to gate.
 
+**The mpv playback engine (`quill/ui/radio/mpv_radio_engine.py` +
+`player_controller.py`, #1076).** Radio has two backends.
+`MpvRadioEngine` — a radio-specific, live-stream-aware libmpv engine — is
+preferred whenever libmpv is present (`RadioHistory.playback_engine` =
+&quot;auto&quot;, the same philosophy as the podcast/Audio Studio `create_engine`);
+`WxMediaEngine` (wx.media/WMP) remains the zero-dependency fallback and the
+&quot;Windows Media (classic)&quot; escape hatch in Preferences. The shared
+`MpvAudioEngine` could not be reused: its poll gates &quot;loaded&quot; on a positive
+`duration`, which a live stream never reports. The radio engine&#39;s readiness
+state machine is a pure, unit-tested function (`next_poll_action`): loaded =
+`core-idle` goes false (audio actually being output); error = a return to
+`idle-active` before ready (bounded by mpv&#39;s own `network-timeout`);
+finished = `eof-reached`/idle after playing — a live stream&#39;s &quot;ended&quot; is a
+disconnect. The mpv engine is what delivers, in one stroke: **output-device
+routing** (`audio-device`; enumerated via `audio-device-list` read as JSON
+through a short-lived handle, pseudo-entries filtered; the Preferences
+&quot;Radio output device&quot; dropdown keeps an unplugged saved device rather than
+silently resetting it; `RadioHistory.output_device`); **live DVR** — a
+seekable 50 MiB demuxer cache (~45 min at 128 kbps) makes pausing live
+radio and Rewind/Forward 30 Seconds/Back to Live real commands
+(`radio.rewind`/`radio.forward`/`radio.jump_to_live`, with a spoken
+&quot;N behind live&quot; phrase); **Volume Boost** (`radio.volume_boost`,
+`volume-max=150` — up to 50% past unity for quiet streams; the 0-100 user
+scale is untouched, the boost is applied on the way to the engine, and the
+wx engine clamps at 100 so it is safe everywhere); **wider station support**
+— effectively every stream format in real-world use now plays: MP3, AAC
+and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) — WMP
+cannot decode Ogg Vorbis, Opus, or HLS at all — and either direction
+gets one silent **cross-engine rescue** per play attempt (a stream the
+current engine cannot open is retried once on the other before an error is
+declared); **engine-native track titles** (mpv `media-title` as the
+What&#39;s-Playing fallback when the out-of-band ICY tap gets nothing — some
+hosts reject it, HLS has no ICY); and **buffering announcements**
+(`paused-for-cache` polled once per stall — &quot;Buffering...&quot; instead of dead
+air). libmpv is the existing pinned assets-v1 component (§ Audio Studio);
+Quill Radio&#39;s installer bundles it under `tools\mpv` exactly as ffmpeg under
+`tools\ffmpeg`, GPL texts and source-offer note alongside.
+
 **Sound Enhancements (`quill/core/audio_enhance.py`, shared with Podcasts
 §5.84g).** A three-band equalizer (Bass/Mid/Treble sliders, -12 to +12 dB
-each, `EQ_BAND_MIN_DB`/`MAX_DB`, freely adjustable — the original four named
-presets, Flat/Bass Boost/Voice Clarity/Podcast, survive only as a &quot;Quick
-preset&quot; shortcut that sets all three sliders at once) and a compressor,
-applied live via an ffmpeg filter graph relayed to the existing playback
-engine over a loopback-only local HTTP server — not a new audio backend
-(BASS/BASS_FX, FastPlay&#39;s approach, needs a paid commercial license for a
-non-revenue app; ffmpeg is a dependency Radio&#39;s recorder already requires
-and QUILL never bundles or redistributes). Off by default; the engine loads
-the station&#39;s own URL directly until the user opts in, so normal playback
-never spawns the relay. **Remembered per favorite station**
-(`core/radio/favorites.py::FavoriteStation.has_sound_enhancement_override` +
-`eq_bass_db`/`eq_mid_db`/`eq_treble_db`/`compressor_enabled`, a whole-record
-override mirroring Podcasts&#39; own per-show override below): opening Sound
-Enhancements while a favorite plays edits that station&#39;s own settings;
-`RadioPlayerController` resolves which applies via an injected
+each, `EQ_BAND_MIN_DB`/`MAX_DB`, freely adjustable — the named presets,
+Flat/Bass Boost/Voice Clarity/Podcast plus the 1.1.0 additions Small
+Speakers and Late Night, survive only as a &quot;Quick preset&quot; shortcut that
+sets all three sliders at once), a compressor, and the 1.1.0
+**listener-level sound options**: **mono downmix** (`pan=mono`, both
+channels blended equally — an accessibility option for single-sided hearing
+or a single earbud, where hard-panned stereo content simply disappears) and
+**night mode** (`dynaudnorm`, real-time loudness normalization that lifts
+quiet program material — the complement to the compressor&#39;s &quot;tame the loud
+parts&quot;). Deliberately global rather than per-station: they describe the
+listener&#39;s ears and situation, not a station
+(`RadioHistory.mono_enabled`/`night_mode_enabled`). One filter graph
+(`build_filter_graph`, order deliberate: mono first, EQ, compressor, night
+mode last) drives all three delivery paths so every option behaves
+identically everywhere: the loopback-only ffmpeg relay on the wx engine;
+**natively via mpv&#39;s `af`** on the mpv engine — no relay, no second ffmpeg
+process, and a settings change is heard live with no reconnect at all
+(`set_filter_graph`); and recordings, via
+`RecordingSettings.apply_sound_enhancements` threading the same graph into
+`build_record_command`. Off by default; the engine loads the station&#39;s own
+URL directly until the user opts in. The EQ + compressor remain
+**remembered per favorite station**
+(`core/radio/favorites.py::FavoriteStation.has_sound_enhancement_override`,
+a whole-record override mirroring Podcasts&#39; own per-show override below):
+opening Sound Enhancements while a favorite plays edits that station&#39;s own
+settings; `RadioPlayerController` resolves which applies via an injected
 `resolve_enhancement` callback at the top of every `play_station`, rather
-than threading the choice through each of the 11+ places a station can start
-playing. `RecordingSettings.apply_sound_enhancements` (off by default)
-optionally threads the same filter graph into `build_record_command`, so a
-recording can capture the filtered audio instead of an unfiltered archival
-copy, for every recording method (Record Now, Record Station, and scheduled
-recordings).
+than threading the choice through each of the 11+ places a station can
+start playing. (The earlier &quot;not a new audio backend&quot; note about BASS
+stands — the second backend chosen, libmpv, was already a first-class
+optional component of the product, adds no licensing exposure, and touches
+nothing but radio playback: earcons and every other product sound stay on
+winsound and the system default device.)
 
 **Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
 `requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
@@ -8480,11 +8529,11 @@ literal stream links).
 **Planned next, not yet built.** Recording and scheduled recording, above,
 close out the two biggest items, but not everything: a read-only ACB Media
 events/meetings calendar view (a new, not-yet-verified egress site against
-`link.acb.org`), a working mpv backend for live streams (needed before
-gapless/exact-seek playback can apply to Radio, not just Podcasts), ICY
-&quot;now playing&quot; metadata, a live-refresh fetcher for the currently
+`link.acb.org`), a live-refresh fetcher for the currently
 static/hand-maintained ACB Media station list, and optional OS-level
-global hotkeys remain — see `docs/planning/roadmap.md` §1.7.
+global hotkeys remain — see `docs/planning/roadmap.md` §1.7. (The mpv
+backend for live streams and ICY &quot;now playing&quot; metadata, once listed here,
+both shipped — see the mpv playback engine above and What&#39;s Playing.)
 
 **Value.** A genuine, on-mission &quot;why QUILL and not a dedicated player&quot;
 answer for a screen-reader-first audience: the ACB Media category exists

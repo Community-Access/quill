@@ -73,6 +73,10 @@ class RadioMixin:
             on_enhance_error=self._on_radio_enhance_error,
             resolve_enhancement=self._radio_resolve_enhancement,
             resolve_volume=self._radio_resolve_volume,
+            output_device=self._radio_history.output_device,
+            on_output_device_error=self._on_radio_output_device_error,
+            playback_engine=self._radio_history.playback_engine,
+            on_buffering=lambda: self._wx.CallAfter(self._announce, "Buffering..."),
         )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
@@ -80,6 +84,11 @@ class RadioMixin:
             treble_db=self._radio_history.eq_treble_db,
             compressor_enabled=self._radio_history.compressor_enabled,
         )
+        self._radio_controller.set_sound_options(
+            mono_enabled=self._radio_history.mono_enabled,
+            night_mode_enabled=self._radio_history.night_mode_enabled,
+        )
+        self._radio_controller.set_volume_boost(self._radio_history.volume_boost)
         self._radio_recording_settings = load_recording_settings(app_data_dir())
         self._radio_recorder = RadioRecorder(
             on_state_changed=self._on_radio_recording_changed,
@@ -192,6 +201,8 @@ class RadioMixin:
             history.eq_mid_db,
             history.eq_treble_db,
             compressor_enabled=history.compressor_enabled,
+            mono_enabled=history.mono_enabled,
+            night_mode_enabled=history.night_mode_enabled,
         )
 
     def _radio_open_recording_settings(self) -> None:
@@ -301,7 +312,12 @@ class RadioMixin:
             return read_stream_title(url)
 
         def _done(_op: str, title: object) -> None:
-            self._wx.CallAfter(self._radio_apply_track_title, str(title or ""), announce_result)
+            resolved = str(title or "")
+            if not resolved and controller is not None:
+                # Engine-native fallback (mpv media-title): some hosts
+                # reject the out-of-band ICY tap, and HLS has no ICY at all.
+                resolved = controller.engine_track_title()
+            self._wx.CallAfter(self._radio_apply_track_title, resolved, announce_result)
 
         self._task_manager.submit(
             "radio-track-title",
@@ -343,6 +359,71 @@ class RadioMixin:
             self._announce(self._radio_now_playing_phrase(self._radio_track_title))
             return
         self._radio_fetch_track_title(announce_result=True)
+
+    # -- live DVR (mpv engine): rewind / forward / back to live -----------------
+
+    def radio_rewind(self) -> None:
+        """Jump back 30 seconds within the live buffer."""
+        behind = self._radio_controller.rewind(30)
+        if behind is None:
+            self._announce(self._radio_dvr_unavailable_message())
+            return
+        self._announce(f"Rewound 30 seconds. {self._radio_behind_live_phrase(behind)}")
+
+    def radio_forward(self) -> None:
+        """Jump forward 30 seconds, back toward the live edge."""
+        behind = self._radio_controller.forward(30)
+        if behind is None:
+            self._announce(self._radio_dvr_unavailable_message())
+            return
+        self._announce(f"Forward 30 seconds. {self._radio_behind_live_phrase(behind)}")
+
+    def radio_jump_to_live(self) -> None:
+        """Return to the live edge of the stream."""
+        if self._radio_controller.jump_to_live():
+            self._announce("Back to live.")
+        else:
+            self._announce("Nothing is playing.")
+
+    def _radio_dvr_unavailable_message(self) -> str:
+        if self._radio_controller.state.station is None:
+            return "Nothing is playing."
+        return (
+            "Rewinding live radio needs the mpv playback engine -- check "
+            "Preferences > Playback engine."
+        )
+
+    @staticmethod
+    def _radio_behind_live_phrase(behind: float) -> str:
+        """A spoken 'how far behind live' fragment: 'Live.' under 5 seconds,
+        else 'N seconds behind live.' / 'M minutes N seconds behind live.'"""
+        seconds = int(round(behind))
+        if seconds < 5:
+            return "Live."
+        if seconds < 60:
+            return f"{seconds} seconds behind live."
+        minutes, remainder = divmod(seconds, 60)
+        plural = "" if minutes == 1 else "s"
+        if remainder:
+            return f"{minutes} minute{plural} {remainder} seconds behind live."
+        return f"{minutes} minute{plural} behind live."
+
+    def radio_toggle_volume_boost(self) -> None:
+        """Volume Boost: amplify up to 50% past 100 for quiet streams
+        (mpv engine). The 0-100 volume scale everywhere else is untouched."""
+        history = self._radio_history
+        history.volume_boost = not history.volume_boost
+        radio_history.save_history(app_data_dir(), history)
+        effective = self._radio_controller.set_volume_boost(history.volume_boost)
+        if not history.volume_boost:
+            self._announce("Volume Boost off.")
+        elif effective:
+            self._announce("Volume Boost on: up to 50 percent louder.")
+        else:
+            self._announce(
+                "Volume Boost on. It takes effect on the mpv playback engine -- "
+                "check Preferences > Playback engine."
+            )
 
     def radio_toggle_title_announcements(self) -> None:
         history = self._radio_history
@@ -729,6 +810,12 @@ class RadioMixin:
         blocking dialog."""
         self._announce(f"Sound Enhancements: {message} Playing without it.")
 
+    def _on_radio_output_device_error(self, message: str) -> None:
+        """The chosen output device couldn't be used (libmpv missing or the
+        engine failed); playback still proceeds on the system default, so
+        this is an announcement, not a blocking dialog (#1076)."""
+        self._announce(message)
+
     def _radio_resolve_enhancement(self, station: RadioStation) -> tuple[float, float, float, bool]:
         """(bass_db, mid_db, treble_db, compressor_enabled) for *station*:
         its own remembered Sound Enhancements if it's a favorite with an
@@ -826,6 +913,9 @@ class RadioMixin:
             treble_db=treble,
             compressor_enabled=compressor,
             subject=favorite.display_label if favorite is not None else "station",
+            show_sound_options=True,
+            mono_enabled=history.mono_enabled,
+            night_mode_enabled=history.night_mode_enabled,
             announce_cb=self._announce,
             on_reset=on_reset,
         )
@@ -833,6 +923,16 @@ class RadioMixin:
         if result is None:
             return
         bass_db, mid_db, treble_db, compressor_enabled, _smart_speed_not_applicable = result
+        # Listener-level sound options: always shared (they describe the
+        # listener, not a station), regardless of a per-station EQ override.
+        mono_enabled, night_mode_enabled = dialog.sound_options
+        if (mono_enabled, night_mode_enabled) != (history.mono_enabled, history.night_mode_enabled):
+            history.mono_enabled = mono_enabled
+            history.night_mode_enabled = night_mode_enabled
+            radio_history.save_history(app_data_dir(), history)
+            self._radio_controller.set_sound_options(
+                mono_enabled=mono_enabled, night_mode_enabled=night_mode_enabled
+            )
         if favorite is not None:
             self._radio_favorites.set_enhancement(
                 favorite.key,
@@ -982,6 +1082,26 @@ class RadioMixin:
                 "radio.toggle_title_announcements",
                 "Internet Radio: Announce Track Titles On/Off",
                 self.radio_toggle_title_announcements,
+            ),
+            (
+                "radio.rewind",
+                "Internet Radio: Rewind 30 Seconds",
+                self.radio_rewind,
+            ),
+            (
+                "radio.forward",
+                "Internet Radio: Forward 30 Seconds",
+                self.radio_forward,
+            ),
+            (
+                "radio.jump_to_live",
+                "Internet Radio: Back to Live",
+                self.radio_jump_to_live,
+            ),
+            (
+                "radio.volume_boost",
+                "Internet Radio: Volume Boost On/Off",
+                self.radio_toggle_volume_boost,
             ),
             (
                 "radio.sound_enhancements",
