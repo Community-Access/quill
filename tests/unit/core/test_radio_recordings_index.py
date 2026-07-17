@@ -86,4 +86,4 @@ def test_scheduled_entries_append_with_recurrence_detail(tmp_path: Path) -> None
 def test_recordings_dir_honors_override_and_default(tmp_path: Path) -> None:
     assert recordings_dir(_settings(tmp_path)) == tmp_path
     default = recordings_dir(RecordingSettings())
-    assert default.name == "radio_recordings"
+    assert default.name == "Quill Radio Recordings"

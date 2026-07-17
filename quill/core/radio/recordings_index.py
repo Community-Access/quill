@@ -4,7 +4,7 @@ Recordings Manager (embedded QUILL and standalone Quill Radio alike).
 
 Completed recordings are simply the audio files in the recordings folder
 (the ``destination_root`` from :class:`~quill.core.radio.recording.
-RecordingSettings`, default ``<data_dir>/radio_recordings``); the active
+RecordingSettings`, default ``~/Music/Quill Radio Recordings``); the active
 recording is whichever file the :class:`RadioRecorder` is writing right
 now; scheduled entries come from the :class:`RecordingScheduler`. Strict-
 typed, no wx.

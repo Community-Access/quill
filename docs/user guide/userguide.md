@@ -5223,11 +5223,17 @@ description of what it enables and its impact.
   its features back off (removing a voice engine you were using, for example,
   switches Read Aloud back to the system voice). It only ever removes copies QUILL
   downloaded — never a system tool or a shared install.
-- **Set as Default:** in Manage Speech Models and Manage Voices, a **Set as
-  Default** button (and a right-click option on the list) lets you pick which
-  installed model or voice QUILL uses, without needing to reach OK in just the
-  right way. Downloading a model or voice engine sets it as the default
-  automatically; use these when you want to switch back to one you already have.
+- **Set as Default:** for a voice engine (Kokoro, Piper, and the other Read
+  Aloud engines), a **Set as Default** button right here in the Download Optional
+  Components hub makes that engine — and a voice you pick from it — your Read
+  Aloud default without opening a separate speech dialog. The button only lights
+  up for a component that can actually be a Read Aloud default, and only once it
+  is installed. The same **Set as Default** also lives in Manage Speech Models
+  and Manage Voices (with a right-click option on the list) for the offline
+  dictation model and for voices. Downloading a model or voice engine sets it as
+  the default automatically; use any of these when you want to switch back to one
+  you already have. (Voice previews also stop cleanly when you move on to another
+  before the first finishes.)
 
 Everything here is optional — the base app, and Windows' built-in SAPI 5 voices,
 work without any of it — so download only what you need. In **portable mode**,
@@ -7657,7 +7663,7 @@ If you don't have them, **Help > Download Optional Components** has two rows for
 **Browse Stations...** opens a search-and-browse dialog:
 
 - A **Category** list on the left offers two instantly available options that need no network call to show: **Favorites** (stations you've saved) and **ACB Media** (the American Council of the Blind's ten Live365 stations, bundled directly into QUILL). Choosing either fills the results list immediately.
-- The **Search RadioBrowser** row above searches [RadioBrowser](https://api.radio-browser.info), a free, keyless, community-run station directory — type a station name, and optionally narrow by tag/genre or country, then press **Search**. Results appear under a third category, **Search Results**.
+- The **search** row above searches every station source at once — type a station name, optionally narrow it, and press **Search**. **Country** is a dropdown (with an **Any country** default) and **Tag/genre** is an editable combo box, both filled once per session from [RadioBrowser](https://api.radio-browser.info)'s own most-popular lists so you don't have to guess the exact spelling; Tag stays editable for a rare custom tag, and picking a country or tag runs the search right away. One search fans out to RadioBrowser, **iHeart**, **TuneIn**, and SomaFM together and blends the matches into one **Search Results** list, with each non-RadioBrowser row naming where it came from ("… - via iHeart" / "via TuneIn"). Each source is failure-tolerant — one directory being down never blanks the list — and all of them are off in Safe Mode.
 - Arrow through the results list and a read-only **Station details** pane reports everything QUILL knows about the selected station: country, language, tags, codec and bitrate, community vote count, homepage, and the stream URL itself.
 - **Play** starts the selected station. **Add to Favorites** (relabels to **Remove from Favorites** once it's saved) keeps it in your Favorites category for next time.
 
@@ -7690,7 +7696,8 @@ Recording needs the **FFmpeg** optional component — the same one the Audio Stu
 
 - **Record Now** (Tools > Media > Internet Radio, the Radio status bar cell's context menu, or the tray) starts recording whatever station is currently playing. Choosing it again, or **Stop Recording**, ends the recording.
 - **Schedule Recording...** queues a recording for later without you needing QUILL open right at that moment to press Record — just QUILL running somewhere. Choose **Once** (a specific date and time), **Daily**, or **Weekly** (a chosen day of the week), a station name and stream URL, and how many minutes to record. The time field accepts a friendly **12-hour** time like `7:30 PM` as well as 24-hour `19:30`, and each schedule can carry its own **time zone** — so you can record an Eastern show at its Eastern time even from the Pacific coast, and daylight saving is handled for you. Existing schedules can be **Edited** in place, **Duplicated** as the starting point for a variation (handy for the same show on several days), or **Enabled/Disabled** without deleting them, from buttons or the list's context menu. There is no catch-up: if QUILL isn't running when the scheduled time arrives, that occurrence is simply missed.
-- **Recording Settings...** sets the format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern using `{station}`, `{date}`, and `{time}` placeholders, and a maximum recording length that acts as a safety cap even if you forget a recording is running.
+- **Recording Settings...** sets the format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern using `{station}`, `{date}`, and `{time}` placeholders, and a maximum recording length that acts as a safety cap even if you forget a recording is running. New recordings go to a visible **Music\Quill Radio Recordings** folder by default (falling back to your home folder) rather than a buried application-data path, so a finished recording is easy to find.
+- **Recordings...** opens a single list of your whole recording life cycle — the file being written right now (its size growing on a live refresh), every finished recording (newest first), and any upcoming scheduled recordings — where you can play, reveal in the file manager, stop the active recording, or remove a finished one, all from the keyboard. The live refresh pauses while the list has keyboard focus, so a screen reader isn't yanked back to the top mid-read; the **Refresh** button updates it on demand.
 
 ### Sound Enhancements
 
@@ -7700,7 +7707,7 @@ Sound Enhancements is remembered **per favorite station**: open it while a favor
 
 ### What's not in Internet Radio
 
-TuneIn and iHeartRadio are not supported — both are undocumented, reverse-engineered commercial APIs with no public terms, and RadioBrowser covers the same need without that risk. YouTube audio is not supported either. Podcasts, described next, are a separate feature that ships alongside Internet Radio.
+TuneIn and iHeartRadio **are** now supported as station sources (they appear blended into your search results, above) — through open, no-key, no-account backends that resolve only the stations you actually search for, never a bulk scrape. YouTube audio is still not supported. Podcasts, described next, are a separate feature that ships alongside Internet Radio.
 
 ## Podcasts
 
