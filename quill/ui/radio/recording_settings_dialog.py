@@ -84,6 +84,24 @@ class RecordingSettingsDialog:
         grid.Add(dest_row, 1, wx.EXPAND)
 
         grid.Add(
+            wx.StaticText(self.dialog, label="&Temporary folder (while recording):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        temp_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._temp_dir_ctrl = wx.TextCtrl(self.dialog, value=settings.temp_dir)
+        self._temp_dir_ctrl.SetName(
+            "Where a recording is written while in progress, then moved to the "
+            "destination folder when it finishes; blank records straight to the "
+            "destination folder"
+        )
+        temp_browse_btn = wx.Button(self.dialog, label="B&rowse...")
+        temp_browse_btn.SetName("Choose a temporary folder")
+        temp_row.Add(self._temp_dir_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
+        temp_row.Add(temp_browse_btn, 0)
+        grid.Add(temp_row, 1, wx.EXPAND)
+
+        grid.Add(
             wx.StaticText(self.dialog, label="Filename &pattern:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._pattern_ctrl = wx.TextCtrl(self.dialog, value=settings.filename_pattern)
@@ -178,6 +196,7 @@ class RecordingSettingsDialog:
         self.dialog.SetSizer(root)
 
         browse_btn.Bind(wx.EVT_BUTTON, self._on_browse)
+        temp_browse_btn.Bind(wx.EVT_BUTTON, self._on_browse_temp)
         save_btn.Bind(wx.EVT_BUTTON, self._on_save)
 
     def show(self) -> RecordingSettings | None:
@@ -205,6 +224,14 @@ class RecordingSettingsDialog:
             if dlg.ShowModal() == wx.ID_OK:
                 self._destination_ctrl.SetValue(dlg.GetPath())
 
+    def _on_browse_temp(self, _event: object) -> None:
+        wx = self._wx
+        with wx.DirDialog(
+            self.dialog, "Choose a temporary folder"
+        ) as dlg:  # dialog_button_contract: exempt
+            if dlg.ShowModal() == wx.ID_OK:
+                self._temp_dir_ctrl.SetValue(dlg.GetPath())
+
     def _on_save(self, _event: object) -> None:
         format_index = self._format_choice.GetSelection()
         fmt = RECORD_FORMATS[format_index] if format_index >= 0 else "mp3"
@@ -215,6 +242,7 @@ class RecordingSettingsDialog:
             format=fmt,
             bitrate_kbps=bitrate,
             destination_root=self._destination_ctrl.GetValue().strip(),
+            temp_dir=self._temp_dir_ctrl.GetValue().strip(),
             filename_pattern=pattern,
             max_duration_minutes=self._max_duration_ctrl.GetValue(),
             reconnect_enabled=self._reconnect_check.GetValue(),

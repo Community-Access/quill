@@ -28,11 +28,13 @@ def test_settings_to_dict_from_dict_round_trip() -> None:
         format="ogg",
         bitrate_kbps=256,
         destination_root="D:/recordings",
+        temp_dir="E:/scratch/radio",
         filename_pattern="{station}_{date}",
         max_duration_minutes=45,
     )
     restored = RecordingSettings.from_dict(original.to_dict())
     assert restored == original
+    assert restored.temp_dir == "E:/scratch/radio"
 
 
 def test_settings_from_dict_defaults_and_rejects_unknown_format() -> None:
@@ -158,6 +160,26 @@ def test_drain_stderr_logs_lines_redacted_and_by_severity(caplog: pytest.LogCapt
     assert any("Opening" in r.getMessage() for r in debugs)
     assert not any("a1b2c3d4e5f6" in r.getMessage() for r in caplog.records)
     assert any("[TOKEN]" in r.getMessage() for r in debugs)
+
+
+def test_finalize_move_relocates_finished_recording(tmp_path: Path) -> None:
+    # quill-radio #5: a finished recording moves from the temp dir to its home.
+    temp = tmp_path / "temp"
+    home = tmp_path / "home"
+    temp.mkdir()
+    src = temp / "show.mp3"
+    src.write_bytes(b"audio")
+    dst = home / "show.mp3"
+    landed = recording._finalize_move(src, dst)
+    assert landed == dst
+    assert dst.read_bytes() == b"audio"
+    assert not src.exists()
+
+
+def test_finalize_move_missing_source_returns_destination(tmp_path: Path) -> None:
+    src = tmp_path / "gone.mp3"
+    dst = tmp_path / "home" / "gone.mp3"
+    assert recording._finalize_move(src, dst) == dst
 
 
 def test_build_record_command_no_user_agent_for_non_http_input() -> None:

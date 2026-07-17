@@ -23,6 +23,7 @@ from __future__ import annotations
 import logging
 import os
 import re
+import shutil
 import subprocess
 import threading
 from collections.abc import Callable
@@ -104,6 +105,13 @@ class RecordingSettings:
     format: str = "mp3"  # one of RECORD_FORMATS
     bitrate_kbps: int = _DEFAULT_BITRATE_KBPS  # ignored for flac/wav (lossless)
     destination_root: str = ""  # "" = default (~/Music/Quill Radio Recordings)
+    #: Where a recording is *written while in progress* (quill-radio #5). "" =
+    #: write straight to destination_root (today's behavior). When set, ffmpeg
+    #: writes here and the finished file is moved to destination_root on a clean
+    #: stop, so a partial never litters the recordings folder and a scratch/SSD
+    #: temp volume can absorb the churn. os.replace on the same volume, else
+    #: copy+delete across volumes.
+    temp_dir: str = ""
     filename_pattern: str = _DEFAULT_FILENAME_PATTERN  # tokens: {station} {date} {time}
     max_duration_minutes: int = _DEFAULT_MAX_DURATION_MINUTES  # safety cap on every recording
     # Auto-reconnect: when the internet hiccups mid-recording, ffmpeg first
@@ -126,6 +134,7 @@ class RecordingSettings:
             "format": self.format,
             "bitrate_kbps": self.bitrate_kbps,
             "destination_root": self.destination_root,
+            "temp_dir": self.temp_dir,
             "filename_pattern": self.filename_pattern,
             "max_duration_minutes": self.max_duration_minutes,
             "reconnect_enabled": self.reconnect_enabled,
@@ -141,6 +150,7 @@ class RecordingSettings:
             format=fmt if fmt in RECORD_FORMATS else "mp3",
             bitrate_kbps=_coerce_int(data.get("bitrate_kbps"), _DEFAULT_BITRATE_KBPS),
             destination_root=str(data.get("destination_root", "")),
+            temp_dir=str(data.get("temp_dir", "")),
             filename_pattern=str(data.get("filename_pattern") or _DEFAULT_FILENAME_PATTERN),
             max_duration_minutes=_coerce_int(
                 data.get("max_duration_minutes"), _DEFAULT_MAX_DURATION_MINUTES
@@ -318,7 +328,11 @@ class RadioRecorder:
         self._on_reconnect = on_reconnect or (lambda _attempt, _maximum: None)
         self._lock = threading.Lock()
         self._process: subprocess.Popen[bytes] | None = None
+        #: Where ffmpeg is writing right now (may be the temp dir, #5).
         self._destination: Path | None = None
+        #: Where the finished file belongs once this recording ends; differs
+        #: from _destination only when settings.temp_dir is set (#5).
+        self._final_destination: Path | None = None
         self._station_name: str = ""
         self._user_stopped = False
         self._reconnect_attempt = 0
@@ -371,6 +385,23 @@ class RadioRecorder:
                 Path(settings.destination_root) if settings.destination_root else _default_dir()
             )
             dest_root.mkdir(parents=True, exist_ok=True)
+            # #5: record into a temp dir when one is set, then move the finished
+            # file to dest_root on a clean stop. "" keeps today's behavior
+            # (write straight to dest_root). A temp dir we cannot create falls
+            # back to dest_root rather than failing the recording.
+            record_root = dest_root
+            if settings.temp_dir:
+                temp_root = Path(settings.temp_dir)
+                try:
+                    temp_root.mkdir(parents=True, exist_ok=True)
+                    record_root = temp_root
+                except OSError as exc:
+                    logger.warning(
+                        "Recording temp dir %s is unusable (%s); recording to the "
+                        "destination folder instead.",
+                        format_args_for_log([str(temp_root)]),
+                        exc,
+                    )
             filename = build_filename(
                 settings.filename_pattern, station=station_name, when=datetime.now()
             )
@@ -386,7 +417,8 @@ class RadioRecorder:
             else:
                 extension = settings.format
                 record_filter = filter_graph
-            destination = dest_root / f"{filename}.{extension}"
+            final_destination = dest_root / f"{filename}.{extension}"
+            destination = record_root / f"{filename}.{extension}"
             minutes = (
                 duration_minutes if duration_minutes is not None else settings.max_duration_minutes
             )
@@ -424,6 +456,7 @@ class RadioRecorder:
                 raise RecordingError(f"Could not start ffmpeg: {exc}") from exc
             self._process = process
             self._destination = destination
+            self._final_destination = final_destination
             self._station_name = station_name
             self._user_stopped = False
             if _continuation_part == 0:
@@ -484,15 +517,24 @@ class RadioRecorder:
         with self._lock:
             if self._process is process:
                 dest = self._destination
+                final = self._final_destination
                 params = self._active_params
                 failed = bool(process.returncode) and not self._user_stopped
                 self._process = None
                 self._destination = None
+                self._final_destination = None
                 self._station_name = ""
             else:
-                dest, params, failed = None, None, False
-        if dest is not None:
-            self._on_state_changed(False, dest)
+                dest, final, params, failed = None, None, None, False
+        # Move the finished file from the temp dir to its home (#5). Done for
+        # both a clean stop and a failed/partial recording, so a partial is
+        # never stranded in temp -- it lands where the user looks for it, then
+        # a reconnect (if any) records a fresh continuation.
+        landed = dest
+        if dest is not None and final is not None and dest != final:
+            landed = _finalize_move(dest, final)
+        if landed is not None:
+            self._on_state_changed(False, landed)
         if failed and params is not None:
             self._maybe_reconnect(params)
 
@@ -559,6 +601,35 @@ class RadioRecorder:
     def shutdown(self) -> None:
         """Called once, from the frame's close path."""
         self.stop()
+
+
+def _finalize_move(src: Path, dst: Path) -> Path:
+    """Move a finished recording from the temp dir *src* to its home *dst* (#5).
+
+    Returns where the file actually ended up. ``os.replace`` handles the same
+    volume in one atomic step; a cross-volume move raises ``OSError``, so it
+    falls back to copy-then-delete. If even that fails the file is left in the
+    temp dir (still playable) and *src* is returned, so a finished recording is
+    never lost to a move error.
+    """
+    if not src.exists():
+        return dst
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(src, dst)
+        return dst
+    except OSError:
+        try:
+            shutil.copy2(src, dst)
+            src.unlink(missing_ok=True)
+            return dst
+        except OSError as exc:
+            logger.warning(
+                "Could not move recording to %s (%s); left it in the temp folder.",
+                format_args_for_log([str(dst)]),
+                exc,
+            )
+            return src
 
 
 def _probe_capture_extension(stream_url: str) -> str:
