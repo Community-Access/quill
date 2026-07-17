@@ -61,6 +61,13 @@ class _FakeButton:
         self.enabled = value
 
 
+class _AliveDialog:
+    """Stands in for a live wx.Dialog for the dialog_alive guard (#1067)."""
+
+    def IsBeingDeleted(self) -> bool:
+        return False
+
+
 class _Stub:
     def __init__(self) -> None:
         self._model_ctrl = _FakeCombo()
@@ -68,6 +75,10 @@ class _Stub:
         self._list_models_btn = _FakeButton()
         self._key_ctrl = _FakeButton()
         self._reveal_btn = _FakeButton()
+        # The list-models / test-connection callbacks now guard on
+        # dialog_alive(self.dialog) (#1067); give the stub a live dialog so the
+        # callbacks proceed normally in these non-close tests.
+        self.dialog = _AliveDialog()
         # Real instance methods bound onto the stub so higher-level methods
         # (e.g. _on_hub_provider_changed) can call self._populate_hub_models
         # / self._hub_provider / self._set_key_field_enabled through it, same

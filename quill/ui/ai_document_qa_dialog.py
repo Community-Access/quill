@@ -10,7 +10,7 @@ import threading
 from collections.abc import Callable
 from pathlib import Path
 
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
 
 
 class AIDocumentQADialog:
@@ -243,6 +243,8 @@ class AIDocumentQADialog:
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
 
     def _on_answer_done(self, question: str, answer: object) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the AI answered (#1067)
         row = self._history.GetItemCount()
         self._history.InsertItem(row, str(row + 1))
         self._history.SetItem(row, 1, question[:60])
@@ -268,6 +270,8 @@ class AIDocumentQADialog:
         self._wx.CallAfter(self._question_ctrl.SetFocus)
 
     def _on_answer_error(self, message: str) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the AI answered (#1067)
         self._status_label.SetLabel(f"Error: {message}")
         self._working = False
         self._ask_btn.Enable(True)

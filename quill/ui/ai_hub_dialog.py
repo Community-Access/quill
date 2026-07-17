@@ -16,7 +16,7 @@ from collections.abc import Callable
 
 from quill.core.i18n import _, lazy_gettext
 from quill.core.platform_nouns import credential_store_name
-from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, set_accessible_name
 
 _PROVIDER_CHOICES: tuple[tuple[str, object], ...] = (
     ("off", lazy_gettext("Off (AI disabled)")),
@@ -373,6 +373,8 @@ class AIHubDialog:
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
 
     def _on_auto_probe_done(self, message: str) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the background probe finished (#1067)
         self._test_label.SetLabel(message)
 
     def _on_hub_list_models(self, _event: object) -> None:
@@ -411,6 +413,8 @@ class AIHubDialog:
     def _on_hub_models_listed(
         self, models: list, error: str, capabilities: dict | None = None
     ) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before model discovery finished (#1067)
         self._list_models_btn.Enable(True)
         self._ollama_capabilities = {str(k): list(v) for k, v in (capabilities or {}).items()}
         if not models:
@@ -1399,6 +1403,8 @@ class AIHubDialog:
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
 
     def _on_test_done(self, message: str) -> None:
+        if not dialog_alive(self.dialog):
+            return  # dialog closed before the connection test finished (#1067)
         self._test_label.SetLabel(message)
         self._test_btn.Enable(True)
 
