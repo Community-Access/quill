@@ -25,6 +25,13 @@ def test_disabled_never_fires() -> None:
     assert should_fire(s, now=999.0, started_at=0.0) is False
 
 
+def test_end_of_chapter_mode_suppresses_the_delay_watcher() -> None:
+    # In end-of-chapter mode the host stops at the chapter boundary; the delay
+    # watcher must not also fire and cut playback off mid-chapter.
+    s = SleepTimerSetting(enabled=True, delay_minutes=1.0, end_of_chapter=True)
+    assert should_fire(s, now=999.0, started_at=0.0) is False
+
+
 def test_watcher_calls_on_sleep_once() -> None:
     fired: list[bool] = []
     w = SleepTimerWatcher(on_sleep=lambda: fired.append(True), check_interval=0.05)

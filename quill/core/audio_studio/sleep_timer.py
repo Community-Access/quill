@@ -40,8 +40,14 @@ class SleepTimerSetting:
 
 
 def should_fire(setting: SleepTimerSetting, now: float, *, started_at: float) -> bool:
-    """Pure check: has ``delay_minutes`` elapsed since ``started_at``?"""
-    if not setting.enabled:
+    """Pure check for the *delay* watcher: has ``delay_minutes`` elapsed?
+
+    Returns ``False`` in end-of-chapter mode: that stop is resolved by the host
+    at the player's end-of-track callback, so the elapsed-delay watcher must not
+    also fire -- otherwise it would cut playback off mid-chapter after
+    ``delay_minutes`` regardless of the chapter boundary the user asked for.
+    """
+    if not setting.enabled or setting.end_of_chapter:
         return False
     return (now - started_at) >= setting.delay_minutes * 60
 
