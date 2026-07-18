@@ -329,6 +329,15 @@ class SpeechDownloadsMixin:
             summary = getattr(result, "summary", "")
             self._set_status(summary)
             if getattr(result, "ok", True):
+                # A non-voice component has no audio to play, so a passing Test
+                # showed only a status-bar flash -- which does not speak in the
+                # standalone shell, making Test look like a no-op. Show the
+                # result in a dialog so Test visibly (and audibly) confirms it.
+                self._show_message_box(
+                    summary or "It works.",
+                    f"Test {component_id}",
+                    self._wx.OK | self._wx.ICON_INFORMATION,
+                )
                 return
             # An expected "needs one more piece" outcome is not a bug. Today the
             # only remedy is "no offline speech model yet" -- reopen the same
@@ -1345,6 +1354,11 @@ class SpeechDownloadsMixin:
                 "Download DECtalk",
                 wx.ICON_INFORMATION | wx.OK,
             )
+            # Reopen the components hub the caller closed to dispatch this, so an
+            # already-installed engine does not dump the user on the home window
+            # (parity with the Kokoro/audio_extras already-installed branches).
+            if on_done:
+                on_done(True)
             return
         confirm = self._show_message_box(
             "Download the DECtalk speech runtime (~30 MB) from GitHub?\n\n"
@@ -1422,6 +1436,8 @@ class SpeechDownloadsMixin:
                 "Download Piper",
                 wx.ICON_INFORMATION | wx.OK,
             )
+            if on_done:  # reopen the hub instead of dumping the user home
+                on_done(True)
             return
         confirm = self._show_message_box(
             "Download the Piper TTS engine (~22 MB) from GitHub?\n\n"
@@ -1593,6 +1609,8 @@ class SpeechDownloadsMixin:
                 "Download eSpeak-NG",
                 wx.ICON_INFORMATION | wx.OK,
             )
+            if on_done:  # reopen the hub instead of dumping the user home
+                on_done(True)
             return
         confirm = self._show_message_box(
             "Download eSpeak-NG (~50 MB) from GitHub?\n\n"
@@ -1660,14 +1678,17 @@ class SpeechDownloadsMixin:
         smaller install handled by :meth:`download_kokoro_engine`.
         """
         from quill.core.paths import app_data_dir
-        from quill.core.read_aloud import kokoro_onnx_ready
+        from quill.core.read_aloud import kokoro_engine_ready, kokoro_onnx_ready
 
         wx = self._wx
         if bool(getattr(self, "_safe_mode", False)):
             self._announce("Downloading components is disabled in Safe Mode.")
             return
         target = app_data_dir() / "kokoro-models"
-        if kokoro_onnx_ready(target):
+        # "Fully ready" means BOTH the model pack and the importable kokoro_onnx
+        # package. Guarding on kokoro_onnx_ready (models only) let the row report
+        # ready when the engine package was never installed.
+        if kokoro_engine_ready(target):
             self._show_message_box(
                 "The Kokoro voices are already downloaded. Choose a Kokoro voice in Manage Voices.",
                 "Download Kokoro Voices",
@@ -1688,13 +1709,27 @@ class SpeechDownloadsMixin:
 
         def _work(progress):
             from quill.core.release_assets import fetch_component
-
-            fetch_component(
-                "kokoro",
-                target,
-                progress=lambda fraction, message: progress(message, int(fraction * 100), 100),
-                label="Downloading Kokoro voices...",
+            from quill.core.speech.engine_install import (
+                install_kokoro_onnx,
+                is_kokoro_onnx_available,
             )
+
+            # Kokoro is usable only when the model pack AND the kokoro_onnx
+            # package are both present (kokoro_engine_ready). Downloading only
+            # the models left the Optional Components row stuck on "Download"
+            # forever, because readiness also needs the importable package.
+            # Fetch whichever piece is missing so the row updates to Installed.
+            if not kokoro_onnx_ready(target):
+                fetch_component(
+                    "kokoro",
+                    target,
+                    progress=lambda fraction, message: progress(message, int(fraction * 100), 100),
+                    label="Downloading Kokoro voices...",
+                )
+            if not is_kokoro_onnx_available():
+                install_kokoro_onnx(
+                    lambda fraction, message: progress(message, int(fraction * 100), 100)
+                )
             return True
 
         def _finished(result: object) -> None:

@@ -566,7 +566,31 @@ class VoiceBrowserDialog:
         if not ready and not self._has_preview_sample(eng, v.id):
             return
         voice_id = self._espeak_combined_voice_id(v.id) if eng == "espeak" else v.id
+        # Push the current rate/speed/volume controls into the shared settings
+        # object the preview reads, so a live preview reflects them. Without this
+        # the preview honored only the last SAVED values, so moving a control did
+        # nothing until the dialog was closed with Save / Set as Default.
+        if ready:
+            self._apply_preview_settings(eng)
         self._preview_fn(eng, voice_id, live=ready, on_state_change=self._on_preview_state)
+
+    def _apply_preview_settings(self, eng: str) -> None:
+        """Mirror the live rate/speed/volume controls into ``self._settings`` (the
+        same object the preview synthesizer reads) so Preview reflects unsaved
+        adjustments. Only the current engine's rate is written; Kokoro uses its
+        own speed spin; Piper exposes no rate control so nothing is written."""
+        s = self._settings
+        s.read_aloud_volume = self._vol_spin.GetValue()
+        s.read_aloud_kokoro_speed = self._kok_spin.GetValue()
+        rate = self._rate_spin.GetValue()
+        if eng == "sapi5":
+            s.read_aloud_rate = rate
+        elif eng == "dectalk":
+            s.read_aloud_dectalk_rate = rate
+        elif eng == "espeak":
+            s.read_aloud_espeak_rate = rate
+        elif eng == "macos":
+            s.read_aloud_macos_rate = rate
 
     def _on_preview_state(self, state: str) -> None:
         """Toggle the Preview button between its idle and Stop labels."""
