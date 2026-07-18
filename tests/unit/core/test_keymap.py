@@ -85,20 +85,26 @@ def test_reset_keymap_restores_defaults(tmp_path: Path, monkeypatch: pytest.Monk
     assert load_keymap() == DEFAULT_KEYMAP
 
 
-def test_load_keymap_drops_unknown_command_id(
+def test_load_keymap_preserves_unknown_command_id(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A saved binding for a command id that no longer exists is dropped."""
+    """A binding for a command id this build does not ship is PRESERVED.
+
+    The shared %APPDATA%\\Quill\\keymap.json is read and rewritten by sibling
+    apps of possibly different vintages; a command absent from this build may be
+    one a newer sibling added, so its binding must not be dropped on rewrite
+    (see the multi-vintage note in ``keymap.merge_keymaps``). A binding for a
+    genuinely-retired command is inert, so preserving it is harmless.
+    """
     store_path = tmp_path / "keymap-store.json"
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    save_keymap({"definitely.not.a.command": "Ctrl+Alt+Z"})
+    save_keymap({"a.sibling_app_command": "Ctrl+Alt+Z"})
 
     loaded = load_keymap()
 
-    assert "definitely.not.a.command" not in loaded
-    assert loaded == DEFAULT_KEYMAP
+    assert loaded["a.sibling_app_command"] == "Ctrl+Alt+Z"
 
 
 def test_load_keymap_drops_empty_binding(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -115,22 +121,23 @@ def test_load_keymap_drops_empty_binding(tmp_path: Path, monkeypatch: pytest.Mon
 
 
 def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """When the saved file contains entries that get dropped, the surviving
+    """When the saved file contains entries that get cleaned, the surviving
     subset is written back to disk so the user sees the cleanup on next open.
 
-    Valid entries survive untouched; invalid entries (unknown command id,
-    conflicting chord, whitespace-only binding) are removed. The on-disk
-    file keeps only the user's surviving delta — not the full
-    DEFAULT_KEYMAP — so a small override file stays small.
+    Valid entries survive untouched; a whitespace-only binding and a
+    conflicting chord are removed. A binding for a command this build does not
+    ship is PRESERVED (it may be a newer sibling app's -- see
+    ``keymap.merge_keymaps``). The on-disk file keeps only the surviving delta
+    plus that carried-forward foreign binding, never the full DEFAULT_KEYMAP.
     """
     store_path = tmp_path / "keymap-store.json"
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    # Mix: one valid override, one orphan command id, one conflict.
+    # Mix: one valid override, one foreign (sibling-app) command, one conflict.
     save_keymap({
         "file.save": "Ctrl+Alt+Shift+Y",  # valid override, must survive
-        "definitely.removed.command": "Ctrl+Alt+X",  # unknown id, must be dropped
+        "a.sibling_app_command": "Ctrl+Alt+X",  # unknown id, now preserved
         "app.command_palette": "Ctrl+S",  # collides with file.save default
     })
 
@@ -138,18 +145,17 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
 
     # Cleaned map in memory.
     assert loaded["file.save"] == "Ctrl+Alt+Shift+Y"
-    assert "definitely.removed.command" not in loaded
+    assert loaded["a.sibling_app_command"] == "Ctrl+Alt+X"  # preserved
     assert loaded["app.command_palette"] == DEFAULT_KEYMAP["app.command_palette"]
 
-    # Surviving user overrides persisted to disk for the next launch, as a
-    # delta plus the epoch stamp. Only the keys the user had on disk and that
-    # survived the merge are kept.
+    # Surviving user overrides plus the carried-forward foreign binding are
+    # persisted as a delta plus the epoch stamp -- never the full DEFAULT_KEYMAP.
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
         "file.save": "Ctrl+Alt+Shift+Y",
+        "a.sibling_app_command": "Ctrl+Alt+X",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
-    assert "definitely.removed.command" not in on_disk
     assert "app.command_palette" not in on_disk
 
 

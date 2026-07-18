@@ -525,16 +525,19 @@ def keymap_path() -> Path:
 
 
 def _keymap_overrides(merged: dict[str, str]) -> dict[str, str]:
-    """Return only the entries of *merged* that differ from DEFAULT_KEYMAP.
+    """Return only the entries of *merged* that must be persisted as a delta.
 
-    This is the delta persisted to disk: omitting defaults is what lets a
-    later DEFAULT_KEYMAP change reach the user automatically (see
-    ``KEYMAP_DEFAULTS_EPOCH``).
+    Two kinds of entry are written: a known command whose chord differs from its
+    ``DEFAULT_KEYMAP`` value (omitting equal-to-default is what lets a later
+    ``DEFAULT_KEYMAP`` change reach the user automatically -- see
+    ``KEYMAP_DEFAULTS_EPOCH``); and a binding for a command this build does not
+    ship, carried forward verbatim so a newer sibling app's binding survives
+    this build's rewrite (see the multi-vintage note in ``merge_keymaps``).
     """
     return {
         command_id: chord
         for command_id, chord in merged.items()
-        if command_id in DEFAULT_KEYMAP and chord != DEFAULT_KEYMAP[command_id]
+        if command_id not in DEFAULT_KEYMAP or chord != DEFAULT_KEYMAP[command_id]
     }
 
 
@@ -576,6 +579,15 @@ def load_keymap() -> dict[str, str]:
         backup_corrupt_file("keymap", path)
         return DEFAULT_KEYMAP.copy()
     cleaned = merge_keymaps(raw)
+    saved_epoch = raw.get(_DEFAULTS_EPOCH_KEY)
+    if isinstance(saved_epoch, int) and saved_epoch > KEYMAP_DEFAULTS_EPOCH:
+        # The file was stamped with a HIGHER epoch than this build knows: a newer
+        # sibling app applied curated rebindings this build has no record of. Use
+        # the merged map in memory, but never rewrite the file -- downgrading it
+        # to this build's epoch would strip the newer app's migration stamp (so
+        # this build's own older one-time rebindings would wrongly re-run against
+        # it on the next launch). Mirrors the settings store's future-file guard.
+        return cleaned
     desired = _persisted_keymap_document(cleaned)
     if raw != desired:
         try:
@@ -829,12 +841,18 @@ def merge_keymaps(raw: object) -> dict[str, str]:
             # Reserved metadata keys (e.g. the epoch stamp) are not bindings.
             if command_id.startswith("_"):
                 continue
-            # A binding for a command id that no longer ships in DEFAULT_KEYMAP
-            # is no longer valid; drop it so the default (which is to omit it)
-            # takes effect.
-            if command_id not in DEFAULT_KEYMAP:
-                logger.debug("Dropping keymap entry for unknown command: %r", command_id)
-                continue
+            # A binding for a command id this build does not ship is PRESERVED,
+            # not dropped. The shared %APPDATA%\Quill\keymap.json is read and
+            # rewritten by several apps of possibly different vintages (QUILL,
+            # Quill Radio, QUILL Cast, Audio Studio); a command absent from this
+            # build's DEFAULT_KEYMAP may be one a newer sibling app added, so
+            # dropping it would silently discard that sibling's binding on this
+            # build's next rewrite (the same multi-vintage hazard the settings
+            # store guards against). A binding for a genuinely-retired command is
+            # inert -- nothing in this build can trigger it -- so carrying it
+            # forward is harmless. It still passes the empty-binding and chord-
+            # conflict checks below like any other entry, and _keymap_overrides
+            # carries it into the saved delta so the rewrite keeps it.
             normalized = binding
             if is_pre_epoch:
                 legacy_binding = legacy_rebindings.get(command_id)
