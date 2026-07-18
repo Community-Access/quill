@@ -2,12 +2,21 @@
 
 One list for the whole recording life cycle, shared by embedded QUILL and
 standalone Quill Radio: the recording being written right now (status
-"Recording", size growing on the 2-second refresh), every finished file in
-the recordings folder ("Recorded", newest first), and upcoming scheduled
-recordings ("Scheduled", with their time). Play any finished recording
-through the shared radio player (which also silences anything else
+"Recording", size and elapsed growing on the refresh), every finished file
+in the recordings folder ("Recorded", newest first), and upcoming scheduled
+recordings ("Scheduled", with their time and timezone). Play any finished
+recording through the shared radio player (which also silences anything else
 playing), stop the active recording, reveal a file in Explorer, or remove
 it -- all keyboard-first and announced.
+
+R1/quill-radio #8: the list refreshes as an *in-place diff* keyed by stable
+identity (the file path for recorded/recording rows, ``schedule:<id>`` for
+scheduled ones). It never tears the list down and rebuilds it, so a screen
+reader never loses its place or hears the whole list re-announced every two
+seconds -- only the cells that actually changed (the active row's size and
+elapsed, a status flip Recording -> Recorded) are touched, and selection,
+focus, and scroll are preserved by identity. The timer always runs; the old
+focus-pause workaround is gone because there is no teardown rebuild to pause.
 """
 
 from __future__ import annotations
@@ -19,9 +28,13 @@ from typing import Any
 
 from quill.core.radio.models import RadioStation
 from quill.core.radio.recordings_index import (
+    STATUS_COMPLETED,
     STATUS_RECORDED,
     STATUS_RECORDING,
+    STATUS_SCHEDULED,
+    ActiveRecording,
     RecordingEntry,
+    format_elapsed,
     list_recordings,
     recordings_dir,
 )
@@ -69,13 +82,14 @@ class RecordingsManagerDialog:
         )
         self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetName(
-            "Recordings; the row's status column reads Recording, Recorded, or "
-            "Scheduled. Enter plays a finished recording, Delete removes it"
+            "Recordings; the row's status column reads Recording, Recorded, "
+            "Scheduled, or Completed. Enter plays a finished recording, Delete "
+            "removes it"
         )
         self._list.InsertColumn(0, "Name", width=280)
         self._list.InsertColumn(1, "Status", width=100)
         self._list.InsertColumn(2, "Size", width=100)
-        self._list.InsertColumn(3, "When", width=200)
+        self._list.InsertColumn(3, "When", width=220)
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._status = wx.StaticText(self.dialog, label="")
@@ -96,7 +110,7 @@ class RecordingsManagerDialog:
         self._remove_btn = self._button(
             buttons, "&Remove...", self._on_remove, "Delete this recording file"
         )
-        self._button(buttons, "Re&fresh", self._refresh, "Reload the recordings list now")
+        self._button(buttons, "Re&fresh", self._on_refresh_button, "Reload the recordings list now")
         buttons.AddStretchSpacer()
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close (recordings continue)")
@@ -110,17 +124,13 @@ class RecordingsManagerDialog:
         self._list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, lambda _e: self._on_play())
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_key)
 
-        # Live status: sizes grow and Recording flips to Recorded without a
-        # manual refresh -- the same auto-refresh cadence as the Status Page.
+        # Live status: the active row's size and elapsed grow and a Recording
+        # flips to Recorded without a manual refresh. The in-place diff means
+        # this never rebuilds the list out from under a screen reader -- only
+        # the changed cells move -- so the timer always runs (R1).
         self._timer = wx.Timer(self.dialog)
-        self.dialog.Bind(wx.EVT_TIMER, lambda _e: self._refresh(keep_selection=True))
+        self.dialog.Bind(wx.EVT_TIMER, lambda _e: self._refresh())
         self._timer.Start(_REFRESH_MS)
-        # quill-radio #4: pause the auto-refresh while the list has focus, so it
-        # never rebuilds out from under a screen reader mid-read. It resumes when
-        # focus leaves the list (onto a button, or away from the dialog); the
-        # Refresh button covers a manual update while reading.
-        self._list.Bind(wx.EVT_SET_FOCUS, self._on_list_focus)
-        self._list.Bind(wx.EVT_KILL_FOCUS, self._on_list_blur)
         self.dialog.Bind(wx.EVT_CLOSE, self._on_close)
 
         self._refresh()
@@ -143,58 +153,129 @@ class RecordingsManagerDialog:
             self._timer.Stop()
             self.dialog.Destroy()
 
-    def _on_list_focus(self, event: Any) -> None:
-        """Pause the auto-refresh while the list is being read (#4)."""
-        self._timer.Stop()
-        event.Skip()
-
-    def _on_list_blur(self, event: Any) -> None:
-        """Resume the auto-refresh once focus leaves the list (#4)."""
-        if self._timer is not None:
-            self._timer.Start(_REFRESH_MS)
-        event.Skip()
-
     def _on_close(self, event: Any) -> None:
         self._timer.Stop()
         event.Skip()
 
+    def _on_refresh_button(self) -> None:
+        """Manual Refresh keeps the selection (R1/9 -- never jumps to top)."""
+        self._refresh(keep_selection=True)
+
     # -- data -------------------------------------------------------------------
 
-    def _refresh(self, keep_selection: bool = False) -> None:
-        selected_name = None
+    def _active_recording(self) -> ActiveRecording | None:
+        """The active recording by identity, or ``None`` when idle (R1/10.3).
+
+        Found from the recorder's live state rather than the folder scan, so a
+        recording writing to a temp dir still shows as "Recording" and the
+        firing schedule is not also double-listed as "Scheduled".
+        """
+        rec = self._recorder
+        if not bool(getattr(rec, "is_recording", False)):
+            return None
+        return ActiveRecording(
+            path=getattr(rec, "current_destination", None),
+            station_name=getattr(rec, "current_station_name", "") or "",
+            stream_url=getattr(rec, "current_stream_url", "") or "",
+            started_at=getattr(rec, "current_started_at", None),
+        )
+
+    def _cells(self, entry: RecordingEntry) -> tuple[str, str, str, str]:
+        """The four column strings for *entry* (used by both the diff and the
+        no-op fast path, so they always agree)."""
+        if entry.status == STATUS_RECORDING and entry.started_at is not None:
+            when = f"elapsed {format_elapsed(entry.started_at)}"
+        elif entry.modified is not None:
+            when = entry.modified.strftime("%Y-%m-%d %H:%M")
+        else:
+            when = entry.detail
+        return (entry.name, entry.status, entry.size_display, when)
+
+    def _set_row(self, row: int, entry: RecordingEntry) -> None:
+        """Update row *row* in place to match *entry* (R1 -- no rebuild)."""
+        name, status, size, when = self._cells(entry)
+        self._list.SetItem(row, 0, name)
+        self._list.SetItem(row, 1, status)
+        self._list.SetItem(row, 2, size)
+        self._list.SetItem(row, 3, when)
+
+    def _snapshot_unchanged(self, snapshot: list[RecordingEntry]) -> bool:
+        """True when *snapshot* is cell-for-cell identical to what is shown.
+
+        The no-op fast path: when nothing changed (the common tick), the list
+        is not touched at all -- no SetItem, no Select, no focus event -- so a
+        screen reader reading a row never has it shift or re-announce.
+        """
+        if len(snapshot) != len(self._entries):
+            return False
+        for new, old in zip(snapshot, self._entries, strict=True):
+            if new.id != old.id:
+                return False
+            if self._cells(new) != self._cells(old):
+                return False
+        return True
+
+    def _refresh(self, keep_selection: bool = True) -> None:
+        snapshot = list_recordings(
+            self._settings,
+            active=self._active_recording(),
+            scheduled=list(getattr(self._scheduler, "entries", []) or []),
+        )
+        # No-op fast path: identical content means zero list mutation, so the
+        # cursor and the screen reader's place are never disturbed (R1/9).
+        if self._snapshot_unchanged(snapshot):
+            self._entries = snapshot
+            return
+
+        selected_id: str | None = None
         if keep_selection:
             index = self._list.GetFirstSelected()
             if 0 <= index < len(self._entries):
-                selected_name = (self._entries[index].name, self._entries[index].status)
-        self._entries = list_recordings(
-            self._settings,
-            active_path=getattr(self._recorder, "current_destination", None),
-            scheduled=list(getattr(self._scheduler, "entries", []) or []),
-        )
-        self._list.DeleteAllItems()
-        for row, entry in enumerate(self._entries):
-            self._list.InsertItem(row, entry.name)
-            self._list.SetItem(row, 1, entry.status)
-            self._list.SetItem(row, 2, entry.size_display)
-            when = entry.modified.strftime("%Y-%m-%d %H:%M") if entry.modified else entry.detail
-            self._list.SetItem(row, 3, when)
+                selected_id = self._entries[index].id
+        top = self._list.GetTopItem() if self._list.GetItemCount() else 0
+
+        new_count = len(snapshot)
+        old_count = len(self._entries)
+        for row in range(min(new_count, old_count)):
+            self._set_row(row, snapshot[row])
+        if new_count > old_count:
+            for row in range(old_count, new_count):
+                self._list.InsertItem(row, snapshot[row].name)
+                self._set_row(row, snapshot[row])
+        elif new_count < old_count:
+            for row in range(old_count - 1, new_count - 1, -1):
+                self._list.DeleteItem(row)
+        self._entries = snapshot
+
+        self._update_status_label()
+
+        # Restore selection by identity. A status flip Recording -> Recorded
+        # keeps the same path identity, so the cursor stays on the same row
+        # instead of yanking to the top (the original 9/10.1 symptom). When the
+        # selected row is genuinely gone (file removed), nothing is forced.
+        if selected_id is not None:
+            for row, entry in enumerate(snapshot):
+                if entry.id == selected_id:
+                    self._list.Select(row)
+                    self._list.Focus(row)
+                    break
+        # Best-effort scroll preservation.
+        if snapshot and top:
+            try:
+                self._list.EnsureVisible(min(top, len(snapshot) - 1))
+            except Exception:  # noqa: BLE001 - scroll preservation is best-effort
+                pass
+        self._on_selection_changed()
+
+    def _update_status_label(self) -> None:
         recorded = sum(1 for e in self._entries if e.status == STATUS_RECORDED)
         active = sum(1 for e in self._entries if e.status == STATUS_RECORDING)
-        scheduled = len(self._entries) - recorded - active
-        self._status.SetLabel(
-            f"{recorded} recorded, {active} recording now, {scheduled} scheduled -- "
-            f"in {recordings_dir(self._settings)}"
-        )
-        if self._entries:
-            restore = 0
-            if selected_name is not None:
-                for row, entry in enumerate(self._entries):
-                    if (entry.name, entry.status) == selected_name:
-                        restore = row
-                        break
-            self._list.Select(restore)
-            self._list.Focus(restore)
-        self._on_selection_changed()
+        scheduled = sum(1 for e in self._entries if e.status == STATUS_SCHEDULED)
+        completed = sum(1 for e in self._entries if e.status == STATUS_COMPLETED)
+        parts = [f"{recorded} recorded", f"{active} recording now", f"{scheduled} scheduled"]
+        if completed:
+            parts.append(f"{completed} completed")
+        self._status.SetLabel(", ".join(parts) + f" -- in {recordings_dir(self._settings)}")
 
     def _selected(self) -> RecordingEntry | None:
         index = self._list.GetFirstSelected()
@@ -286,7 +367,7 @@ class RecordingsManagerDialog:
             self._announce(f"Could not delete the file: {error}")
             return
         self._announce(f"Removed recording {entry.name}")
-        self._refresh()
+        self._refresh(keep_selection=True)
 
     def _on_key(self, event: Any) -> None:
         wx = self._wx

@@ -121,14 +121,48 @@ def test_disabled_entry_never_due() -> None:
     assert is_due(entry, datetime(2026, 7, 14, 8, 0, 0)) is False
 
 
-def test_daily_is_due_at_matching_time_once_per_day() -> None:
-    entry = _entry(recurrence="daily", run_at="2026-01-01T08:00:00")
+def test_daily_is_due_throughout_its_window_once_per_day() -> None:
+    # R2: the window model fires any time *now* is in [start, start+duration),
+    # not only on the exact start minute. A poll that lands a minute past
+    # still fires (with the remaining minutes), so a stall across the target
+    # minute no longer drops the occurrence.
+    entry = _entry(recurrence="daily", run_at="2026-01-01T08:00:00", duration_minutes=60)
     assert is_due(entry, datetime(2026, 7, 14, 8, 0, 0)) is True
-    assert is_due(entry, datetime(2026, 7, 14, 8, 1, 0)) is False
+    assert is_due(entry, datetime(2026, 7, 14, 8, 1, 0)) is True  # late start still in window
+    assert is_due(entry, datetime(2026, 7, 14, 8, 59, 59)) is True
+    assert is_due(entry, datetime(2026, 7, 14, 9, 0, 0)) is False  # window closed
     entry.last_fired_date = "2026-07-14"
-    assert is_due(entry, datetime(2026, 7, 14, 8, 0, 0)) is False
+    assert is_due(entry, datetime(2026, 7, 14, 8, 30, 0)) is False  # already fired today
     # A new day resets eligibility.
     assert is_due(entry, datetime(2026, 7, 15, 8, 0, 0)) is True
+
+
+def test_remaining_minutes_shrinks_for_a_late_start() -> None:
+    # R2: a fire inside the window records only the remaining minutes so a late
+    # launch does not overshoot the intended end.
+    from quill.core.radio.recording_schedule import remaining_minutes
+
+    entry = _entry(recurrence="daily", run_at="2026-01-01T08:00:00", duration_minutes=60)
+    assert remaining_minutes(entry, datetime(2026, 7, 14, 8, 0, 0)) == 60
+    assert remaining_minutes(entry, datetime(2026, 7, 14, 8, 30, 0)) == 30
+    assert remaining_minutes(entry, datetime(2026, 7, 14, 8, 59, 30)) == 1  # floored to 1
+
+
+def test_missed_occurrences_excludes_window_still_open_at_now() -> None:
+    # R2/11.7: an occurrence whose window is still open at *now* will start late
+    # on this launch, so it is not "missed" -- do not double-announce it.
+    entry = _entry(recurrence="daily", run_at="2026-07-14T08:00:00", duration_minutes=60)
+    # Closed 07:00 -> 08:30: the 08:00 window (08:00-09:00) is still open at
+    # 08:30, so it must not be reported as missed (the scheduler will catch up).
+    missed = missed_occurrences(
+        [entry], since=datetime(2026, 7, 14, 7, 0), now=datetime(2026, 7, 14, 8, 30)
+    )
+    assert missed == []
+    # Once the window has closed (09:01), the 08:00 occurrence is genuinely missed.
+    missed = missed_occurrences(
+        [entry], since=datetime(2026, 7, 14, 7, 0), now=datetime(2026, 7, 14, 9, 1)
+    )
+    assert len(missed) == 1
 
 
 def test_weekly_only_due_on_matching_weekday() -> None:
@@ -187,6 +221,68 @@ def test_load_schedule_missing_file_returns_empty(tmp_path: Path) -> None:
 def test_load_schedule_corrupt_file_returns_empty(tmp_path: Path) -> None:
     (tmp_path / "radio_recording_schedule.json").write_text("not json", encoding="utf-8")
     assert load_schedule(tmp_path) == []
+
+
+# -- R2 scheduler firing: stamp only on success, defer when busy, retry on error --
+
+
+def test_scheduler_stamps_only_on_success_and_disables_once(tmp_path: Path) -> None:
+    from quill.core.radio.recording import RecordingSettings
+    from quill.core.radio.recording_schedule import RecordingScheduler, _today_in_zone
+
+    calls: list[int] = []
+
+    class _Recorder:
+        def start(self, **kwargs: object) -> None:
+            calls.append(int(kwargs.get("duration_minutes", 0)))  # type: ignore[arg-type]
+
+    entry = _entry(id="once1", recurrence="once", run_at="2026-07-14T08:00:00")
+    scheduler = RecordingScheduler(
+        data_dir=tmp_path,
+        recorder=_Recorder(),  # type: ignore[arg-type]
+        recording_settings=RecordingSettings(),
+    )
+    try:
+        scheduler.add(entry)
+        scheduler._fire(entry, datetime(2026, 7, 14, 8, 0, 0))
+        assert calls == [60]
+        # Stamped + once-entry auto-disabled on success (R2).
+        when = datetime(2026, 7, 14, 8, 0, 0)
+        assert scheduler.entries[0].last_fired_date == _today_in_zone(entry, when)
+        assert scheduler.entries[0].enabled is False
+    finally:
+        scheduler.shutdown()
+
+
+def test_scheduler_defers_when_recorder_busy_and_does_not_stamp(tmp_path: Path) -> None:
+    from quill.core.radio.recording import RecordingError, RecordingSettings
+    from quill.core.radio.recording_schedule import RecordingScheduler
+
+    busy_calls: list[str] = []
+
+    class _BusyRecorder:
+        def start(self, **kwargs: object) -> None:
+            raise RecordingError("Recording already in progress")
+
+    entry = _entry(id="daily1", recurrence="daily", run_at="2026-07-14T08:00:00")
+    scheduler = RecordingScheduler(
+        data_dir=tmp_path,
+        recorder=_BusyRecorder(),  # type: ignore[arg-type]
+        recording_settings=RecordingSettings(),
+        on_busy=lambda e: busy_calls.append(e.id),
+    )
+    try:
+        scheduler.add(entry)
+        scheduler._fire(entry, datetime(2026, 7, 14, 8, 10, 0))
+        # Announced once, not stamped (so the next poll retries within the window).
+        assert busy_calls == ["daily1"]
+        assert scheduler.entries[0].last_fired_date == ""
+        # A second fire in the same window does not re-announce (once per entry).
+        scheduler._fire(entry, datetime(2026, 7, 14, 8, 20, 0))
+        assert busy_calls == ["daily1"]
+        assert scheduler.entries[0].last_fired_date == ""
+    finally:
+        scheduler.shutdown()
 
 
 # -- per-entry timezone (#7): interpret the entry's wall-clock in its own zone --

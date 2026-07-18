@@ -1,11 +1,22 @@
 """Scheduled radio recordings -- fires only while QUILL is running.
 
 Deliberately not an OS-level scheduled task (Windows Task Scheduler, cron,
-launchd): "add scheduling if QUILL is open to record" is the explicit,
-simpler scope this implements -- an in-process scheduler thread wakes
-periodically and starts any entry whose time has come. If QUILL isn't
-running at the scheduled moment, that occurrence is simply missed; there is
-no catch-up, and no background service keeps running after QUILL exits.
+launchd): "add scheduling if QUILL is open to record" is the explicit, simpler
+scope this implements -- an in-process scheduler thread wakes periodically and
+starts any entry whose time has come. If QUILL isn't running at the scheduled
+moment, that occurrence is missed; there is no catch-up, and no background
+service keeps running after QUILL exits.
+
+R2 firing model (replaces the exact-minute match that dropped occurrences if a
+poll landed outside the target minute): each entry has an *occurrence window*
+``[start, start + duration)`` -- ``start`` is today's wall-clock time in the
+entry's own zone (or the once target). An entry fires whenever ``now`` falls in
+that window and it has not already fired today, recording only the *remaining*
+minutes so a late launch still catches the show instead of overshooting. That
+also gives launch-time catch-up for free: a daily 08:00 show reopened at 08:30
+records the last 30 minutes. A failure to start does **not** stamp the entry --
+the next poll retries within the same window (so a busy recorder or a momentary
+ffmpeg hiccup no longer burns a once-recording).
 
 wx-free, strict-typed.
 """
@@ -14,6 +25,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import threading
 import uuid
 from collections.abc import Callable
@@ -47,8 +59,9 @@ class RecordingScheduleEntry:
     zone name (e.g. ``"America/New_York"``); empty means the machine's local
     time, and the entry's wall-clock time is interpreted in that zone so a
     Pacific user can record an Eastern show at the right local moment.
-    ``last_fired_date`` (an ISO date) guards against firing more than once for
-    the same occurrence -- for ``"once"`` it also means "already used."
+    ``last_fired_date`` (an ISO date in the entry's zone) guards against firing
+    more than once for the same day -- for ``"once"`` it also means "already
+    used," and R2 additionally sets ``enabled=False`` on a successful once-fire.
     """
 
     id: str
@@ -126,60 +139,90 @@ def _entry_zone(entry: RecordingScheduleEntry) -> ZoneInfo | None:
         return None
 
 
-def is_due(entry: RecordingScheduleEntry, now: datetime) -> bool:
-    """Pure, testable: would *entry* fire right now?
+def _to_absolute(moment: datetime) -> datetime:
+    """A naive datetime is taken as system-local; an aware one is left as-is."""
+    return moment if moment.tzinfo is not None else moment.astimezone()
 
-    With ``entry.timezone`` empty (the default) *now* is compared as-is, the
-    original naive-local behavior. With a zone set, the entry's wall-clock time
-    is interpreted in that zone: *now* is converted into the zone (a naive
-    *now* is taken as system-local first), so an ``America/New_York`` 19:00
-    daily entry fires at 16:00 for a Pacific listener.
+
+def _local_now(entry: RecordingScheduleEntry, now: datetime) -> datetime:
+    """*now* expressed in the entry's zone (naive *now* taken as system-local)."""
+    zone = _entry_zone(entry)
+    if zone is None:
+        return now
+    now_abs = now if now.tzinfo is not None else now.astimezone()
+    return now_abs.astimezone(zone)
+
+
+def occurrence_start(entry: RecordingScheduleEntry, now: datetime) -> datetime | None:
+    """The absolute start moment of the occurrence in effect at *now*, or
+    ``None`` if there is none today (R2 firing model).
+
+    * once: the target moment, if it has not already fired (else ``None`` so a
+      spent once-entry can never be due again).
+    * daily: today's ``HH:MM`` in the entry's zone.
+    * weekly: today's ``HH:MM`` in the entry's zone, but only on the entry's
+      weekday -- ``None`` on the other six days.
+
+    The returned datetime is absolute (aware); the caller compares *now* (made
+    absolute the same way) against it and ``start + duration``.
     """
     if not entry.enabled:
-        return False
+        return None
     zone = _entry_zone(entry)
-    if zone is not None:
-        now_absolute = now if now.tzinfo is not None else now.astimezone()
-        local_now = now_absolute.astimezone(zone)
-    else:
-        now_absolute = now
-        local_now = now
-    today = local_now.date().isoformat()
     if entry.recurrence == "once":
         if entry.last_fired_date:
-            return False
+            return None
         try:
             target = datetime.fromisoformat(entry.run_at)
         except ValueError:
-            return False
+            return None
         if zone is not None and target.tzinfo is None:
             target = target.replace(tzinfo=zone)
-        return now_absolute >= target
-    if entry.last_fired_date == today:
-        return False
+        return _to_absolute(target)
     time_of_day = _time_of_day(entry.run_at)
     if time_of_day is None:
-        return False
+        return None
     hour, minute = time_of_day
-    if local_now.hour != hour or local_now.minute != minute:
+    local = _local_now(entry, now)
+    if entry.recurrence == "weekly" and local.weekday() != entry.weekday:
+        return None
+    start_local = datetime(local.year, local.month, local.day, hour, minute, tzinfo=local.tzinfo)
+    return _to_absolute(start_local)
+
+
+def is_due(entry: RecordingScheduleEntry, now: datetime) -> bool:
+    """Pure, testable: should *entry* fire right now (R2 window model)?
+
+    Fires when *now* falls in the occurrence window ``[start, start + duration)``
+    and the entry has not already fired today (in its own zone). ``start`` comes
+    from :func:`occurrence_start`; an entry whose day/weekday has no occurrence,
+    or a spent once-entry, returns ``False``. This replaces the old exact-minute
+    match: a poll that lands a minute or more past the start still fires (with
+    the remaining minutes), so a stall across the target minute no longer drops
+    the occurrence, and a launch inside the window catches up automatically.
+    """
+    if not entry.enabled:
         return False
-    if entry.recurrence == "weekly" and local_now.weekday() != entry.weekday:
+    start = occurrence_start(entry, now)
+    if start is None:
         return False
-    return True
+    now_abs = _to_absolute(now)
+    if now_abs < start:
+        return False
+    if _today_in_zone(entry, now) == entry.last_fired_date:
+        return False
+    end = start + timedelta(minutes=max(1, entry.duration_minutes))
+    return now_abs < end
 
 
 def _today_in_zone(entry: RecordingScheduleEntry, now: datetime) -> str:
     """ISO date of *now* in the entry's effective zone (local when unset).
 
-    Used to stamp ``last_fired_date`` in the same frame of reference ``is_due``
-    reads it, so the once-per-day guard is correct for a zoned entry even when
-    the machine's local date differs from the entry-zone date at that instant.
+    Used to stamp ``last_fired_date`` in the same frame of reference
+    :func:`is_due` reads it, so the once-per-day guard is correct for a zoned
+    entry even when the machine's local date differs from the entry-zone date.
     """
-    zone = _entry_zone(entry)
-    if zone is not None:
-        now_absolute = now if now.tzinfo is not None else now.astimezone()
-        return now_absolute.astimezone(zone).date().isoformat()
-    return now.date().isoformat()
+    return _local_now(entry, now).date().isoformat()
 
 
 def due_entries(
@@ -188,14 +231,27 @@ def due_entries(
     return [entry for entry in entries if is_due(entry, now)]
 
 
+def remaining_minutes(entry: RecordingScheduleEntry, now: datetime) -> int:
+    """Minutes left in the current occurrence window, at least 1 (R2 late-start).
+
+    A fire at the start returns the full duration; a fire halfway returns the
+    remaining half, so a recording started late does not overshoot the intended
+    end. Returns the full duration when *now* is at/before the start.
+    """
+    start = occurrence_start(entry, now)
+    if start is None:
+        return max(1, entry.duration_minutes)
+    now_abs = _to_absolute(now)
+    if now_abs <= start:
+        return max(1, entry.duration_minutes)
+    end = start + timedelta(minutes=max(1, entry.duration_minutes))
+    left = math.ceil((end - now_abs).total_seconds() / 60)
+    return max(1, left)
+
+
 #: Cap the missed-occurrence look-back so a long-dormant install (or an empty
 #: "last seen") never reports months of daily occurrences at once (#4).
 _MAX_MISSED_LOOKBACK_DAYS = 62
-
-
-def _to_absolute(moment: datetime) -> datetime:
-    """A naive datetime is taken as system-local; an aware one is left as-is."""
-    return moment if moment.tzinfo is not None else moment.astimezone()
 
 
 def _occurrences_between(
@@ -204,7 +260,7 @@ def _occurrences_between(
     """Absolute moments *entry* would have fired in ``(since_abs, now_abs]``.
 
     Interprets the entry's wall-clock time in its own zone (local when unset),
-    the same frame ``is_due`` uses. An occurrence on or before
+    the same frame :func:`is_due` uses. An occurrence on or before
     ``last_fired_date`` is treated as already handled and skipped.
     """
     zone = _entry_zone(entry)
@@ -249,7 +305,9 @@ def _occurrences_between(
 def missed_occurrences(
     entries: list[RecordingScheduleEntry], *, since: datetime, now: datetime
 ) -> list[tuple[RecordingScheduleEntry, datetime]]:
-    """Enabled schedule occurrences that fell in ``(since, now]`` (#4).
+    """Enabled schedule occurrences that fell in ``(since, now]`` (#4), excluding
+    any whose window is still open at *now* (R2/11.7: those will start late on
+    launch, so they are not "missed").
 
     Used at startup to report recordings whose time passed while the app was
     closed (``since`` = when it was last running). Returns (entry, moment)
@@ -264,6 +322,10 @@ def missed_occurrences(
         if not entry.enabled:
             continue
         for moment in _occurrences_between(entry, since_abs, now_abs):
+            # R2/11.7: if the window is still open, the scheduler will start it
+            # late on this launch -- do not also announce it as missed.
+            if now_abs < moment + timedelta(minutes=max(1, entry.duration_minutes)):
+                continue
             missed.append((entry, moment))
     missed.sort(key=lambda pair: pair[1])
     return missed
@@ -333,18 +395,28 @@ class RecordingScheduler:
         recorder: RadioRecorder,
         recording_settings: RecordingSettings,
         on_fired: Callable[[RecordingScheduleEntry, str], None] | None = None,
+        on_busy: Callable[[RecordingScheduleEntry], None] | None = None,
         filter_graph_provider: Callable[[], str] | None = None,
     ) -> None:
         self._data_dir = data_dir
         self._recorder = recorder
         self._recording_settings = recording_settings
         self._on_fired = on_fired or (lambda _entry, _error: None)
+        #: Fired once per entry when a fire is deferred because the recorder is
+        #: busy (R2/11.3) -- the entry is held pending and retried within its
+        #: window rather than burned. ``None`` means "stay silent."
+        self._on_busy = on_busy or (lambda _entry: None)
         #: Called at fire time for the current Sound Enhancements filter
         #: graph (""  if apply_sound_enhancements is off) -- injected so this
         #: wx-free module never has to know about audio_enhance.py or the
         #: live RadioHistory state that owns the current EQ preset/compressor.
         self._filter_graph_provider = filter_graph_provider or (lambda: "")
+        self._lock = threading.RLock()
         self.entries: list[RecordingScheduleEntry] = load_schedule(data_dir)
+        #: Entry ids whose last fire outcome was already announced (R2): a busy
+        #: deferral or a hard failure is spoken once, then retried silently until
+        #: it succeeds (which clears the id).
+        self._announced: set[str] = set()
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True, name="quill-radio-scheduler")
         self._thread.start()
@@ -354,48 +426,98 @@ class RecordingScheduler:
         self._recording_settings = settings
 
     def add(self, entry: RecordingScheduleEntry) -> None:
-        self.entries.append(entry)
-        save_schedule(self._data_dir, self.entries)
+        with self._lock:
+            self.entries.append(entry)
+            save_schedule(self._data_dir, self.entries)
 
     def update(self, entry: RecordingScheduleEntry) -> bool:
         """Replace the entry with the same id in place; ``False`` if absent."""
-        for index, existing in enumerate(self.entries):
-            if existing.id == entry.id:
-                self.entries[index] = entry
+        with self._lock:
+            for index, existing in enumerate(self.entries):
+                if existing.id == entry.id:
+                    self.entries[index] = entry
+                    save_schedule(self._data_dir, self.entries)
+                    return True
+        return False
+
+    def remove(self, entry_id: str) -> bool:
+        with self._lock:
+            before = len(self.entries)
+            self.entries = [e for e in self.entries if e.id != entry_id]
+            if len(self.entries) != before:
                 save_schedule(self._data_dir, self.entries)
                 return True
         return False
 
-    def remove(self, entry_id: str) -> bool:
-        before = len(self.entries)
-        self.entries = [e for e in self.entries if e.id != entry_id]
-        if len(self.entries) != before:
-            save_schedule(self._data_dir, self.entries)
-            return True
-        return False
-
     def _run(self) -> None:
+        # R2/11.4: the loop body is wrapped so one failing iteration (or a
+        # concurrent mutation of self.entries) can never kill the thread and
+        # silently drop every future scheduled recording for the session.
         while not self._stop_event.wait(timeout=_POLL_SECONDS):
-            now = datetime.now()
-            for entry in due_entries(self.entries, now):
-                self._fire(entry, now)
+            try:
+                now = datetime.now()
+                with self._lock:
+                    snapshot = list(self.entries)
+                for entry in due_entries(snapshot, now):
+                    if self._stop_event.is_set():
+                        break
+                    self._fire(entry, now)
+            except Exception:  # noqa: BLE001 - scheduler thread must never die
+                logger.exception("Radio scheduler iteration failed; continuing.")
 
     def _fire(self, entry: RecordingScheduleEntry, now: datetime) -> None:
-        error: str = ""
+        """Start *entry* now, recording only the remaining minutes (R2).
+
+        On a busy recorder the fire is deferred (announced once) and retried on
+        the next poll within the window (11.3); on a hard failure it is also
+        retried within the window without stamping the entry (11.2); only a
+        successful start stamps ``last_fired_date`` (and disables a once-entry).
+        """
         try:
             self._recorder.start(
                 station_name=entry.station_name,
                 stream_url=entry.stream_url,
                 settings=self._recording_settings,
-                duration_minutes=entry.duration_minutes,
+                duration_minutes=remaining_minutes(entry, now),
                 filter_graph=self._filter_graph_provider(),
             )
+            started = True
+            error = ""
         except RecordingError as exc:
+            started = False
             error = str(exc)
-            logger.warning("Scheduled radio recording %s could not start: %s", entry.id, exc)
-        entry.last_fired_date = _today_in_zone(entry, now)
-        save_schedule(self._data_dir, self.entries)
-        self._on_fired(entry, error)
+
+        if started:
+            self._stamp_fired(entry, now)
+            self._announced.discard(entry.id)
+            self._on_fired(entry, "")
+            return
+
+        if "already in progress" in error.lower():
+            # Recorder busy: hold the entry pending and retry within its window
+            # instead of burning the occurrence (R2/11.3). Announce once.
+            if entry.id not in self._announced:
+                self._announced.add(entry.id)
+                self._on_busy(entry)
+            return
+        # Hard failure (ffmpeg missing, etc.): announce once, then retry within
+        # the window on later polls without stamping (R2/11.2).
+        logger.warning("Scheduled radio recording %s could not start: %s", entry.id, error)
+        if entry.id not in self._announced:
+            self._announced.add(entry.id)
+            self._on_fired(entry, error)
+
+    def _stamp_fired(self, entry: RecordingScheduleEntry, now: datetime) -> None:
+        """Stamp the live entry by id (not the snapshot ref) and disable a
+        once-entry on success (R1/10.1 + R2/11.5)."""
+        with self._lock:
+            for existing in self.entries:
+                if existing.id == entry.id:
+                    existing.last_fired_date = _today_in_zone(existing, now)
+                    if existing.recurrence == "once":
+                        existing.enabled = False
+                    save_schedule(self._data_dir, self.entries)
+                    return
 
     def shutdown(self) -> None:
         self._stop_event.set()
