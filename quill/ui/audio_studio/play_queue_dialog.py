@@ -10,6 +10,7 @@ with ``ShowModal``, embedded QUILL via ``_show_modal_dialog``.
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 
 import wx
 
@@ -81,16 +82,41 @@ class PlayQueueDialog(wx.Dialog):
         self._next_btn.Bind(wx.EVT_BUTTON, self._on_next)
         self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove)
         self._clear_btn.Bind(wx.EVT_BUTTON, self._on_clear)
+        # Delete removes the highlighted entry (a screen-reader user expects the
+        # key to work from the list, not only via the Remove button).
+        self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
         self._reload()
         apply_modal_ids(self, affirmative_id=wx.ID_CLOSE, cancel_id=wx.ID_CLOSE)
 
-    def _reload(self) -> None:
-        self._list.Clear()
-        for entry in self._queue.entries:
-            self._list.Append(f"{entry.title} -- {entry.path}")
+    def _row_label(self, index: int, entry: QueueEntry) -> str:
+        """One list row. The current entry and any entry whose file is gone are
+        marked in words so a screen reader speaks the distinction, not just a
+        visual cue."""
+        tags = []
+        if index == self._queue.current_index:
+            tags.append(str(_("Current")))
+        if not Path(entry.path).exists():
+            tags.append(str(_("missing")))
+        prefix = f"[{', '.join(tags)}] " if tags else ""
+        return f"{prefix}{entry.title} -- {entry.path}"
 
-    def _persist(self) -> None:
-        self._reload()
+    def _reload(self, *, select: int | None = None) -> None:
+        self._list.Clear()
+        for index, entry in enumerate(self._queue.entries):
+            self._list.Append(self._row_label(index, entry))
+        if self._queue.entries:
+            # Selecting a row makes the screen reader speak it, which is how each
+            # action (add/remove/next) announces its result. Clamp to range so a
+            # remove near the end still lands on a valid row.
+            target = 0 if select is None else max(0, min(select, len(self._queue.entries) - 1))
+            self._list.SetSelection(target)
+        elif self._add_btn:
+            # Empty queue: move focus somewhere sensible so the screen reader is
+            # not stranded on a now-empty list.
+            self._add_btn.SetFocus()
+
+    def _persist(self, *, select: int | None = None) -> None:
+        self._reload(select=select)
         if self._on_save is not None:
             self._on_save()
 
@@ -104,24 +130,33 @@ class PlayQueueDialog(wx.Dialog):
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return
             path = picker.GetPath()
-        from pathlib import Path
-
         queue_add(self._queue, QueueEntry(path=str(path), title=Path(path).stem))
-        self._persist()
+        # Land on the entry that was just added (dedup may leave it where it was).
+        added = next(
+            (i for i, e in enumerate(self._queue.entries) if e.path == str(path)),
+            len(self._queue.entries) - 1,
+        )
+        self._persist(select=added)
 
     def _on_next(self, event: wx.CommandEvent) -> None:
         entry = queue_next(self._queue)
         if entry is None:
             return
-        self._persist()
+        self._persist(select=self._queue.current_index)
 
     def _on_remove(self, event: wx.CommandEvent) -> None:
         sel = self._list.GetSelection()
         if sel < 0 or sel >= len(self._queue.entries):
             return
         queue_remove(self._queue, self._queue.entries[sel].path)
-        self._persist()
+        self._persist(select=sel)
 
     def _on_clear(self, event: wx.CommandEvent) -> None:
         queue_clear(self._queue)
         self._persist()
+
+    def _on_list_key(self, event: wx.KeyEvent) -> None:
+        if event.GetKeyCode() == wx.WXK_DELETE:
+            self._on_remove(event)  # type: ignore[arg-type]
+            return
+        event.Skip()

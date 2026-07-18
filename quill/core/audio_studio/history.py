@@ -59,7 +59,7 @@ class AudioStudioHistory:
 
     books: list[PlayedBook] = field(default_factory=list)
     #: On by default -- the Studio's common case is "pick up where I left off".
-    resume_on_launch: bool = True
+    resume_on_launch: bool = False
 
     def record(self, path: str, *, title: str, position_ms: int = 0, chapter: int = 0) -> None:
         """Note that this book just started/continued playing; moves to front."""
@@ -94,7 +94,7 @@ def load_history(data_dir: Path) -> AudioStudioHistory:
     except (OSError, ValueError):
         return history
     if isinstance(raw, dict):
-        history.resume_on_launch = bool(raw.get("resume_on_launch", True))
+        history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         entries = raw.get("books")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedBook.from_dict(entry)

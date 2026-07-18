@@ -38,8 +38,9 @@ def test_last_played() -> None:
     assert h.last_played.path == "a"
 
 
-def test_resume_on_launch_defaults_true() -> None:
-    assert AudioStudioHistory().resume_on_launch is True
+def test_resume_on_launch_defaults_false() -> None:
+    # Opt-in: a fresh install does not silently reopen the last book on launch.
+    assert AudioStudioHistory().resume_on_launch is False
 
 
 def test_round_trip(tmp_path: Path) -> None:
@@ -56,7 +57,7 @@ def test_round_trip(tmp_path: Path) -> None:
 def test_load_missing_file_returns_empty(tmp_path: Path) -> None:
     got = load_history(tmp_path)
     assert got.books == []
-    assert got.resume_on_launch is True  # default
+    assert got.resume_on_launch is False  # default (opt-in)
 
 
 def test_load_broken_file_returns_empty(tmp_path: Path) -> None:
