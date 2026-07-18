@@ -236,6 +236,13 @@ class RadioPlayerController:
             wanted_mpv = mpv_present
         else:  # auto
             wanted_mpv = mpv_present
+        # #5 observability: why a given backend was chosen for this station.
+        _log.debug(
+            "Radio engine selection: preference=%s, mpv_present=%s -> %s",
+            self._playback_engine,
+            mpv_present,
+            "mpv" if wanted_mpv else "wx.media",
+        )
         if wanted_mpv:
             if self._mpv_engine is None:
                 try:
