@@ -17,7 +17,11 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import acb_media, radio_browser, soma_fm
-from quill.core.radio.directory_search import iheart_search_stations, tunein_search_stations
+from quill.core.radio.directory_search import (
+    iheart_search_stations,
+    merge_and_rank,
+    tunein_search_stations,
+)
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
@@ -26,6 +30,20 @@ _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
 _SEARCH_RESULTS = "Search Results"
 _CATEGORIES = (_FAVORITES, _ACB_MEDIA, _SEARCH_RESULTS)
+
+#: Source-facet choices (the Unified Find Stations filter). "All sources" is the
+#: default; the rest match RadioStation.source values a search can produce. A
+#: RadioBrowser result has an empty source, so it filters under "RadioBrowser".
+_ALL_SOURCES = "All sources"
+_SOURCE_FACETS = (
+    _ALL_SOURCES,
+    "RadioBrowser",
+    "iHeart",
+    "TuneIn",
+    "SomaFM",
+    "ACB Media",
+    "Website",
+)
 
 #: How many stations a search returns (#1064). RadioBrowser's own API caps a
 #: single request at 200; we ask for all of it (ordered most-listened first)
@@ -74,6 +92,22 @@ def country_query(choice_label: str) -> str:
     return "" if label in ("", _ANY_COUNTRY) else label
 
 
+def looks_like_url(text: str) -> bool:
+    """True when *text* is a website address, not a station-name query (pure).
+
+    Lets the one search box fold in "Find Streams from a Website": an entry
+    that is a URL (explicit scheme, or a bare ``host.tld/...`` with no spaces)
+    is scanned for streams instead of run as a directory name search.
+    """
+    value = text.strip()
+    if not value or " " in value:
+        return False
+    if value.lower().startswith(("http://", "https://")):
+        return True
+    host = value.split("/", 1)[0]
+    return "." in host and " " not in host and not host.endswith(".")
+
+
 class StationBrowserDialog:
     """Browse/search/play/favorite internet radio stations."""
 
@@ -103,6 +137,10 @@ class StationBrowserDialog:
         self._on_open_link_finder = on_open_link_finder
 
         self._current_results: list[RadioStation] = []
+        #: The unfiltered list behind _current_results, so the Source facet can
+        #: filter what's shown without re-running the search.
+        self._all_results: list[RadioStation] = []
+        self._fill_status: str = ""
         self._search_results: list[RadioStation] = []
         # Pagination state for #1064: the query behind the current results, the
         # RadioBrowser and SomaFM halves kept apart so paging appends only more
@@ -191,11 +229,24 @@ class StationBrowserDialog:
 
         results_col = wx.BoxSizer(wx.VERTICAL)
         results_col.Add(wx.StaticText(self.dialog, label="&Stations"), 0, wx.BOTTOM, 4)
+        facet_row = wx.BoxSizer(wx.HORIZONTAL)
+        facet_row.Add(
+            wx.StaticText(self.dialog, label="So&urce:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            4,
+        )
+        self._source_facet = wx.Choice(self.dialog, choices=list(_SOURCE_FACETS))
+        self._source_facet.SetName("Show only results from one source")
+        self._source_facet.SetSelection(0)
+        facet_row.Add(self._source_facet, 0)
+        results_col.Add(facet_row, 0, wx.BOTTOM, 4)
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Station results; arrow through to hear details of each")
-        self._results.InsertColumn(0, "Name", width=260)
-        self._results.InsertColumn(1, "Country", width=140)
-        self._results.InsertColumn(2, "Format", width=140)
+        self._results.InsertColumn(0, "Name", width=240)
+        self._results.InsertColumn(1, "Country", width=120)
+        self._results.InsertColumn(2, "Format", width=110)
+        self._results.InsertColumn(3, "Source", width=110)
         results_col.Add(self._results, 1, wx.EXPAND)
         body.Add(results_col, 2, wx.EXPAND)
         root.Add(body, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -242,6 +293,8 @@ class StationBrowserDialog:
         add_custom_btn.SetName("Add a station by typing its own stream link")
         link_finder_btn = wx.Button(self.dialog, label="Find Streams from a &Website...")
         link_finder_btn.SetName("Scan a website you type in for stream links")
+        self._refresh_btn = wx.Button(self.dialog, label="&Refresh Directory")
+        self._refresh_btn.SetName("Re-fetch the iHeart station directory used by search")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
@@ -249,6 +302,7 @@ class StationBrowserDialog:
         btn_row.Add(self._more_btn, 0, wx.RIGHT, 6)
         btn_row.Add(add_custom_btn, 0, wx.RIGHT, 6)
         btn_row.Add(link_finder_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._refresh_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
@@ -271,6 +325,8 @@ class StationBrowserDialog:
         self._more_btn.Bind(wx.EVT_BUTTON, self._on_more_stations)
         add_custom_btn.Bind(wx.EVT_BUTTON, self._on_add_custom)
         link_finder_btn.Bind(wx.EVT_BUTTON, self._on_link_finder)
+        self._refresh_btn.Bind(wx.EVT_BUTTON, self._on_refresh_directory)
+        self._source_facet.Bind(wx.EVT_CHOICE, self._on_source_facet)
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute_toggle)
         # #1070: Ctrl+Up/Ctrl+Down (Volume Up/Down) must work while browsing.
@@ -356,27 +412,144 @@ class StationBrowserDialog:
     # ------------------------------------------------------------------
     # Population
 
+    def _source_label(self, station: RadioStation) -> str:
+        """The Source-column/facet label for *station* (RadioBrowser default)."""
+        return station.source or "RadioBrowser"
+
+    def _apply_source_facet(self, stations: list[RadioStation]) -> list[RadioStation]:
+        """Filter *stations* by the current Source facet (All = everything)."""
+        choice = self._source_facet.GetStringSelection() or _ALL_SOURCES
+        if choice == _ALL_SOURCES:
+            return stations
+        return [s for s in stations if self._source_label(s) == choice]
+
     def _fill_results(self, stations: list[RadioStation], *, status: str) -> None:
+        # Keep the full list so the Source facet can filter without re-searching.
+        self._all_results = stations
+        self._fill_status = status
+        self._render_results()
+
+    def _render_results(self) -> None:
+        stations = self._apply_source_facet(self._all_results)
         self._current_results = stations
         self._results.DeleteAllItems()
         for row, station in enumerate(stations):
             # Blended non-RadioBrowser sources name themselves in the row so a
             # listener can tell where a station came from (iHeart, TuneIn, ...).
             label = station.display_name
-            if station.source and station.source != "RadioBrowser":
-                label = f"{label} - via {station.source}"
+            source = self._source_label(station)
+            if source != "RadioBrowser":
+                label = f"{label} - via {source}"
             self._results.InsertItem(row, label)
             self._results.SetItem(row, 1, station.country)
             bitrate = f"{station.bitrate_kbps}k" if station.bitrate_kbps else ""
             fmt = " ".join(part for part in (station.codec, bitrate) if part)
             self._results.SetItem(row, 2, fmt)
-        self._status.SetLabel(status)
+            self._results.SetItem(row, 3, source)
+        self._status.SetLabel(self._fill_status)
         self._play_btn.Enable(False)
         self._favorite_btn.Enable(False)
         self._details.SetValue("")
         if stations:
             self._results.Select(0)
             self._results.Focus(0)
+
+    def _on_source_facet(self, _event: object) -> None:
+        """Re-render the current results filtered by the chosen source."""
+        self._render_results()
+        self._announce(
+            _search_result_summary(len(self._current_results))
+            + f" -- {self._source_facet.GetStringSelection()}"
+        )
+
+    def _on_refresh_directory(self, _event: object) -> None:
+        """Re-fetch the iHeart station directory (its 2-GET sitemap index) off
+        thread, so a stale/expanded catalog is picked up without restarting.
+        TuneIn and RadioBrowser are always live, so only iHeart is cached."""
+        if self._safe_mode:
+            self._status.SetLabel("Refreshing the directory is disabled in Safe Mode.")
+            return
+        self._refresh_btn.Enable(False)
+        self._status.SetLabel("Refreshing the iHeart directory...")
+
+        def _do_refresh(**_kwargs: Any) -> int:
+            from quill.core.radio import iheart
+
+            try:
+                index = iheart.fetch_station_index(safe_mode=self._safe_mode)
+            except iheart.IHeartError:
+                index = []
+            self._iheart_index_cache = index
+            return len(index)
+
+        self._task_manager.submit(
+            "radio-refresh-directory",
+            _do_refresh,
+            on_success=lambda _op, count: self._wx.CallAfter(self._on_refresh_done, count, None),
+            on_failure=lambda _op, exc: self._wx.CallAfter(self._on_refresh_done, 0, exc),
+        )
+
+    def _on_refresh_done(self, count: int, error: BaseException | None) -> None:
+        self._refresh_btn.Enable(True)
+        if error is not None:
+            self._status.SetLabel(f"Could not refresh the directory: {error}")
+            return
+        message = f"iHeart directory refreshed: {count} stations."
+        self._status.SetLabel(message)
+        self._announce(message)
+
+    def _search_website(self, url: str) -> None:
+        """Scan *url* for streams and show them as ``source="Website"`` results,
+        folding the website finder into the one search box."""
+        self._status.SetLabel(f"Scanning {url} for streams...")
+        self._search_btn.Enable(False)
+        self._more_btn.Enable(False)
+
+        def _do_scan(**_kwargs: Any) -> list[RadioStation]:
+            from quill.core.radio import link_finder
+
+            try:
+                result = link_finder.scan_page_for_streams(url, safe_mode=self._safe_mode)
+            except link_finder.LinkFinderError:
+                return []
+            return [
+                RadioStation(
+                    name=candidate.label or candidate.reason or "Website stream",
+                    stream_url=candidate.url,
+                    homepage=url,
+                    source="Website",
+                )
+                for candidate in result.candidates
+            ]
+
+        self._task_manager.submit(
+            "radio-website-scan",
+            _do_scan,
+            on_success=lambda _op, stations: self._wx.CallAfter(
+                self._on_website_scan_done, stations, None
+            ),
+            on_failure=lambda _op, exc: self._wx.CallAfter(self._on_website_scan_done, [], exc),
+        )
+
+    def _on_website_scan_done(
+        self, stations: list[RadioStation], error: BaseException | None
+    ) -> None:
+        self._search_btn.Enable(True)
+        if error is not None:
+            self._status.SetLabel(f"Website scan failed: {error}")
+            return
+        self._search_rb = []
+        self._search_extras = stations
+        self._search_results = merge_and_rank([stations], self._search_query)
+        self._search_more_available = False
+        self._more_btn.Enable(False)
+        self._show_category(_SEARCH_RESULTS)
+        count = len(self._search_results)
+        self._announce(
+            f"{count} stream{'' if count == 1 else 's'} found on the website."
+            if count
+            else "No streams found on that website."
+        )
 
     def _show_category(self, category: str) -> None:
         index = _CATEGORIES.index(category)
@@ -419,6 +592,12 @@ class StationBrowserDialog:
             return
         if self._safe_mode:
             self._status.SetLabel("Internet Radio search is disabled in Safe Mode.")
+            return
+        # Fold in the website scanner: a URL in the name box is scanned for
+        # streams instead of run as a directory search (the "Find Streams from a
+        # Website..." button stays as an explicit shortcut).
+        if looks_like_url(name):
+            self._search_website(name)
             return
         self._status.SetLabel("Searching stations...")
         self._search_btn.Enable(False)
@@ -486,7 +665,9 @@ class StationBrowserDialog:
         radio, extras = payload
         self._search_rb = radio
         self._search_extras = extras
-        self._search_results = radio + extras
+        # Unified merge: de-dup across sources (a stream on two directories, or
+        # the same station name+country twice) and float exact-name matches up.
+        self._search_results = merge_and_rank([radio, extras], self._search_query)
         self._search_offset = len(radio)
         self._search_more_available = len(radio) >= _SEARCH_LIMIT
         self._more_btn.Enable(self._search_more_available)
@@ -528,7 +709,9 @@ class StationBrowserDialog:
             return
         first_new_index = len(self._search_results)
         self._search_rb = self._search_rb + stations
-        self._search_results = self._search_rb + self._search_extras
+        self._search_results = merge_and_rank(
+            [self._search_rb, self._search_extras], self._search_query
+        )
         self._search_offset += len(stations)
         self._search_more_available = len(stations) >= _SEARCH_LIMIT
         self._more_btn.Enable(self._search_more_available)

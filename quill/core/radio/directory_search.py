@@ -20,6 +20,8 @@ wx-free, strict-typed. Safe Mode is enforced by the underlying clients' own
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from quill.core.radio import iheart, tunein
 from quill.core.radio.iheart import IHeartStation
 from quill.core.radio.models import RadioStation
@@ -27,6 +29,47 @@ from quill.core.radio.models import RadioStation
 #: Per-search resolve caps for the blended directories (one GET each).
 TUNEIN_RESOLVE_CAP = 10
 IHEART_RESOLVE_CAP = 5
+
+
+def merge_and_rank(
+    result_lists: Iterable[list[RadioStation]], query: str = ""
+) -> list[RadioStation]:
+    """Merge per-source station lists into one de-duped, ranked list.
+
+    The Unified Find Stations model: every source returns its own
+    :class:`RadioStation` list; this collapses them into a single list.
+
+    De-dup, first occurrence wins (so the caller controls source priority by
+    the order it passes the lists): by ``stream_url`` first (the same stream on
+    two directories is one entry), then by ``(name, country)`` (the same station
+    with a different mount URL is still one entry). Ranking then floats
+    exact-name matches for *query* to the top; everything else keeps its
+    merged order, so each source's own relevance ordering is preserved beneath
+    the exact hits. An empty *query* just de-dups without re-ordering.
+    """
+    seen_urls: set[str] = set()
+    seen_name_country: set[tuple[str, str]] = set()
+    merged: list[RadioStation] = []
+    for stations in result_lists:
+        for station in stations:
+            url_key = (station.stream_url or "").strip().lower()
+            name_key = (station.name or "").strip().lower()
+            country_key = (station.country or "").strip().lower()
+            name_country = (name_key, country_key)
+            if url_key and url_key in seen_urls:
+                continue
+            if name_key and name_country in seen_name_country:
+                continue
+            if url_key:
+                seen_urls.add(url_key)
+            seen_name_country.add(name_country)
+            merged.append(station)
+    normalized_query = query.strip().lower()
+    if not normalized_query:
+        return merged
+    exact = [s for s in merged if (s.name or "").strip().lower() == normalized_query]
+    rest = [s for s in merged if (s.name or "").strip().lower() != normalized_query]
+    return exact + rest
 
 
 def tunein_search_stations(

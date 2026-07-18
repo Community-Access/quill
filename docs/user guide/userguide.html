@@ -30653,15 +30653,28 @@ most-popular lists so you don't have to guess the exact spelling; Tag
 stays editable for a rare custom tag, and picking a country or tag runs
 the search right away. One search fans out to RadioBrowser,
 <strong>iHeart</strong>, <strong>TuneIn</strong>, and SomaFM together
-and blends the matches into one <strong>Search Results</strong> list,
-with each non-RadioBrowser row naming where it came from ("… - via
-iHeart" / "via TuneIn"). Each source is failure-tolerant — one directory
-being down never blanks the list — and all of them are off in Safe
-Mode.</li>
+and blends the matches into <strong>one merged, de-duplicated
+list</strong> (the same stream on two directories, or the same station
+name and country twice, collapses to a single row; exact name matches
+sort to the top). Each source is failure-tolerant — one directory being
+down never blanks the list — and all of them are off in Safe Mode.</li>
 <li>Arrow through the results list and a read-only <strong>Station
 details</strong> pane reports everything QUILL knows about the selected
 station: country, language, tags, codec and bitrate, community vote
-count, homepage, and the stream URL itself.</li>
+count, homepage, and the stream URL itself. Each row also shows a
+<strong>Source</strong> column (RadioBrowser, iHeart, TuneIn, SomaFM,
+ACB Media, or Website), and a <strong>Source</strong> dropdown above the
+list filters it to just one source without re-searching.</li>
+<li><strong>Type or paste a website address</strong> into the search box
+and Browse Stations scans that page for streams and lists what it finds,
+badged <strong>Website</strong> — the "Find Streams from a Website"
+capability, right in the same search box (the dedicated <strong>Find
+Streams from a Website...</strong> button below stays as a
+shortcut).</li>
+<li><strong>Refresh Directory</strong> re-fetches iHeart's station
+directory on demand — useful if its catalog has grown since you opened
+the dialog. RadioBrowser and TuneIn are always live, so only iHeart is
+cached per session.</li>
 <li><strong>Play</strong> starts the selected station. <strong>Add to
 Favorites</strong> (relabels to <strong>Remove from Favorites</strong>
 once it's saved) keeps it in your Favorites category for next time.</li>

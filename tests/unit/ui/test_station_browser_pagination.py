@@ -17,7 +17,20 @@ from quill.ui.radio.station_browser_dialog import (
     StationBrowserDialog,
     _search_result_summary,
     country_query,
+    looks_like_url,
 )
+
+
+def test_looks_like_url_distinguishes_urls_from_name_queries() -> None:
+    assert looks_like_url("https://example.com/stream") is True
+    assert looks_like_url("http://example.com") is True
+    assert looks_like_url("example.com/radio") is True
+    assert looks_like_url("wnyc.org") is True
+    # Plain station-name searches are not URLs.
+    assert looks_like_url("Jazz FM") is False
+    assert looks_like_url("news") is False
+    assert looks_like_url("") is False
+    assert looks_like_url("BBC Radio 1") is False
 
 
 def test_country_query_maps_any_to_no_filter() -> None:
@@ -71,6 +84,7 @@ def _dialog() -> Any:
     d._search_results = []
     d._search_rb = []
     d._search_extras = []
+    d._search_query = ""
     d._search_offset = 0
     d._search_more_available = False
     d._announced: list[str] = []
