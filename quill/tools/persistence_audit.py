@@ -125,6 +125,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/watch_queue.py::_save_locked": "cache",
     "core/ai/activity_log.py::append": "cache",
     # --- marker / small state flags ---
+    # Radio's active-recording resume marker (R1-R4): transient state written
+    # when a recording starts and cleared on clean stop; absent by default, and
+    # its loss just means no resume offer on the next launch.
+    "core/radio/recording_resume.py::save_marker": "marker",
     "core/onboarding.py::mark_assistant_onboarding_complete": "marker",
     "core/onboarding.py::mark_glow_onboarding_complete": "marker",
     "core/onboarding.py::mark_onboarding_complete": "marker",
