@@ -117,7 +117,10 @@ def _engine_available(frame: Any) -> dict[str, bool]:
     s = frame.settings
     return {
         "sapi5": True,
-        "dectalk": discover_dectalk_executable(s.read_aloud_dectalk_executable) is not None,
+        "dectalk": discover_dectalk_executable(
+            getattr(s, "read_aloud_dectalk_executable", "")
+        )
+        is not None,
         "piper": discover_piper_executable() is not None,
         # Kokoro must be reported ready only when it can ACTUALLY synthesize --
         # model files present AND the kokoro_onnx package importable
@@ -128,7 +131,10 @@ def _engine_available(frame: Any) -> dict[str, bool]:
         # true-readiness check the Speech Hub and the editor's own engine map
         # use, so all three surfaces now agree on whether Kokoro is usable.
         "kokoro": kokoro_engine_ready(),
-        "espeak": discover_espeak_executable(s.read_aloud_espeak_executable) is not None,
+        "espeak": discover_espeak_executable(
+            getattr(s, "read_aloud_espeak_executable", "")
+        )
+        is not None,
         "macos": macos_say_available(),
     }
 
@@ -719,6 +725,24 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
             "Batch Export to Speech Audio",
             frame._wx.ICON_INFORMATION | frame._wx.OK,
         )
+        return
+
+    # Verify the chosen local engine can actually synthesize before starting, so
+    # a not-ready engine (e.g. Kokoro voices downloaded but the kokoro_onnx
+    # package not installed) fails ONCE here with a clear "install it" prompt
+    # instead of erroring on every chunk of every document. Cloud engines are not
+    # in this map (they have their own key checks), so they default to allowed.
+    if not _engine_available(frame).get(req.engine, True):
+        answer = frame._show_message_box(
+            f"The {req.engine} voice engine is not fully installed yet, so this "
+            "run cannot produce audio.\n\nOpen Download Optional Components to "
+            "finish installing it now?",
+            "Batch Export to Speech Audio",
+            frame._wx.ICON_WARNING | frame._wx.YES_NO,
+        )
+        if answer == frame._wx.YES and hasattr(frame, "open_optional_components"):
+            frame.open_optional_components(preselect=req.engine)
+        frame._set_status(f"{req.engine} is not installed yet — run cancelled.")
         return
 
     # In book mode each document becomes one chapter file, so force the single-file
