@@ -614,7 +614,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         help_menu.Append(prd_id, "&Product Requirements...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-1.0"), id=notes_id
+            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-2.0"), id=notes_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
@@ -677,7 +677,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     def _open_radio_doc(self, stem: str) -> None:
         titles = {
             "userguide": "Quill Radio User Guide",
-            "release-notes-1.0": "Quill Radio Release Notes",
+            "release-notes-2.0": "Quill Radio Release Notes",
             "prd": "Quill Radio Product Requirements",
         }
         self.open_app_document(
