@@ -67,7 +67,8 @@ def build_filename(pattern: str, *, station: str, when: datetime) -> str:
     """Fill in ``{station}``/``{date}``/``{time}`` tokens, then sanitize the
     result for use as a filename (without extension)."""
     filled = (
-        pattern.replace("{station}", station)
+        pattern
+        .replace("{station}", station)
         .replace("{date}", when.strftime("%Y-%m-%d"))
         .replace("{time}", when.strftime("%H-%M-%S"))
     )
