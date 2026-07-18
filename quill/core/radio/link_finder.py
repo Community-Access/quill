@@ -375,6 +375,7 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
         _follow_pages(parser.iframe_urls, _MAX_IFRAMES_TO_FOLLOW, "embedded iframe")
     )
     all_candidates.extend(_triton_candidates(normalized, html_text, safe_mode=safe_mode))
+    all_candidates.extend(_tunein_candidates(normalized, html_text, safe_mode=safe_mode))
 
     # Only chase "Listen Live"/"Play" links when the page and its iframes gave
     # us nothing directly -- following them otherwise just adds noise and extra
@@ -439,8 +440,9 @@ def _follow_pages(
         # mounts, while a player page's other links (its own help articles,
         # for instance) are only stream-*shaped*.
         page_candidates: list[PageStreamCandidate] = []
-        if base:  # a followed Listen link may itself be a Triton player page
+        if base:  # a followed Listen link may itself be a Triton or TuneIn page
             page_candidates.extend(_triton_candidates(sub_url, sub_html, safe_mode=safe_mode))
+            page_candidates.extend(_tunein_candidates(sub_url, sub_html, safe_mode=safe_mode))
         page_candidates.extend(sub_parser.candidates)
         for candidate in page_candidates:
             out.append(
@@ -482,4 +484,37 @@ def _triton_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStre
             label=stream.mount,
         )
         for stream in streams
+    ]
+
+
+def _tunein_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
+    """Resolve a TuneIn (RadioTime) station page to stream candidates, or ``[]``
+    when the page is not a TuneIn page.
+
+    A TuneIn station page never carries the playable stream in its HTML -- it is
+    served by RadioTime's OPML API, keyed by the station's ``s``-prefixed guide
+    id (which the page URL/HTML does advertise). This mirrors
+    :func:`_triton_candidates`: when the page looks like TuneIn and a guide id is
+    present, resolve it through the keyless OPML API and offer the real
+    stream(s). Any failure (not a TuneIn page, no guide id, API unreachable,
+    Safe Mode) degrades to an empty list so it never breaks the rest of the scan.
+    """
+    from quill.core.radio import tunein
+
+    if not tunein.page_is_tunein(url, html):
+        return []
+    guide_id = tunein.guide_id_from_page(url) or tunein.guide_id_from_page(html)
+    if not guide_id:
+        return []
+    try:
+        stream_urls = tunein.resolve_station_streams(guide_id, safe_mode=safe_mode)
+    except tunein.TuneInError:
+        return []
+    return [
+        PageStreamCandidate(
+            url=stream_url,
+            reason=f"stream from the TuneIn station page ({guide_id})",
+            label=guide_id,
+        )
+        for stream_url in stream_urls
     ]
