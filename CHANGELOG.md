@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### New
+
+- **Quill Radio tells you about recordings it missed while it was closed (quill-radio #4).** The scheduler only records while the app is running, so a scheduled recording whose time passed while Quill Radio was closed used to disappear silently. On launch, Quill Radio now checks which enabled schedules (one-time, daily, or weekly, honoring each entry's time zone) came due during the time it was closed and announces a short summary -- "2 scheduled recordings were missed while Quill Radio was closed: WQXR at Tue Jul 14 8:00 AM; ..." -- naming up to three and collapsing the rest to a count. Nothing is announced when nothing was missed (or on a first run), and a long-dormant install is capped so it can't recite months of daily occurrences.
+
 ### Improved
 
 - **Radio stream discovery now leaves a debug trail (quill-radio #5).** With radio debug mode on, Find Streams from a Website logs each scanned page and the candidate links it kept (with the reason for each, including the iHeart/TuneIn portal-page follow), and the Triton/StreamTheWorld resolver logs which callsign resolved to how many playable streams -- so a "why didn't this station's stream show up?" question has an answer in `quill.log`. Every logged URL is redacted first. (More per-module coverage -- engine selection, reconnects, recording finalization -- follows with the recording-module decomposition.)

@@ -97,6 +97,30 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
+        wx.CallAfter(self._report_missed_recordings)
+
+    def _report_missed_recordings(self) -> None:
+        """Announce scheduled recordings whose time passed while closed (#4)."""
+        from datetime import datetime
+
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+        from quill.core.radio.recording_schedule import describe_missed, missed_occurrences
+
+        history = self._radio_history
+        now = datetime.now()
+        if history.last_seen:
+            try:
+                since = datetime.fromisoformat(history.last_seen)
+            except ValueError:
+                since = now
+            message = describe_missed(
+                missed_occurrences(self._radio_scheduler.entries, since=since, now=now)
+            )
+            if message:
+                self._announce(message)
+        history.last_seen = now.isoformat()
+        radio_history.save_history(app_data_dir(), history)
 
     # -- main panel -------------------------------------------------------------
     #
@@ -1021,6 +1045,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             event.Veto()
             self._send_to_tray()
             return
+        # Stamp when the app was last running, so the next launch can report
+        # scheduled recordings missed while it was closed (#4).
+        from datetime import datetime
+
+        self._radio_history.last_seen = datetime.now().isoformat()
+        radio_history.save_history(app_data_dir(), self._radio_history)
         for shutdown_fn in (
             getattr(self._radio_controller, "shutdown", None),
             getattr(self._radio_recorder, "shutdown", None),

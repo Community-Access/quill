@@ -58,6 +58,13 @@ def test_check_updates_on_startup_round_trips(tmp_path: Path) -> None:
     assert loaded.last_update_check == "2026-07-16T00:00:00"
 
 
+def test_last_seen_round_trips_and_defaults_empty(tmp_path: Path) -> None:
+    # quill-radio #4: the "last running" stamp for the missed-recording report.
+    assert load_history(tmp_path).last_seen == ""
+    save_history(tmp_path, RadioHistory(last_seen="2026-07-17T10:00:00"))
+    assert load_history(tmp_path).last_seen == "2026-07-17T10:00:00"
+
+
 def test_debug_mode_round_trips_and_defaults_off(tmp_path: Path) -> None:
     # quill-radio #5: the verbose-logging preference persists; absent = off.
     assert load_history(tmp_path).debug_mode is False

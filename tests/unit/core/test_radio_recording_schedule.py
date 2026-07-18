@@ -11,6 +11,7 @@ from quill.core.radio.recording_schedule import (
     due_entries,
     is_due,
     load_schedule,
+    missed_occurrences,
     new_id,
     save_schedule,
 )
@@ -29,6 +30,79 @@ def _entry(**overrides: object) -> RecordingScheduleEntry:
     )
     base.update(overrides)
     return RecordingScheduleEntry(**base)  # type: ignore[arg-type]
+
+
+def test_missed_occurrences_once_in_window() -> None:
+    entry = _entry(recurrence="once", run_at="2026-07-14T08:00:00")
+    since = datetime(2026, 7, 14, 7, 0)
+    now = datetime(2026, 7, 14, 9, 0)
+    missed = missed_occurrences([entry], since=since, now=now)
+    assert len(missed) == 1
+    assert missed[0][0] is entry
+
+
+def test_missed_occurrences_once_already_fired_or_outside_window() -> None:
+    fired = _entry(recurrence="once", run_at="2026-07-14T08:00:00", last_fired_date="2026-07-14")
+    assert (
+        missed_occurrences(
+            [fired], since=datetime(2026, 7, 14, 7, 0), now=datetime(2026, 7, 14, 9, 0)
+        )
+        == []
+    )
+    future = _entry(recurrence="once", run_at="2026-07-20T08:00:00")
+    assert (
+        missed_occurrences(
+            [future], since=datetime(2026, 7, 14, 7, 0), now=datetime(2026, 7, 14, 9, 0)
+        )
+        == []
+    )
+
+
+def test_missed_occurrences_daily_counts_each_day() -> None:
+    entry = _entry(recurrence="daily", run_at="2026-07-14T08:00:00")
+    # Closed from the 14th 07:00 through the 16th 09:00: 14th, 15th, 16th fire.
+    missed = missed_occurrences(
+        [entry], since=datetime(2026, 7, 14, 7, 0), now=datetime(2026, 7, 16, 9, 0)
+    )
+    assert len(missed) == 3
+    assert [m[1].date().isoformat() for m in missed] == ["2026-07-14", "2026-07-15", "2026-07-16"]
+
+
+def test_missed_occurrences_weekly_only_on_its_weekday() -> None:
+    # 2026-07-14 is a Tuesday (weekday 1).
+    entry = _entry(recurrence="weekly", run_at="2026-07-14T08:00:00", weekday=1)
+    missed = missed_occurrences(
+        [entry], since=datetime(2026, 7, 13, 0, 0), now=datetime(2026, 7, 27, 0, 0)
+    )
+    assert [m[1].date().isoformat() for m in missed] == ["2026-07-14", "2026-07-21"]
+
+
+def test_describe_missed_summary_and_empty() -> None:
+    from quill.core.radio.recording_schedule import describe_missed
+
+    assert describe_missed([]) == ""
+    entry = _entry(station_name="WQXR", recurrence="once", run_at="2026-07-14T08:00:00")
+    msg = describe_missed([(entry, datetime(2026, 7, 14, 8, 0).astimezone())])
+    assert "1 scheduled recording was missed" in msg
+    assert "WQXR" in msg
+
+
+def test_missed_occurrences_skips_disabled_and_empty_window() -> None:
+    disabled = _entry(recurrence="daily", run_at="2026-07-14T08:00:00", enabled=False)
+    assert (
+        missed_occurrences(
+            [disabled], since=datetime(2026, 7, 14, 7, 0), now=datetime(2026, 7, 16, 9, 0)
+        )
+        == []
+    )
+    active = _entry(recurrence="daily", run_at="2026-07-14T08:00:00")
+    # since >= now yields nothing (e.g. a blank "last seen" defaulting to now).
+    assert (
+        missed_occurrences(
+            [active], since=datetime(2026, 7, 16, 9, 0), now=datetime(2026, 7, 16, 9, 0)
+        )
+        == []
+    )
 
 
 def test_once_is_due_after_its_moment_and_not_fired_yet() -> None:
