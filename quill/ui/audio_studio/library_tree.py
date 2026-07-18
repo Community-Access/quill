@@ -26,6 +26,8 @@ from quill.core.audio_studio.library import (
     PINNED_VIEWS,
     BookEntry,
     LibraryState,
+    add_book,
+    view_query,
 )
 from quill.core.audio_studio.library import (
     move_to_folder as _move_to_folder,
@@ -65,7 +67,15 @@ def build_library_tree(
             select_item = item
 
     for view in PINNED_VIEWS:
-        tag(tree.AppendItem(root, view), ("view", view))
+        view_item = tree.AppendItem(root, view)
+        tag(view_item, ("view", view))
+        # Populate the view with the books its query returns. Without this the
+        # four views rendered as permanently empty headers -- the reason the
+        # home library looked broken. Books also appear under their folder
+        # below; a pinned view is a cross-cutting saved search, so a book can
+        # legitimately show under Favorites/Recently Played and under its folder.
+        for book in view_query(state, view):
+            tag(tree.AppendItem(view_item, book.title), ("book", book.path))
 
     folder_items: dict[str, object] = {"": root}
 
@@ -114,6 +124,11 @@ class LibraryTreeActions:
         *,
         announce: Callable[[str], None],
     ) -> bool:
+        # Ingest first: acting on a book (including an Inbox entry that only
+        # lives in the recent-files list) promotes it into the library, so the
+        # toggle actually takes effect and the announcement is truthful. Without
+        # this, favoriting an Inbox book announced success but changed nothing.
+        add_book(store, entry.path, entry.title)
         now_fav = _toggle_favorite(store, entry.path)
         verb = "Added" if now_fav else "Removed"
         prep = "to" if now_fav else "from"
@@ -167,6 +182,9 @@ class LibraryTreeActions:
             if not LibraryTreeActions.new_folder(parent, store, announce=lambda _m: None):
                 return False
             choice = store.folders[-1]
+        # Ingest first (see toggle_favorite): filing an Inbox book into a folder
+        # promotes it into the library so the move actually persists.
+        add_book(store, entry.path, entry.title)
         if choice == TOP_LEVEL_CHOICE:
             _move_to_folder(store, entry.path, "")
             announce(f"Filed {entry.title} at the top level")

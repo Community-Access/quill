@@ -97,6 +97,32 @@ def _find(state: LibraryState, path: str) -> BookEntry | None:
     return None
 
 
+def add_book(
+    state: LibraryState, path: str, title: str = "", *, now: float = 0.0
+) -> BookEntry:
+    """Add ``path`` to the library if absent; return its entry either way.
+
+    This is the library's ingestion point -- the reason the "Your books" tree
+    fills up instead of staying empty. Callers add a book when it is opened in
+    the Workbench, when a wizard export finishes, or when the user acts on an
+    Inbox entry (favorite / move / file into a folder), which promotes that
+    recently-opened file into the permanent library.
+
+    Idempotent and safe to call on every open: an existing book (matched by
+    ``path``) is returned unchanged except that a blank title is backfilled from
+    the supplied one. A new book is stamped with ``added_at = now``; the title
+    falls back to the file stem when none is given.
+    """
+    book = _find(state, path)
+    if book is not None:
+        if title and not book.title:
+            book.title = title
+        return book
+    entry = BookEntry(path=path, title=title or Path(path).stem, added_at=now)
+    state.books.append(entry)
+    return entry
+
+
 def record_play(state: LibraryState, path: str, *, now: float) -> None:
     """Stamp ``last_played_at`` on the matching book; no-op when absent."""
     book = _find(state, path)

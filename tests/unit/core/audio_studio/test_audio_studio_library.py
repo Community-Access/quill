@@ -8,6 +8,7 @@ from quill.core.audio_studio.library import (
     PINNED_VIEWS,
     BookEntry,
     LibraryState,
+    add_book,
     load_library,
     move_to_folder,
     record_play,
@@ -19,6 +20,35 @@ from quill.core.audio_studio.library import (
 
 def _state(books):
     return LibraryState(books=list(books), folders=[])
+
+
+def test_add_book_adds_new_entry() -> None:
+    s = _state([])
+    entry = add_book(s, "/books/a.m4b", "Alpha", now=123.0)
+    assert entry.path == "/books/a.m4b"
+    assert entry.title == "Alpha"
+    assert entry.added_at == 123.0
+    assert [b.path for b in s.books] == ["/books/a.m4b"]
+
+
+def test_add_book_is_idempotent() -> None:
+    s = _state([BookEntry(path="a", title="Alpha", favorite=True)])
+    same = add_book(s, "a", "Alpha")
+    assert same is s.books[0]  # returns the existing entry, not a duplicate
+    assert len(s.books) == 1
+    assert s.books[0].favorite is True  # unchanged
+
+
+def test_add_book_backfills_blank_title() -> None:
+    s = _state([BookEntry(path="a", title="")])
+    add_book(s, "a", "Real Title")
+    assert s.books[0].title == "Real Title"
+
+
+def test_add_book_defaults_title_to_file_stem() -> None:
+    s = _state([])
+    entry = add_book(s, "/x/My Book.m4b")
+    assert entry.title == "My Book"
 
 
 def test_toggle_favorite_round_trips(tmp_path: Path) -> None:
