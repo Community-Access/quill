@@ -43,3 +43,39 @@ def configure_logging(log_dir: Path) -> logging.handlers.QueueListener:
     )
     listener.start()
     return listener
+
+
+def relocate_log(listener: logging.handlers.QueueListener, log_dir: Path) -> None:
+    """Move the active ``quill.log`` to *log_dir* at runtime (quill-radio #5).
+
+    Swaps the listener's rotating-file handler for one writing into *log_dir*,
+    so a user who changes the log-folder preference sees new records land there
+    without a restart. The old handler is closed. A no-op (leaving the current
+    handler in place) if the new directory can't be created, so a bad path
+    never leaves logging broken.
+    """
+    try:
+        log_dir.mkdir(parents=True, exist_ok=True)
+        new_handler = logging.handlers.RotatingFileHandler(
+            log_dir / "quill.log",
+            maxBytes=5_000_000,
+            backupCount=5,
+            encoding="utf-8",
+        )
+    except OSError:
+        logging.getLogger(__name__).warning(
+            "Could not relocate the log to %s; keeping the current location.", log_dir
+        )
+        return
+    new_handler.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)s %(threadName)s %(name)s: %(message)s")
+    )
+    old_handlers = list(listener.handlers)
+    listener.stop()
+    listener.handlers = (new_handler,)
+    listener.start()
+    for handler in old_handlers:
+        try:
+            handler.close()
+        except OSError:
+            pass

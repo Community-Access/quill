@@ -123,6 +123,10 @@ class RadioHistory:
     #: time passed while it was closed (quill-radio #4). Empty = never recorded
     #: (a first run reports nothing).
     last_seen: str = ""
+    #: Where the standalone writes ``quill.log`` (quill-radio #5). "" = the
+    #: default ``<data_dir>/logs``. Set from the Preferences "Log folder" field;
+    #: applied at startup and relocated live when changed.
+    log_dir: str = ""
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -180,6 +184,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
+        history.log_dir = str(raw.get("log_dir", ""))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -218,6 +223,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,
+            "log_dir": history.log_dir,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

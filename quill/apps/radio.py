@@ -839,6 +839,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     _NOW_PLAYING_HELP,
                     history.now_playing_template,
                 ),
+                PreferenceText(
+                    "&Log folder:",
+                    "Where quill.log is written; leave blank for the default. "
+                    "Changing it moves the log immediately.",
+                    history.log_dir,
+                ),
             ],
             actions=[
                 PreferenceAction(
@@ -880,6 +886,19 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             self._radio_controller.set_output_device(chosen_device)
         new_template = text_values[0].strip()
         history.now_playing_template = new_template or _DEFAULT_NOW_PLAYING_TEMPLATE
+        new_log_dir = text_values[1].strip()
+        if new_log_dir != history.log_dir:
+            history.log_dir = new_log_dir
+            # Relocate the live log so new records land in the chosen folder now
+            # (quill-radio #5), not just next launch.
+            listener = getattr(self, "_log_listener", None)
+            if listener is not None:
+                from pathlib import Path
+
+                from quill.stability.logging_config import relocate_log
+
+                target = Path(new_log_dir) if new_log_dir else app_data_dir() / "logs"
+                relocate_log(listener, target)
         radio_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
@@ -1070,10 +1089,25 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
 
 def main() -> int:
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
+    # Configure file logging before the app comes up so startup records -- and
+    # everything radio debug mode raises to DEBUG -- land in quill.log
+    # (quill-radio #5). The folder is the log-location preference, or the
+    # default <data_dir>/logs.
+    from pathlib import Path
+
+    from quill.core.paths import app_data_dir
+    from quill.core.radio import history as radio_history
+    from quill.stability.logging_config import configure_logging
+
+    history = radio_history.load_history(app_data_dir())
+    log_dir = Path(history.log_dir) if history.log_dir else app_data_dir() / "logs"
+    log_listener = configure_logging(log_dir)
     app = wx.App()
     frame = RadioAppFrame(safe_mode=safe_mode)
+    frame._log_listener = log_listener
     frame.frame.Show()
     app.MainLoop()
+    log_listener.stop()
     return 0
 
 

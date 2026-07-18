@@ -58,6 +58,13 @@ def test_check_updates_on_startup_round_trips(tmp_path: Path) -> None:
     assert loaded.last_update_check == "2026-07-16T00:00:00"
 
 
+def test_log_dir_round_trips_and_defaults_empty(tmp_path: Path) -> None:
+    # quill-radio #5: the settable log-folder preference.
+    assert load_history(tmp_path).log_dir == ""
+    save_history(tmp_path, RadioHistory(log_dir="D:/radio-logs"))
+    assert load_history(tmp_path).log_dir == "D:/radio-logs"
+
+
 def test_last_seen_round_trips_and_defaults_empty(tmp_path: Path) -> None:
     # quill-radio #4: the "last running" stamp for the missed-recording report.
     assert load_history(tmp_path).last_seen == ""
