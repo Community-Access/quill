@@ -528,3 +528,28 @@ def test_wav_output_actually_lands_in_audio_output_subfolder(tmp_path: Path, mon
 
     assert (tmp_path / "Audio Output" / "a.wav").is_file()
     assert not (tmp_path / "a.wav").exists()
+
+
+def test_engine_available_kokoro_uses_true_readiness(monkeypatch) -> None:
+    """The wizard's engine map reports Kokoro ready only when it can actually
+    synthesize (models present AND kokoro_onnx importable), matching the Speech
+    Hub -- never the files-only check that let it offer an unusable Kokoro."""
+    import quill.core.read_aloud as ra
+    from quill.ui import batch_speech_runner as bsr
+
+    monkeypatch.setattr(ra, "discover_dectalk_executable", lambda *_a, **_k: None)
+    monkeypatch.setattr(ra, "discover_espeak_executable", lambda *_a, **_k: None)
+    monkeypatch.setattr(ra, "discover_piper_executable", lambda *_a, **_k: None)
+    monkeypatch.setattr(ra, "macos_say_available", lambda: False)
+    frame = SimpleNamespace(
+        settings=SimpleNamespace(
+            read_aloud_dectalk_executable="", read_aloud_espeak_executable=""
+        )
+    )
+
+    monkeypatch.setattr(ra, "kokoro_engine_ready", lambda *_a, **_k: True)
+    assert bsr._engine_available(frame)["kokoro"] is True
+
+    # Model files present but the package cannot import -> not offered.
+    monkeypatch.setattr(ra, "kokoro_engine_ready", lambda *_a, **_k: False)
+    assert bsr._engine_available(frame)["kokoro"] is False

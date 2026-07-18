@@ -110,7 +110,7 @@ def _engine_available(frame: Any) -> dict[str, bool]:
         discover_dectalk_executable,
         discover_espeak_executable,
         discover_piper_executable,
-        kokoro_onnx_ready,
+        kokoro_engine_ready,
         macos_say_available,
     )
 
@@ -119,7 +119,15 @@ def _engine_available(frame: Any) -> dict[str, bool]:
         "sapi5": True,
         "dectalk": discover_dectalk_executable(s.read_aloud_dectalk_executable) is not None,
         "piper": discover_piper_executable() is not None,
-        "kokoro": kokoro_onnx_ready(),
+        # Kokoro must be reported ready only when it can ACTUALLY synthesize --
+        # model files present AND the kokoro_onnx package importable
+        # (kokoro_engine_ready), never the files-only kokoro_onnx_ready. Using
+        # the files-only check here let the wizard offer Kokoro as a usable voice
+        # when the package install had been skipped or failed, so a batch chose
+        # Kokoro and then failed per document at synthesis time. This is the same
+        # true-readiness check the Speech Hub and the editor's own engine map
+        # use, so all three surfaces now agree on whether Kokoro is usable.
+        "kokoro": kokoro_engine_ready(),
         "espeak": discover_espeak_executable(s.read_aloud_espeak_executable) is not None,
         "macos": macos_say_available(),
     }
