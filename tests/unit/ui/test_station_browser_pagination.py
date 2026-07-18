@@ -55,12 +55,16 @@ class _FakeButton:
 class _FakeList:
     def __init__(self) -> None:
         self.selected: int | None = None
+        self.focused = False
 
     def Select(self, index: int) -> None:  # noqa: N802
         self.selected = index
 
     def Focus(self, index: int) -> None:  # noqa: N802
         self.selected = index
+
+    def SetFocus(self) -> None:  # noqa: N802
+        self.focused = True
 
     def EnsureVisible(self, index: int) -> None:  # noqa: N802
         pass

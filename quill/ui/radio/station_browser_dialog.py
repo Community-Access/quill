@@ -675,6 +675,12 @@ class StationBrowserDialog:
         self._announce(
             _search_result_summary(len(self._search_results), more=self._search_more_available)
         )
+        # Land keyboard focus in the results list when a search returns something,
+        # so the user is placed on the first result (already selected/focused as
+        # row 0 by _render_results) instead of being left on the search box having
+        # to Tab into the list.
+        if self._current_results:
+            self._results.SetFocus()
 
     def _on_more_stations(self, _event: object) -> None:
         """Fetch and append the next page of RadioBrowser results (#1064)."""
