@@ -38,6 +38,7 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
         compressor_enabled=True,
         now_playing_template="{title}[ by {artist}]",
         debug_mode=False,
+        log_dir="",
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
