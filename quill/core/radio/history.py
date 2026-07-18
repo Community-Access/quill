@@ -127,6 +127,11 @@ class RadioHistory:
     #: default ``<data_dir>/logs``. Set from the Preferences "Log folder" field;
     #: applied at startup and relocated live when changed.
     log_dir: str = ""
+    #: Whether to resume an in-progress recording found at launch (R3).
+    #: ``"ask"`` shows the Resume/Skip/Always-resume dialog; ``"always"``
+    #: auto-resumes without prompting; ``"never"`` silently skips. Persisted so
+    #: the user's "Always resume" / "Never resume" choice sticks across launches.
+    recording_resume_choice: str = "ask"
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -185,6 +190,10 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
         history.log_dir = str(raw.get("log_dir", ""))
+        resume_choice = str(raw.get("recording_resume_choice", "ask"))
+        history.recording_resume_choice = (
+            resume_choice if resume_choice in ("ask", "always", "never") else "ask"
+        )
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -224,6 +233,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,
             "log_dir": history.log_dir,
+            "recording_resume_choice": history.recording_resume_choice,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

@@ -103,11 +103,179 @@ class RadioMixin:
             recorder=self._radio_recorder,
             recording_settings=self._radio_recording_settings,
             on_fired=self._on_radio_scheduled_recording_fired,
+            on_busy=self._on_radio_scheduled_recording_busy,
             filter_graph_provider=self._radio_recording_filter_graph,
         )
         self._radio_wake_watcher = wake_timer.WakeUpWatcher(
             app_data_dir(), on_wake=self._on_radio_wake_up
         )
+        # R2/11.6: announce scheduled recordings missed while QUILL was closed
+        # (the embedded host previously had no missed reporting), then stamp
+        # last_seen. Deferred so it never blocks the window coming up.
+        self._wx.CallAfter(self._report_missed_recordings)
+        # R3: reconcile temp-dir strays from a crash and offer to resume an
+        # in-progress recording found via the persisted marker. Runs after the
+        # missed report, deferred so the window is up first.
+        self._wx.CallAfter(self._reconcile_and_offer_radio_resume)
+        # R3: stamp last_seen once a minute so a crash still leaves an accurate
+        # missed-recording window (the close-path stamp alone is lost on a kill).
+        self._radio_last_seen_timer = self._wx.Timer(self.frame)
+        self.frame.Bind(
+            self._wx.EVT_TIMER,
+            lambda _e: self._stamp_radio_last_seen(),
+            self._radio_last_seen_timer,
+        )
+        self._radio_last_seen_timer.Start(60_000)
+
+    def _shutdown_radio(self) -> None:
+        """Tear down every radio subsystem and stamp last_seen (R2/11.6).
+
+        Consolidated so the embedded close path is one safe call instead of a
+        per-subsystem block that grows each time radio gains a subsystem
+        (GATE-11: ``main_frame.py`` must not grow). Each component is guarded so
+        one failure cannot block the rest -- the same isolation the per-line
+        ``_safely`` calls gave. The standalone host keeps its own close path.
+        """
+        for attr, _label in (
+            ("_radio_controller", "radio player"),
+            ("_radio_recorder", "radio recorder"),
+            ("_radio_scheduler", "radio recording scheduler"),
+            ("_radio_wake_watcher", "radio wake-up timer"),
+        ):
+            obj = getattr(self, attr, None)
+            shutdown = getattr(obj, "shutdown", None)
+            if callable(shutdown):
+                try:
+                    shutdown()
+                except Exception:  # noqa: BLE001 - shutdown must never block exit
+                    pass
+        # R3: stop the periodic last_seen timer.
+        timer = getattr(self, "_radio_last_seen_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001
+                pass
+        # R3: a clean close clears the active-recording marker so the next launch
+        # does not offer a stale resume (only a crash/kill leaves it behind).
+        self._clear_radio_recording_marker()
+        # Stamp that QUILL Radio was running now so the next launch can report
+        # scheduled recordings missed while it was closed.
+        self._stamp_radio_last_seen()
+
+    # -- R3: resume across restart -------------------------------------------
+
+    def _reconcile_and_offer_radio_resume(self) -> None:
+        """Move crash-orphaned temp files home, then offer to resume an
+        in-progress recording found via the persisted marker (R3).
+
+        Runs once at launch (deferred). Reconcile is always done and announced;
+        resume honors the remembered choice (ask/always/never) and the grace
+        window. A marker past its grace is cleared and skipped.
+        """
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.recording_resume import (
+            load_marker,
+            reconcile_temp_strays,
+            remaining_minutes,
+            within_resume_grace,
+        )
+
+        # 1) Reconcile temp-dir strays from a crash (R3/12, 13.6).
+        try:
+            moved = reconcile_temp_strays(self._radio_recording_settings)
+        except Exception:  # noqa: BLE001 - reconcile must never block launch
+            moved = []
+        if moved:
+            self._announce(
+                f"Recovered {len(moved)} recording file(s) left in the temp "
+                f"folder from an earlier crash; moved to your recordings folder."
+            )
+
+        # 2) Offer to resume an in-progress recording found via the marker.
+        try:
+            marker = load_marker(app_data_dir())
+        except Exception:  # noqa: BLE001
+            marker = None
+        if marker is None or not marker.stream_url:
+            return
+        if not within_resume_grace(marker):
+            # The show is long over: clear the stale marker and move on.
+            self._clear_radio_recording_marker()
+            return
+        left = remaining_minutes(marker)
+        choice = self._radio_history.recording_resume_choice
+        if choice == "never":
+            self._clear_radio_recording_marker()
+            return
+        if choice == "always":
+            self._start_radio_resume(marker, left)
+            return
+        # "ask": show the accessible resume dialog.
+        self._ask_radio_resume(marker, left)
+
+    def _ask_radio_resume(self, marker: object, left: int) -> None:
+        from quill.ui.radio.resume_recording_dialog import ResumeRecordingDialog
+
+        station = getattr(marker, "station_name", "") or "the stream"
+        end = getattr(marker, "scheduled_end", "")
+        result = ResumeRecordingDialog(
+            self.frame,
+            station_name=station,
+            remaining_minutes=left,
+            scheduled_end=end,
+            announce_cb=self._announce,
+        ).show()
+        if result is None:
+            return  # dialog dismissed/cancelled -> skip, leave marker to age out
+        action, remember = result
+        if remember:
+            self._radio_history.recording_resume_choice = (
+                "always" if action == "resume" else "never"
+            )
+            from quill.core.paths import app_data_dir
+            from quill.core.radio import history as radio_history
+
+            radio_history.save_history(app_data_dir(), self._radio_history)
+        if action == "resume":
+            self._start_radio_resume(marker, left)
+        else:
+            self._clear_radio_recording_marker()
+
+    def _start_radio_resume(self, marker: object, left: int) -> None:
+        """Resume the marker's recording for the remaining minutes (R3)."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.recording_resume import clear_marker
+        from quill.core.speech.ffmpeg import ffmpeg_available
+
+        if not ffmpeg_available():
+            self._announce("Cannot resume recording: FFmpeg is not installed.")
+            self._clear_radio_recording_marker()
+            return
+        if self._radio_recorder.is_recording:
+            # Something is already recording (e.g. a schedule fired on launch);
+            # don't clobber it. The marker will age out or be cleared on next stop.
+            return
+        station_name = getattr(marker, "station_name", "") or "Recording"
+        stream_url = getattr(marker, "stream_url", "") or ""
+        if not stream_url:
+            self._clear_radio_recording_marker()
+            return
+        try:
+            self._radio_recorder.start(
+                station_name=station_name,
+                stream_url=stream_url,
+                settings=self._radio_recording_settings,
+                duration_minutes=max(1, left),
+                filter_graph=self._radio_recording_filter_graph(),
+            )
+            self._announce(f"Resuming recording of {station_name} for {max(1, left)} minute(s).")
+        except Exception as exc:  # noqa: BLE001 - a failed resume is announced, not fatal
+            self._announce(f"Could not resume the recording: {exc}")
+            try:
+                clear_marker(app_data_dir())
+            except Exception:  # noqa: BLE001
+                pass
 
     def _stop_podcast_before_radio(self) -> None:
         """Never double-play: starting a radio stream silences a playing
@@ -135,8 +303,55 @@ class RadioMixin:
     def _apply_radio_recording_changed(self, is_recording: bool, destination: Path | None) -> None:
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
-        if not is_recording and destination is not None:
-            self._announce(f"Recording saved: {destination.name}")
+        if is_recording:
+            # R3: persist an active-recording marker so a restart can offer to
+            # resume. Built from the recorder's live state (the temp path, the
+            # final destination, the start time, and the duration cap) so the
+            # marker is correct even when recording to a temp dir.
+            self._persist_radio_recording_marker()
+        else:
+            # R3: a clean stop clears the marker -- only a crash/kill leaves it
+            # behind for the next launch to find.
+            self._clear_radio_recording_marker()
+            if destination is not None:
+                self._announce(f"Recording saved: {destination.name}")
+
+    def _persist_radio_recording_marker(self) -> None:
+        """Write the active-recording marker from the recorder's live state (R3)."""
+        from datetime import timedelta
+
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.recording_resume import ActiveRecordingMarker, save_marker
+
+        rec = self._radio_recorder
+        started = rec.current_started_at
+        minutes = rec.current_minutes
+        if started is None or minutes <= 0:
+            return
+        marker = ActiveRecordingMarker(
+            station_name=rec.current_station_name,
+            stream_url=rec.current_stream_url,
+            temp_path=str(rec.current_destination or ""),
+            output_path=str(rec.current_final_destination or ""),
+            started_at=started.isoformat(),
+            scheduled_end=(started + timedelta(minutes=minutes)).isoformat(),
+            duration_minutes=minutes,
+            entry_id="",
+        )
+        try:
+            save_marker(app_data_dir(), marker)
+        except Exception:  # noqa: BLE001 - a marker we cannot persist just means no resume offer
+            pass
+
+    def _clear_radio_recording_marker(self) -> None:
+        """Remove the active-recording marker (R3, clean-stop path)."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.recording_resume import clear_marker
+
+        try:
+            clear_marker(app_data_dir())
+        except Exception:  # noqa: BLE001 - best-effort
+            pass
 
     def _on_radio_recording_reconnect(self, attempt: int, maximum: int) -> None:
         self._wx.CallAfter(
@@ -155,6 +370,63 @@ class RadioMixin:
         else:
             self._announce(f"Scheduled recording started: {station_name}")
         self._refresh_statusbar()
+
+    def _on_radio_scheduled_recording_busy(self, entry: object) -> None:
+        """A scheduled fire was deferred because the recorder is busy (R2/11.3):
+        the entry is held pending and retried within its window instead of being
+        burned. Announced once per deferral so the user knows it is queued."""
+        self._wx.CallAfter(
+            self._announce,
+            f"Scheduled recording of {getattr(entry, 'station_name', '')} is queued; "
+            "it will start when the current recording finishes.",
+        )
+
+    def _stamp_radio_last_seen(self) -> None:
+        """Record that QUILL Radio was running *now* (R2/11.6 + R3).
+
+        The scheduler is in-process, so missed-recording reporting can only
+        cover time QUILL was actually open. Stamping ``last_seen`` on close (and
+        periodically while open) lets the next launch report exactly the window
+        the app was down. Shared by embedded QUILL and standalone Quill Radio.
+        """
+        from datetime import datetime
+
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        history.last_seen = datetime.now().isoformat()
+        radio_history.save_history(app_data_dir(), history)
+
+    def _report_missed_recordings(self) -> None:
+        """Announce scheduled recordings whose time passed while closed (#4).
+
+        Shared by embedded QUILL and standalone Quill Radio (R2/11.6: previously
+        only the standalone app reported missed recordings). Compares the
+        schedule against the window the app was down (``last_seen`` -> now) and
+        speaks a one-line summary; occurrences whose window is still open at
+        launch are excluded (R2/11.7) -- the scheduler will start those late.
+        """
+        from datetime import datetime
+
+        from quill.core.radio.recording_schedule import describe_missed, missed_occurrences
+
+        history = self._radio_history
+        now = datetime.now()
+        since = now
+        if history.last_seen:
+            try:
+                since = datetime.fromisoformat(history.last_seen)
+            except ValueError:
+                since = now
+        message = describe_missed(
+            missed_occurrences(self._radio_scheduler.entries, since=since, now=now)
+        )
+        if message:
+            self._announce(message)
+        # Stamp that we were running now (R2/11.6): the next launch reports
+        # only the window the app was actually down.
+        self._stamp_radio_last_seen()
 
     def _radio_no_ffmpeg_message(self) -> str:
         """Where to get ffmpeg, phrased for the hosting app: QUILL points at
@@ -637,13 +909,19 @@ class RadioMixin:
         if tray_icon is None:
             return
         wx = self._wx
-        controller = getattr(self, "_radio_controller", None)
-        text = controller.state.status_text if controller is not None else ""
         # The tray icon's tooltip is also its accessible name: brand it with
         # the hosting app's own title ("Quill Radio" standalone, "Quill"
         # embedded) so tray navigation never reads the wrong product.
         app_name = self.frame.GetTitle() or "Quill"
-        tooltip = f"{app_name} - {text}" if text and "stopped" not in text.lower() else app_name
+        status = self._radio_status_text()  # carries "(recording)" when recording
+        recorder = getattr(self, "_radio_recorder", None)
+        recording = recorder is not None and recorder.is_recording
+        # R1/10.5: a recording always shows in the tray, even while playback is
+        # stopped; idle (stopped, not recording) stays short (just the app name).
+        if status and (recording or "stopped" not in status.lower()):
+            tooltip = f"{app_name} - {status}"
+        else:
+            tooltip = app_name
         try:
             icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)

@@ -76,6 +76,24 @@ def build_filename(pattern: str, *, station: str, when: datetime) -> str:
     return sanitized or "recording"
 
 
+def uniquify(path: Path) -> Path:
+    """Return a path that does not yet exist, appending ``" (2)"``, ``" (3)"``
+    before the extension (R4/13.2). Replaces the old unconditional ``-y``
+    overwrite, so a user pattern without ``{time}`` no longer silently destroys
+    an earlier recording of the same name."""
+    if not path.exists():
+        return path
+    stem = path.stem
+    suffix = path.suffix
+    parent = path.parent
+    for n in range(2, 1000):
+        candidate = parent / f"{stem} ({n}){suffix}"
+        if not candidate.exists():
+            return candidate
+    # Pathological fallback (999 same-name files): keep the original; -y is gone
+    # so ffmpeg would refuse to overwrite, but we never expect to reach here.
+    return path
+
 def build_record_command(
     ffmpeg: str,
     stream_url: str,
@@ -140,7 +158,7 @@ def build_record_command(
         args.extend(["-c:a", _CODECS.get(format, "libmp3lame")])
         if format in ("mp3", "ogg"):
             args.extend(["-b:a", f"{max(32, bitrate_kbps)}k"])
-    args.extend(["-t", str(max(1, duration_seconds)), "-y", str(out_path)])
+    args.extend(["-t", str(max(1, duration_seconds)), str(out_path)])
     return args
 
 

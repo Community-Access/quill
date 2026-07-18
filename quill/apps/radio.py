@@ -97,30 +97,8 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
-        wx.CallAfter(self._report_missed_recordings)
-
-    def _report_missed_recordings(self) -> None:
-        """Announce scheduled recordings whose time passed while closed (#4)."""
-        from datetime import datetime
-
-        from quill.core.paths import app_data_dir
-        from quill.core.radio import history as radio_history
-        from quill.core.radio.recording_schedule import describe_missed, missed_occurrences
-
-        history = self._radio_history
-        now = datetime.now()
-        if history.last_seen:
-            try:
-                since = datetime.fromisoformat(history.last_seen)
-            except ValueError:
-                since = now
-            message = describe_missed(
-                missed_occurrences(self._radio_scheduler.entries, since=since, now=now)
-            )
-            if message:
-                self._announce(message)
-        history.last_seen = now.isoformat()
-        radio_history.save_history(app_data_dir(), history)
+        # Missed-recording reporting + startup reconcile/resume live in
+        # RadioMixin._init_radio now (R2/11.6 + R3), so both hosts get them once.
 
     # -- main panel -------------------------------------------------------------
     #
@@ -1065,11 +1043,18 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             self._send_to_tray()
             return
         # Stamp when the app was last running, so the next launch can report
-        # scheduled recordings missed while it was closed (#4).
-        from datetime import datetime
-
-        self._radio_history.last_seen = datetime.now().isoformat()
-        radio_history.save_history(app_data_dir(), self._radio_history)
+        # scheduled recordings missed while it was closed (#4). Shared with
+        # embedded QUILL via RadioMixin (R2/11.6). R3: also stop the periodic
+        # last_seen timer and clear the active-recording marker so a clean close
+        # is not mistaken for a crash on the next launch.
+        self._stamp_radio_last_seen()
+        timer = getattr(self, "_radio_last_seen_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001
+                pass
+        self._clear_radio_recording_marker()
         for shutdown_fn in (
             getattr(self._radio_controller, "shutdown", None),
             getattr(self._radio_recorder, "shutdown", None),

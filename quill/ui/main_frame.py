@@ -3938,18 +3938,10 @@ class MainFrame(
         _safely("model lifecycle timer", self._stop_lifecycle_sweep_timer)
         _safely("global hotkeys", self._unregister_global_hotkeys)
         _safely("tray icon", self._remove_tray_icon)
-        radio_controller = getattr(self, "_radio_controller", None)
-        if radio_controller is not None:
-            _safely("radio player", radio_controller.shutdown)
-        radio_recorder = getattr(self, "_radio_recorder", None)
-        if radio_recorder is not None:
-            _safely("radio recorder", radio_recorder.shutdown)
-        radio_scheduler = getattr(self, "_radio_scheduler", None)
-        if radio_scheduler is not None:
-            _safely("radio recording scheduler", radio_scheduler.shutdown)
-        radio_wake = getattr(self, "_radio_wake_watcher", None)
-        if radio_wake is not None:
-            _safely("radio wake-up timer", radio_wake.shutdown)
+        # Radio teardown (player, recorder, scheduler, wake timer, last_seen
+        # stamp) is consolidated in RadioMixin so this frozen module does not
+        # grow a per-subsystem block each time radio gains a subsystem (GATE-11).
+        _safely("radio", self._shutdown_radio)
         podcast_controller = getattr(self, "_podcast_controller", None)
         if podcast_controller is not None:
             _safely("podcast player", podcast_controller.shutdown)

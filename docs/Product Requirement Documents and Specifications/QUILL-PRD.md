@@ -4159,15 +4159,97 @@ auto-reconnect continuation files (stored in `_active_params`) so a resumed
 recording never re-probes or switches container; a missing/failed `ffprobe`
 degrades to `.mka` rather than blocking the recording. `RecordingScheduler` is an in-process polling thread
 (`_POLL_SECONDS = 20`) — deliberately not an OS-level scheduled task; "while
-QUILL is running" is the explicit, simpler scope requested, with no
-catch-up if QUILL wasn't open at the scheduled moment. Schedule entries
-support `once`/`daily`/`weekly` recurrence, guarded by a `last_fired_date`
-so the same occurrence never double-fires. Recording reuses the existing,
+QUILL is running" is the explicit, simpler scope requested. Schedule entries
+support `once`/`daily`/`weekly` recurrence, each carrying its own `ZoneInfo`
+time zone (record an Eastern show at its Eastern time from any coast;
+daylight saving handled automatically). Recording reuses the existing,
 already-optional `ffmpeg` component (`quill.core.speech.ffmpeg`) rather than
 introducing a second ffmpeg dependency path, and the Media submenu's
 Record Now/Schedule Recording/Recording Settings items are hidden outright
 (not merely disabled) when `ffmpeg_available()` is false — closing a
 gap from the original Phase 1 ship where recording did not yet exist to gate.
+
+**Recording reliability — resume across restart, the scheduler window
+model, and pipeline hardening (R1-R4, 2026-07-17).** A reported round of
+bugs around the Recordings list, the scheduler, and reconnects was closed
+in four phases (audit + decisions in `x.md` Part 2; all lands in `quill/`,
+none vendored into QUILL-AS):
+
+- *R1 — display and dialog.* `RecordingsManagerDialog` refresh is now an
+  in-place diff keyed by full path (no `DeleteAllItems`; a no-op when the
+  snapshot is unchanged; selection/focus/scroll preserved), so a screen
+  reader is no longer yanked to the top mid-read. The active recording is
+  counted from `RadioRecorder.is_recording` + `current_destination`
+  regardless of folder (a recording writing to a temp dir is no longer
+  invisible; `recordings_index.py`), a firing schedule is no longer
+  double-counted, completed `once` entries drop out of the scheduled count,
+  the active row shows a live elapsed time, scheduled entries show their
+  zone-labeled times, and the tray tooltip carries "(recording)".
+- *R2 — scheduler reliability.* `recording_schedule.py` was rewritten onto
+  a next-due-timestamp window model: an entry is due from `start` through
+  `start + duration` (`is_due`), so a late arrival starts with the remaining
+  minutes (`remaining_minutes`) and launch-time catch-up is free
+  (`missed_occurrences` filters out windows still open at `now`, so catch-up
+  is not double-announced). `last_fired` is stamped by entry id only on a
+  successful start (`_fire`); a failure retries on the next poll within the
+  window; `once` entries auto-disable after firing; a same-minute conflict
+  (two schedules due while the recorder is busy) defers the second via
+  `on_busy` instead of burning it. The scheduler's `self.entries` is an
+  `RLock` shared with the UI thread and `_run` is wrapped in a catch-log-
+  continue so the thread can never die silently. Missed-recording reporting
+  and `last_seen` stamping moved into the shared `RadioMixin`
+  (`_report_missed_recordings`, `_stamp_radio_last_seen`) so embedded QUILL
+  gets the same behavior as standalone Quill Radio.
+- *R3 — resume across restart (new feature).* The new wx-free
+  `quill/core/radio/recording_resume.py` defines `ActiveRecordingMarker`
+  (station, url, temp/output path, started_at, scheduled_end, duration,
+  entry id), with strict-discard `from_dict` (a corrupt marker yields
+  `None`, never a bogus resume), `load/save/clear_marker`,
+  `remaining_minutes(marker, now)` floored at 0, `within_resume_grace`
+  (`DEFAULT_RESUME_GRACE_MINUTES = 10`), and `reconcile_temp_strays` (moves
+  recording-extension files from `temp_dir` to `dest_root` when their mtime
+  is older than `_STILL_WRITING_SECS = 30`; leaves a file still being written
+  untouched; ignores non-recording files; no-op when no temp dir or temp ==
+  dest). `RadioHistory` gained `recording_resume_choice` (`ask`|`always`|
+  `never`, default `ask`; bad value degrades to `ask`). The `RadioMixin`
+  persists the marker from the recorder's live state on start
+  (`_persist_radio_recording_marker`, via `_apply_radio_recording_changed`)
+  and clears it on a clean stop — a crash leaves it for next launch. At
+  startup `_reconcile_and_offer_radio_resume` (a `wx.CallAfter`) reconciles
+  temp strays, then per `recording_resume_choice` asks/always/never offers
+  to resume for the remaining minutes via the new
+  `quill/ui/radio/resume_recording_dialog.py` (Resume = affirmative/Enter,
+  Skip = Escape, "Don't ask me again" checkbox; `None` when dismissed is
+  treated as skip and the marker is left to age out past grace). A periodic
+  `_radio_last_seen_timer` (60 s) keeps the missed-recording window accurate
+  across a crash. The dialog goes through the shared `_show_modal_dialog` /
+  `apply_modal_ids` contract and is registered in the dialog inventory.
+- *R4 — pipeline hardening.* (1) Absolute end-time across reconnects:
+  `RadioRecorder` stores `_scheduled_end = started + duration` on a fresh
+  start, and `_maybe_reconnect` records only the remaining minutes
+  (`ceil((end - now)/60)`, floored at 1; gives up when `<= 0`), never a fresh
+  full duration. (2) `uniquify()` (in `recording_commands.py`) replaces the
+  unconditional `-y` overwrite (appends `" (2)".." (999)"` before the
+  extension; returns the path unchanged if it does not exist) and
+  continuation parts keep the original start timestamp in their
+  `{date}`/`{time}` tokens (grouped by name, `" (part N)"` appended) instead
+  of rebuilding from `now()`. (3) Fatal vs transient: `_drain_stderr`
+  captures a `_stderr_tail` (`deque(maxlen=32)`); `_FATAL_STDERR_RE` (no
+  space left / disk full / enospc / read-only / HTTP 4xx / 403 / 404 / 410 /
+  451) classifies a drop as fatal, and `_monitor` then skips
+  `_maybe_reconnect` — a stream the server took down is gone; reconnecting
+  only wastes the budget and spams continuation files. A 5xx / network
+  timeout / bare EOF stays transient and is retried. (4) Host-tied child +
+  off-thread stop: `_assign_kill_on_close_job` puts ffmpeg in a Windows job
+  object with `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` (ctypes against
+  `kernel32`, best-effort — `None` off-Windows or on any failure, degrading
+  to the pre-job behavior), so a crashed/killed QUILL closes the handle and
+  the OS kills the child instead of stranding a bare ffmpeg in the temp dir.
+  `stop()` sends `q` synchronously (a pipe write) and spawns a daemon
+  `_await_stop` thread for the wait/terminate fallback (`_STOP_GRACE_SECONDS`
+  then `terminate()`), so the UI/close path never blocks. `_monitor` closes
+  the job handle after `process.wait()` returns (child already dead) so a
+  long session leaks no handles.
 
 **The mpv playback engine (`quill/ui/radio/mpv_radio_engine.py` +
 `player_controller.py`, #1076).** Radio has two backends.

@@ -21,15 +21,18 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 import logging
+import math
 import os
 import re
 import shutil
 import subprocess
 import threading
+from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
+from typing import cast
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
@@ -42,6 +45,7 @@ from quill.core.radio.recording_commands import (
     build_record_command,
     parse_probe_codec,
     raw_capture_extension,
+    uniquify,
 )
 from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg, find_ffprobe
 from quill.stability.redaction import format_args_for_log, redact_source_tokens
@@ -62,6 +66,7 @@ __all__ = [
     "parse_probe_codec",
     "raw_capture_extension",
     "save_recording_settings",
+    "uniquify",
 ]
 
 logger = logging.getLogger(__name__)
@@ -70,6 +75,15 @@ logger = logging.getLogger(__name__)
 #: problem worth seeing without debug mode); everything else logs at DEBUG.
 _STDERR_ERROR_RE = re.compile(
     r"(?i)\b(error|failed|invalid|unable|no such|not found|denied|refused|timed out)\b"
+)
+
+#: R4/13.3 -- ffmpeg stderr markers that mean the failure is *fatal* (the stream
+#: is gone or the disk is full), not a transient drop worth spending a reconnect
+#: attempt on. A 5xx, a network timeout, or a bare EOF is treated as transient.
+_FATAL_STDERR_RE = re.compile(
+    r"(?i)(no space left|disk full|enospc|read-only|"
+    r"server returned 40[0-9]|http error 40[0-9]|http/[0-9.]+ 40[0-9]|"
+    r"403 forbidden|404 not found|410 gone|451 unavailable)"
 )
 
 _PROBE_TIMEOUT_SECONDS = 10.0
@@ -192,6 +206,21 @@ class RadioRecorder:
         self._station_name: str = ""
         self._user_stopped = False
         self._reconnect_attempt = 0
+        #: When the current recording started (R1/10.4 elapsed readout,
+        #: R3 resume marker). ``None`` while idle.
+        self._started_at: datetime | None = None
+        #: The absolute end moment of the current recording
+        #: (``_started_at + duration_minutes``), preserved across reconnects so a
+        #: continuation part records only the remaining time, not a fresh full
+        #: duration (R4/13.1). ``None`` while idle.
+        self._scheduled_end: datetime | None = None
+        #: Recent ffmpeg stderr lines (R4/13.3), inspected on a drop to decide
+        #: fatal (disk full / HTTP 4xx -> do not reconnect) vs transient.
+        self._stderr_tail: deque[str] = deque(maxlen=32)
+        #: Windows job object keeping the ffmpeg child alive only as long as the
+        #: host is alive (R4/13.5); a crashed host closes the handle and the OS
+        #: kills the child. ``None`` off-Windows or if the job could not be created.
+        self._job: object | None = None
         #: (station_name, stream_url, settings, duration_minutes, filter_graph,
         #: resolved_extension) of the active recording, kept so a reconnect can
         #: restart with the same shape -- including any Sound Enhancements filter
@@ -213,6 +242,37 @@ class RadioRecorder:
     def current_station_name(self) -> str:
         with self._lock:
             return self._station_name
+
+    @property
+    def current_stream_url(self) -> str:
+        """The stream URL of the active recording (R1/10.2 double-count guard)."""
+        with self._lock:
+            return self._active_params[1] if self._active_params is not None else ""
+
+    @property
+    def current_final_destination(self) -> Path | None:
+        """Where the finished file belongs (differs from current_destination
+        only with a temp dir set, #5). R3's resume marker reads this."""
+        with self._lock:
+            return self._final_destination
+
+    @property
+    def current_minutes(self) -> int:
+        """The duration cap (minutes) of the active recording (R3 marker)."""
+        with self._lock:
+            return self._active_params[3] if self._active_params is not None else 0
+
+    @property
+    def current_filter_graph(self) -> str:
+        """The filter graph of the active recording (R3 marker)."""
+        with self._lock:
+            return self._active_params[4] if self._active_params is not None else ""
+
+    @property
+    def current_started_at(self) -> datetime | None:
+        """When the active recording started (R1 elapsed, R3 marker)."""
+        with self._lock:
+            return self._started_at
 
     def start(
         self,
@@ -258,9 +318,16 @@ class RadioRecorder:
                         format_args_for_log([str(temp_root)]),
                         exc,
                     )
-            filename = build_filename(
-                settings.filename_pattern, station=station_name, when=datetime.now()
+            # R4/13.4: a continuation part keeps the *original* start timestamp in
+            # its {date}/{time} tokens (so parts 1 and 2 group by name), not a
+            # fresh now(). The original start is preserved across reconnects
+            # (only a _continuation_part==0 start resets _started_at below).
+            when = (
+                self._started_at
+                if (_continuation_part > 0 and self._started_at)
+                else datetime.now()
             )
+            filename = build_filename(settings.filename_pattern, station=station_name, when=when)
             if _continuation_part > 0:
                 filename = f"{filename} (part {_continuation_part + 1})"
             # Raw capture: the file extension follows the server's own codec
@@ -273,8 +340,14 @@ class RadioRecorder:
             else:
                 extension = settings.format
                 record_filter = filter_graph
-            final_destination = dest_root / f"{filename}.{extension}"
-            destination = record_root / f"{filename}.{extension}"
+            final_destination = uniquify(dest_root / f"{filename}.{extension}")
+            # The temp file (if any) shares the unique name so the post-stop move
+            # lands on the same final path; uniquify against the temp dir too.
+            destination = (
+                uniquify(record_root / f"{filename}.{extension}")
+                if record_root != dest_root
+                else final_destination
+            )
             minutes = (
                 duration_minutes if duration_minutes is not None else settings.max_duration_minutes
             )
@@ -310,6 +383,12 @@ class RadioRecorder:
                 )
             except OSError as exc:
                 raise RecordingError(f"Could not start ffmpeg: {exc}") from exc
+            # R4/13.5: on Windows, put the ffmpeg child in a job object that dies
+            # with the host (a crash/kill of QUILL closes the handle and the OS
+            # kills the child), so a crashed host can no longer strand a bare
+            # ffmpeg writing to the temp dir. Best-effort: a failure degrades to
+            # the pre-job behavior, never blocks the recording.
+            self._job = _assign_kill_on_close_job(process)
             self._process = process
             self._destination = destination
             self._final_destination = final_destination
@@ -317,6 +396,10 @@ class RadioRecorder:
             self._user_stopped = False
             if _continuation_part == 0:
                 self._reconnect_attempt = 0
+                self._started_at = datetime.now()
+                # R4/13.1: remember the absolute end so a reconnect records only
+                # the remaining time, not a fresh full duration.
+                self._scheduled_end = self._started_at + timedelta(minutes=minutes)
             self._active_params = (
                 station_name,
                 stream_url,
@@ -355,6 +438,9 @@ class RadioRecorder:
                 line = raw.decode("utf-8", "replace").rstrip()
                 if not line:
                     continue
+                # R4/13.3: keep the recent stderr so _monitor can classify a drop
+                # as fatal (disk full / HTTP 4xx -> no reconnect) vs transient.
+                self._stderr_tail.append(line)
                 safe = redact_source_tokens(line)
                 if _STDERR_ERROR_RE.search(line):
                     logger.warning("ffmpeg recording %s: %s", station_name, safe)
@@ -376,12 +462,26 @@ class RadioRecorder:
                 final = self._final_destination
                 params = self._active_params
                 failed = bool(process.returncode) and not self._user_stopped
+                # R4/13.3: snapshot the stderr tail under the lock so a fatal
+                # failure (disk full / HTTP 4xx) is not retried -- reconnecting
+                # a stream the server took down with a 404 would only waste the
+                # attempt budget and spam continuation files.
+                fatal = failed and any(_FATAL_STDERR_RE.search(line) for line in self._stderr_tail)
                 self._process = None
                 self._destination = None
                 self._final_destination = None
                 self._station_name = ""
+                self._started_at = None
+                # R4/13.5: the job object tracked this process; close its handle
+                # now that the child has exited (wait() returned), so a long
+                # session does not leak one handle per recording.
+                job = self._job
+                self._job = None
+                self._stderr_tail.clear()
             else:
-                dest, final, params, failed = None, None, None, False
+                dest, final, params, failed, fatal, job = None, None, None, False, False, None
+        if job is not None:
+            _close_job_handle(job)
         # Move the finished file from the temp dir to its home (#5). Done for
         # both a clean stop and a failed/partial recording, so a partial is
         # never stranded in temp -- it lands where the user looks for it, then
@@ -397,18 +497,37 @@ class RadioRecorder:
                 format_args_for_log([str(landed)]),
             )
             self._on_state_changed(False, landed)
-        if failed and params is not None:
+        if failed and params is not None and not fatal:
             self._maybe_reconnect(params)
 
     def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int, str, str]) -> None:
         """A recording died without being asked to stop: wait, then resume
-        into a continuation file, up to the configured attempt budget."""
-        station_name, stream_url, settings, minutes, filter_graph, extension = params
+        into a continuation file, up to the configured attempt budget.
+
+        R4/13.1: a continuation records only the *remaining* time to the
+        original scheduled end (``_scheduled_end``), never a fresh full
+        duration -- a 60-minute show that drops at minute 50 records a ~10
+        minute continuation, not another 60."""
+        station_name, stream_url, settings, _minutes, filter_graph, extension = params
         if not settings.reconnect_enabled:
             return
         with self._lock:
             self._reconnect_attempt += 1
             attempt = self._reconnect_attempt
+            scheduled_end = self._scheduled_end
+        # R4/13.1: remaining minutes to the absolute end, floored at 1 so a
+        # reconnect that fires just before the end still records something; a
+        # drop discovered after the scheduled end gives up (the show is over).
+        if scheduled_end is None:
+            remaining = settings.max_duration_minutes
+        else:
+            remaining = math.ceil((scheduled_end - datetime.now()).total_seconds() / 60)
+        if remaining <= 0:
+            logger.info(
+                "Radio recording of %s dropped past its scheduled end; not reconnecting.",
+                station_name,
+            )
+            return
         if attempt > max(0, settings.reconnect_max_attempts):
             logger.warning(
                 "Radio recording of %s gave up after %d reconnect attempt(s).",
@@ -418,11 +537,12 @@ class RadioRecorder:
             return
         self._on_reconnect(attempt, settings.reconnect_max_attempts)
         logger.info(
-            "Radio recording of %s dropped; reconnect attempt %d/%d in %ds.",
+            "Radio recording of %s dropped; reconnect attempt %d/%d in %ds (remaining %d min).",
             station_name,
             attempt,
             settings.reconnect_max_attempts,
             settings.reconnect_wait_seconds,
+            remaining,
         )
         stop_signal = threading.Event()
         stop_signal.wait(max(1, settings.reconnect_wait_seconds))
@@ -434,7 +554,7 @@ class RadioRecorder:
                 station_name=station_name,
                 stream_url=stream_url,
                 settings=settings,
-                duration_minutes=minutes,
+                duration_minutes=remaining,
                 filter_graph=filter_graph,
                 _continuation_part=attempt,
                 _forced_extension=extension,
@@ -444,7 +564,12 @@ class RadioRecorder:
             self._maybe_reconnect(params)
 
     def stop(self) -> None:
-        """Ask the current recording to finish cleanly; a no-op if idle."""
+        """Ask the current recording to finish cleanly; a no-op if idle.
+
+        R4/13.5: the wait-and-terminate fallback runs on a daemon thread so a
+        slow ffmpeg shutdown never blocks the UI thread (notably the frame's
+        close path). The 'q' keypress is sent synchronously -- it is just a
+        pipe write -- and the thread only waits and, if needed, terminates."""
         with self._lock:
             process = self._process
             self._user_stopped = True
@@ -454,15 +579,132 @@ class RadioRecorder:
             if process.stdin is not None:
                 process.stdin.write(b"q")
                 process.stdin.flush()
-            process.wait(timeout=_STOP_GRACE_SECONDS)
-        except Exception:  # noqa: BLE001 - fall through to a hard stop below
-            logger.warning("Graceful stop of radio recording did not land in time; terminating.")
-        if process.poll() is None:
-            process.terminate()
+        except (OSError, ValueError):
+            # Pipe already closed (ffmpeg gone); the thread's wait will return.
+            pass
+        threading.Thread(
+            target=_await_stop,
+            args=(process,),
+            daemon=True,
+            name="quill-radio-record-stop",
+        ).start()
 
     def shutdown(self) -> None:
         """Called once, from the frame's close path."""
         self.stop()
+
+
+def _await_stop(process: subprocess.Popen[bytes]) -> None:
+    """Wait for *process* to exit after 'q' was written; terminate it if it
+    does not land within the grace period (R4/13.5).
+
+    Runs on a daemon thread so the caller (the UI thread / close path) is
+    never blocked by a slow ffmpeg shutdown. The graceful 'q' was already
+    sent synchronously by :meth:`RadioRecorder.stop`; this only owns the
+    wait-and-terminate fallback."""
+    try:
+        process.wait(timeout=_STOP_GRACE_SECONDS)
+    except Exception:  # noqa: BLE001 - wait timed out or pipe closed
+        logger.warning("Graceful stop of radio recording did not land in time; terminating.")
+    if process.poll() is None:
+        try:
+            process.terminate()
+        except OSError:
+            pass
+
+
+def _assign_kill_on_close_job(process: subprocess.Popen[bytes]) -> object | None:
+    """Put *process* in a Windows job object that kills it when the host dies
+    (R4/13.5), so a crashed/killed QUILL can no longer strand a bare ffmpeg
+    writing to the temp dir.
+
+    Best-effort: returns the job handle (an int) on success, or ``None``
+    off-Windows or if anything goes wrong (job creation, assignment, or the
+    kill-on-close flag). A ``None`` return degrades to the pre-job behavior --
+    the recording still works, it just is not tied to the host's lifetime."""
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
+
+        class _IO_COUNTERS(ctypes.Structure):
+            _fields_ = [
+                ("ReadOperationCount", ctypes.c_ulonglong),
+                ("WriteOperationCount", ctypes.c_ulonglong),
+                ("OtherOperationCount", ctypes.c_ulonglong),
+                ("ReadTransferCount", ctypes.c_ulonglong),
+                ("WriteTransferCount", ctypes.c_ulonglong),
+                ("OtherTransferCount", ctypes.c_ulonglong),
+            ]
+
+        class _BASIC_LIMITS(ctypes.Structure):
+            _fields_ = [
+                ("PerProcessUserTimeLimit", ctypes.c_int64),
+                ("PerJobUserTimeLimit", ctypes.c_int64),
+                ("LimitFlags", wintypes.DWORD),
+                ("MinimumWorkingSetSize", ctypes.c_size_t),
+                ("MaximumWorkingSetSize", ctypes.c_size_t),
+                ("ActiveProcessLimit", wintypes.DWORD),
+                ("Affinity", ctypes.c_size_t),
+                ("PriorityClass", wintypes.DWORD),
+                ("SchedulingClass", wintypes.DWORD),
+            ]
+
+        class _EXTENDED_LIMITS(ctypes.Structure):
+            _fields_ = [
+                ("BasicLimitInformation", _BASIC_LIMITS),
+                ("IoInfo", _IO_COUNTERS),
+                ("ProcessMemoryLimit", ctypes.c_size_t),
+                ("JobMemoryLimit", ctypes.c_size_t),
+                ("PeakProcessMemoryUsed", ctypes.c_size_t),
+                ("PeakJobMemoryUsed", ctypes.c_size_t),
+            ]
+
+        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000
+        JobObjectExtendedLimitInformation = 9
+        job: object = kernel32.CreateJobObjectW(None, None)
+        if not job:
+            return None
+        info = _EXTENDED_LIMITS()
+        info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        if not kernel32.SetInformationJobObject(
+            job,
+            JobObjectExtendedLimitInformation,
+            ctypes.byref(info),
+            ctypes.sizeof(info),
+        ):
+            kernel32.CloseHandle(job)
+            return None
+        # subprocess.Popen keeps the process handle on Windows as _handle (int).
+        # AssignProcessToJobObject needs that handle; the child must inherit it
+        # (CREATE_NO_WINDOW does not block inheritance of the handle Popen keeps).
+        proc_handle = getattr(process, "_handle", None)
+        if not proc_handle or not kernel32.AssignProcessToJobObject(job, proc_handle):
+            kernel32.CloseHandle(job)
+            return None
+        return job
+    except Exception:  # noqa: BLE001 - best-effort; never break a recording
+        logger.debug("Could not bind radio recording to a kill-on-close job.", exc_info=True)
+        return None
+
+
+def _close_job_handle(job: object) -> None:
+    """Close a job handle returned by :func:`_assign_kill_on_close_job`.
+
+    Safe to call only after the child has exited (the recorder does so from
+    ``_monitor`` once ``process.wait()`` returns), so closing the handle
+    cannot kill a still-running recording."""
+    if not job:
+        return
+    try:
+        import ctypes
+
+        ctypes.windll.kernel32.CloseHandle(cast("int", job))  # type: ignore[attr-defined]
+    except Exception:  # noqa: BLE001 - best-effort cleanup
+        pass
 
 
 def _finalize_move(src: Path, dst: Path) -> Path:
