@@ -102,6 +102,26 @@ def guide_id_from_page(url_or_text: str) -> str | None:
     return match.group(1).lower() if match else None
 
 
+#: Hosts/markers whose presence on a scanned page identifies it as a TuneIn
+#: (RadioTime) station page, so the Find Streams scanner only resolves a guide
+#: id against TuneIn's API for pages that actually are TuneIn -- a bare ``s\d+``
+#: elsewhere is not treated as a TuneIn station.
+_TUNEIN_MARKERS = ("tunein.com", "radiotime.com", "opml.radiotime")
+
+
+def page_is_tunein(url: str, html: str) -> bool:
+    """True when the scanned page itself is a TuneIn (RadioTime) page.
+
+    Pure and cheap: matches on the *URL host* only, not the HTML, so a page
+    that merely *links* to a TuneIn station (a directory listing) is not treated
+    as a TuneIn page -- it is followed one level like any portal link, and the
+    resolution happens on the followed TuneIn page. ``html`` is accepted for a
+    signature symmetric with :func:`page_is_triton_player` but is unused.
+    """
+    lowered_url = url.lower()
+    return any(marker in lowered_url for marker in _TUNEIN_MARKERS)
+
+
 # --- pure parsers -----------------------------------------------------------
 
 

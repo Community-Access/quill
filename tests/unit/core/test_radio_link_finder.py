@@ -200,6 +200,55 @@ def test_scan_does_not_call_triton_for_a_normal_site(monkeypatch: pytest.MonkeyP
     assert result.candidates == []
 
 
+def test_scan_resolves_a_tunein_station_page(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A TuneIn station page carries no stream in its HTML -- it resolves via
+    # RadioTime's OPML API, keyed by the page's s-prefixed guide id.
+    import quill.core.radio.tunein as tunein
+
+    html = "<html><head><title>WNYC</title></head><body>tunein.com station</body></html>"
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: html)
+    monkeypatch.setattr(
+        tunein,
+        "resolve_station_streams",
+        lambda guide_id, *, safe_mode=False: ["https://cdn.example.com/wnyc.mp3"],
+    )
+    result = scan_page_for_streams("https://tunein.com/radio/WNYC-s24939/")
+    urls = [c.url for c in result.candidates]
+    assert "https://cdn.example.com/wnyc.mp3" in urls
+    candidate = next(c for c in result.candidates if "wnyc.mp3" in c.url)
+    assert "TuneIn station page" in candidate.reason
+
+
+def test_scan_ignores_tunein_resolution_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    import quill.core.radio.tunein as tunein
+    from quill.core.radio.tunein import TuneInError
+
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: "<html><body>tunein.com</body></html>")
+
+    def _boom(guide_id: str, *, safe_mode: bool = False):
+        raise TuneInError("offline")
+
+    monkeypatch.setattr(tunein, "resolve_station_streams", _boom)
+    result = scan_page_for_streams("https://tunein.com/radio/WNYC-s24939/")
+    assert result.candidates == []
+
+
+def test_scan_does_not_call_tunein_for_a_normal_site(monkeypatch: pytest.MonkeyPatch) -> None:
+    import quill.core.radio.tunein as tunein
+
+    monkeypatch.setattr(
+        lf, "_fetch_html", lambda url: "<html><body>plain site s12345</body></html>"
+    )
+    monkeypatch.setattr(
+        tunein,
+        "resolve_station_streams",
+        lambda *a, **k: pytest.fail("must not hit TuneIn for a non-TuneIn page"),
+    )
+    # A bare s-id on an unrelated page must not be treated as a TuneIn station.
+    result = scan_page_for_streams("https://example.com")
+    assert result.candidates == []
+
+
 def test_scan_follows_a_listen_live_link_when_page_is_empty(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -392,21 +441,32 @@ def test_iheart_live_link_is_followed_not_offered_as_a_stream(
 def test_tunein_radio_link_is_followed_not_offered_as_a_stream(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # A TuneIn /radio/ station page is a portal page too: follow it, don't
-    # offer the tunein.com page URL as a stream candidate.
+    # A TuneIn /radio/ station page is a portal page: follow it, resolve its
+    # real stream via the OPML API, and never offer the tunein.com page URL
+    # itself as a stream candidate.
+    import quill.core.radio.tunein as tunein_mod
+
     home = (
         "<html><body>"
         '<a href="https://tunein.com/radio/BBC-Radio-1-s24939/">BBC Radio 1</a>'
         "</body></html>"
     )
-    tunein = '<html><body><audio src="https://cdn.example.com/bbc.mp3"></audio></body></html>'
+    tunein_page = '<html><body><audio src="https://cdn.example.com/bbc.mp3"></audio></body></html>'
     pages = {
         "https://directory.example.com": home,
-        "https://tunein.com/radio/BBC-Radio-1-s24939/": tunein,
+        "https://tunein.com/radio/BBC-Radio-1-s24939/": tunein_page,
     }
     monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    monkeypatch.setattr(
+        tunein_mod,
+        "resolve_station_streams",
+        lambda guide_id, *, safe_mode=False: ["https://opml.example.com/bbc-resolved.mp3"],
+    )
     result = scan_page_for_streams("directory.example.com")
     urls = [c.url for c in result.candidates]
+    # The followed TuneIn page resolves via the API and also exposes its audio
+    # tag; either way the real stream is offered, never the page URL.
+    assert "https://opml.example.com/bbc-resolved.mp3" in urls
     assert "https://cdn.example.com/bbc.mp3" in urls
     assert not any("tunein.com/radio" in u for u in urls)
 
