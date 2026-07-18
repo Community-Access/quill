@@ -49,7 +49,7 @@ No ``wx`` imports: this is pure model code. It is imported lazily by
 
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, fields
 from typing import Any
 
 from quill.core.settings import Settings
@@ -217,3 +217,59 @@ def from_versioned(raw: object) -> Settings:
     document yields an all-defaults :class:`Settings`.
     """
     return _safe_from_dict(migrate(raw))
+
+
+def is_future_settings_document(raw: object) -> bool:
+    """Return True when ``raw`` was written by a *newer* schema than this build.
+
+    The shared ``%APPDATA%\\Quill`` store is written by several apps of possibly
+    different vintages. A file stamped with a schema above this build's must not
+    be rewritten (that would downgrade a newer app's data); the loader reads it
+    for in-memory use and leaves it untouched.
+    """
+    if not isinstance(raw, dict):
+        return False
+    version = raw.get("schema_version")
+    return isinstance(version, int) and version > SETTINGS_SCHEMA_VERSION
+
+
+def _known_setting_keys() -> set[str]:
+    # Fields this build recognizes, plus keys it deliberately retires -- neither
+    # is "unknown". Anything else in a same-version file was written by a newer
+    # sibling app and must survive this build's rewrite.
+    return {f.name for f in fields(Settings)} | set(RETIRED_SETTINGS_KEYS)
+
+
+def reconcile_unknown_overrides(
+    raw: dict[str, Any], desired: dict[str, Any]
+) -> dict[str, Any]:
+    """Return ``desired`` with override keys this build does not recognize
+    carried forward from ``raw`` -- verbatim, in their original group.
+
+    Adding a setting *field* does not bump ``schema_version``, so the common
+    multi-vintage case is two same-version apps where one has a field the other
+    lacks. Without this, the older app's rewrite (dropping the unknown field)
+    silently discards the newer app's setting. Retired and known keys are left
+    to the normal delta path; only genuinely unrecognized keys are preserved.
+    """
+    raw_groups = raw.get("groups")
+    if not isinstance(raw_groups, dict):
+        # A legacy flat file has no "groups"; migration owns that shape.
+        return desired
+    known = _known_setting_keys()
+    merged_groups = {
+        name: dict(bucket)
+        for name, bucket in desired.get("groups", {}).items()
+        if isinstance(bucket, dict)
+    }
+    carried = False
+    for group_name, bucket in raw_groups.items():
+        if not isinstance(bucket, dict):
+            continue
+        for key, value in bucket.items():
+            if str(key) not in known:
+                merged_groups.setdefault(str(group_name), {})[str(key)] = value
+                carried = True
+    if not carried:
+        return desired
+    return {**desired, "groups": merged_groups}

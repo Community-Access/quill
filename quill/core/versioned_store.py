@@ -53,6 +53,9 @@ def load_with_migration[T](
     serialize: Callable[[T], dict[str, object]],
     is_legacy: Callable[[dict[str, object]], bool],
     default: Callable[[], T],
+    reconcile_unknown: Callable[[dict[str, object], dict[str, object]], dict[str, object]]
+    | None = None,
+    is_future: Callable[[dict[str, object]], bool] | None = None,
 ) -> T:
     """Load ``path`` as a versioned-delta store, migrating + backing up if needed.
 
@@ -68,6 +71,15 @@ def load_with_migration[T](
       is worth backing up.
     * ``default`` builds the all-defaults object for a missing or unreadable
       file -- which is intentionally *not* created on disk on read.
+    * ``reconcile_unknown`` (optional) preserves the multi-vintage shared-store
+      contract: given ``(raw, desired)`` for a *non-legacy* file, it returns
+      ``desired`` augmented with any content this binary does not recognize but
+      a newer sibling app wrote (e.g. a setting field this older build lacks),
+      carried forward verbatim so the rewrite does not silently drop it. Called
+      only when ``is_legacy(raw)`` is False (a real migration is authoritative).
+    * ``is_future`` (optional) reports that ``raw`` was written by a *newer*
+      schema than this binary understands. Such a file is read for in-memory use
+      but never rewritten -- an older app must not downgrade a newer app's file.
 
     When the on-disk form already equals the canonical form, nothing is written
     (no churn). Otherwise the file is rewritten to the canonical form; if it was
@@ -90,9 +102,20 @@ def load_with_migration[T](
         backup_corrupt_file(store_name, path)
         return default()
     obj = parse(raw)
+    if is_future is not None and is_future(raw):
+        # A file written by a newer schema than this build understands: use what
+        # we can in memory, but never rewrite it -- downgrading it would strip
+        # the newer app's data. It stays intact for the app that owns it.
+        return obj
     desired = serialize(obj)
+    legacy = is_legacy(raw)
+    if reconcile_unknown is not None and not legacy:
+        # Same-schema file that a newer sibling app may have extended (a setting
+        # this older build has no field for). Carry those unknown entries forward
+        # so the rewrite preserves them instead of dropping them.
+        desired = reconcile_unknown(raw, desired)
     if raw != desired:
-        if is_legacy(raw):
+        if legacy:
             backup_before_migration(store_name, raw, version_tag=_version_tag(raw))
         try:
             write_json_atomic(path, desired)

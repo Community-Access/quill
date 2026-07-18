@@ -1559,7 +1559,9 @@ def load_settings() -> Settings:
     # SET-5: read the nested versioned document, a legacy flat file, or junk.
     from quill.core.settings_migration import (
         from_versioned,
+        is_future_settings_document,
         is_legacy_settings_document,
+        reconcile_unknown_overrides,
         to_versioned,
     )
 
@@ -1570,6 +1572,8 @@ def load_settings() -> Settings:
         serialize=to_versioned,
         is_legacy=is_legacy_settings_document,
         default=Settings,
+        reconcile_unknown=reconcile_unknown_overrides,
+        is_future=is_future_settings_document,
     )
 
 
