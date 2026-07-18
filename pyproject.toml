@@ -96,7 +96,7 @@ mac = ["pyobjc-framework-Cocoa>=10.3; sys_platform == 'darwin'"]
 # files the issue via the GitHub API. Ships in every build (this is the only
 # Report a Bug form); on failure QUILL copies the online support-form URL.
 # 1.0.1 fixes the wx sizer-parenting crash that broke the dialog on wx 4.2.5+.
-feedback = ["feedback-hub>=1.0.1"]
+feedback = ["feedback-hub>=1.0.2"]
 # Cross-platform earcon audio via BASS (Un4seen). Enables true mixing so multiple
 # sounds can play simultaneously. Falls back to winsound (Windows) or silence without
 # this extra. Confirm Un4seen commercial license terms before paid distribution.

@@ -7,19 +7,19 @@
   "fields": [
     {
       "name": "summary",
-      "label": "Summary",
+      "label": "Title",
       "type": "text",
       "required": true,
-      "max_length": 120,
-      "placeholder": "One-line description of the issue"
+      "max_length": 200,
+      "placeholder": "Short title for the issue (the full report goes in Description below)"
     },
     {
       "name": "message",
-      "label": "What happened",
+      "label": "Description",
       "type": "textarea",
       "required": true,
       "max_length": 5000,
-      "placeholder": "Describe what went wrong"
+      "placeholder": "Describe what happened -- paste as much detail as you like here"
     },
     {
       "name": "expected",
