@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Radio - prd</title>
+  <title>prd</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -176,12 +176,9 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Quill Radio - prd</h1>
-</header>
 <h1 id="quill-radio----product-requirements">Quill Radio -- Product
 Requirements</h1>
-<p>Version 1.1</p>
+<p>Version 2.0</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>Quill Radio is QUILL's internet radio, shipped as its own small
 Windows app for people who want the radio on without loading a full
@@ -213,9 +210,42 @@ from QUILL's keymap so nothing collides with editor shortcuts.</li>
 (all reused from upstream; all shipped in 1.0)</h2>
 <p><strong>Listening</strong></p>
 <ul>
-<li>Station browser over the RadioBrowser directory (search, tag/country
-filters, test-play, favorite); bundled ACB Media directory; custom
+<li>Station browser over four blended directories -- RadioBrowser,
+SomaFM, iHeart, TuneIn -- with a Source facet, genre/country dropdown
+filters, test-play, and favorite; bundled ACB Media directory; custom
 stream URLs; website stream finder with a Test/Stop Test toggle.</li>
+<li>iHeart and TuneIn directory sources + Unified Find Stations
+(upstream <code>core/radio/iheart.py</code>,
+<code>core/radio/tunein.py</code>,
+<code>core/radio/directory_search.py</code>; #1116, #1117, #1132).
+iHeart is indexed from its public XML sitemap
+(<code>www.iheart.com/sitemap.xml</code> -&gt; the
+<code>livestations</code> sub-sitemap, two HTTPS GETs) and each
+station's real stream (iHeart-native HLS or a StreamTheWorld redirect)
+is resolved lazily from its own page on demand; the sitemap index is
+cached once per Browse Stations session with a Refresh button, and a
+name search resolves up to <code>IHEART_RESOLVE_CAP = 5</code> matches.
+TuneIn goes through RadioTime's open OPML API
+(<code>opml.radiotime.com</code> --
+<code>Search.ashx</code>/<code>Browse.ashx</code>/<code>Tune.ashx?partnerId=RadioTime</code>,
+no key/auth; a bad guide id self-validates to "nothing found"),
+resolving up to <code>TUNEIN_RESOLVE_CAP = 10</code> per search.
+<code>directory_search.merge_and_rank</code> blends all four sources
+into one de-duped (by stream URL, then name+country), exact-match-first
+list; each non-RadioBrowser row is labeled "via <source>". The Browse
+Stations dialog adds a Source facet dropdown (All sources / RadioBrowser
+/ iHeart / TuneIn / SomaFM / ACB Media / Website) and turns the
+tag/country free-text into a genre editable combo and a country dropdown
+auto-filled from the directory (choosing one fires the search). Find
+Streams also resolves iHeart/TuneIn station pages directly
+(<code>link_finder</code> <code>_PORTAL_HOSTS</code>,
+<code>_tunein_candidates</code>; #1131, #1105, #1087). All
+failure-tolerant (a down source never blanks the list), egress via each
+client's single reviewed <code>_fetch</code>, off in Safe Mode via
+<code>refuse_in_safe_mode</code>. This reverses the earlier "TuneIn
+deliberately left out" non-goal (upstream QUILL PRD §5.84f), approved
+2026-07-17; TuneIn uses RadioTime's public API, not a competitor-data
+scrape.</li>
 <li>JavaScript-player resolution in the website stream finder (upstream
 <code>core/radio/triton.py</code>): Triton Digital / StreamTheWorld
 players (the <code>player.listenlive.co</code> network and thousands of
@@ -244,6 +274,14 @@ user-set token template
 <code>[optional]</code> segments) stored in
 <code>RadioHistory.now_playing_template</code> and edited in Preferences
 (Ctrl+,). Default <code>{title}[ by {artist}]</code>.</li>
+<li>What's Playing server status-endpoint fallback (upstream
+<code>core/radio/station_status.py</code>, #1111, #1112): when the ICY
+side-tap and the playback engine's own <code>media-title</code> both
+come up empty (common on HLS), Quill Radio reads the current title from
+the stream server's own public now-playing status endpoint -- Icecast
+<code>/status-json.xsl</code>, SHOUTcast v2 <code>/stats?json=1</code>,
+or v1 <code>/7.html</code> -- on the same host it is already streaming
+from. Same-host only, off in Safe Mode.</li>
 <li>Paged station search (upstream
 <code>radio_browser.search_stations</code> offset + the Browse Stations
 dialog, #1064): 200 most-listened-first results per request (was 50)
@@ -283,9 +321,20 @@ top level.</li>
 <ul>
 <li>Record now; Record Station (a different station than the one
 playing, for N minutes); scheduled recordings (once/daily/weekly).</li>
+<li>Schedule management (upstream
+<code>ui/radio/schedule_recording_dialog.py</code>, #1106): Edit an
+entry in place, Duplicate it, and Enable/disable it without deleting (a
+disabled entry renders "(disabled)" and does not fire); 12-hour or
+24-hour time entry (<code>parse_time_of_day</code>, "7:30 PM" or
+"19:30"); and a per-entry time-zone dropdown ("(local time)" plus all
+zoneinfo zones) so an entry fires at the correct absolute moment and the
+list shows zone-labeled times.</li>
 <li>Recordings list: live status (Recording with growing size / Recorded
-/ Scheduled), Play, Stop Recording, Open in Folder, Remove, 2-second
-auto-refresh.</li>
+/ Scheduled), Play, Stop Recording, Open in Folder, Remove. Refresh is
+an in-place diff keyed by file path (no-op when unchanged;
+selection/focus/scroll preserved), not a rebuild; the active row shows a
+live elapsed time and scheduled rows show their zone-labeled times; the
+tray tooltip carries "(recording)".</li>
 <li>Auto-reconnect: ffmpeg HTTP reconnect flags plus process-level retry
 into numbered part files; enabled/attempts/spacing configurable; user
 stops and duration-cap finishes never retry.</li>
@@ -309,6 +358,41 @@ flac-&gt;<code>.flac</code>, ...), falling back to Matroska audio
 copy container; a missing/failed probe degrades to <code>.mka</code>
 rather than blocking the recording, and the resolved extension is reused
 across auto-reconnect continuation files.</li>
+<li>Recording reliability (upstream <code>quill/core/radio/*</code>,
+2.0.0; R1-R4): a reported round of recording bugs closed in four phases,
+delivered in the 2.0.0 release. (R1) the Recordings list is an in-place
+diff keyed by file path -- a screen reader is no longer yanked to the
+top mid-read; the active recording is counted from the recorder itself
+(a temp-folder recording is no longer invisible), a firing schedule is
+no longer double-counted, completed one-time entries drop out of the
+scheduled count, and the active row shows a live elapsed time. (R2) the
+scheduler uses a next-due-timestamp window model (an entry is due from
+<code>start</code> through <code>start + duration</code>, so a late
+arrival starts with the remaining minutes and launch catch-up is free);
+<code>last_fired</code> is stamped by entry id only on a successful
+start, <code>once</code> entries auto-disable after firing, a
+same-minute conflict defers via <code>on_busy</code>, and the scheduler
+thread is lock-guarded and can no longer die silently. (R3, new feature)
+resume across restart: an <code>ActiveRecordingMarker</code> is written
+at start and cleared on a clean stop (a crash leaves it); on launch,
+<code>reconcile_temp_strays</code> moves finished temp orphans to the
+destination and leaves a still-writing file untouched, then per
+<code>RadioHistory.recording_resume_choice</code>
+(<code>ask</code>|<code>always</code>|<code>never</code>, default
+<code>ask</code>) Quill Radio offers to resume for the remaining minutes
+within a 10-minute grace via an accessible dialog
+(Resume/Skip/Don't-ask-again; a corrupt marker is discarded). (R4)
+pipeline hardening: a reconnect records only the remaining time to
+<code>_scheduled_end</code> (not a fresh full duration);
+<code>uniquify()</code> replaces the unconditional <code>-y</code>
+overwrite and continuation parts keep the original start timestamp; a
+drop is classified fatal (disk full / HTTP 4xx) vs transient
+(5xx/network) before any reconnect attempt is spent; and on Windows
+ffmpeg runs in a job object with
+<code>JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE</code> so a crashed host takes
+the child down, with the stop wait moved off the UI thread. Everything
+lands in the shared <code>quill</code> package; nothing is vendored into
+the wrapper.</li>
 </ul>
 <p><strong>Timers</strong></p>
 <ul>
@@ -328,6 +412,12 @@ on exit.</li>
 spoken progress and offers Install now; About.</li>
 <li>Unlock-gated Audio Description Project menu when
 <code>future.adp_assistant</code> is unlocked.</li>
+<li>Diagnostics (upstream <code>core/radio/radio_logging.py</code>,
+<code>RadioHistory.debug_mode</code>/<code>log_dir</code>; #1130, #1124,
+#1122): a Verbose logging (debug-mode) checkbox in Preferences applied
+live via <code>set_radio_debug</code> (no restart), and a settable Log
+folder; recording stderr is captured into the log so a failed capture
+leaves a trail.</li>
 </ul>
 <p>Out of scope by decision: QUILL's editor, AI, speech transcription,
 braille, and TTS stacks (not installed); a custom update engine beyond
@@ -370,13 +460,20 @@ compares against and downloads.</li>
 <ul>
 <li>N-1. Every outbound surface is inventoried in QUILL's network-egress
 audit: RadioBrowser and SomaFM (search/tags/countries/click-votes/byuuid
-fallback), the user-typed page for Find Streams (plus, for a
-Triton/StreamTheWorld player page, one follow-on call to Triton's
-provisioning API to resolve the JS-computed stream), the playing stream
-itself for ICY titles, and this repository's GitHub releases for the
-update check. No telemetry of any kind. (Sound Enhancements' local
-relay, §8, is loopback-only and never reaches the network itself -- it
-filters the same stream this section already covers.)</li>
+fallback); iHeart (<code>www.iheart.com</code> public sitemap index +
+on-demand station-page GETs to resolve a stream); TuneIn via RadioTime's
+OPML directory (<code>opml.radiotime.com</code> search/browse/tune,
+<code>partnerId=RadioTime</code>, no key); the user-typed page for Find
+Streams (plus, for a Triton/StreamTheWorld player page or an
+iHeart/TuneIn page, one follow-on call to that provider's public API to
+resolve the stream); the playing stream itself for ICY titles and, as a
+same-host last-resort for What's Playing, that stream server's own
+Icecast/SHOUTcast status endpoint; and this repository's GitHub releases
+for the update check. Playback (mpv) and the metadata/status requests
+send a "Quill Radio" User-Agent. No telemetry of any kind. (Sound
+Enhancements' local relay, §8, is loopback-only and never reaches the
+network itself -- it filters the same stream this section already
+covers.)</li>
 <li>N-2. Safe Mode disables the radio's network surfaces along with the
 feature.</li>
 </ul>
@@ -388,6 +485,43 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>Recordings reliability overhaul (2.0.0, upstream
+<code>quill/core/radio/*</code>; R1-R4).</strong> The headline of 2.0.0:
+a reported round of recording bugs closed and the one missing piece
+added -- a recording that survives a restart. Resume across restart with
+an ask-on-launch dialog and a 10-minute grace window; window-based
+scheduling with launch catch-up; a flicker-free, place-keeping
+Recordings list with honest counts and a live elapsed time; and pipeline
+hardening against dropped connections, dead streams, and a crashed host.
+Detailed as delivered scope in §3 (Recording). Everything lands in the
+shared <code>quill</code> package; nothing is vendored into the
+wrapper.</li>
+<li><strong>iHeart and TuneIn directories + Unified Find Stations
+(2.0.0, upstream <code>core/radio/iheart.py</code>,
+<code>core/radio/tunein.py</code>,
+<code>core/radio/directory_search.py</code>; #1116, #1117,
+#1132).</strong> Two of the largest internet-radio directories added as
+keyless, account-free station sources blended into Browse Stations, with
+a Source facet, genre/country dropdown filters, "via <source>" result
+labels, a Refresh button for the cached iHeart index, and iHeart/TuneIn
+page resolution in Find Streams. Detailed as delivered scope in §3
+(Listening). Reverses the earlier TuneIn non-goal (upstream QUILL PRD
+§5.84f), approved 2026-07-17.</li>
+<li><strong>Schedule management (2.0.0, upstream
+<code>ui/radio/schedule_recording_dialog.py</code>, #1106).</strong>
+Edit, Duplicate, and Enable/disable for schedule entries; 12-or-24-hour
+time entry; per-entry time zones with zone-labeled list times. Detailed
+in §3 (Recording).</li>
+<li><strong>What's Playing server status-endpoint fallback (2.0.0,
+upstream <code>core/radio/station_status.py</code>, #1111,
+#1112).</strong> A same-host last resort reading the stream server's own
+Icecast/SHOUTcast now-playing status page when ICY and the engine title
+channel are both empty. Detailed in §3 (Listening).</li>
+<li><strong>Diagnostics (2.0.0, upstream
+<code>core/radio/radio_logging.py</code>; #1130, #1124, #1122).</strong>
+A live Verbose logging (debug-mode) checkbox and a settable Log folder
+in Preferences, with recording stderr captured to the log. Detailed in
+§3 (Shell).</li>
 <li><strong>The mpv playback engine (1.1.0, upstream
 <code>quill/ui/radio/mpv_radio_engine.py</code> +
 <code>player_controller.py</code>, #1076).</strong> A second, preferred

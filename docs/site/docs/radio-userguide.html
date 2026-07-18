@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Radio - userguide</title>
+  <title>userguide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -176,11 +176,8 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Quill Radio - userguide</h1>
-</header>
 <h1 id="quill-radio-user-guide">Quill Radio User Guide</h1>
-<p>Version 1.1</p>
+<p>Version 2.0</p>
 <p>Quill Radio is internet radio the way a screen reader user would
 design it: a small window whose favorites tree has focus the instant it
 opens, menus that say everything they do, spoken feedback for every
@@ -192,11 +189,11 @@ nothing you set up here is ever stranded.</p>
 downloads):</p>
 <ul>
 <li><strong>The installer</strong>
-(<code>Quill-Radio-Setup-1.0.0.exe</code>) -- its own folder, Start Menu
+(<code>Quill-Radio-Setup-2.0.0.exe</code>) -- its own folder, Start Menu
 entry, uninstaller. Your data lives in the shared Quill store in your
 Windows profile.</li>
 <li><strong>The portable zip</strong>
-(<code>Quill-Radio-Portable-1.0.0.zip</code>) -- extract anywhere, even
+(<code>Quill-Radio-Portable-2.0.0.zip</code>) -- extract anywhere, even
 a USB stick, and run <code>QuillRadio\QuillRadio.exe</code>. Its
 <code>data</code> folder keeps your favorites, history, and settings
 inside the app folder, so the whole radio travels with you.</li>
@@ -249,13 +246,34 @@ Stations...</strong></li>
 <h3 id="station-alts">Station (Alt+S)</h3>
 <ul>
 <li><strong>Browse Stations...</strong> -- the full station browser:
-search RadioBrowser's live directory, filter by tag or country,
-test-play, favorite. A search shows up to 200 stations at once,
+search across four directories at once -- <strong>RadioBrowser</strong>,
+<strong>SomaFM</strong>, <strong>iHeart</strong>, and
+<strong>TuneIn</strong> -- blended into one results list, test-play,
+favorite. Every result is labeled with the directory it came from ("via
+iHeart", "via TuneIn"). RadioBrowser shows up to 200 stations at once,
 most-listened first; when there are still more, a <strong>More
 Stations</strong> button loads the next page and puts your cursor on the
-first newly added station. The status line tells you when more can be
-loaded and suggests adding a tag or country to narrow a very broad
-search.</li>
+first newly added station. iHeart and TuneIn add a small set of their
+most relevant, immediately-playable matches to each search (each
+iHeart/TuneIn result's real stream is looked up on demand, so they are
+capped per search to keep one search from becoming dozens of network
+requests).
+<ul>
+<li><strong>Source</strong> -- a dropdown to narrow the search to one
+directory (All sources, RadioBrowser, iHeart, TuneIn, SomaFM, ACB Media,
+or Website) when you already know where a station lives.</li>
+<li><strong>Tag/genre</strong> and <strong>Country</strong> -- these are
+now proper dropdown lists, filled in from the directory itself, so you
+pick "jazz" or "United Kingdom" from a list instead of typing the exact
+spelling; choosing one runs the search right away.</li>
+<li><strong>Refresh</strong> -- re-fetches the iHeart station directory.
+iHeart's directory index is cached once per Browse Stations session
+(TuneIn and RadioBrowser are always live), so use Refresh if you want
+the very latest iHeart listing.</li>
+<li>The status line tells you when more can be loaded and suggests
+adding a tag or country to narrow a very broad search. Search is
+disabled in Safe Mode.</li>
+</ul></li>
 <li><strong>Add Custom Station...</strong> -- paste any stream URL and
 name it yourself.</li>
 <li><strong>When a station won't play, Quill Radio tries to fix it for
@@ -284,8 +302,12 @@ scanner to read; Quill Radio recognizes the player, reads the station's
 call letters from the page, and looks the real stream up through the
 station provider's own public address service -- no browser, no
 guessing. Both the MP3 and the AAC stream are offered when a station
-publishes both. If a page is not one of these players, or does not name
-its station, the scan simply behaves as before.</li>
+publishes both. It also recognizes an <strong>iHeart</strong> or
+<strong>TuneIn</strong> station page pasted directly and resolves its
+real playable stream through that directory, instead of handing back a
+page address that will not play. If a page is not one of these players
+or directories, or does not name its station, the scan simply behaves as
+before.</li>
 <li><strong>Manage Favorites...</strong> -- the favorites, made
 organizable. See "The Favorites Manager" below.</li>
 <li><strong>New Folder...</strong> (Ctrl+Shift+E) -- create a folder
@@ -321,7 +343,13 @@ system default device; an unplugged device is remembered, not reset, and
 if it can't be used the radio plays through the default and says so).
 Every setting takes effect the moment you save -- switching engine or
 device mid-song reconnects the station right where it matters: on the
-new engine or device.</li>
+new engine or device. Preferences also carries two troubleshooting
+settings: <strong>Verbose logging</strong> (a debug-mode checkbox that
+turns on detailed logging live, no restart, for when you need to
+diagnose something or attach detail to a bug report) and <strong>Log
+folder</strong> (choose where the log is written so it's easy to find; a
+failed recording captures the recorder's own error output into it as
+well).</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) -- hide the window; playback
 continues from the notification area.</li>
 <li><strong>Exit</strong> -- quit Quill Radio. Closing the window this
@@ -362,10 +390,17 @@ Needs the mpv playback engine.</li>
 track or show title straight from the stream's own metadata. When a
 station sends messy broadcast metadata (a string of catalog codes rather
 than a clean "Artist - Title"), Quill Radio finds the title and artist
-in it and reads just those. You control the wording in Station &gt;
-Preferences (Ctrl+,) with a small template: <code>{title}</code> and
-<code>{artist}</code> tokens, <code>[square brackets]</code> around
-optional wording that disappears when a field is empty (the default
+in it and reads just those. And when a station answers with nothing at
+all -- no metadata, and the playback engine's own title channel is empty
+too (common on HLS) -- Quill Radio takes one more step: it reads the
+current title from the stream server's own public "now playing" status
+page (the Icecast or SHOUTcast status endpoint). It only ever asks the
+same server you are already listening to, and it is off in Safe Mode --
+so a batch of stations that used to answer with silence now report a
+real title. You control the wording in Station &gt; Preferences (Ctrl+,)
+with a small template: <code>{title}</code> and <code>{artist}</code>
+tokens, <code>[square brackets]</code> around optional wording that
+disappears when a field is empty (the default
 <code>{title}[ by {artist}]</code> drops the " by" when there's no
 artist), and <code>{raw}</code> for the stream's exact original text.
 Leave it blank to restore the default.</li>
@@ -410,9 +445,31 @@ player.</li>
 <li><strong>Schedule Recording...</strong> -- record a show later, once,
 daily, or weekly, even from the tray. Pick a favorite from the list and
 its name and stream fill in for you (both stay editable for one-off
-streams); the Remove button names the schedule it will delete and dims
-when none is selected, and the Delete key and a context menu work on the
-list.</li>
+streams). Enter the time however you think of it -- "7:30 PM" or
+"19:30", both are understood -- and pin each entry to its own
+<strong>time zone</strong> (defaulting to your local time), so a show
+quoted in another zone records at the right moment and the list shows
+each entry's time with its zone. The schedule is something you manage,
+not just add to:
+<ul>
+<li><strong>Edit</strong> -- change a selected entry's station, time,
+duration, or repeat without deleting and re-adding it.</li>
+<li><strong>Duplicate</strong> -- copy a selected entry as a starting
+point for another day or a second time slot.</li>
+<li><strong>Enable / disable</strong> -- turn an entry off without
+losing it; a disabled entry reads "(disabled)" in the list and does not
+fire, and you can turn it back on any time.</li>
+<li><strong>Remove</strong> names the schedule it will delete and dims
+when none is selected; the Delete key and a context menu work on the
+list too. A schedule is due from its start time through the end of its
+duration, so if Quill Radio reaches a few seconds late it still starts
+with the remaining minutes, and on launch it catches up anything whose
+window is still open. (Quill Radio has to be running for a scheduled
+recording to fire -- the tray icon counts -- so a show whose whole
+window passed while Quill Radio was closed is simply missed, and the
+next launch tells you, naming up to three and collapsing the rest to a
+count.)</li>
+</ul></li>
 <li><strong>Recordings...</strong> -- everything you have recorded,
 live. See "The Recordings list" below.</li>
 <li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
@@ -505,23 +562,74 @@ Manager is for the heavy lifting, not a required stop.</li>
 </ul>
 <h2 id="the-recordings-list">The Recordings list</h2>
 <p>Record &gt; Recordings... shows the whole recording life cycle in one
-place, refreshing live:</p>
+place. The list updates rows in place keyed by file path, so it is a
+no-op when nothing has changed; when something has, your selection,
+focus, and scroll position are preserved instead of the list rebuilding
+under you mid-read:</p>
 <ul>
 <li>The recording being written right now -- status
-<strong>Recording</strong>, its size growing as you watch.</li>
+<strong>Recording</strong>, its size growing as you watch, with a live
+elapsed time. It is counted from the recorder itself, so a recording
+still being written to the temp folder is always visible here, never
+invisible until it lands.</li>
 <li>Every finished file, newest first -- status
 <strong>Recorded</strong>, with size and date.</li>
 <li>Upcoming scheduled recordings -- status <strong>Scheduled</strong>,
-with their times.</li>
+with their zone-labeled times.</li>
 </ul>
+<p>The recording and scheduled counts are accurate: a schedule that is
+currently firing is not double-counted, and a completed one-time
+schedule drops out of the scheduled count rather than lingering.</p>
 <p>Actions: <strong>Play</strong> (through the app's own player; it
 reads <strong>Stop</strong> while that recording is playing),
 <strong>Stop Recording</strong>, <strong>Open in Folder</strong>,
 <strong>Remove</strong> (Delete key, with confirmation),
-<strong>Refresh</strong>. If the internet hiccups during a recording,
-ffmpeg first rides it out; if the connection truly dies, Quill Radio
-waits and resumes into a numbered part file, announcing each attempt --
-tune or disable this in Recording Settings.</p>
+<strong>Refresh</strong>. The tray tooltip carries "(recording)" while a
+recording is active.</p>
+<h3 id="if-the-internet-hiccups-during-a-recording">If the internet
+hiccups during a recording</h3>
+<p>ffmpeg first rides out short gaps itself (the reconnect settings in
+Recording Settings). If the connection truly dies, Quill Radio waits and
+resumes into a numbered <strong>part file</strong>, announcing each
+attempt. Two things keep that tidy:</p>
+<ul>
+<li>A continuation records only the <em>remaining</em> time to the
+original scheduled end, not a fresh full duration -- a 60-minute show
+that drops at minute 50 records a ~10 minute continuation, not another
+60.</li>
+<li>A drop is classified before any reconnect attempt is spent. A
+<em>fatal</em> failure (your disk is full, or the server took the stream
+down with an HTTP 4xx such as 404 or 410) stops trying -- the stream is
+gone, and reconnecting would only spam part files. A <em>transient</em>
+drop (a network hiccup or a 5xx) is retried.</li>
+</ul>
+<p>Output filenames are never silently overwritten: a pattern that
+produces the same name twice gets <code>" (2)"</code>,
+<code>" (3)"</code> appended instead of clobbering the earlier file, and
+part files keep the original start timestamp in their name so they group
+together. And on Windows, the FFmpeg child is tied to Quill Radio's
+lifetime through a job object, so a crashed or killed Quill Radio takes
+it down rather than stranding a bare recording writing to your temp
+folder.</p>
+<h3
+id="if-a-recording-was-in-progress-when-quill-radio-quit-or-crashed">If
+a recording was in progress when Quill Radio quit or crashed</h3>
+<p>A recording used to be lost the moment Quill Radio quit or crashed.
+It now remembers an in-progress recording and offers to pick it back up.
+On the next launch it first tidies the temp folder (any finished orphan
+file is moved to your recordings folder; a file still being written is
+left untouched), then, if a recording was in progress and is still
+within a 10-minute grace window, asks once in an accessible dialog:</p>
+<blockquote>
+<p>A recording of WQXR was in progress until 9:00 AM. Resume it for the
+remaining 12 minute(s)?</p>
+</blockquote>
+<p><strong>Resume</strong> (Enter) restarts the recording for the
+remaining minutes only. <strong>Skip</strong> (Escape) leaves it as it
+is. A <strong>Don't ask me again</strong> checkbox remembers your choice
+-- always resume, or never ask -- changeable later in Preferences.
+Nothing happens when nothing was in progress, and a corrupt marker is
+discarded rather than driving a bogus resume.</p>
 <h2 id="hardware-media-keys">Hardware media keys</h2>
 <p>If your keyboard has media keys, Play/Pause and Stop control Quill
 Radio system-wide while it runs -- even from the tray. Keys another app
@@ -564,18 +672,27 @@ stream, a loopback-only web server on your own machine hands the
 filtered audio to the player) -- nothing about it is reachable off your
 computer; on the mpv engine the same filters run inside the player
 itself, no relay at all.</li>
-<li><strong>Station search</strong> talks to the community
-<strong>RadioBrowser</strong> directory and the free, keyless
-<strong>SomaFM</strong> directory, blended into one results list;
-<strong>Find Streams</strong> fetches only the one page you type
-(following its "Listen Live" link one level and, if it's a
-Triton/StreamTheWorld player, one lookup to the station provider's own
-public address service); <strong>stream recovery</strong> does the same
-lookups against a failing station's own website only when a stream won't
-play (and only if you leave the setting on); <strong>What's
-Playing</strong> reads metadata from the stream you are already playing.
-No other network calls exist, and every one of them is inventoried in
-QUILL's network-egress audit.</li>
+<li><strong>Station search</strong> talks to four keyless, account-free
+directories, blended into one results list: the community
+<strong>RadioBrowser</strong> directory, the free
+<strong>SomaFM</strong> directory, <strong>iHeart</strong> (read from
+its public station sitemap, <code>www.iheart.com</code>, with each
+chosen station's real stream resolved on demand from its own page), and
+<strong>TuneIn</strong> (through RadioTime's open OPML directory,
+<code>opml.radiotime.com</code> -- the same service TuneIn's own web
+player uses). <strong>Find Streams</strong> fetches only the one page
+you type (following its "Listen Live" link one level and, if it's a
+Triton/StreamTheWorld player or an iHeart/TuneIn page, one lookup to
+that provider's own public address service); <strong>stream
+recovery</strong> does the same lookups against a failing station's own
+website only when a stream won't play (and only if you leave the setting
+on); <strong>What's Playing</strong> reads metadata from the stream you
+are already playing, and as a last resort reads the current title from
+that same stream server's own public status page (its Icecast or
+SHOUTcast now-playing endpoint -- the same host, never a third party).
+All network features are off in Safe Mode. No other network calls exist,
+and every one of them is inventoried in QUILL's network-egress
+audit.</li>
 <li>The <strong>ACB Media</strong> directory is bundled -- no network
 needed to browse it.</li>
 </ul>
