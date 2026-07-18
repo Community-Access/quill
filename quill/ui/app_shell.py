@@ -78,7 +78,11 @@ class AppShellFrame:
         if bar is not None:
             bar.SetStatusText(message)
 
-    def _show_message_box(self, message: str, caption: str, style: int) -> int:
+    def _show_message_box(
+        self, message: str, caption: str, style: int | None = None
+    ) -> int:
+        if style is None:  # plain OK box like wx.MessageBox; None used to crash
+            style = wx.OK | wx.ICON_INFORMATION
         self._region_tracker.enter(caption)
         try:
             return wx.MessageBox(  # MSGBOX-OK: app_shell's own implementation
