@@ -118,6 +118,11 @@ class RadioHistory:
     #: chatty); one checkbox in Preferences (Ctrl+,) turns it on. Applied when
     #: history loads and whenever the checkbox changes.
     debug_mode: bool = False
+    #: ISO timestamp of when the app was last running (written on close), so a
+    #: startup "missed recording" report can name scheduled recordings whose
+    #: time passed while it was closed (quill-radio #4). Empty = never recorded
+    #: (a first run reports nothing).
+    last_seen: str = ""
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -174,6 +179,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.debug_mode = bool(raw.get("debug_mode", False))
+        history.last_seen = str(raw.get("last_seen", ""))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -211,6 +217,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "night_mode_enabled": history.night_mode_enabled,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "debug_mode": history.debug_mode,
+            "last_seen": history.last_seen,
             "stations": [station.to_dict() for station in history.stations],
         },
     )
