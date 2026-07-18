@@ -29,6 +29,7 @@ button in the Find Streams from a Website dialog, disabled in Safe Mode via
 
 from __future__ import annotations
 
+import logging
 import re
 import ssl
 import urllib.error
@@ -39,6 +40,9 @@ from html.parser import HTMLParser
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.stability.redaction import format_args_for_log
+
+logger = logging.getLogger(__name__)
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 12.0
@@ -390,6 +394,16 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     seen: dict[str, PageStreamCandidate] = {}
     for candidate in all_candidates:
         seen.setdefault(candidate.url, candidate)
+    # #5 observability: which links were kept, and why -- the argv-style
+    # redaction masks any token a candidate URL might carry.
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug(
+            "Find Streams scanned %s: %d candidate(s) [%s]",
+            format_args_for_log([normalized]),
+            len(seen),
+            "; ".join(f"{c.reason}: {format_args_for_log([c.url])}" for c in seen.values())
+            or "none",
+        )
     return PageScanResult(
         page_title=parser.title.strip(),
         favicon_url=parser.favicon,
