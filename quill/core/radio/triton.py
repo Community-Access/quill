@@ -36,6 +36,7 @@ button as the rest of :mod:`link_finder` and disabled in Safe Mode via
 
 from __future__ import annotations
 
+import logging
 import re
 import ssl
 import urllib.error
@@ -48,6 +49,8 @@ from xml.etree.ElementTree import Element
 from quill import __version__
 from quill.core import safe_xml
 from quill.core.error_codes import CodedError
+
+logger = logging.getLogger(__name__)
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 12.0
@@ -225,7 +228,16 @@ def resolve_station_streams(callsign: str, *, safe_mode: bool = False) -> list[T
     normalized = callsign.strip().upper()
     if not normalized:
         return []
-    return parse_livestream_config(_fetch_api(normalized))
+    streams = parse_livestream_config(_fetch_api(normalized))
+    # #5 observability: what a callsign resolved to (or that it resolved to
+    # nothing), so a "why won't this Triton station play?" question has an answer.
+    logger.debug(
+        "Triton resolve %s -> %d stream(s) [%s]",
+        normalized,
+        len(streams),
+        ", ".join(s.codec for s in streams) or "none",
+    )
+    return streams
 
 
 # --- XML helpers (namespace-agnostic; Triton stamps a version namespace) ---
