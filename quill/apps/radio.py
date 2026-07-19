@@ -284,22 +284,43 @@ class RadioAppFrame(
         folder_sort = self._radio_history.folder_sort_orders.get(
             favorite.folder, self._radio_history.favorites_sort
         )
+        switched = False
         if folder_sort != "manual":
-            self._announce(
-                "Reordering works in manual order. Set Favorites sort order to "
-                "Unsorted (manual order) in Preferences, or from a folder's Sort menu."
-            )
-            return
+            # Force the point: rather than refuse, bake the current on-screen
+            # order in as the manual order (so nothing visibly jumps) and switch
+            # to manual, then do the move -- pressing the reorder key is a clear
+            # intent to reorder.
+            self._force_favorites_manual_order()
+            switched = True
         from quill.ui.radio.favorites_manager_dialog import move_announcement
 
         if not self._radio_favorites.move(favorite.key, delta=delta):
             self._announce("Already at the edge of its folder.")
+            if switched:
+                self._reload_favorites_tree(keep_key=favorite.key)
             return
         # Speak the new position before the tree reload re-announces the item, so
         # "Moved down, now above X" is what the listener hears.
-        self._announce(move_announcement(self._radio_favorites, favorite.key, delta))
+        prefix = "Switched to manual order. " if switched else ""
+        self._announce(prefix + move_announcement(self._radio_favorites, favorite.key, delta))
         self._save_radio_favorites()
         self._reload_favorites_tree(keep_key=favorite.key)
+
+    def _force_favorites_manual_order(self) -> None:
+        """Commit the current display order as the stored (manual) order and set
+        the sort to manual, so Alt+Shift+Up/Down can reorder without the list
+        first jumping to a different order."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        ordered = self._radio_favorites.favorites_in_display_order(
+            self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
+        )
+        self._radio_favorites.favorites = list(ordered)
+        self._radio_history.favorites_sort = "manual"
+        self._radio_history.folder_sort_orders = {}
+        radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_favorites()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState

@@ -14,7 +14,7 @@ from typing import Any
 from quill.core.weather import geocoding
 from quill.core.weather import locations as loc_store
 from quill.core.weather.models import WeatherLocation
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 class AddLocationDialog:
@@ -51,7 +51,7 @@ class AddLocationDialog:
             10,
         )
         self._query = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-        self._query.SetName("Location to add: ZIP, city and state, or coordinates")
+        set_accessible_name(self._query, "Location to add: ZIP, city and state, or coordinates")
         root.Add(self._query, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         name_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -62,12 +62,12 @@ class AddLocationDialog:
             6,
         )
         self._name = wx.TextCtrl(self.dialog)
-        self._name.SetName("Friendly name for this location, for example Home")
+        set_accessible_name(self._name, "Friendly name for this location, for example Home")
         name_row.Add(self._name, 1, wx.EXPAND)
         root.Add(name_row, 0, wx.EXPAND | wx.ALL, 10)
 
         self._status = wx.StaticText(self.dialog, label="")
-        self._status.SetName("Resolution status")
+        set_accessible_name(self._status, "Resolution status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -85,7 +85,13 @@ class AddLocationDialog:
     def show(self) -> bool:
         """Modal; returns True if a location was added."""
         self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, ok_id=self._wx.ID_OK, cancel_id=self._wx.ID_CANCEL)
+        apply_modal_ids(
+            self.dialog,
+            affirmative_id=self._wx.ID_OK,
+            affirmative_label="Add",
+            cancel_id=self._wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
         from quill.ui.dialog_contract import show_modal_dialog
 
         self._query.SetFocus()

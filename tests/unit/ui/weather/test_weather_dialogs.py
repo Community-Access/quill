@@ -121,6 +121,42 @@ def test_add_location_dialog_builds(app, tmp_path) -> None:
     dlg.dialog.Destroy()
 
 
+def test_add_location_show_applies_modal_ids(app, tmp_path, monkeypatch) -> None:
+    # Regression: show() must call apply_modal_ids with valid kwargs
+    # (affirmative_id, not ok_id) -- the old ok_id= raised TypeError so the
+    # dialog never appeared.
+    import quill.ui.dialog_contract as dc
+    from quill.core.weather.locations import WeatherLocationStore
+
+    monkeypatch.setattr(dc, "show_modal_dialog", lambda *a, **k: None)
+    dlg = AddLocationDialog(
+        None,
+        store=WeatherLocationStore(),
+        data_dir=tmp_path,
+        task_manager=_FakeTaskManager(),
+        safe_mode=False,
+    )
+    assert dlg.show() is False  # no exception; nothing added
+
+
+def test_settings_show_applies_modal_ids(app, tmp_path, monkeypatch) -> None:
+    import quill.ui.dialog_contract as dc
+
+    monkeypatch.setattr(dc, "show_modal_dialog", lambda *a, **k: None)
+    dlg = WeatherSettingsDialog(None, settings=WeatherSettings(), data_dir=tmp_path)
+    assert dlg.show() is False  # no exception
+
+
+def test_weather_center_show_applies_modal_ids(app, tmp_path, monkeypatch) -> None:
+    import quill.ui.dialog_contract as dc
+
+    monkeypatch.setattr(dc, "show_modal_dialog", lambda *a, **k: None)
+    dlg = WeatherCenterDialog(
+        None, data_dir=tmp_path, task_manager=_FakeTaskManager(), safe_mode=False
+    )
+    dlg.show()  # no exception (no locations -> no fetch)
+
+
 class _MenuHost:
     def __init__(self, frame, wx_mod) -> None:
         self.frame = frame
