@@ -201,9 +201,7 @@ class RecordingSettings:
             reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
             apply_sound_enhancements=bool(data.get("apply_sound_enhancements", False)),
             # 0 (unlimited) is the floor -- a negative saved value coerces to it.
-            max_concurrent_recordings=max(
-                0, _coerce_int(data.get("max_concurrent_recordings"), 0)
-            ),
+            max_concurrent_recordings=max(0, _coerce_int(data.get("max_concurrent_recordings"), 0)),
         )
 
 

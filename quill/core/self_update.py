@@ -151,9 +151,7 @@ def stage_portable_update(zip_path: Path, staging_root: Path, *, exe_name: str) 
     entries = list(staging_root.iterdir())
     if len(entries) == 1 and entries[0].is_dir() and (entries[0] / exe_name).is_file():
         return entries[0]
-    raise SelfUpdateError(
-        f"The downloaded update does not contain {exe_name}; not applying it."
-    )
+    raise SelfUpdateError(f"The downloaded update does not contain {exe_name}; not applying it.")
 
 
 def write_and_launch_helper(script_text: str, helper_dir: Path) -> Path:

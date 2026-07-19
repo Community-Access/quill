@@ -33,11 +33,11 @@ def test_parse_genre_list_keeps_root_genre_m3u_only() -> None:
     tree = _tree([
         ("jazz.m3u", "blob"),
         ("acid_jazz.m3u", "blob"),
-        ("---everything-full.m3u", "blob"),   # aggregate: starts with '-'
-        ("---sorted.m3u", "blob"),            # aggregate
-        ("+checked+", "tree"),                # a directory
-        ("deso.fm/something.m3u", "blob"),    # inside a subdir
-        ("README.md", "blob"),                # not an .m3u
+        ("---everything-full.m3u", "blob"),  # aggregate: starts with '-'
+        ("---sorted.m3u", "blob"),  # aggregate
+        ("+checked+", "tree"),  # a directory
+        ("deso.fm/something.m3u", "blob"),  # inside a subdir
+        ("README.md", "blob"),  # not an .m3u
     ])
     assert parse_genre_list(tree) == ["acid_jazz", "jazz"]  # sorted, aggregates/subdirs dropped
 

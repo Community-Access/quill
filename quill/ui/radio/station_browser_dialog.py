@@ -910,7 +910,7 @@ class StationBrowserDialog:
             self._status.SetLabel(f"Could not get a stream for {title}.")
             self._announce(f"Could not play {title}.")
             return
-        station = RadioStation(name=title, stream_url=streams[0], source="TuneIn")
+        station = RadioStation(name=title, stream_url=tunein.best_stream(streams), source="TuneIn")
         self._controller.play_station(station)
         self._announce(f"Playing {title}")
         self._refresh_play_button()

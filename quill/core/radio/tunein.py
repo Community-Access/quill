@@ -345,6 +345,20 @@ def resolve_station_streams(guide_id: str, *, safe_mode: bool = False) -> list[s
     return parse_tune_response(_fetch(f"{_OPML_BASE}/Tune.ashx?{params}"))
 
 
+def best_stream(streams: list[str]) -> str:
+    """Pick the most broadly-playable URL from a Tune.ashx result (pure).
+
+    TuneIn often returns its own ``stream.platform...tunein.com/listen.stream``
+    redirect first, which several engines can't follow; a direct CDN media URL
+    (``.mp3``/``.aac``/``.m3u8``, a StreamTheWorld redirect, etc.) later in the
+    list plays reliably. So prefer the first stream that is NOT that proprietary
+    endpoint, falling back to the first stream if they all are."""
+    for url in streams:
+        if "tunein.com/listen.stream" not in url.lower():
+            return url
+    return streams[0] if streams else ""
+
+
 def to_radio_station(result: TuneInResult, stream_url: str) -> RadioStation:
     """Build a :class:`RadioStation` from a resolved TuneIn station."""
     return RadioStation(

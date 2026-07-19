@@ -336,7 +336,7 @@ class BrowseTreeDialog:
             self._announce(f"Could not play {title}.")
             return
         self._controller.play_station(
-            RadioStation(name=title, stream_url=streams[0], source="TuneIn")
+            RadioStation(name=title, stream_url=tunein.best_stream(streams), source="TuneIn")
         )
         self._announce(f"Playing {title}")
 

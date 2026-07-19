@@ -104,7 +104,9 @@ def test_add_children_tunein_folders_and_stations() -> None:
         root,
         "tunein",
         [
-            TuneInResult(guide_id="", title="Music", is_station=False, browse_url="http://x?c=music"),
+            TuneInResult(
+                guide_id="", title="Music", is_station=False, browse_url="http://x?c=music"
+            ),
             TuneInResult(guide_id="s9", title="Jazz FM", is_station=True),
         ],
     )

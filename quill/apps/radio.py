@@ -643,9 +643,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_new_folder(), id=new_folder_id)
         import_id = wx.NewIdRef()
         station_menu.Append(import_id, "&Import Stations from Playlist...")
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id
-        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_manage_radio_favorites(), id=manage_id)
@@ -751,9 +749,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_record_station_dialog(), id=record_station_id
         )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.radio_stop_all_recordings(), id=stop_all_id
-        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_stop_all_recordings(), id=stop_all_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_schedule_recording(), id=schedule_id
         )

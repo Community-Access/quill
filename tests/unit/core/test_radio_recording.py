@@ -532,9 +532,7 @@ def test_start_refuses_past_the_concurrency_cap(
     monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
     settings = RecordingSettings(destination_root=str(tmp_path), max_concurrent_recordings=1)
     recorder = RadioRecorder()
-    recorder.start(
-        station_name="WXYZ", stream_url="https://example.com/one", settings=settings
-    )
+    recorder.start(station_name="WXYZ", stream_url="https://example.com/one", settings=settings)
     with pytest.raises(RecordingLimitError):
         recorder.start(
             station_name="Other", stream_url="https://example.com/two", settings=settings

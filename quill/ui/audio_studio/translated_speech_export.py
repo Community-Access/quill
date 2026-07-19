@@ -38,8 +38,7 @@ _TITLE = "Export a Document to Translated Speech"
 #: Source documents Audio Studio can read for narration (mirrors
 #: ``core.speech.batch_export.SUPPORTED_EXTENSIONS``).
 _DOC_WILDCARD = (
-    "Documents (*.md;*.html;*.htm;*.docx;*.txt)|*.md;*.html;*.htm;*.docx;*.txt"
-    "|All files (*.*)|*.*"
+    "Documents (*.md;*.html;*.htm;*.docx;*.txt)|*.md;*.html;*.htm;*.docx;*.txt|All files (*.*)|*.*"
 )
 
 # Output formats in the order they appear in the format Choice.

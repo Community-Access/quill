@@ -98,7 +98,7 @@ def tunein_search_stations(
         except tunein.TuneInError:
             continue
         if streams:
-            stations.append(tunein.to_radio_station(result, streams[0]))
+            stations.append(tunein.to_radio_station(result, tunein.best_stream(streams)))
     return stations
 
 

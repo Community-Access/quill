@@ -147,6 +147,26 @@ def test_search_and_resolve_go_through_fetch(monkeypatch) -> None:
     assert any("Tune.ashx" in c and "partnerId=RadioTime" in c for c in calls)
 
 
+def test_best_stream_prefers_direct_url_over_tunein_redirect() -> None:
+    # TuneIn's own listen.stream redirect is first but many engines can't
+    # follow it; best_stream skips to the first directly-playable URL.
+    streams = [
+        "https://stream.platform.prod.us-west-2.tunein.com/listen.stream?streamId=1",
+        "https://stream.platform.prod.us-west-2.tunein.com/listen.stream?streamId=2",
+        "https://tunein-live-e.cdnstream1.com/11447_TIN.mp3",
+    ]
+    assert tunein.best_stream(streams) == "https://tunein-live-e.cdnstream1.com/11447_TIN.mp3"
+
+
+def test_best_stream_falls_back_to_first_when_all_redirects() -> None:
+    streams = [
+        "https://stream.platform.prod.us-west-2.tunein.com/listen.stream?streamId=1",
+        "https://stream.platform.prod.us-west-2.tunein.com/listen.stream?streamId=2",
+    ]
+    assert tunein.best_stream(streams) == streams[0]
+    assert tunein.best_stream([]) == ""
+
+
 def test_search_empty_query_makes_no_request(monkeypatch) -> None:
     monkeypatch.setattr(
         tunein, "_fetch", lambda url: (_ for _ in ()).throw(AssertionError("no net"))

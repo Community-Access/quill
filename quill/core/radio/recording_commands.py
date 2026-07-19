@@ -47,6 +47,7 @@ def format_uses_bitrate(format: str) -> bool:
     """
     return format in BITRATE_FORMATS
 
+
 #: The raw-capture container extension for a probed source codec. Common codecs
 #: get their natural elementary-stream extension so the file opens anywhere;
 #: anything else falls back to Matroska audio (``.mka``), which stream-copies
@@ -108,6 +109,7 @@ def uniquify(path: Path) -> Path:
     # Pathological fallback (999 same-name files): keep the original; -y is gone
     # so ffmpeg would refuse to overwrite, but we never expect to reach here.
     return path
+
 
 def build_record_command(
     ffmpeg: str,

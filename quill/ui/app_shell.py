@@ -78,9 +78,7 @@ class AppShellFrame:
         if bar is not None:
             bar.SetStatusText(message)
 
-    def _show_message_box(
-        self, message: str, caption: str, style: int | None = None
-    ) -> int:
+    def _show_message_box(self, message: str, caption: str, style: int | None = None) -> int:
         if style is None:  # plain OK box like wx.MessageBox; None used to crash
             style = wx.OK | wx.ICON_INFORMATION
         self._region_tracker.enter(caption)
@@ -620,9 +618,11 @@ class AppShellFrame:
         from quill.ui.dialog_contract import apply_modal_ids
 
         self._announce(f"Update {release.version} downloaded")
-        applyable = str(target).lower().endswith(
-            (".exe", ".msi", ".zip")
-        ) and sys.platform.startswith("win")
+        applyable = str(target).lower().endswith((
+            ".exe",
+            ".msi",
+            ".zip",
+        )) and sys.platform.startswith("win")
         if applyable:
             action_line = (
                 "Select 'Install and restart now' to update and relaunch "

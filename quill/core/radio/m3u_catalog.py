@@ -45,10 +45,34 @@ CATALOG_CREDIT = "the community M3U catalog by junguler"
 #: Shown if the live genre listing can't be fetched (offline / rate-limited), so
 #: the feature still works with the repo's long-standing genre files.
 _FALLBACK_GENRES: tuple[str, ...] = (
-    "60s", "70s", "80s", "90s", "alternative", "ambient", "blues", "classical",
-    "country", "dance", "electronic", "folk", "funk", "hip_hop", "house", "indie",
-    "jazz", "latin", "lounge", "metal", "oldies", "pop", "punk", "reggae", "rock",
-    "soul", "techno", "world",
+    "60s",
+    "70s",
+    "80s",
+    "90s",
+    "alternative",
+    "ambient",
+    "blues",
+    "classical",
+    "country",
+    "dance",
+    "electronic",
+    "folk",
+    "funk",
+    "hip_hop",
+    "house",
+    "indie",
+    "jazz",
+    "latin",
+    "lounge",
+    "metal",
+    "oldies",
+    "pop",
+    "punk",
+    "reggae",
+    "rock",
+    "soul",
+    "techno",
+    "world",
 )
 
 
