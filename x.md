@@ -1379,4 +1379,180 @@ Process and quality:
 - Timers: the family default of 2 s polling UI timers (recordings
   dialog) should give way to event-driven updates via the existing
   callback contracts; write it into the toolkit's UI guidelines.
+
+## 24. Installer strategy and execution state (2026-07-17, current)
+
+### Lean vs full: decided direction
+
+One embeddable-Python-plus-pip payload, delivered as two installer
+variants - exactly what QUILL already does (standard vs Offline Edition;
+the two portable zips in S:\QUILL prove it).
+
+- Standard installer = LEAN (the default). Ships the runtime + core +
+  ffmpeg/mpv (basic audio must work offline), and DOWNLOADS neural
+  engines (Kokoro, Whisper, Vosk) and optional voices on demand via
+  Voices > Download Optional Components. Small download. This is the
+  answer to "people want a smaller install and download components."
+- Offline installer = FULL (a second, additive artifact). Same payload
+  plus a staged wheelhouse (wheels\kokoro, wheels\faster-whisper,
+  wheels\vosk, wheels\mp3) and the engine binaries, for field/ACB use
+  without reliable internet. QUILL's engine_install.py already looks for
+  {app}\wheels\<name>, so this is staging, not new code.
+- "Lean now, full later" is zero-risk to the now: the offline variant is
+  a superset build that does not change the lean one. Lean ships first;
+  offline improves later.
+
+The hard prerequisite for lean to WORK is that the installer wraps the
+embeddable-Python-plus-pip payload (so on-demand downloads can run). This
+is the crux fix below.
+
+### The Audio Studio installer must switch payloads
+
+Today build_release.ps1 produces BOTH the portable zip and the system
+installer from the PyInstaller freeze (dist\QuillAudioStudio, _internal,
+no pip). That frozen build is the exact artifact the portable script's
+docstring calls "the root cause of the Kokoro/audio breakage" - it cannot
+run on-demand engine installs. So the installed Audio Studio is broken
+for engines, and today's dependency fixes (below) only reach the ZIP.
+
+Fix (the golden installer): restructure so ONE embeddable-Python payload
+(build_studio_portable.py output) feeds both artifacts, mirroring QUILL:
+- portable zip = payload WITH data\ (portable mode);
+- installer = same payload WITHOUT data\ (installed mode -> %APPDATA%\Quill),
+  .iss [Files] Source pointed at dist\QuillAudioStudio-portable\QuillAudioStudio;
+- retire the PyInstaller spec + freeze path for AS;
+- lean by default (exclude the heavy engine/wheel trees), offline variant
+  additive.
+This needs a real build + install + launch to validate, so it is NOT a
+blind edit - do it in a validated build session, not as a "no-risk-now"
+change.
+
+### Per-app installer verdict (payload today)
+
+- QUILL: wraps ..\portable\* (embeddable Python + pip + wheels\ offline
+  cache). GOLDEN - lean install with working + offline downloads.
+- Quill Radio: wraps a PyInstaller freeze; no runtime pip needed
+  (libmpv/ffmpeg staged natively). GOLDEN.
+- Quill Cast: PyInstaller freeze; ffmpeg staged, libmpv intentionally
+  absent (wx.media fallback). GOLDEN.
+- Audio Studio: PyInstaller freeze - NOT golden (needs runtime pip for
+  engines but has none). Fix = switch to the embeddable payload above.
+
+### Done now (safe, no commits yet)
+
+- AS dependency completeness: pyproject.toml gained speech
+  (sounddevice), elevenlabs, feedback (feedback-hub), audio (sound_lib)
+  extras; build_studio_portable.py now bundles base + ui + ssh + speech
+  + feedback + audio (was base + ui only). paramiko pulls cryptography,
+  fixing the PuTTY-key hard-import crash path. Validated by a real build:
+  all 23 requirements install into the bundle and the app imports under
+  the bundle's own Python. Fixes SFTP publish, mic capture / cloud-TTS
+  preview, earcon mixing, and the accessible Report-a-Bug dialog.
+- ElevenLabs is deliberately NOT bundled: the SDK ships auto-generated
+  filenames long enough to exceed the Windows 260-char path limit under
+  the deep bundle tree, which breaks BOTH the ISCC installer compile and
+  the zip step (and even blocks deletion). It is optional cloud TTS that
+  needs a user API key anyway, so it is now on-demand like the neural
+  engines (extra still declared for a future in-app installer). Caught by
+  the validated build, not on a user machine.
+- build_studio_portable.py tool staging now HARD-FAILS if ffmpeg is
+  absent (searches QAS_TOOLS_DIR, repo tools\, then legacy C:\qas) - no
+  more silent shipping of a build with no audio.
+- Vendor tooling hardened: vendor_from_quill.py rewrite() now covers
+  quill.build_info / branding / __main__ / _feedback_token (the class of
+  imports that became perpetual hand-fixed deltas and ImportErrors on
+  re-vendor); PRESERVE now protects the genuinely-behavioral deltas
+  (storage_mode, diagnostics, accessibility_agent, ai/__init__). Verified
+  by direct rewrite() checks. The next re-vendor is now safe.
+
+### Needs a validated build (do in a build session, not blind)
+
+- AS installer payload switch (above) + lean/offline variants.
+- Full build-install-launch of AS to prove SFTP/ElevenLabs/preview/
+  bug-dialog reachability and on-demand engine install in the INSTALLED
+  build.
+- Offline wheelhouse staging for the FULL variant.
+
+### Needs a tested PR into quill (branch; main is protected)
+
+- Data-store hardening (preserve-unknown-fields, rewrite-only-on-legacy,
+  last-writer stamp) - shared-store correctness, must run the GATE suite.
+- AS P1 feature fixes upstream (library ingestion, speaking _set_status,
+  context-menu crash, queue double-advance, sleep-timer end-of-chapter,
+  Reveal, Favorite/Move honesty, resume default).
+- The two shared _show_message_box crashes (chapter_workbench.py:781,
+  publish_dialog.py:610).
+
+### Needs an explicit go (hygiene)
+
+- git init + first commit in S:\qrm (entire repo unversioned).
+- Commit the S:\QUILL-AS working-tree deltas (vendoring fixes + today's
+  dependency/tooling edits), now that PRESERVE protects them.
  
+## 25. Queued: reverse-vendor Audio Studio into quill/apps/ (post-release)
+
+Committed direction (section 17-18, Option D). Do this immediately AFTER the
+Audio Studio 1.0.0 / Quill Radio 2.0.0 build wave ships, not during it. The
+feature code (quill/core/audio_studio, quill/ui/audio_studio, speech, publish)
+already lives in QUILL as the source of truth; quillas/ is only a vendored
+snapshot, so this is a small lift, not a rewrite.
+
+End state: Audio Studio is quill/apps/studio.py (beside radio.py, podcasts.py);
+quill-audio-studio becomes a thin wrapper (launcher + spec + installer + docs)
+pinned to a QUILL tag; the 283-file quillas/ closure and the vendor tooling are
+deleted; the GATE suite covers Audio Studio automatically.
+
+Ordered tasks:
+
+Phase A - land the app in quill/ (one branch, PR to main):
+1. Move quillas/apps/studio.py -> quill/apps/studio.py, rewriting quillas.* ->
+   quill.* imports. Add the entry point quill.apps.studio:main (mirror
+   radio.py/podcasts.py) and register it wherever radio/podcasts are.
+2. Upstream the app-owned deltas that only existed in quillas (so nothing is
+   lost when the closure is deleted). From the vendor design doc "Upstream sync
+   policy" + this session's PRESERVE list:
+   - core/recent.py remove_recent_audiobook_file (already upstreamed - verify).
+   - ui/main_frame_speech_downloads.py _optional_component_allowlist opt-in
+     attribute (MainFrame keeps the full list; the Studio sets the six).
+   - core/storage_mode.py: QuillAudioStudio.exe portable detection.
+   - The lazy-glow shims (core/diagnostics.py, core/accessibility_agent.py) OR,
+     better, land the audio-studio-optimization Phase 1 guarding upstream so the
+     denylist works without per-file deltas (preferred - removes the shims).
+   - core/feedback_token.py bundled-token import (build_info/branding wired to
+     quill's own).
+3. Move the standalone-only tests (tests/unit/ui/test_studio_shell_*,
+   test_no_stray_quill_imports is obsolete once vendoring is gone) into QUILL's
+   suite, rewriting imports. Delete the reachability analyzer.
+4. GATE compliance for the new app: register studio.py's dialogs in the dialog
+   inventory, run accessible_name_audit, persistence_audit (audio_studio save
+   sites already classified as content), and module_size_budget (studio.py is a
+   new tracked file - give it a deliberate entry, ratchet-down thereafter).
+   pytest -q green in QUILL.
+
+Phase B - turn quill-audio-studio into a thin wrapper:
+5. Replace quillas/ with a ~55-line quill_audio_studio/__init__.py that exports
+   QUILL_APP_ROOT/QUILL_PORTABLE and calls quill.apps.studio.main (mirror
+   quill_radio/__init__.py). Delete the vendored closure, scripts/vendor_*.py,
+   scripts/analyze_reachability.py, and the vendored test tree.
+6. pyproject: dependencies = ["quill[ui] @ git+...@<QUILL tag>"] (pinned like
+   Radio/Cast). Keep the audio extras (ssh/speech/feedback/audio) so the
+   wrapper build installs them - or fold them into quill's bundled groups.
+7. Packaging decision (section 3/17 "split by need"): Audio Studio needs the
+   pip-capable embeddable-Python payload for on-demand engines. Either (a) keep
+   build_studio_portable.py + build_release.ps1 in the wrapper (they already
+   produce the right artifact), or (b) hook Audio Studio into QUILL's
+   build_windows_distribution.py (which is the embeddable-Python builder) as a
+   second app target. (a) is less work and already proven this release.
+8. Installer: the quill-audio-studio.iss already wraps the embeddable payload;
+   keep it in the wrapper.
+
+Phase C - validate and cut over:
+9. Build the wrapper (portable + installer, token-embedded), install, launch,
+   exercise: a narrate run, the Workbench, a voice preview + on-demand Kokoro
+   install, SFTP publish reachability, the library, sleep/queue/media keys.
+10. Tag QUILL, pin the wrapper to that tag, ship. Retire the vendoring docs.
+
+Risk notes: this is safe to do because the feature code is unchanged (it is
+already in quill/); the only genuinely new code moving is studio.py + app_shell
+deltas. The main work is GATE registration and the wrapper conversion. Do it on
+a branch with the full QUILL suite + GATE green before merging.
