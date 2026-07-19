@@ -236,6 +236,21 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "verified TLS context with a bounded timeout. Disabled in Safe Mode "
         "via soma_fm.refuse_in_safe_mode."
     ),
+    "core/weather/_http.py::http_json": (
+        "Single egress chokepoint for QUILL Weather (the top-level Weather "
+        "menu, a text-first accessible weather view -- QUILL-Weather-PRD.md). "
+        "Two free, no-account providers are reached through it: Zippopotam.us "
+        "(geocoding.py -- resolves a US ZIP or city/state the user typed to "
+        "coordinates) and the National Weather Service api.weather.gov (nws.py "
+        "-- point metadata, period forecast, latest observation, and active "
+        "watches/warnings/advisories). Reached only by an explicit user action "
+        "(adding a location, opening Weather Now, or Refresh); the refresh "
+        "cadence never polls alerts more than once per 30 seconds per NWS "
+        "guidance. HTTPS-only over a verified TLS context with a bounded "
+        "timeout and an identifying User-Agent (which NWS requires); no key or "
+        "credential is ever sent. Disabled in Safe Mode via "
+        "nws.refuse_in_safe_mode / geocoding.refuse_in_safe_mode."
+    ),
     "core/mastodon/client.py::_http_json": (
         "Single egress site for the 'Post to Mastodon' feature. Reached only by an "
         "explicit user action -- adding an account (app registration + OAuth token "

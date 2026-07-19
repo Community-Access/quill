@@ -19,6 +19,7 @@ from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
+from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
 _VERSION = "2.1.0"
@@ -70,7 +71,9 @@ _ENGINE_HELP = (
 )
 
 
-class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin):
+class RadioAppFrame(
+    AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin, WeatherMixin
+):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_radio()
@@ -758,6 +761,8 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=settings_id
         )
         menu_bar.Append(record_menu, "&Record")
+
+        self._append_weather_menu(menu_bar)
 
         # Unlock-gated: a top-level Audio Description Project menu, absent
         # entirely until future.adp_assistant is unlocked (Help > Redeem
