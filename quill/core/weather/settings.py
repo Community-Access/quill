@@ -38,7 +38,9 @@ class WeatherSettings:
     # -- Weather Now layout --
     #: Section order/visibility; a section absent from the list is hidden.
     section_order: list[str] = field(default_factory=_default_sections)
-    forecast_period_count: int = 7
+    #: 14 periods = the full ~7-day NWS forecast (day + night for each). NWS's
+    #: public forecast product does not extend beyond about 7 days.
+    forecast_period_count: int = 14
     show_detailed_forecast: bool = True
 
     # -- alerts (PRD 13.3) --

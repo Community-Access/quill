@@ -43,6 +43,26 @@ def test_alert_list_label() -> None:
     assert wcd._alert_list_label(alert) == "Tornado Warning -- Pima, AZ -- Critical"
 
 
+def test_period_detail_text_leads_with_day_and_temp() -> None:
+    p = ForecastPeriod(
+        "This Afternoon", 96, "F", "Hot", detailed_forecast="Very hot, high near 96."
+    )
+    text = wcd._period_detail_text(p)
+    assert text.startswith("This Afternoon: 96 deg F")  # day + temp at the top
+    assert "Very hot, high near 96." in text  # then the full detail, copyable
+
+
+def test_weather_center_has_labels_before_each_readonly_field(app, tmp_path) -> None:
+    # A StaticText immediately before each read-only field is what names it for
+    # a screen reader; every detail field must have one.
+    dlg = WeatherCenterDialog(
+        None, data_dir=tmp_path, task_manager=_FakeTaskManager(), safe_mode=False
+    )
+    assert dlg._alert_detail_label.GetLabelText()
+    assert dlg._period_detail_label.GetLabelText()
+    dlg.dialog.Destroy()
+
+
 def test_alert_detail_text_includes_instructions() -> None:
     alert = WeatherAlert(
         "i",

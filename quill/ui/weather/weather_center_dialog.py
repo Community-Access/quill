@@ -34,6 +34,14 @@ def _alert_list_label(alert: Any) -> str:
     return " -- ".join(b for b in bits if b)
 
 
+def _period_detail_text(period: Any) -> str:
+    """A forecast period as a self-contained, copyable block: the day name and
+    temperature at the top, then the full detailed forecast."""
+    head = f"{period.name}: {period.temperature} deg {period.temperature_unit}"
+    body = period.detailed_forecast or period.short_forecast
+    return f"{head}\n{body}" if body else head
+
+
 def _alert_detail_text(alert: Any) -> str:
     """The full official alert: headline, instructions, description, timing."""
     lines = [alert.headline or alert.event]
@@ -111,6 +119,11 @@ class WeatherCenterDialog:
         self._alerts_list = wx.ListBox(self.dialog)
         set_accessible_name(self._alerts_list, "Active weather alerts")
         root.Add(self._alerts_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        # A StaticText immediately before the field is what actually names a
+        # read-only TextCtrl for a screen reader (the ADP dialog's pattern);
+        # set_accessible_name alone does not stick on a read-only multiline box.
+        self._alert_detail_label = wx.StaticText(self.dialog, label="Selected aler&t (read-only):")
+        root.Add(self._alert_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._alert_detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
@@ -133,11 +146,15 @@ class WeatherCenterDialog:
         self._forecast_list = wx.ListBox(self.dialog)
         set_accessible_name(self._forecast_list, "Forecast periods")
         root.Add(self._forecast_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        self._period_detail_label = wx.StaticText(
+            self.dialog, label="Selected &period (read-only):"
+        )
+        root.Add(self._period_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._period_detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._period_detail, "Selected forecast period, details")
-        self._period_detail.SetMinSize((-1, 60))
+        self._period_detail.SetMinSize((-1, 72))
         root.Add(self._period_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- status + close --
@@ -240,10 +257,13 @@ class WeatherCenterDialog:
         )
         self._alert_detail.SetValue(_alert_detail_text(alerts[0]) if alerts else "")
 
+        place = location.resolved_name or location.label
         if result.current is not None:
-            self._current.SetValue(render.current_conditions_line(result.current, self._settings))
+            line = render.current_conditions_line(result.current, self._settings)
+            when = f" (observed {result.current.observed_at})" if result.current.observed_at else ""
+            self._current.SetValue(f"{place} -- current conditions: {line}{when}")
         else:
-            self._current.SetValue("Current conditions are unavailable right now.")
+            self._current.SetValue(f"{place} -- current conditions are unavailable right now.")
 
         periods = result.periods[: self._settings.forecast_period_count]
         self._forecast_list.Set(
@@ -253,11 +273,7 @@ class WeatherCenterDialog:
             ]
             or ["Forecast unavailable."]
         )
-        self._period_detail.SetValue(
-            periods[0].detailed_forecast
-            if periods and self._settings.show_detailed_forecast
-            else ""
-        )
+        self._period_detail.SetValue(_period_detail_text(periods[0]) if periods else "")
         self._status.SetValue(self._status_line(result))
 
         n = len(alerts)
@@ -295,7 +311,7 @@ class WeatherCenterDialog:
         index = self._forecast_list.GetSelection()
         periods = self._report.periods[: self._settings.forecast_period_count]
         if 0 <= index < len(periods):
-            self._period_detail.SetValue(periods[index].detailed_forecast)
+            self._period_detail.SetValue(_period_detail_text(periods[index]))
 
     # -- sub-dialogs ------------------------------------------------------------
 
