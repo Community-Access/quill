@@ -102,6 +102,51 @@ def test_search_stations_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(stations) == 1 and stations[0].name == "WXYZ"
 
 
+def test_noaa_weather_stations_searches_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The 'weather' tag is noise; NWR re-streams are found by name instead.
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+
+    def fake_urlopen(request, *a, **k):
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        payload = json.dumps([{"name": "NOAA Weather Radio KHB60 Seattle", "url": "https://x/w"}])
+        return _FakeResponse(payload.encode())
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    stations = rb.noaa_weather_stations(limit=25)
+    assert "NOAA" in seen["url"]  # queried by name (URL-encoded), not the weather tag
+    assert "tag=weather" not in seen["url"]
+    assert [s.name for s in stations] == ["NOAA Weather Radio KHB60 Seattle"]
+
+
+def test_popular_stations_hits_topvote_and_parses(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+
+    def fake_urlopen(request, *a, **k):
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        return _FakeResponse(json.dumps([{"name": "Top FM", "url": "https://x/stream"}]).encode())
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    stations = rb.popular_stations(limit=50)
+    assert "/json/stations/topvote/50" in seen["url"]
+    assert [s.name for s in stations] == ["Top FM"]
+
+
+def test_popular_stations_clamps_limit_and_refuses_in_safe_mode(monkeypatch) -> None:
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+    monkeypatch.setattr(
+        rb.urllib.request,
+        "urlopen",
+        lambda request, *a, **k: seen.update(url=request.full_url) or _FakeResponse(b"[]"),
+    )
+    rb.popular_stations(limit=9999)
+    assert "/json/stations/topvote/200" in seen["url"]  # clamped to 200
+    with pytest.raises(rb.RadioBrowserError):
+        rb.popular_stations(safe_mode=True)
+
+
 def test_search_stations_passes_limit_and_offset(monkeypatch: pytest.MonkeyPatch) -> None:
     # #1064 pagination: a caller can ask for a page beyond the first.
     _stub_mirrors(monkeypatch, ["mirror1.example.com"])

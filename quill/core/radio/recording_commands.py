@@ -32,6 +32,22 @@ RECORD_FORMAT_LABELS: dict[str, str] = {
 }
 _CODECS = {"mp3": "libmp3lame", "ogg": "libvorbis", "flac": "flac", "wav": "pcm_s16le"}
 
+#: Formats that re-encode to a lossy codec, so the chosen bitrate matters.
+#: Lossless re-encodes (flac/wav) and the raw stream copy ignore it entirely
+#: (see ``build_record_command``: ``-b:a`` is only emitted for these).
+BITRATE_FORMATS = ("mp3", "ogg")
+
+
+def format_uses_bitrate(format: str) -> bool:
+    """Whether a recording *format* honours the bitrate setting (pure).
+
+    False for the raw stream copy and the lossless re-encodes, so the Recording
+    Settings dialog can hide the bitrate control when it would do nothing
+    (#1155 -- a bitrate box under Raw stream is confusing UX).
+    """
+    return format in BITRATE_FORMATS
+
+
 #: The raw-capture container extension for a probed source codec. Common codecs
 #: get their natural elementary-stream extension so the file opens anywhere;
 #: anything else falls back to Matroska audio (``.mka``), which stream-copies
@@ -93,6 +109,7 @@ def uniquify(path: Path) -> Path:
     # Pathological fallback (999 same-name files): keep the original; -y is gone
     # so ffmpeg would refuse to overwrite, but we never expect to reach here.
     return path
+
 
 def build_record_command(
     ffmpeg: str,

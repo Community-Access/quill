@@ -61,8 +61,87 @@ def _favorites_key_frame() -> tuple[SimpleNamespace, list[str]]:
         _on_favorites_activated=lambda _e: calls.append("activated"),
         _on_tree_remove=lambda: calls.append("remove"),
         _on_tree_rename=lambda: calls.append("rename"),
+        _move_selected_favorite=lambda delta: calls.append(f"move:{delta}"),
     )
     return frame, calls
+
+
+def test_alt_shift_up_down_reorder_via_char_hook_when_tree_focused(monkeypatch) -> None:
+    # Handled in the frame char hook (Windows steals Alt+arrow from the tree's
+    # own key handler), and only when the favorites tree has focus.
+    calls: list[str] = []
+    tree = object()
+    frame = SimpleNamespace(
+        _favorites_tree=tree,
+        _move_selected_favorite=lambda delta: calls.append(f"move:{delta}"),
+        _radio_history=SimpleNamespace(alt_f4_to_tray=False),
+        _send_to_tray=lambda: calls.append("tray"),
+    )
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: tree))
+    up, _sk = _key_event(wx.WXK_UP, alt=True, shift=True)
+    RadioAppFrame._on_radio_char_hook(frame, up)  # type: ignore[arg-type]
+    down, _sk2 = _key_event(wx.WXK_DOWN, alt=True, shift=True)
+    RadioAppFrame._on_radio_char_hook(frame, down)  # type: ignore[arg-type]
+    assert calls == ["move:-1", "move:1"]
+
+
+def test_alt_shift_ignored_when_tree_not_focused(monkeypatch) -> None:
+    calls: list[str] = []
+    frame = SimpleNamespace(
+        _favorites_tree=object(),
+        _move_selected_favorite=lambda delta: calls.append(f"move:{delta}"),
+        _radio_history=SimpleNamespace(alt_f4_to_tray=False),
+        _send_to_tray=lambda: None,
+    )
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: object()))  # something else
+    up, skipped = _key_event(wx.WXK_UP, alt=True, shift=True)
+    RadioAppFrame._on_radio_char_hook(frame, up)  # type: ignore[arg-type]
+    assert calls == [] and skipped == [True]  # passes through untouched
+
+
+def _move_frame(*, folder_sort: str, moved: bool = True):
+    calls: list[str] = []
+    favorite = SimpleNamespace(key="k1", folder="")
+    store = SimpleNamespace(
+        move=lambda key, *, delta: calls.append(f"store.move({delta})") or moved,
+    )
+    frame = SimpleNamespace(
+        _selected_favorite=lambda: favorite,
+        _radio_history=SimpleNamespace(folder_sort_orders={}, favorites_sort=folder_sort),
+        _radio_favorites=store,
+        _announce=lambda m: calls.append(f"say:{m}"),
+        _save_radio_favorites=lambda: calls.append("save"),
+        _reload_favorites_tree=lambda keep_key=None: calls.append(f"reload:{keep_key}"),
+    )
+    return frame, calls
+
+
+def test_move_favorite_manual_order_reorders_and_announces(monkeypatch) -> None:
+    # move_announcement is imported inside the method; stub it to a known phrase.
+    import quill.ui.radio.favorites_manager_dialog as fm
+
+    monkeypatch.setattr(
+        fm, "move_announcement", lambda store, key, delta: "Moved down, now above X"
+    )
+    frame, calls = _move_frame(folder_sort="manual")
+    RadioAppFrame._move_selected_favorite(frame, 1)  # type: ignore[arg-type]
+    assert "store.move(1)" in calls
+    assert any("Moved down, now above X" in c for c in calls)
+    assert "save" in calls and "reload:k1" in calls
+
+
+def test_move_favorite_blocked_when_not_manual_order() -> None:
+    frame, calls = _move_frame(folder_sort="az")
+    RadioAppFrame._move_selected_favorite(frame, -1)  # type: ignore[arg-type]
+    assert not any("store.move" in c for c in calls)  # nothing moved
+    assert any("manual order" in c.lower() for c in calls)  # told how to enable it
+
+
+def test_move_favorite_at_edge_announces_and_does_not_reload() -> None:
+    frame, calls = _move_frame(folder_sort="manual", moved=False)
+    RadioAppFrame._move_selected_favorite(frame, -1)  # type: ignore[arg-type]
+    assert any("edge" in c.lower() for c in calls)
+    assert not any(c.startswith("reload") for c in calls)
 
 
 def test_ctrl_up_triggers_volume_up_without_skipping() -> None:
@@ -127,6 +206,80 @@ def test_f2_still_renames_alongside_the_new_volume_handling() -> None:
 
     assert calls == ["rename"]
     assert skipped == []
+
+
+# ---------------------------------------------------------------------------
+# NFB Radio on the Station menu, alongside ACB Media
+# ---------------------------------------------------------------------------
+
+
+def test_nfb_radio_appears_on_station_menu_and_plays_nfbrn() -> None:
+    from quill.ui.main_frame_radio import RadioMixin
+
+    played: list[str] = []
+    binds: list = []
+
+    class _FakeMenu:
+        def __init__(self) -> None:
+            self.items: list = []
+
+        def Append(self, item_id, label):  # noqa: N802 - wx shape
+            self.items.append((item_id, label))
+
+        def Bind(self, _evt, handler, id=None):  # noqa: N802, A002
+            binds.append((id, handler))
+
+        def AppendSubMenu(self, submenu, label):  # noqa: N802
+            self.items.append((None, label))
+
+    frame = SimpleNamespace(
+        _wx=SimpleNamespace(NewIdRef=lambda: object(), EVT_MENU="evt", Menu=_FakeMenu),
+        _radio_controller=SimpleNamespace(play_station=lambda s: played.append(s.name)),
+        _retain_radio_menu_ids=lambda *a: None,
+    )
+    menu = _FakeMenu()
+    RadioMixin._append_nfb_media_submenu(frame, menu)  # type: ignore[arg-type]
+
+    assert any("NFB" in label for _id, label in menu.items), "NFB item added to Station menu"
+    binds[-1][1](None)  # invoke the menu handler
+    assert any("NFBRN" in name for name in played), "playing it starts the NFBRN stream"
+
+
+# ---------------------------------------------------------------------------
+# Volume changes persist a favorite's level WITHOUT reloading the tree (#1154)
+# ---------------------------------------------------------------------------
+
+
+def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1154: adjusting the volume of a playing favorite persists the new level
+    # to disk, but must NOT go through _save_radio_favorites -- whose standalone
+    # override rebuilds the favorites tree and makes the screen reader
+    # re-announce the station on every Volume Up/Down keystroke. It uses the
+    # disk-only _persist_radio_favorites instead.
+    from quill.ui.main_frame_radio import RadioMixin
+
+    calls: list[str] = []
+    favorite = SimpleNamespace(volume_percent=50)
+    frame = SimpleNamespace(
+        _radio_history_key="uuid-1",
+        _radio_favorites=SimpleNamespace(
+            find=lambda _key: favorite,
+            set_volume=lambda _key, vol: calls.append(f"set_volume={vol}"),
+        ),
+        _save_radio_favorites=lambda: calls.append("save_radio_favorites(RELOADS TREE)"),
+        _persist_radio_favorites=lambda: calls.append("persist_radio_favorites(disk only)"),
+    )
+    state = SimpleNamespace(
+        station=SimpleNamespace(station_uuid="uuid-1", stream_url="s"),
+        muted=False,
+        volume_percent=60,
+    )
+
+    RadioMixin._radio_track_history_and_volume(frame, state)  # type: ignore[arg-type]
+
+    assert "set_volume=60" in calls
+    assert "persist_radio_favorites(disk only)" in calls
+    assert "save_radio_favorites(RELOADS TREE)" not in calls
 
 
 # ---------------------------------------------------------------------------
@@ -263,6 +416,36 @@ def test_close_prompts_when_recording_or_playback_active(
     assert skipped == []
     assert calls == [], "a vetoed close must not run shutdown"
     assert frame._closing_in_progress is False, "guard must reset after the dialog closes"
+
+
+def test_exit_after_recording_completes_the_close(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1153: after making a recording, choosing Exit must actually exit -- run
+    # every shutdown step and skip the close event -- not hang the app. The
+    # shutdowns are all non-blocking (recorder stops on daemon threads, the mpv
+    # engine soft-stops, the enhancement relay is a threading server), so the
+    # close path returns and the frame is destroyed.
+    frame, calls = _close_frame(
+        monkeypatch, recording_active=True, player_state=RadioPlayerState.PLAYING
+    )
+
+    orig_init = _FakeCloseConfirmDialog.__init__
+
+    def _init_with_exit(self: _FakeCloseConfirmDialog, *a: object, **k: object) -> None:
+        orig_init(self, *a, **k)
+        self.result = ("exit", False)
+
+    monkeypatch.setattr(_FakeCloseConfirmDialog, "__init__", _init_with_exit)
+    event, skipped, vetoed = _close_event()
+
+    frame._on_radio_app_close(event)
+
+    assert skipped == [True], "Exit after recording must proceed to a real exit"
+    assert vetoed == []
+    assert "controller.shutdown" in calls
+    assert "recorder.shutdown" in calls
+    assert "scheduler.shutdown" in calls
+    assert "task_manager.shutdown(wait=False)" in calls
+    assert frame._closing_in_progress is False
 
 
 def test_dont_ask_again_persists_close_action_and_minimizes(

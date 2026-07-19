@@ -748,7 +748,20 @@ class UpdatesMixin:
         wx = self._wx
         runnable = target.suffix.lower() in {".exe", ".msi"} and sys.platform.startswith("win")
         extractable = target.suffix.lower() == ".zip"
-        if runnable:
+        # On Windows, any real asset can be applied and relaunched in one click
+        # (installed => silent installer; portable => copy-over helper). Non-Windows
+        # keeps the older reveal/extract behavior.
+        applyable = sys.platform.startswith("win") and target.suffix.lower() in {
+            ".exe",
+            ".msi",
+            ".zip",
+        }
+        if applyable:
+            action_line = (
+                "Select 'Install and restart now' to update and relaunch "
+                "automatically -- your settings and data are kept -- or "
+            )
+        elif runnable:
             action_line = "Select 'Install now' to close Quill and run the installer, or "
         elif extractable:
             action_line = "Select 'Extract now' to unzip it into a ready-to-run folder, or "
@@ -779,7 +792,12 @@ class UpdatesMixin:
         folder_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OPEN))
         btn_sizer.Add(close_btn, 0, wx.RIGHT, 6)
         btn_sizer.Add(folder_btn, 0, wx.RIGHT, 6)
-        if runnable:
+        if applyable:
+            apply_btn = wx.Button(dialog, wx.ID_OK, label="Install and restart now")
+            apply_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
+            apply_btn.SetDefault()
+            btn_sizer.Add(apply_btn, 0)
+        elif runnable:
             install_btn = wx.Button(dialog, wx.ID_OK, label="Install now...")
             install_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
             install_btn.SetDefault()
@@ -793,7 +811,7 @@ class UpdatesMixin:
             close_btn.SetDefault()
         sizer.Add(btn_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
         dialog.SetSizer(sizer)
-        affirmative = wx.ID_OK if (runnable or extractable) else wx.ID_OPEN
+        affirmative = wx.ID_OK if (applyable or runnable or extractable) else wx.ID_OPEN
         apply_modal_ids(dialog, affirmative_id=affirmative, escape_id=wx.ID_CANCEL)
         wx.CallAfter(body.SetFocus)
         try:
@@ -802,10 +820,30 @@ class UpdatesMixin:
             dialog.Destroy()
         if result == wx.ID_OPEN:
             self._reveal_in_folder(target)
+        elif result == wx.ID_OK and applyable:
+            self._apply_update_and_restart(release, target)
         elif result == wx.ID_OK and runnable:
             self._launch_installer(target)
         elif result == wx.ID_OK and extractable:
             self._extract_and_reveal_portable_update(release, target)
+
+    def _apply_update_and_restart(self, release: object, target: Path) -> None:
+        """One-click apply + relaunch on Windows; leaves Quill open on failure."""
+        from quill.core.paths import app_data_dir
+        from quill.core.updates import running_portable
+        from quill.ui.update_apply import apply_update_and_restart
+
+        if apply_update_and_restart(
+            target=target,
+            portable=running_portable(),
+            version=str(getattr(release, "version", "")),
+            app_data_dir=app_data_dir(),
+            announce=self._announce,
+            show_error=lambda msg: self._show_message_box(
+                msg, "Update", self._wx.ICON_ERROR | self._wx.OK
+            ),
+        ):
+            self.frame.Close()
 
     def _extract_and_reveal_portable_update(self, release: GitHubRelease, target: Path) -> None:
         """Extract a downloaded portable-update ZIP and reveal the result.

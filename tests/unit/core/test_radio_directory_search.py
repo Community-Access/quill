@@ -114,6 +114,19 @@ def test_iheart_search_filters_by_name_and_resolves(monkeypatch) -> None:
     assert stations[0].station_uuid == "iheart:4846"
 
 
+def test_iheart_search_matches_punctuation_and_id(monkeypatch) -> None:
+    # Issue #1156: slug "1031-austin" -> name "1031 Austin"; a search for the
+    # branded "103.1 Austin" (with the dot) or the bare station id must find it.
+    index = [
+        IHeartStation("8403", "1031 Austin", "1031-austin", "https://iheart/live/1031-austin-8403/")
+    ]
+    monkeypatch.setattr(ds.iheart, "resolve_stream", lambda url, *, safe_mode=False: "https://x")
+    for query in ("103.1 Austin", "1031 austin", "8403", "austin"):
+        assert [s.name for s in ds.iheart_search_stations(index, query)] == ["1031 Austin"], query
+    # A query that shares no token is still rejected.
+    assert ds.iheart_search_stations(index, "seattle") == []
+
+
 def test_iheart_search_respects_cap_and_skips_unresolvable(monkeypatch) -> None:
     def resolve(url, *, safe_mode=False):
         return "" if "delilah" in url else "https://revma/x.m3u8"

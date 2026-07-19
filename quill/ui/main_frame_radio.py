@@ -329,6 +329,20 @@ class RadioMixin:
     def _save_radio_favorites(self) -> None:
         radio_favorites.save_favorites(app_data_dir(), self._radio_favorites)
 
+    def _persist_radio_favorites(self) -> None:
+        """Write favorites to disk WITHOUT touching any favorites UI.
+
+        For background, non-structural updates -- a favorite's remembered
+        volume changing as you hold Volume Up/Down -- where the visible
+        favorites list is unchanged. The standalone app's
+        ``_save_radio_favorites`` rebuilds its favorites tree, which
+        transiently re-selects items and makes the screen reader re-announce
+        the station on every keystroke (#1154). Structural changes (add /
+        remove / rename / move / sort) still go through
+        ``_save_radio_favorites`` so the tree reflects them.
+        """
+        radio_favorites.save_favorites(app_data_dir(), self._radio_favorites)
+
     # -- recording --------------------------------------------------------
 
     def _on_radio_recording_changed(
@@ -647,7 +661,10 @@ class RadioMixin:
             and state.volume_percent != favorite.volume_percent
         ):
             self._radio_favorites.set_volume(key, state.volume_percent)
-            self._save_radio_favorites()
+            # Disk-only (not _save_radio_favorites): the tree shows no volume,
+            # and reloading it here re-announces the station on every Volume
+            # Up/Down keystroke (#1154).
+            self._persist_radio_favorites()
 
     # -- track titles (What's Playing) -----------------------------------------
 
@@ -1175,6 +1192,39 @@ class RadioMixin:
             self._retain_radio_menu_ids(item_id)
         menu.AppendSubMenu(sub, "ACB &Media")
 
+    def _append_nfb_media_submenu(self, menu: object) -> None:
+        """NFB Radio on the Station menu, alongside ACB Media: the National
+        Federation of the Blind Radio Network, playable inline. Bundled, no
+        network to list it. A single station appears as one item; were it ever
+        several, they nest in a submenu like ACB Media."""
+        from quill.core.radio import nfb_media
+
+        wx = self._wx
+        stations = nfb_media.nfb_media_stations()
+        if not stations:
+            return
+        if len(stations) == 1:
+            item_id = wx.NewIdRef()
+            menu.Append(item_id, "NFB &Radio")
+            menu.Bind(
+                wx.EVT_MENU,
+                lambda _e, s=stations[0]: self._radio_controller.play_station(s),
+                id=item_id,
+            )
+            self._retain_radio_menu_ids(item_id)
+            return
+        sub = wx.Menu()
+        for station in stations:
+            item_id = wx.NewIdRef()
+            sub.Append(item_id, station.display_name)
+            sub.Bind(
+                wx.EVT_MENU,
+                lambda _e, s=station: self._radio_controller.play_station(s),
+                id=item_id,
+            )
+            self._retain_radio_menu_ids(item_id)
+        menu.AppendSubMenu(sub, "NFB &Radio")
+
     def _append_radio_favorites_submenu(self, menu: object) -> None:
         wx = self._wx
         favorites = getattr(self, "_radio_favorites", None)
@@ -1515,7 +1565,9 @@ class RadioMixin:
         dlg.show()
         self._refresh_statusbar()
 
-    def open_internet_radio(self) -> None:
+    def open_internet_radio(
+        self, *, initial_category: str | None = None, focus_search: bool = False
+    ) -> None:
         if self._safe_mode:
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
@@ -1532,7 +1584,30 @@ class RadioMixin:
             on_open_add_custom=self._radio_open_add_custom,
             on_open_link_finder=self._radio_open_link_finder,
         )
-        dlg.show()
+        dlg.show(initial_category=initial_category, focus_search=focus_search)
+        self._refresh_statusbar()
+
+    def open_browse_stations(self, *, initial_source: str | None = None) -> None:
+        """The dedicated, search-free Browse Stations tree: every source as a
+        branch you expand to reveal its stations (Search Stations... stays the
+        field-based dialog)."""
+        if self._safe_mode:
+            self._show_message_box(
+                _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
+            )
+            return
+        from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
+
+        dlg = BrowseTreeDialog(
+            self.frame,
+            controller=self._radio_controller,
+            favorites_store=self._radio_favorites,
+            task_manager=self._task_manager,
+            safe_mode=self._safe_mode,
+            announce_cb=self._announce,
+            on_favorites_changed=self._save_radio_favorites,
+        )
+        dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
 
     def _radio_open_add_custom(self, prefill: RadioStation | None) -> None:

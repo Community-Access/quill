@@ -123,16 +123,32 @@ def _best_playlist(playlists: object) -> dict[str, object] | None:
     return min(entries, key=rank)
 
 
+#: Runs of non-alphanumerics -- the separators a search normalises away so
+#: "GrooveSalad", "Groove Salad" and "groove-salad" all match the same channel
+#: (Kelly's report: a known channel was missed because the query's spacing did
+#: not match the title's; mirrors quill.core.radio.iheart._normalize).
+_NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _normalize(text: str) -> str:
+    """Lowercased, alphanumeric-token form of *text* (pure)."""
+    return _NON_ALNUM_RE.sub(" ", text.casefold()).strip()
+
+
 def _channel_matches(channel: dict[str, object], query: str) -> bool:
-    if not query:
+    """Whether *channel* matches *query* over title/description/genre (pure,
+    punctuation- and spacing-insensitive). Empty query matches every channel."""
+    normalized_query = _normalize(query)
+    if not normalized_query:
         return True
-    needle = query.strip().casefold()
-    haystacks = (
-        str(channel.get("title", "")),
-        str(channel.get("description", "")),
-        str(channel.get("genre", "")).replace("|", " "),
+    haystack = " ".join(
+        _normalize(str(channel.get(key, ""))) for key in ("title", "description", "genre")
     )
-    return any(needle in haystack.casefold() for haystack in haystacks)
+    # De-spaced match ("groovesalad" in "...groovesalad...") plus an all-tokens
+    # fallback so a multi-word query in any order still finds the channel.
+    if normalized_query.replace(" ", "") in haystack.replace(" ", ""):
+        return True
+    return all(token in haystack for token in normalized_query.split())
 
 
 def channels_from_json(data: object) -> list[dict[str, object]]:

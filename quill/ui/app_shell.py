@@ -78,9 +78,7 @@ class AppShellFrame:
         if bar is not None:
             bar.SetStatusText(message)
 
-    def _show_message_box(
-        self, message: str, caption: str, style: int | None = None
-    ) -> int:
+    def _show_message_box(self, message: str, caption: str, style: int | None = None) -> int:
         if style is None:  # plain OK box like wx.MessageBox; None used to crash
             style = wx.OK | wx.ICON_INFORMATION
         self._region_tracker.enter(caption)
@@ -620,13 +618,15 @@ class AppShellFrame:
         from quill.ui.dialog_contract import apply_modal_ids
 
         self._announce(f"Update {release.version} downloaded")
-        runnable = str(target).lower().endswith((".exe", ".msi")) and sys.platform.startswith("win")
-        if runnable:
-            action_line = "Select 'Install now' to close this app and run the installer, or "
-        elif str(target).lower().endswith(".zip"):
+        applyable = str(target).lower().endswith((
+            ".exe",
+            ".msi",
+            ".zip",
+        )) and sys.platform.startswith("win")
+        if applyable:
             action_line = (
-                "This is the portable version: close this app, extract the zip "
-                "over (or beside) your current folder, and start it again. "
+                "Select 'Install and restart now' to update and relaunch "
+                "automatically -- your settings and data are kept -- or "
             )
         else:
             action_line = ""
@@ -655,11 +655,11 @@ class AppShellFrame:
         folder_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OPEN))
         buttons.Add(close_btn, 0, wx.RIGHT, 6)
         buttons.Add(folder_btn, 0, wx.RIGHT, 6)
-        if runnable:
-            install_btn = wx.Button(dialog, wx.ID_OK, label="Install now...")
-            install_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
-            install_btn.SetDefault()
-            buttons.Add(install_btn, 0)
+        if applyable:
+            apply_btn = wx.Button(dialog, wx.ID_OK, label="Install and restart now")
+            apply_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
+            apply_btn.SetDefault()
+            buttons.Add(apply_btn, 0)
         else:
             close_btn.SetDefault()
         sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
@@ -671,10 +671,23 @@ class AppShellFrame:
         if result == wx.ID_OPEN:
             subprocess.Popen(["explorer", "/select,", str(target)])  # noqa: S603,S607
             return
-        if result == wx.ID_OK and runnable:
-            import os
+        if result == wx.ID_OK and applyable:
+            self._apply_update_and_restart(release, Path(str(target)))
 
-            os.startfile(str(target))  # noqa: S606 - user chose Install now
+    def _apply_update_and_restart(self, release: object, target: Path) -> None:
+        """Apply the downloaded update and relaunch (one-click). On any failure
+        the app stays open and the user can still Open folder to update by hand."""
+        from quill.core.paths import app_data_dir
+        from quill.ui.update_apply import apply_update_and_restart
+
+        if apply_update_and_restart(
+            target=target,
+            portable=self._running_portable_build(),
+            version=str(getattr(release, "version", "")),
+            app_data_dir=app_data_dir(),
+            announce=self._announce,
+            show_error=lambda msg: self._show_message_box(msg, "Update", wx.ICON_ERROR | wx.OK),
+        ):
             self.frame.Close()
 
     # -- calling back into full QUILL ----------------------------------------

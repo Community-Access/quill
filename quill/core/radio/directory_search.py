@@ -98,7 +98,7 @@ def tunein_search_stations(
         except tunein.TuneInError:
             continue
         if streams:
-            stations.append(tunein.to_radio_station(result, streams[0]))
+            stations.append(tunein.to_radio_station(result, tunein.best_stream(streams)))
     return stations
 
 
@@ -107,19 +107,19 @@ def iheart_search_stations(
 ) -> list[RadioStation]:
     """iHeart stations from *index* matching *name*, as ``source="iHeart"``.
 
-    Filters the already-fetched sitemap *index* by a case-insensitive name
-    substring, then resolves up to *cap* matches to a playable stream (each one
-    station-page GET, so the cap keeps a search cheap). A resolve error or an
-    unresolvable page is skipped.
+    Filters the already-fetched sitemap *index* with
+    :func:`iheart.station_matches` -- a punctuation-insensitive match over each
+    station's name, slug and numeric id -- then resolves up to *cap* matches to a
+    playable stream (each one station-page GET, so the cap keeps a search cheap).
+    A resolve error or an unresolvable page is skipped.
     """
-    lowered = name.strip().lower()
-    if not lowered:
+    if not name.strip():
         return []
     stations: list[RadioStation] = []
     for station in index:
         if len(stations) >= cap:
             break
-        if lowered not in station.name.lower():
+        if not iheart.station_matches(station, name):
             continue
         try:
             stream = iheart.resolve_stream(station.page_url, safe_mode=safe_mode)

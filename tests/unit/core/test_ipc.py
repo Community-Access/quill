@@ -99,6 +99,25 @@ def test_enqueue_show_request(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -
     assert drain_open_requests() == [None]
 
 
+def test_slots_isolate_queues(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # A show request on one app's slot must not be drained by another app's
+    # slot (#1152: Quill Radio, Quill Cast and QUILL share the data dir).
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    enqueue_open_request(None, slot="radio")
+    assert drain_open_requests() == []  # QUILL's default slot sees nothing
+    assert drain_open_requests(slot="cast") == []  # a different app sees nothing
+    assert drain_open_requests(slot="radio") == [None]  # only the radio slot
+    assert drain_open_requests(slot="radio") == []  # drained once
+
+
+def test_slots_isolate_primary_claim(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # Two different apps can each be primary at once; the same app cannot.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    lock_path = ipc._lock_file_path(slot="radio")
+    assert lock_path.name == "instance-radio.lock"
+    assert ipc._lock_file_path().name == "instance.lock"
+
+
 def test_enqueue_and_drain_action(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     image = tmp_path / "scan.png"

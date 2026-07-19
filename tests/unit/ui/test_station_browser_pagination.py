@@ -155,6 +155,30 @@ def test_search_error_reports_and_does_not_crash() -> None:
     assert "Search failed" in dialog._status.label
 
 
+def test_explicit_search_focuses_results() -> None:
+    # Search button / Enter in a text field: land focus on the first result.
+    dialog = _dialog()
+    dialog._focus_results_after_search = True
+    dialog._on_search_done(([_station("a")], []), None)
+    assert dialog._results.focused is True
+
+
+def test_dropdown_pick_does_not_steal_focus() -> None:
+    # Arrowing the Country/Tag dropdown fires a search per keystroke; it must
+    # not fling focus to the results list (quill-radio Browse Stations focus).
+    dialog = _dialog()
+    dialog._focus_results_after_search = False
+    dialog._on_search_done(([_station("a")], []), None)
+    assert dialog._results.focused is False
+
+
+def test_focus_defaults_on_when_flag_unset() -> None:
+    # Backward-compatible default: with no facet context, focus the results.
+    dialog = _dialog()
+    dialog._on_search_done(([_station("a")], []), None)
+    assert dialog._results.focused is True
+
+
 def test_summary_wording() -> None:
     assert _search_result_summary(0) == "No stations found. Try a different name, tag, or country."
     assert _search_result_summary(1) == "1 station found."

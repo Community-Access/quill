@@ -20,18 +20,23 @@ from quill.core.paths import app_data_dir
 _lock_handle: IO[str] | None = None
 
 
-def try_claim_primary_instance() -> bool:
+def try_claim_primary_instance(slot: str = "") -> bool:
     """Return True if this process is now the single primary instance.
 
     Backed by an OS advisory file lock (``flock`` on POSIX, ``msvcrt.locking``
     on Windows) held for the process lifetime — not by a PID written to disk.
     The kernel owns the lock's lifecycle, so a stale lock file is impossible.
+
+    ``slot`` namespaces the lock so sibling apps that share one data dir (QUILL,
+    Quill Radio, Quill Cast) each get their own single-instance guard: the empty
+    default is QUILL's, ``"radio"`` is Quill Radio's, and so on. Two copies of
+    the *same* app collide; two *different* apps do not.
     """
     global _lock_handle
     if _lock_handle is not None:
         return True  # already claimed by this process; idempotent
 
-    lock_path = _lock_file_path()
+    lock_path = _lock_file_path(slot)
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     try:
         # O_RDWR|O_CREAT (no truncate, no append) so writes are positioned and
@@ -58,7 +63,7 @@ def try_claim_primary_instance() -> bool:
     return True
 
 
-def release_primary_instance() -> None:
+def release_primary_instance(slot: str = "") -> None:
     """Release the OS lock (if held) and remove the lock file."""
     global _lock_handle
     handle = _lock_handle
@@ -71,7 +76,7 @@ def release_primary_instance() -> None:
                 handle.close()
             except OSError:
                 pass
-    _lock_file_path().unlink(missing_ok=True)
+    _lock_file_path(slot).unlink(missing_ok=True)
 
 
 def _acquire_os_lock(handle: IO[str]) -> bool:
@@ -134,8 +139,9 @@ def enqueue_open_request(
     line: int | None = None,
     column: int | None = None,
     action: str = "open",
+    slot: str = "",
 ) -> None:
-    queue_path = _queue_file_path()
+    queue_path = _queue_file_path(slot)
     queue_path.parent.mkdir(parents=True, exist_ok=True)
     # H-4-core-2: serialize concurrent writes via a dedicated side-car lock
     # file (*.lock) that always has content at byte 0 so msvcrt.locking can
@@ -158,8 +164,8 @@ def enqueue_open_request(
             handle.flush()
 
 
-def drain_open_requests() -> list[OpenRequest | None]:
-    queue_path = _queue_file_path()
+def drain_open_requests(slot: str = "") -> list[OpenRequest | None]:
+    queue_path = _queue_file_path(slot)
     if not queue_path.exists():
         return []
     lines = queue_path.read_text(encoding="utf-8").splitlines()
@@ -208,9 +214,11 @@ def _queue_write_lock(queue_path: Path) -> Iterator[None]:
         yield
 
 
-def _lock_file_path() -> Path:
-    return app_data_dir() / "ipc" / "instance.lock"
+def _lock_file_path(slot: str = "") -> Path:
+    name = f"instance-{slot}.lock" if slot else "instance.lock"
+    return app_data_dir() / "ipc" / name
 
 
-def _queue_file_path() -> Path:
-    return app_data_dir() / "ipc" / "open-requests.jsonl"
+def _queue_file_path(slot: str = "") -> Path:
+    name = f"open-requests-{slot}.jsonl" if slot else "open-requests.jsonl"
+    return app_data_dir() / "ipc" / name
