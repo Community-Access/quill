@@ -273,7 +273,11 @@ user-set token template
 (<code>{title}</code>/<code>{artist}</code>/<code>{raw}</code> with
 <code>[optional]</code> segments) stored in
 <code>RadioHistory.now_playing_template</code> and edited in Preferences
-(Ctrl+,). Default <code>{title}[ by {artist}]</code>.</li>
+(Ctrl+,). Default <code>{title}[ by {artist}]</code>. 2.0.1 adds
+review/copy: <code>radio.whats_playing_details</code> opens a read-only,
+selectable, character-reviewable dialog with a Copy button, and
+<code>radio.copy_whats_playing</code> copies the clean text straight to
+the clipboard (#1134).</li>
 <li>What's Playing server status-endpoint fallback (upstream
 <code>core/radio/station_status.py</code>, #1111, #1112): when the ICY
 side-tap and the playback engine's own <code>media-title</code> both
@@ -386,9 +390,11 @@ pipeline hardening: a reconnect records only the remaining time to
 <code>_scheduled_end</code> (not a fresh full duration);
 <code>uniquify()</code> replaces the unconditional <code>-y</code>
 overwrite and continuation parts keep the original start timestamp; a
-drop is classified fatal (disk full / HTTP 4xx) vs transient
-(5xx/network) before any reconnect attempt is spent; and on Windows
-ffmpeg runs in a job object with
+drop is classified fatal (disk full / HTTP 404/410/451 only, narrowed in
+2.0.1 so a transient 403/408/5xx/network drop reconnects) vs transient
+before any reconnect attempt is spent, with the stderr tail cleared on a
+reconnect/progress signal so a recovered-from error cannot poison a
+later verdict; and on Windows ffmpeg runs in a job object with
 <code>JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE</code> so a crashed host takes
 the child down, with the stop wait moved off the UI thread. Everything
 lands in the shared <code>quill</code> package; nothing is vendored into
@@ -485,6 +491,41 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>2.0.1 fast-follow (upstream <code>quill/core/radio/*</code>,
+<code>quill/ui/radio/*</code>).</strong> From the first round of live
+feedback:
+<ul>
+<li><em>Recording reconnect classification narrowed.</em>
+<code>_FATAL_STDERR_RE</code> (<code>core/radio/recording.py</code>) now
+matches only genuinely-terminal outcomes (disk full; HTTP 404/410/451);
+a transient 403 (rotating CDN token), 408/409, 5xx, or bare EOF
+reconnects within the attempt budget. The stderr tail is cleared on a
+reconnect/progress signal (<code>_RECOVERY_STDERR_RE</code>) so an error
+ffmpeg recovered from can't poison a later drop's verdict -- fixing
+"recording stops after ~1 minute" reports.</li>
+<li><em>Recording-started announcement.</em> Record Now / Record Station
+announce "Recording started: <station>"
+(<code>main_frame_radio.radio_record_toggle</code> /
+<code>open_record_station_dialog</code>).</li>
+<li><em>What's Playing review/copy (#1134).</em> New
+<code>radio.whats_playing_details</code> (a read-only, selectable,
+char-reviewable <code>NowPlayingDialog</code> with Copy) and
+<code>radio.copy_whats_playing</code> (<code>_copy_to_clipboard</code>);
+no new setting.</li>
+<li><em>Channel mode.</em> <code>RadioHistory.channel_mode</code> and
+<code>FavoriteStation.channel_mode</code> (stereo/mono/left/right)
+replace the <code>mono_enabled</code> bool (migrated on load).
+<code>audio_enhance</code> gains left/right pan filters
+(<code>pan=stereo|c0=c0|c1=c0</code> / <code>...|c0=c1|c1=c1</code>);
+the Sound Enhancements dialog's mono checkbox becomes a Channel-mode
+RadioBox. Global default AND per-station override (resolved with the EQ
+via <code>_radio_resolve_enhancement</code>); night mode stays
+global.</li>
+<li><em>Recording-playback volume.</em> A <code>Ctrl+Up/Down</code>
+char-hook on the (modal) Recordings dialog drives the shared
+controller's volume, so a played-back recording is adjustable like a
+live stream.</li>
+</ul></li>
 <li><strong>Recordings reliability overhaul (2.0.0, upstream
 <code>quill/core/radio/*</code>; R1-R4).</strong> The headline of 2.0.0:
 a reported round of recording bugs closed and the one missing piece

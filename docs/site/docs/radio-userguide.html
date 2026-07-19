@@ -404,6 +404,15 @@ disappears when a field is empty (the default
 <code>{title}[ by {artist}]</code> drops the " by" when there's no
 artist), and <code>{raw}</code> for the stream's exact original text.
 Leave it blank to restore the default.</li>
+<li><strong>What's Playing - Review and Copy...</strong> -- opens a
+small window with the current title and artist in a read-only,
+selectable field you can arrow through <strong>character by
+character</strong> to catch an exact spelling, with a
+<strong>Copy</strong> button to put it on the clipboard (handy for
+looking up lyrics or buying a track). A separate <strong>Copy What's
+Playing</strong> command (in the Command Palette) copies it straight to
+the clipboard without opening the window. Press What's Playing first so
+there's a title to review.</li>
 <li><strong>Announce Track Titles</strong> (check item) -- when on,
 title changes are announced as they happen. Off by default.</li>
 <li><strong>Sleep Timer...</strong> -- fade out and stop after a set
@@ -414,30 +423,37 @@ itself. Quill Radio must be running (the tray counts).</li>
 <li><strong>Sound Enhancements...</strong> -- a three-band equalizer
 (Bass, Mid, Treble sliders, -12 to +12 dB each, freely adjustable), a
 compressor ("Even Out Volume", boosts quiet passages and tames loud
-ones), and two listener options: <strong>Combine channels into
-mono</strong> (both stereo channels blended into one -- with
-single-sided hearing or a single earbud, a station that hard-pans a
-voice to the other channel simply loses it; mono means nothing
-disappears) and <strong>Night mode</strong> (evens loudness in real time
-by lifting quiet passages -- the complement to Even Out Volume taming
-loud ones; ideal for low-volume late-night listening). A "Quick preset"
-combo box (Flat, Bass Boost, Voice Clarity, Podcast, Small Speakers,
-Late Night) sets all three sliders at once as a starting point -- move
-any slider afterward and it becomes Custom. Off by default. On the mpv
-playback engine (the default), changes apply <strong>live, with no
-interruption at all</strong>; on the Windows Media engine they filter
-through FFmpeg (needs Help &gt; Get FFmpeg...) and reconnect on OK --
-instant, since a live stream has no position to lose. The EQ and
-compressor are <strong>remembered per station</strong>: open the dialog
-while a favorite is playing to set that station's own sound; with
-nothing playing (or a non-favorite on), you're setting the shared
-default every other station follows. Mono and Night mode are always
-shared -- they describe your ears and your evening, not a station.</li>
+ones), a <strong>Channel mode</strong> choice (Stereo, Mono, Left only,
+Right only) and <strong>Night mode</strong>. Channel mode routes the
+audio for accessibility: <strong>Mono</strong> blends both stereo
+channels into one, so a station that hard-pans a voice to one side never
+disappears with single-sided hearing or a single earbud; <strong>Left
+only</strong> or <strong>Right only</strong> sends just that one channel
+to both ears, so you can listen to the radio in one ear while your
+screen reader (or anything else) uses the other. <strong>Night
+mode</strong> evens loudness in real time by lifting quiet passages --
+the complement to Even Out Volume taming loud ones; ideal for low-volume
+late-night listening. A "Quick preset" combo box (Flat, Bass Boost,
+Voice Clarity, Podcast, Small Speakers, Late Night) sets all three
+sliders at once as a starting point -- move any slider afterward and it
+becomes Custom. Off by default. On the mpv playback engine (the
+default), changes apply <strong>live, with no interruption at
+all</strong>; on the Windows Media engine they filter through FFmpeg
+(needs Help &gt; Get FFmpeg...) and reconnect on OK -- instant, since a
+live stream has no position to lose. The EQ, compressor, and
+<strong>Channel mode</strong> are <strong>remembered per
+station</strong>: open the dialog while a favorite is playing to set
+that station's own sound (including sending just that station to one
+ear); with nothing playing (or a non-favorite on), you're setting the
+shared default every other station follows. Night mode is always shared
+-- it describes your evening, not a station.</li>
 </ul>
 <h3 id="record-altr">Record (Alt+R)</h3>
 <ul>
 <li><strong>Record Now / Stop Recording</strong> -- capture the station
-you are listening to.</li>
+you are listening to. When a capture begins, Quill Radio announces
+"Recording started" with the station name, so it is always clear the
+command took effect.</li>
 <li><strong>Record Station...</strong> -- record a <em>different</em>
 station for a set number of minutes while you listen to something else
 (or to nothing). The recorder is its own process; it never needed the
@@ -584,8 +600,10 @@ schedule drops out of the scheduled count rather than lingering.</p>
 reads <strong>Stop</strong> while that recording is playing),
 <strong>Stop Recording</strong>, <strong>Open in Folder</strong>,
 <strong>Remove</strong> (Delete key, with confirmation),
-<strong>Refresh</strong>. The tray tooltip carries "(recording)" while a
-recording is active.</p>
+<strong>Refresh</strong>. While a recording plays back,
+<strong>Ctrl+Up</strong> and <strong>Ctrl+Down</strong> change its
+volume right here, the same as they do for live radio. The tray tooltip
+carries "(recording)" while a recording is active.</p>
 <h3 id="if-the-internet-hiccups-during-a-recording">If the internet
 hiccups during a recording</h3>
 <p>ffmpeg first rides out short gaps itself (the reconnect settings in
@@ -597,11 +615,14 @@ attempt. Two things keep that tidy:</p>
 original scheduled end, not a fresh full duration -- a 60-minute show
 that drops at minute 50 records a ~10 minute continuation, not another
 60.</li>
-<li>A drop is classified before any reconnect attempt is spent. A
-<em>fatal</em> failure (your disk is full, or the server took the stream
-down with an HTTP 4xx such as 404 or 410) stops trying -- the stream is
-gone, and reconnecting would only spam part files. A <em>transient</em>
-drop (a network hiccup or a 5xx) is retried.</li>
+<li>A drop is classified before any reconnect attempt is spent, and only
+a genuinely-terminal failure gives up: your disk is full, or the server
+returned an HTTP 404, 410, or 451 that means the stream is truly gone.
+Everything else -- a network hiccup, a 5xx, or a momentary 403 Forbidden
+from an expiring or rotating stream token -- is transient and
+reconnects. (A transient error ffmpeg has already recovered from can no
+longer be mistaken for a fatal one when the stream later drops for an
+unrelated reason, so a recording is far less likely to stop short.)</li>
 </ul>
 <p>Output filenames are never silently overwritten: a pattern that
 produces the same name twice gets <code>" (2)"</code>,
