@@ -48,7 +48,12 @@ class _FakeTree:
 
     def GetFirstChild(self, node):  # noqa: N802
         kids = self.children.get(node, [])
-        return (kids[0][0] if kids else _Node(False), None)
+        return (kids[0][0] if kids else _Node(False), 0)
+
+    def GetNextChild(self, node, cookie):  # noqa: N802
+        kids = self.children.get(node, [])
+        nxt = cookie + 1
+        return (kids[nxt][0] if nxt < len(kids) else _Node(False), nxt)
 
     def SelectItem(self, node):  # noqa: N802
         self._selection = node
@@ -64,7 +69,7 @@ def _dialog() -> Any:
     d._announce = d._announced.append
     d._favorites = RadioFavoritesStore(favorites=[])
     d._details = SimpleNamespace(SetValue=lambda _v: None)
-    d._play_btn = SimpleNamespace(Enable=lambda _v: None)
+    d._play_btn = SimpleNamespace(Enable=lambda _v: None, SetLabel=lambda _l: None)
     d._favorite_btn = SimpleNamespace(Enable=lambda _v: None, SetLabel=lambda _l: None)
     d._on_favorites_changed = lambda: None
     return d
@@ -149,3 +154,51 @@ def test_toggle_favorite_adds_and_removes() -> None:
     assert d._favorites.contains(station)
     d._toggle_favorite()
     assert not d._favorites.contains(station)
+
+
+def test_add_favorites_builds_unfiled_stations_then_folders() -> None:
+    d = _dialog()
+    top = RadioStation(name="Top FM", stream_url="https://x/t", station_uuid="t")
+    filed = RadioStation(name="News One", stream_url="https://x/n", station_uuid="n")
+    d._favorites.add(top)
+    d._favorites.add(filed, folder="News")
+    root = _Node()
+    d._add_favorites(root)
+    kids = d._tree.children[root]
+    labels = [label for _n, label in kids]
+    kinds = [d._tree.GetItemData(n).get("kind") for n, _label in kids]
+    # unfiled station leaf first, then the folder node
+    assert labels[0] == "Top FM" and kinds[0] == "station"
+    assert "News" in labels[1] and kinds[1] == "fav-folder"
+    # the folder holds its station
+    folder_node = kids[1][0]
+    assert _child_data(d, folder_node)[0]["station"].name == "News One"
+
+
+def test_add_favorites_empty_shows_placeholder() -> None:
+    d = _dialog()
+    root = _Node()
+    d._add_favorites(root)
+    assert _child_data(d, root)[0]["kind"] == "placeholder"
+
+
+def test_favorite_folder_adds_all_loaded_stations() -> None:
+    d = _dialog()
+    changed: list = []
+    d._on_favorites_changed = lambda: changed.append(True)
+    folder = _Node()
+    s1 = RadioStation(name="A", stream_url="https://x/a", station_uuid="a")
+    s2 = RadioStation(name="B", stream_url="https://x/b", station_uuid="b")
+    for s in (s1, s2):
+        leaf = d._tree.AppendItem(folder, s.name)
+        d._tree.SetItemData(leaf, {"kind": "station", "station": s})
+    d._favorite_folder(folder)
+    assert d._favorites.contains(s1) and d._favorites.contains(s2)
+    assert changed == [True]
+
+
+def test_favorite_folder_unloaded_asks_to_open() -> None:
+    d = _dialog()
+    folder = _Node()  # no children loaded
+    d._favorite_folder(folder)
+    assert any("Open the folder first" in m for m in d._announced)
