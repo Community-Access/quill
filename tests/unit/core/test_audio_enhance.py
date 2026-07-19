@@ -378,6 +378,108 @@ def test_filter_graph_orders_channel_first_and_night_mode_last() -> None:
     assert graph.index("acompressor") < graph.index("dynaudnorm")
 
 
+def test_optilab_off_or_bypassed_adds_nothing() -> None:
+    from quill.core.audio_enhance import build_filter_graph, is_enhancement_active
+
+    # A real mode but the bypass off -> nothing engaged (the checkbox is a true
+    # bypass that still remembers the chosen mode).
+    assert (
+        build_filter_graph(
+            *FLAT, compressor_enabled=False, optilab_enabled=False, optilab_mode="podcast"
+        )
+        == ""
+    )
+    assert not is_enhancement_active(
+        *FLAT, compressor_enabled=False, optilab_enabled=False, optilab_mode="podcast"
+    )
+    # Enabled but mode "off" -> also nothing.
+    assert (
+        build_filter_graph(
+            *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="off"
+        )
+        == ""
+    )
+
+
+def test_optilab_modes_build_expected_chains() -> None:
+    from quill.core.audio_enhance import build_filter_graph, is_enhancement_active
+
+    podcast = build_filter_graph(
+        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="podcast"
+    )
+    assert is_enhancement_active(
+        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="podcast"
+    )
+    # Podcast: subsonic HPF, speech leveling, compression, bass tame, then a
+    # lookahead limiter guarding the output (last).
+    assert "highpass=f=30" in podcast
+    assert "speechnorm=" in podcast
+    assert "acompressor=" in podcast
+    assert podcast.split(",")[-1].startswith("alimiter=")
+
+    stream = build_filter_graph(
+        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="stream"
+    )
+    assert "dynaudnorm=" in stream
+    assert stream.split(",")[-1].startswith("alimiter=")
+
+    limiter = build_filter_graph(
+        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="limiter"
+    )
+    # Smooth Limiter is the lightest chain: a compressor then the limiter.
+    assert limiter.startswith("acompressor=")
+    assert limiter.split(",")[-1].startswith("alimiter=")
+
+
+def test_optilab_input_zero_default_omits_volume_but_nonzero_adds_it() -> None:
+    from quill.core.audio_enhance import build_filter_graph
+
+    zero = build_filter_graph(
+        *FLAT,
+        compressor_enabled=False,
+        optilab_enabled=True,
+        optilab_mode="limiter",
+        optilab_input_db=0.0,
+    )
+    assert "volume=" not in zero  # 0 dB is the default and changes nothing
+    trimmed = build_filter_graph(
+        *FLAT,
+        compressor_enabled=False,
+        optilab_enabled=True,
+        optilab_mode="limiter",
+        optilab_input_db=6.0,
+    )
+    assert trimmed.startswith("volume=6.00dB")
+
+
+def test_optilab_auto_adapt_changes_the_chain() -> None:
+    from quill.core.audio_enhance import build_filter_graph
+
+    neutral = build_filter_graph(
+        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="podcast",
+        optilab_auto_adapt=0,
+    )
+    adapted = build_filter_graph(
+        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="podcast",
+        optilab_auto_adapt=100,
+    )
+    assert neutral != adapted  # adapt leans the leveling/density more assertive
+
+
+def test_optilab_chain_comes_after_night_mode() -> None:
+    from quill.core.audio_enhance import build_filter_graph
+
+    graph = build_filter_graph(
+        *FLAT,
+        compressor_enabled=False,
+        night_mode_enabled=True,
+        optilab_enabled=True,
+        optilab_mode="stream",
+    )
+    # Night mode levels first; OptiLab's own limiter guards the final output.
+    assert graph.index("dynaudnorm=f=250") < graph.index("alimiter=")
+
+
 def test_filter_graph_left_and_right_send_whole_mix_to_one_ear() -> None:
     from quill.core.audio_enhance import build_filter_graph
 

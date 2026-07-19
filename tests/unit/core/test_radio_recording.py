@@ -15,12 +15,33 @@ import quill.core.radio.recording as recording
 from quill.core.radio.recording import (
     RadioRecorder,
     RecordingError,
+    RecordingJob,
+    RecordingLimitError,
     RecordingSettings,
     build_filename,
     build_record_command,
     load_recording_settings,
     save_recording_settings,
 )
+
+
+def _make_job(process: object, *, station_name: str = "WQXR") -> RecordingJob:
+    """A minimal RecordingJob wrapping *process* for the stderr-drain tests."""
+    when = datetime(2026, 7, 14, 8, 0, 0)
+    return RecordingJob(
+        job_id="job1",
+        process=process,  # type: ignore[arg-type]
+        destination=Path("out.mp3"),
+        final_destination=Path("out.mp3"),
+        station_name=station_name,
+        stream_url="https://example.com/stream",
+        settings=RecordingSettings(),
+        minutes=60,
+        filter_graph="",
+        extension="mp3",
+        started_at=when,
+        scheduled_end=when,
+    )
 
 
 def test_settings_to_dict_from_dict_round_trip() -> None:
@@ -153,7 +174,7 @@ def test_drain_stderr_logs_lines_redacted_and_by_severity(caplog: pytest.LogCapt
     ]
     recorder = RadioRecorder()
     with caplog.at_level("DEBUG", logger="quill.core.radio.recording"):
-        recorder._drain_stderr(_FakeProcess(lines), "WQXR")  # type: ignore[arg-type]
+        recorder._drain_stderr(_make_job(_FakeProcess(lines)))
     warnings = [r for r in caplog.records if r.levelname == "WARNING"]
     debugs = [r for r in caplog.records if r.levelname == "DEBUG"]
     assert any("Failed to reconnect" in r.getMessage() for r in warnings)
@@ -419,16 +440,27 @@ def test_start_raises_when_ffmpeg_missing(monkeypatch: pytest.MonkeyPatch, tmp_p
 
 def test_start_launches_and_reports_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
-    states: list[tuple[bool, Path | None]] = []
-    recorder = RadioRecorder(on_state_changed=lambda rec, dest: states.append((rec, dest)))
+    states: list[tuple[bool, Path | None, str]] = []
+    recorder = RadioRecorder(
+        on_state_changed=lambda rec, dest, job_id: states.append((rec, dest, job_id))
+    )
     dest = recorder.start(
         station_name="WXYZ",
         stream_url="https://example.com/stream",
         settings=RecordingSettings(destination_root=str(tmp_path)),
     )
     assert recorder.is_recording is True
+    assert recorder.active_count == 1
     assert recorder.current_destination == dest
-    assert states == [(True, dest)]
+    assert len(states) == 1
+    started, started_dest, started_job = states[0]
+    assert (started, started_dest) == (True, dest)
+    assert started_job  # a non-empty job id identifies the recording
+    # active_jobs exposes the running recording by identity.
+    jobs = recorder.active_jobs()
+    assert len(jobs) == 1
+    assert jobs[0].job_id == started_job
+    assert jobs[0].destination == dest
     recorder.stop()
     time.sleep(0.05)
     assert recorder.is_recording is False
@@ -456,23 +488,83 @@ def test_start_threads_filter_graph_into_the_ffmpeg_command(
     assert "acompressor=threshold=-18dB" in captured[0]
 
 
-def test_start_refuses_when_already_recording(
+def test_concurrent_recordings_run_together_by_default(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
+    # Concurrent recording: the default cap is unlimited, so a second (and
+    # third) start records alongside the first instead of being refused.
     monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
     recorder = RadioRecorder()
     recorder.start(
         station_name="WXYZ",
-        stream_url="https://example.com/stream",
+        stream_url="https://example.com/one",
         settings=RecordingSettings(destination_root=str(tmp_path)),
     )
-    with pytest.raises(RecordingError):
+    recorder.start(
+        station_name="Other",
+        stream_url="https://example.com/two",
+        settings=RecordingSettings(destination_root=str(tmp_path)),
+    )
+    assert recorder.active_count == 2
+    urls = {j.stream_url for j in recorder.active_jobs()}
+    assert urls == {"https://example.com/one", "https://example.com/two"}
+    recorder.stop_all()
+    time.sleep(0.05)
+    assert recorder.is_recording is False
+
+
+def test_start_refuses_past_the_concurrency_cap(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A positive cap holds the line: at the cap, another start raises the
+    # dedicated RecordingLimitError (a RecordingError subclass).
+    monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
+    settings = RecordingSettings(destination_root=str(tmp_path), max_concurrent_recordings=1)
+    recorder = RadioRecorder()
+    recorder.start(
+        station_name="WXYZ", stream_url="https://example.com/one", settings=settings
+    )
+    with pytest.raises(RecordingLimitError):
         recorder.start(
-            station_name="Other",
-            stream_url="https://example.com/other",
-            settings=RecordingSettings(destination_root=str(tmp_path)),
+            station_name="Other", stream_url="https://example.com/two", settings=settings
         )
-    recorder.stop()
+    assert issubclass(RecordingLimitError, RecordingError)
+    assert recorder.active_count == 1
+    recorder.stop_all()
+
+
+def test_stop_targets_one_recording_by_job_id(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # stop(job_id) stops exactly one recording; the other keeps running.
+    monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
+    recorder = RadioRecorder()
+    recorder.start(
+        station_name="WXYZ",
+        stream_url="https://example.com/one",
+        settings=RecordingSettings(destination_root=str(tmp_path)),
+    )
+    recorder.start(
+        station_name="Other",
+        stream_url="https://example.com/two",
+        settings=RecordingSettings(destination_root=str(tmp_path)),
+    )
+    first = next(j for j in recorder.active_jobs() if j.stream_url.endswith("/one"))
+    recorder.stop(first.job_id)
+    time.sleep(0.05)
+    remaining = recorder.active_jobs()
+    assert len(remaining) == 1
+    assert remaining[0].stream_url.endswith("/two")
+    recorder.stop_all()
+
+
+def test_max_concurrent_recordings_round_trips_and_floors_at_zero() -> None:
+    assert RecordingSettings().max_concurrent_recordings == 0
+    settings = RecordingSettings(max_concurrent_recordings=3)
+    assert RecordingSettings.from_dict(settings.to_dict()).max_concurrent_recordings == 3
+    # A negative saved value coerces to unlimited (0), never below.
+    coerced = RecordingSettings.from_dict({"max_concurrent_recordings": -5})
+    assert coerced.max_concurrent_recordings == 0
 
 
 def test_stop_is_a_noop_when_not_recording() -> None:
@@ -571,8 +663,9 @@ def test_stderr_tail_cleared_on_recovery_so_stale_403_does_not_poison() -> None:
         b"",
     ]
     recorder = RadioRecorder()
-    recorder._drain_stderr(_FakeProcess(lines), "WQXR")  # type: ignore[arg-type]
-    tail = list(recorder._stderr_tail)
+    job = _make_job(_FakeProcess(lines))
+    recorder._drain_stderr(job)
+    tail = list(job.stderr_tail)
     assert not any(recording._FATAL_STDERR_RE.search(line) for line in tail)
     assert any("Failed to reconnect" in line for line in tail)
 

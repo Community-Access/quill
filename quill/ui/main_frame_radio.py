@@ -29,7 +29,11 @@ from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
-from quill.ui.radio.player_controller import RadioPlaybackState, RadioPlayerController
+from quill.ui.radio.player_controller import (
+    RadioPlaybackState,
+    RadioPlayerController,
+    ResolvedEnhancement,
+)
 from quill.ui.radio.recording_settings_dialog import RecordingSettingsDialog
 from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
@@ -91,6 +95,10 @@ class RadioMixin:
         self._radio_controller.set_sound_options(
             channel_mode=self._radio_history.channel_mode,
             night_mode_enabled=self._radio_history.night_mode_enabled,
+            optilab_enabled=self._radio_history.optilab_enabled,
+            optilab_mode=self._radio_history.optilab_mode,
+            optilab_input_db=self._radio_history.optilab_input_db,
+            optilab_auto_adapt=self._radio_history.optilab_auto_adapt,
         )
         self._radio_controller.set_volume_boost(self._radio_history.volume_boost)
         self._radio_recording_settings = load_recording_settings(app_data_dir())
@@ -173,9 +181,8 @@ class RadioMixin:
         resume honors the remembered choice (ask/always/never) and the grace
         window. A marker past its grace is cleared and skipped.
         """
-        from quill.core.paths import app_data_dir
         from quill.core.radio.recording_resume import (
-            load_marker,
+            load_markers,
             reconcile_temp_strays,
             remaining_minutes,
             within_resume_grace,
@@ -192,42 +199,66 @@ class RadioMixin:
                 f"folder from an earlier crash; moved to your recordings folder."
             )
 
-        # 2) Offer to resume an in-progress recording found via the marker.
+        # 2) Offer to resume in-progress recordings found via the markers
+        #    (concurrent recording: there may be several). Markers past their
+        #    grace window are cleared and skipped; the rest are resumed per the
+        #    remembered choice, or offered in one batched prompt for "ask".
+        from quill.core.paths import app_data_dir
+
         try:
-            marker = load_marker(app_data_dir())
+            markers = load_markers(app_data_dir())
         except Exception:  # noqa: BLE001
-            marker = None
-        if marker is None or not marker.stream_url:
+            markers = []
+        resumable: list[tuple[object, int]] = []
+        for marker in markers:
+            if not getattr(marker, "stream_url", ""):
+                continue
+            if not within_resume_grace(marker):
+                # The show is long over: clear the stale marker and move on.
+                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
+                continue
+            resumable.append((marker, remaining_minutes(marker)))
+        if not resumable:
             return
-        if not within_resume_grace(marker):
-            # The show is long over: clear the stale marker and move on.
-            self._clear_radio_recording_marker()
-            return
-        left = remaining_minutes(marker)
         choice = self._radio_history.recording_resume_choice
         if choice == "never":
-            self._clear_radio_recording_marker()
+            for marker, _left in resumable:
+                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
             return
         if choice == "always":
-            self._start_radio_resume(marker, left)
+            for marker, left in resumable:
+                self._start_radio_resume(marker, left)
             return
-        # "ask": show the accessible resume dialog.
-        self._ask_radio_resume(marker, left)
+        # "ask": one dialog for one recording, a batched prompt for several.
+        self._ask_radio_resume(resumable)
 
-    def _ask_radio_resume(self, marker: object, left: int) -> None:
-        from quill.ui.radio.resume_recording_dialog import ResumeRecordingDialog
+    def _ask_radio_resume(self, resumable: list[tuple[object, int]]) -> None:
+        from quill.ui.radio.resume_recording_dialog import (
+            ResumeRecordingDialog,
+            ResumeRecordingsBatchDialog,
+        )
 
-        station = getattr(marker, "station_name", "") or "the stream"
-        end = getattr(marker, "scheduled_end", "")
-        result = ResumeRecordingDialog(
-            self.frame,
-            station_name=station,
-            remaining_minutes=left,
-            scheduled_end=end,
-            announce_cb=self._announce,
-        ).show()
+        if len(resumable) == 1:
+            marker, left = resumable[0]
+            station = getattr(marker, "station_name", "") or "the stream"
+            end = getattr(marker, "scheduled_end", "")
+            result = ResumeRecordingDialog(
+                self.frame,
+                station_name=station,
+                remaining_minutes=left,
+                scheduled_end=end,
+                announce_cb=self._announce,
+            ).show()
+        else:
+            lines = [
+                f"{getattr(m, 'station_name', '') or 'Recording'} -- {left} minute(s) left"
+                for m, left in resumable
+            ]
+            result = ResumeRecordingsBatchDialog(
+                self.frame, lines=lines, announce_cb=self._announce
+            ).show()
         if result is None:
-            return  # dialog dismissed/cancelled -> skip, leave marker to age out
+            return  # dismissed/cancelled -> skip, leave markers to age out
         action, remember = result
         if remember:
             self._radio_history.recording_resume_choice = (
@@ -238,28 +269,30 @@ class RadioMixin:
 
             radio_history.save_history(app_data_dir(), self._radio_history)
         if action == "resume":
-            self._start_radio_resume(marker, left)
+            for marker, left in resumable:
+                self._start_radio_resume(marker, left)
         else:
-            self._clear_radio_recording_marker()
+            for marker, _left in resumable:
+                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
 
     def _start_radio_resume(self, marker: object, left: int) -> None:
-        """Resume the marker's recording for the remaining minutes (R3)."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio.recording_resume import clear_marker
+        """Resume the marker's recording for the remaining minutes (R3).
+
+        Concurrent recording: no longer refuses when something else is already
+        recording -- a resumed recording simply joins the others.
+        """
         from quill.core.speech.ffmpeg import ffmpeg_available
 
+        job_id = getattr(marker, "job_id", "") or None
         if not ffmpeg_available():
             self._announce("Cannot resume recording: FFmpeg is not installed.")
-            self._clear_radio_recording_marker()
-            return
-        if self._radio_recorder.is_recording:
-            # Something is already recording (e.g. a schedule fired on launch);
-            # don't clobber it. The marker will age out or be cleared on next stop.
+            self._clear_radio_recording_marker(job_id)
             return
         station_name = getattr(marker, "station_name", "") or "Recording"
         stream_url = getattr(marker, "stream_url", "") or ""
+        entry_id = getattr(marker, "entry_id", "") or ""
         if not stream_url:
-            self._clear_radio_recording_marker()
+            self._clear_radio_recording_marker(job_id)
             return
         try:
             self._radio_recorder.start(
@@ -268,14 +301,15 @@ class RadioMixin:
                 settings=self._radio_recording_settings,
                 duration_minutes=max(1, left),
                 filter_graph=self._radio_recording_filter_graph(),
+                entry_id=entry_id,
             )
             self._announce(f"Resuming recording of {station_name} for {max(1, left)} minute(s).")
+            # The old marker (from the previous run) is superseded by the fresh
+            # one the new job wrote under its own id; clear the stale one.
+            self._clear_radio_recording_marker(job_id)
         except Exception as exc:  # noqa: BLE001 - a failed resume is announced, not fatal
             self._announce(f"Could not resume the recording: {exc}")
-            try:
-                clear_marker(app_data_dir())
-            except Exception:  # noqa: BLE001
-                pass
+            self._clear_radio_recording_marker(job_id)
 
     def _stop_podcast_before_radio(self) -> None:
         """Never double-play: starting a radio stream silences a playing
@@ -297,59 +331,75 @@ class RadioMixin:
 
     # -- recording --------------------------------------------------------
 
-    def _on_radio_recording_changed(self, is_recording: bool, destination: Path | None) -> None:
-        self._wx.CallAfter(self._apply_radio_recording_changed, is_recording, destination)
+    def _on_radio_recording_changed(
+        self, is_recording: bool, destination: Path | None, job_id: str = ""
+    ) -> None:
+        self._wx.CallAfter(self._apply_radio_recording_changed, is_recording, destination, job_id)
 
-    def _apply_radio_recording_changed(self, is_recording: bool, destination: Path | None) -> None:
+    def _apply_radio_recording_changed(
+        self, is_recording: bool, destination: Path | None, job_id: str = ""
+    ) -> None:
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
         if is_recording:
-            # R3: persist an active-recording marker so a restart can offer to
-            # resume. Built from the recorder's live state (the temp path, the
-            # final destination, the start time, and the duration cap) so the
-            # marker is correct even when recording to a temp dir.
-            self._persist_radio_recording_marker()
+            # R3: persist a per-recording marker (keyed by job id) so a restart
+            # can offer to resume this exact recording. Built from the recorder's
+            # live state (the temp path, the final destination, the start time,
+            # the duration cap) so the marker is correct even in a temp dir.
+            self._persist_radio_recording_marker(job_id)
         else:
-            # R3: a clean stop clears the marker -- only a crash/kill leaves it
-            # behind for the next launch to find.
-            self._clear_radio_recording_marker()
+            # R3: a clean stop clears just this recording's marker -- only a
+            # crash/kill leaves markers behind for the next launch to find.
+            self._clear_radio_recording_marker(job_id)
             if destination is not None:
                 self._announce(f"Recording saved: {destination.name}")
 
-    def _persist_radio_recording_marker(self) -> None:
-        """Write the active-recording marker from the recorder's live state (R3)."""
+    def _persist_radio_recording_marker(self, job_id: str = "") -> None:
+        """Write a per-recording marker from the recorder's live state (R3).
+
+        Concurrent recording: keyed by ``job_id`` so several simultaneous
+        recordings each persist their own marker instead of clobbering one.
+        """
         from datetime import timedelta
 
         from quill.core.paths import app_data_dir
         from quill.core.radio.recording_resume import ActiveRecordingMarker, save_marker
 
         rec = self._radio_recorder
-        started = rec.current_started_at
-        minutes = rec.current_minutes
+        snap = rec.job(job_id) if job_id else None
+        if snap is None:
+            return
+        started = snap.started_at
+        minutes = snap.minutes
         if started is None or minutes <= 0:
             return
         marker = ActiveRecordingMarker(
-            station_name=rec.current_station_name,
-            stream_url=rec.current_stream_url,
-            temp_path=str(rec.current_destination or ""),
-            output_path=str(rec.current_final_destination or ""),
+            station_name=snap.station_name,
+            stream_url=snap.stream_url,
+            temp_path=str(snap.destination or ""),
+            output_path=str(snap.final_destination or ""),
             started_at=started.isoformat(),
             scheduled_end=(started + timedelta(minutes=minutes)).isoformat(),
             duration_minutes=minutes,
-            entry_id="",
+            entry_id=snap.entry_id,
+            job_id=snap.job_id,
         )
         try:
             save_marker(app_data_dir(), marker)
         except Exception:  # noqa: BLE001 - a marker we cannot persist just means no resume offer
             pass
 
-    def _clear_radio_recording_marker(self) -> None:
-        """Remove the active-recording marker (R3, clean-stop path)."""
+    def _clear_radio_recording_marker(self, job_id: str | None = None) -> None:
+        """Remove one recording's marker by job id, or every marker when
+        ``job_id`` is ``None`` (R3, clean-stop / clean-close path)."""
         from quill.core.paths import app_data_dir
-        from quill.core.radio.recording_resume import clear_marker
+        from quill.core.radio.recording_resume import clear_all_markers, clear_marker
 
         try:
-            clear_marker(app_data_dir())
+            if job_id is None:
+                clear_all_markers(app_data_dir())
+            else:
+                clear_marker(app_data_dir(), job_id)
         except Exception:  # noqa: BLE001 - best-effort
             pass
 
@@ -434,6 +484,28 @@ class RadioMixin:
         their own Help > Get FFmpeg... item."""
         return _NO_FFMPEG_MESSAGE
 
+    def _radio_playing_job_id(self) -> str:
+        """The job id of the active recording whose stream is the station now
+        playing, or "" (concurrent recording).
+
+        Record Now and its menu label act on the station you are *listening* to:
+        if that station is being recorded this returns its job id (so Record Now
+        stops it), otherwise Record Now starts a new concurrent recording. Any
+        other recording is stopped from the Recordings list.
+        """
+        controller = getattr(self, "_radio_controller", None)
+        station = controller.state.station if controller is not None else None
+        if station is None:
+            return ""
+        recorder = getattr(self, "_radio_recorder", None)
+        jobs = getattr(recorder, "active_jobs", None)
+        if not callable(jobs):
+            return ""
+        for job in jobs():
+            if getattr(job, "stream_url", "") == station.stream_url:
+                return getattr(job, "job_id", "") or ""
+        return ""
+
     def radio_record_toggle(self) -> None:
         if not ffmpeg_available():
             self._show_message_box(
@@ -442,8 +514,12 @@ class RadioMixin:
                 self._wx.ICON_INFORMATION | self._wx.OK,
             )
             return
-        if self._radio_recorder.is_recording:
-            self._radio_recorder.stop()
+        # Concurrent recording: if the station you are listening to is already
+        # recording, stop that one; otherwise start a new recording of it. A
+        # second, different station keeps recording in the background.
+        playing_job = self._radio_playing_job_id()
+        if playing_job:
+            self._radio_recorder.stop(playing_job)
             self._announce("Stopping recording...")
             return
         controller = getattr(self, "_radio_controller", None)
@@ -466,6 +542,23 @@ class RadioMixin:
         self._announce(f"Recording started: {station.name}.")
         self._refresh_statusbar()
 
+    def radio_stop_all_recordings(self) -> None:
+        """Stop every recording at once (concurrent recording). Announces how
+        many were stopped, or that nothing was recording."""
+        recorder = getattr(self, "_radio_recorder", None)
+        count = int(getattr(recorder, "active_count", 0) or 0)
+        if count < 1:
+            self._announce("Nothing is recording right now.")
+            return
+        stop_all = getattr(recorder, "stop_all", None)
+        if callable(stop_all):
+            stop_all()
+        else:
+            recorder.stop()
+        noun = "recording" if count == 1 else "recordings"
+        self._announce(f"Stopping all {count} {noun}...")
+        self._refresh_statusbar()
+
     def _radio_recording_filter_graph(self) -> str:
         """The current Sound Enhancements filter graph, or "" if Recording
         Settings' "Apply Sound Enhancements to recordings" is off."""
@@ -481,6 +574,10 @@ class RadioMixin:
             compressor_enabled=history.compressor_enabled,
             channel_mode=history.channel_mode,
             night_mode_enabled=history.night_mode_enabled,
+            optilab_enabled=history.optilab_enabled,
+            optilab_mode=history.optilab_mode,
+            optilab_input_db=history.optilab_input_db,
+            optilab_auto_adapt=history.optilab_auto_adapt,
         )
 
     def _radio_open_recording_settings(self) -> None:
@@ -882,11 +979,8 @@ class RadioMixin:
                 self._wx.ICON_INFORMATION | self._wx.OK,
             )
             return
-        if self._radio_recorder.is_recording:
-            self._announce(
-                "A recording is already running; stop it first from the Recordings list."
-            )
-            return
+        # Concurrent recording: no longer refuses when something is already
+        # recording -- Record Station starts another capture alongside it.
         controller = getattr(self, "_radio_controller", None)
         dialog = RecordStationDialog(
             self.frame,
@@ -958,7 +1052,7 @@ class RadioMixin:
         app_name = self.frame.GetTitle() or "Quill"
         status = self._radio_status_text()  # carries "(recording)" when recording
         recorder = getattr(self, "_radio_recorder", None)
-        recording = recorder is not None and recorder.is_recording
+        recording = recorder is not None and bool(getattr(recorder, "active_count", 0))
         # R1/10.5: a recording always shows in the tray, even while playback is
         # stopped; idle (stopped, not recording) stays short (just the app name).
         if status and (recording or "stopped" not in status.lower()):
@@ -981,8 +1075,11 @@ class RadioMixin:
             return ""
         text = controller.state.status_text
         recorder = getattr(self, "_radio_recorder", None)
-        if recorder is not None and recorder.is_recording:
+        count = int(getattr(recorder, "active_count", 0) or 0) if recorder is not None else 0
+        if count == 1:
             text += " (recording)"
+        elif count > 1:
+            text += f" ({count} recording)"
         return text
 
     def radio_play_stop_toggle(self) -> None:
@@ -1022,15 +1119,21 @@ class RadioMixin:
         menu.AppendSeparator()
         recorder = getattr(self, "_radio_recorder", None)
         record_id, schedule_id, rec_settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        record_label = (
-            "Stop Recording" if recorder is not None and recorder.is_recording else "Record Now"
-        )
+        # The label tracks the station you are listening to (concurrent
+        # recording): Stop Recording only when *that* station is the one being
+        # recorded, else Record Now.
+        record_label = "Stop Recording" if self._radio_playing_job_id() else "Record Now"
         menu.Append(record_id, record_label)
         menu.Append(schedule_id, "Schedule Recording...")
         menu.Append(rec_settings_id, "Recording Settings...")
         menu.Bind(wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=record_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self._radio_open_schedule_recording(), id=schedule_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=rec_settings_id)
+        # Stop All appears only when two or more recordings are running.
+        if int(getattr(recorder, "active_count", 0) or 0) >= 2:
+            stop_all_id = wx.NewIdRef()
+            menu.Append(stop_all_id, "Stop All Recordings")
+            menu.Bind(wx.EVT_MENU, lambda _e: self.radio_stop_all_recordings(), id=stop_all_id)
         menu.AppendSeparator()
         browse_id = wx.NewIdRef()
         menu.Append(browse_id, "Browse Stations...")
@@ -1170,30 +1273,39 @@ class RadioMixin:
         this is an announcement, not a blocking dialog (#1076)."""
         self._announce(message)
 
-    def _radio_resolve_enhancement(
-        self, station: RadioStation
-    ) -> tuple[float, float, float, bool, str]:
-        """(bass_db, mid_db, treble_db, compressor_enabled, channel_mode) for
-        *station*: its own remembered Sound Enhancements if it's a favorite
-        with an override, else the shared default -- called by
-        RadioPlayerController on every play_station."""
+    def _radio_resolve_enhancement(self, station: RadioStation) -> ResolvedEnhancement:
+        """Every Sound Enhancements setting for *station*: its own remembered
+        override if it's a favorite with one, else the shared default -- called
+        by RadioPlayerController on every play_station. Every setting (EQ,
+        compressor, channel mode, night mode, and OptiLab) is per-stream as well
+        as global."""
         key = station.station_uuid or station.stream_url
         favorite = self._radio_favorites.find(key)
         if favorite is not None and favorite.has_sound_enhancement_override:
-            return (
-                favorite.eq_bass_db,
-                favorite.eq_mid_db,
-                favorite.eq_treble_db,
-                favorite.compressor_enabled,
-                favorite.channel_mode,
+            return ResolvedEnhancement(
+                bass_db=favorite.eq_bass_db,
+                mid_db=favorite.eq_mid_db,
+                treble_db=favorite.eq_treble_db,
+                compressor_enabled=favorite.compressor_enabled,
+                channel_mode=favorite.channel_mode,
+                night_mode_enabled=favorite.night_mode_enabled,
+                optilab_enabled=favorite.optilab_enabled,
+                optilab_mode=favorite.optilab_mode,
+                optilab_input_db=favorite.optilab_input_db,
+                optilab_auto_adapt=favorite.optilab_auto_adapt,
             )
         history = self._radio_history
-        return (
-            history.eq_bass_db,
-            history.eq_mid_db,
-            history.eq_treble_db,
-            history.compressor_enabled,
-            history.channel_mode,
+        return ResolvedEnhancement(
+            bass_db=history.eq_bass_db,
+            mid_db=history.eq_mid_db,
+            treble_db=history.eq_treble_db,
+            compressor_enabled=history.compressor_enabled,
+            channel_mode=history.channel_mode,
+            night_mode_enabled=history.night_mode_enabled,
+            optilab_enabled=history.optilab_enabled,
+            optilab_mode=history.optilab_mode,
+            optilab_input_db=history.optilab_input_db,
+            optilab_auto_adapt=history.optilab_auto_adapt,
         )
 
     def _radio_resolve_volume(self, station: RadioStation) -> int:
@@ -1229,22 +1341,21 @@ class RadioMixin:
 
         history = self._radio_history
         favorite = self._radio_enhance_context_favorite()
-        if favorite is not None and favorite.has_sound_enhancement_override:
-            bass, mid, treble, compressor = (
-                favorite.eq_bass_db,
-                favorite.eq_mid_db,
-                favorite.eq_treble_db,
-                favorite.compressor_enabled,
-            )
-            channel = favorite.channel_mode
-        else:
-            bass, mid, treble, compressor = (
-                history.eq_bass_db,
-                history.eq_mid_db,
-                history.eq_treble_db,
-                history.compressor_enabled,
-            )
-            channel = history.channel_mode
+        override = favorite is not None and favorite.has_sound_enhancement_override
+        # Every Sound Enhancements setting is per-stream as well as global: load
+        # the playing favorite's own override if it has one, else the shared
+        # default. FavoriteStation and RadioHistory share these field names.
+        src: object = favorite if override else history
+        bass = src.eq_bass_db
+        mid = src.eq_mid_db
+        treble = src.eq_treble_db
+        compressor = src.compressor_enabled
+        channel = src.channel_mode
+        night = src.night_mode_enabled
+        opt_enabled = src.optilab_enabled
+        opt_mode = src.optilab_mode
+        opt_input = src.optilab_input_db
+        opt_adapt = src.optilab_auto_adapt
         on_reset = None
         if favorite is not None and favorite.has_sound_enhancement_override:
 
@@ -1265,6 +1376,10 @@ class RadioMixin:
                     self._radio_controller.set_sound_options(
                         channel_mode=history.channel_mode,
                         night_mode_enabled=history.night_mode_enabled,
+                        optilab_enabled=history.optilab_enabled,
+                        optilab_mode=history.optilab_mode,
+                        optilab_input_db=history.optilab_input_db,
+                        optilab_auto_adapt=history.optilab_auto_adapt,
                     )
                 self._announce(
                     f"Sound Enhancements for {favorite.display_label}: back to the shared default."
@@ -1279,22 +1394,24 @@ class RadioMixin:
             subject=favorite.display_label if favorite is not None else "station",
             show_sound_options=True,
             channel_mode=channel,
-            night_mode_enabled=history.night_mode_enabled,
+            night_mode_enabled=night,
+            optilab_enabled=opt_enabled,
+            optilab_mode=opt_mode,
+            optilab_input_db=opt_input,
+            optilab_auto_adapt=opt_adapt,
             announce_cb=self._announce,
             on_reset=on_reset,
+            on_live_change=self._radio_sound_preview,
         )
         result = dialog.show()
         if result is None:
             return
         bass_db, mid_db, treble_db, compressor_enabled, _smart_speed_not_applicable = result
-        channel_mode, night_mode_enabled = dialog.sound_options
-        # Night mode is always shared (it describes the listener, not a station);
-        # channel mode rides with the EQ -- per-station when a favorite is
-        # playing, else the shared default -- so a station can be routed to one
-        # ear and remembered.
-        if night_mode_enabled != history.night_mode_enabled:
-            history.night_mode_enabled = night_mode_enabled
-            radio_history.save_history(app_data_dir(), history)
+        options = dialog.sound_options
+        # Every setting is per-stream as well as global: when a favorite is
+        # playing, all of it (EQ, compressor, channel, night mode, OptiLab) is
+        # saved as that station's override; otherwise it updates the shared
+        # default every other station follows.
         if favorite is not None:
             self._radio_favorites.set_enhancement(
                 favorite.key,
@@ -1302,7 +1419,12 @@ class RadioMixin:
                 mid_db=mid_db,
                 treble_db=treble_db,
                 compressor_enabled=compressor_enabled,
-                channel_mode=channel_mode,
+                channel_mode=options.channel_mode,
+                night_mode_enabled=options.night_mode_enabled,
+                optilab_enabled=options.optilab_enabled,
+                optilab_mode=options.optilab_mode,
+                optilab_input_db=options.optilab_input_db,
+                optilab_auto_adapt=options.optilab_auto_adapt,
             )
             self._save_radio_favorites()
             target = favorite.display_label
@@ -1311,21 +1433,52 @@ class RadioMixin:
             history.eq_mid_db = mid_db
             history.eq_treble_db = treble_db
             history.compressor_enabled = compressor_enabled
-            history.channel_mode = channel_mode
+            history.channel_mode = options.channel_mode
+            history.night_mode_enabled = options.night_mode_enabled
+            history.optilab_enabled = options.optilab_enabled
+            history.optilab_mode = options.optilab_mode
+            history.optilab_input_db = options.optilab_input_db
+            history.optilab_auto_adapt = options.optilab_auto_adapt
             radio_history.save_history(app_data_dir(), history)
             target = "the shared default"
-        self._radio_controller.set_sound_options(
-            channel_mode=channel_mode, night_mode_enabled=night_mode_enabled
-        )
-        self._radio_controller.set_enhancement(
+        # Apply the final values to what's playing (one apply for the whole set).
+        self._radio_controller.preview_enhancements(
             bass_db=bass_db,
             mid_db=mid_db,
             treble_db=treble_db,
             compressor_enabled=compressor_enabled,
+            channel_mode=options.channel_mode,
+            night_mode_enabled=options.night_mode_enabled,
+            optilab_enabled=options.optilab_enabled,
+            optilab_mode=options.optilab_mode,
+            optilab_input_db=options.optilab_input_db,
+            optilab_auto_adapt=options.optilab_auto_adapt,
         )
         self._announce(
             f"Sound Enhancements for {target}: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, "
             f"Treble {treble_db:+.0f}" + (", Even Out Volume on" if compressor_enabled else "")
+        )
+
+    def _radio_sound_preview(self, snapshot: object) -> None:
+        """Live-preview callback for the Sound Enhancements dialog: apply the
+        in-progress settings to whatever is playing (mpv: live; wx: one
+        reconnect) so the listener hears changes without pressing OK. Cancel
+        reverts to the values captured when the dialog opened."""
+        bass, mid, treble, compressor, _smart, options = snapshot  # type: ignore[misc]
+        controller = getattr(self, "_radio_controller", None)
+        if controller is None:
+            return
+        controller.preview_enhancements(
+            bass_db=bass,
+            mid_db=mid,
+            treble_db=treble,
+            compressor_enabled=compressor,
+            channel_mode=options.channel_mode,
+            night_mode_enabled=options.night_mode_enabled,
+            optilab_enabled=options.optilab_enabled,
+            optilab_mode=options.optilab_mode,
+            optilab_input_db=options.optilab_input_db,
+            optilab_auto_adapt=options.optilab_auto_adapt,
         )
 
     def open_manage_radio_favorites(self) -> None:
@@ -1511,6 +1664,11 @@ class RadioMixin:
                 "radio.record_station",
                 "Internet Radio: Record Station...",
                 self.open_record_station_dialog,
+            ),
+            (
+                "radio.stop_all_recordings",
+                "Internet Radio: Stop All Recordings",
+                self.radio_stop_all_recordings,
             ),
             (
                 "radio.wake_timer",

@@ -679,12 +679,17 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         record_menu.Append(record_id, "&Record Now / Stop Recording")
         record_station_id = wx.NewIdRef()
         record_menu.Append(record_station_id, "Record Statio&n...")
+        stop_all_id = wx.NewIdRef()
+        record_menu.Append(stop_all_id, "Stop A&ll Recordings")
         record_menu.Append(schedule_id, "&Schedule Recording...")
         record_menu.Append(recordings_id, "Recordin&gs...")
         record_menu.Append(settings_id, "Recording &Settings...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=record_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_record_station_dialog(), id=record_station_id
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_stop_all_recordings(), id=stop_all_id
         )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_schedule_recording(), id=schedule_id
@@ -1053,6 +1058,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                 treble_db=history.eq_treble_db,
                 compressor_enabled=history.compressor_enabled,
             )
+            # Every setting is per-stream now, so the playing station's channel,
+            # night mode, and OptiLab also revert to the shared default live.
+            self._radio_controller.set_sound_options(
+                channel_mode=history.channel_mode,
+                night_mode_enabled=history.night_mode_enabled,
+                optilab_enabled=history.optilab_enabled,
+                optilab_mode=history.optilab_mode,
+                optilab_input_db=history.optilab_input_db,
+                optilab_auto_adapt=history.optilab_auto_adapt,
+            )
         self._announce(f"Reset {count} station{plural} to the shared default.")
 
     def _maybe_resume_last_station(self) -> None:
@@ -1086,7 +1101,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             "Internet Radio from Quill, as a standalone app.\n\n"
             "Runs the same radio feature code as QUILL itself and shares its "
             "settings, favorites, and recordings.\n"
-            f"https://github.com/{_REPO}",
+            f"https://github.com/{_REPO}\n\n"
+            "Credits and thanks:\n"
+            "- Broadcast polish adapted from OptiLab Core by dgl1984 "
+            "(https://github.com/dgl1984/optilab, Apache-2.0).",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )

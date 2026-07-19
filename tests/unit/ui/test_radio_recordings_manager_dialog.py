@@ -163,6 +163,46 @@ def test_selection_follows_identity_not_position(tmp_path: Path) -> None:
     assert 0 not in fake_list.selects
 
 
+def test_per_row_stop_and_stop_all_target_jobs(tmp_path: Path) -> None:
+    # Concurrent recording: two Recording rows; Stop targets the selected row's
+    # job id, Stop All stops every recording.
+    dlg, fake_list, _recorder = _dialog(tmp_path)
+    a = tmp_path / "A - live.mp3"
+    b = tmp_path / "B - live.mp3"
+    a.write_bytes(b"a")
+    b.write_bytes(b"b")
+    stopped: list[str] = []
+    stop_all_calls: list[bool] = []
+    jobs = [
+        SimpleNamespace(
+            job_id="ja", destination=a, station_name="A", stream_url="https://x/a",
+            started_at=datetime.now(),
+        ),
+        SimpleNamespace(
+            job_id="jb", destination=b, station_name="B", stream_url="https://x/b",
+            started_at=datetime.now(),
+        ),
+    ]
+    dlg._recorder = SimpleNamespace(
+        active_jobs=lambda: jobs,
+        active_count=len(jobs),
+        is_recording=True,
+        stop=lambda job_id=None: stopped.append(job_id),
+        stop_all=lambda: stop_all_calls.append(True),
+    )
+    dlg._announce = lambda _m: None  # type: ignore[assignment]
+    dlg._refresh()
+    recording_rows = [e for e in dlg._entries if e.status == "Recording"]
+    assert [e.job_id for e in recording_rows] == ["ja", "jb"]
+    # Select the second Recording row and Stop it -> stops job jb only.
+    fake_list._selected = 1
+    dlg._on_stop_recording()
+    assert stopped == ["jb"]
+    # Stop All stops every recording.
+    dlg._on_stop_all_recordings()
+    assert stop_all_calls == [True]
+
+
 def test_completed_once_does_not_count_as_scheduled(tmp_path: Path) -> None:
     # R1/10.1: the status label counts Completed separately from Scheduled.
     from quill.core.radio.recording_schedule import RecordingScheduleEntry

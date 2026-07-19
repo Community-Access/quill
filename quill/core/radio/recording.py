@@ -27,9 +27,10 @@ import re
 import shutil
 import subprocess
 import threading
+import uuid
 from collections import deque
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import cast
@@ -56,8 +57,10 @@ from quill.stability.redaction import format_args_for_log, redact_source_tokens
 __all__ = [
     "RECORD_FORMATS",
     "RECORD_FORMAT_LABELS",
+    "JobSnapshot",
     "RadioRecorder",
     "RecordingError",
+    "RecordingLimitError",
     "RecordingSettings",
     "build_filename",
     "build_probe_codec_command",
@@ -110,6 +113,19 @@ class RecordingError(CodedError):
     code = "QUILL-RADIO-RECORDING-FAILED"
 
 
+class RecordingLimitError(RecordingError):
+    """The concurrent-recording cap is already reached (a subclass so callers
+    that only care about "could not start" still catch it, while the scheduler
+    can tell "cap reached, hold and retry" apart from a hard failure).
+
+    Only raised when ``RecordingSettings.max_concurrent_recordings`` is a
+    positive number and that many recordings are already running; with the
+    default of ``0`` (unlimited) it never fires.
+    """
+
+    code = "QUILL-RADIO-RECORDING-LIMIT"
+
+
 @dataclass(slots=True)
 class RecordingSettings:
     """Rich, global recording defaults (Preferences > Internet Radio > Recording)."""
@@ -140,6 +156,16 @@ class RecordingSettings:
     #: build_record_command's filter_graph parameter -- this module itself
     #: stays decoupled from audio_enhance.py; the caller computes the graph.
     apply_sound_enhancements: bool = False
+    #: How many recordings may run at the same time (quill-radio concurrent
+    #: recording). ``0`` means *unlimited* -- the recorder starts every
+    #: recording the user or the scheduler asks for, so five overlapping
+    #: scheduled shows all record instead of one winning and the rest being
+    #: dropped. A positive number caps concurrency: once that many are running,
+    #: a further Record Now is refused with a friendly message and a scheduled
+    #: fire is held pending (retried within its window) rather than burned.
+    #: The default is unlimited by explicit product choice; a user on a modest
+    #: machine or a metered connection can set a ceiling in Recording Settings.
+    max_concurrent_recordings: int = 0
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -153,6 +179,7 @@ class RecordingSettings:
             "reconnect_max_attempts": self.reconnect_max_attempts,
             "reconnect_wait_seconds": self.reconnect_wait_seconds,
             "apply_sound_enhancements": self.apply_sound_enhancements,
+            "max_concurrent_recordings": self.max_concurrent_recordings,
         }
 
     @classmethod
@@ -171,6 +198,10 @@ class RecordingSettings:
             reconnect_max_attempts=max(0, _coerce_int(data.get("reconnect_max_attempts"), 5)),
             reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
             apply_sound_enhancements=bool(data.get("apply_sound_enhancements", False)),
+            # 0 (unlimited) is the floor -- a negative saved value coerces to it.
+            max_concurrent_recordings=max(
+                0, _coerce_int(data.get("max_concurrent_recordings"), 0)
+            ),
         )
 
 
@@ -187,103 +218,182 @@ def _coerce_int(value: object, default: int) -> int:
     return default
 
 
-class RadioRecorder:
-    """Owns at most one active stream recording at a time.
+@dataclass(slots=True)
+class JobSnapshot:
+    """An immutable, lock-free view of one active recording.
 
-    ``on_state_changed(is_recording, destination)`` fires on a background
-    thread when a recording starts or ends (naturally, via :meth:`stop`, or
-    by hitting its duration cap) -- callers that touch wx must marshal back
-    to the UI thread themselves, the same contract QUILL's other background
-    workers use.
+    The multi-recording replacement for the recorder's old scalar
+    ``current_*`` getters: :meth:`RadioRecorder.active_jobs` returns one of
+    these per running recording so the Recordings list, the resume marker, and
+    the tray can each see every capture, not just "the" one.
+    """
+
+    job_id: str
+    station_name: str
+    stream_url: str
+    destination: Path
+    final_destination: Path
+    started_at: datetime
+    minutes: int
+    filter_graph: str
+    entry_id: str = ""
+
+
+@dataclass
+class RecordingJob:
+    """Everything one in-flight recording owns (concurrent recording).
+
+    One recording == one job. Each job has its own ffmpeg process, its own
+    recent-stderr tail (so two recordings can never cross-contaminate each
+    other's fatal/transient reconnect verdict), its own reconnect counter and
+    user-stopped flag, and its own Windows kill-on-close handle. Jobs live in
+    :attr:`RadioRecorder._jobs` keyed by :attr:`job_id`. A reconnect reuses the
+    same ``job_id`` (and the original ``started_at``/``scheduled_end``) so the
+    Recordings row and the resume marker keep a stable identity across a drop.
+    """
+
+    job_id: str
+    process: subprocess.Popen[bytes]
+    destination: Path
+    final_destination: Path
+    station_name: str
+    stream_url: str
+    settings: RecordingSettings
+    minutes: int
+    filter_graph: str
+    extension: str
+    started_at: datetime
+    scheduled_end: datetime
+    entry_id: str = ""
+    #: Recent ffmpeg stderr (R4/13.3), inspected on a drop to decide fatal vs
+    #: transient. Per-job so a second recording's stderr never poisons this
+    #: job's verdict.
+    stderr_tail: deque[str] = field(default_factory=lambda: deque(maxlen=32))
+    #: Windows kill-on-close job handle (R4/13.5); one per recording.
+    win_job: object | None = None
+    reconnect_attempt: int = 0
+    user_stopped: bool = False
+
+    def snapshot(self) -> JobSnapshot:
+        return JobSnapshot(
+            job_id=self.job_id,
+            station_name=self.station_name,
+            stream_url=self.stream_url,
+            destination=self.destination,
+            final_destination=self.final_destination,
+            started_at=self.started_at,
+            minutes=self.minutes,
+            filter_graph=self.filter_graph,
+            entry_id=self.entry_id,
+        )
+
+
+class RadioRecorder:
+    """Owns any number of concurrent stream recordings (concurrent recording).
+
+    Previously the recorder held one recording at a time; it now manages a set
+    of independent :class:`RecordingJob` objects keyed by id, so overlapping
+    scheduled shows and manual captures all record at once instead of one
+    winning and the rest being dropped. ``RecordingSettings.
+    max_concurrent_recordings`` caps how many may run (``0`` = unlimited, the
+    default).
+
+    ``on_state_changed(is_recording, destination, job_id)`` fires on a
+    background thread when a recording starts or ends (naturally, via
+    :meth:`stop`, or by hitting its duration cap); ``job_id`` identifies which
+    recording changed so the caller can persist/clear exactly that one's resume
+    marker. Callers that touch wx must marshal back to the UI thread themselves,
+    the same contract QUILL's other background workers use.
     """
 
     def __init__(
         self,
         *,
-        on_state_changed: Callable[[bool, Path | None], None] | None = None,
+        on_state_changed: Callable[[bool, Path | None, str], None] | None = None,
         on_reconnect: Callable[[int, int], None] | None = None,
     ) -> None:
-        self._on_state_changed = on_state_changed or (lambda _recording, _dest: None)
+        self._on_state_changed = on_state_changed or (lambda _recording, _dest, _job_id: None)
         #: (attempt, max_attempts) -- fired on a background thread each time a
         #: dropped recording is about to be resumed into a continuation file.
         self._on_reconnect = on_reconnect or (lambda _attempt, _maximum: None)
+        #: Guards membership of the jobs dict; per-job fields are only mutated
+        #: under it (or, for a job's own stderr tail, by that job's single drain
+        #: thread, read back under the lock in _monitor).
         self._lock = threading.Lock()
-        self._process: subprocess.Popen[bytes] | None = None
-        #: Where ffmpeg is writing right now (may be the temp dir, #5).
-        self._destination: Path | None = None
-        #: Where the finished file belongs once this recording ends; differs
-        #: from _destination only when settings.temp_dir is set (#5).
-        self._final_destination: Path | None = None
-        self._station_name: str = ""
-        self._user_stopped = False
-        self._reconnect_attempt = 0
-        #: When the current recording started (R1/10.4 elapsed readout,
-        #: R3 resume marker). ``None`` while idle.
-        self._started_at: datetime | None = None
-        #: The absolute end moment of the current recording
-        #: (``_started_at + duration_minutes``), preserved across reconnects so a
-        #: continuation part records only the remaining time, not a fresh full
-        #: duration (R4/13.1). ``None`` while idle.
-        self._scheduled_end: datetime | None = None
-        #: Recent ffmpeg stderr lines (R4/13.3), inspected on a drop to decide
-        #: fatal (disk full / HTTP 4xx -> do not reconnect) vs transient.
-        self._stderr_tail: deque[str] = deque(maxlen=32)
-        #: Windows job object keeping the ffmpeg child alive only as long as the
-        #: host is alive (R4/13.5); a crashed host closes the handle and the OS
-        #: kills the child. ``None`` off-Windows or if the job could not be created.
-        self._job: object | None = None
-        #: (station_name, stream_url, settings, duration_minutes, filter_graph,
-        #: resolved_extension) of the active recording, kept so a reconnect can
-        #: restart with the same shape -- including any Sound Enhancements filter
-        #: and, for raw-capture mode, the extension resolved on the first probe
-        #: so a continuation file never re-probes or changes container.
-        self._active_params: tuple[str, str, RecordingSettings, int, str, str] | None = None
+        #: Every recording currently running, keyed by job id.
+        self._jobs: dict[str, RecordingJob] = {}
+
+    # -- read API ---------------------------------------------------------------
+
+    def _live_jobs(self) -> list[RecordingJob]:
+        """All jobs whose ffmpeg is still running, oldest first (caller holds no
+        lock; this takes it)."""
+        with self._lock:
+            jobs = [j for j in self._jobs.values() if j.process.poll() is None]
+        jobs.sort(key=lambda j: j.started_at)
+        return jobs
 
     @property
     def is_recording(self) -> bool:
-        with self._lock:
-            return self._process is not None and self._process.poll() is None
+        """True while any recording is running (back-compat: "anything active")."""
+        return bool(self._live_jobs())
 
     @property
-    def current_destination(self) -> Path | None:
+    def active_count(self) -> int:
+        """How many recordings are running right now."""
+        return len(self._live_jobs())
+
+    def active_jobs(self) -> list[JobSnapshot]:
+        """A snapshot of every running recording, oldest first."""
+        return [j.snapshot() for j in self._live_jobs()]
+
+    def job(self, job_id: str) -> JobSnapshot | None:
+        """A snapshot of one recording by id, or ``None`` if it is not running."""
         with self._lock:
-            return self._destination
+            job = self._jobs.get(job_id)
+            return job.snapshot() if job is not None else None
+
+    def _first(self) -> RecordingJob | None:
+        jobs = self._live_jobs()
+        return jobs[0] if jobs else None
+
+    # Back-compat scalar getters -- report the oldest active recording. New code
+    # uses active_jobs()/job(); these keep any remaining single-recording call
+    # site (a status line, an old test) working.
+    @property
+    def current_destination(self) -> Path | None:
+        job = self._first()
+        return job.destination if job is not None else None
 
     @property
     def current_station_name(self) -> str:
-        with self._lock:
-            return self._station_name
+        job = self._first()
+        return job.station_name if job is not None else ""
 
     @property
     def current_stream_url(self) -> str:
-        """The stream URL of the active recording (R1/10.2 double-count guard)."""
-        with self._lock:
-            return self._active_params[1] if self._active_params is not None else ""
+        job = self._first()
+        return job.stream_url if job is not None else ""
 
     @property
     def current_final_destination(self) -> Path | None:
-        """Where the finished file belongs (differs from current_destination
-        only with a temp dir set, #5). R3's resume marker reads this."""
-        with self._lock:
-            return self._final_destination
+        job = self._first()
+        return job.final_destination if job is not None else None
 
     @property
     def current_minutes(self) -> int:
-        """The duration cap (minutes) of the active recording (R3 marker)."""
-        with self._lock:
-            return self._active_params[3] if self._active_params is not None else 0
+        job = self._first()
+        return job.minutes if job is not None else 0
 
     @property
     def current_filter_graph(self) -> str:
-        """The filter graph of the active recording (R3 marker)."""
-        with self._lock:
-            return self._active_params[4] if self._active_params is not None else ""
+        job = self._first()
+        return job.filter_graph if job is not None else ""
 
     @property
     def current_started_at(self) -> datetime | None:
-        """When the active recording started (R1 elapsed, R3 marker)."""
-        with self._lock:
-            return self._started_at
+        job = self._first()
+        return job.started_at if job is not None else None
 
     def start(
         self,
@@ -293,18 +403,44 @@ class RadioRecorder:
         settings: RecordingSettings,
         duration_minutes: int | None = None,
         filter_graph: str = "",
+        entry_id: str = "",
+        _job_id: str = "",
         _continuation_part: int = 0,
         _forced_extension: str = "",
+        _started_at: datetime | None = None,
+        _scheduled_end: datetime | None = None,
     ) -> Path:
-        """Start recording *stream_url*; raises :class:`RecordingError` if
-        ffmpeg is unavailable or a recording is already in progress. A
-        non-empty ``filter_graph`` records the Sound-Enhancements-filtered
-        audio instead of a raw archival copy (see ``build_record_command``).
-        Raw-capture mode (``settings.format == "copy"``) ignores the filter and
-        writes a container matching the stream's own codec."""
+        """Start recording *stream_url* as a new concurrent job; returns where
+        ffmpeg is writing. Raises :class:`RecordingError` if ffmpeg is
+        unavailable, or :class:`RecordingLimitError` if the concurrency cap
+        (``settings.max_concurrent_recordings``, ``0`` = unlimited) is already
+        reached. A non-empty ``filter_graph`` records the Sound-Enhancements-
+        filtered audio instead of a raw archival copy (see
+        ``build_record_command``). Raw-capture mode (``settings.format ==
+        "copy"``) ignores the filter and writes a container matching the
+        stream's own codec.
+
+        ``entry_id`` links the recording to a schedule entry (for the resume
+        marker). The ``_``-prefixed parameters are internal to the reconnect
+        path: a continuation reuses the dropped recording's ``_job_id`` and its
+        original ``_started_at``/``_scheduled_end`` so identity and the
+        remaining-time math survive a drop.
+        """
+        is_continuation = _continuation_part > 0
         with self._lock:
-            if self._process is not None and self._process.poll() is None:
-                raise RecordingError("A recording is already in progress.")
+            # Concurrency cap (0 = unlimited). A continuation replaces a
+            # recording that just dropped -- it reuses an existing job_id and so
+            # is never counted against the cap.
+            cap = max(0, getattr(settings, "max_concurrent_recordings", 0) or 0)
+            if not is_continuation and cap:
+                running = sum(1 for j in self._jobs.values() if j.process.poll() is None)
+                if running >= cap:
+                    raise RecordingLimitError(
+                        f"The maximum of {cap} simultaneous "
+                        f"recording{'s' if cap != 1 else ''} is already running. "
+                        "Stop one to start another, or raise the limit in "
+                        "Recording Settings."
+                    )
             ffmpeg = find_ffmpeg()
             if ffmpeg is None:
                 raise RecordingError(f"ffmpeg is not installed. {INSTALL_HINT}")
@@ -331,13 +467,10 @@ class RadioRecorder:
                     )
             # R4/13.4: a continuation part keeps the *original* start timestamp in
             # its {date}/{time} tokens (so parts 1 and 2 group by name), not a
-            # fresh now(). The original start is preserved across reconnects
-            # (only a _continuation_part==0 start resets _started_at below).
-            when = (
-                self._started_at
-                if (_continuation_part > 0 and self._started_at)
-                else datetime.now()
-            )
+            # fresh now(). ``now`` is computed once and reused for both the
+            # filename token and the job's started_at so they never diverge.
+            now = datetime.now()
+            when = _started_at if (is_continuation and _started_at is not None) else now
             filename = build_filename(settings.filename_pattern, station=station_name, when=when)
             if _continuation_part > 0:
                 filename = f"{filename} (part {_continuation_part + 1})"
@@ -399,48 +532,59 @@ class RadioRecorder:
             # kills the child), so a crashed host can no longer strand a bare
             # ffmpeg writing to the temp dir. Best-effort: a failure degrades to
             # the pre-job behavior, never blocks the recording.
-            self._job = _assign_kill_on_close_job(process)
-            self._process = process
-            self._destination = destination
-            self._final_destination = final_destination
-            self._station_name = station_name
-            self._user_stopped = False
-            if _continuation_part == 0:
-                self._reconnect_attempt = 0
-                self._started_at = datetime.now()
-                # R4/13.1: remember the absolute end so a reconnect records only
-                # the remaining time, not a fresh full duration.
-                self._scheduled_end = self._started_at + timedelta(minutes=minutes)
-            self._active_params = (
-                station_name,
-                stream_url,
-                settings,
-                minutes,
-                record_filter,
-                extension,
+            win_job = _assign_kill_on_close_job(process)
+            job_id = _job_id or uuid.uuid4().hex
+            started_at = _started_at if (is_continuation and _started_at is not None) else now
+            # R4/13.1: the absolute end is preserved across reconnects so a
+            # continuation records only the remaining time, not a fresh full
+            # duration.
+            scheduled_end = (
+                _scheduled_end
+                if (is_continuation and _scheduled_end is not None)
+                else started_at + timedelta(minutes=minutes)
             )
-        self._on_state_changed(True, destination)
+            job = RecordingJob(
+                job_id=job_id,
+                process=process,
+                destination=destination,
+                final_destination=final_destination,
+                station_name=station_name,
+                stream_url=stream_url,
+                settings=settings,
+                minutes=minutes,
+                filter_graph=record_filter,
+                extension=extension,
+                started_at=started_at,
+                scheduled_end=scheduled_end,
+                entry_id=entry_id,
+                win_job=win_job,
+                reconnect_attempt=_continuation_part,
+            )
+            self._jobs[job_id] = job
+        self._on_state_changed(True, destination, job_id)
         threading.Thread(
-            target=self._monitor, args=(process,), daemon=True, name="quill-radio-record-monitor"
+            target=self._monitor, args=(job,), daemon=True, name="quill-radio-record-monitor"
         ).start()
         threading.Thread(
             target=self._drain_stderr,
-            args=(process, station_name),
+            args=(job,),
             daemon=True,
             name="quill-radio-record-stderr",
         ).start()
         return destination
 
-    def _drain_stderr(self, process: subprocess.Popen[bytes], station_name: str) -> None:
-        """Log ffmpeg's live stderr for *process* (quill-radio #4/#5).
+    def _drain_stderr(self, job: RecordingJob) -> None:
+        """Log ffmpeg's live stderr for *job* (quill-radio #4/#5).
 
         Always runs so the OS pipe buffer cannot fill and stall ffmpeg. Each
         line is redacted (a stream URL can carry a token) and logged at DEBUG,
         except lines that look like a real error, which log at WARNING so a
         failing recording leaves a trail without debug mode. In debug mode
         ffmpeg runs at ``-loglevel verbose``, so the whole connection/codec
-        story lands in ``quill.log``.
+        story lands in ``quill.log``. The tail is the *job's own* deque, so a
+        second recording's stderr never poisons this one's verdict.
         """
+        process = job.process
         stream = getattr(process, "stderr", None)
         if stream is None:
             return
@@ -455,13 +599,13 @@ class RadioRecorder:
                 # so an error it already recovered from cannot poison a later
                 # verdict.
                 if _RECOVERY_STDERR_RE.search(line):
-                    self._stderr_tail.clear()
-                self._stderr_tail.append(line)
+                    job.stderr_tail.clear()
+                job.stderr_tail.append(line)
                 safe = redact_source_tokens(line)
                 if _STDERR_ERROR_RE.search(line):
-                    logger.warning("ffmpeg recording %s: %s", station_name, safe)
+                    logger.warning("ffmpeg recording %s: %s", job.station_name, safe)
                 else:
-                    logger.debug("ffmpeg recording %s: %s", station_name, safe)
+                    logger.debug("ffmpeg recording %s: %s", job.station_name, safe)
         except (OSError, ValueError):
             pass
         finally:
@@ -470,41 +614,34 @@ class RadioRecorder:
             except OSError:
                 pass
 
-    def _monitor(self, process: subprocess.Popen[bytes]) -> None:
-        process.wait()
+    def _monitor(self, job: RecordingJob) -> None:
+        job.process.wait()
         with self._lock:
-            if self._process is process:
-                dest = self._destination
-                final = self._final_destination
-                params = self._active_params
-                failed = bool(process.returncode) and not self._user_stopped
-                # R4/13.3: snapshot the stderr tail under the lock so a fatal
-                # failure (disk full / HTTP 4xx) is not retried -- reconnecting
-                # a stream the server took down with a 404 would only waste the
-                # attempt budget and spam continuation files.
-                fatal = failed and any(_FATAL_STDERR_RE.search(line) for line in self._stderr_tail)
-                self._process = None
-                self._destination = None
-                self._final_destination = None
-                self._station_name = ""
-                self._started_at = None
-                # R4/13.5: the job object tracked this process; close its handle
-                # now that the child has exited (wait() returned), so a long
-                # session does not leak one handle per recording.
-                job = self._job
-                self._job = None
-                self._stderr_tail.clear()
-            else:
-                dest, final, params, failed, fatal, job = None, None, None, False, False, None
-        if job is not None:
-            _close_job_handle(job)
+            # Drop this job from the active set (only if it is still the one
+            # registered under its id -- a reconnect that already replaced it
+            # inserts a distinct object under the same id).
+            if self._jobs.get(job.job_id) is job:
+                del self._jobs[job.job_id]
+            failed = bool(job.process.returncode) and not job.user_stopped
+            # R4/13.3: read the job's own stderr tail under the lock so a fatal
+            # failure (disk full / HTTP 4xx) is not retried -- reconnecting a
+            # stream the server took down with a 404 would only waste the attempt
+            # budget and spam continuation files.
+            fatal = failed and any(_FATAL_STDERR_RE.search(line) for line in job.stderr_tail)
+            # R4/13.5: close this job's kill-on-close handle now the child has
+            # exited (wait() returned), so a long session does not leak a handle
+            # per recording.
+            win_job = job.win_job
+            job.win_job = None
+        if win_job is not None:
+            _close_job_handle(win_job)
         # Move the finished file from the temp dir to its home (#5). Done for
         # both a clean stop and a failed/partial recording, so a partial is
         # never stranded in temp -- it lands where the user looks for it, then
         # a reconnect (if any) records a fresh continuation.
-        landed = dest
-        if dest is not None and final is not None and dest != final:
-            landed = _finalize_move(dest, final)
+        landed = job.destination
+        if job.destination != job.final_destination:
+            landed = _finalize_move(job.destination, job.final_destination)
         if landed is not None:
             # #5 observability: how a recording ended and where it finalized.
             logger.debug(
@@ -512,25 +649,23 @@ class RadioRecorder:
                 "dropped/partial" if failed else "stopped/complete",
                 format_args_for_log([str(landed)]),
             )
-            self._on_state_changed(False, landed)
-        if failed and params is not None and not fatal:
-            self._maybe_reconnect(params)
+            self._on_state_changed(False, landed, job.job_id)
+        if failed and not fatal:
+            self._maybe_reconnect(job)
 
-    def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int, str, str]) -> None:
-        """A recording died without being asked to stop: wait, then resume
-        into a continuation file, up to the configured attempt budget.
+    def _maybe_reconnect(self, job: RecordingJob) -> None:
+        """*job* died without being asked to stop: wait, then resume into a
+        continuation file (reusing the same job id), up to the attempt budget.
 
         R4/13.1: a continuation records only the *remaining* time to the
-        original scheduled end (``_scheduled_end``), never a fresh full
+        original scheduled end (``job.scheduled_end``), never a fresh full
         duration -- a 60-minute show that drops at minute 50 records a ~10
         minute continuation, not another 60."""
-        station_name, stream_url, settings, _minutes, filter_graph, extension = params
+        settings = job.settings
         if not settings.reconnect_enabled:
             return
-        with self._lock:
-            self._reconnect_attempt += 1
-            attempt = self._reconnect_attempt
-            scheduled_end = self._scheduled_end
+        attempt = job.reconnect_attempt + 1
+        scheduled_end = job.scheduled_end
         # R4/13.1: remaining minutes to the absolute end, floored at 1 so a
         # reconnect that fires just before the end still records something; a
         # drop discovered after the scheduled end gives up (the show is over).
@@ -541,20 +676,20 @@ class RadioRecorder:
         if remaining <= 0:
             logger.info(
                 "Radio recording of %s dropped past its scheduled end; not reconnecting.",
-                station_name,
+                job.station_name,
             )
             return
         if attempt > max(0, settings.reconnect_max_attempts):
             logger.warning(
                 "Radio recording of %s gave up after %d reconnect attempt(s).",
-                station_name,
+                job.station_name,
                 attempt - 1,
             )
             return
         self._on_reconnect(attempt, settings.reconnect_max_attempts)
         logger.info(
             "Radio recording of %s dropped; reconnect attempt %d/%d in %ds (remaining %d min).",
-            station_name,
+            job.station_name,
             attempt,
             settings.reconnect_max_attempts,
             settings.reconnect_wait_seconds,
@@ -563,51 +698,70 @@ class RadioRecorder:
         stop_signal = threading.Event()
         stop_signal.wait(max(1, settings.reconnect_wait_seconds))
         with self._lock:
-            if self._user_stopped or (self._process is not None and self._process.poll() is None):
+            existing = self._jobs.get(job.job_id)
+            if job.user_stopped or (existing is not None and existing.process.poll() is None):
                 return
         try:
             self.start(
-                station_name=station_name,
-                stream_url=stream_url,
+                station_name=job.station_name,
+                stream_url=job.stream_url,
                 settings=settings,
                 duration_minutes=remaining,
-                filter_graph=filter_graph,
+                filter_graph=job.filter_graph,
+                entry_id=job.entry_id,
+                _job_id=job.job_id,
                 _continuation_part=attempt,
-                _forced_extension=extension,
+                _forced_extension=job.extension,
+                _started_at=job.started_at,
+                _scheduled_end=job.scheduled_end,
             )
         except RecordingError as error:
             logger.warning("Reconnect attempt %d could not start: %s", attempt, error)
-            self._maybe_reconnect(params)
+            job.reconnect_attempt = attempt
+            self._maybe_reconnect(job)
 
-    def stop(self) -> None:
-        """Ask the current recording to finish cleanly; a no-op if idle.
+    def stop(self, job_id: str | None = None) -> None:
+        """Ask a recording to finish cleanly; a no-op if it is not running.
 
-        R4/13.5: the wait-and-terminate fallback runs on a daemon thread so a
-        slow ffmpeg shutdown never blocks the UI thread (notably the frame's
-        close path). The 'q' keypress is sent synchronously -- it is just a
-        pipe write -- and the thread only waits and, if needed, terminates."""
+        ``job_id`` names one recording to stop; ``None`` stops *all* of them
+        (the close-path/back-compat behavior). R4/13.5: each wait-and-terminate
+        fallback runs on its own daemon thread so a slow ffmpeg shutdown never
+        blocks the UI thread. The 'q' keypress is sent synchronously -- it is
+        just a pipe write -- and the thread only waits and, if needed,
+        terminates."""
         with self._lock:
-            process = self._process
-            self._user_stopped = True
-        if process is None or process.poll() is not None:
-            return
-        try:
-            if process.stdin is not None:
-                process.stdin.write(b"q")
-                process.stdin.flush()
-        except (OSError, ValueError):
-            # Pipe already closed (ffmpeg gone); the thread's wait will return.
-            pass
-        threading.Thread(
-            target=_await_stop,
-            args=(process,),
-            daemon=True,
-            name="quill-radio-record-stop",
-        ).start()
+            if job_id is None:
+                targets = list(self._jobs.values())
+            else:
+                one = self._jobs.get(job_id)
+                targets = [one] if one is not None else []
+            for target in targets:
+                target.user_stopped = True
+        for target in targets:
+            process = target.process
+            if process.poll() is not None:
+                continue
+            try:
+                if process.stdin is not None:
+                    process.stdin.write(b"q")
+                    process.stdin.flush()
+            except (OSError, ValueError):
+                # Pipe already closed (ffmpeg gone); the thread's wait returns.
+                pass
+            threading.Thread(
+                target=_await_stop,
+                args=(process,),
+                daemon=True,
+                name="quill-radio-record-stop",
+            ).start()
+
+    def stop_all(self) -> None:
+        """Stop every running recording (the Stop All action / shutdown)."""
+        self.stop(None)
 
     def shutdown(self) -> None:
-        """Called once, from the frame's close path."""
-        self.stop()
+        """Called once, from the frame's close path: stop every recording."""
+        self.stop(None)
 
 
 def _await_stop(process: subprocess.Popen[bytes]) -> None:

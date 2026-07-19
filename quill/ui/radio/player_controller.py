@@ -36,6 +36,7 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import NamedTuple
 
 import wx
 
@@ -45,6 +46,24 @@ from quill.ui.audio_studio.audio_engine import WxMediaEngine
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine, mpv_output_device_available
 
 _log = logging.getLogger(__name__)
+
+
+class ResolvedEnhancement(NamedTuple):
+    """Every Sound Enhancements setting resolved for a station about to play --
+    its own per-station override if it is a favorite with one, else the shared
+    default. Every field is per-stream as well as global (see the host's
+    ``_radio_resolve_enhancement``)."""
+
+    bass_db: float = 0.0
+    mid_db: float = 0.0
+    treble_db: float = 0.0
+    compressor_enabled: bool = False
+    channel_mode: str = "stereo"
+    night_mode_enabled: bool = False
+    optilab_enabled: bool = False
+    optilab_mode: str = "off"
+    optilab_input_db: float = 0.0
+    optilab_auto_adapt: int = 0
 
 
 class RadioPlayerState(Enum):
@@ -94,8 +113,7 @@ class RadioPlayerController:
         on_register_click: Callable[[str], None] | None = None,
         before_play: Callable[[], None] | None = None,
         on_enhance_error: Callable[[str], None] | None = None,
-        resolve_enhancement: Callable[[RadioStation], tuple[float, float, float, bool, str]]
-        | None = None,
+        resolve_enhancement: Callable[[RadioStation], ResolvedEnhancement] | None = None,
         resolve_volume: Callable[[RadioStation], int] | None = None,
         output_device: str = "",
         on_output_device_error: Callable[[str], None] | None = None,
@@ -169,6 +187,12 @@ class RadioPlayerController:
         self._compressor_enabled = False
         self._channel_mode = "stereo"
         self._night_mode_enabled = False
+        # OptiLab broadcast-polish (global listener option, like night mode):
+        # a bypass flag plus the chosen mode / input trim / auto-adapt.
+        self._optilab_enabled = False
+        self._optilab_mode = "off"
+        self._optilab_input_db = 0.0
+        self._optilab_auto_adapt = 0
         #: Volume Boost: amplify up to 50% past 100 (mpv engine only; the
         #: wx engine clamps at 100, so it silently does nothing there).
         self._volume_boost = False
@@ -194,13 +218,19 @@ class RadioPlayerController:
             except Exception:  # noqa: BLE001 - a sibling-stop must never block play
                 pass
         if self._resolve_enhancement is not None:
-            (
-                self._eq_bass_db,
-                self._eq_mid_db,
-                self._eq_treble_db,
-                self._compressor_enabled,
-                self._channel_mode,
-            ) = self._resolve_enhancement(station)
+            resolved = self._resolve_enhancement(station)
+            self._eq_bass_db = resolved.bass_db
+            self._eq_mid_db = resolved.mid_db
+            self._eq_treble_db = resolved.treble_db
+            self._compressor_enabled = resolved.compressor_enabled
+            self._channel_mode = resolved.channel_mode
+            # Night mode and OptiLab are per-stream too (resolved here), each
+            # falling back to the shared default when the station has no override.
+            self._night_mode_enabled = resolved.night_mode_enabled
+            self._optilab_enabled = resolved.optilab_enabled
+            self._optilab_mode = resolved.optilab_mode
+            self._optilab_input_db = resolved.optilab_input_db
+            self._optilab_auto_adapt = resolved.optilab_auto_adapt
         self._state.station = station
         if self._resolve_volume is not None:
             memorized = self._resolve_volume(station)
@@ -313,6 +343,10 @@ class RadioPlayerController:
             compressor_enabled=self._compressor_enabled,
             channel_mode=self._channel_mode,
             night_mode_enabled=self._night_mode_enabled,
+            optilab_enabled=self._optilab_enabled,
+            optilab_mode=self._optilab_mode,
+            optilab_input_db=self._optilab_input_db,
+            optilab_auto_adapt=self._optilab_auto_adapt,
         )
 
     def _resolve_playback_url(self, station: RadioStation) -> str:
@@ -341,6 +375,10 @@ class RadioPlayerController:
                 compressor_enabled=self._compressor_enabled,
                 channel_mode=self._channel_mode,
                 night_mode_enabled=self._night_mode_enabled,
+                optilab_enabled=self._optilab_enabled,
+                optilab_mode=self._optilab_mode,
+                optilab_input_db=self._optilab_input_db,
+                optilab_auto_adapt=self._optilab_auto_adapt,
             )
         except EnhanceError as error:
             if self._on_enhance_error is not None:
@@ -382,13 +420,75 @@ class RadioPlayerController:
         self._compressor_enabled = compressor_enabled
         self._apply_sound_change()
 
-    def set_sound_options(self, *, channel_mode: str, night_mode_enabled: bool) -> None:
-        """Change the listener-level sound options (channel mode, night mode);
-        same live-apply/reconnect behavior as ``set_enhancement``."""
-        if (channel_mode, night_mode_enabled) == (self._channel_mode, self._night_mode_enabled):
+    def set_sound_options(
+        self,
+        *,
+        channel_mode: str,
+        night_mode_enabled: bool,
+        optilab_enabled: bool = False,
+        optilab_mode: str = "off",
+        optilab_input_db: float = 0.0,
+        optilab_auto_adapt: int = 0,
+    ) -> None:
+        """Change the listener-level sound options (channel mode, night mode,
+        and OptiLab broadcast polish); same live-apply/reconnect behavior as
+        ``set_enhancement``."""
+        new = (
+            channel_mode,
+            night_mode_enabled,
+            optilab_enabled,
+            optilab_mode,
+            optilab_input_db,
+            optilab_auto_adapt,
+        )
+        current = (
+            self._channel_mode,
+            self._night_mode_enabled,
+            self._optilab_enabled,
+            self._optilab_mode,
+            self._optilab_input_db,
+            self._optilab_auto_adapt,
+        )
+        if new == current:
             return
         self._channel_mode = channel_mode
         self._night_mode_enabled = night_mode_enabled
+        self._optilab_enabled = optilab_enabled
+        self._optilab_mode = optilab_mode
+        self._optilab_input_db = optilab_input_db
+        self._optilab_auto_adapt = optilab_auto_adapt
+        self._apply_sound_change()
+
+    def preview_enhancements(
+        self,
+        *,
+        bass_db: float,
+        mid_db: float,
+        treble_db: float,
+        compressor_enabled: bool,
+        channel_mode: str,
+        night_mode_enabled: bool,
+        optilab_enabled: bool = False,
+        optilab_mode: str = "off",
+        optilab_input_db: float = 0.0,
+        optilab_auto_adapt: int = 0,
+    ) -> None:
+        """Apply every Sound Enhancements setting at once and make it heard --
+        the live-preview path for the dialog, so moving a slider is heard
+        immediately (mpv: live ``af``; wx: one reconnect) without pressing OK.
+
+        A single ``_apply_sound_change`` for the whole set (not one per field)
+        so a drag never reconnects the wx relay twice for one change."""
+        self._eq_bass_db = bass_db
+        self._eq_mid_db = mid_db
+        self._eq_treble_db = treble_db
+        self._compressor_enabled = compressor_enabled
+        self._channel_mode = channel_mode
+        self._night_mode_enabled = night_mode_enabled
+        self._optilab_enabled = optilab_enabled
+        self._optilab_mode = optilab_mode
+        self._optilab_input_db = optilab_input_db
+        self._optilab_auto_adapt = optilab_auto_adapt
         self._apply_sound_change()
 
     def set_volume_boost(self, enabled: bool) -> bool:

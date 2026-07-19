@@ -46,6 +46,10 @@ def _frame(monkeypatch: pytest.MonkeyPatch, *, playing: RadioStation | None) -> 
         compressor_enabled=True,
         channel_mode="stereo",
         night_mode_enabled=False,
+        optilab_enabled=False,
+        optilab_mode="off",
+        optilab_input_db=0.0,
+        optilab_auto_adapt=0,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
@@ -130,7 +134,14 @@ def test_on_reset_pushes_live_update_when_that_station_is_playing(
         ),
         (
             "set_sound_options",
-            {"channel_mode": "stereo", "night_mode_enabled": False},
+            {
+                "channel_mode": "stereo",
+                "night_mode_enabled": False,
+                "optilab_enabled": False,
+                "optilab_mode": "off",
+                "optilab_input_db": 0.0,
+                "optilab_auto_adapt": 0,
+            },
         ),
     ]
 

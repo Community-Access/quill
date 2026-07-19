@@ -98,3 +98,98 @@ class ResumeRecordingDialog:
         # _result is set when Resume/Skip was clicked; None when dismissed
         # without a choice (Escape/X) -- the caller treats None as skip.
         return self._result
+
+
+class ResumeRecordingsBatchDialog:
+    """Resume *several* interrupted recordings at once (concurrent recording).
+
+    When more than one recording was in progress at a crash, this offers a
+    single "Resume all / Skip all" choice listing each station -- friendlier for
+    a screen-reader user than N sequential prompts. Returns ``(action,
+    remember)`` where ``action`` is ``"resume"`` (resume every one) or ``"skip"``
+    (discard every one), or ``None`` if dismissed (treated as skip). The station
+    list is a read-only, arrow-reviewable field so the names can be checked
+    before choosing.
+    """
+
+    def __init__(
+        self,
+        parent: object,
+        *,
+        lines: list[str],
+        announce_cb: Callable[[str], None] | None = None,
+    ) -> None:
+        import wx
+
+        self._wx = wx
+        self._announce = announce_cb or (lambda _m: None)
+        self._result: tuple[str, bool] | None = None
+        self._resume_id = int(wx.NewIdRef())
+
+        count = len(lines)
+        self.dialog = wx.Dialog(parent, title="Resume Recordings")
+        root = wx.BoxSizer(wx.VERTICAL)
+
+        intro = wx.StaticText(
+            self.dialog,
+            label=f"{count} recordings were in progress when Quill Radio last closed.",
+        )
+        intro.SetName("Resume recordings prompt")
+        intro.Wrap(420)
+        root.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
+
+        listing = wx.TextCtrl(
+            self.dialog,
+            value="\n".join(lines),
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
+        )
+        listing.SetName("Interrupted recordings; review with the arrow keys")
+        listing.SetMinSize((420, min(200, 24 * max(1, count) + 16)))
+        root.Add(listing, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+        prompt = wx.StaticText(
+            self.dialog, label="Resume all of them for their remaining time?"
+        )
+        prompt.SetName("Resume prompt")
+        root.Add(prompt, 0, wx.EXPAND | wx.ALL, 10)
+
+        self._remember_check = wx.CheckBox(self.dialog, label="&Don't ask me again")
+        self._remember_check.SetName(
+            "Don't ask me again -- remembers this choice; change it later in Preferences"
+        )
+        self._remember_check.SetValue(False)
+        root.Add(self._remember_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        buttons.AddStretchSpacer()
+        resume_btn = wx.Button(self.dialog, self._resume_id, "&Resume All")
+        resume_btn.SetName("Resume every interrupted recording for its remaining time")
+        skip_btn = wx.Button(self.dialog, wx.ID_CANCEL, "&Skip All")
+        skip_btn.SetName("Skip resuming; leave the recordings as they are")
+        buttons.Add(resume_btn, 0, wx.RIGHT, 6)
+        buttons.Add(skip_btn)
+        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+        self.dialog.SetSizerAndFit(root)
+
+        resume_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose("resume"))
+        skip_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose("skip"))
+
+    def _choose(self, action: str) -> None:
+        self._result = (action, bool(self._remember_check.GetValue()))
+        self.dialog.EndModal(self._resume_id if action == "resume" else self._wx.ID_CANCEL)
+
+    def show(self) -> tuple[str, bool] | None:
+        wx = self._wx
+        self.dialog.CentreOnParent()
+        apply_modal_ids(
+            self.dialog,
+            affirmative_id=self._resume_id,
+            affirmative_label="Resume All",
+            cancel_id=wx.ID_CANCEL,
+            escape_id=wx.ID_CANCEL,
+        )
+        try:
+            show_modal_dialog(self.dialog, "Resume Recordings", announce=self._announce)
+        finally:
+            self.dialog.Destroy()
+        return self._result

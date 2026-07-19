@@ -39,11 +39,19 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
         now_playing_template="{title}[ by {artist}]",
         debug_mode=False,
         log_dir="",
+        favorites_sort="az",
+        channel_mode="stereo",
+        night_mode_enabled=False,
+        optilab_enabled=False,
+        optilab_mode="off",
+        optilab_input_db=0.0,
+        optilab_auto_adapt=0,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
         state=SimpleNamespace(station=playing, state=RadioPlayerState.PLAYING),
         set_enhancement=lambda **kw: calls.append(("set_enhancement", kw)),
+        set_sound_options=lambda **kw: calls.append(("set_sound_options", kw)),
     )
     saved: list[bool] = []
     frame._save_radio_favorites = lambda: saved.append(True)
@@ -107,7 +115,18 @@ def test_reset_all_live_updates_when_playing_station_was_reset() -> None:
         (
             "set_enhancement",
             {"bass_db": 1.0, "mid_db": 2.0, "treble_db": 3.0, "compressor_enabled": True},
-        )
+        ),
+        (
+            "set_sound_options",
+            {
+                "channel_mode": "stereo",
+                "night_mode_enabled": False,
+                "optilab_enabled": False,
+                "optilab_mode": "off",
+                "optilab_input_db": 0.0,
+                "optilab_auto_adapt": 0,
+            },
+        ),
     ]
 
 

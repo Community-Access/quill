@@ -39,19 +39,23 @@ STATUS_COMPLETED = "Completed"
 
 @dataclass(slots=True)
 class ActiveRecording:
-    """The recording being written right now, by identity (R1/10.3).
+    """A recording being written right now, by identity (R1/10.3).
 
     Passed to :func:`list_recordings` instead of a bare path so the active
     row can be found even when it lives in a temp dir the folder scan never
     reaches, and so a firing schedule whose stream is the one recording is
     not also double-listed as "Scheduled" (10.2). ``path`` may be ``None``
     only when ``station_name``/``stream_url`` still identify the recording.
+    ``job_id`` (concurrent recording) is the recorder's id for this recording,
+    carried onto the row so the Recordings dialog's Stop button can target this
+    exact capture when several are running.
     """
 
     path: Path | None
     station_name: str = ""
     stream_url: str = ""
     started_at: datetime | None = None
+    job_id: str = ""
 
 
 @dataclass(slots=True)
@@ -72,6 +76,9 @@ class RecordingEntry:
     #: When the active recording started (R1/10.4): the dialog ticks an
     #: elapsed readout from this. ``None`` for non-active rows.
     started_at: datetime | None = None
+    #: The recorder job id for a Recording row (concurrent recording), so the
+    #: dialog's Stop button can stop this exact recording. Empty for other rows.
+    job_id: str = ""
 
     @property
     def size_display(self) -> str:
@@ -173,42 +180,61 @@ def _schedule_detail(item: object, *, now: datetime) -> str:
 def list_recordings(
     settings: object,
     *,
-    active: ActiveRecording | None = None,
+    active: ActiveRecording | list[ActiveRecording] | None = None,
     scheduled: list[object] | None = None,
     now: datetime | None = None,
 ) -> list[RecordingEntry]:
     """Every recording row: active first, then files newest-first, then
     scheduled entries. A missing folder reads as no completed recordings.
 
-    The active recording is found by identity (R1/10.3): it is always shown
-    when *active* is set, even when it is writing to a temp dir the folder
-    scan never reaches. A firing schedule whose stream is the one recording
-    is suppressed from the scheduled list so it is not double-counted
-    (10.2). A one-time schedule that already ran shows as ``Completed`` and
-    is excluded from the scheduled count (10.1).
+    *active* may be a single :class:`ActiveRecording`, a list of them
+    (concurrent recording -- one row per running recording, oldest first), or
+    ``None``. Each active recording is found by identity (R1/10.3): it is always
+    shown, even when it is writing to a temp dir the folder scan never reaches.
+    A firing schedule whose stream is any of the recordings is suppressed from
+    the scheduled list so it is not double-counted (10.2). A one-time schedule
+    that already ran shows as ``Completed`` and is excluded from the scheduled
+    count (10.1).
     """
     if now is None:
         now = datetime.now()
     entries: list[RecordingEntry] = []
     folder = recordings_dir(settings)
-    active_path = active.path if active is not None else None
-    active_resolved = active_path.resolve() if active_path is not None else None
-    active_url = (active.stream_url or "") if active is not None else ""
+    if active is None:
+        actives: list[ActiveRecording] = []
+    elif isinstance(active, ActiveRecording):
+        actives = [active]
+    else:
+        actives = list(active)
 
-    # Active recording leads the list, found by path even when it lives in a
-    # temp dir the folder scan below never reaches (R1/10.3).
-    if active is not None and active_path is not None and active_resolved is not None:
-        size, modified = _stat(active_path)
+    # The resolved paths and stream URLs of every active recording, so the
+    # folder scan never re-lists an active file and a firing schedule is not
+    # double-listed as Scheduled while its stream is recording (10.2).
+    active_resolved_paths: set[Path] = set()
+    active_urls: set[str] = set()
+
+    # Active recordings lead the list, each found by path even when it lives in
+    # a temp dir the folder scan below never reaches (R1/10.3).
+    for item in actives:
+        if item.stream_url:
+            active_urls.add(item.stream_url)
+        item_path = item.path
+        if item_path is None:
+            continue
+        resolved = item_path.resolve()
+        active_resolved_paths.add(resolved)
+        size, modified = _stat(item_path)
         entries.append(
             RecordingEntry(
-                id=str(active_resolved),
-                name=(active.station_name or active_path.stem),
+                id=str(resolved),
+                name=(item.station_name or item_path.stem),
                 status=STATUS_RECORDING,
-                path=active_path,
+                path=item_path,
                 size_bytes=size,
                 modified=modified,
                 detail="writing now",
-                started_at=active.started_at,
+                started_at=item.started_at,
+                job_id=item.job_id,
             )
         )
 
@@ -221,10 +247,10 @@ def list_recordings(
         if not path.is_file() or path.suffix.lower() not in _RECORDING_SUFFIXES:
             continue
         resolved = path.resolve()
-        # The active file is already the leading row; never also emit it as
+        # An active file is already a leading row; never also emit it as
         # Recorded (which would double-list it, and on a same-volume temp dir
         # could even match the scan).
-        if active_resolved is not None and resolved == active_resolved:
+        if resolved in active_resolved_paths:
             continue
         try:
             stat = path.stat()
@@ -268,10 +294,10 @@ def list_recordings(
                 )
             )
             continue
-        # While this stream is the one recording, the firing schedule is the
+        # While this stream is one of the recordings, the firing schedule is a
         # Recording row above -- do not also list it as Scheduled (10.2).
         item_url = str(getattr(item, "stream_url", "") or "")
-        if active_url and item_url and item_url == active_url:
+        if item_url and item_url in active_urls:
             continue
         entries.append(
             RecordingEntry(

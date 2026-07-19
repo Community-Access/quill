@@ -241,3 +241,43 @@ def test_channel_mode_migrates_legacy_mono_enabled(tmp_path: Path) -> None:
         json.dumps({"mono_enabled": False}), encoding="utf-8"
     )
     assert load_history(tmp_path).channel_mode == "stereo"
+
+
+def test_optilab_defaults_off_and_round_trips(tmp_path: Path) -> None:
+    # Defaults: bypassed, mode off, input 0, adapt 0 (per product choice).
+    fresh = RadioHistory()
+    assert fresh.optilab_enabled is False
+    assert fresh.optilab_mode == "off"
+    assert fresh.optilab_input_db == 0.0
+    assert fresh.optilab_auto_adapt == 0
+    history = RadioHistory(
+        optilab_enabled=True,
+        optilab_mode="stream",
+        optilab_input_db=4.5,
+        optilab_auto_adapt=60,
+    )
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.optilab_enabled is True
+    assert loaded.optilab_mode == "stream"
+    assert loaded.optilab_input_db == 4.5
+    assert loaded.optilab_auto_adapt == 60
+
+
+def test_optilab_coerces_invalid_values(tmp_path: Path) -> None:
+    import json
+
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps(
+            {
+                "optilab_mode": "bogus",
+                "optilab_input_db": "not-a-number",
+                "optilab_auto_adapt": 500,
+            }
+        ),
+        encoding="utf-8",
+    )
+    loaded = load_history(tmp_path)
+    assert loaded.optilab_mode == "off"  # unknown mode -> off
+    assert loaded.optilab_input_db == 0.0  # unparseable -> 0
+    assert loaded.optilab_auto_adapt == 100  # clamped into 0..100

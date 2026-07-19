@@ -33,6 +33,44 @@ def test_missing_folder_lists_nothing(tmp_path: Path) -> None:
     assert list_recordings(_settings(tmp_path / "absent")) == []
 
 
+def test_multiple_active_recordings_each_lead_as_own_row(tmp_path: Path) -> None:
+    # Concurrent recording: a list of active recordings yields one Recording row
+    # each, carrying its job id, oldest first as passed.
+    a = tmp_path / "A - live.mp3"
+    b = tmp_path / "B - live.mp3"
+    a.write_bytes(b"a")
+    b.write_bytes(b"b")
+    actives = [
+        ActiveRecording(path=a, station_name="A", stream_url="https://x/a", job_id="ja"),
+        ActiveRecording(path=b, station_name="B", stream_url="https://x/b", job_id="jb"),
+    ]
+    rows = list_recordings(_settings(tmp_path), active=actives)
+    recording_rows = [r for r in rows if r.status == STATUS_RECORDING]
+    assert [r.name for r in recording_rows] == ["A", "B"]
+    assert [r.job_id for r in recording_rows] == ["ja", "jb"]
+    # Neither active file is also listed as Recorded (no double-listing).
+    assert sum(1 for r in rows if r.status == STATUS_RECORDED) == 0
+
+
+def test_scheduled_suppressed_while_its_stream_is_one_of_the_actives(tmp_path: Path) -> None:
+    active = ActiveRecording(
+        path=tmp_path / "B - live.mp3", station_name="B", stream_url="https://x/b", job_id="jb"
+    )
+    (tmp_path / "B - live.mp3").write_bytes(b"b")
+    scheduled = [
+        RecordingScheduleEntry(
+            id="s1",
+            station_name="B",
+            stream_url="https://x/b",
+            recurrence="daily",
+            run_at="2026-07-14T08:00:00",
+        )
+    ]
+    rows = list_recordings(_settings(tmp_path), active=[active], scheduled=scheduled)
+    # The firing schedule is the Recording row, not also a Scheduled row.
+    assert not any(r.status == STATUS_SCHEDULED for r in rows)
+
+
 def test_files_list_newest_first_with_status_recorded(tmp_path: Path) -> None:
     older = tmp_path / "Morning Show 2026-07-13.mp3"
     newer = tmp_path / "Jazz Night 2026-07-14.mp3"

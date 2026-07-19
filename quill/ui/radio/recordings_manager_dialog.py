@@ -102,7 +102,16 @@ class RecordingsManagerDialog:
             buttons,
             "&Stop Recording",
             self._on_stop_recording,
-            "Finish the recording being written right now",
+            "Finish the selected recording being written right now",
+        )
+        # Stop All is only shown/enabled when two or more recordings are running
+        # at once (concurrent recording) -- it stays out of the way for the
+        # common single-recording case.
+        self._stop_all_btn = self._button(
+            buttons,
+            "Stop A&ll Recordings",
+            self._on_stop_all_recordings,
+            "Finish every recording being written right now",
         )
         self._open_btn = self._button(
             buttons, "&Open in Folder", self._on_open_in_folder, "Show this file in Explorer"
@@ -118,6 +127,9 @@ class RecordingsManagerDialog:
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
 
         self.dialog.SetSizer(root)
+        # Stop All starts hidden; the first refresh reveals it only when two or
+        # more recordings are running (concurrent recording).
+        self._stop_all_btn.Show(False)
 
         self._list.Bind(wx.EVT_LIST_ITEM_SELECTED, lambda _e: self._on_selection_changed())
         self._list.Bind(wx.EVT_LIST_ITEM_DESELECTED, lambda _e: self._on_selection_changed())
@@ -168,22 +180,36 @@ class RecordingsManagerDialog:
 
     # -- data -------------------------------------------------------------------
 
-    def _active_recording(self) -> ActiveRecording | None:
-        """The active recording by identity, or ``None`` when idle (R1/10.3).
-
-        Found from the recorder's live state rather than the folder scan, so a
-        recording writing to a temp dir still shows as "Recording" and the
-        firing schedule is not also double-listed as "Scheduled".
+    def _active_recordings(self) -> list[ActiveRecording]:
+        """Every recording being written right now, by identity (R1/10.3,
+        concurrent recording), oldest first -- so each shows as its own
+        "Recording" row even in a temp dir and its firing schedule is not also
+        double-listed as "Scheduled".
         """
         rec = self._recorder
+        jobs = getattr(rec, "active_jobs", None)
+        if callable(jobs):
+            return [
+                ActiveRecording(
+                    path=getattr(j, "destination", None),
+                    station_name=getattr(j, "station_name", "") or "",
+                    stream_url=getattr(j, "stream_url", "") or "",
+                    started_at=getattr(j, "started_at", None),
+                    job_id=getattr(j, "job_id", "") or "",
+                )
+                for j in jobs()
+            ]
+        # Back-compat with a recorder exposing only the old scalar getters.
         if not bool(getattr(rec, "is_recording", False)):
-            return None
-        return ActiveRecording(
-            path=getattr(rec, "current_destination", None),
-            station_name=getattr(rec, "current_station_name", "") or "",
-            stream_url=getattr(rec, "current_stream_url", "") or "",
-            started_at=getattr(rec, "current_started_at", None),
-        )
+            return []
+        return [
+            ActiveRecording(
+                path=getattr(rec, "current_destination", None),
+                station_name=getattr(rec, "current_station_name", "") or "",
+                stream_url=getattr(rec, "current_stream_url", "") or "",
+                started_at=getattr(rec, "current_started_at", None),
+            )
+        ]
 
     def _cells(self, entry: RecordingEntry) -> tuple[str, str, str, str]:
         """The four column strings for *entry* (used by both the diff and the
@@ -223,7 +249,7 @@ class RecordingsManagerDialog:
     def _refresh(self, keep_selection: bool = True) -> None:
         snapshot = list_recordings(
             self._settings,
-            active=self._active_recording(),
+            active=self._active_recordings(),
             scheduled=list(getattr(self._scheduler, "entries", []) or []),
         )
         # No-op fast path: identical content means zero list mutation, so the
@@ -304,13 +330,19 @@ class RecordingsManagerDialog:
         entry = self._selected()
         is_file = entry is not None and entry.path is not None
         is_done = is_file and entry is not None and entry.status == STATUS_RECORDED
+        is_active_row = entry is not None and entry.status == STATUS_RECORDING
         playing = self._is_entry_playing(entry)
         self._play_btn.Enable(bool(is_done))
         self._play_btn.SetLabel("&Stop" if playing else "&Play")
         self._play_btn.SetName("Stop this recording" if playing else "Play this recording")
         self._open_btn.Enable(bool(is_file))
         self._remove_btn.Enable(bool(is_done))
-        self._stop_btn.Enable(bool(getattr(self._recorder, "is_recording", False)))
+        # Stop targets the selected Recording row; Stop All appears only when two
+        # or more recordings are running (concurrent recording).
+        active = sum(1 for e in self._entries if e.status == STATUS_RECORDING)
+        self._stop_btn.Enable(bool(is_active_row))
+        self._stop_all_btn.Show(active >= 2)
+        self._stop_all_btn.Enable(active >= 2)
 
     def _on_char_hook(self, event: object) -> None:
         """Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the dialog, so a
@@ -358,11 +390,34 @@ class RecordingsManagerDialog:
         self._on_selection_changed()
 
     def _on_stop_recording(self) -> None:
-        if not bool(getattr(self._recorder, "is_recording", False)):
+        entry = self._selected()
+        if entry is None or entry.status != STATUS_RECORDING:
+            self._announce("Select a recording that is in progress to stop it.")
+            return
+        # Target this exact recording by its job id (concurrent recording); fall
+        # back to the old stop-the-one behavior for a recorder without job ids.
+        if entry.job_id:
+            self._recorder.stop(entry.job_id)
+        else:
+            self._recorder.stop()
+        self._announce(
+            f"Stopping recording of {entry.name}; it will appear as Recorded in a moment."
+        )
+        self._refresh(keep_selection=True)
+
+    def _on_stop_all_recordings(self) -> None:
+        count = sum(1 for e in self._entries if e.status == STATUS_RECORDING)
+        if count < 1:
             self._announce("Nothing is recording right now.")
             return
-        self._recorder.stop()
-        self._announce("Stopping recording; it will appear as Recorded in a moment.")
+        stop_all = getattr(self._recorder, "stop_all", None)
+        if callable(stop_all):
+            stop_all()
+        else:
+            self._recorder.stop()
+        self._announce(
+            f"Stopping all {count} recordings; they will appear as Recorded in a moment."
+        )
         self._refresh(keep_selection=True)
 
     def _on_open_in_folder(self) -> None:

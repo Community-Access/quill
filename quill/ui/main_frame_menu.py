@@ -2412,6 +2412,19 @@ class MenuBuilderMixin:
                     lambda _e: self.open_record_station_dialog(),
                     id=id_radio_record_station,
                 )
+                # Concurrent recording: stop every recording at once. Always
+                # present (it announces "Nothing is recording" when idle) so it
+                # has a stable place; most useful when several run together.
+                id_radio_stop_all = wx.NewIdRef()
+                media_menu.Append(
+                    id_radio_stop_all,
+                    self._menu_label(_("Stop A&ll Recordings"), "radio.stop_all_recordings"),
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU,
+                    lambda _e: self.radio_stop_all_recordings(),
+                    id=id_radio_stop_all,
+                )
                 id_radio_wake_timer = wx.NewIdRef()
                 media_menu.Append(
                     id_radio_wake_timer,

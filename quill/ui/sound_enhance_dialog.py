@@ -23,14 +23,37 @@ simply isn't there).
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import NamedTuple
 
-from quill.core.audio_enhance import EQ_BAND_MAX_DB, EQ_BAND_MIN_DB, EQ_PRESETS
+from quill.core.audio_enhance import (
+    EQ_BAND_MAX_DB,
+    EQ_BAND_MIN_DB,
+    EQ_PRESETS,
+    OPTILAB_INPUT_MAX_DB,
+    OPTILAB_INPUT_MIN_DB,
+    OPTILAB_MODE_LABELS,
+)
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
 _PRESET_NAMES = ("Custom", *EQ_PRESETS)
 
 #: Channel-mode RadioBox order -- index maps to the stored ``channel_mode``.
 _CHANNEL_ORDER = ("stereo", "mono", "left", "right")
+
+#: OptiLab mode Choice order -- index maps to the stored ``optilab_mode``.
+_OPTILAB_ORDER = ("off", "podcast", "stream", "limiter")
+
+
+class SoundOptions(NamedTuple):
+    """The listener-level options the dialog returns via :attr:`sound_options`
+    (channel mode, night mode, and OptiLab broadcast polish)."""
+
+    channel_mode: str = "stereo"
+    night_mode_enabled: bool = False
+    optilab_enabled: bool = False
+    optilab_mode: str = "off"
+    optilab_input_db: float = 0.0
+    optilab_auto_adapt: int = 0
 
 
 class SoundEnhanceDialog:
@@ -53,8 +76,13 @@ class SoundEnhanceDialog:
         show_sound_options: bool = False,
         channel_mode: str = "stereo",
         night_mode_enabled: bool = False,
+        optilab_enabled: bool = False,
+        optilab_mode: str = "off",
+        optilab_input_db: float = 0.0,
+        optilab_auto_adapt: int = 0,
         announce_cb: Callable[[str], None] | None = None,
         on_reset: Callable[[], None] | None = None,
+        on_live_change: Callable[[object], None] | None = None,
     ) -> None:
         import wx
 
@@ -62,8 +90,20 @@ class SoundEnhanceDialog:
         self._announce = announce_cb or (lambda _m: None)
         self._show_smart_speed = show_smart_speed
         self._on_reset = on_reset
+        # Live preview: apply changes to what's playing as controls move, so the
+        # listener hears them without pressing OK. Cancel reverts to how it was.
+        self._on_live_change = on_live_change
+        self._previewed = False
+        self._did_reset = False
         self._result: tuple[float, float, float, bool, bool] | None = None
-        self._sound_options: tuple[str, bool] = (channel_mode, night_mode_enabled)
+        self._sound_options = SoundOptions(
+            channel_mode=channel_mode,
+            night_mode_enabled=night_mode_enabled,
+            optilab_enabled=optilab_enabled,
+            optilab_mode=optilab_mode,
+            optilab_input_db=optilab_input_db,
+            optilab_auto_adapt=optilab_auto_adapt,
+        )
         # wx.Window.SetName() is inert for MSAA/UIA on Windows (see
         # quill.ui.accessible_names) -- screen readers there normally infer a
         # name from the adjacent wx.StaticText instead, but that inference
@@ -134,6 +174,10 @@ class SoundEnhanceDialog:
         # they describe the listener's ears and situation, not a station).
         self._channel_radio: wx.RadioBox | None = None
         self._night_mode_check: wx.CheckBox | None = None
+        self._optilab_check: wx.CheckBox | None = None
+        self._optilab_mode_choice: wx.Choice | None = None
+        self._optilab_input_ctrl: wx.SpinCtrl | None = None
+        self._optilab_adapt_slider: wx.Slider | None = None
         if show_sound_options:
             # A RadioBox (not a checkbox): Stereo / Mono / Left only / Right only.
             # Left/Right send just that channel to both ears, so the radio can
@@ -158,6 +202,87 @@ class SoundEnhanceDialog:
             self._night_mode_check.SetValue(night_mode_enabled)
             root.Add(self._night_mode_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+            # OptiLab broadcast polish (adapted from OptiLab Core by dgl1984,
+            # Apache-2.0). A bypass checkbox so the chosen mode is remembered
+            # while turned off, a Mode choice, an Input trim (0 dB by default),
+            # and an Auto-Adapt amount.
+            optilab_box = wx.StaticBoxSizer(
+                wx.VERTICAL, self.dialog, "Broadcast polish (OptiLab)"
+            )
+            self._optilab_check = wx.CheckBox(
+                self.dialog, label="&Apply broadcast polish (OptiLab)"
+            )
+            self._optilab_check.SetName(
+                "Apply broadcast polish -- a one-touch leveling, density, and "
+                "limiting chain adapted from OptiLab by dgl1984. Uncheck to bypass "
+                "it while keeping your chosen mode"
+            )
+            self._optilab_check.SetValue(optilab_enabled)
+            optilab_box.Add(self._optilab_check, 0, wx.ALL, 6)
+
+            mode_row = wx.BoxSizer(wx.HORIZONTAL)
+            mode_row.Add(
+                wx.StaticText(self.dialog, label="&Polish mode:"), 0, wx.ALIGN_CENTER_VERTICAL
+            )
+            self._optilab_mode_choice = wx.Choice(
+                self.dialog, choices=[OPTILAB_MODE_LABELS[m] for m in _OPTILAB_ORDER]
+            )
+            self._optilab_mode_choice.SetName(
+                "Broadcast polish mode -- Podcast Leveler for speech, Stream Polish "
+                "for music, Smooth Limiter for clean peak control"
+            )
+            self._optilab_mode_choice.SetSelection(
+                _OPTILAB_ORDER.index(optilab_mode) if optilab_mode in _OPTILAB_ORDER else 0
+            )
+            mode_row.Add(self._optilab_mode_choice, 1, wx.EXPAND | wx.LEFT, 8)
+            optilab_box.Add(mode_row, 0, wx.EXPAND | wx.ALL, 6)
+
+            input_row = wx.BoxSizer(wx.HORIZONTAL)
+            input_row.Add(
+                wx.StaticText(self.dialog, label="&Input (dB):"), 0, wx.ALIGN_CENTER_VERTICAL
+            )
+            self._optilab_input_ctrl = wx.SpinCtrl(
+                self.dialog,
+                min=int(OPTILAB_INPUT_MIN_DB),
+                max=int(OPTILAB_INPUT_MAX_DB),
+                initial=int(round(optilab_input_db)),
+            )
+            self._optilab_input_ctrl.SetName(
+                "Input level in decibels for broadcast polish; zero leaves the level "
+                "unchanged"
+            )
+            input_row.Add(self._optilab_input_ctrl, 0, wx.LEFT, 8)
+            optilab_box.Add(input_row, 0, wx.EXPAND | wx.ALL, 6)
+
+            adapt_row = wx.BoxSizer(wx.HORIZONTAL)
+            adapt_row.Add(
+                wx.StaticText(self.dialog, label="A&uto-Adapt:"), 0, wx.ALIGN_CENTER_VERTICAL
+            )
+            self._optilab_adapt_slider = wx.Slider(
+                self.dialog,
+                value=max(0, min(100, int(optilab_auto_adapt))),
+                minValue=0,
+                maxValue=100,
+                style=wx.SL_HORIZONTAL | wx.SL_LABELS,
+            )
+            self._optilab_adapt_slider.SetName(
+                "Auto-Adapt, percent, 0 to 100 -- higher leans the leveling and "
+                "density more assertive"
+            )
+            if self._slider_accessible_cls is not None:
+                try:
+                    self._optilab_adapt_slider.SetAccessible(
+                        self._slider_accessible_cls(
+                            self._optilab_adapt_slider, self._optilab_adapt_slider.GetName()
+                        )
+                    )
+                except Exception:  # noqa: BLE001 - accessible name is best-effort
+                    pass
+            adapt_row.Add(self._optilab_adapt_slider, 1, wx.EXPAND | wx.LEFT, 8)
+            optilab_box.Add(adapt_row, 0, wx.EXPAND | wx.ALL, 6)
+
+            root.Add(optilab_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._reset_btn: wx.Button | None = None
         if on_reset is not None:
@@ -177,6 +302,34 @@ class SoundEnhanceDialog:
         ok_btn.Bind(wx.EVT_BUTTON, self._on_apply)
         if self._reset_btn is not None:
             self._reset_btn.Bind(wx.EVT_BUTTON, self._on_reset_click)
+
+        # Live preview: a short debounce so a slider drag through several values
+        # only applies once it settles (one wx reconnect, imperceptible on mpv).
+        # Every value-changing control schedules it.
+        self._live_timer = wx.Timer(self.dialog)
+        self.dialog.Bind(wx.EVT_TIMER, lambda _e: self._emit_live_preview(), self._live_timer)
+        if self._on_live_change is not None:
+            # EQ sliders and the preset choice already have handlers
+            # (_on_slider_changed / _on_preset_choice) that now also schedule a
+            # preview; bind the remaining controls here.
+            self._compressor_check.Bind(wx.EVT_CHECKBOX, self._on_control_changed)
+            if self._smart_speed_check is not None:
+                self._smart_speed_check.Bind(wx.EVT_CHECKBOX, self._on_control_changed)
+            if self._channel_radio is not None:
+                self._channel_radio.Bind(wx.EVT_RADIOBOX, self._on_control_changed)
+            if self._night_mode_check is not None:
+                self._night_mode_check.Bind(wx.EVT_CHECKBOX, self._on_control_changed)
+            if self._optilab_check is not None:
+                self._optilab_check.Bind(wx.EVT_CHECKBOX, self._on_control_changed)
+            if self._optilab_mode_choice is not None:
+                self._optilab_mode_choice.Bind(wx.EVT_CHOICE, self._on_control_changed)
+            if self._optilab_input_ctrl is not None:
+                self._optilab_input_ctrl.Bind(wx.EVT_SPINCTRL, self._on_control_changed)
+            if self._optilab_adapt_slider is not None:
+                self._optilab_adapt_slider.Bind(wx.EVT_SLIDER, self._on_control_changed)
+
+        # The starting values, so Cancel can revert a live preview to how it was.
+        self._original_snapshot = self._live_snapshot()
 
     def _add_band_slider(self, root: object, label: str, value_db: float):
         wx = self._wx
@@ -217,6 +370,11 @@ class SoundEnhanceDialog:
 
     def _on_slider_changed(self, _event: object) -> None:
         self._sync_preset_choice()
+        self._schedule_live_preview()
+
+    def _on_control_changed(self, _event: object) -> None:
+        """Any non-slider control changed -- schedule a live preview."""
+        self._schedule_live_preview()
 
     def _on_preset_choice(self, _event: object) -> None:
         index = self._preset_choice.GetSelection()
@@ -228,6 +386,57 @@ class SoundEnhanceDialog:
         self._mid_slider.SetValue(round(mid))
         self._treble_slider.SetValue(round(treble))
         self._announce(f"{name}: Bass {bass:+.0f}, Mid {mid:+.0f}, Treble {treble:+.0f}")
+        self._schedule_live_preview()
+
+    def _read_sound_options(self) -> SoundOptions:
+        """The listener-level options from the live controls."""
+        return SoundOptions(
+            channel_mode=(
+                _CHANNEL_ORDER[self._channel_radio.GetSelection()]
+                if self._channel_radio
+                else "stereo"
+            ),
+            night_mode_enabled=(
+                bool(self._night_mode_check.GetValue()) if self._night_mode_check else False
+            ),
+            optilab_enabled=(
+                bool(self._optilab_check.GetValue()) if self._optilab_check else False
+            ),
+            optilab_mode=(
+                _OPTILAB_ORDER[self._optilab_mode_choice.GetSelection()]
+                if self._optilab_mode_choice
+                else "off"
+            ),
+            optilab_input_db=(
+                float(self._optilab_input_ctrl.GetValue()) if self._optilab_input_ctrl else 0.0
+            ),
+            optilab_auto_adapt=(
+                int(self._optilab_adapt_slider.GetValue()) if self._optilab_adapt_slider else 0
+            ),
+        )
+
+    def _live_snapshot(self) -> tuple[float, float, float, bool, bool, SoundOptions]:
+        """Everything the live-preview / revert callback needs: the EQ bands,
+        the compressor, Smart Speed, and the listener-level options."""
+        bass, mid, treble = self._current_band_values()
+        smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
+        return (bass, mid, treble, self._compressor_check.GetValue(), smart_speed,
+                self._read_sound_options())
+
+    def _schedule_live_preview(self) -> None:
+        if self._on_live_change is None:
+            return
+        # Restart the one-shot debounce; the last change in a drag wins.
+        self._live_timer.Start(180, oneShot=True)
+
+    def _emit_live_preview(self) -> None:
+        if self._on_live_change is None:
+            return
+        self._previewed = True
+        try:
+            self._on_live_change(self._live_snapshot())
+        except Exception:  # noqa: BLE001 - a preview must never crash the dialog
+            pass
 
     def show(self) -> tuple[float, float, float, bool, bool] | None:
         wx = self._wx
@@ -241,20 +450,34 @@ class SoundEnhanceDialog:
         )
         try:
             answer = show_modal_dialog(self.dialog, "Sound Enhancements", announce=self._announce)
-            return self._result if answer == wx.ID_OK else None
         finally:
+            try:
+                self._live_timer.Stop()
+            except Exception:  # noqa: BLE001 - stopping a timer must never raise
+                pass
             self.dialog.Destroy()
+        if answer == wx.ID_OK:
+            return self._result
+        # Cancel/Escape/X: revert a live preview to how it was -- unless Reset
+        # already restored the shared default (its own live update stands).
+        if self._on_live_change is not None and self._previewed and not self._did_reset:
+            try:
+                self._on_live_change(self._original_snapshot)
+            except Exception:  # noqa: BLE001 - revert must never raise
+                pass
+        return None
 
     def _on_reset_click(self, _event: object) -> None:
+        self._did_reset = True
         if self._on_reset is not None:
             self._on_reset()
         self.dialog.EndModal(self._wx.ID_CANCEL)
 
     @property
-    def sound_options(self) -> tuple[str, bool]:
-        """(channel_mode, night_mode_enabled) as applied -- only meaningful
-        after an OK ``show`` with ``show_sound_options=True``. ``channel_mode``
-        is one of stereo/mono/left/right. A separate property (not part of the
+    def sound_options(self) -> SoundOptions:
+        """The listener-level options as applied (channel mode, night mode, and
+        OptiLab broadcast polish) -- only meaningful after an OK ``show`` with
+        ``show_sound_options=True``. A separate property (not part of the
         ``show`` tuple) so existing callers' 5-tuple contract is untouched."""
         return self._sound_options
 
@@ -262,8 +485,5 @@ class SoundEnhanceDialog:
         bass, mid, treble = self._current_band_values()
         smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
         self._result = (bass, mid, treble, self._compressor_check.GetValue(), smart_speed)
-        self._sound_options = (
-            _CHANNEL_ORDER[self._channel_radio.GetSelection()] if self._channel_radio else "stereo",
-            bool(self._night_mode_check.GetValue()) if self._night_mode_check else False,
-        )
+        self._sound_options = self._read_sound_options()
         self.dialog.EndModal(self._wx.ID_OK)

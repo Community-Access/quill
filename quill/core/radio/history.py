@@ -106,6 +106,15 @@ class RadioHistory:
     #: Night mode -- real-time loudness normalization (lifts quiet program
     #: material), the complement to the compressor's "tame the loud parts".
     night_mode_enabled: bool = False
+    #: OptiLab broadcast-polish (listener-level, global like night mode; adapted
+    #: from OptiLab Core by dgl1984, Apache-2.0). ``optilab_enabled`` is the
+    #: bypass so the chosen mode is remembered while turned off; ``optilab_mode``
+    #: is "off"/"podcast"/"stream"/"limiter"; ``optilab_input_db`` is the input
+    #: trim (0 by default) and ``optilab_auto_adapt`` the 0-100% adapt amount.
+    optilab_enabled: bool = False
+    optilab_mode: str = "off"
+    optilab_input_db: float = 0.0
+    optilab_auto_adapt: int = 0
     #: Favorites sort order for the tree/menus: "az" (A-Z, the default so a
     #: fresh list is alphabetized), "za" (Z-A), or "manual" (the hand-arranged
     #: Move Up/Down order). Applies to folders and to stations; a folder may
@@ -204,6 +213,22 @@ def load_history(data_dir: Path) -> RadioHistory:
         else:
             history.channel_mode = "mono" if bool(raw.get("mono_enabled", False)) else "stereo"
         history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
+        history.optilab_enabled = bool(raw.get("optilab_enabled", False))
+        raw_optilab_mode = str(raw.get("optilab_mode", "") or "")
+        history.optilab_mode = (
+            raw_optilab_mode
+            if raw_optilab_mode in ("off", "podcast", "stream", "limiter")
+            else "off"
+        )
+        try:
+            history.optilab_input_db = float(raw.get("optilab_input_db", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            history.optilab_input_db = 0.0
+        try:
+            raw_adapt = int(raw.get("optilab_auto_adapt", 0) or 0)
+            history.optilab_auto_adapt = max(0, min(100, raw_adapt))
+        except (TypeError, ValueError):
+            history.optilab_auto_adapt = 0
         sort = str(raw.get("favorites_sort", "az"))
         history.favorites_sort = sort if sort in ("az", "za", "manual") else "az"
         raw_folder_sorts = raw.get("folder_sort_orders", {})
@@ -264,6 +289,10 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             # still read the mono choice if the user downgrades.
             "mono_enabled": history.channel_mode == "mono",
             "night_mode_enabled": history.night_mode_enabled,
+            "optilab_enabled": history.optilab_enabled,
+            "optilab_mode": history.optilab_mode,
+            "optilab_input_db": history.optilab_input_db,
+            "optilab_auto_adapt": history.optilab_auto_adapt,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,

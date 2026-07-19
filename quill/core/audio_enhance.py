@@ -108,6 +108,92 @@ CHANNEL_MODES = ("stereo", "mono", "left", "right")
 # gaussian window tuned for music-safe smoothing without audible pumping.
 _NIGHT_MODE_FILTER = "dynaudnorm=f=250:g=15:p=0.9"
 
+# -- OptiLab broadcast-polish modes --------------------------------------------
+#
+# Three one-touch "broadcast polish" chains adapted from OptiLab Core by
+# dgl1984 (https://github.com/dgl1984/optilab, Apache-2.0), with thanks and
+# attribution. OptiLab itself is a GUI-only plugin (JSFX/CLAP/Winamp DSP) with
+# no library to call and a Windows-64-only binary, so rather than embedding it
+# we reproduce the *shape* of its three modes -- Podcast Leveler, Stream Polish,
+# Smooth Limiter -- as ffmpeg filter chains that ride the same graph everywhere
+# Sound Enhancements already reaches (mpv-native live, the relay, recordings)
+# and so work cross-platform and preview live. This is a faithful adaptation,
+# not a bit-for-bit port of OptiLab's custom multiband/AGC/limiter DSP.
+#
+# Each mode maps OptiLab's three controls onto ffmpeg: Mode picks the chain,
+# Input is a front-end gain (``volume``, 0 dB by default), and Auto-Adapt
+# (0-100%) scales the leveling/density toward a more assertive setting, the way
+# OptiLab interpolates its internal stages.
+OPTILAB_MODES = ("off", "podcast", "stream", "limiter")
+OPTILAB_MODE_LABELS = {
+    "off": "Off",
+    "podcast": "Podcast Leveler (speech)",
+    "stream": "Stream Polish (music)",
+    "limiter": "Smooth Limiter (mastering)",
+}
+#: Input trim range (dB); 0 (no change) is the default, per product choice.
+OPTILAB_INPUT_MIN_DB = -12.0
+OPTILAB_INPUT_MAX_DB = 18.0
+
+
+def _db_to_linear(db: float) -> float:
+    return 10.0 ** (db / 20.0)
+
+
+def clamp_optilab_input(value: float) -> float:
+    """Clamp OptiLab's Input trim to its supported range."""
+    return max(OPTILAB_INPUT_MIN_DB, min(OPTILAB_INPUT_MAX_DB, value))
+
+
+def _optilab_filters(mode: str, input_db: float, auto_adapt: int) -> list[str]:
+    """The ffmpeg filter chain for an OptiLab mode (empty for ``"off"``).
+
+    Adapted from OptiLab Core (dgl1984, Apache-2.0): a leveling -> density ->
+    tone -> lookahead-limiter chain per mode, with Auto-Adapt (0-100%) leaning
+    the leveling/density more assertive. ``input_db`` is a front-end trim
+    (0 = unchanged).
+    """
+    if mode not in ("podcast", "stream", "limiter"):
+        return []
+    depth = max(0.0, min(1.0, auto_adapt / 100.0))
+    filters: list[str] = []
+    trim = clamp_optilab_input(input_db)
+    if trim:
+        filters.append(f"volume={trim:.2f}dB")
+    if mode == "podcast":
+        # Speech: subsonic HPF, speech leveling (AGC), gentle density, a small
+        # 65 Hz bass tame, then a lookahead limiter near -1.5 dBFS.
+        expansion = 6.25 + 6.25 * depth
+        ratio = 3.0 + 1.0 * depth
+        filters.append("highpass=f=30")
+        filters.append(f"speechnorm=e={expansion:.2f}:r=0.0005:l=1")
+        filters.append(
+            f"acompressor=threshold=-17dB:ratio={ratio:.2f}:attack=20:release=250:makeup=2"
+        )
+        filters.append("equalizer=f=65:t=q:w=1.4:g=-2")
+        filters.append(f"alimiter=limit={_db_to_linear(-1.5):.4f}:attack=5:release=50")
+    elif mode == "stream":
+        # Music: broadband leveling, denser compression, a touch of presence,
+        # then a lookahead limiter near -0.8 dBFS.
+        peak = 0.90 + 0.05 * depth
+        ratio = 2.5 + 0.7 * depth
+        filters.append(f"dynaudnorm=f=200:g=15:p={peak:.2f}")
+        filters.append(
+            f"acompressor=threshold=-15dB:ratio={ratio:.2f}:attack=10:release=200:makeup=1.5"
+        )
+        filters.append("equalizer=f=12000:t=q:w=1:g=1.5")
+        filters.append(f"alimiter=limit={_db_to_linear(-0.8):.4f}:attack=5:release=50")
+    else:  # limiter
+        # Clean mastering-style peak control: a light compressor then a
+        # transparent lookahead limiter near -2.0 dBFS.
+        ratio = 2.0 + 1.0 * depth
+        filters.append(
+            f"acompressor=threshold=-12dB:ratio={ratio:.2f}:attack=5:release=150:makeup=1"
+        )
+        filters.append(f"alimiter=limit={_db_to_linear(-2.0):.4f}:attack=5:release=60")
+    return filters
+
+
 _RELAY_READ_CHUNK = 4096
 
 
@@ -115,6 +201,11 @@ class EnhanceError(CodedError):
     """Sound Enhancements could not start (ffmpeg missing or failed to launch)."""
 
     code = "QUILL-RADIO-ENHANCE-FAILED"
+
+
+def _optilab_active(optilab_enabled: bool, optilab_mode: str) -> bool:
+    """True when the OptiLab chain should apply (enabled and a real mode)."""
+    return bool(optilab_enabled) and optilab_mode in ("podcast", "stream", "limiter")
 
 
 def is_enhancement_active(
@@ -126,6 +217,8 @@ def is_enhancement_active(
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
+    optilab_enabled: bool = False,
+    optilab_mode: str = "off",
 ) -> bool:
     """True when these settings would change the audio at all."""
     return (
@@ -134,6 +227,7 @@ def is_enhancement_active(
         or smart_speed_enabled
         or channel_mode in _CHANNEL_FILTERS
         or night_mode_enabled
+        or _optilab_active(optilab_enabled, optilab_mode)
     )
 
 
@@ -146,16 +240,24 @@ def build_filter_graph(
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
+    optilab_enabled: bool = False,
+    optilab_mode: str = "off",
+    optilab_input_db: float = 0.0,
+    optilab_auto_adapt: int = 0,
 ) -> str:
     """Build the ffmpeg ``-af`` filter graph for the three-band equalizer
     (Bass/Mid/Treble, in dB, each clamped to ``EQ_BAND_MIN_DB``..
     ``EQ_BAND_MAX_DB``) + the compressor + Smart Speed (silence trimming,
     podcasts only -- radio callers never pass ``smart_speed_enabled=True``)
-    + mono downmix + night mode (loudness normalization).
+    + mono downmix + night mode (loudness normalization) + the OptiLab
+    broadcast-polish chain.
 
     Filter order matters and is deliberate: mono first (everything after
     hears the blended signal), then EQ, then the compressor, then night
-    mode last so it levels the already-shaped result.
+    mode, and the OptiLab chain *last* -- its own lookahead limiter guards
+    the final output. The OptiLab chain only applies when ``optilab_enabled``
+    is true and ``optilab_mode`` is a real mode, so the checkbox is a true
+    bypass that leaves the chosen mode remembered.
 
     Pure and unit-tested. Returns ``""`` when nothing is engaged (a caller
     should treat that as "play the stream directly, no relay needed").
@@ -177,6 +279,8 @@ def build_filter_graph(
         filters.append(_SMART_SPEED_FILTER)
     if night_mode_enabled:
         filters.append(_NIGHT_MODE_FILTER)
+    if _optilab_active(optilab_enabled, optilab_mode):
+        filters += _optilab_filters(optilab_mode, optilab_input_db, optilab_auto_adapt)
     return ",".join(filters)
 
 
@@ -191,6 +295,10 @@ def build_relay_command(
     smart_speed_enabled: bool = False,
     channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
+    optilab_enabled: bool = False,
+    optilab_mode: str = "off",
+    optilab_input_db: float = 0.0,
+    optilab_auto_adapt: int = 0,
     start_seconds: float = 0.0,
 ) -> list[str]:
     """Build the ffmpeg argv that filters *stream_url* and writes MP3 to stdout.
@@ -216,6 +324,10 @@ def build_relay_command(
         smart_speed_enabled=smart_speed_enabled,
         channel_mode=channel_mode,
         night_mode_enabled=night_mode_enabled,
+        optilab_enabled=optilab_enabled,
+        optilab_mode=optilab_mode,
+        optilab_input_db=optilab_input_db,
+        optilab_auto_adapt=optilab_auto_adapt,
     )
     if filter_graph:
         args.extend(["-af", filter_graph])
@@ -331,6 +443,10 @@ class EnhanceRelay:
         smart_speed_enabled: bool = False,
         channel_mode: str = "stereo",
         night_mode_enabled: bool = False,
+        optilab_enabled: bool = False,
+        optilab_mode: str = "off",
+        optilab_input_db: float = 0.0,
+        optilab_auto_adapt: int = 0,
         start_seconds: float = 0.0,
     ) -> str:
         """Start relaying *stream_url* through the filter graph; returns the
@@ -355,6 +471,10 @@ class EnhanceRelay:
             smart_speed_enabled=smart_speed_enabled,
             channel_mode=channel_mode,
             night_mode_enabled=night_mode_enabled,
+            optilab_enabled=optilab_enabled,
+            optilab_mode=optilab_mode,
+            optilab_input_db=optilab_input_db,
+            optilab_auto_adapt=optilab_auto_adapt,
             start_seconds=start_seconds,
         )
         extra_kwargs: dict = {}

@@ -37,7 +37,15 @@ DEFAULT_RESUME_GRACE_MINUTES = 10
 #: are reconciled to the destination.
 _STILL_WRITING_SECS = 30
 
+#: Legacy single-marker file (pre-concurrent-recording). Still read at launch
+#: so a marker written by an older build is migrated/resumed once, then cleared.
 _MARKER_FILE = "radio_active_recording.json"
+
+#: Directory of per-recording markers (concurrent recording): one
+#: ``<job_id>.json`` file per in-progress recording, so several simultaneous
+#: recordings each persist and clear their own marker with no read-modify-write
+#: race on a shared file.
+_MARKERS_DIR = "radio_active_recordings"
 
 _RECORDING_SUFFIXES = frozenset(f".{fmt}" for fmt in RECORD_FORMATS)
 
@@ -53,6 +61,10 @@ class ActiveRecordingMarker:
     ``scheduled_end`` is the absolute ISO moment the recording was meant to end
     (``started_at + duration_minutes``), used to compute the remaining minutes.
     ``entry_id`` links back to the schedule entry (empty for a manual recording).
+    ``job_id`` is the recorder's own id for the recording (concurrent
+    recording): it keys the marker's own file so several simultaneous
+    recordings each persist their own marker instead of one clobbering the
+    rest.
     """
 
     station_name: str
@@ -63,6 +75,7 @@ class ActiveRecordingMarker:
     scheduled_end: str  # ISO datetime
     duration_minutes: int
     entry_id: str = ""
+    job_id: str = ""
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -81,6 +94,7 @@ class ActiveRecordingMarker:
                 scheduled_end=str(data.get("scheduled_end", "") or ""),
                 duration_minutes=duration,
                 entry_id=str(data.get("entry_id", "") or ""),
+                job_id=str(data.get("job_id", "") or ""),
             )
         except (TypeError, ValueError):
             return None
@@ -107,34 +121,122 @@ def _marker_path(data_dir: Path) -> Path:
     return data_dir / _MARKER_FILE
 
 
+def _markers_dir(data_dir: Path) -> Path:
+    return data_dir / _MARKERS_DIR
+
+
+def _safe_key(key: str) -> str:
+    """A filesystem-safe file stem for a marker key (job/entry id).
+
+    Job ids are uuid hex, so this is normally a no-op; it only guards against a
+    stray separator making the path escape the markers directory.
+    """
+    cleaned = "".join(ch for ch in key if ch.isalnum() or ch in ("-", "_"))
+    return cleaned or "recording"
+
+
+def _marker_key(marker: ActiveRecordingMarker) -> str:
+    """The storage key for *marker*: its recorder job id, else its schedule
+    entry id, else a stable fallback derived from the output path."""
+    return marker.job_id or marker.entry_id or _safe_key(marker.output_path or marker.stream_url)
+
+
 def load_marker(data_dir: Path) -> ActiveRecordingMarker | None:
-    """Read the active-recording marker (``None`` if absent or corrupt)."""
+    """Read one active-recording marker (``None`` if none): the first of
+    :func:`load_markers`. Kept for single-recording call sites and tests."""
+    markers = load_markers(data_dir)
+    return markers[0] if markers else None
+
+
+def load_markers(data_dir: Path) -> list[ActiveRecordingMarker]:
+    """Every active-recording marker (concurrent recording), earliest first.
+
+    Reads each ``<job_id>.json`` in the markers directory and, for migration,
+    the legacy single-marker file if it is still present -- so a marker written
+    by an older single-recording build is still found and resumed once. Corrupt
+    or unreadable files are skipped, never fatal.
+    """
+    markers: list[ActiveRecordingMarker] = []
+    directory = _markers_dir(data_dir)
+    try:
+        files = sorted(directory.glob("*.json"))
+    except OSError:
+        files = []
+    for path in files:
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(raw, dict):
+            continue
+        marker = ActiveRecordingMarker.from_dict(raw)
+        if marker is not None and marker.stream_url:
+            markers.append(marker)
+    # Migration: a legacy single-marker file from an older build.
     try:
         raw = json.loads(_marker_path(data_dir).read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return None
-    if not isinstance(raw, dict):
-        return None
-    return ActiveRecordingMarker.from_dict(raw)
+        raw = None
+    if isinstance(raw, dict):
+        legacy = ActiveRecordingMarker.from_dict(raw)
+        if legacy is not None and legacy.stream_url:
+            markers.append(legacy)
+    markers.sort(key=lambda m: m.started_at)
+    return markers
 
 
 def save_marker(data_dir: Path, marker: ActiveRecordingMarker) -> None:
-    """Persist the marker atomically (called from the recorder start path)."""
+    """Persist *marker* atomically to its own ``<key>.json`` (recorder start
+    path). The key is the recording's job id, so several simultaneous
+    recordings never overwrite each other's marker."""
     from quill.core.storage import write_json_atomic
 
-    write_json_atomic(_marker_path(data_dir), marker.to_dict())
-
-
-def clear_marker(data_dir: Path) -> None:
-    """Remove the marker (called on a clean stop). Absent is not an error."""
+    directory = _markers_dir(data_dir)
     try:
-        _marker_path(data_dir).unlink()
-    except FileNotFoundError:
-        pass
+        directory.mkdir(parents=True, exist_ok=True)
     except OSError:
-        # Best-effort: a marker we cannot clear just becomes stale; the next
-        # launch will reconcile the orphan and re-clear it.
-        pass
+        return
+    write_json_atomic(directory / f"{_safe_key(_marker_key(marker))}.json", marker.to_dict())
+
+
+def clear_marker(data_dir: Path, key: str | ActiveRecordingMarker | None = None) -> None:
+    """Remove one marker on a clean stop; absent is not an error.
+
+    *key* may be a job/entry id string, a marker (its key is used), or ``None``.
+    A ``None`` key clears the legacy single-marker file only (back-compat for
+    the old no-argument clear); a per-recording marker is always cleared by id.
+    """
+    targets: list[Path] = []
+    if key is None:
+        targets.append(_marker_path(data_dir))
+    else:
+        stem = _marker_key(key) if isinstance(key, ActiveRecordingMarker) else str(key)
+        targets.append(_markers_dir(data_dir) / f"{_safe_key(stem)}.json")
+    for path in targets:
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
+        except OSError:
+            # Best-effort: a marker we cannot clear just becomes stale; the next
+            # launch reconciles the orphan and re-clears it.
+            pass
+
+
+def clear_all_markers(data_dir: Path) -> None:
+    """Remove every marker -- per-recording files and the legacy single file
+    (the clean-close path: nothing to resume next launch)."""
+    directory = _markers_dir(data_dir)
+    try:
+        files = list(directory.glob("*.json"))
+    except OSError:
+        files = []
+    for path in files:
+        try:
+            path.unlink()
+        except OSError:
+            pass
+    clear_marker(data_dir, None)
 
 
 def remaining_minutes(marker: ActiveRecordingMarker, now: datetime | None = None) -> int:

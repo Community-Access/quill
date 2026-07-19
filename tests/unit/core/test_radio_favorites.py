@@ -39,6 +39,47 @@ def test_per_station_channel_mode_defaults_to_stereo(tmp_path: Path) -> None:
     assert load_favorites(tmp_path).find(_STATION_A.station_uuid).channel_mode == "stereo"
 
 
+def test_per_station_night_mode_and_optilab_round_trip(tmp_path: Path) -> None:
+    # Every Sound Enhancements setting is per-stream: night mode and OptiLab
+    # broadcast polish are stored on the station's override and survive a
+    # save/load, just like the EQ and channel mode.
+    store = RadioFavoritesStore()
+    store.add(_STATION_A)
+    assert store.set_enhancement(
+        _STATION_A.station_uuid,
+        bass_db=0.0,
+        mid_db=0.0,
+        treble_db=0.0,
+        compressor_enabled=False,
+        channel_mode="stereo",
+        night_mode_enabled=True,
+        optilab_enabled=True,
+        optilab_mode="podcast",
+        optilab_input_db=3.0,
+        optilab_auto_adapt=40,
+    )
+    save_favorites(tmp_path, store)
+    fav = load_favorites(tmp_path).find(_STATION_A.station_uuid)
+    assert fav is not None
+    assert fav.night_mode_enabled is True
+    assert fav.optilab_enabled is True
+    assert fav.optilab_mode == "podcast"
+    assert fav.optilab_input_db == 3.0
+    assert fav.optilab_auto_adapt == 40
+
+
+def test_per_station_night_mode_and_optilab_default_off(tmp_path: Path) -> None:
+    store = RadioFavoritesStore()
+    store.add(_STATION_A)
+    save_favorites(tmp_path, store)
+    fav = load_favorites(tmp_path).find(_STATION_A.station_uuid)
+    assert fav.night_mode_enabled is False
+    assert fav.optilab_enabled is False
+    assert fav.optilab_mode == "off"
+    assert fav.optilab_input_db == 0.0
+    assert fav.optilab_auto_adapt == 0
+
+
 def test_favorites_in_display_order_az_za_manual_non_mutating() -> None:
     store = RadioFavoritesStore()
     store.add(RadioStation(name="Charlie", stream_url="https://c"))

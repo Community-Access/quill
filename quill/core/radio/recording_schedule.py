@@ -35,7 +35,12 @@ from pathlib import Path
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from quill.core.radio.recording import RadioRecorder, RecordingError, RecordingSettings
+from quill.core.radio.recording import (
+    RadioRecorder,
+    RecordingError,
+    RecordingLimitError,
+    RecordingSettings,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -468,10 +473,14 @@ class RecordingScheduler:
     def _fire(self, entry: RecordingScheduleEntry, now: datetime) -> None:
         """Start *entry* now, recording only the remaining minutes (R2).
 
-        On a busy recorder the fire is deferred (announced once) and retried on
-        the next poll within the window (11.3); on a hard failure it is also
-        retried within the window without stamping the entry (11.2); only a
-        successful start stamps ``last_fired_date`` (and disables a once-entry).
+        With concurrent recording the recorder no longer refuses a second start,
+        so each due entry simply records its own stream -- five overlapping shows
+        all record at once. A fire is only deferred when a concurrency *cap* is
+        set and already reached (:class:`RecordingLimitError`): then it is held
+        pending and retried on the next poll within its window (R2/11.3). A hard
+        failure (ffmpeg missing, etc.) is also retried within the window without
+        stamping (11.2). Only a successful start stamps ``last_fired_date`` (and
+        disables a once-entry).
         """
         try:
             self._recorder.start(
@@ -480,32 +489,29 @@ class RecordingScheduler:
                 settings=self._recording_settings,
                 duration_minutes=remaining_minutes(entry, now),
                 filter_graph=self._filter_graph_provider(),
+                entry_id=entry.id,
             )
-            started = True
-            error = ""
-        except RecordingError as exc:
-            started = False
-            error = str(exc)
-
-        if started:
-            self._stamp_fired(entry, now)
-            self._announced.discard(entry.id)
-            self._on_fired(entry, "")
-            return
-
-        if "already in progress" in error.lower():
-            # Recorder busy: hold the entry pending and retry within its window
-            # instead of burning the occurrence (R2/11.3). Announce once.
+        except RecordingLimitError:
+            # Concurrency cap reached: hold the entry pending and retry within
+            # its window instead of burning the occurrence (R2/11.3). Announce
+            # once. With the default unlimited cap this branch never runs.
             if entry.id not in self._announced:
                 self._announced.add(entry.id)
                 self._on_busy(entry)
             return
-        # Hard failure (ffmpeg missing, etc.): announce once, then retry within
-        # the window on later polls without stamping (R2/11.2).
-        logger.warning("Scheduled radio recording %s could not start: %s", entry.id, error)
-        if entry.id not in self._announced:
-            self._announced.add(entry.id)
-            self._on_fired(entry, error)
+        except RecordingError as exc:
+            # Hard failure (ffmpeg missing, etc.): announce once, then retry
+            # within the window on later polls without stamping (R2/11.2).
+            error = str(exc)
+            logger.warning("Scheduled radio recording %s could not start: %s", entry.id, error)
+            if entry.id not in self._announced:
+                self._announced.add(entry.id)
+                self._on_fired(entry, error)
+            return
+
+        self._stamp_fired(entry, now)
+        self._announced.discard(entry.id)
+        self._on_fired(entry, "")
 
     def _stamp_fired(self, entry: RecordingScheduleEntry, now: datetime) -> None:
         """Stamp the live entry by id (not the snapshot ref) and disable a

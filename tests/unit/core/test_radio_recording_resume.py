@@ -15,8 +15,10 @@ from quill.core.radio.recording import RecordingSettings
 from quill.core.radio.recording_resume import (
     DEFAULT_RESUME_GRACE_MINUTES,
     ActiveRecordingMarker,
+    clear_all_markers,
     clear_marker,
     load_marker,
+    load_markers,
     reconcile_temp_strays,
     remaining_minutes,
     save_marker,
@@ -33,6 +35,7 @@ def _marker(
     temp: str = "",
     output: str = "",
     entry_id: str = "",
+    job_id: str = "job1",
 ) -> ActiveRecordingMarker:
     return ActiveRecordingMarker(
         station_name=station,
@@ -43,6 +46,7 @@ def _marker(
         scheduled_end=(started + timedelta(minutes=minutes)).isoformat(),
         duration_minutes=minutes,
         entry_id=entry_id,
+        job_id=job_id,
     )
 
 
@@ -61,10 +65,45 @@ def test_save_load_and_clear_marker_round_trip(tmp_path: Path) -> None:
     assert reloaded.stream_url == "https://x/stream"
     assert reloaded.temp_path == "/t/a.mp3"
     assert reloaded.duration_minutes == 60
-    clear_marker(tmp_path)
+    assert reloaded.job_id == "job1"
+    clear_marker(tmp_path, marker)
     assert load_marker(tmp_path) is None
     # Clearing an absent marker is not an error.
-    clear_marker(tmp_path)
+    clear_marker(tmp_path, marker)
+
+
+def test_multiple_markers_persist_and_clear_independently(tmp_path: Path) -> None:
+    # Concurrent recording: each recording writes its own marker keyed by job id,
+    # so several persist at once and clearing one leaves the others.
+    a = _marker(started=datetime(2026, 7, 17, 8, 0), station="A", url="https://x/a", job_id="ja")
+    b = _marker(started=datetime(2026, 7, 17, 8, 5), station="B", url="https://x/b", job_id="jb")
+    save_marker(tmp_path, a)
+    save_marker(tmp_path, b)
+    loaded = load_markers(tmp_path)
+    assert {m.job_id for m in loaded} == {"ja", "jb"}
+    # Earliest first.
+    assert loaded[0].job_id == "ja"
+    clear_marker(tmp_path, "ja")
+    remaining = load_markers(tmp_path)
+    assert [m.job_id for m in remaining] == ["jb"]
+    clear_all_markers(tmp_path)
+    assert load_markers(tmp_path) == []
+
+
+def test_load_markers_migrates_legacy_single_marker(tmp_path: Path) -> None:
+    # A marker written by an older single-recording build (the legacy file) is
+    # still found so its recording can be resumed once.
+    import json
+
+    legacy = _marker(started=datetime(2026, 7, 17, 8, 0), job_id="")
+    (tmp_path / "radio_active_recording.json").write_text(
+        json.dumps(legacy.to_dict()), encoding="utf-8"
+    )
+    loaded = load_markers(tmp_path)
+    assert len(loaded) == 1
+    assert loaded[0].stream_url == "https://x/stream"
+    clear_all_markers(tmp_path)
+    assert load_markers(tmp_path) == []
 
 
 def test_load_marker_absent_or_corrupt_returns_none(tmp_path: Path) -> None:

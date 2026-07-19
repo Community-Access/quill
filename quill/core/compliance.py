@@ -85,6 +85,19 @@ _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
 
 _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
     {
+        "name": "OptiLab Core (dgl1984)",
+        "scope": "adapted-dsp",
+        "version": "1.2.0",
+        "license": "Apache-2.0",
+        "homepage": "https://github.com/dgl1984/optilab",
+        "source": "",
+        "notes": (
+            "Sound Enhancements' broadcast-polish modes (Podcast Leveler, Stream "
+            "Polish, Smooth Limiter) are a faithful adaptation of OptiLab Core's "
+            "DSP, reproduced as ffmpeg filter chains. With thanks to dgl1984."
+        ),
+    },
+    {
         "name": "WordNet 2.1 (Princeton University)",
         "scope": "bundled-data",
         "version": "2.1",

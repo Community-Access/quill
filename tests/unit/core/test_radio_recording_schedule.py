@@ -254,20 +254,23 @@ def test_scheduler_stamps_only_on_success_and_disables_once(tmp_path: Path) -> N
         scheduler.shutdown()
 
 
-def test_scheduler_defers_when_recorder_busy_and_does_not_stamp(tmp_path: Path) -> None:
-    from quill.core.radio.recording import RecordingError, RecordingSettings
+def test_scheduler_defers_when_concurrency_cap_reached_and_does_not_stamp(tmp_path: Path) -> None:
+    # Concurrent recording: a fire is only deferred when the concurrency *cap*
+    # is reached (RecordingLimitError). The generic "already in progress" refusal
+    # no longer exists -- overlapping shows just record together.
+    from quill.core.radio.recording import RecordingLimitError, RecordingSettings
     from quill.core.radio.recording_schedule import RecordingScheduler
 
     busy_calls: list[str] = []
 
-    class _BusyRecorder:
+    class _AtCapRecorder:
         def start(self, **kwargs: object) -> None:
-            raise RecordingError("Recording already in progress")
+            raise RecordingLimitError("The maximum of 1 simultaneous recording is already running.")
 
     entry = _entry(id="daily1", recurrence="daily", run_at="2026-07-14T08:00:00")
     scheduler = RecordingScheduler(
         data_dir=tmp_path,
-        recorder=_BusyRecorder(),  # type: ignore[arg-type]
+        recorder=_AtCapRecorder(),  # type: ignore[arg-type]
         recording_settings=RecordingSettings(),
         on_busy=lambda e: busy_calls.append(e.id),
     )
@@ -281,6 +284,34 @@ def test_scheduler_defers_when_recorder_busy_and_does_not_stamp(tmp_path: Path) 
         scheduler._fire(entry, datetime(2026, 7, 14, 8, 20, 0))
         assert busy_calls == ["daily1"]
         assert scheduler.entries[0].last_fired_date == ""
+    finally:
+        scheduler.shutdown()
+
+
+def test_scheduler_fires_overlapping_entries_concurrently(tmp_path: Path) -> None:
+    # Two due entries each start their own recording (no busy-defer): the whole
+    # point of concurrent recording.
+    from quill.core.radio.recording import RecordingSettings
+    from quill.core.radio.recording_schedule import RecordingScheduler
+
+    started: list[str] = []
+
+    class _Recorder:
+        def start(self, *, station_name: str, **kwargs: object) -> None:
+            started.append(station_name)
+
+    scheduler = RecordingScheduler(
+        data_dir=tmp_path,
+        recorder=_Recorder(),  # type: ignore[arg-type]
+        recording_settings=RecordingSettings(),
+    )
+    try:
+        a = _entry(id="a", station_name="A", recurrence="daily", run_at="2026-07-14T08:00:00")
+        b = _entry(id="b", station_name="B", recurrence="daily", run_at="2026-07-14T08:00:00")
+        now = datetime(2026, 7, 14, 8, 5, 0)
+        scheduler._fire(a, now)
+        scheduler._fire(b, now)
+        assert started == ["A", "B"]
     finally:
         scheduler.shutdown()
 

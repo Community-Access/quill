@@ -122,6 +122,20 @@ class RecordingSettingsDialog:
         )
         grid.Add(self._max_duration_ctrl, 0)
 
+        grid.Add(
+            wx.StaticText(self.dialog, label="Maximum &simultaneous recordings:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        self._max_concurrent_ctrl = wx.SpinCtrl(self.dialog, min=0, max=99)
+        self._max_concurrent_ctrl.SetValue(max(0, settings.max_concurrent_recordings))
+        self._max_concurrent_ctrl.SetName(
+            "How many recordings may run at the same time. Zero means unlimited "
+            "-- every recording you or the schedule asks for starts. Set a number "
+            "to cap it on a slower machine or a metered connection"
+        )
+        grid.Add(self._max_concurrent_ctrl, 0)
+
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
         reconnect_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "If the connection drops")
@@ -249,5 +263,6 @@ class RecordingSettingsDialog:
             reconnect_max_attempts=self._reconnect_attempts_ctrl.GetValue(),
             reconnect_wait_seconds=self._reconnect_wait_ctrl.GetValue(),
             apply_sound_enhancements=self._apply_enhancements_check.GetValue(),
+            max_concurrent_recordings=self._max_concurrent_ctrl.GetValue(),
         )
         self.dialog.EndModal(self._wx.ID_OK)

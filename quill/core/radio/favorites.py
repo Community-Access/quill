@@ -69,6 +69,15 @@ class FavoriteStation:
     #: per-station override; falls back to RadioHistory.channel_mode when the
     #: override is off. Lets a listener route one station to a single ear.
     channel_mode: str = "stereo"
+    #: Night mode and OptiLab broadcast polish, also part of the per-station
+    #: override so every Sound Enhancements setting can be remembered per
+    #: station as well as shared; each falls back to the RadioHistory default
+    #: while the override is off.
+    night_mode_enabled: bool = False
+    optilab_enabled: bool = False
+    optilab_mode: str = "off"
+    optilab_input_db: float = 0.0
+    optilab_auto_adapt: int = 0
 
     @property
     def key(self) -> str:
@@ -206,10 +215,15 @@ class RadioFavoritesStore:
         treble_db: float,
         compressor_enabled: bool,
         channel_mode: str = "stereo",
+        night_mode_enabled: bool = False,
+        optilab_enabled: bool = False,
+        optilab_mode: str = "off",
+        optilab_input_db: float = 0.0,
+        optilab_auto_adapt: int = 0,
     ) -> bool:
-        """Give this station its own Sound Enhancements, overriding the
-        shared default (RadioHistory.eq_bass_db/mid/treble/compressor_enabled
-        and channel_mode) for this station only."""
+        """Give this station its own Sound Enhancements, overriding every shared
+        default (RadioHistory's EQ/compressor, channel mode, night mode, and
+        OptiLab broadcast polish) for this station only."""
         favorite = self.find(key)
         if favorite is None:
             return False
@@ -219,6 +233,11 @@ class RadioFavoritesStore:
         favorite.eq_treble_db = treble_db
         favorite.compressor_enabled = compressor_enabled
         favorite.channel_mode = channel_mode
+        favorite.night_mode_enabled = night_mode_enabled
+        favorite.optilab_enabled = optilab_enabled
+        favorite.optilab_mode = optilab_mode
+        favorite.optilab_input_db = optilab_input_db
+        favorite.optilab_auto_adapt = optilab_auto_adapt
         return True
 
     def clear_enhancement_override(self, key: str) -> bool:
@@ -407,6 +426,17 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
                     if entry.get("channel_mode") in ("stereo", "mono", "left", "right")
                     else "stereo"
                 ),
+                night_mode_enabled=bool(entry.get("night_mode_enabled", False)),
+                optilab_enabled=bool(entry.get("optilab_enabled", False)),
+                optilab_mode=(
+                    str(entry.get("optilab_mode"))
+                    if entry.get("optilab_mode") in ("off", "podcast", "stream", "limiter")
+                    else "off"
+                ),
+                optilab_input_db=_coerce_float(entry.get("optilab_input_db"), 0.0),
+                optilab_auto_adapt=max(
+                    0, min(100, int(_coerce_float(entry.get("optilab_auto_adapt"), 0.0)))
+                ),
             )
         )
     return store
@@ -433,6 +463,11 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                     "eq_treble_db": favorite.eq_treble_db,
                     "compressor_enabled": favorite.compressor_enabled,
                     "channel_mode": favorite.channel_mode,
+                    "night_mode_enabled": favorite.night_mode_enabled,
+                    "optilab_enabled": favorite.optilab_enabled,
+                    "optilab_mode": favorite.optilab_mode,
+                    "optilab_input_db": favorite.optilab_input_db,
+                    "optilab_auto_adapt": favorite.optilab_auto_adapt,
                 }
                 for favorite in store.favorites
             ],
