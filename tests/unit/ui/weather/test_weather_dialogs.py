@@ -110,7 +110,7 @@ def test_weather_center_builds_and_renders(app, tmp_path) -> None:
     dlg._render_report(report.location, report)
     assert dlg._alerts_list.GetCount() == 1
     assert "Excessive Heat Warning" in dlg._alerts_list.GetString(0)
-    assert "96 deg F" in dlg._current.GetValue()
+    assert "96 degrees Fahrenheit" in dlg._current.GetValue()
     assert dlg._forecast_list.GetCount() == 2
     assert "This Afternoon" in dlg._forecast_list.GetString(0)
     assert "TWC" in dlg._status.GetValue()

@@ -138,7 +138,7 @@ class WeatherCenterDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._current, "Current conditions")
-        self._current.SetMinSize((-1, 48))
+        self._current.SetMinSize((-1, 150))
         root.Add(self._current, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- forecast --
@@ -185,6 +185,16 @@ class WeatherCenterDialog:
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh())
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _e: self._add_location())
         self._settings_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_settings())
+
+        # Detail boxes start hidden (and out of the tab order) until there is
+        # something to show -- no stopping on a blank read-only field.
+        for control in (
+            self._alert_detail_label,
+            self._alert_detail,
+            self._period_detail_label,
+            self._period_detail,
+        ):
+            control.Hide()
 
         self._reload_location_choice()
 
@@ -272,14 +282,23 @@ class WeatherCenterDialog:
             f"Active &Alerts ({len(alerts)}):" if alerts else "Active &Alerts (none):"
         )
         self._alert_detail.SetValue(_alert_detail_text(alerts[0]) if alerts else "")
+        # Skip an empty read-only field in the tab order (no alert -> no box).
+        self._show_field(self._alert_detail_label, self._alert_detail, bool(alerts))
 
         place = location.resolved_name or location.label
+        today = result.daily[0] if result.daily else None
         if result.current is not None:
-            line = render.current_conditions_line(result.current, self._settings)
-            when = f" (observed {result.current.observed_at})" if result.current.observed_at else ""
-            self._current.SetValue(f"{place} -- current conditions: {line}{when}")
+            block = render.current_conditions_block(
+                result.current, today, self._settings, result.air_quality
+            )
+            when = (
+                f" Observed {render.friendly_datetime(result.current.observed_at)}."
+                if result.current.observed_at
+                else ""
+            )
+            self._current.SetValue(f"Weather for {place}. {block}{when}")
         else:
-            self._current.SetValue(f"{place} -- current conditions are unavailable right now.")
+            self._current.SetValue(f"Current conditions for {place} are unavailable right now.")
 
         periods = result.periods[: self._settings.forecast_period_count]
         self._forecast_list.Set(
@@ -290,24 +309,35 @@ class WeatherCenterDialog:
             or ["Forecast unavailable."]
         )
         self._period_detail.SetValue(_period_detail_text(periods[0]) if periods else "")
+        self._show_field(self._period_detail_label, self._period_detail, bool(periods))
 
         self._daily_list.Set(
             [day.line for day in result.daily] or ["Extended daily outlook unavailable."]
         )
 
         self._status.SetValue(self._status_line(result))
+        self.dialog.Layout()
 
         n = len(alerts)
-        summary = f"{location.label}. "
+        summary = f"Weather for {place}. "
         summary += (
-            "No active alerts. "
+            "There are no active alerts. "
             if n == 0
-            else (f"{n} active alert{'' if n == 1 else 's'}; highest {alerts[0].event}. ")
+            else (
+                f"There {'is' if n == 1 else 'are'} {n} active "
+                f"alert{'' if n == 1 else 's'}. The most urgent is a {alerts[0].event}. "
+            )
         )
-        if result.current is not None:
-            summary += render.current_conditions_line(result.current, self._settings)
+        if result.current is not None and result.current.temperature_f is not None:
+            summary += render.current_conditions_line(result.current, self._settings) + "."
         if self._settings.announce_alert_count_on_open:
             self._announce(summary)
+
+    def _show_field(self, label: Any, field: Any, visible: bool) -> None:
+        """Show or hide a label+field pair; hidden controls leave the tab order,
+        so a screen-reader user never lands on an empty read-only box."""
+        label.Show(visible)
+        field.Show(visible)
 
     def _status_line(self, report: WeatherReport) -> str:
         bits = [f"Source: National Weather Service office {report.office or '?'}"]

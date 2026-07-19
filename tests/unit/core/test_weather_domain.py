@@ -157,34 +157,101 @@ def _report_with_current() -> WeatherReport:
     )
 
 
-def test_temp_and_wind_units() -> None:
+def test_temp_and_wind_phrases_are_spelled_out() -> None:
     f = WeatherSettings(temperature_unit="F", wind_unit="mph")
     c = WeatherSettings(temperature_unit="C", wind_unit="km/h")
-    assert render.temp_str(212.0, f) == "212 deg F"
-    assert render.temp_str(212.0, c) == "100 deg C"
-    assert render.wind_str(10.0, "NW", f) == "NW 10 mph"
-    assert render.wind_str(10.0, "NW", c) == "NW 16 km/h"
-    assert render.wind_str(0.0, "NW", f) == "calm"
-
-
-def test_quick_weather_line_composes_by_toggles() -> None:
-    report = _report_with_current()
-    s = WeatherSettings(
-        quick_include_wind=True, quick_include_humidity=False, quick_include_alert_count=True
+    assert render.temp_phrase(212.0, f) == "212 degrees Fahrenheit"
+    assert render.temp_phrase(212.0, c) == "100 degrees Celsius"
+    assert render.temp_phrase(98.0, f, with_unit=False) == "98 degrees"
+    assert (
+        render.wind_phrase(10.0, "WNW", None, f)
+        == "The wind is blowing from the west-northwest at 10 miles per hour."
     )
-    line = render.quick_weather_line(report, s)
-    assert line.startswith("Tucson, AZ.")
-    assert "96 deg F and clear" in line
-    assert "Wind WNW 5 mph" in line
-    assert "1 active alert; highest is Excessive Heat Warning" in line
-    assert "Humidity" not in line  # toggle off
+    assert "gusting to 22 miles per hour" in render.wind_phrase(10.0, "NW", 22.0, f)
+    assert render.wind_phrase(0.0, "NW", None, f) == "The air is calm."
+
+
+def test_uv_and_air_quality_phrases() -> None:
+    from quill.core.weather.models import AirQuality
+
+    assert "very high" in render.uv_phrase(9)
+    assert render.uv_phrase(None) == ""
+    assert render.air_quality_phrase(AirQuality(us_aqi=42, category="Good")) == (
+        "The air quality index is 42, which is good."
+    )
+    assert render.air_quality_phrase(None) == ""
+
+
+def test_friendly_datetime() -> None:
+    assert render.friendly_datetime("2026-07-19T18:30:00-07:00") == "July 19 at 6:30 PM"
+    assert render.friendly_datetime("2026-07-19T05:05") == "July 19 at 5:05 AM"
+    assert render.friendly_datetime("bad") == ""
+
+
+def test_current_conditions_block_is_complete_and_toggleable() -> None:
+    from quill.core.weather.models import AirQuality, DailyOutlook
+
+    current = CurrentConditions(
+        text_description="Clear",
+        temperature_f=96.0,
+        feels_like_f=101.0,
+        humidity_percent=20,
+        dewpoint_f=54.0,
+        wind_speed_mph=5.0,
+        wind_direction="WNW",
+        wind_gust_mph=15.0,
+        pressure_inhg=29.92,
+        visibility_mi=10.0,
+        cloud_cover_percent=5,
+    )
+    today = DailyOutlook(
+        "2026-07-20",
+        "Monday",
+        98,
+        75,
+        "F",
+        "Clear",
+        precipitation_percent=10,
+        sunrise="5:42 AM",
+        sunset="7:38 PM",
+        uv_index=9,
+    )
+    aq = AirQuality(us_aqi=42, category="Good")
+    block = render.current_conditions_block(current, today, WeatherSettings(), aq)
+    for want in (
+        "96 degrees Fahrenheit and clear",
+        "It feels like 101 degrees",
+        "humidity is 20 percent",
+        "dew point is 54 degrees",
+        "west-northwest at 5 miles per hour, gusting to 15",
+        "Cloud cover is 5 percent",
+        "29.92 inches of mercury",
+        "Visibility is 10 miles",
+        "10 percent chance of precipitation",
+        "sun rises at 5:42 AM and sets at 7:38 PM",
+        "ultraviolet index reaches 9",
+        "air quality index is 42",
+    ):
+        assert want in block, want
+    # a toggle off removes exactly that point
+    off = WeatherSettings(show_air_quality=False, show_uv_index=False)
+    block2 = render.current_conditions_block(current, today, off, aq)
+    assert "air quality" not in block2 and "ultraviolet" not in block2
+
+
+def test_quick_weather_line_is_friendly() -> None:
+    report = _report_with_current()
+    line = render.quick_weather_line(report, WeatherSettings())
+    assert line.startswith("Here is the weather for Tucson, AZ.")
+    assert "It is 96 degrees Fahrenheit and clear." in line
+    assert "The most urgent is a Excessive Heat Warning." in line
 
 
 def test_quick_weather_line_no_alerts() -> None:
     report = _report_with_current()
     report.alerts = []
     line = render.quick_weather_line(report, WeatherSettings())
-    assert "No active alerts." in line
+    assert "There are no active alerts." in line
 
 
 def test_filtered_alerts_applies_settings() -> None:
@@ -196,18 +263,3 @@ def test_filtered_alerts_applies_settings() -> None:
     s = WeatherSettings(alert_severity_floor="Severe")
     kept = render.filtered_alerts(report, s)
     assert [a.event for a in kept] == ["Tornado Warning"]
-
-
-def test_current_conditions_line() -> None:
-    c = CurrentConditions(
-        text_description="Clear",
-        temperature_f=96.0,
-        wind_speed_mph=5.0,
-        wind_direction="WNW",
-        humidity_percent=20,
-    )
-    line = render.current_conditions_line(c, WeatherSettings())
-    assert line == "Clear, 96 deg F, wind WNW 5 mph, humidity 20 percent"
-    assert render.current_conditions_line(CurrentConditions(), WeatherSettings()).startswith(
-        "No current"
-    )

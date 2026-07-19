@@ -10,10 +10,11 @@ wx-free, strict-typed, HTTPS-only, egress-audited (shares the weather
 from __future__ import annotations
 
 import urllib.parse
+from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
 from quill.core.weather._http import HTTP_ERRORS, http_json
-from quill.core.weather.models import DailyOutlook
+from quill.core.weather.models import AirQuality, DailyOutlook
 
 #: WMO weather interpretation codes -> plain text (Open-Meteo's daily code).
 _WMO_TEXT: dict[int, str] = {
@@ -85,6 +86,20 @@ def weekday_name(iso_date: str) -> str:
     return ("Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday")[h]
 
 
+def format_time(iso: object) -> str:
+    """'2026-07-21T05:42' -> '5:42 AM' (pure, no clock). '' on anything odd."""
+    if not isinstance(iso, str) or "T" not in iso:
+        return ""
+    clock = iso.split("T", 1)[1][:5]
+    try:
+        hour, minute = (int(part) for part in clock.split(":"))
+    except (ValueError, IndexError):
+        return ""
+    suffix = "AM" if hour < 12 else "PM"
+    hour12 = hour % 12 or 12
+    return f"{hour12}:{minute:02d} {suffix}"
+
+
 def daily_from_json(data: object, *, unit: str) -> list[DailyOutlook]:
     """Parse an Open-Meteo daily block into DailyOutlook rows (pure)."""
     daily = data.get("daily") if isinstance(data, dict) else None
@@ -95,6 +110,9 @@ def daily_from_json(data: object, *, unit: str) -> list[DailyOutlook]:
     highs = daily.get("temperature_2m_max") or []
     lows = daily.get("temperature_2m_min") or []
     precip = daily.get("precipitation_probability_max") or []
+    sunrises = daily.get("sunrise") or []
+    sunsets = daily.get("sunset") or []
+    uv = daily.get("uv_index_max") or []
     rows: list[DailyOutlook] = []
     for i, date in enumerate(times):
         if not isinstance(date, str):
@@ -108,6 +126,9 @@ def daily_from_json(data: object, *, unit: str) -> list[DailyOutlook]:
                 temperature_unit=unit,
                 condition=weather_code_text(codes[i]) if i < len(codes) else "Unknown",
                 precipitation_percent=_int_at(precip, i),
+                sunrise=format_time(sunrises[i]) if i < len(sunrises) else "",
+                sunset=format_time(sunsets[i]) if i < len(sunsets) else "",
+                uv_index=_int_at(uv, i),
             )
         )
     return rows
@@ -121,21 +142,35 @@ def _int_at(values: object, index: int) -> int | None:
     return None
 
 
-def daily_forecast(
+@dataclass(slots=True)
+class OpenMeteoData:
+    """The Open-Meteo forecast pieces: the extended daily outlook, plus the
+    current cloud cover (a data point NWS observations don't expose cleanly)."""
+
+    daily: list[DailyOutlook]
+    cloud_cover_percent: int | None = None
+
+
+def fetch(
     latitude: float,
     longitude: float,
     *,
     days: int = 10,
     unit: str = "F",
     safe_mode: bool = False,
-) -> list[DailyOutlook]:
-    """Fetch the extended daily outlook (up to 16 days). ``unit`` is 'F' or 'C'."""
+) -> OpenMeteoData:
+    """One Open-Meteo forecast call: the up-to-16-day daily outlook plus current
+    cloud cover. ``unit`` is 'F' or 'C'."""
     refuse_in_safe_mode(safe_mode)
     days = max(1, min(16, days))
     query = urllib.parse.urlencode({
         "latitude": f"{latitude:.4f}",
         "longitude": f"{longitude:.4f}",
-        "daily": "weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+        "current": "cloud_cover",
+        "daily": (
+            "weathercode,temperature_2m_max,temperature_2m_min,"
+            "precipitation_probability_max,sunrise,sunset,uv_index_max"
+        ),
         "temperature_unit": "celsius" if unit == "C" else "fahrenheit",
         "timezone": "auto",
         "forecast_days": days,
@@ -144,4 +179,67 @@ def daily_forecast(
         data = http_json(f"https://api.open-meteo.com/v1/forecast?{query}")
     except HTTP_ERRORS as error:
         raise OpenMeteoError(f"Could not reach the extended-forecast service: {error}") from error
-    return daily_from_json(data, unit=unit)
+    current = data.get("current") if isinstance(data, dict) else None
+    cloud = current.get("cloud_cover") if isinstance(current, dict) else None
+    return OpenMeteoData(
+        daily=daily_from_json(data, unit=unit),
+        cloud_cover_percent=round(cloud) if isinstance(cloud, (int, float)) else None,
+    )
+
+
+def daily_forecast(
+    latitude: float,
+    longitude: float,
+    *,
+    days: int = 10,
+    unit: str = "F",
+    safe_mode: bool = False,
+) -> list[DailyOutlook]:
+    """The extended daily outlook alone (thin wrapper over :func:`fetch`)."""
+    return fetch(latitude, longitude, days=days, unit=unit, safe_mode=safe_mode).daily
+
+
+_AQI_CATEGORIES = (
+    (50, "Good"),
+    (100, "Moderate"),
+    (150, "Unhealthy for sensitive groups"),
+    (200, "Unhealthy"),
+    (300, "Very unhealthy"),
+    (10_000, "Hazardous"),
+)
+
+
+def aqi_category(us_aqi: object) -> str:
+    """US Air Quality Index number -> its official category name."""
+    if not isinstance(us_aqi, (int, float)):
+        return ""
+    for ceiling, name in _AQI_CATEGORIES:
+        if us_aqi <= ceiling:
+            return name
+    return "Hazardous"
+
+
+def air_quality(latitude: float, longitude: float, *, safe_mode: bool = False) -> AirQuality | None:
+    """Current US Air Quality Index + fine-particulate level (Open-Meteo's free,
+    keyless air-quality API). Returns None if unavailable."""
+    refuse_in_safe_mode(safe_mode)
+    query = urllib.parse.urlencode({
+        "latitude": f"{latitude:.4f}",
+        "longitude": f"{longitude:.4f}",
+        "current": "us_aqi,pm2_5",
+        "timezone": "auto",
+    })
+    try:
+        data = http_json(f"https://air-quality-api.open-meteo.com/v1/air-quality?{query}")
+    except HTTP_ERRORS:
+        return None
+    current = data.get("current") if isinstance(data, dict) else None
+    if not isinstance(current, dict):
+        return None
+    aqi = current.get("us_aqi")
+    pm = current.get("pm2_5")
+    return AirQuality(
+        us_aqi=round(aqi) if isinstance(aqi, (int, float)) else None,
+        category=aqi_category(aqi),
+        pm2_5=round(pm, 1) if isinstance(pm, (int, float)) else None,
+    )

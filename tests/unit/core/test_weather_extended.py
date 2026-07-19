@@ -70,7 +70,7 @@ def test_weather_code_text_and_weekday() -> None:
     assert open_meteo.weekday_name("bad") == ""
 
 
-def test_daily_from_json_parses_rows() -> None:
+def test_daily_from_json_parses_rows_and_astro() -> None:
     data = {
         "daily": {
             "time": ["2026-07-20", "2026-07-21"],
@@ -78,29 +78,40 @@ def test_daily_from_json_parses_rows() -> None:
             "temperature_2m_max": [98.4, 90.1],
             "temperature_2m_min": [74.6, 72.0],
             "precipitation_probability_max": [0, 60],
+            "sunrise": ["2026-07-20T05:42", "2026-07-21T05:43"],
+            "sunset": ["2026-07-20T19:38", "2026-07-21T19:37"],
+            "uv_index_max": [9, 8],
         }
     }
     rows = open_meteo.daily_from_json(data, unit="F")
     assert len(rows) == 2
     assert rows[0].weekday == "Monday" and rows[0].high_temp == 98 and rows[0].low_temp == 75
     assert rows[0].condition == "Clear"
-    assert "Monday 2026-07-20: Clear, high 98 low 75 F" == rows[0].line
+    assert rows[0].sunrise == "5:42 AM" and rows[0].sunset == "7:38 PM" and rows[0].uv_index == 9
+    assert rows[0].line == (
+        "Monday, 2026-07-20: Clear. High 98, low 75 degrees. Sunrise 5:42 AM, sunset 7:38 PM."
+    )
     assert rows[1].condition == "Thunderstorm" and rows[1].precipitation_percent == 60
-    assert "60% precip" in rows[1].line
+    assert "60 percent chance of precipitation" in rows[1].line
 
 
-def test_daily_forecast_hits_open_meteo_and_refuses_safe_mode(monkeypatch) -> None:
+def test_fetch_reads_cloud_cover_and_refuses_safe_mode(monkeypatch) -> None:
     seen: dict[str, str] = {}
     monkeypatch.setattr(
         open_meteo,
         "http_json",
-        lambda url: seen.update(url=url) or {"daily": {"time": [], "weathercode": []}},
+        lambda url: (
+            seen.update(url=url)
+            or {"current": {"cloud_cover": 42}, "daily": {"time": [], "weathercode": []}}
+        ),
     )
-    open_meteo.daily_forecast(32.2, -110.9, days=10, unit="C")
-    assert "api.open-meteo.com" in seen["url"]
+    data = open_meteo.fetch(32.2, -110.9, days=10, unit="C")
+    assert "api.open-meteo.com/v1/forecast" in seen["url"]
     assert "forecast_days=10" in seen["url"] and "temperature_unit=celsius" in seen["url"]
+    assert "current=cloud_cover" in seen["url"]
+    assert data.cloud_cover_percent == 42
     with pytest.raises(OpenMeteoError):
-        open_meteo.daily_forecast(32.2, -110.9, safe_mode=True)
+        open_meteo.fetch(32.2, -110.9, safe_mode=True)
 
 
 def test_daily_forecast_clamps_days(monkeypatch) -> None:
@@ -108,3 +119,25 @@ def test_daily_forecast_clamps_days(monkeypatch) -> None:
     monkeypatch.setattr(open_meteo, "http_json", lambda url: seen.update(url=url) or {})
     open_meteo.daily_forecast(1, 2, days=99)
     assert "forecast_days=16" in seen["url"]  # capped at Open-Meteo's max
+
+
+def test_air_quality_parses_and_categorizes(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+    monkeypatch.setattr(
+        open_meteo,
+        "http_json",
+        lambda url: seen.update(url=url) or {"current": {"us_aqi": 142, "pm2_5": 33.4}},
+    )
+    aq = open_meteo.air_quality(32.2, -110.9)
+    assert "air-quality-api.open-meteo.com" in seen["url"]
+    assert aq is not None and aq.us_aqi == 142
+    assert aq.category == "Unhealthy for sensitive groups" and aq.pm2_5 == 33.4
+    assert open_meteo.aqi_category(30) == "Good" and open_meteo.aqi_category(500) == "Hazardous"
+
+
+def test_air_quality_none_on_failure(monkeypatch) -> None:
+    def boom(url):
+        raise OSError("down")
+
+    monkeypatch.setattr(open_meteo, "http_json", boom)
+    assert open_meteo.air_quality(1, 2) is None
