@@ -102,18 +102,21 @@ def test_search_stations_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(stations) == 1 and stations[0].name == "WXYZ"
 
 
-def test_weather_stations_queries_the_weather_tag(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_noaa_weather_stations_searches_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The 'weather' tag is noise; NWR re-streams are found by name instead.
     _stub_mirrors(monkeypatch, ["mirror1.example.com"])
     seen: dict[str, str] = {}
 
     def fake_urlopen(request, *a, **k):
         seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
-        return _FakeResponse(json.dumps([{"name": "NWR Tucson", "url": "https://x/w"}]).encode())
+        payload = json.dumps([{"name": "NOAA Weather Radio KHB60 Seattle", "url": "https://x/w"}])
+        return _FakeResponse(payload.encode())
 
     monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
-    stations = rb.weather_stations(limit=25)
-    assert "tag=weather" in seen["url"]
-    assert [s.name for s in stations] == ["NWR Tucson"]
+    stations = rb.noaa_weather_stations(limit=25)
+    assert "NOAA" in seen["url"]  # queried by name (URL-encoded), not the weather tag
+    assert "tag=weather" not in seen["url"]
+    assert [s.name for s in stations] == ["NOAA Weather Radio KHB60 Seattle"]
 
 
 def test_popular_stations_hits_topvote_and_parses(monkeypatch: pytest.MonkeyPatch) -> None:

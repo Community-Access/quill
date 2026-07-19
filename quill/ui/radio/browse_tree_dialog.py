@@ -473,7 +473,7 @@ class BrowseTreeDialog:
 #: Off-thread station loaders for the flat "stations" sources, keyed by payload.
 _STATION_LOADERS: dict[str, Callable[[bool], list[RadioStation]]] = {
     "popular": lambda safe: radio_browser.popular_stations(safe_mode=safe),
-    "weather": lambda safe: radio_browser.weather_stations(safe_mode=safe),
+    "weather": lambda safe: radio_browser.noaa_weather_stations(safe_mode=safe),
     "acb": lambda _safe: acb_media.acb_media_stations(),
     "nfb": lambda _safe: nfb_media.nfb_media_stations(),
     "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
