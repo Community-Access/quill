@@ -34,11 +34,27 @@ def _alert_list_label(alert: Any) -> str:
     return " -- ".join(b for b in bits if b)
 
 
+def _spell_out(text: str) -> str:
+    """Expand the abbreviations the National Weather Service leaves in its own
+    forecast prose, so a screen reader or voice speaks them in full. Only widens
+    abbreviations -- it never changes the official wording's meaning."""
+    import re
+
+    text = re.sub(r"\bmph\b", "miles per hour", text)
+    text = re.sub(r"\bkm/h\b", "kilometers per hour", text)
+    return text
+
+
+def _temp_words(period: Any) -> str:
+    scale = "Fahrenheit" if period.temperature_unit == "F" else "Celsius"
+    return f"{period.temperature} degrees {scale}"
+
+
 def _period_detail_text(period: Any) -> str:
-    """A forecast period as a self-contained, copyable block: the day name and
-    temperature at the top, then the full detailed forecast."""
-    head = f"{period.name}: {period.temperature} deg {period.temperature_unit}"
-    body = period.detailed_forecast or period.short_forecast
+    """A forecast period as a self-contained, copyable, fully spoken block: the
+    day name and temperature at the top, then the full detailed forecast."""
+    head = f"{period.name}: {_temp_words(period)}"
+    body = _spell_out(period.detailed_forecast or period.short_forecast)
     return f"{head}\n{body}" if body else head
 
 
@@ -108,8 +124,9 @@ class WeatherCenterDialog:
         loc_row.Add(self._location_choice, 1, wx.EXPAND | wx.RIGHT, 6)
         self._refresh_btn = wx.Button(self.dialog, label="&Refresh")
         self._add_btn = wx.Button(self.dialog, label="&Add Location...")
+        self._remove_btn = wx.Button(self.dialog, label="Re&move Location")
         self._settings_btn = wx.Button(self.dialog, label="&Settings...")
-        for b in (self._refresh_btn, self._add_btn, self._settings_btn):
+        for b in (self._refresh_btn, self._add_btn, self._remove_btn, self._settings_btn):
             loc_row.Add(b, 0, wx.RIGHT, 4)
         root.Add(loc_row, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -167,6 +184,14 @@ class WeatherCenterDialog:
         self._daily_list = wx.ListBox(self.dialog)
         set_accessible_name(self._daily_list, "Extended daily outlook, one line per day")
         root.Add(self._daily_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        self._daily_detail_label = wx.StaticText(self.dialog, label="Selected &day (read-only):")
+        root.Add(self._daily_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
+        self._daily_detail = wx.TextCtrl(
+            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+        )
+        set_accessible_name(self._daily_detail, "Selected day, full details")
+        self._daily_detail.SetMinSize((-1, 60))
+        root.Add(self._daily_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- status + close --
         self._status = wx.TextCtrl(self.dialog, style=wx.TE_READONLY)
@@ -180,8 +205,11 @@ class WeatherCenterDialog:
         self.dialog.SetSizer(root)
 
         self._location_choice.Bind(wx.EVT_CHOICE, lambda _e: self._on_location_chosen())
+        self._location_choice.Bind(wx.EVT_KEY_DOWN, self._on_location_key)
+        self._remove_btn.Bind(wx.EVT_BUTTON, lambda _e: self._remove_location())
         self._alerts_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_alert_selected())
         self._forecast_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_period_selected())
+        self._daily_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_daily_selected())
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh())
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _e: self._add_location())
         self._settings_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_settings())
@@ -193,6 +221,8 @@ class WeatherCenterDialog:
             self._alert_detail,
             self._period_detail_label,
             self._period_detail,
+            self._daily_detail_label,
+            self._daily_detail,
         ):
             control.Hide()
 
@@ -302,10 +332,7 @@ class WeatherCenterDialog:
 
         periods = result.periods[: self._settings.forecast_period_count]
         self._forecast_list.Set(
-            [
-                f"{p.name}: {p.temperature} deg {p.temperature_unit}, {p.short_forecast}"
-                for p in periods
-            ]
+            [f"{p.name}: {_temp_words(p)}, {p.short_forecast}" for p in periods]
             or ["Forecast unavailable."]
         )
         self._period_detail.SetValue(_period_detail_text(periods[0]) if periods else "")
@@ -314,6 +341,8 @@ class WeatherCenterDialog:
         self._daily_list.Set(
             [day.line for day in result.daily] or ["Extended daily outlook unavailable."]
         )
+        self._daily_detail.SetValue(result.daily[0].line if result.daily else "")
+        self._show_field(self._daily_detail_label, self._daily_detail, bool(result.daily))
 
         self._status.SetValue(self._status_line(result))
         self.dialog.Layout()
@@ -363,6 +392,55 @@ class WeatherCenterDialog:
         periods = self._report.periods[: self._settings.forecast_period_count]
         if 0 <= index < len(periods):
             self._period_detail.SetValue(_period_detail_text(periods[index]))
+
+    def _on_daily_selected(self) -> None:
+        if self._report is None:
+            return
+        index = self._daily_list.GetSelection()
+        if 0 <= index < len(self._report.daily):
+            self._daily_detail.SetValue(self._report.daily[index].line)
+
+    # -- remove a location ------------------------------------------------------
+
+    def _on_location_key(self, event: Any) -> None:
+        if event.GetKeyCode() == self._wx.WXK_DELETE:
+            self._remove_location()
+        else:
+            event.Skip()
+
+    def _remove_location(self) -> None:
+        """Remove the chosen location (the Remove button or the Delete key)."""
+        location = self._current_location()
+        if location is None:
+            self._announce("There is no location to remove.")
+            return
+        label = location.label
+        self._store.remove(location.id)
+        loc_store.save_locations(self._data_dir, self._store)
+        self._reload_location_choice()
+        if self._store.locations:
+            self._announce(f"Removed {label}.")
+            self._refresh()
+            return
+        self._report = None
+        for listbox in (self._alerts_list, self._forecast_list, self._daily_list):
+            listbox.Set([])
+        for box in (
+            self._current,
+            self._alert_detail,
+            self._period_detail,
+            self._daily_detail,
+            self._status,
+        ):
+            box.SetValue("")
+        for label_ctrl, field in (
+            (self._alert_detail_label, self._alert_detail),
+            (self._period_detail_label, self._period_detail),
+            (self._daily_detail_label, self._daily_detail),
+        ):
+            self._show_field(label_ctrl, field, False)
+        self.dialog.Layout()
+        self._announce(f"Removed {label}. No locations left. Choose Add Location to begin.")
 
     # -- sub-dialogs ------------------------------------------------------------
 
