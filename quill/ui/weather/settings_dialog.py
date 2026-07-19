@@ -74,6 +74,15 @@ class WeatherSettingsDialog:
         set_accessible_name(self._periods, "Number of forecast periods to show")
         grid.Add(self._periods, 0)
 
+        label("&Extended daily outlook (days, 0 = off):")
+        self._daily_days = wx.SpinCtrl(
+            self.dialog, min=0, max=16, initial=settings.daily_outlook_days
+        )
+        set_accessible_name(
+            self._daily_days, "Extended daily outlook length in days, 0 turns it off"
+        )
+        grid.Add(self._daily_days, 0)
+
         label("Alert &severity to show:")
         self._severity = wx.Choice(
             self.dialog, choices=[_SEVERITY_LABELS[s] for s in SEVERITY_FLOOR]
@@ -175,6 +184,7 @@ class WeatherSettingsDialog:
         s.temperature_unit = TEMPERATURE_UNITS[self._temp.GetSelection()]
         s.wind_unit = WIND_UNITS[self._wind.GetSelection()]
         s.forecast_period_count = self._periods.GetValue()
+        s.daily_outlook_days = self._daily_days.GetValue()
         s.alert_severity_floor = SEVERITY_FLOOR[self._severity.GetSelection()]
         s.refresh_minutes = self._refresh.GetValue()
         s.show_detailed_forecast = self._detailed.GetValue()

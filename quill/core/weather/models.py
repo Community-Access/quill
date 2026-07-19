@@ -70,6 +70,32 @@ class ForecastPeriod:
 
 
 @dataclass(slots=True)
+class DailyOutlook:
+    """One day of the extended daily outlook (beyond the NWS 7-day product)."""
+
+    date: str  # ISO date, e.g. "2026-07-21"
+    weekday: str  # "Monday"
+    high_temp: int | None
+    low_temp: int | None
+    temperature_unit: str  # "F" or "C"
+    condition: str  # human text from the weather code
+    precipitation_percent: int | None = None
+
+    @property
+    def line(self) -> str:
+        """A self-contained, copyable one-line summary for the day."""
+        hi = f"{self.high_temp}" if self.high_temp is not None else "?"
+        lo = f"{self.low_temp}" if self.low_temp is not None else "?"
+        precip = (
+            f", {self.precipitation_percent}% precip"
+            if self.precipitation_percent not in (None, 0)
+            else ""
+        )
+        unit = self.temperature_unit
+        return f"{self.weekday} {self.date}: {self.condition}, high {hi} low {lo} {unit}{precip}"
+
+
+@dataclass(slots=True)
 class WeatherAlert:
     """A normalized active NWS alert (watch/warning/advisory)."""
 
@@ -119,6 +145,8 @@ class WeatherReport:
     location: WeatherLocation
     current: CurrentConditions | None = None
     periods: list[ForecastPeriod] = field(default_factory=list)
+    #: Extended daily outlook (Open-Meteo), beyond the ~7-day NWS periods.
+    daily: list[DailyOutlook] = field(default_factory=list)
     alerts: list[WeatherAlert] = field(default_factory=list)
     #: NWS forecast office id (e.g. "TWC") and resolved zone/county, for the
     #: source-status line the PRD requires.

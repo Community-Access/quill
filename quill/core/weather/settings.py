@@ -38,8 +38,13 @@ class WeatherSettings:
     # -- Weather Now layout --
     #: Section order/visibility; a section absent from the list is hidden.
     section_order: list[str] = field(default_factory=_default_sections)
-    forecast_period_count: int = 7
+    #: 14 periods = the full ~7-day NWS forecast (day + night for each). NWS's
+    #: public forecast product does not extend beyond about 7 days.
+    forecast_period_count: int = 14
     show_detailed_forecast: bool = True
+    #: Extended daily outlook length (Open-Meteo), for reaching past NWS's 7
+    #: days. 0 disables it; capped at 16 (Open-Meteo's own limit).
+    daily_outlook_days: int = 10
 
     # -- alerts (PRD 13.3) --
     #: Only show alerts at or above this severity ("all" shows every one).
@@ -67,6 +72,7 @@ class WeatherSettings:
         )
         self.wind_unit = self.wind_unit if self.wind_unit in WIND_UNITS else "mph"
         self.forecast_period_count = max(1, min(14, int(self.forecast_period_count)))
+        self.daily_outlook_days = max(0, min(16, int(self.daily_outlook_days)))
         self.alert_severity_floor = (
             self.alert_severity_floor if self.alert_severity_floor in SEVERITY_FLOOR else "all"
         )
@@ -113,7 +119,7 @@ def load_settings(data_dir: Path) -> WeatherSettings:
     ):
         if isinstance(raw.get(f), str):
             setattr(s, f, raw[f])
-    for f in ("forecast_period_count", "refresh_minutes"):
+    for f in ("forecast_period_count", "refresh_minutes", "daily_outlook_days"):
         if isinstance(raw.get(f), (int, float)):
             setattr(s, f, int(raw[f]))
     for f in (
@@ -147,6 +153,7 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "wind_unit": settings.wind_unit,
             "section_order": list(settings.section_order),
             "forecast_period_count": settings.forecast_period_count,
+            "daily_outlook_days": settings.daily_outlook_days,
             "show_detailed_forecast": settings.show_detailed_forecast,
             "alert_severity_floor": settings.alert_severity_floor,
             "muted_events": list(settings.muted_events),

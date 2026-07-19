@@ -261,10 +261,17 @@ def active_alerts(
     return alerts_from_json(data)
 
 
-def fetch_report(location: WeatherLocation, *, safe_mode: bool = False) -> WeatherReport:
+def fetch_report(
+    location: WeatherLocation,
+    *,
+    safe_mode: bool = False,
+    daily_days: int = 10,
+    temperature_unit: str = "F",
+) -> WeatherReport:
     """Gather a full Weather Now report for a location. Point resolution is
-    required (raises on failure); forecast, observation, and alerts each
-    degrade to a note so one dead sub-request never blanks the whole screen."""
+    required (raises on failure); the NWS forecast, observation, and alerts, and
+    the Open-Meteo extended daily outlook, each degrade to a note so one dead
+    sub-request never blanks the whole screen."""
     refuse_in_safe_mode(safe_mode)
     point = resolve_point(location.latitude, location.longitude)
     report = WeatherReport(
@@ -290,6 +297,16 @@ def fetch_report(location: WeatherLocation, *, safe_mode: bool = False) -> Weath
         report.alerts = active_alerts(location.latitude, location.longitude)
     except WeatherError:
         report.notes.append("Active alerts could not be checked -- try Refresh.")
+
+    if daily_days > 0:
+        from quill.core.weather import open_meteo
+
+        try:
+            report.daily = open_meteo.daily_forecast(
+                location.latitude, location.longitude, days=daily_days, unit=temperature_unit
+            )
+        except open_meteo.OpenMeteoError:
+            report.notes.append("The extended daily outlook is temporarily unavailable.")
 
     return report
 
