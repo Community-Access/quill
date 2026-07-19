@@ -65,6 +65,18 @@ _CATEGORIES = (
 #: same fetch_genres / fetch_genre_stations / genre_display / CATALOG_CREDIT.
 _GENRE_SOURCES = {_M3U_GENRES: m3u_catalog, _XIPH_DIR: xiph}
 
+#: The browse sources offered as the Station menu's "Browse Stations" submenu,
+#: in menu order -- each opens this dialog straight to that source. Favorites and
+#: Search Results are not "browse a source" choices, so they are not listed.
+BROWSE_MENU_CATEGORIES: tuple[str, ...] = (
+    _POPULAR,
+    _ACB_MEDIA,
+    _SOMAFM,
+    _TUNEIN_BROWSE,
+    _M3U_GENRES,
+    _XIPH_DIR,
+)
+
 #: Source-facet choices (the Unified Find Stations filter). "All sources" is the
 #: default; the rest match RadioStation.source values a search can produce. A
 #: RadioBrowser result has an empty source, so it filters under "RadioBrowser".
@@ -462,11 +474,18 @@ class StationBrowserDialog:
 
     # ------------------------------------------------------------------
 
-    def show(self) -> None:
+    def show(self, *, initial_category: str | None = None, focus_search: bool = False) -> None:
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
         from quill.ui.dialog_contract import show_modal_dialog
 
+        # Opened straight to a browse source (the Station menu's Browse submenu),
+        # or focused on the search box (Search Stations...). Default stays the
+        # Favorites view the constructor set.
+        if initial_category is not None:
+            self._show_category(initial_category)
+        if focus_search:
+            self._wx.CallAfter(self._name_ctrl.SetFocus)
         try:
             show_modal_dialog(self.dialog, "Internet Radio", announce=self._announce)
         finally:

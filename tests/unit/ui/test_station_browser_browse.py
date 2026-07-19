@@ -16,8 +16,20 @@ from quill.ui.radio.station_browser_dialog import (
     _M3U_GENRES,
     _POPULAR,
     _SOMAFM,
+    BROWSE_MENU_CATEGORIES,
     StationBrowserDialog,
 )
+
+
+def test_browse_menu_categories_are_real_browsable_sources() -> None:
+    # The Station menu's Browse submenu opens the dialog to each of these; every
+    # one must be a real category, and Favorites/Search Results are not "browse
+    # a source" choices, so they must be excluded.
+    for category in BROWSE_MENU_CATEGORIES:
+        assert category in _CATEGORIES, category
+    assert "Favorites" not in BROWSE_MENU_CATEGORIES
+    assert "Search Results" not in BROWSE_MENU_CATEGORIES
+    assert _POPULAR in BROWSE_MENU_CATEGORIES and _SOMAFM in BROWSE_MENU_CATEGORIES
 
 
 class _FakeChoice:

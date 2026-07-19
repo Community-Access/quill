@@ -1565,7 +1565,9 @@ class RadioMixin:
         dlg.show()
         self._refresh_statusbar()
 
-    def open_internet_radio(self) -> None:
+    def open_internet_radio(
+        self, *, initial_category: str | None = None, focus_search: bool = False
+    ) -> None:
         if self._safe_mode:
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
@@ -1582,7 +1584,7 @@ class RadioMixin:
             on_open_add_custom=self._radio_open_add_custom,
             on_open_link_finder=self._radio_open_link_finder,
         )
-        dlg.show()
+        dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
 
     def _radio_open_add_custom(self, prefill: RadioStation | None) -> None:

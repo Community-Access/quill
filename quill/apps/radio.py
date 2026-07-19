@@ -626,8 +626,28 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         menu_bar = wx.MenuBar()
 
         station_menu = wx.Menu()
-        browse_id, add_id, find_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        station_menu.Append(browse_id, "&Browse Stations...")
+        # Browsing (pick a source and see its stations) is its own submenu,
+        # clearly distinct from searching by name. Each choice opens Browse
+        # Stations straight to that source; Search Stations opens it on the box.
+        from quill.ui.radio.station_browser_dialog import BROWSE_MENU_CATEGORIES
+
+        browse_sub = wx.Menu()
+        browse_ids: list[object] = []
+        for category in BROWSE_MENU_CATEGORIES:
+            item_id = wx.NewIdRef()
+            browse_ids.append(item_id)
+            browse_sub.Append(item_id, category)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e, c=category: self.open_internet_radio(initial_category=c),
+                id=item_id,
+            )
+        station_menu.AppendSubMenu(browse_sub, "&Browse Stations")
+        search_id, add_id, find_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        station_menu.Append(search_id, "&Search Stations...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_internet_radio(focus_search=True), id=search_id
+        )
         station_menu.Append(add_id, "&Add Custom Station...")
         station_menu.Append(find_id, "Find &Streams from a Website...")
         manage_id = wx.NewIdRef()
@@ -640,7 +660,6 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id
         )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_manage_radio_favorites(), id=manage_id)
@@ -811,7 +830,8 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.SetMenuBar(menu_bar)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
-            browse_id,
+            *browse_ids,
+            search_id,
             add_id,
             find_id,
             manage_id,
