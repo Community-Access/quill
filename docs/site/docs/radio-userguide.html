@@ -807,6 +807,122 @@ audit.</li>
 <li>The <strong>ACB Media</strong> directory is bundled -- no network
 needed to browse it.</li>
 </ul>
+<h2 id="weather">Weather</h2>
+<p>Quill Radio includes a <strong>Weather</strong> menu that brings
+official U.S. weather to you as clear, screen-reader-first text: current
+conditions, the forecast, an extended daily outlook, and -- most
+importantly -- active watches, warnings, and advisories for the places
+you care about.</p>
+<p>Everything comes from free, no-account, no-key sources: the
+<strong>National Weather Service</strong> (api.weather.gov) for
+observations, the forecast, and alerts; <strong>Open-Meteo</strong> for
+the extended daily outlook and the air-quality index; and
+<strong>OpenStreetMap</strong> for searching locations. Nothing is sent
+anywhere except your request for weather at a place you choose.</p>
+<h3 id="a-safety-note-first">A safety note first</h3>
+<p>Quill Weather is an <strong>additional</strong> accessible weather
+tool. Delivery can be delayed or interrupted by network, device, or
+provider problems. Do not rely on it as your only source of emergency
+information. Keep a NOAA Weather Radio, Wireless Emergency Alerts, and
+local emergency instructions as your primary safety channels.</p>
+<h3 id="adding-a-location">Adding a location</h3>
+<ol type="1">
+<li>Open the <strong>Weather</strong> menu and choose <strong>Add
+Location...</strong> (or open <strong>Weather Now...</strong> and press
+the <strong>Add Location</strong> button).</li>
+<li>Type a <strong>ZIP code</strong>, a <strong>city and state</strong>
+(<code>Tucson, AZ</code>), a <strong>county name</strong>, or an
+<strong>address</strong>, then press <strong>Search</strong>. (You can
+also type exact <strong>coordinates</strong> like
+<code>32.2, -110.9</code>.)</li>
+<li>A <strong>Results</strong> list appears. Because a search can match
+more than one place -- there are Springfields in Illinois, Missouri, and
+more -- you <strong>arrow to the right one and press Add
+Selected</strong>. Optionally give it a friendly <strong>name</strong>
+like <code>Home</code> or <code>Mom's</code> first.</li>
+<li>The first location you add becomes your primary location. Add as
+many as you like and switch between them with the
+<strong>Location</strong> chooser in Weather Now.</li>
+</ol>
+<p><strong>Removing a location:</strong> in Weather Now, select it in
+the Location chooser and press <strong>Remove Location</strong> (or the
+<strong>Delete</strong> key).</p>
+<h3 id="weather-now">Weather Now</h3>
+<p><strong>Weather menu &gt; Weather Now...</strong> (or
+<strong>Ctrl+Shift+W</strong>) opens the Weather Center. It reads top to
+bottom in priority order:</p>
+<ol type="1">
+<li><strong>Active Alerts</strong> -- a list of any watches, warnings,
+and advisories, most severe first. Arrow through them; the full official
+text, including the <strong>instructions</strong>, appears in the
+read-only box just below (so you can read and copy it). When there are
+no alerts, that box is hidden, so you don't stop on an empty field.</li>
+<li><strong>Current conditions</strong> -- a complete, warm paragraph
+from the nearest station: temperature, feels-like, sky, humidity, dew
+point, wind and gusts, cloud cover, barometric pressure, visibility,
+chance of precipitation, sunrise, sunset, the ultraviolet index, and air
+quality. Every value is written out for speech, and the observation time
+is shown in the location's own time zone. You choose which of these
+details appear in Settings.</li>
+<li><strong>Forecast</strong> -- the National Weather Service period
+forecast ("This Afternoon", "Tonight", ...). Arrow the list; each
+period's full detailed text appears below, led by its day and
+temperature so it stands alone.</li>
+<li><strong>Daily outlook (extended)</strong> -- an at-a-glance list
+reaching about 10 days out (up to 16), each day a friendly line:
+"Monday, July 20: Clear. High 98, low 75 degrees. Sunrise 5:42 AM,
+sunset 7:38 PM." Arrow the list to read each day in the detail box
+below.</li>
+<li>A <strong>status line</strong> naming the National Weather Service
+office and the observation station, so you always know where the data
+came from.</li>
+</ol>
+<p>Press <strong>Refresh</strong> at any time to pull the latest.
+<strong>Close</strong> leaves any radio you are playing untouched.</p>
+<h3 id="quick-weather">Quick Weather</h3>
+<p><strong>Weather menu &gt; Quick Weather</strong> (or
+<strong>Ctrl+Shift+Q</strong>) speaks a one-line summary of your primary
+location without opening a window -- for example:</p>
+<blockquote>
+<p>Here is the weather for Tucson, Arizona. It is 96 degrees Fahrenheit
+and mostly clear. It feels like 101 degrees. The wind is blowing from
+the west-northwest at 5 miles per hour. There is one active alert. The
+most urgent is an Excessive Heat Warning.</p>
+</blockquote>
+<p>You choose what that line includes in Settings.</p>
+<h3 id="active-alerts">Active Alerts</h3>
+<p><strong>Weather menu &gt; Active Alerts...</strong> opens Weather Now
+with focus already on the alerts list, so you can review warnings with
+the fewest keystrokes.</p>
+<h3 id="settings">Settings</h3>
+<p><strong>Weather menu &gt; Settings...</strong> controls:</p>
+<ul>
+<li><strong>Units</strong> -- temperature in Fahrenheit or Celsius; wind
+in miles per hour, kilometers per hour, knots, or meters per
+second.</li>
+<li><strong>Forecast periods to show</strong> and <strong>Extended daily
+outlook (days)</strong> -- how much of the forecast and outlook Weather
+Now lists (0 days turns the outlook off).</li>
+<li><strong>Current-conditions details to include</strong> -- a checkbox
+for each of feels-like, humidity, dew point, wind and gusts, cloud
+cover, pressure, visibility, chance of precipitation, sunrise and
+sunset, the ultraviolet index, and air quality. Temperature and the sky
+condition always show.</li>
+<li><strong>Alert severity to show</strong> -- everything, or only
+Moderate and above, Severe and above, and so on -- plus a list of
+specific <strong>event names to hide</strong> (one per line).</li>
+<li><strong>Refresh interval</strong> -- how often Weather Now refreshes
+(never faster than the NWS-recommended minimum).</li>
+<li><strong>Quick Weather line</strong> -- turn feels-like temperature,
+wind, humidity, the active-alert count, and data age on or off.</li>
+</ul>
+<h3 id="whats-coming-later">What's coming later</h3>
+<p>This release shows weather as <strong>text</strong>. Later phases of
+Quill Weather add spoken weather with its own voices and interruption
+rules, background alert monitoring that keeps watch while the window is
+closed, and a NOAA Weather Radio stream explorer. See the Product
+Requirements document (Help &gt; Product Requirements) for the full
+roadmap.</p>
 <h2 id="keyboard-reference">Keyboard reference</h2>
 <table>
 <thead>
