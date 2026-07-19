@@ -59,7 +59,7 @@ ui = [
     "certifi>=2026.6.17",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
     # NVDA/JAWS/Narrator instead of speaking over them.
-    "prismatoid>=0.16.7; sys_platform == 'win32'",
+    "prismatoid>=0.17.3; sys_platform == 'win32'",
     # accessible_output2: fallback screen-reader speech bridge (Windows). Its
     # per-reader is_active() detection is used when Prism cannot acquire a live
     # backend, before resorting to the SAPI self-voice. Pulls in libloader.
