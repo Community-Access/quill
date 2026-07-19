@@ -325,6 +325,44 @@ top level.</li>
 <ul>
 <li>Record now; Record Station (a different station than the one
 playing, for N minutes); scheduled recordings (once/daily/weekly).</li>
+<li>Concurrent recording (2.0.2, upstream
+<code>quill/core/radio/*</code>, <code>ui/radio/*</code>): the recorder
+holds any number of independent recordings, not one.
+<code>RadioRecorder</code> became a manager of
+<code>{job_id: RecordingJob}</code> -- each job owns its own ffmpeg
+process, recent-stderr tail (no cross-contamination of the
+fatal/transient verdict), reconnect counter, user-stopped flag, Windows
+kill-on-close handle, and resume marker;
+<code>active_jobs()</code>/<code>job(id)</code>/<code>active_count</code>
+replace the old scalar <code>current_*</code> getters (kept as
+back-compat), <code>stop(job_id)</code> / <code>stop_all()</code>
+replace the single <code>stop()</code>, and the state-changed callback
+carries the <code>job_id</code>.
+<code>RecordingSettings.max_concurrent_recordings</code> caps
+concurrency (0 = unlimited, the default); at the cap
+<code>start()</code> raises <code>RecordingLimitError</code> (a
+<code>RecordingError</code> subclass) and the scheduler holds the entry
+pending via <code>on_busy</code> and retries within its window -- the
+old "already in progress" hard refusal and its fragile string-match in
+the scheduler are gone, so overlapping scheduled shows all record. A
+reconnect reuses the same <code>job_id</code> (and the original
+<code>started_at</code>/<code>scheduled_end</code>) so a recording's row
+and marker keep a stable identity across a drop. Record Now targets the
+listened station (<code>_radio_playing_job_id</code>): stop it if it is
+recording, else start a new job; Record Station's single-recording guard
+is removed. UI: the Recordings window lists one row per active recording
+with per-row <strong>Stop Recording</strong> (by job id) and
+<strong>Stop All Recordings</strong> (shown at &gt;=2), mirrored in the
+Record menu and the tray/status menu
+(<code>radio.stop_all_recordings</code>); the status bar / tray read "(N
+recording)". Crash-resume is multi-marker:
+<code>recording_resume.py</code> writes one
+<code>&lt;job_id&gt;.json</code> per recording under a markers directory
+(migrating a legacy single-marker file), and launch offers a single
+<code>ResumeRecordingDialog</code> for one interrupted recording or a
+batched <code>ResumeRecordingsBatchDialog</code> for several. Everything
+lands in the shared <code>quill</code> package; nothing is vendored into
+the wrapper.</li>
 <li>Schedule management (upstream
 <code>ui/radio/schedule_recording_dialog.py</code>, #1106): Edit an
 entry in place, Duplicate it, and Enable/disable it without deleting (a
@@ -491,6 +529,29 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>2.0.2 (upstream <code>quill/core/radio/*</code>,
+<code>quill/apps/radio.py</code>,
+<code>quill/ui/radio/*</code>).</strong>
+<ul>
+<li><em>Channel mode Left/Right one-ear fix.</em> 2.0.1's
+<code>pan=stereo|c0=c0|c1=c0</code> duplicated a single source channel
+to both outputs; corrected to send the whole stereo field to one output
+and silence the other (<code>pan=stereo|c0=0.5*c0+0.5*c1|c1=0*c0</code>,
+and the mirror for right) in <code>core/audio_enhance.py</code>.</li>
+<li><em>Favorites sort order.</em>
+<code>RadioHistory.favorites_sort</code> (az/za/manual, default az) +
+per-folder <code>folder_sort_orders</code>; non-mutating
+<code>RadioFavoritesStore.favorites_in_display_order</code> /
+<code>folders_in_display_order</code> so the manual order survives.
+Applied to the main tree, the Favorites Manager (Move buttons disabled
+for sorted folders), and the Station-menu submenu; re-sorts on add.
+Preferences choice for the default; a folder context-menu override.</li>
+<li><em>M3U/M3U8 station import.</em> Pure
+<code>core/radio/playlist_import.parse_m3u</code> +
+<code>split_new_and_duplicates</code>; Station &gt; Import Stations from
+Playlist... with folder targeting/creation at any depth and a
+skip-vs-import-all duplicate prompt.</li>
+</ul></li>
 <li><strong>2.0.1 fast-follow (upstream <code>quill/core/radio/*</code>,
 <code>quill/ui/radio/*</code>).</strong> From the first round of live
 feedback:
@@ -586,6 +647,51 @@ scale, per-station volumes, and mute untouched); <strong>engine-native
 What's Playing fallback</strong> (mpv <code>media-title</code> when the
 ICY side-tap gets nothing or the stream is HLS); and
 <strong>"Buffering..." announcements</strong> on mid-stream stalls.</li>
+<li><strong>OptiLab broadcast polish (2.0.2, upstream
+<code>core/audio_enhance.py</code>,
+<code>ui/sound_enhance_dialog.py</code>).</strong> One-touch
+broadcast-processing modes in Sound Enhancements, adapted from OptiLab
+Core by dgl1984 (github.com/dgl1984/optilab, Apache-2.0). OptiLab is a
+GUI-only plugin (JSFX/CLAP/Winamp DSP) with no library API and a
+Windows-64-only binary, so rather than hosting the binary the modes
+reproduce the <em>shape</em> of its three chains -- Podcast Leveler (HPF
+-&gt; speechnorm -&gt; acompressor -&gt; 65 Hz tame -&gt; alimiter),
+Stream Polish (dynaudnorm -&gt; acompressor -&gt; presence -&gt;
+alimiter), Smooth Limiter (acompressor -&gt; alimiter) -- as ffmpeg
+filter chains appended last in <code>build_filter_graph</code> (their
+lookahead limiter guards the output), so they ride the same three
+delivery paths (mpv-native live, relay, recordings) and work
+cross-platform. Controls map OptiLab's onto ffmpeg: Mode picks the
+chain, Input is a front-end <code>volume</code> trim (0 dB default, per
+product choice), Auto-Adapt (0-100%) leans the leveling/density more
+assertive. A bypass checkbox (<code>optilab_enabled</code>) keeps the
+chosen mode remembered while off. Stored on <code>RadioHistory</code>
+and, as of 2.0.2, also per-station on <code>FavoriteStation</code>,
+carried by
+<code>RadioPlayerController.set_sound_options</code>/<code>preview_enhancements</code>
+and resolved per stream by <code>ResolvedEnhancement</code>. A faithful
+adaptation, not a bit-for-bit port; credited in release notes, the About
+box, and the third-party notices.</li>
+<li><strong>Live Sound Enhancements preview + fully per-station (2.0.2,
+upstream <code>ui/sound_enhance_dialog.py</code>,
+<code>ui/radio/player_controller.py</code>).</strong> Every control in
+the Sound Enhancements dialog previews live on the playing stream via an
+<code>on_live_change</code> callback (debounced ~180 ms) into
+<code>RadioPlayerController.preview_enhancements</code> (one apply for
+the whole set, so a wx drag reconnects once, not per field; mpv applies
+natively). OK keeps; Cancel/Escape reverts to the snapshot captured on
+open (the Reset button's own restore is exempted). And all
+listener-level settings -- previously EQ/compressor/channel per-station
+but night mode + OptiLab global-only -- are now per-station as well as
+global: <code>FavoriteStation</code> gained
+<code>night_mode_enabled</code>/<code>optilab_*</code>,
+<code>set_enhancement</code> and the <code>ResolvedEnhancement</code>
+NamedTuple carry the full set, <code>play_station</code> applies all of
+it per stream, and <code>open_sound_enhancements</code> saves the whole
+dialog to the favorite override (when a favorite plays) or the shared
+<code>RadioHistory</code> default (otherwise). Reset to Default and
+Reset All Stations both restore the shared default including night mode
+and OptiLab.</li>
 <li><strong>Sound Enhancements</strong> (Playback &gt; Sound
 Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12
 to +12 dB) and a compressor, applied live via an ffmpeg filter graph

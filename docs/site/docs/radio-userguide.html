@@ -314,6 +314,14 @@ organizable. See "The Favorites Manager" below.</li>
 right where you want it: pick the location (top level or inside any
 existing folder), then name it. The folder exists immediately, ready for
 Move to Folder.</li>
+<li><strong>Import Stations from Playlist...</strong> -- import an M3U
+or M3U8 playlist. Choose the file, then pick where the stations go: an
+existing folder, or type a brand-new folder path at any depth (like
+<code>News/Local</code>, created for you). If any of the playlist's
+stations are already in your favorites, Quill Radio tells you how many
+and asks whether to skip those duplicates or import everything. Station
+names come from the playlist's own <code>#EXTINF</code> lines; a bare
+URL is named after its host.</li>
 <li><strong>Play Last Station</strong> (Ctrl+L) -- resume whatever you
 last had on, one keystroke, no navigation.</li>
 <li><strong>Recently Played</strong> (submenu) -- your last fifteen
@@ -343,7 +351,11 @@ system default device; an unplugged device is remembered, not reset, and
 if it can't be used the radio plays through the default and says so).
 Every setting takes effect the moment you save -- switching engine or
 device mid-song reconnects the station right where it matters: on the
-new engine or device. Preferences also carries two troubleshooting
+new engine or device. Preferences also carries <strong>Favorites sort
+order</strong> (Ascending A to Z, Descending Z to A, or Unsorted -- how
+your folders and stations are ordered in the list; Ascending/Descending
+re-sort when you add a station, while Unsorted keeps your hand-arranged
+Move Up/Down order, which is never lost) and two troubleshooting
 settings: <strong>Verbose logging</strong> (a debug-mode checkbox that
 turns on detailed logging live, no restart, for when you need to
 diagnose something or attach detail to a bug report) and <strong>Log
@@ -428,36 +440,68 @@ Right only) and <strong>Night mode</strong>. Channel mode routes the
 audio for accessibility: <strong>Mono</strong> blends both stereo
 channels into one, so a station that hard-pans a voice to one side never
 disappears with single-sided hearing or a single earbud; <strong>Left
-only</strong> or <strong>Right only</strong> sends just that one channel
-to both ears, so you can listen to the radio in one ear while your
-screen reader (or anything else) uses the other. <strong>Night
-mode</strong> evens loudness in real time by lifting quiet passages --
-the complement to Even Out Volume taming loud ones; ideal for low-volume
-late-night listening. A "Quick preset" combo box (Flat, Bass Boost,
-Voice Clarity, Podcast, Small Speakers, Late Night) sets all three
-sliders at once as a starting point -- move any slider afterward and it
-becomes Custom. Off by default. On the mpv playback engine (the
-default), changes apply <strong>live, with no interruption at
-all</strong>; on the Windows Media engine they filter through FFmpeg
-(needs Help &gt; Get FFmpeg...) and reconnect on OK -- instant, since a
-live stream has no position to lose. The EQ, compressor, and
-<strong>Channel mode</strong> are <strong>remembered per
-station</strong>: open the dialog while a favorite is playing to set
-that station's own sound (including sending just that station to one
-ear); with nothing playing (or a non-favorite on), you're setting the
-shared default every other station follows. Night mode is always shared
--- it describes your evening, not a station.</li>
+only</strong> or <strong>Right only</strong> sends the whole stereo mix
+(nothing is lost) to just that one ear and silences the other, so you
+can listen to the radio in one ear while your screen reader (or anything
+else) uses the other. <strong>Night mode</strong> evens loudness in real
+time by lifting quiet passages -- the complement to Even Out Volume
+taming loud ones; ideal for low-volume late-night listening. A "Quick
+preset" combo box (Flat, Bass Boost, Voice Clarity, Podcast, Small
+Speakers, Late Night) sets all three sliders at once as a starting point
+-- move any slider afterward and it becomes Custom. Off by default. The
+dialog also has a <strong>Broadcast polish (OptiLab)</strong> section:
+an <strong>Apply broadcast polish</strong> checkbox (a bypass that keeps
+your chosen mode while turned off), a <strong>Polish mode</strong>
+choice -- <strong>Podcast Leveler</strong> for speech, <strong>Stream
+Polish</strong> for music, or <strong>Smooth Limiter</strong> for clean
+peak control -- an <strong>Input</strong> trim in decibels (0, no
+change, by default), and an <strong>Auto-Adapt</strong> slider (0-100%)
+that leans the leveling and density more assertive as you raise it.
+Broadcast polish levels quiet and loud passages, adds density, and
+limits peaks, so a run of stations at very different loudness sits at a
+steadier, fuller level -- especially handy for talk streams and
+unattended recordings. It is adapted, with thanks and credit, from
+OptiLab Core by dgl1984 (<a
+href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>,
+Apache-2.0); it is a faithful adaptation of that plugin's three modes
+rather than the plugin itself.</li>
 </ul>
+<p><strong>Every control previews live.</strong> As you move a slider or
+change any setting -- EQ, compressor, channel mode, night mode, or
+broadcast polish -- you hear it on what's playing right away, without
+pressing OK (on the default mpv engine it applies with no interruption;
+on the Windows Media engine it reconnects once the change settles).
+<strong>OK</strong> keeps and saves the settings;
+<strong>Cancel</strong> (or Escape) puts everything back the way it was
+when you opened the dialog.</p>
+<p><strong>Every setting is remembered per station as well as
+shared.</strong> The whole dialog -- EQ, compressor, channel mode, night
+mode, and broadcast polish -- is saved per station when you open it
+while a favorite is playing (so one station can be routed to one ear, or
+given its own broadcast polish, and remembered); with nothing playing,
+or a non-favorite on, you are setting the shared default every other
+station follows. The per-station Reset to Default button and
+Preferences' Reset All Stations' Sound Enhancements both drop a station
+back to that shared default.</p>
 <h3 id="record-altr">Record (Alt+R)</h3>
 <ul>
 <li><strong>Record Now / Stop Recording</strong> -- capture the station
 you are listening to. When a capture begins, Quill Radio announces
 "Recording started" with the station name, so it is always clear the
-command took effect.</li>
+command took effect. This command follows what you are listening to: if
+the station on now is the one recording, it stops that recording;
+otherwise it starts a new one. A recording of a <em>different</em>
+station running in the background is never stopped by Record Now -- stop
+those from the Recordings window.</li>
 <li><strong>Record Station...</strong> -- record a <em>different</em>
 station for a set number of minutes while you listen to something else
 (or to nothing). The recorder is its own process; it never needed the
-player.</li>
+player. You can start as many of these as you like -- they all record at
+once (see "Recording several stations at once" below).</li>
+<li><strong>Stop All Recordings</strong> -- stop every recording in
+progress at once. (It is also in the tray/status menu, and appears as a
+button in the Recordings window when two or more recordings are
+running.)</li>
 <li><strong>Schedule Recording...</strong> -- record a show later, once,
 daily, or weekly, even from the tray. Pick a favorite from the list and
 its name and stream fill in for you (both stay editable for one-off
@@ -490,15 +534,41 @@ count.)</li>
 live. See "The Recordings list" below.</li>
 <li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
 WAV, or <strong>Raw stream</strong> -- see below), bitrate, destination
-folder, filename pattern, a maximum-length safety cap, the <strong>If
-the connection drops</strong> section (reconnect on/off, how many
-attempts, and how many seconds between them), and <strong>Apply Sound
-Enhancements to recordings</strong> -- off by default, so recordings
-stay an unfiltered archival copy even with Sound Enhancements on for
-live listening; turn it on to record the filtered (EQ/compressor) audio
+folder, filename pattern, a maximum-length safety cap, <strong>Maximum
+simultaneous recordings</strong> (0 = unlimited, the default -- see
+"Recording several stations at once" below), the <strong>If the
+connection drops</strong> section (reconnect on/off, how many attempts,
+and how many seconds between them), and <strong>Apply Sound Enhancements
+to recordings</strong> -- off by default, so recordings stay an
+unfiltered archival copy even with Sound Enhancements on for live
+listening; turn it on to record the filtered (EQ/compressor) audio
 instead, for every recording method (Record Now, Record Station, and
 scheduled recordings alike).</li>
 </ul>
+<h3 id="recording-several-stations-at-once">Recording several stations
+at once</h3>
+<p>Quill Radio records as many stations at the same time as you want.
+Start a Record Station capture, then another, then another -- each
+records independently while you go on listening to whatever you like.
+Overlapping <strong>scheduled</strong> recordings all fire too: two
+shows booked for the same hour both record, where before only one would
+and the rest were dropped.</p>
+<p>Each recording is fully self-contained -- its own connection, its own
+reconnect-on-a-hiccup handling (below), its own crash-resume -- so one
+recording dropping, finishing, or being stopped never affects the
+others.</p>
+<p>If you would rather cap it (a slower machine, a metered connection),
+set <strong>Maximum simultaneous recordings</strong> in Recording
+Settings to a number; <strong>0</strong> means unlimited, which is the
+default. When the cap is reached, a scheduled recording that would
+exceed it is held pending and retried while its window is still open,
+rather than being lost.</p>
+<p>To stop recordings: <strong>Record Now</strong> stops the recording
+of the station you are listening to; the Recordings window's
+<strong>Stop Recording</strong> button stops the one you have selected
+there; and <strong>Stop All Recordings</strong> (Record menu,
+tray/status menu, or the button that appears in the Recordings window
+when two or more are running) stops every one at once.</p>
 <h3 id="raw-stream-recording-lossless-capture">Raw stream recording
 (lossless capture)</h3>
 <p>The <strong>Raw stream -- exactly as sent, no re-encoding
@@ -568,7 +638,17 @@ folder.</li>
 <li><strong>Reordering.</strong> Move Up / Move Down within a folder;
 for long hops, <strong>Mark for Move</strong>, select the destination,
 then <strong>Move Above</strong> or <strong>Move Below</strong> -- the
-moved station joins the destination's folder.</li>
+moved station joins the destination's folder. (Reordering is your
+hand-arranged "Unsorted" order; when a folder is set to Ascending or
+Descending the Move buttons are disabled there, since a sorted folder
+ignores hand placement.)</li>
+<li><strong>Sort order.</strong> Preferences (Ctrl+,) sets the default
+order for every folder -- Ascending (A to Z), Descending (Z to A), or
+Unsorted. Any single folder can override that from its context menu
+(<strong>Sort This Folder...</strong> on the main-page tree): choose
+Ascending, Descending, Unsorted, or "follow the default" just for that
+folder's stations. Ascending/Descending re-sort automatically as you add
+stations.</li>
 <li><strong>Rename</strong> (F2 on a station) gives it your own display
 name everywhere; blank restores the directory's name.</li>
 <li>Enter plays (the Play button reads Stop while that station is on),
@@ -583,11 +663,12 @@ no-op when nothing has changed; when something has, your selection,
 focus, and scroll position are preserved instead of the list rebuilding
 under you mid-read:</p>
 <ul>
-<li>The recording being written right now -- status
-<strong>Recording</strong>, its size growing as you watch, with a live
-elapsed time. It is counted from the recorder itself, so a recording
-still being written to the temp folder is always visible here, never
-invisible until it lands.</li>
+<li>Every recording being written right now -- each its own
+<strong>Recording</strong> row, its size growing as you watch, with its
+own live elapsed time. They are counted from the recorder itself, so a
+recording still being written to the temp folder is always visible here,
+never invisible until it lands. When several are running, each is its
+own row.</li>
 <li>Every finished file, newest first -- status
 <strong>Recorded</strong>, with size and date.</li>
 <li>Upcoming scheduled recordings -- status <strong>Scheduled</strong>,
@@ -598,12 +679,15 @@ currently firing is not double-counted, and a completed one-time
 schedule drops out of the scheduled count rather than lingering.</p>
 <p>Actions: <strong>Play</strong> (through the app's own player; it
 reads <strong>Stop</strong> while that recording is playing),
-<strong>Stop Recording</strong>, <strong>Open in Folder</strong>,
+<strong>Stop Recording</strong> (stops the recording selected in the
+list), <strong>Stop All Recordings</strong> (appears when two or more
+are running -- stops every one), <strong>Open in Folder</strong>,
 <strong>Remove</strong> (Delete key, with confirmation),
 <strong>Refresh</strong>. While a recording plays back,
 <strong>Ctrl+Up</strong> and <strong>Ctrl+Down</strong> change its
 volume right here, the same as they do for live radio. The tray tooltip
-carries "(recording)" while a recording is active.</p>
+carries "(recording)" -- or "(2 recording)" when several run together --
+while a recording is active.</p>
 <h3 id="if-the-internet-hiccups-during-a-recording">If the internet
 hiccups during a recording</h3>
 <p>ffmpeg first rides out short gaps itself (the reconnect settings in
@@ -624,6 +708,12 @@ reconnects. (A transient error ffmpeg has already recovered from can no
 longer be mistaken for a fatal one when the stream later drops for an
 unrelated reason, so a recording is far less likely to stop short.)</li>
 </ul>
+<p>Reconnect handling is per recording, so when several are recording at
+once each rides out its own hiccups without touching the others. And
+crash-resume covers all of them: if Quill Radio closes unexpectedly
+while several recordings were running, the next launch offers to resume
+every interrupted one -- a single prompt for one recording, or one
+batched "Resume all?" prompt when there were several.</p>
 <p>Output filenames are never silently overwritten: a pattern that
 produces the same name twice gets <code>" (2)"</code>,
 <code>" (3)"</code> appended instead of clobbering the earlier file, and

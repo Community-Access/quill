@@ -194,6 +194,108 @@ Stations. More on that below.</p>
 and QUILL share one codebase and one data store, so these fixes arrive
 in both at once -- nothing here is vendored into the Quill Radio
 wrapper.</p>
+<h2 id="update-202">Update 2.0.2</h2>
+<p>Adds concurrent recording, live Sound Enhancements preview, OptiLab
+broadcast polish, fixes the 2.0.1 channel mode, and adds two favorites
+features people asked for:</p>
+<ul>
+<li><strong>Sound Enhancements preview live, and every setting is
+per-station.</strong> You asked for the sliders to work while something
+is playing -- they do now. Move any control in Playback &gt; Sound
+Enhancements (the EQ sliders, Even Out Volume, Channel mode, Night mode,
+or the new broadcast polish) and you hear it on what's playing
+immediately, no OK required: live and uninterrupted on the default
+engine, and on the Windows Media engine it reconnects once the change
+settles. <strong>OK</strong> keeps and saves it; <strong>Cancel</strong>
+or <strong>Escape</strong> puts everything back exactly as it was when
+you opened the dialog. And -- as you also asked -- <em>every</em>
+setting in that dialog is now remembered per station as well as shared,
+not just the EQ and channel mode: open it while a favorite is playing to
+give that station its own night mode or broadcast polish too, or open it
+with nothing playing to set the shared default every other station
+follows.</li>
+<li><strong>Broadcast polish (OptiLab).</strong> Sound Enhancements
+gained a one-touch broadcast-polish section: pick a
+<strong>mode</strong> -- <strong>Podcast Leveler</strong> for speech,
+<strong>Stream Polish</strong> for music, or <strong>Smooth
+Limiter</strong> for clean peak control -- set an optional
+<strong>Input</strong> trim (0 dB by default) and an
+<strong>Auto-Adapt</strong> amount, and there's a checkbox to bypass it
+while keeping your chosen mode. It levels, adds density, and limits, so
+a run of stations at wildly different loudness sits at a steadier,
+fuller level -- especially nice for talk streams and unattended
+recordings. This is adapted, with thanks and full credit, from
+<strong>OptiLab Core by dgl1984</strong> (<a
+href="https://github.com/dgl1984/optilab">github.com/dgl1984/optilab</a>,
+Apache-2.0). OptiLab itself is a GUI-only plugin (JSFX/CLAP/Winamp DSP)
+with no library to call, so rather than embedding its Windows-only
+binary we reproduce the shape of its three modes as ffmpeg filter chains
+that ride the same pipeline as the rest of Sound Enhancements -- so it
+previews live on the default engine, applies to recordings, and works
+cross-platform. It's a faithful adaptation, not a bit-for-bit port of
+OptiLab's custom DSP; if you want the exact plugin, grab it from
+dgl1984's repository.</li>
+<li><strong>Record as many stations at once as you want.</strong> Until
+now the recorder held exactly one recording at a time. If you scheduled
+two shows that overlapped, the first one won and the rest were quietly
+dropped; and Record Station refused to start while anything else was
+recording. That limit is gone. Every recording now runs on its own --
+overlapping scheduled shows all record, and you can start one Record
+Station capture after another while listening to something else
+entirely. Each recording is fully independent: its own connection, its
+own reconnect-on-a-hiccup handling, its own crash-resume marker, so one
+recording dropping, finishing, or being stopped never disturbs the
+others.
+<ul>
+<li><strong>A limit if you want one.</strong> Recording Settings gained
+<strong>Maximum simultaneous recordings</strong>. Zero means unlimited
+-- the default, so everything you ask for records. Set a number to cap
+it on a slower machine or a metered connection; when the cap is reached,
+a scheduled recording is held pending and retried within its window
+instead of being lost.</li>
+<li><strong>Record Now follows what you're listening to.</strong> Press
+Record Now and it records the station you're on; press it again on that
+same station and it stops <em>that</em> recording. A background
+recording of a different station is never stopped by accident -- to stop
+one of those, use the Recordings window.</li>
+<li><strong>Stop Recording, and Stop All Recordings.</strong> The
+Recordings window's <strong>Stop Recording</strong> button stops the one
+recording you've selected. <strong>Stop All Recordings</strong> -- in
+the Record menu, the tray/status menu, and as a button that appears in
+the Recordings window when two or more are running -- stops every
+recording at once.</li>
+<li><strong>The Recordings window shows them all.</strong> Each
+recording in progress is its own row with its own live elapsed time, and
+the status bar and tray tooltip read "(2 recording)" when several are
+running together.</li>
+<li><strong>Crash-resume covers every one.</strong> Each recording
+writes its own resume marker, so after an unexpected close Quill Radio
+offers to resume all of them -- a single prompt for one interrupted
+recording, and one batched "Resume all?" prompt when there were several,
+rather than a stack of dialogs to click through.</li>
+</ul></li>
+<li><strong>Channel mode Left/Right now plays in one ear only.</strong>
+In 2.0.1, choosing "Left only" or "Right only" accidentally played the
+audio in <em>both</em> ears. It now sends the whole stereo mix --
+nothing lost -- to just the one ear you chose and silences the other, so
+you really can keep the radio in one ear while your screen reader uses
+the other. Mono and Stereo are unchanged.</li>
+<li><strong>Sort your favorites: Ascending, Descending, or
+Unsorted.</strong> Preferences (Ctrl+,) gained a <strong>Favorites sort
+order</strong> that orders your folders and stations by name (Ascending
+A to Z, or Descending Z to A) and re-sorts the moment you add one.
+<strong>Unsorted</strong> keeps the hand-arranged order you build with
+Move Up/Down -- and that order is never thrown away, so you can flip
+back to it any time. Any folder can carry its own sort from its context
+menu, overriding the default just for that folder's stations.</li>
+<li><strong>Import stations from an M3U/M3U8 playlist.</strong> Station
+&gt; <strong>Import Stations from Playlist...</strong> reads a playlist
+file into a folder you pick -- an existing one, or a brand-new path you
+type at any depth like <code>News/Local</code> -- and, when some of the
+stations are already favorites, asks whether to skip those or import
+everything. Station names come from the playlist's <code>#EXTINF</code>
+lines; a bare URL is named after its host.</li>
+</ul>
 <h2 id="update-201">Update 2.0.1</h2>
 <p>A fast follow-up from the first round of live feedback, folded into
 this same release:</p>
@@ -220,11 +322,11 @@ store search. A separate <strong>Copy What's Playing</strong> command
 copies it straight to the clipboard.</li>
 <li><strong>Channel mode: Stereo, Mono, Left only, or Right
 only.</strong> The old "Combine channels into mono" checkbox in Sound
-Enhancements is now a Channel mode choice. Left or Right sends just that
-channel to both ears, so you can listen to the radio in one ear while
-your screen reader uses the other. It works as your shared default and,
-like the equalizer, as a per-station setting that's remembered for that
-station.</li>
+Enhancements is now a Channel mode choice. Left or Right sends the whole
+stereo mix (nothing lost) to just that one ear and silences the other,
+so you can listen to the radio in one ear while your screen reader uses
+the other. It works as your shared default and, like the equalizer, as a
+per-station setting that's remembered for that station.</li>
 <li><strong>Turn a recording down while it plays back.</strong> Ctrl+Up
 and Ctrl+Down now change the volume from inside the Recordings window,
 the same as they do for live radio.</li>
