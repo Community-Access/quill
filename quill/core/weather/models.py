@@ -47,9 +47,15 @@ class CurrentConditions:
     text_description: str = ""
     temperature_f: float | None = None
     temperature_c: float | None = None
+    feels_like_f: float | None = None  # heat index or wind chill
     humidity_percent: float | None = None
+    dewpoint_f: float | None = None
     wind_speed_mph: float | None = None
+    wind_gust_mph: float | None = None
     wind_direction: str = ""
+    pressure_inhg: float | None = None
+    visibility_mi: float | None = None
+    cloud_cover_percent: int | None = None
     station_id: str = ""
     observed_at: str = ""  # ISO 8601 from the provider
 
@@ -80,19 +86,31 @@ class DailyOutlook:
     temperature_unit: str  # "F" or "C"
     condition: str  # human text from the weather code
     precipitation_percent: int | None = None
+    sunrise: str = ""  # friendly local time, e.g. "5:42 AM"
+    sunset: str = ""
+    uv_index: int | None = None
 
     @property
     def line(self) -> str:
-        """A self-contained, copyable one-line summary for the day."""
-        hi = f"{self.high_temp}" if self.high_temp is not None else "?"
-        lo = f"{self.low_temp}" if self.low_temp is not None else "?"
-        precip = (
-            f", {self.precipitation_percent}% precip"
-            if self.precipitation_percent not in (None, 0)
-            else ""
-        )
-        unit = self.temperature_unit
-        return f"{self.weekday} {self.date}: {self.condition}, high {hi} low {lo} {unit}{precip}"
+        """A self-contained, friendly, copyable one-line summary for the day."""
+        unit = "degrees" if self.temperature_unit == "F" else f"degrees {self.temperature_unit}"
+        hi = f"{self.high_temp}" if self.high_temp is not None else "unknown"
+        lo = f"{self.low_temp}" if self.low_temp is not None else "unknown"
+        parts = [f"{self.weekday}, {self.date}: {self.condition}.", f"High {hi}, low {lo} {unit}."]
+        if self.precipitation_percent not in (None, 0):
+            parts.append(f"{self.precipitation_percent} percent chance of precipitation.")
+        if self.sunrise and self.sunset:
+            parts.append(f"Sunrise {self.sunrise}, sunset {self.sunset}.")
+        return " ".join(parts)
+
+
+@dataclass(slots=True)
+class AirQuality:
+    """Current air quality (Open-Meteo air-quality API)."""
+
+    us_aqi: int | None = None
+    category: str = ""  # "Good", "Moderate", ...
+    pm2_5: float | None = None
 
 
 @dataclass(slots=True)
@@ -147,6 +165,7 @@ class WeatherReport:
     periods: list[ForecastPeriod] = field(default_factory=list)
     #: Extended daily outlook (Open-Meteo), beyond the ~7-day NWS periods.
     daily: list[DailyOutlook] = field(default_factory=list)
+    air_quality: AirQuality | None = None
     alerts: list[WeatherAlert] = field(default_factory=list)
     #: NWS forecast office id (e.g. "TWC") and resolved zone/county, for the
     #: source-status line the PRD requires.

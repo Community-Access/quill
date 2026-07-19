@@ -1,16 +1,43 @@
-"""Deterministic, unit-aware text rendering for QUILL Weather (PRD 6.2, 9.6).
+"""Deterministic, speech-first text rendering for QUILL Weather (PRD 6.2, 9.6).
 
-Pure functions that turn a normalized report into the exact strings the UI
-shows (and, later, speaks). No wx, no clock, no randomness -- so the Quick
-Weather line and every panel are unit-tested character-for-character. Speech
-reuses these same strings when the speech phase lands, so text and audio can
+Pure functions that turn a normalized report into warm, fully spelled-out
+sentences meant to be read aloud by a screen reader or spoken by a text-to-
+speech voice: no abbreviations ("miles per hour", not "mph"; "west-northwest",
+not "WNW"; "degrees", not a symbol). No wx, no clock, no randomness -- so every
+line is unit-tested exactly. Speech and text share these strings, so they can
 never drift apart.
 """
 
 from __future__ import annotations
 
-from quill.core.weather.models import CurrentConditions, WeatherReport
+from quill.core.weather.models import CurrentConditions, DailyOutlook, WeatherReport
 from quill.core.weather.settings import WeatherSettings
+
+#: Compass abbreviation -> spoken words.
+_WIND_WORDS = {
+    "N": "north",
+    "NNE": "north-northeast",
+    "NE": "northeast",
+    "ENE": "east-northeast",
+    "E": "east",
+    "ESE": "east-southeast",
+    "SE": "southeast",
+    "SSE": "south-southeast",
+    "S": "south",
+    "SSW": "south-southwest",
+    "SW": "southwest",
+    "WSW": "west-southwest",
+    "W": "west",
+    "WNW": "west-northwest",
+    "NW": "northwest",
+    "NNW": "north-northwest",
+}
+_WIND_UNIT_WORDS = {
+    "mph": "miles per hour",
+    "km/h": "kilometers per hour",
+    "kts": "knots",
+    "m/s": "meters per second",
+}
 
 
 def convert_temp(fahrenheit: float | None, unit: str) -> float | None:
@@ -26,61 +53,221 @@ def convert_wind_mph(mph: float | None, unit: str) -> float | None:
     return round(mph * factor, 1)
 
 
-def temp_str(fahrenheit: float | None, settings: WeatherSettings) -> str:
+def _unit_word(unit: str) -> str:
+    return "Celsius" if unit == "C" else "Fahrenheit"
+
+
+def temp_phrase(
+    fahrenheit: float | None, settings: WeatherSettings, *, with_unit: bool = True
+) -> str:
+    """A temperature spoken as words: '96 degrees Fahrenheit' (or without the
+    scale for a follow-on mention like 'it feels like 98')."""
     value = convert_temp(fahrenheit, settings.temperature_unit)
     if value is None:
-        return "unknown"
-    shown = int(round(value))
-    return f"{shown} deg {settings.temperature_unit}"
+        return "an unknown temperature"
+    number = int(round(value))
+    if with_unit:
+        return f"{number} degrees {_unit_word(settings.temperature_unit)}"
+    return f"{number} degrees"
 
 
-def wind_str(mph: float | None, direction: str, settings: WeatherSettings) -> str:
+def wind_phrase(
+    mph: float | None, direction: str, gust_mph: float | None, settings: WeatherSettings
+) -> str:
+    """A full sentence describing the wind, gust included when stronger."""
     value = convert_wind_mph(mph, settings.wind_unit)
-    if value is None:
-        return "calm"
-    shown = int(round(value))
-    if shown == 0:
-        return "calm"
-    dir_part = f"{direction} " if direction else ""
-    return f"{dir_part}{shown} {settings.wind_unit}".strip()
+    if value is None or int(round(value)) == 0:
+        return "The air is calm."
+    unit = _WIND_UNIT_WORDS.get(settings.wind_unit, settings.wind_unit)
+    heading = _WIND_WORDS.get(direction, "")
+    from_part = f"from the {heading} " if heading else ""
+    sentence = f"The wind is blowing {from_part}at {int(round(value))} {unit}"
+    gust = convert_wind_mph(gust_mph, settings.wind_unit)
+    if gust is not None and int(round(gust)) > int(round(value)):
+        sentence += f", gusting to {int(round(gust))} {unit}"
+    return sentence + "."
+
+
+def uv_phrase(index: int | None) -> str:
+    if index is None:
+        return ""
+    if index <= 2:
+        level = "low"
+    elif index <= 5:
+        level = "moderate"
+    elif index <= 7:
+        level = "high"
+    elif index <= 10:
+        level = "very high"
+    else:
+        level = "extreme"
+    return f"The ultraviolet index reaches {index} today, which is {level}."
+
+
+def friendly_datetime(iso: str) -> str:
+    """'2026-07-19T18:30:00-07:00' -> 'July 19 at 6:30 PM' (pure display of the
+    local time the provider already returned; no time-zone math)."""
+    if not isinstance(iso, str) or "T" not in iso:
+        return ""
+    date_part, rest = iso.split("T", 1)
+    months = (
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    )
+    try:
+        _year, month, day = (int(p) for p in date_part.split("-"))
+        hour, minute = (int(p) for p in rest[:5].split(":"))
+    except (ValueError, IndexError):
+        return ""
+    if not 1 <= month <= 12:
+        return ""
+    suffix = "AM" if hour < 12 else "PM"
+    hour12 = hour % 12 or 12
+    return f"{months[month - 1]} {day} at {hour12}:{minute:02d} {suffix}"
+
+
+def air_quality_phrase(air: object) -> str:
+    """A spoken sentence for an AirQuality value (duck-typed to avoid a model
+    import cycle in the signature); '' when nothing usable."""
+    aqi = getattr(air, "us_aqi", None)
+    category = getattr(air, "category", "")
+    if aqi is None:
+        return ""
+    tail = f", which is {category.lower()}" if category else ""
+    return f"The air quality index is {aqi}{tail}."
+
+
+def current_conditions_block(
+    current: CurrentConditions,
+    today: DailyOutlook | None,
+    settings: WeatherSettings,
+    air_quality: object = None,
+) -> str:
+    """A warm, complete, spoken-ready paragraph of the current data points the
+    user has chosen to include. Temperature and the sky condition always show;
+    every other point is gated by its Settings toggle."""
+    parts: list[str] = []
+    if current.temperature_f is not None:
+        lead = f"Right now it is {temp_phrase(current.temperature_f, settings)}"
+        if current.text_description:
+            lead += f" and {current.text_description.lower()}"
+        parts.append(lead + ".")
+    elif current.text_description:
+        parts.append(f"Right now it is {current.text_description.lower()}.")
+
+    if (
+        settings.show_feels_like
+        and current.feels_like_f is not None
+        and current.temperature_f is not None
+        and abs(current.feels_like_f - current.temperature_f) >= 1
+    ):
+        parts.append(
+            f"It feels like {temp_phrase(current.feels_like_f, settings, with_unit=False)}."
+        )
+    if settings.show_humidity and current.humidity_percent is not None:
+        parts.append(f"The humidity is {int(current.humidity_percent)} percent.")
+    if settings.show_dew_point and current.dewpoint_f is not None:
+        parts.append(
+            f"The dew point is {temp_phrase(current.dewpoint_f, settings, with_unit=False)}."
+        )
+    if settings.show_wind:
+        parts.append(
+            wind_phrase(
+                current.wind_speed_mph, current.wind_direction, current.wind_gust_mph, settings
+            )
+        )
+    if settings.show_cloud_cover and current.cloud_cover_percent is not None:
+        parts.append(f"Cloud cover is {int(current.cloud_cover_percent)} percent.")
+    if settings.show_pressure and current.pressure_inhg is not None:
+        parts.append(f"The barometric pressure is {current.pressure_inhg} inches of mercury.")
+    if settings.show_visibility and current.visibility_mi is not None:
+        parts.append(f"Visibility is {current.visibility_mi:g} miles.")
+    if (
+        settings.show_precip_chance
+        and today is not None
+        and today.precipitation_percent is not None
+    ):
+        parts.append(
+            f"There is a {today.precipitation_percent} percent chance of precipitation today."
+        )
+    if settings.show_sunrise_sunset and today is not None and today.sunrise and today.sunset:
+        parts.append(f"The sun rises at {today.sunrise} and sets at {today.sunset}.")
+    if settings.show_uv_index and today is not None:
+        uv = uv_phrase(today.uv_index)
+        if uv:
+            parts.append(uv)
+    if settings.show_air_quality:
+        aq = air_quality_phrase(air_quality)
+        if aq:
+            parts.append(aq)
+    if not parts:
+        return "No current observation is available right now."
+    return " ".join(parts)
 
 
 def current_conditions_line(current: CurrentConditions, settings: WeatherSettings) -> str:
-    """One readable sentence of current conditions."""
+    """A short spoken line of current conditions (for Quick Weather)."""
     parts: list[str] = []
-    if current.text_description:
-        parts.append(current.text_description)
     if current.temperature_f is not None:
-        parts.append(temp_str(current.temperature_f, settings))
-    if current.wind_speed_mph is not None:
-        parts.append(f"wind {wind_str(current.wind_speed_mph, current.wind_direction, settings)}")
+        lead = f"{temp_phrase(current.temperature_f, settings)}"
+        if current.text_description:
+            lead += f" and {current.text_description.lower()}"
+        parts.append(lead)
+    elif current.text_description:
+        parts.append(current.text_description)
+    if current.wind_speed_mph:
+        parts.append(
+            wind_phrase(current.wind_speed_mph, current.wind_direction, None, settings).rstrip(".")
+        )
     if current.humidity_percent is not None:
         parts.append(f"humidity {int(current.humidity_percent)} percent")
-    return ", ".join(parts) if parts else "No current observation available."
+    return ", ".join(parts) if parts else "No current observation is available."
 
 
 def quick_weather_line(report: WeatherReport, settings: WeatherSettings) -> str:
     """The one-line Quick Weather summary (PRD 6.2), composed per the user's
-    include-toggles. Deterministic and speech-ready."""
-    loc = report.location.resolved_name or report.location.label
-    bits: list[str] = [f"{loc}."]
+    include-toggles -- friendly and fully spoken."""
+    place = report.location.resolved_name or report.location.label
+    bits: list[str] = [f"Here is the weather for {place}."]
     current = report.current
     if current and current.temperature_f is not None:
-        lead = temp_str(current.temperature_f, settings)
+        lead = f"It is {temp_phrase(current.temperature_f, settings)}"
         if current.text_description:
             lead += f" and {current.text_description.lower()}"
         bits.append(lead + ".")
+    if settings.quick_include_feels_like and current and current.feels_like_f is not None:
+        bits.append(
+            f"It feels like {temp_phrase(current.feels_like_f, settings, with_unit=False)}."
+        )
     if settings.quick_include_wind and current and current.wind_speed_mph:
-        bits.append(f"Wind {wind_str(current.wind_speed_mph, current.wind_direction, settings)}.")
+        bits.append(
+            wind_phrase(
+                current.wind_speed_mph, current.wind_direction, current.wind_gust_mph, settings
+            )
+        )
     if settings.quick_include_humidity and current and current.humidity_percent is not None:
-        bits.append(f"Humidity {int(current.humidity_percent)} percent.")
+        bits.append(f"The humidity is {int(current.humidity_percent)} percent.")
     if settings.quick_include_alert_count:
-        n = report.active_alert_count
-        if n == 0:
-            bits.append("No active alerts.")
+        count = report.active_alert_count
+        if count == 0:
+            bits.append("There are no active alerts.")
         else:
-            top = report.alerts[0].event
-            bits.append(f"{n} active alert{'' if n == 1 else 's'}; highest is {top}.")
+            verb = "is" if count == 1 else "are"
+            plural = "" if count == 1 else "s"
+            bits.append(
+                f"There {verb} {count} active alert{plural}. "
+                f"The most urgent is a {report.alerts[0].event}."
+            )
     return " ".join(bits)
 
 

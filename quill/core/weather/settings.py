@@ -46,6 +46,20 @@ class WeatherSettings:
     #: days. 0 disables it; capped at 16 (Open-Meteo's own limit).
     daily_outlook_days: int = 10
 
+    # -- current-conditions data points to include (all on by default;
+    #    temperature and the sky condition always show) --
+    show_feels_like: bool = True
+    show_humidity: bool = True
+    show_dew_point: bool = True
+    show_wind: bool = True
+    show_pressure: bool = True
+    show_visibility: bool = True
+    show_cloud_cover: bool = True
+    show_precip_chance: bool = True
+    show_sunrise_sunset: bool = True
+    show_uv_index: bool = True
+    show_air_quality: bool = True
+
     # -- alerts (PRD 13.3) --
     #: Only show alerts at or above this severity ("all" shows every one).
     alert_severity_floor: str = "all"
@@ -124,6 +138,17 @@ def load_settings(data_dir: Path) -> WeatherSettings:
             setattr(s, f, int(raw[f]))
     for f in (
         "show_detailed_forecast",
+        "show_feels_like",
+        "show_humidity",
+        "show_dew_point",
+        "show_wind",
+        "show_pressure",
+        "show_visibility",
+        "show_cloud_cover",
+        "show_precip_chance",
+        "show_sunrise_sunset",
+        "show_uv_index",
+        "show_air_quality",
         "announce_alert_count_on_open",
         "refresh_on_open",
         "quick_include_feels_like",
@@ -155,6 +180,17 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "forecast_period_count": settings.forecast_period_count,
             "daily_outlook_days": settings.daily_outlook_days,
             "show_detailed_forecast": settings.show_detailed_forecast,
+            "show_feels_like": settings.show_feels_like,
+            "show_humidity": settings.show_humidity,
+            "show_dew_point": settings.show_dew_point,
+            "show_wind": settings.show_wind,
+            "show_pressure": settings.show_pressure,
+            "show_visibility": settings.show_visibility,
+            "show_cloud_cover": settings.show_cloud_cover,
+            "show_precip_chance": settings.show_precip_chance,
+            "show_sunrise_sunset": settings.show_sunrise_sunset,
+            "show_uv_index": settings.show_uv_index,
+            "show_air_quality": settings.show_air_quality,
             "alert_severity_floor": settings.alert_severity_floor,
             "muted_events": list(settings.muted_events),
             "announce_alert_count_on_open": settings.announce_alert_count_on_open,

@@ -48,7 +48,7 @@ def test_period_detail_text_leads_with_day_and_temp() -> None:
         "This Afternoon", 96, "F", "Hot", detailed_forecast="Very hot, high near 96."
     )
     text = wcd._period_detail_text(p)
-    assert text.startswith("This Afternoon: 96 deg F")  # day + temp at the top
+    assert text.startswith("This Afternoon: 96 degrees Fahrenheit")  # day + temp at the top
     assert "Very hot, high near 96." in text  # then the full detail, copyable
 
 
@@ -60,6 +60,37 @@ def test_weather_center_has_labels_before_each_readonly_field(app, tmp_path) -> 
     )
     assert dlg._alert_detail_label.GetLabelText()
     assert dlg._period_detail_label.GetLabelText()
+    assert dlg._daily_detail_label.GetLabelText()
+    dlg.dialog.Destroy()
+
+
+def test_period_detail_is_fully_spelled_out() -> None:
+    p = ForecastPeriod(
+        "This Afternoon",
+        94,
+        "F",
+        "Mostly Sunny",
+        detailed_forecast="Mostly sunny, with a high near 94. West wind around 5 mph.",
+    )
+    text = wcd._period_detail_text(p)
+    assert "This Afternoon: 94 degrees Fahrenheit" in text  # no "deg F"
+    assert "5 miles per hour" in text and " mph" not in text
+    assert wcd._spell_out("gusts to 20 mph") == "gusts to 20 miles per hour"
+
+
+def test_remove_location_clears_when_it_was_the_last(app, tmp_path) -> None:
+    from quill.core.weather import locations as loc_store
+    from quill.core.weather.models import WeatherLocation
+
+    store = loc_store.WeatherLocationStore()
+    store.add(WeatherLocation("Home", 1.0, 2.0))
+    loc_store.save_locations(tmp_path, store)
+    dlg = WeatherCenterDialog(
+        None, data_dir=tmp_path, task_manager=_FakeTaskManager(), safe_mode=False
+    )
+    dlg._remove_location()
+    assert loc_store.load_locations(tmp_path).locations == []
+    assert not dlg._daily_detail.IsShown()  # detail fields hidden again
     dlg.dialog.Destroy()
 
 
@@ -110,7 +141,7 @@ def test_weather_center_builds_and_renders(app, tmp_path) -> None:
     dlg._render_report(report.location, report)
     assert dlg._alerts_list.GetCount() == 1
     assert "Excessive Heat Warning" in dlg._alerts_list.GetString(0)
-    assert "96 deg F" in dlg._current.GetValue()
+    assert "96 degrees Fahrenheit" in dlg._current.GetValue()
     assert dlg._forecast_list.GetCount() == 2
     assert "This Afternoon" in dlg._forecast_list.GetString(0)
     assert "TWC" in dlg._status.GetValue()

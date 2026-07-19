@@ -112,6 +112,31 @@ class WeatherSettingsDialog:
         )
 
         root.Add(
+            wx.StaticText(
+                self.dialog,
+                label="Current-conditions details to include (temperature and sky always show):",
+            ),
+            0,
+            wx.LEFT | wx.TOP,
+            12,
+        )
+        self._detail_checks: dict[str, Any] = {}
+        for attr, text in (
+            ("show_feels_like", "Feels-&like temperature"),
+            ("show_humidity", "H&umidity"),
+            ("show_dew_point", "Dew &point"),
+            ("show_wind", "&Wind and gusts"),
+            ("show_cloud_cover", "&Cloud cover"),
+            ("show_pressure", "Barometric pr&essure"),
+            ("show_visibility", "&Visibility"),
+            ("show_precip_chance", "Chance of pre&cipitation today"),
+            ("show_sunrise_sunset", "Sunrise and sun&set"),
+            ("show_uv_index", "Ultra&violet index"),
+            ("show_air_quality", "&Air quality"),
+        ):
+            self._detail_checks[attr] = self._check(root, text, getattr(settings, attr))
+
+        root.Add(
             wx.StaticText(self.dialog, label="Quick Weather line includes:"),
             0,
             wx.LEFT | wx.TOP,
@@ -185,6 +210,8 @@ class WeatherSettingsDialog:
         s.wind_unit = WIND_UNITS[self._wind.GetSelection()]
         s.forecast_period_count = self._periods.GetValue()
         s.daily_outlook_days = self._daily_days.GetValue()
+        for attr, check in self._detail_checks.items():
+            setattr(s, attr, check.GetValue())
         s.alert_severity_floor = SEVERITY_FLOOR[self._severity.GetSelection()]
         s.refresh_minutes = self._refresh.GetValue()
         s.show_detailed_forecast = self._detailed.GetValue()

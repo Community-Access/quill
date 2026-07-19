@@ -185,13 +185,34 @@ def observation_from_json(data: object) -> CurrentConditions:
 
     humidity, _ = _value_and_unit(props.get("relativeHumidity"))
     wind_deg, _ = _value_and_unit(props.get("windDirection"))
+
+    # Feels-like: NWS reports heatIndex (hot) or windChill (cold), degC; use
+    # whichever the station sent, else leave None (renderer falls back to temp).
+    feel_c, _ = _value_and_unit(props.get("heatIndex"))
+    if feel_c is None:
+        feel_c, _ = _value_and_unit(props.get("windChill"))
+    dewpoint_c, _ = _value_and_unit(props.get("dewpoint"))
+    pressure_pa, _ = _value_and_unit(props.get("barometricPressure"))
+    gust_value, gust_unit = _value_and_unit(props.get("windGust"))
+    gust_mph = (
+        None
+        if gust_value is None
+        else (mps_to_mph(gust_value) if "m_s" in gust_unit else kmh_to_mph(gust_value))
+    )
+    vis_m, _ = _value_and_unit(props.get("visibility"))
+
     return CurrentConditions(
         text_description=str(props.get("textDescription", "")),
         temperature_c=temp_c,
         temperature_f=temp_f,
+        feels_like_f=c_to_f(feel_c),
         humidity_percent=round(humidity) if humidity is not None else None,
+        dewpoint_f=c_to_f(dewpoint_c),
         wind_speed_mph=wind_mph,
+        wind_gust_mph=gust_mph,
         wind_direction=degrees_to_compass(wind_deg) if wind_deg is not None else "",
+        pressure_inhg=round(pressure_pa / 3386.389, 2) if pressure_pa else None,
+        visibility_mi=round(vis_m / 1609.344, 1) if vis_m else None,
         station_id=str(props.get("station", "")).rsplit("/", 1)[-1],
         observed_at=str(props.get("timestamp", "")),
     )
@@ -302,11 +323,19 @@ def fetch_report(
         from quill.core.weather import open_meteo
 
         try:
-            report.daily = open_meteo.daily_forecast(
+            extended = open_meteo.fetch(
                 location.latitude, location.longitude, days=daily_days, unit=temperature_unit
             )
+            report.daily = extended.daily
+            if report.current is not None and extended.cloud_cover_percent is not None:
+                report.current.cloud_cover_percent = extended.cloud_cover_percent
         except open_meteo.OpenMeteoError:
             report.notes.append("The extended daily outlook is temporarily unavailable.")
+
+        try:
+            report.air_quality = open_meteo.air_quality(location.latitude, location.longitude)
+        except open_meteo.OpenMeteoError:
+            report.air_quality = None
 
     return report
 
