@@ -15,7 +15,7 @@ from quill.core.weather.settings import (
     WIND_UNITS,
     WeatherSettings,
 )
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 _SEVERITY_LABELS = {
     "all": "Show all alerts",
@@ -56,13 +56,13 @@ class WeatherSettingsDialog:
         # units
         label("&Temperature unit:")
         self._temp = wx.Choice(self.dialog, choices=["Fahrenheit", "Celsius"])
-        self._temp.SetName("Temperature unit")
+        set_accessible_name(self._temp, "Temperature unit")
         self._temp.SetSelection(TEMPERATURE_UNITS.index(settings.temperature_unit))
         grid.Add(self._temp, 0, wx.EXPAND)
 
         label("&Wind unit:")
         self._wind = wx.Choice(self.dialog, choices=list(WIND_UNITS))
-        self._wind.SetName("Wind speed unit")
+        set_accessible_name(self._wind, "Wind speed unit")
         self._wind.SetSelection(WIND_UNITS.index(settings.wind_unit))
         grid.Add(self._wind, 0, wx.EXPAND)
 
@@ -71,20 +71,20 @@ class WeatherSettingsDialog:
         self._periods = wx.SpinCtrl(
             self.dialog, min=1, max=14, initial=settings.forecast_period_count
         )
-        self._periods.SetName("Number of forecast periods to show")
+        set_accessible_name(self._periods, "Number of forecast periods to show")
         grid.Add(self._periods, 0)
 
         label("Alert &severity to show:")
         self._severity = wx.Choice(
             self.dialog, choices=[_SEVERITY_LABELS[s] for s in SEVERITY_FLOOR]
         )
-        self._severity.SetName("Minimum alert severity to show")
+        set_accessible_name(self._severity, "Minimum alert severity to show")
         self._severity.SetSelection(SEVERITY_FLOOR.index(settings.alert_severity_floor))
         grid.Add(self._severity, 0, wx.EXPAND)
 
         label("&Refresh every (minutes):")
         self._refresh = wx.SpinCtrl(self.dialog, min=1, max=180, initial=settings.refresh_minutes)
-        self._refresh.SetName("Auto-refresh interval in minutes")
+        set_accessible_name(self._refresh, "Auto-refresh interval in minutes")
         grid.Add(self._refresh, 0)
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 12)
@@ -128,7 +128,7 @@ class WeatherSettingsDialog:
             12,
         )
         self._muted = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
-        self._muted.SetName("Alert events to hide, one per line")
+        set_accessible_name(self._muted, "Alert events to hide, one per line")
         self._muted.SetValue("\n".join(settings.muted_events))
         self._muted.SetMinSize((-1, 70))
         root.Add(self._muted, 1, wx.EXPAND | wx.ALL, 12)
@@ -153,7 +153,13 @@ class WeatherSettingsDialog:
     def show(self) -> bool:
         """Modal; returns True if settings were saved."""
         self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, ok_id=self._wx.ID_OK, cancel_id=self._wx.ID_CANCEL)
+        apply_modal_ids(
+            self.dialog,
+            affirmative_id=self._wx.ID_OK,
+            affirmative_label="Save",
+            cancel_id=self._wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
         from quill.ui.dialog_contract import show_modal_dialog
 
         try:

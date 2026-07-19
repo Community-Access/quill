@@ -22,7 +22,7 @@ from quill.core.weather import locations as loc_store
 from quill.core.weather import nws, render
 from quill.core.weather import settings as settings_mod
 from quill.core.weather.models import WeatherLocation, WeatherReport
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 def _alert_list_label(alert: Any) -> str:
@@ -96,7 +96,7 @@ class WeatherCenterDialog:
             6,
         )
         self._location_choice = wx.Choice(self.dialog)
-        self._location_choice.SetName("Weather location")
+        set_accessible_name(self._location_choice, "Weather location")
         loc_row.Add(self._location_choice, 1, wx.EXPAND | wx.RIGHT, 6)
         self._refresh_btn = wx.Button(self.dialog, label="&Refresh")
         self._add_btn = wx.Button(self.dialog, label="&Add Location...")
@@ -109,12 +109,12 @@ class WeatherCenterDialog:
         self._alerts_label = wx.StaticText(self.dialog, label="Active &Alerts:")
         root.Add(self._alerts_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._alerts_list = wx.ListBox(self.dialog)
-        self._alerts_list.SetName("Active weather alerts")
+        set_accessible_name(self._alerts_list, "Active weather alerts")
         root.Add(self._alerts_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self._alert_detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
-        self._alert_detail.SetName("Selected alert, full official text")
+        set_accessible_name(self._alert_detail, "Selected alert, full official text")
         root.Add(self._alert_detail, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- current conditions --
@@ -124,25 +124,25 @@ class WeatherCenterDialog:
         self._current = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
-        self._current.SetName("Current conditions")
+        set_accessible_name(self._current, "Current conditions")
         self._current.SetMinSize((-1, 48))
         root.Add(self._current, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- forecast --
         root.Add(wx.StaticText(self.dialog, label="&Forecast:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._forecast_list = wx.ListBox(self.dialog)
-        self._forecast_list.SetName("Forecast periods")
+        set_accessible_name(self._forecast_list, "Forecast periods")
         root.Add(self._forecast_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self._period_detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
-        self._period_detail.SetName("Selected forecast period, details")
+        set_accessible_name(self._period_detail, "Selected forecast period, details")
         self._period_detail.SetMinSize((-1, 60))
         root.Add(self._period_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- status + close --
         self._status = wx.TextCtrl(self.dialog, style=wx.TE_READONLY)
-        self._status.SetName("Weather source and freshness status")
+        set_accessible_name(self._status, "Weather source and freshness status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         btn_row.AddStretchSpacer()
