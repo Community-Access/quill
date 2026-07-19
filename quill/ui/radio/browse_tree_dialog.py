@@ -2,14 +2,17 @@
 
 A dedicated, search-free browse experience (its counterpart, Search Stations,
 keeps the old field-based dialog). The whole window is a single ``wx.TreeCtrl``
-whose top-level branches are the sources -- Popular, Weather/NOAA, ACB Media,
-NFB Radio, SomaFM, TuneIn, and the genre catalogs (Community M3U, Xiph). You
-expand a branch to reveal its stations (or its genres/folders, then their
-stations); everything loads lazily on first open, off the UI thread. Enter (or
-the Play button) plays the highlighted station; a rich Shift+F10 / right-click
-context menu offers Play/Stop, Add/Remove Favorite, Copy stream link, and Open
-website. Playback is the shared ``RadioPlayerController`` passed in, so closing
-the window never stops the stream.
+whose top-level branches are the sources -- Favorites (your own saved folders
+and streams, at the top for a quick jump), then Popular, Weather/NOAA, ACB
+Media, NFB Radio, SomaFM, TuneIn, and the genre catalogs (Community M3U, Xiph).
+You expand a branch to reveal its stations (or its genres/folders, then their
+stations); internet sources load lazily on first open, off the UI thread, while
+Favorites is built instantly from local data. Enter (or the Play button) plays
+the highlighted station -- the Play button reads "Stop" while that station is
+the one playing. A rich Shift+F10 / right-click context menu offers Play/Stop,
+Add/Remove Favorite (and "Add all stations to Favorites" on a folder), Copy
+stream link, and Open website. Playback is the shared ``RadioPlayerController``
+passed in, so closing the window never stops the stream.
 """
 
 from __future__ import annotations
@@ -34,6 +37,7 @@ from quill.ui.dialog_contract import apply_modal_ids
 #: expand straight to stations; "genres" sources expand to genre folders; the
 #: "tunein" source expands to TuneIn's own folder tree.
 _SOURCES: tuple[tuple[str, str, Any], ...] = (
+    ("Favorites", "favorites", None),
     ("Popular Stations", "stations", "popular"),
     ("Weather / NOAA", "stations", "weather"),
     ("ACB Media", "stations", "acb"),
@@ -236,6 +240,36 @@ class BrowseTreeDialog:
             if first.IsOk():
                 tree.SelectItem(first)
 
+    def _add_favorites(self, node: Any) -> None:
+        """Build the local Favorites branch: unfiled stations first, then a
+        node per folder holding its stations. Favorite leaves reuse the plain
+        "station" kind, so Play / Add-Remove Favorite / context menu all work
+        unchanged. Local data, so no network fetch."""
+        tree = self._tree
+        if not node.IsOk():
+            return
+        tree.DeleteChildren(node)
+        by_folder: dict[str, list[Any]] = {}
+        for fav in self._favorites.favorites_in_display_order():
+            by_folder.setdefault(fav.folder, []).append(fav)
+        for fav in by_folder.get("", []):  # top-level (unfiled) stations
+            leaf = tree.AppendItem(node, fav.display_label)
+            tree.SetItemData(leaf, {"kind": "station", "station": fav.station})
+        for folder in self._favorites.folders_in_display_order():  # then folders
+            fnode = tree.AppendItem(node, f"{folder}  [folder]")
+            tree.SetItemData(fnode, {"kind": "fav-folder", "folder": folder, "loaded": True})
+            for fav in by_folder.get(folder, []):
+                leaf = tree.AppendItem(fnode, fav.display_label)
+                tree.SetItemData(leaf, {"kind": "station", "station": fav.station})
+        count = tree.GetChildrenCount(node, False)
+        if not count:
+            empty = tree.AppendItem(node, "No favorites yet -- add stations from any source below.")
+            tree.SetItemData(empty, {"kind": "placeholder"})
+        self._announce(f"Favorites: {count} item{'' if count == 1 else 's'}.")
+        first, _cookie = tree.GetFirstChild(node)
+        if first.IsOk():
+            tree.SelectItem(first)
+
     # -- events -----------------------------------------------------------------
 
     def _node_data(self, node: Any) -> dict | None:
@@ -253,6 +287,11 @@ class BrowseTreeDialog:
     def _on_expanding(self, event: Any) -> None:
         node = event.GetItem()
         data = self._node_data(node)
+        if data is not None and data.get("kind") == "favorites":
+            if not data.get("loaded"):
+                data["loaded"] = True
+                self._add_favorites(node)
+            return
         if data is None or data.get("kind") not in _EXPANDABLE:
             return
         if data.get("loaded"):
@@ -285,16 +324,24 @@ class BrowseTreeDialog:
             station = data["station"]
             self._details.SetValue(station.details_text)
             self._play_btn.Enable(True)
+            self._refresh_play_button(station)
             self._favorite_btn.Enable(True)
             self._update_favorite_label(station)
         elif data and data.get("kind") == "tunein-station":
             self._details.SetValue(f"{data['title']}\nTuneIn -- Enter or Play to tune in.")
             self._play_btn.Enable(True)
+            self._play_btn.SetLabel("&Play")
             self._favorite_btn.Enable(False)  # unresolved until it plays
         else:
             self._details.SetValue("")
             self._play_btn.Enable(False)
+            self._play_btn.SetLabel("&Play")
             self._favorite_btn.Enable(False)
+
+    def _refresh_play_button(self, station: RadioStation) -> None:
+        """Label the Play button 'Stop' when the highlighted station is the one
+        currently playing, so it reads as a live toggle (like the main window)."""
+        self._play_btn.SetLabel("&Stop" if self._is_playing(station) else "&Play")
 
     # -- play / favorite --------------------------------------------------------
 
@@ -314,6 +361,7 @@ class BrowseTreeDialog:
         else:
             self._controller.play_station(station)
             self._announce(f"Playing {station.display_name}")
+        self._refresh_play_button(station)
 
     def _play_tunein(self, guide_id: str, title: str) -> None:
         self._details.SetValue(f"Resolving {title}...")
@@ -369,15 +417,50 @@ class BrowseTreeDialog:
         self._update_favorite_label(station)
         self._on_favorites_changed()
 
+    def _favorite_folder(self, node: Any) -> None:
+        """Add every loaded station under a folder to Favorites in one go.
+        Only the stations already loaded into the tree are added; if the folder
+        hasn't been opened yet, ask the user to open it first (so a huge genre
+        isn't fetched-and-favorited blind)."""
+        tree = self._tree
+        if not node.IsOk():
+            return
+        added = 0
+        child, cookie = tree.GetFirstChild(node)
+        loaded_any = False
+        while child.IsOk():
+            data = self._node_data(child)
+            if data is not None and data.get("kind") == "station":
+                loaded_any = True
+                station = data["station"]
+                if not self._favorites.contains(station):
+                    self._favorites.add(station)
+                    added += 1
+            child, cookie = tree.GetNextChild(node, cookie)
+        if not loaded_any:
+            self._announce("Open the folder first to load its stations, then try again.")
+            return
+        if added:
+            self._on_favorites_changed()
+        self._announce(
+            f"Added {added} station{'' if added == 1 else 's'} to Favorites."
+            if added
+            else "Those stations are already in Favorites."
+        )
+
     def _refresh_selected(self) -> None:
         """Re-fetch the highlighted node's source (or its parent source)."""
         node = self._tree.GetSelection()
         data = self._node_data(node)
-        # Walk up to the nearest expandable node and reload it.
-        while data is not None and data.get("kind") not in _EXPANDABLE:
+        # Walk up to the nearest reloadable node (an internet source or the
+        # local Favorites branch) and reload it.
+        while data is not None and data.get("kind") not in (*_EXPANDABLE, "favorites"):
             node = self._tree.GetItemParent(node)
             data = self._node_data(node)
         if data is None:
+            return
+        if data.get("kind") == "favorites":
+            self._add_favorites(node)  # local rebuild, no network
             return
         data["loaded"] = False
         self._tree.DeleteChildren(node)
@@ -411,11 +494,11 @@ class BrowseTreeDialog:
                 entries.append(("Open &Website", lambda: self._open_url(station.homepage)))
         elif kind == "tunein-station":
             entries = [("&Play", self._play_selected)]
-        elif kind in _EXPANDABLE:
-            entries = [
-                ("&Open", lambda: self._tree.Expand(node)),
-                ("&Refresh", self._refresh_selected),
-            ]
+        elif kind in _EXPANDABLE or kind == "fav-folder":
+            entries = [("&Open", lambda: self._tree.Expand(node))]
+            if kind in _EXPANDABLE:
+                entries.append(("&Refresh", self._refresh_selected))
+            entries.append(("Add All Stations to &Favorites", lambda: self._favorite_folder(node)))
         if not entries:
             return
         menu = wx.Menu()
