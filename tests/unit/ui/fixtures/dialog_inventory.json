@@ -79,6 +79,8 @@
   "quill/ui/audio_studio/play_queue_dialog.py::PlayQueueDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/audio_studio/publish_dialog.py::PublishDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/audio_studio/sleep_timer_dialog.py::SleepTimerDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/audio_studio/translated_speech_export.py::TranslatedSpeechExportDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/audio_studio/translated_speech_export.py::run_translated_speech_export::wx.FileDialog": "native",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._on_load_job::wx.FileDialog": "native",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog.__init__::wx.Dialog": "hardened_custom",
