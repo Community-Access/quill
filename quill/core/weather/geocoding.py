@@ -36,11 +36,17 @@ class GeocodeResult:
     latitude: float
     longitude: float
     name: str  # "Tucson"
-    state: str  # "AZ"
+    state: str  # "AZ" or "Arizona"
     query: str  # what was typed
+    #: The provider's full descriptive name, when available -- used to tell
+    #: apart same-named places in a search list ("Springfield, Sangamon County,
+    #: Illinois" vs "Springfield, Greene County, Missouri").
+    full_name: str = ""
 
     @property
     def display_name(self) -> str:
+        if self.full_name:
+            return self.full_name
         return f"{self.name}, {self.state}".strip(", ") if self.name else self.query
 
 
@@ -89,6 +95,72 @@ def geocode(query: str, *, safe_mode: bool = False) -> GeocodeResult:
     raise WeatherGeocodeError(
         f"Could not read '{text}'. Try a 5-digit ZIP, 'City, ST', or 'lat,lon'."
     )
+
+
+def search(query: str, *, limit: int = 10, safe_mode: bool = False) -> list[GeocodeResult]:
+    """Search for places matching free text -- a ZIP, city, county, or address
+    -- and return the candidates to choose from (PRD 6.1). Uses the free,
+    keyless Nominatim (OpenStreetMap) US search, which -- unlike a bare ZIP
+    lookup -- disambiguates same-named places. A bare ``lat,lon`` is returned
+    as the single exact point with no request."""
+    text = (query or "").strip()
+    if not text:
+        return []
+    local = parse_latlon(text)
+    if local is not None:
+        return [local]
+
+    refuse_in_safe_mode(safe_mode)
+    limit = max(1, min(20, limit))
+    url = "https://nominatim.openstreetmap.org/search?" + urllib.parse.urlencode({
+        "q": text,
+        "format": "jsonv2",
+        "countrycodes": "us",
+        "limit": limit,
+        "addressdetails": 1,
+    })
+    try:
+        data = http_json(url)
+    except HTTP_ERRORS as error:
+        raise WeatherGeocodeError(f"Could not search for '{text}'.") from error
+    return results_from_nominatim(data, text)
+
+
+def results_from_nominatim(data: object, query: str) -> list[GeocodeResult]:
+    """Parse a Nominatim search response into candidates (pure, testable)."""
+    results: list[GeocodeResult] = []
+    if not isinstance(data, list):
+        return results
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        try:
+            lat = float(item["lat"])
+            lon = float(item["lon"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        raw_addr = item.get("address")
+        addr = raw_addr if isinstance(raw_addr, dict) else {}
+        name = str(
+            addr.get("city")
+            or addr.get("town")
+            or addr.get("village")
+            or addr.get("hamlet")
+            or addr.get("county")
+            or item.get("name")
+            or ""
+        ).strip()
+        results.append(
+            GeocodeResult(
+                latitude=lat,
+                longitude=lon,
+                name=name,
+                state=str(addr.get("state", "")).strip(),
+                query=query,
+                full_name=str(item.get("display_name", "")).strip(),
+            )
+        )
+    return results
 
 
 def _zippopotam(url: str, query: str) -> GeocodeResult:

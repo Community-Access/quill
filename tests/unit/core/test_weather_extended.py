@@ -1,0 +1,110 @@
+"""QUILL Weather extended sources: Nominatim search (candidate lists) and the
+Open-Meteo daily outlook. Parsing against inline fixtures; fetch paths stub the
+shared http_json."""
+
+from __future__ import annotations
+
+import pytest
+
+from quill.core.weather import geocoding, open_meteo
+from quill.core.weather.geocoding import WeatherGeocodeError
+from quill.core.weather.open_meteo import OpenMeteoError
+
+# -- Nominatim search ---------------------------------------------------------
+
+
+def test_search_returns_multiple_candidates(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+    payload = [
+        {
+            "lat": "39.7817",
+            "lon": "-89.6501",
+            "display_name": "Springfield, Illinois",
+            "address": {"city": "Springfield", "state": "Illinois"},
+        },
+        {
+            "lat": "37.2090",
+            "lon": "-93.2923",
+            "display_name": "Springfield, Missouri",
+            "address": {"city": "Springfield", "state": "Missouri"},
+        },
+    ]
+    monkeypatch.setattr(geocoding, "http_json", lambda url: seen.update(url=url) or payload)
+    results = geocoding.search("Springfield")
+    assert "nominatim.openstreetmap.org/search" in seen["url"]
+    assert [r.state for r in results] == ["Illinois", "Missouri"]
+    assert results[0].display_name == "Springfield, Illinois"  # full_name disambiguates
+
+
+def test_search_latlon_is_local_single_result(monkeypatch) -> None:
+    monkeypatch.setattr(
+        geocoding, "http_json", lambda *a, **k: pytest.fail("no network for coords")
+    )
+    results = geocoding.search("32.2, -110.9")
+    assert len(results) == 1 and results[0].latitude == 32.2
+
+
+def test_search_refuses_in_safe_mode() -> None:
+    with pytest.raises(WeatherGeocodeError):
+        geocoding.search("Tucson", safe_mode=True)
+
+
+def test_results_from_nominatim_skips_bad_rows() -> None:
+    data = [
+        {"lat": "1.0", "lon": "2.0", "display_name": "A", "address": {"town": "A", "state": "TX"}},
+        {"lat": "bad"},  # skipped
+        "junk",  # skipped
+    ]
+    results = geocoding.results_from_nominatim(data, "x")
+    assert len(results) == 1 and results[0].name == "A"
+
+
+# -- Open-Meteo daily outlook -------------------------------------------------
+
+
+def test_weather_code_text_and_weekday() -> None:
+    assert open_meteo.weather_code_text(0) == "Clear"
+    assert open_meteo.weather_code_text(95) == "Thunderstorm"
+    assert open_meteo.weather_code_text(999) == "Unknown"
+    assert open_meteo.weekday_name("2026-07-20") == "Monday"  # a known Monday
+    assert open_meteo.weekday_name("bad") == ""
+
+
+def test_daily_from_json_parses_rows() -> None:
+    data = {
+        "daily": {
+            "time": ["2026-07-20", "2026-07-21"],
+            "weathercode": [0, 95],
+            "temperature_2m_max": [98.4, 90.1],
+            "temperature_2m_min": [74.6, 72.0],
+            "precipitation_probability_max": [0, 60],
+        }
+    }
+    rows = open_meteo.daily_from_json(data, unit="F")
+    assert len(rows) == 2
+    assert rows[0].weekday == "Monday" and rows[0].high_temp == 98 and rows[0].low_temp == 75
+    assert rows[0].condition == "Clear"
+    assert "Monday 2026-07-20: Clear, high 98 low 75 F" == rows[0].line
+    assert rows[1].condition == "Thunderstorm" and rows[1].precipitation_percent == 60
+    assert "60% precip" in rows[1].line
+
+
+def test_daily_forecast_hits_open_meteo_and_refuses_safe_mode(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+    monkeypatch.setattr(
+        open_meteo,
+        "http_json",
+        lambda url: seen.update(url=url) or {"daily": {"time": [], "weathercode": []}},
+    )
+    open_meteo.daily_forecast(32.2, -110.9, days=10, unit="C")
+    assert "api.open-meteo.com" in seen["url"]
+    assert "forecast_days=10" in seen["url"] and "temperature_unit=celsius" in seen["url"]
+    with pytest.raises(OpenMeteoError):
+        open_meteo.daily_forecast(32.2, -110.9, safe_mode=True)
+
+
+def test_daily_forecast_clamps_days(monkeypatch) -> None:
+    seen: dict[str, str] = {}
+    monkeypatch.setattr(open_meteo, "http_json", lambda url: seen.update(url=url) or {})
+    open_meteo.daily_forecast(1, 2, days=99)
+    assert "forecast_days=16" in seen["url"]  # capped at Open-Meteo's max

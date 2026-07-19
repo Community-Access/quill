@@ -157,6 +157,17 @@ class WeatherCenterDialog:
         self._period_detail.SetMinSize((-1, 72))
         root.Add(self._period_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # -- extended daily outlook (Open-Meteo, past the NWS 7 days) --
+        root.Add(
+            wx.StaticText(self.dialog, label="&Daily outlook (extended):"),
+            0,
+            wx.LEFT | wx.RIGHT,
+            10,
+        )
+        self._daily_list = wx.ListBox(self.dialog)
+        set_accessible_name(self._daily_list, "Extended daily outlook, one line per day")
+        root.Add(self._daily_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         # -- status + close --
         self._status = wx.TextCtrl(self.dialog, style=wx.TE_READONLY)
         set_accessible_name(self._status, "Weather source and freshness status")
@@ -230,7 +241,12 @@ class WeatherCenterDialog:
 
         def _work(**_kwargs: Any) -> object:
             try:
-                return nws.fetch_report(location, safe_mode=self._safe_mode)
+                return nws.fetch_report(
+                    location,
+                    safe_mode=self._safe_mode,
+                    daily_days=self._settings.daily_outlook_days,
+                    temperature_unit=self._settings.temperature_unit,
+                )
             except nws.WeatherError as exc:
                 return exc
 
@@ -274,6 +290,11 @@ class WeatherCenterDialog:
             or ["Forecast unavailable."]
         )
         self._period_detail.SetValue(_period_detail_text(periods[0]) if periods else "")
+
+        self._daily_list.Set(
+            [day.line for day in result.daily] or ["Extended daily outlook unavailable."]
+        )
+
         self._status.SetValue(self._status_line(result))
 
         n = len(alerts)
