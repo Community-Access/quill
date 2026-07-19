@@ -89,7 +89,7 @@ def test_daily_from_json_parses_rows_and_astro() -> None:
     assert rows[0].condition == "Clear"
     assert rows[0].sunrise == "5:42 AM" and rows[0].sunset == "7:38 PM" and rows[0].uv_index == 9
     assert rows[0].line == (
-        "Monday, 2026-07-20: Clear. High 98, low 75 degrees. Sunrise 5:42 AM, sunset 7:38 PM."
+        "Monday, July 20: Clear. High 98, low 75 degrees. Sunrise 5:42 AM, sunset 7:38 PM."
     )
     assert rows[1].condition == "Thunderstorm" and rows[1].precipitation_percent == 60
     assert "60 percent chance of precipitation" in rows[1].line

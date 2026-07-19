@@ -12,6 +12,33 @@ from dataclasses import dataclass, field
 #: NWS severity/urgency fields (never a hidden score -- see PRD 10.6).
 ALERT_TIERS = ("Critical", "Urgent", "Important", "Advisory", "Informational")
 
+_MONTHS = (
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
+
+def friendly_date(iso_date: str) -> str:
+    """'2026-07-20' -> 'July 20' (pure); returns the input unchanged if it does
+    not parse, so a display never shows nothing."""
+    try:
+        _year, month, day = (int(part) for part in iso_date.split("-"))
+    except (ValueError, AttributeError):
+        return iso_date
+    if not 1 <= month <= 12:
+        return iso_date
+    return f"{_MONTHS[month - 1]} {day}"
+
 
 @dataclass(slots=True)
 class WeatherLocation:
@@ -93,10 +120,10 @@ class DailyOutlook:
     @property
     def line(self) -> str:
         """A self-contained, friendly, copyable one-line summary for the day."""
-        unit = "degrees" if self.temperature_unit == "F" else f"degrees {self.temperature_unit}"
         hi = f"{self.high_temp}" if self.high_temp is not None else "unknown"
         lo = f"{self.low_temp}" if self.low_temp is not None else "unknown"
-        parts = [f"{self.weekday}, {self.date}: {self.condition}.", f"High {hi}, low {lo} {unit}."]
+        when = f"{self.weekday}, {friendly_date(self.date)}"
+        parts = [f"{when}: {self.condition}.", f"High {hi}, low {lo} degrees."]
         if self.precipitation_percent not in (None, 0):
             parts.append(f"{self.precipitation_percent} percent chance of precipitation.")
         if self.sunrise and self.sunset:
