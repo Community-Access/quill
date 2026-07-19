@@ -795,12 +795,14 @@ class StationBrowserDialog:
         self._status.SetLabel("Loading TuneIn...")
         self._fetch_tunein_children(self._tunein_root, "")
 
-    def _fetch_tunein_children(self, node: Any, guide_id: str) -> None:
-        """Fetch a node's TuneIn children off-thread and add them under it."""
+    def _fetch_tunein_children(self, node: Any, target: str) -> None:
+        """Fetch a node's TuneIn children off-thread and add them under it.
+
+        *target* is a category's ``browse_url`` (or "" for the top level)."""
 
         def _work(**_kwargs: Any) -> list[Any]:
             try:
-                return tunein.browse(guide_id, safe_mode=self._safe_mode)
+                return tunein.browse(target, safe_mode=self._safe_mode)
             except tunein.TuneInError:
                 return []
 
@@ -824,6 +826,7 @@ class StationBrowserDialog:
                 {
                     "kind": "station" if result.is_station else "category",
                     "guide_id": result.guide_id,
+                    "drill": result.browse_url or result.guide_id,
                     "title": result.title,
                     "subtitle": result.subtitle,
                     "loaded": False,
@@ -863,7 +866,7 @@ class StationBrowserDialog:
             return
         data["loaded"] = True  # fetch once; a failed/empty fetch just leaves it empty
         self._status.SetLabel(f"Opening {data.get('title', 'folder')}...")
-        self._fetch_tunein_children(event.GetItem(), data["guide_id"])
+        self._fetch_tunein_children(event.GetItem(), data.get("drill") or data.get("guide_id", ""))
 
     def _on_tunein_activated(self, event: Any) -> None:
         data = self._tunein_tree.GetItemData(event.GetItem())

@@ -7,11 +7,55 @@ import pytest
 import quill.core.radio.tunein as tunein
 from quill.core.radio.tunein import (
     TuneInError,
+    _browse_json_url,
     guide_id_from_page,
+    parse_browse_level,
     parse_directory_results,
     parse_tune_response,
     refuse_in_safe_mode,
 )
+
+_TOP_LEVEL = """
+{"head":{"status":"200"},"body":[
+  {"element":"outline","type":"link","text":"Music","URL":"http://opml.radiotime.com/Browse.ashx?c=music","key":"music"},
+  {"element":"outline","type":"link","text":"Sports","URL":"http://opml.radiotime.com/Browse.ashx?c=sports","key":"sports"}
+]}
+"""
+
+_GROUPED_LOCAL = """
+{"body":[
+  {"element":"outline","text":"FM","children":[
+    {"element":"outline","type":"audio","item":"station","text":"97.5 The Vibe","guide_id":"s1055"},
+    {"element":"outline","type":"audio","item":"station","text":"94.9 MIXfm","guide_id":"s34200"}
+  ]},
+  {"element":"outline","text":"AM","children":[
+    {"element":"outline","type":"audio","text":"AM 620","guide_id":"s99"}
+  ]}
+]}
+"""
+
+
+def test_parse_browse_level_top_uses_url_not_guide_id() -> None:
+    rows = parse_browse_level(_TOP_LEVEL)
+    assert [r.title for r in rows] == ["Music", "Sports"]
+    assert all(not r.is_station for r in rows)  # 'sports' key must NOT read as a station
+    assert rows[0].browse_url.endswith("c=music")
+
+
+def test_parse_browse_level_inlines_group_headers_to_stations() -> None:
+    rows = parse_browse_level(_GROUPED_LOCAL)
+    # FM/AM group headers are transparent; their child stations surface here.
+    assert [r.title for r in rows] == ["97.5 The Vibe", "94.9 MIXfm", "AM 620"]
+    assert all(r.is_station and r.guide_id.startswith("s") for r in rows)
+
+
+def test_browse_json_url_forms() -> None:
+    assert _browse_json_url("").endswith("Browse.ashx?render=json")
+    # a full row URL is upgraded to https + render=json
+    got = _browse_json_url("http://opml.radiotime.com/Browse.ashx?c=music")
+    assert got.startswith("https://") and "render=json" in got and "c=music" in got
+    # a bare id becomes a c= category
+    assert "c=jazz" in _browse_json_url("jazz")
 
 
 def test_refuse_in_safe_mode() -> None:

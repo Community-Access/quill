@@ -67,8 +67,11 @@ class TuneInResult:
     """One row from a TuneIn search or browse.
 
     A *station* (``is_station`` True) carries a resolvable ``guide_id``
-    (``s...``); a *category* is a browse link the caller can drill into with
-    :func:`browse` using its ``guide_id`` (``c.../g...``).
+    (``s...``). A *category* is a browse link the caller drills into with
+    :func:`browse`; because RadioTime's levels use inconsistent ids (a top-level
+    key like ``music``, a ``guide_id`` like ``c57940``, or an ``?id=r0`` URL),
+    the category carries its own ``browse_url`` -- the exact next-level endpoint
+    -- which :func:`browse` fetches directly.
     """
 
     guide_id: str
@@ -76,6 +79,7 @@ class TuneInResult:
     subtitle: str = ""
     image: str = ""
     is_station: bool = False
+    browse_url: str = ""
 
 
 def refuse_in_safe_mode(safe_mode: bool) -> None:
@@ -181,6 +185,69 @@ def parse_directory_results(json_text: str) -> list[TuneInResult]:
     return results
 
 
+def _browse_result(item: object) -> TuneInResult | None:
+    """One browse row from a RadioTime outline item (pure), or None to skip.
+
+    A category carries its own next-level ``URL`` (``browse_url``); a station
+    carries a resolvable ``guide_id`` (``s...``). ``type`` decides which -- the
+    id prefix is not reliable (a category key like ``sports`` starts with s)."""
+    if not isinstance(item, dict):
+        return None
+    title = str(item.get("text") or item.get("title") or "").strip()
+    if not title:
+        return None
+    guide_id = str(item.get("guide_id") or item.get("guideId") or "").strip()
+    browse_url = str(item.get("URL") or item.get("url") or "").strip()
+    kind = str(item.get("type") or item.get("item") or "").strip().lower()
+    is_station = kind in ("audio", "station")
+    if is_station:
+        if not guide_id:
+            return None  # a station with no id can't be resolved
+    elif not browse_url and not guide_id:
+        return None  # a category with nowhere to drill
+    return TuneInResult(
+        guide_id=guide_id,
+        title=title,
+        subtitle=str(item.get("subtext") or item.get("subtitle") or "").strip(),
+        image=str(item.get("image") or "").strip(),
+        is_station=is_station,
+        browse_url=browse_url,
+    )
+
+
+def parse_browse_level(json_text: str) -> list[TuneInResult]:
+    """Parse one Browse.ashx level into its direct rows (pure), for the tree.
+
+    Unlike :func:`parse_directory_results` (which flattens the whole document for
+    a flat search list), this keeps the level's own rows: a plain group header
+    (an outline with ``children`` but no ``URL``/``guide_id`` of its own -- e.g.
+    the ``FM``/``AM`` groups under Local Radio) is transparent, so its child
+    stations appear at this level rather than as an un-openable folder.
+    """
+    try:
+        data = json.loads(json_text)
+    except (ValueError, TypeError):
+        return []
+    body = data.get("body") if isinstance(data, dict) else None
+    if not isinstance(body, list):
+        return []
+    results: list[TuneInResult] = []
+    for node in body:
+        if not isinstance(node, dict):
+            continue
+        children = node.get("children")
+        if isinstance(children, list) and not (node.get("URL") or node.get("guide_id")):
+            for child in children:
+                row = _browse_result(child)
+                if row is not None:
+                    results.append(row)
+            continue
+        row = _browse_result(node)
+        if row is not None:
+            results.append(row)
+    return results
+
+
 def parse_tune_response(text: str) -> list[str]:
     """Playable stream URLs from a ``Tune.ashx`` body (pure).
 
@@ -227,18 +294,35 @@ def search(query: str, *, safe_mode: bool = False) -> list[TuneInResult]:
     return parse_directory_results(_fetch(f"{_OPML_BASE}/Search.ashx?{params}"))
 
 
-def browse(category: str = "", *, safe_mode: bool = False) -> list[TuneInResult]:
-    """Browse the TuneIn category tree, or a category's contents (one GET).
+def _browse_json_url(target: str) -> str:
+    """The JSON Browse.ashx URL for a drill *target* (pure).
 
-    An empty *category* returns the top-level tree; a category guide id (a
-    ``Browse.ashx`` row's ``guide_id``) drills into it.
+    Empty target -> the top-level tree. A full RadioTime URL (a category row's
+    own ``browse_url``, e.g. ``.../Browse.ashx?c=music`` or ``?id=r0``) is used
+    directly, upgraded to HTTPS with ``render=json`` ensured. Anything else is
+    treated as a bare ``c=`` category id.
+    """
+    value = target.strip()
+    if not value:
+        return f"{_OPML_BASE}/Browse.ashx?render=json"
+    if value.lower().startswith(("http://", "https://")):
+        if value.lower().startswith("http://"):
+            value = "https://" + value[len("http://") :]
+        if "render=json" not in value:
+            value += ("&" if "?" in value else "?") + "render=json"
+        return value
+    return f"{_OPML_BASE}/Browse.ashx?{urllib.parse.urlencode({'c': value, 'render': 'json'})}"
+
+
+def browse(target: str = "", *, safe_mode: bool = False) -> list[TuneInResult]:
+    """Browse one level of the TuneIn tree (one GET).
+
+    An empty *target* returns the top-level tree; otherwise *target* is a
+    category row's ``browse_url`` (or a bare ``c=`` id) to drill into. Returns
+    that level's direct rows (folders + stations).
     """
     refuse_in_safe_mode(safe_mode)
-    params: dict[str, str] = {"render": "json"}
-    if category.strip():
-        params["c"] = category.strip()
-    url = f"{_OPML_BASE}/Browse.ashx?{urllib.parse.urlencode(params)}"
-    return parse_directory_results(_fetch(url))
+    return parse_browse_level(_fetch(_browse_json_url(target)))
 
 
 def resolve_station_streams(guide_id: str, *, safe_mode: bool = False) -> list[str]:

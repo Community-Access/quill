@@ -55,6 +55,13 @@ def test_parse_genres_dedups_case_insensitively_and_sorts() -> None:
     assert parse_genres(_GENRES_HTML) == ["80s", "Jazz", "Pop"]  # jazz/Jazz collapsed
 
 
+def test_parse_genres_url_decodes_names() -> None:
+    # The href segment is percent-encoded; the genre name must come out decoded
+    # so it isn't double-encoded when fetch_genre_stations re-encodes it.
+    html = '<a href="/genres/%C3%89clectique">x</a>'
+    assert parse_genres(html) == ["Éclectique"]
+
+
 def test_genre_display() -> None:
     assert genre_display("jazz") == "Jazz"
     assert genre_display("80s") == "80s"  # digits left alone

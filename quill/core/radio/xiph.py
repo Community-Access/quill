@@ -70,10 +70,16 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
 def parse_genres(page_html: str) -> list[str]:
     """Every genre name from the ``/genres`` index (pure), de-duplicated
     case-insensitively (the directory lists e.g. both ``Pop`` and ``pop``),
-    keeping the first spelling seen, sorted for a stable browse order."""
+    keeping the first spelling seen, sorted for a stable browse order.
+
+    The href segment is percent-encoded (``/genres/%C3%89clectique``), so it is
+    URL-decoded to the real genre name here -- :func:`fetch_genre_stations` then
+    re-encodes it exactly once when building the page URL."""
+    import urllib.parse
+
     seen: dict[str, str] = {}
     for raw in _GENRE_LINK_RE.findall(page_html):
-        name = _html.unescape(raw).strip()
+        name = _html.unescape(urllib.parse.unquote(raw)).strip()
         key = name.casefold()
         if name and key not in seen:
             seen[key] = name
