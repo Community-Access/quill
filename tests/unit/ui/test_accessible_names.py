@@ -539,10 +539,19 @@ def test_pin_macos_text_area_role_sets_role_and_label(monkeypatch) -> None:
     assert inner.label == "Document"
 
 
-def test_native_layer_is_inert_off_macos() -> None:
-    """On this (Windows) runner the darwin gate must short-circuit."""
+def test_native_layer_is_inert_off_macos(monkeypatch) -> None:
+    """Off darwin the native gate must short-circuit before touching PyObjC.
+
+    Forces a non-darwin platform so this is exercised on EVERY runner. On the
+    macOS-release CI job (which runs the full UI suite natively) the host is
+    really darwin, so without this patch ``set_accessible_name`` would take the
+    real native path and call ``objc.objc_object(c_void_p=...)`` on the fake
+    ``_HandleTextCtrl`` handle (0xBEEF). Dereferencing that garbage NSView in
+    Cocoa is a SIGSEGV -- not a Python exception the helper's try/except can
+    catch -- and it took down the whole test job (exit 139)."""
     import quill.ui.accessible_names as an
 
+    monkeypatch.setattr(an.sys, "platform", "win32")
     ctrl = _HandleTextCtrl(name="text")
     set_accessible_name(ctrl, "Port:")
 
