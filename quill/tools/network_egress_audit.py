@@ -195,6 +195,28 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "verified TLS context, bounded timeout and response size. Disabled in "
         "Safe Mode via iheart.refuse_in_safe_mode."
     ),
+    "core/radio/m3u_catalog.py::_fetch": (
+        "Single egress site for the Community M3U catalog source: the public "
+        "junguler/m3u-radio-music-playlists GitHub repo -- one GET to "
+        "api.github.com for the genre listing (git tree) and one GET to "
+        "raw.githubusercontent.com for a chosen genre's .m3u playlist, parsed "
+        "into stations. No API key or auth. Reached only by an explicit browse "
+        "or Refresh action, never a background poll and never a bulk crawl (one "
+        "genre at a time); the ~1.7 GB repo is read on demand, never bundled or "
+        "redistributed. HTTPS-only over a verified TLS context, bounded timeout "
+        "and response size. Disabled in Safe Mode via m3u_catalog.refuse_in_safe_mode."
+    ),
+    "core/radio/xiph.py::_fetch": (
+        "Single egress site for the Xiph/Icecast public directory source "
+        "(dir.xiph.org, the long-running keyless Icecast yellow pages): one GET "
+        "for the /genres index and one GET for a /genres/<name> page, whose "
+        "station cards each advertise a directly-playable stream URL. No API key "
+        "or auth (the directory has no JSON/OPML API, so its public HTML is "
+        "read). Reached only by an explicit browse or Refresh action, never a "
+        "background poll and never a bulk crawl (one genre at a time). HTTPS-only "
+        "over a verified TLS context, bounded timeout and response size. Disabled "
+        "in Safe Mode via xiph.refuse_in_safe_mode."
+    ),
     "core/radio/radio_browser.py::_http_json": (
         "Single egress site for the Internet Radio feature: station search, "
         "tag/country lists, and click-through vote registration against "

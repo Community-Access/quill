@@ -130,6 +130,80 @@ def test_f2_still_renames_alongside_the_new_volume_handling() -> None:
 
 
 # ---------------------------------------------------------------------------
+# NFB Radio on the Station menu, alongside ACB Media
+# ---------------------------------------------------------------------------
+
+
+def test_nfb_radio_appears_on_station_menu_and_plays_nfbrn() -> None:
+    from quill.ui.main_frame_radio import RadioMixin
+
+    played: list[str] = []
+    binds: list = []
+
+    class _FakeMenu:
+        def __init__(self) -> None:
+            self.items: list = []
+
+        def Append(self, item_id, label):  # noqa: N802 - wx shape
+            self.items.append((item_id, label))
+
+        def Bind(self, _evt, handler, id=None):  # noqa: N802, A002
+            binds.append((id, handler))
+
+        def AppendSubMenu(self, submenu, label):  # noqa: N802
+            self.items.append((None, label))
+
+    frame = SimpleNamespace(
+        _wx=SimpleNamespace(NewIdRef=lambda: object(), EVT_MENU="evt", Menu=_FakeMenu),
+        _radio_controller=SimpleNamespace(play_station=lambda s: played.append(s.name)),
+        _retain_radio_menu_ids=lambda *a: None,
+    )
+    menu = _FakeMenu()
+    RadioMixin._append_nfb_media_submenu(frame, menu)  # type: ignore[arg-type]
+
+    assert any("NFB" in label for _id, label in menu.items), "NFB item added to Station menu"
+    binds[-1][1](None)  # invoke the menu handler
+    assert any("NFBRN" in name for name in played), "playing it starts the NFBRN stream"
+
+
+# ---------------------------------------------------------------------------
+# Volume changes persist a favorite's level WITHOUT reloading the tree (#1154)
+# ---------------------------------------------------------------------------
+
+
+def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1154: adjusting the volume of a playing favorite persists the new level
+    # to disk, but must NOT go through _save_radio_favorites -- whose standalone
+    # override rebuilds the favorites tree and makes the screen reader
+    # re-announce the station on every Volume Up/Down keystroke. It uses the
+    # disk-only _persist_radio_favorites instead.
+    from quill.ui.main_frame_radio import RadioMixin
+
+    calls: list[str] = []
+    favorite = SimpleNamespace(volume_percent=50)
+    frame = SimpleNamespace(
+        _radio_history_key="uuid-1",
+        _radio_favorites=SimpleNamespace(
+            find=lambda _key: favorite,
+            set_volume=lambda _key, vol: calls.append(f"set_volume={vol}"),
+        ),
+        _save_radio_favorites=lambda: calls.append("save_radio_favorites(RELOADS TREE)"),
+        _persist_radio_favorites=lambda: calls.append("persist_radio_favorites(disk only)"),
+    )
+    state = SimpleNamespace(
+        station=SimpleNamespace(station_uuid="uuid-1", stream_url="s"),
+        muted=False,
+        volume_percent=60,
+    )
+
+    RadioMixin._radio_track_history_and_volume(frame, state)  # type: ignore[arg-type]
+
+    assert "set_volume=60" in calls
+    assert "persist_radio_favorites(disk only)" in calls
+    assert "save_radio_favorites(RELOADS TREE)" not in calls
+
+
+# ---------------------------------------------------------------------------
 # Alt+F4 / Exit close path (_on_radio_app_close)
 # ---------------------------------------------------------------------------
 
@@ -263,6 +337,36 @@ def test_close_prompts_when_recording_or_playback_active(
     assert skipped == []
     assert calls == [], "a vetoed close must not run shutdown"
     assert frame._closing_in_progress is False, "guard must reset after the dialog closes"
+
+
+def test_exit_after_recording_completes_the_close(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1153: after making a recording, choosing Exit must actually exit -- run
+    # every shutdown step and skip the close event -- not hang the app. The
+    # shutdowns are all non-blocking (recorder stops on daemon threads, the mpv
+    # engine soft-stops, the enhancement relay is a threading server), so the
+    # close path returns and the frame is destroyed.
+    frame, calls = _close_frame(
+        monkeypatch, recording_active=True, player_state=RadioPlayerState.PLAYING
+    )
+
+    orig_init = _FakeCloseConfirmDialog.__init__
+
+    def _init_with_exit(self: _FakeCloseConfirmDialog, *a: object, **k: object) -> None:
+        orig_init(self, *a, **k)
+        self.result = ("exit", False)
+
+    monkeypatch.setattr(_FakeCloseConfirmDialog, "__init__", _init_with_exit)
+    event, skipped, vetoed = _close_event()
+
+    frame._on_radio_app_close(event)
+
+    assert skipped == [True], "Exit after recording must proceed to a real exit"
+    assert vetoed == []
+    assert "controller.shutdown" in calls
+    assert "recorder.shutdown" in calls
+    assert "scheduler.shutdown" in calls
+    assert "task_manager.shutdown(wait=False)" in calls
+    assert frame._closing_in_progress is False
 
 
 def test_dont_ask_again_persists_close_action_and_minimizes(

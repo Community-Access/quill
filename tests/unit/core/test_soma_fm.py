@@ -126,6 +126,20 @@ def test_search_stations_matches_title_description_and_genre(
     assert len(search_stations("no-such-thing")) == 0
 
 
+def test_search_stations_matching_ignores_spacing_and_punctuation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Kelly's report: a known channel ("Groove Salad") was missed when the query
+    # spacing/punctuation did not match the title exactly.
+    channels_payload = json.dumps({"channels": [_SAMPLE_CHANNEL]}).encode()
+    routes = {"channels.json": channels_payload, "groovesalad256.pls": _SAMPLE_PLS.encode()}
+    monkeypatch.setattr(soma_fm.urllib.request, "urlopen", _dispatching_urlopen(routes))
+    assert len(search_stations("GrooveSalad")) == 1  # no space
+    assert len(search_stations("groove-salad")) == 1  # hyphen
+    assert len(search_stations("salad groove")) == 1  # tokens, any order
+    assert len(search_stations("Groove Salad")) == 1  # exact still works
+
+
 def test_search_stations_empty_query_returns_every_channel(monkeypatch: pytest.MonkeyPatch) -> None:
     channels_payload = json.dumps({"channels": [_SAMPLE_CHANNEL]}).encode()
     routes = {"channels.json": channels_payload, "groovesalad256.pls": _SAMPLE_PLS.encode()}

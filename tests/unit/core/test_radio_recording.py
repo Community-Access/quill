@@ -20,6 +20,7 @@ from quill.core.radio.recording import (
     RecordingSettings,
     build_filename,
     build_record_command,
+    format_uses_bitrate,
     load_recording_settings,
     save_recording_settings,
 )
@@ -42,6 +43,16 @@ def _make_job(process: object, *, station_name: str = "WQXR") -> RecordingJob:
         started_at=when,
         scheduled_end=when,
     )
+
+
+def test_format_uses_bitrate_only_for_lossy_reencode() -> None:
+    # #1155: the Recording Settings dialog hides its bitrate control for any
+    # format that ignores bitrate -- the raw stream copy and the lossless
+    # re-encodes. Only the lossy re-encoders honour it.
+    assert format_uses_bitrate("mp3") is True
+    assert format_uses_bitrate("ogg") is True
+    for fmt in ("flac", "wav", "copy", "unknown"):
+        assert format_uses_bitrate(fmt) is False, fmt
 
 
 def test_settings_to_dict_from_dict_round_trip() -> None:

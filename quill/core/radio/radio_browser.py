@@ -199,6 +199,19 @@ def search_stations(
     return stations_from_json(_http_json(path))
 
 
+def popular_stations(limit: int = 100, *, safe_mode: bool = False) -> list[RadioStation]:
+    """The most-popular stations right now -- no search needed.
+
+    Backs the "Popular Stations" browse category: RadioBrowser's ``topvote``
+    endpoint returns the community's most-voted stations, so a listener can just
+    open Browse Stations and see what everyone is listening to without typing a
+    thing. One GET through the same reviewed egress site as search.
+    """
+    refuse_in_safe_mode(safe_mode)
+    path = f"/json/stations/topvote/{max(1, min(limit, 200))}"
+    return stations_from_json(_http_json(path))
+
+
 def lookup_station(station_uuid: str, *, safe_mode: bool = False) -> RadioStation | None:
     """Fresh directory data for one station -- the stream-fallback path.
 

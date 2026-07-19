@@ -10,6 +10,7 @@ from quill.core.radio.recording import (
     RECORD_FORMAT_LABELS,
     RECORD_FORMATS,
     RecordingSettings,
+    format_uses_bitrate,
 )
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -54,16 +55,19 @@ class RecordingSettingsDialog:
         )
         if settings.format in RECORD_FORMATS:
             self._format_choice.SetSelection(RECORD_FORMATS.index(settings.format))
+        # Bitrate only applies to the lossy re-encode formats; toggle its row's
+        # visibility when the format changes so a Raw stream (or lossless) never
+        # shows a meaningless, confusing bitrate control (#1155).
+        self._format_choice.Bind(wx.EVT_CHOICE, self._on_format_changed)
         grid.Add(self._format_choice, 1, wx.EXPAND)
 
-        grid.Add(
-            wx.StaticText(self.dialog, label="&Quality (bitrate):"), 0, wx.ALIGN_CENTER_VERTICAL
-        )
+        self._bitrate_label = wx.StaticText(self.dialog, label="&Quality (bitrate):")
+        grid.Add(self._bitrate_label, 0, wx.ALIGN_CENTER_VERTICAL)
         self._bitrate_choice = wx.Choice(
             self.dialog, choices=[f"{b} kbps" for b in _BITRATE_CHOICES]
         )
         self._bitrate_choice.SetName(
-            "Bitrate for MP3/OGG recordings; ignored for lossless FLAC/WAV"
+            "Bitrate for MP3/OGG recordings; ignored for lossless and raw stream formats"
         )
         closest = min(_BITRATE_CHOICES, key=lambda b: abs(b - settings.bitrate_kbps))
         self._bitrate_choice.SetSelection(_BITRATE_CHOICES.index(closest))
@@ -212,6 +216,26 @@ class RecordingSettingsDialog:
         browse_btn.Bind(wx.EVT_BUTTON, self._on_browse)
         temp_browse_btn.Bind(wx.EVT_BUTTON, self._on_browse_temp)
         save_btn.Bind(wx.EVT_BUTTON, self._on_save)
+
+        # Hide the bitrate row now if the initial format doesn't use it.
+        self._sync_bitrate_visibility()
+
+    def _current_format(self) -> str:
+        index = self._format_choice.GetSelection()
+        return RECORD_FORMATS[index] if index >= 0 else "mp3"
+
+    def _sync_bitrate_visibility(self) -> None:
+        """Show the bitrate row only for formats that re-encode to a lossy
+        codec; hide the label and control for Raw stream and the lossless
+        formats, where bitrate does nothing -- keeping it off the screen and
+        out of the screen reader's tab order (#1155)."""
+        show = format_uses_bitrate(self._current_format())
+        self._bitrate_label.Show(show)
+        self._bitrate_choice.Show(show)
+        self.dialog.Layout()
+
+    def _on_format_changed(self, _event: object) -> None:
+        self._sync_bitrate_visibility()
 
     def show(self) -> RecordingSettings | None:
         self.dialog.CentreOnParent()

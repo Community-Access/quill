@@ -21,7 +21,7 @@ from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "2.0.2"
+_VERSION = "2.1.0"
 _REPO = "Community-Access/quill-radio"
 http_client.set_product_identity(_TITLE, _VERSION)  # radio User-Agent identity (#6)
 
@@ -96,6 +96,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         # playback running. The titlebar X and Exit keep close_action.
         self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_radio_char_hook)
         self._maybe_resume_last_station()
+        # Watch for a second launch asking us to come forward (#1152): a
+        # re-launched Quill Radio enqueues a "show" request and exits; this
+        # timer drains it and un-hides/raises this window, even from the tray.
+        self._start_ipc_poll()
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
@@ -154,14 +158,17 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self._favorite_toggle_btn.Enable(False)
         self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
         buttons.Add(self._favorite_toggle_btn, 0, wx.RIGHT, 6)
-        for label, handler in (
-            ("&Record", lambda _e: self.radio_record_toggle()),
-            ("&Browse Stations...", lambda _e: self.open_internet_radio()),
-        ):
-            button = wx.Button(panel, label=label)
-            set_accessible_name(button, label)
-            button.Bind(wx.EVT_BUTTON, handler)
-            buttons.Add(button, 0, wx.RIGHT, 6)
+        # The Record button doubles as the stop control: while a recording is
+        # running it reads "Stop Recording" so it is obvious you are recording
+        # (#1152 feedback), mirroring the single Play/Stop button above.
+        self._record_btn = wx.Button(panel, label="&Record")
+        set_accessible_name(self._record_btn, "Record")
+        self._record_btn.Bind(wx.EVT_BUTTON, lambda _e: self.radio_record_toggle())
+        buttons.Add(self._record_btn, 0, wx.RIGHT, 6)
+        browse_btn = wx.Button(panel, label="&Browse Stations...")
+        set_accessible_name(browse_btn, "Browse Stations...")
+        browse_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_internet_radio())
+        buttons.Add(browse_btn, 0, wx.RIGHT, 6)
         root.Add(buttons, 0, wx.ALL, 8)
 
         panel.SetSizer(root)
@@ -516,6 +523,19 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             menu_bar.SetLabel(int(item_id), f"{label}\tCtrl+P")
         self._refresh_favorite_toggle()
 
+    def _refresh_record_button(self) -> None:
+        """Reflect recording state on the Record button: it becomes "Stop
+        Recording" while any recording is active so it is obvious you are
+        recording, and toggles back to "Record" when they all stop."""
+        button = getattr(self, "_record_btn", None)
+        if button is None:
+            return
+        recording = bool(getattr(self._radio_recorder, "is_recording", False))
+        label = "Stop &Recording" if recording else "&Record"
+        if button.GetLabel() != label:
+            button.SetLabel(label)
+            set_accessible_name(button, "Stop Recording" if recording else "Record")
+
     def _refresh_favorite_toggle(self) -> None:
         button = getattr(self, "_favorite_toggle_btn", None)
         if button is None:
@@ -594,6 +614,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self._append_radio_recent_submenu(station_menu)
         self._append_radio_favorites_submenu(station_menu)
         self._append_acb_media_submenu(station_menu)
+        self._append_nfb_media_submenu(station_menu)
         self._resume_menu_item_id = wx.NewIdRef()
         station_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Station on Lau&nch")
         station_menu.Check(self._resume_menu_item_id, self._radio_history.resume_on_launch)
@@ -815,6 +836,33 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     def _send_to_tray(self) -> None:
         self.frame.Hide()
         self._announce("Quill Radio is still running in the system tray.")
+
+    # -- single instance (#1152) ------------------------------------------------
+
+    def _start_ipc_poll(self) -> None:
+        """Poll the radio IPC queue for a foreground request from a 2nd launch."""
+        timer = wx.Timer(self.frame)
+        self.frame.Bind(wx.EVT_TIMER, self._on_ipc_timer, timer)
+        timer.Start(800)
+        self._ipc_timer = timer
+
+    def _on_ipc_timer(self, _event: object) -> None:
+        from quill.core.ipc import drain_open_requests
+
+        # Any queued request is a "come to the foreground" from a second launch
+        # (the radio slot only ever enqueues show requests). Drain and surface.
+        if drain_open_requests(slot=_IPC_SLOT):
+            self._foreground_window()
+
+    def _foreground_window(self) -> None:
+        """Bring the window forward, un-hiding it from the tray and de-iconizing."""
+        frame = self.frame
+        if not frame.IsShown():
+            frame.Show(True)
+        if frame.IsIconized():
+            frame.Iconize(False)
+        frame.Raise()
+        frame.RequestUserAttention()
 
     def _toggle_resume_on_launch(self) -> None:
         from quill.core.paths import app_data_dir
@@ -1121,6 +1169,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         if now_playing is not None:
             now_playing.SetLabel(text)
         self._refresh_play_stop_button()
+        self._refresh_record_button()
 
     def _save_radio_favorites(self) -> None:
         # Every favorites mutation -- the toggle button, tree actions, the
@@ -1194,12 +1243,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         # last_seen timer and clear the active-recording marker so a clean close
         # is not mistaken for a crash on the next launch.
         self._stamp_radio_last_seen()
-        timer = getattr(self, "_radio_last_seen_timer", None)
-        if timer is not None:
-            try:
-                timer.Stop()
-            except Exception:  # noqa: BLE001
-                pass
+        for timer_attr in ("_radio_last_seen_timer", "_ipc_timer"):
+            timer = getattr(self, timer_attr, None)
+            if timer is not None:
+                try:
+                    timer.Stop()
+                except Exception:  # noqa: BLE001
+                    pass
         self._clear_radio_recording_marker()
         for shutdown_fn in (
             getattr(self._radio_controller, "shutdown", None),
@@ -1218,8 +1268,28 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         event.Skip()
 
 
+#: Single-instance slot for Quill Radio's IPC lock/queue -- distinct from
+#: QUILL's own ("") and Quill Cast's, so the three sibling apps that share one
+#: data dir each guard themselves without blocking each other (#1152).
+_IPC_SLOT = "radio"
+
+
 def main() -> int:
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
+    from quill.core.ipc import (
+        enqueue_open_request,
+        release_primary_instance,
+        try_claim_primary_instance,
+    )
+
+    # Single instance (#1152): if a Quill Radio is already running -- including
+    # one sitting in the system tray -- do not open a second window. Ask the
+    # running copy to come to the foreground, then exit. Cheap, before any UI or
+    # logging setup, so a re-launch is near-instant.
+    if not try_claim_primary_instance(slot=_IPC_SLOT):
+        enqueue_open_request(None, slot=_IPC_SLOT)
+        return 0
+
     # Configure file logging before the app comes up so startup records -- and
     # everything radio debug mode raises to DEBUG -- land in quill.log
     # (quill-radio #5). The folder is the log-location preference, or the
@@ -1237,8 +1307,11 @@ def main() -> int:
     frame = RadioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     frame.frame.Show()
-    app.MainLoop()
-    log_listener.stop()
+    try:
+        app.MainLoop()
+    finally:
+        release_primary_instance(slot=_IPC_SLOT)
+        log_listener.stop()
     return 0
 
 

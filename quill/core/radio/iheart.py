@@ -123,6 +123,50 @@ def _name_from_slug(slug: str) -> str:
     return " ".join(word.upper() if word.isupper() else word.capitalize() for word in words)
 
 
+#: Runs of anything that is not a letter or digit -- the token separators a
+#: search normalises away so "103.1", "103-1", "K276EL" and "khfi hd2" all
+#: reduce to the same alphanumeric shape the sitemap slug carries.
+_NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _normalize(text: str) -> str:
+    """Lowercased, alphanumeric-token form of *text* (pure).
+
+    ``"103.1 Austin's 80s"`` -> ``"103 1 austin s 80s"``. Collapsing punctuation
+    to single spaces lets a query match a slug/name regardless of dots, hyphens,
+    apostrophes or casing.
+    """
+    return _NON_ALNUM_RE.sub(" ", text.lower()).strip()
+
+
+def station_matches(station: IHeartStation, query: str) -> bool:
+    """Whether *station* matches the search *query* (pure, punctuation-insensitive).
+
+    The sitemap only carries a station's slug-derived name, slug and numeric id,
+    so those are all a directory search can see (call signs, taglines and former
+    aliases live only on the lazily-fetched station page). Matching is done over
+    all three, normalised so branding punctuation does not defeat it:
+
+    - The station id matches as a plain substring, so ``"8403"`` finds station
+      ``8403``.
+    - The de-punctuated query matches the de-punctuated name+slug, so
+      ``"103.1 Austin"`` finds slug ``1031-austin`` / name ``1031 Austin``.
+    - Otherwise every query *token* must appear, so a partial ``"kbco"`` or
+      ``"973 kbco"`` still matches ``973 KBCO``.
+
+    An empty query never matches (callers filter it earlier, but this is safe).
+    """
+    normalized_query = _normalize(query)
+    if not normalized_query:
+        return False
+    if normalized_query in station.station_id.lower():
+        return True
+    haystack = f"{_normalize(station.name)} {_normalize(station.slug)}"
+    if normalized_query.replace(" ", "") in haystack.replace(" ", ""):
+        return True
+    return all(token in haystack for token in normalized_query.split())
+
+
 def parse_livestations_sitemap(xml_text: str) -> list[IHeartStation]:
     """Parse the livestations sub-sitemap into stations (pure).
 

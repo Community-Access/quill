@@ -16,7 +16,15 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.radio import acb_media, radio_browser, soma_fm
+from quill.core.radio import (
+    acb_media,
+    m3u_catalog,
+    nfb_media,
+    radio_browser,
+    soma_fm,
+    tunein,
+    xiph,
+)
 from quill.core.radio.directory_search import (
     iheart_search_stations,
     merge_and_rank,
@@ -28,8 +36,35 @@ from quill.ui.dialog_contract import apply_modal_ids
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
+_NFB_RADIO = nfb_media.CATEGORY_LABEL
+_SOMAFM = "SomaFM"
+#: TuneIn's category tree (Music, Talk, Sports, Local, ...), browsed as folders.
+_TUNEIN_BROWSE = "TuneIn"
+#: Community M3U (junguler catalog): a genre-picker category, browsed on demand.
+_M3U_GENRES = "Music Genres"
+#: Xiph/Icecast public directory: the other genre-picker (browse-by-genre) source.
+_XIPH_DIR = "Xiph Directory"
+#: RadioBrowser's most-voted stations -- browse what everyone's listening to.
+_POPULAR = "Popular Stations"
 _SEARCH_RESULTS = "Search Results"
-_CATEGORIES = (_FAVORITES, _ACB_MEDIA, _SEARCH_RESULTS)
+#: Browsable-without-search categories come first; Search Results last. ACB
+#: Media and NFB Radio are bundled (instant); SomaFM and Music Genres fetch on
+#: demand. Kelly's request: pick a source and see its stations, no query needed.
+_CATEGORIES = (
+    _FAVORITES,
+    _POPULAR,
+    _ACB_MEDIA,
+    _NFB_RADIO,
+    _SOMAFM,
+    _TUNEIN_BROWSE,
+    _M3U_GENRES,
+    _XIPH_DIR,
+    _SEARCH_RESULTS,
+)
+
+#: The two genre-picker sources share one code path; each module exposes the
+#: same fetch_genres / fetch_genre_stations / genre_display / CATALOG_CREDIT.
+_GENRE_SOURCES = {_M3U_GENRES: m3u_catalog, _XIPH_DIR: xiph}
 
 #: Source-facet choices (the Unified Find Stations filter). "All sources" is the
 #: default; the rest match RadioStation.source values a search can produce. A
@@ -42,6 +77,9 @@ _SOURCE_FACETS = (
     "TuneIn",
     "SomaFM",
     "ACB Media",
+    _NFB_RADIO,
+    m3u_catalog.CATEGORY_LABEL,
+    xiph.CATEGORY_LABEL,
     "Website",
 )
 
@@ -220,8 +258,9 @@ class StationBrowserDialog:
         cat_col.Add(wx.StaticText(self.dialog, label="&Category"), 0, wx.BOTTOM, 4)
         self._category_list = wx.ListBox(self.dialog, choices=list(_CATEGORIES))
         self._category_list.SetName(
-            "Station category; Favorites and ACB Media are always available, "
-            "Search Results appears after a search"
+            "Station category; Favorites, Popular Stations, ACB Media, NFB Radio, "
+            "SomaFM, TuneIn, Music Genres, and the Xiph Directory browse without "
+            "a search, Search Results appears after a search"
         )
         self._category_list.SetSelection(0)
         cat_col.Add(self._category_list, 1, wx.EXPAND)
@@ -239,7 +278,17 @@ class StationBrowserDialog:
         self._source_facet = wx.Choice(self.dialog, choices=list(_SOURCE_FACETS))
         self._source_facet.SetName("Show only results from one source")
         self._source_facet.SetSelection(0)
-        facet_row.Add(self._source_facet, 0)
+        facet_row.Add(self._source_facet, 0, wx.RIGHT, 12)
+        # Genre picker for the Music Genres (Community M3U) category. Empty and
+        # disabled until that category is selected, then filled from the live
+        # genre list; picking a genre browses it.
+        self._genre_label = wx.StaticText(self.dialog, label="&Genre:")
+        facet_row.Add(self._genre_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        self._genre_ctrl = wx.Choice(self.dialog, choices=[])
+        self._genre_ctrl.SetName("Music genre to browse (Community M3U catalog)")
+        self._genre_ctrl.Enable(False)
+        self._genre_slugs: list[str] = []
+        facet_row.Add(self._genre_ctrl, 0)
         results_col.Add(facet_row, 0, wx.BOTTOM, 4)
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Station results; arrow through to hear details of each")
@@ -293,8 +342,11 @@ class StationBrowserDialog:
         add_custom_btn.SetName("Add a station by typing its own stream link")
         link_finder_btn = wx.Button(self.dialog, label="Find Streams from a &Website...")
         link_finder_btn.SetName("Scan a website you type in for stream links")
-        self._refresh_btn = wx.Button(self.dialog, label="&Refresh Directory")
-        self._refresh_btn.SetName("Re-fetch the iHeart station directory used by search")
+        self._refresh_btn = wx.Button(self.dialog, label="&Refresh")
+        self._refresh_btn.SetName(
+            "Re-fetch the current source from the internet -- the Music Genres "
+            "list/stations, or the iHeart directory used by search"
+        )
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
@@ -325,7 +377,8 @@ class StationBrowserDialog:
         self._more_btn.Bind(wx.EVT_BUTTON, self._on_more_stations)
         add_custom_btn.Bind(wx.EVT_BUTTON, self._on_add_custom)
         link_finder_btn.Bind(wx.EVT_BUTTON, self._on_link_finder)
-        self._refresh_btn.Bind(wx.EVT_BUTTON, self._on_refresh_directory)
+        self._refresh_btn.Bind(wx.EVT_BUTTON, self._on_refresh)
+        self._genre_ctrl.Bind(wx.EVT_CHOICE, self._on_genre_selected)
         self._source_facet.Bind(wx.EVT_CHOICE, self._on_source_facet)
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute_toggle)
@@ -555,6 +608,8 @@ class StationBrowserDialog:
         index = _CATEGORIES.index(category)
         if self._category_list.GetSelection() != index:
             self._category_list.SetSelection(index)
+        # The genre picker applies to the genre-source categories only.
+        self._genre_ctrl.Enable(category in _GENRE_SOURCES)
         if category == _FAVORITES:
             stations = [f.station for f in self._favorites.favorites]
             status = (
@@ -567,6 +622,33 @@ class StationBrowserDialog:
             stations = acb_media.acb_media_stations()
             status = f"{len(stations)} ACB Media stations from the American Council of the Blind."
             self._fill_results(stations, status=status)
+        elif category == _NFB_RADIO:
+            stations = nfb_media.nfb_media_stations()
+            status = (
+                f"{len(stations)} station from the National Federation of the Blind "
+                "Radio Network."
+            )
+            self._fill_results(stations, status=status)
+        elif category == _POPULAR:
+            self._browse_async(
+                lambda: radio_browser.popular_stations(safe_mode=self._safe_mode),
+                loading="Loading the most popular stations...",
+                done=lambda n: f"{n} of the most popular stations right now.",
+                error="Could not load popular stations",
+            )
+        elif category == _SOMAFM:
+            self._browse_async(
+                lambda: soma_fm.search_stations("", safe_mode=self._safe_mode),
+                loading="Loading SomaFM channels...",
+                done=lambda n: f"{n} SomaFM channel{'' if n == 1 else 's'}.",
+                error="Could not reach SomaFM",
+            )
+        elif category == _TUNEIN_BROWSE:
+            self._tunein_stack = []
+            self._tunein_browse("")
+        elif category in _GENRE_SOURCES:
+            self._genre_source = _GENRE_SOURCES[category]
+            self._load_genres()
         else:
             status = (
                 _search_result_summary(len(self._search_results), more=self._search_more_available)
@@ -574,6 +656,176 @@ class StationBrowserDialog:
                 else "Search above to see results here."
             )
             self._fill_results(self._search_results, status=status)
+
+    # -- browse-a-source (no search) --------------------------------------------
+
+    def _browse_async(
+        self,
+        fetch: Callable[[], list[RadioStation]],
+        *,
+        loading: str,
+        done: Callable[[int], str],
+        error: str,
+    ) -> None:
+        """Fetch a source's stations off-thread and show them (Kelly's "browse
+        without searching"). Any failure is announced, never fatal."""
+        if self._safe_mode:
+            self._status.SetLabel("Browsing sources is disabled in Safe Mode.")
+            return
+        self._status.SetLabel(loading)
+
+        def _work(**_kwargs: Any) -> list[RadioStation]:
+            try:
+                return fetch()
+            except Exception:  # noqa: BLE001 - reported via the empty-list path
+                return []
+
+        def _ok(_op: str, stations: object) -> None:
+            rows = stations if isinstance(stations, list) else []
+            self._wx.CallAfter(
+                self._fill_results,
+                rows,
+                status=done(len(rows)) if rows else f"{error}, or nothing to show.",
+            )
+            self._wx.CallAfter(self._announce, done(len(rows)) if rows else error)
+
+        def _fail(_op: str, exc: BaseException) -> None:
+            self._wx.CallAfter(self._status.SetLabel, f"{error}: {exc}")
+
+        self._task_manager.submit("radio-browse-source", _work, on_success=_ok, on_failure=_fail)
+
+    def _load_genres(self) -> None:
+        """Populate the genre picker from the current genre source (Community M3U
+        or the Xiph directory), then wait for a genre pick. Both sources share
+        this one path -- each exposes fetch_genres / genre_display / CATALOG_CREDIT."""
+        source = self._genre_source
+        self._fill_results([], status="")
+        if self._safe_mode:
+            self._status.SetLabel("Browsing this directory is disabled in Safe Mode.")
+            return
+        self._status.SetLabel("Loading genres...")
+
+        def _work(**_kwargs: Any) -> list[str]:
+            try:
+                return list(source.fetch_genres(safe_mode=self._safe_mode))
+            except Exception:  # noqa: BLE001 - reported via the empty-list path
+                return []
+
+        def _ok(_op: str, genres: object) -> None:
+            self._wx.CallAfter(self._apply_genres, genres if isinstance(genres, list) else [])
+
+        self._task_manager.submit("radio-genres", _work, on_success=_ok, on_failure=None)
+
+    def _apply_genres(self, slugs: list[str]) -> None:
+        source = self._genre_source
+        self._genre_slugs = slugs
+        self._genre_ctrl.Set([source.genre_display(slug) for slug in slugs])
+        self._genre_ctrl.Enable(bool(slugs))
+        if not slugs:
+            self._status.SetLabel("Could not load the genre list. Try Refresh.")
+            return
+        message = f"{len(slugs)} genres from {source.CATALOG_CREDIT}. Pick a genre to browse it."
+        self._status.SetLabel(message)
+        self._announce(message)
+
+    def _on_genre_selected(self, _event: object) -> None:
+        source = self._genre_source
+        index = self._genre_ctrl.GetSelection()
+        if index < 0 or index >= len(self._genre_slugs):
+            return
+        slug = self._genre_slugs[index]
+        display = source.genre_display(slug)
+        label = source.CATEGORY_LABEL
+        self._browse_async(
+            lambda: source.fetch_genre_stations(slug, safe_mode=self._safe_mode),
+            loading=f"Loading {display} stations...",
+            done=lambda n: f"{n} {display} station{'' if n == 1 else 's'} ({label}).",
+            error=f"Could not load {display}",
+        )
+
+    # -- TuneIn category browse (folders + resolve-on-play) ---------------------
+
+    def _tunein_browse(self, guide_id: str) -> None:
+        """Browse one level of TuneIn's category tree off-thread; results are
+        shown as folder rows (drill in) and unresolved station rows."""
+        if self._safe_mode:
+            self._status.SetLabel("The TuneIn directory is disabled in Safe Mode.")
+            return
+        self._genre_ctrl.Enable(False)
+        self._status.SetLabel("Loading TuneIn..." if not guide_id else "Loading TuneIn category...")
+
+        def _work(**_kwargs: Any) -> list[Any]:
+            try:
+                return tunein.browse(guide_id, safe_mode=self._safe_mode)
+            except tunein.TuneInError:
+                return []
+
+        def _ok(_op: str, results: object) -> None:
+            self._wx.CallAfter(
+                self._tunein_browse_done, results if isinstance(results, list) else []
+            )
+
+        self._task_manager.submit("radio-tunein-browse", _work, on_success=_ok, on_failure=None)
+
+    def _tunein_browse_done(self, results: list[Any]) -> None:
+        rows: list[RadioStation] = []
+        if getattr(self, "_tunein_stack", []):
+            rows.append(tunein.nav_up_row())
+        rows.extend(tunein.browse_row_to_station(r) for r in results)
+        categories = sum(1 for r in results if not r.is_station)
+        stations = len(results) - categories
+        status = (
+            f"TuneIn: {categories} categor{'y' if categories == 1 else 'ies'}, "
+            f"{stations} station{'' if stations == 1 else 's'}. Open a folder with Enter."
+            if results
+            else "Nothing here -- use Up one level to go back."
+        )
+        self._fill_results(rows, status=status)
+        self._announce(status)
+
+    def _play_tunein_station(self, station: RadioStation, guide_id: str) -> None:
+        """Resolve a TuneIn browse station's stream off-thread, then play it."""
+        self._status.SetLabel(f"Resolving {station.name}...")
+
+        def _work(**_kwargs: Any) -> list[str]:
+            try:
+                return tunein.resolve_station_streams(guide_id, safe_mode=self._safe_mode)
+            except tunein.TuneInError:
+                return []
+
+        def _ok(_op: str, streams: object) -> None:
+            self._wx.CallAfter(
+                self._play_resolved_tunein, station, streams if isinstance(streams, list) else []
+            )
+
+        self._task_manager.submit("radio-tunein-resolve", _work, on_success=_ok, on_failure=None)
+
+    def _play_resolved_tunein(self, station: RadioStation, streams: list[str]) -> None:
+        if not streams:
+            self._status.SetLabel(f"Could not get a stream for {station.name}.")
+            self._announce(f"Could not play {station.name}.")
+            return
+        resolved = RadioStation(
+            name=station.name,
+            stream_url=streams[0],
+            station_uuid="",
+            tags=station.tags,
+            source="TuneIn",
+        )
+        self._controller.play_station(resolved)
+        self._announce(f"Playing {station.name}")
+        self._refresh_play_button()
+
+    def _on_refresh(self, _event: object) -> None:
+        """Context-aware Refresh: re-fetch the Music Genres list when that
+        category is active, otherwise re-fetch the iHeart search directory."""
+        selection = self._category_list.GetSelection()
+        category = _CATEGORIES[selection] if selection != self._wx.NOT_FOUND else ""
+        if category in _GENRE_SOURCES:
+            self._genre_source = _GENRE_SOURCES[category]
+            self._load_genres()
+            return
+        self._on_refresh_directory(_event)
 
     # ------------------------------------------------------------------
     # Events
@@ -583,7 +835,20 @@ class StationBrowserDialog:
         if selection != self._wx.NOT_FOUND:
             self._show_category(_CATEGORIES[selection])
 
-    def _on_search(self, _event: object) -> None:
+    def _on_search(self, event: object) -> None:
+        # Whether the finished search should move focus into the results list.
+        # Arrowing through the Country choice (EVT_CHOICE) or the Tag combo's
+        # list (EVT_COMBOBOX) fires a search per keystroke; stealing focus to
+        # the results then makes the dropdown un-navigable -- one Down arrow and
+        # focus jumps away. So only an explicit commit (the Search button, or
+        # Enter in a text field) lands focus on the results; a dropdown pick
+        # leaves focus where it is so the user can keep arrowing.
+        wx = self._wx
+        event_type = getattr(event, "GetEventType", lambda: None)()
+        self._focus_results_after_search = event_type not in (
+            wx.EVT_CHOICE.typeId,
+            wx.EVT_COMBOBOX.typeId,
+        )
         name = self._name_ctrl.GetValue().strip()
         tag = self._tag_ctrl.GetValue().strip()
         country = country_query(self._country_ctrl.GetStringSelection())
@@ -678,8 +943,9 @@ class StationBrowserDialog:
         # Land keyboard focus in the results list when a search returns something,
         # so the user is placed on the first result (already selected/focused as
         # row 0 by _render_results) instead of being left on the search box having
-        # to Tab into the list.
-        if self._current_results:
+        # to Tab into the list. A facet-dropdown pick (Country/Tag) suppresses
+        # this so arrowing the dropdown does not fling focus to the results.
+        if self._current_results and getattr(self, "_focus_results_after_search", True):
             self._results.SetFocus()
 
     def _on_more_stations(self, _event: object) -> None:
@@ -807,6 +1073,21 @@ class StationBrowserDialog:
         station = self._selected_station()
         if station is None:
             return
+        # TuneIn browse rows (folders / unresolved stations) are handled here and
+        # never reach ordinary playback; a normal station has kind == "".
+        kind, guide_id = tunein.classify_nav(station)
+        if kind == "up":
+            if getattr(self, "_tunein_stack", []):
+                self._tunein_stack.pop()
+            self._tunein_browse(self._tunein_stack[-1] if self._tunein_stack else "")
+            return
+        if kind == "category":
+            self._tunein_stack = [*getattr(self, "_tunein_stack", []), guide_id]
+            self._tunein_browse(guide_id)
+            return
+        if kind == "station":
+            self._play_tunein_station(station, guide_id)
+            return
         # One button, honest label: it stops the station it started.
         if self._is_station_playing(station):
             self._controller.stop()
@@ -862,6 +1143,10 @@ class StationBrowserDialog:
     def _on_toggle_favorite(self, _event: object) -> None:
         station = self._selected_station()
         if station is None:
+            return
+        # A TuneIn browse folder / unresolved row has no playable stream to save.
+        if tunein.classify_nav(station)[0]:
+            self._announce("Open this to play it before adding it to Favorites.")
             return
         if self._favorites.contains(station):
             self._favorites.remove(station.station_uuid or station.stream_url)

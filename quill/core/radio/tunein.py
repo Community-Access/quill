@@ -271,3 +271,59 @@ def to_radio_station(result: TuneInResult, stream_url: str) -> RadioStation:
         tags=(result.subtitle,) if result.subtitle else (),
         source="TuneIn",
     )
+
+
+# --- browse navigation (folders + unresolved stations, for the browser UI) ---
+#
+# TuneIn's Browse.ashx is a tree: a level can hold sub-category folders and/or
+# stations, and a browse station carries only a guide id (its stream is resolved
+# on play via Tune.ashx). The flat results list represents a browse level as
+# marker RadioStations; the station_uuid encodes the row kind so the dialog can
+# tell a folder (drill in) from a station (resolve + play) from the Up row,
+# without disturbing normal, fully-resolved stations (which have none of these
+# prefixes). All pure and unit-testable.
+
+_NAV_UP = "tunein-nav-up"
+_NAV_CAT_PREFIX = "tunein-nav-cat:"
+_NAV_STATION_PREFIX = "tunein-nav-station:"
+
+
+def browse_row_to_station(result: TuneInResult) -> RadioStation:
+    """A marker :class:`RadioStation` for one browse row (folder or station)."""
+    if result.is_station:
+        return RadioStation(
+            name=result.title,
+            stream_url="",  # resolved on play via resolve_station_streams
+            station_uuid=f"{_NAV_STATION_PREFIX}{result.guide_id}",
+            favicon=result.image,
+            tags=(result.subtitle,) if result.subtitle else (),
+            source="TuneIn",
+        )
+    return RadioStation(
+        name=f"{result.title}  [browse]",
+        stream_url="",
+        station_uuid=f"{_NAV_CAT_PREFIX}{result.guide_id}",
+        tags=("Category",),
+        source="TuneIn",
+    )
+
+
+def nav_up_row() -> RadioStation:
+    """The "Up one level" marker row shown when drilled into a sub-category."""
+    return RadioStation(
+        name="[Up one level]", stream_url="", station_uuid=_NAV_UP, source="TuneIn"
+    )
+
+
+def classify_nav(station: RadioStation) -> tuple[str, str]:
+    """Classify a browse-row station (pure): ``("up"|"category"|"station"|"",
+    guide_id)``. An empty kind means it is a normal station, not a browse row --
+    so the dialog leaves ordinary playback completely untouched."""
+    uuid = station.station_uuid or ""
+    if uuid == _NAV_UP:
+        return ("up", "")
+    if uuid.startswith(_NAV_CAT_PREFIX):
+        return ("category", uuid[len(_NAV_CAT_PREFIX) :])
+    if uuid.startswith(_NAV_STATION_PREFIX):
+        return ("station", uuid[len(_NAV_STATION_PREFIX) :])
+    return ("", "")
