@@ -194,6 +194,173 @@ Stations. More on that below.</p>
 and QUILL share one codebase and one data store, so these fixes arrive
 in both at once -- nothing here is vendored into the Quill Radio
 wrapper.</p>
+<h2 id="update-210">Update 2.1.0</h2>
+<p>Quill Radio 2.1.0 adds a top-level <strong>Weather</strong> menu, a
+whole new way to <strong>browse stations</strong>, <strong>one-click
+updating</strong>, and a round of fixes from live feedback -- all in the
+shared <code>quill</code> package, so QUILL gets them too.</p>
+<ul>
+<li><p><strong>A whole new Weather menu -- official weather as
+delightful, spoken text.</strong> A top-level <strong>Weather</strong>
+menu on free, no-account sources: the <strong>National Weather
+Service</strong> for conditions, the forecast, and alerts;
+<strong>Open-Meteo</strong> for the extended outlook and air quality;
+and <strong>OpenStreetMap</strong> for search. <strong>Search</strong> a
+location by ZIP code, city, county, or address and pick the right match
+from a list -- so the several Springfields are easy to tell apart --
+then open <strong>Weather Now</strong>. It reads, as plain
+arrow-navigable and copyable text:</p>
+<ul>
+<li>any active <strong>watches, warnings, and advisories</strong> first,
+with the full official instructions;</li>
+<li>a complete, warm paragraph of <strong>current conditions</strong> --
+temperature, feels-like, sky, humidity, dew point, wind and gusts, cloud
+cover, barometric pressure, visibility, chance of precipitation,
+sunrise, sunset, the ultraviolet index, and air quality;</li>
+<li>the <strong>National Weather Service forecast</strong>, period by
+period; and</li>
+<li>an <strong>extended daily outlook</strong> of <strong>up to 16
+days</strong> (10 by default), further than the Weather Service's own
+7-day forecast.</li>
+</ul>
+<p>Every value is written out for speech -- "the wind is blowing from
+the west-northwest at 5 miles per hour", not "WNW 5 mph" -- and
+observation times show in the location's own time zone. <strong>Each
+current-conditions detail can be turned on or off in Settings.</strong>
+Manage places with <strong>Add Location</strong> and <strong>Remove
+Location</strong> (or the Delete key). <strong>Quick Weather</strong>
+speaks a one-line summary without opening a window, and <strong>Active
+Alerts</strong> jumps straight to the alerts. Text only for now --
+spoken weather with its own voices comes in a later phase -- and, as the
+app says, it is an additional accessible tool, never a replacement for a
+NOAA Weather Radio, Wireless Emergency Alerts, or local emergency
+instructions.</p></li>
+<li><p><strong>A whole new way to browse -- one unified tree of every
+source.</strong> You asked (thanks, Kelly) to be able to pick a source
+like SomaFM and just see its stations, without typing a search first. So
+<strong>Browse Stations</strong> is now its own dedicated, search-free
+window: a single tree whose branches are the sources. You expand a
+branch and its stations appear on the spot; press <strong>Enter</strong>
+to play the highlighted one, and <strong>Shift+F10</strong> (or
+right-click) opens a full menu -- Play/Stop, Add or Remove Favorite,
+Copy the stream link, Open the station's website -- with a
+<strong>Refresh</strong> to re-pull a source. It reads like a media
+library you wander, not a form you fill in. <strong>Search
+Stations...</strong> stays a separate window with the familiar
+name/tag/country box. The branches are:</p>
+<ul>
+<li><strong>Favorites</strong>, at the very top -- your own saved
+folders and streams, built instantly, so you can jump straight to one.
+Right-click a source folder for <strong>Add All Stations to
+Favorites</strong>, and note the <strong>Play button reads
+"Stop"</strong> while the highlighted station is playing.</li>
+<li><strong>Popular Stations</strong> -- the most-listened stations on
+the internet right now (from the community RadioBrowser directory), a
+great "what's good?" start with nothing to type.</li>
+<li><strong>Weather / NOAA</strong> -- <strong>NOAA Weather Radio
+(NWR)</strong> internet re-streams: the actual transmitters, named with
+their call sign and frequency ("NOAA Weather Radio KHB36 Manassas
+162.550 MHz"). NOAA has no audio API of its own (NWR is over-air VHF),
+so these are the online re-streams listeners share; Quill Radio finds
+the genuine ones by name.</li>
+<li><strong>ACB Media</strong> and <strong>NFB Radio</strong> -- the
+bundled accessibility-community streams, ready to play.</li>
+<li><strong>SomaFM</strong> -- SomaFM's whole channel lineup at once, so
+you can arrow through every channel instead of guessing a name.</li>
+<li><strong>TuneIn</strong> -- TuneIn's own directory as a real
+<strong>folder tree</strong>: Music, Talk, Sports, Local Radio, By
+Location, By Language, and more. Open a folder to reveal its sub-folders
+and stations, and press <strong>Enter</strong> on one to play it.</li>
+<li><strong>Community M3U (Music Genres)</strong> -- a big community
+catalog sorted by genre (jazz, classical, 80s, country, ambient, and
+dozens more), fetched live from the public
+<strong>m3u-radio-music-playlists</strong> collection by
+<strong>junguler</strong> (<a
+href="https://github.com/junguler/m3u-radio-music-playlists">https://github.com/junguler/m3u-radio-music-playlists</a>)
+-- with our thanks. Nothing is bundled; the lists are read on the
+spot.</li>
+<li><strong>Xiph / Icecast Directory</strong> -- the long-running,
+keyless Icecast "yellow pages" at <strong>dir.xiph.org</strong>, browsed
+by genre and refreshable the same on-the-spot way.</li>
+</ul></li>
+<li><p><strong>Browsing and searching are now clearly separate.</strong>
+The Station menu splits the two: <strong>Browse Stations...</strong>
+opens the unified source tree above, while <strong>Search
+Stations...</strong> opens the field-based window with your cursor
+already in the search box. No more one screen that tried to be
+both.</p></li>
+<li><p><strong>SomaFM search ignores spacing and punctuation
+too.</strong> "GrooveSalad", "groove-salad", or "salad groove" all find
+"Groove Salad", where before only an exact run of letters
+matched.</p></li>
+<li><p><strong>Reorder your favorites straight from the
+keyboard.</strong> When your favorites are in <strong>manual
+(Unsorted)</strong> order, press <strong>Alt+Shift+Up</strong> or
+<strong>Alt+Shift+Down</strong> on the main Favorites list to move the
+selected station up or down within its folder -- the same gesture you'd
+use to move an item in Microsoft Teams. Quill Radio speaks where it
+landed, naming the neighbor: "Moved down, now above WABC." (The Manage
+Favorites dialog's Move Up / Move Down buttons still do the same thing
+with the mouse.)</p></li>
+<li><p><strong>Update in one click -- Quill Radio installs it and
+restarts itself.</strong> When an update is available, choose Download,
+then <strong>Install and restart now</strong>. Quill Radio applies the
+update for you -- extracting the new portable files over your current
+folder, or running the installer silently -- and relaunches
+automatically, keeping every favorite, recording, and setting exactly as
+it was. No more closing the app, hunting for the zip, unzipping it, and
+swapping folders by hand. This is shared across every Quill app, so
+QUILL, QUILL Cast, and Audio Studio update the same easy way.</p></li>
+<li><p><strong>Quill Radio no longer opens a second copy of
+itself.</strong> If Quill Radio was already running -- even minimized to
+the system tray -- launching it again used to start a whole second
+instance. Now the copy already running simply comes to the front, and
+the second launch bows out. (#1152)</p></li>
+<li><p><strong>The Record button tells you when you are
+recording.</strong> Once a recording begins, the Record button on the
+main window changes to <strong>Stop Recording</strong>, and changes back
+to <strong>Record</strong> when it stops -- so it is obvious at a glance
+(and to a screen reader) that a capture is running. (Recording has no
+pause, so this is a Record/Stop toggle.)</p></li>
+<li><p><strong>Volume changes are quiet again with a screen
+reader.</strong> Holding Ctrl+Up or Ctrl+Down on a station you have
+saved used to speak the station's name -- and sometimes a track title --
+on <em>every</em> step, so "turn it up three notches" became a wall of
+chatter. That was the app re-saving the station's remembered volume by
+rebuilding the whole favorites list underneath you. It now saves the new
+level quietly, so you hear just "Radio volume 60", "Radio volume 70".
+(#1154)</p></li>
+<li><p><strong>The Country list in Browse Stations stays put while you
+arrow through it.</strong> Moving to the Country dropdown and pressing
+Down used to fire a search that immediately threw your focus into the
+results list -- so you could never actually arrow down the list of
+countries. A search now jumps to the results only when you ask for one
+(the Search button, or pressing Enter in a search box); arrowing through
+Country or Tag just narrows the list and leaves your focus
+alone.</p></li>
+<li><p><strong>The Raw stream recording format no longer shows a
+bitrate.</strong> A raw stream is saved exactly as the station sends it,
+with no re-encoding, so a "Quality (bitrate)" setting does nothing for
+it -- it was just a confusing extra control. Recording Settings now
+hides the bitrate control for the Raw stream format (and for the
+lossless FLAC and WAV formats) and shows it only for MP3 and OGG, where
+it actually applies. (#1155)</p></li>
+<li><p><strong>Station search finds more stations by their branding and
+call sign.</strong> A station listed under a short name -- "103.1
+Austin" for "103.1 Austin's 80s Station" -- used to be unfindable if you
+searched with the dot, and its station id did nothing. iHeart search now
+ignores punctuation and matches a station's name, its page address, and
+its numeric id, so "103.1 Austin", "1031 Austin", and "8403" all land on
+it. (#1156)</p></li>
+<li><p><strong>"Impossible to exit after recording" -- confirmed
+fixed.</strong> A report of Quill Radio becoming completely unresponsive
+after a recording, with no way to exit (#1153), was the Alt+F4/Exit
+freeze that 2.0.1 already fixed: closing while a confirmation prompt is
+up no longer stacks a second one, and every shutdown step on the way out
+runs without blocking. This release adds a regression test so that exit
+path can never silently break again. If you ever meet an unresponsive
+exit, please send the exact steps.</p></li>
+</ul>
 <h2 id="update-202">Update 2.0.2</h2>
 <p>Adds concurrent recording, live Sound Enhancements preview, OptiLab
 broadcast polish, fixes the 2.0.1 channel mode, and adds two favorites

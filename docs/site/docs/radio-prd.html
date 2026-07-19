@@ -173,6 +173,71 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
 </head>
 <body>
@@ -727,5 +792,2415 @@ Release Notes / Product Requirements open the bundled docs in your
 browser.</li>
 </ul>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
+<h2 id="9-quill-weather----full-product-requirements">9. QUILL Weather
+-- full product requirements</h2>
+<p>The following is the complete QUILL Weather product-requirements
+document. The Weather menu shipped in 2.1.0 implements its text-only
+first slice; the sections below describe the full roadmap.</p>
+<h2 id="quill-weather">QUILL Weather</h2>
+<h3 id="product-requirements-document">Product Requirements
+Document</h3>
+<p><strong>Working title:</strong> QUILL Weather<br />
+<strong>Ecosystem:</strong> QUILL / QuillVille<br />
+<strong>Document status:</strong> Product definition and
+implementation-ready working draft<br />
+<strong>Version:</strong> 1.0<br />
+<strong>Date:</strong> July 19, 2026<br />
+<strong>Primary platforms:</strong> Windows first; macOS next; iOS
+considered in later phases<br />
+<strong>Product posture:</strong> Accessibility-first,
+screen-reader-first, keyboard-first, local-first, provider-based,
+safety-conscious</p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>QUILL Weather transforms official weather data into an immediate,
+understandable, highly configurable, and delightfully accessible weather
+experience.</p>
+<p>It is not merely a weather screen. It is a persistent <strong>Weather
+Guardian</strong>, an accessible <strong>Weather Center</strong>, a
+flexible <strong>audio weather channel generator</strong>, a
+location-aware <strong>Alert Center</strong>, and a deeply configurable
+<strong>Voice Studio</strong> built on the QUILL speech framework.</p>
+<p>A user should be able to:</p>
+<ol type="1">
+<li>Add a home, work, family, travel, event, or temporary location in
+seconds.</li>
+<li>Hear current conditions immediately.</li>
+<li>Receive watches, warnings, advisories, updates, and cancellations as
+soon as QUILL receives them.</li>
+<li>Continue receiving alerts while the main QUILL window is closed,
+provided QUILL Weather Guardian is running.</li>
+<li>Assign different voices, engines, rates, volumes, earcons, verbosity
+levels, and interruption rules to different weather feeds and alert
+scenarios.</li>
+<li>Build continuous generated audio channels from authoritative weather
+data.</li>
+<li>Listen to a live community NOAA Weather Radio stream when one is
+available.</li>
+<li>Understand where every piece of weather information came from, when
+it was issued, when it was last checked, and whether it may be
+stale.</li>
+<li>Use every major feature without sight, without a mouse, and without
+needing to interpret a visual map.</li>
+</ol>
+<p>The initial primary data provider will be the United States National
+Weather Service at <code>api.weather.gov</code>. The NWS API provides
+forecasts, hourly forecasts, observations, alerts, zones, stations, and
+grid data as open government data. It is cache-aware, supports
+conditional requests, and requires an identifying User-Agent. NWS
+recommends requesting alert updates no more frequently than every 30
+seconds.</p>
+<p>For faster alerts, a later QUILL Alert Relay can subscribe to the
+NOAA Weather Wire Service Open Interface. NWS describes NWWS as its
+fastest method for receiving text alerts and weather products, generally
+within 10 seconds of issuance. The relay will reconcile those pushed
+products with the public NWS alerts API and deliver normalized updates
+to subscribed QUILL clients.</p>
+<p>QUILL Weather must never imply that it replaces Wireless Emergency
+Alerts, a physical NOAA Weather Radio, local emergency instructions, or
+other official safety channels. It is an additional accessible delivery
+and interpretation tool.</p>
+<hr />
+<h2 id="2-product-vision">2. Product Vision</h2>
+<h3 id="21-vision-statement">2.1 Vision statement</h3>
+<blockquote>
+<p>Weather should never be hidden behind a map, buried in a dashboard,
+delayed by an inaccessible workflow, or spoken in a voice the user
+cannot understand.</p>
+</blockquote>
+<p>QUILL Weather meets people where they are. It provides as much or as
+little weather information as the user wants, in the voice they choose,
+for the places and people they care about.</p>
+<h3 id="22-product-promise">2.2 Product promise</h3>
+<p>QUILL Weather makes five promises:</p>
+<h4 id="everything-can-be-reached">Everything can be reached</h4>
+<p>Every location, alert, forecast period, setting, history item, source
+status, and audio control is keyboard accessible and represented through
+native or predictably accessible controls.</p>
+<h4 id="important-state-is-never-hidden">Important state is never
+hidden</h4>
+<p>An alert’s status, severity, urgency, certainty, effective time,
+expiration, affected area, source, update history, and delivery state
+are available as text and speech. Color, icon, animation, and screen
+position are never the only means of conveying meaning.</p>
+<h4 id="official-information-remains-official">Official information
+remains official</h4>
+<p>QUILL preserves the source alert, its identifiers, its lifecycle, and
+its authoritative text. QUILL may organize or deterministically
+summarize information, but it will not silently rewrite emergency
+instructions.</p>
+<h4 id="the-user-controls-the-voice">The user controls the voice</h4>
+<p>Different weather content can use different QUILL speech providers,
+voices, rates, pitches, volumes, pronunciation dictionaries, earcons,
+and interruption behaviors.</p>
+<h4 id="fast-does-not-mean-careless">Fast does not mean careless</h4>
+<p>QUILL prioritizes alert speed while using deduplication, update
+reconciliation, source freshness, delivery logging, and transparent
+fallback behavior.</p>
+<hr />
+<h2 id="3-goals">3. Goals</h2>
+<h3 id="31-primary-goals">3.1 Primary goals</h3>
+<ol type="1">
+<li>Provide fast access to official current conditions, forecasts, and
+alerts.</li>
+<li>Keep monitoring selected locations while QUILL Weather Guardian is
+running.</li>
+<li>Deliver new, updated, escalated, downgraded, extended, and cancelled
+alerts without forcing the user to open the main window.</li>
+<li>Allow unlimited saved locations, subject only to practical local
+storage and service limits.</li>
+<li>Support location groups and multi-location weather feeds.</li>
+<li>Generate highly configurable spoken weather channels from structured
+data.</li>
+<li>Provide per-feed, per-content, per-location, and per-alert speech
+scenarios.</li>
+<li>Integrate naturally with the existing QUILL speech provider and
+voice framework.</li>
+<li>Preserve raw provider data and normalize it into a stable internal
+weather model.</li>
+<li>Work without a QUILL account in local mode.</li>
+<li>Use QuilleSync optionally for encrypted synchronization of saved
+locations, feed definitions, voice mappings, alert rules, and
+preferences.</li>
+<li>Support live NOAA Weather Radio stream catalog entries without
+making live audio a prerequisite for weather or alert availability.</li>
+<li>Provide strong diagnostics and a human-readable event history.</li>
+</ol>
+<h3 id="32-success-measures">3.2 Success measures</h3>
+<p>QUILL Weather will be considered successful when:</p>
+<ul>
+<li>A new user can add a location and hear current conditions within 30
+seconds of launching the feature.</li>
+<li>A returning user can hear the primary location’s current conditions
+within 3 seconds when fresh cached data is available.</li>
+<li>The alert monitor operates while the main window is closed.</li>
+<li>A new alert is announced within one polling cycle in local API
+mode.</li>
+<li>A relay-delivered alert is normally announced within 15 seconds of
+relay receipt.</li>
+<li>Alert updates do not produce duplicate announcements unless the user
+has chosen repeat behavior.</li>
+<li>Every alert action can be completed with a keyboard and screen
+reader.</li>
+<li>Voice routing works independently for routine weather, watches,
+warnings, emergency instructions, and system status.</li>
+<li>Source freshness and failure states are always understandable.</li>
+<li>No emergency alert content is replaced by an unmarked generative
+summary.</li>
+</ul>
+<hr />
+<h2 id="4-non-goals">4. Non-Goals</h2>
+<p>The initial product will not:</p>
+<ol type="1">
+<li>Claim to be a certified emergency warning receiver.</li>
+<li>Replace Wireless Emergency Alerts, local emergency management, a
+physical NOAA Weather Radio, or instructions from public safety
+officials.</li>
+<li>Activate the Emergency Alert System.</li>
+<li>Generate meteorological predictions independent of official
+providers.</li>
+<li>Use generative AI to rewrite life-safety instructions as the only
+presented version.</li>
+<li>Promise a live NOAA audio stream for every city or transmitter.</li>
+<li>Require an account, subscription, or cloud relay for basic weather
+access.</li>
+<li>Require visual map interaction.</li>
+<li>Attempt to provide global forecast coverage in the first
+release.</li>
+<li>Store continuous precise-location history by default.</li>
+<li>Treat all provider values as equally current or equally
+reliable.</li>
+<li>Infer missing observations or alert instructions and present the
+inference as source data.</li>
+</ol>
+<hr />
+<h2 id="5-product-components">5. Product Components</h2>
+<h3 id="51-quill-weather-center">5.1 QUILL Weather Center</h3>
+<p>The main accessible weather workspace.</p>
+<p>Primary sections:</p>
+<ul>
+<li>Weather Now</li>
+<li>Active Alerts</li>
+<li>Forecast Timeline</li>
+<li>Hourly Conditions</li>
+<li>Weather Details</li>
+<li>Saved Locations</li>
+<li>Location Groups</li>
+<li>Weather Feeds</li>
+<li>NOAA Weather Radio Explorer</li>
+<li>Alert History</li>
+<li>Voice Studio</li>
+<li>Settings</li>
+<li>Source and System Status</li>
+<li>Diagnostics</li>
+</ul>
+<p>The Weather Center will use a simple semantic structure with
+predictable headings, lists, property views, and command menus. Users
+can choose a compact view or detailed view.</p>
+<h3 id="52-weather-guardian">5.2 Weather Guardian</h3>
+<p>A lightweight background process responsible for:</p>
+<ul>
+<li>Alert monitoring</li>
+<li>Forecast refresh scheduling</li>
+<li>Tray presence</li>
+<li>OS notifications</li>
+<li>Speech and earcon delivery</li>
+<li>Feed refreshes</li>
+<li>Relay connectivity</li>
+<li>Network recovery</li>
+<li>Stale-data detection</li>
+<li>Alert lifecycle reconciliation</li>
+<li>Delivery history</li>
+</ul>
+<p>Weather Guardian starts with the user only when explicitly enabled.
+It does not require administrator privileges.</p>
+<p>Closing the Weather Center does not close Weather Guardian. Exiting
+Weather Guardian requires an explicit Exit Monitoring command.</p>
+<h3 id="53-weather-channels">5.3 Weather Channels</h3>
+<p>A Weather Channel is a generated audio feed assembled from selected
+structured content.</p>
+<p>Example channel:</p>
+<ol type="1">
+<li>Channel identification</li>
+<li>Active critical alerts</li>
+<li>Current conditions</li>
+<li>Next six hours</li>
+<li>Today and tonight</li>
+<li>Extended forecast</li>
+<li>Hazardous weather outlook</li>
+<li>NOAA Weather Radio transmitter information</li>
+<li>Last-update status</li>
+<li>Repeat after a configured interval</li>
+</ol>
+<p>Channels can be played on demand or continuously. New alerts can
+interrupt or queue according to the channel’s alert policy.</p>
+<h3 id="54-alert-center">5.4 Alert Center</h3>
+<p>A complete, searchable history and current-state view for all
+monitored locations.</p>
+<p>It distinguishes:</p>
+<ul>
+<li>New alert</li>
+<li>Updated alert</li>
+<li>Escalated alert</li>
+<li>Downgraded alert</li>
+<li>Extended alert</li>
+<li>Area changed</li>
+<li>Instructions changed</li>
+<li>Corrected alert</li>
+<li>Cancelled alert</li>
+<li>Expired alert</li>
+<li>Test message</li>
+<li>Unknown lifecycle event</li>
+</ul>
+<p>The Alert Center preserves alert revisions and clearly identifies
+what changed.</p>
+<h3 id="55-voice-studio">5.5 Voice Studio</h3>
+<p>The configuration surface for weather speech scenarios.</p>
+<p>Voice Studio allows the user to assign voices and behaviors by:</p>
+<ul>
+<li>Feed</li>
+<li>Location</li>
+<li>Location group</li>
+<li>Content type</li>
+<li>Alert event</li>
+<li>Alert severity</li>
+<li>Alert urgency</li>
+<li>Alert certainty</li>
+<li>Alert lifecycle event</li>
+<li>Language</li>
+<li>Time of day</li>
+<li>Foreground or background state</li>
+<li>Headphones or speakers, where supported</li>
+<li>Routine, important, urgent, or critical priority</li>
+</ul>
+<h3 id="56-noaa-weather-radio-explorer">5.6 NOAA Weather Radio
+Explorer</h3>
+<p>A searchable transmitter and stream catalog containing:</p>
+<ul>
+<li>Call sign</li>
+<li>Transmitter city and state</li>
+<li>Frequency</li>
+<li>Counties served</li>
+<li>SAME codes</li>
+<li>Coverage notes</li>
+<li>Operational status</li>
+<li>NWS office</li>
+<li>Community audio stream, when available</li>
+<li>Stream provider</li>
+<li>Stream last verified time</li>
+<li>Stream health</li>
+<li>Official or community provenance</li>
+<li>Receiver-node information, when applicable</li>
+</ul>
+<p>QUILL must clearly differentiate:</p>
+<ul>
+<li>Official NWR transmitter metadata</li>
+<li>Official NWS data</li>
+<li>Community-operated audio streams</li>
+<li>QUILL-generated weather audio</li>
+</ul>
+<hr />
+<h2 id="6-core-user-experiences">6. Core User Experiences</h2>
+<h3 id="61-first-launch">6.1 First launch</h3>
+<p>On first launch, QUILL Weather asks one accessible question:</p>
+<blockquote>
+<p>Which location would you like to use first?</p>
+</blockquote>
+<p>Available methods:</p>
+<ul>
+<li>Enter city and state</li>
+<li>Enter ZIP code</li>
+<li>Enter an address</li>
+<li>Use current location</li>
+<li>Enter latitude and longitude</li>
+<li>Search by county</li>
+<li>Search by NOAA Weather Radio call sign</li>
+<li>Skip and explore sample data</li>
+</ul>
+<p>The user reviews resolved choices before saving. QUILL announces
+ambiguities such as multiple cities with the same name.</p>
+<p>After selection, QUILL immediately presents:</p>
+<ul>
+<li>Location name</li>
+<li>Current conditions</li>
+<li>Active alert count</li>
+<li>Next forecast period</li>
+<li>Data source</li>
+<li>Last update time</li>
+</ul>
+<p>The user is then offered an optional, clearly explained choice to
+enable Weather Guardian at sign-in.</p>
+<h3 id="62-quick-weather">6.2 Quick Weather</h3>
+<p>A configurable global command speaks:</p>
+<ul>
+<li>Location</li>
+<li>Temperature</li>
+<li>Feels-like temperature, when meaningful</li>
+<li>Current condition</li>
+<li>Wind</li>
+<li>Active alert count</li>
+<li>Next meaningful forecast change</li>
+<li>Data age</li>
+</ul>
+<p>Example:</p>
+<blockquote>
+<p>Phoenix. 108 degrees, feels like 112. Mostly sunny. Southwest wind 8
+miles per hour. One Excessive Heat Warning is active. Conditions were
+updated 6 minutes ago.</p>
+</blockquote>
+<p>The quick response must be deterministic and configurable.</p>
+<h3 id="63-active-alert-arrival">6.3 Active alert arrival</h3>
+<p>When a new alert arrives:</p>
+<ol type="1">
+<li>Weather Guardian validates and normalizes it.</li>
+<li>The alert is matched against monitored locations and alert
+rules.</li>
+<li>QUILL deduplicates it against existing revisions.</li>
+<li>QUILL determines its priority scenario.</li>
+<li>The configured earcon plays.</li>
+<li>The configured voice announces the headline.</li>
+<li>An accessible OS notification appears when enabled.</li>
+<li>The system tray state changes.</li>
+<li>The Alert Center records receipt and delivery.</li>
+<li>The user can open details, repeat, acknowledge, snooze allowed
+repeats, or move directly to instructions.</li>
+</ol>
+<p>Example spoken sequence:</p>
+<blockquote>
+<p>Weather Warning. Tornado Warning for Pima County, including the
+Tucson area, until 4:45 PM. Take shelter now. Press the configured Alert
+Details command for the complete official message.</p>
+</blockquote>
+<p>For warnings where the official message contains instructions, the
+user must be able to hear those instructions immediately without
+navigating through unrelated details.</p>
+<h3 id="64-alert-update">6.4 Alert update</h3>
+<p>An update must not be treated as a duplicate merely because the event
+name is unchanged.</p>
+<p>QUILL compares:</p>
+<ul>
+<li>Headline</li>
+<li>Severity</li>
+<li>Urgency</li>
+<li>Certainty</li>
+<li>Effective, onset, expiration, and end times</li>
+<li>Area description</li>
+<li>Geometry and geocodes</li>
+<li>Description</li>
+<li>Instruction</li>
+<li>Response type</li>
+<li>Event codes</li>
+<li>References</li>
+<li>Parameters</li>
+<li>Sender and issuing office</li>
+</ul>
+<p>The announcement can say:</p>
+<blockquote>
+<p>Update to the Tornado Warning for Pima County. The warning now
+expires at 5:15 PM. The affected area has expanded eastward.
+Instructions remain unchanged.</p>
+</blockquote>
+<p>A user can choose:</p>
+<ul>
+<li>Headline only</li>
+<li>Changes only</li>
+<li>Changes plus instructions</li>
+<li>Entire updated alert</li>
+<li>Silent log for low-priority updates</li>
+</ul>
+<h3 id="65-all-clear-behavior">6.5 All-clear behavior</h3>
+<p>When an alert is cancelled or expires:</p>
+<ul>
+<li>The Alert Center updates immediately.</li>
+<li>The tray state is recalculated.</li>
+<li>The user’s configured all-clear scenario runs.</li>
+<li>QUILL never says “all clear” unless the source explicitly supports
+that interpretation.</li>
+<li>Default wording is factual:</li>
+</ul>
+<blockquote>
+<p>The Severe Thunderstorm Warning for Maricopa County has expired. Two
+other advisories remain active.</p>
+</blockquote>
+<h3 id="66-continuous-weather-channel">6.6 Continuous weather
+channel</h3>
+<p>A user starts “Home Weather Radio.”</p>
+<p>QUILL generates a continuous audio experience using a selected
+program clock. Routine content repeats at user-defined intervals, but
+only changed content needs to be spoken on every cycle.</p>
+<p>A new warning can:</p>
+<ul>
+<li>Interrupt immediately</li>
+<li>Finish the current sentence, then interrupt</li>
+<li>Finish the current segment, then interrupt</li>
+<li>Queue behind current content</li>
+<li>Announce headline only and offer details</li>
+</ul>
+<p>Critical alerts default to immediate interruption, but the user
+retains control.</p>
+<h3 id="67-multi-location-monitoring">6.7 Multi-location monitoring</h3>
+<p>A user creates a group named “Family” containing:</p>
+<ul>
+<li>Home</li>
+<li>Keri</li>
+<li>David</li>
+<li>Brian</li>
+</ul>
+<p>The group can use:</p>
+<ul>
+<li>One shared voice profile</li>
+<li>A unique location-identification voice</li>
+<li>A critical-alert voice</li>
+<li>Different quiet-hour rules</li>
+<li>A combined scan feed</li>
+</ul>
+<p>Example:</p>
+<blockquote>
+<p>Family Weather Scan. Phoenix has one warning. Tucson has no active
+alerts. Austin has a Heat Advisory.</p>
+</blockquote>
+<h3 id="68-travel-mode">6.8 Travel mode</h3>
+<p>Travel mode can monitor:</p>
+<ul>
+<li>The current OS-provided location</li>
+<li>A destination</li>
+<li>Saved locations</li>
+<li>A configurable corridor or set of waypoints in a later release</li>
+</ul>
+<p>Current location is sampled only with permission. Precise location
+history is not retained unless the user explicitly enables it.</p>
+<hr />
+<h2 id="7-location-model">7. Location Model</h2>
+<h3 id="71-location-types">7.1 Location types</h3>
+<p>QUILL supports:</p>
+<ul>
+<li>Fixed point</li>
+<li>Address</li>
+<li>City</li>
+<li>ZIP code</li>
+<li>County</li>
+<li>NWS forecast zone</li>
+<li>Fire weather zone</li>
+<li>Marine zone</li>
+<li>State or territory</li>
+<li>Current location</li>
+<li>Temporary location</li>
+<li>NOAA Weather Radio transmitter</li>
+<li>Custom latitude and longitude</li>
+<li>Location group</li>
+</ul>
+<h3 id="72-location-record">7.2 Location record</h3>
+<p>Each saved location includes:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;loc_uuid&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;display_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Home&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;resolved_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Phoenix, Arizona&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;latitude&quot;</span><span class="fu">:</span> <span class="fl">33.4484</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;longitude&quot;</span><span class="fu">:</span> <span class="fl">-112.0740</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timezone&quot;</span><span class="fu">:</span> <span class="st">&quot;America/Phoenix&quot;</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;country&quot;</span><span class="fu">:</span> <span class="st">&quot;US&quot;</span><span class="fu">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;state&quot;</span><span class="fu">:</span> <span class="st">&quot;AZ&quot;</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;county_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Maricopa&quot;</span><span class="fu">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;county_zone&quot;</span><span class="fu">:</span> <span class="st">&quot;AZC013&quot;</span><span class="fu">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;forecast_zone&quot;</span><span class="fu">:</span> <span class="st">&quot;AZZ543&quot;</span><span class="fu">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;fire_zone&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;marine_zone&quot;</span><span class="fu">:</span> <span class="kw">null</span><span class="fu">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;nws_office&quot;</span><span class="fu">:</span> <span class="st">&quot;PSR&quot;</span><span class="fu">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;grid_x&quot;</span><span class="fu">:</span> <span class="dv">159</span><span class="fu">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;grid_y&quot;</span><span class="fu">:</span> <span class="dv">57</span><span class="fu">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;forecast_url&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;hourly_forecast_url&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;grid_data_url&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;observation_station_ids&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;nwr_transmitters&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;source_resolved_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-07-19T17:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;privacy_classification&quot;</span><span class="fu">:</span> <span class="st">&quot;precise&quot;</span><span class="fu">,</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sync_enabled&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Actual provider URLs are stored as provider-owned metadata and can be
+refreshed.</p>
+<h3 id="73-location-resolution">7.3 Location resolution</h3>
+<p>The NWS API requires latitude and longitude for point metadata and
+does not provide general address geocoding. QUILL therefore uses a
+pluggable Geocoder Provider interface.</p>
+<p>Resolution sequence:</p>
+<ol type="1">
+<li>Use exact coordinates when supplied.</li>
+<li>Use OS location services when requested.</li>
+<li>Use the configured geocoder for addresses, cities, and ZIP
+codes.</li>
+<li>Present ambiguous results for user selection.</li>
+<li>Resolve coordinates through the NWS <code>/points/{lat},{lon}</code>
+endpoint.</li>
+<li>Cache point-to-grid metadata because it changes infrequently.</li>
+<li>Discover forecast URLs, zones, office, grid, and nearby
+stations.</li>
+<li>Resolve NWR transmitter coverage separately.</li>
+</ol>
+<h3 id="74-location-privacy">7.4 Location privacy</h3>
+<ul>
+<li>No current-location access without explicit permission.</li>
+<li>No continuous location history by default.</li>
+<li>Saved precise coordinates are classified as sensitive application
+data.</li>
+<li>Local protection uses operating-system secure storage where
+appropriate.</li>
+<li>QuilleSync synchronization is optional.</li>
+<li>A future encrypted sync design must avoid exposing precise locations
+to the sync operator.</li>
+<li>Users can sync a coarse county or zone instead of an exact
+point.</li>
+<li>Removing a location offers to remove its weather history and cached
+coordinate metadata.</li>
+</ul>
+<hr />
+<h2 id="8-weather-feed-model">8. Weather Feed Model</h2>
+<h3 id="81-feed-definition">8.1 Feed definition</h3>
+<p>A feed is a named weather experience containing one or more locations
+and one or more content segments.</p>
+<p>Example feed types:</p>
+<ul>
+<li>Quick Weather</li>
+<li>Home Weather Radio</li>
+<li>Morning Briefing</li>
+<li>Evening Outlook</li>
+<li>Family Alert Scan</li>
+<li>Travel Watch</li>
+<li>Severe Weather Only</li>
+<li>Marine Weather</li>
+<li>Fire Weather</li>
+<li>NOAA Radio Stream</li>
+<li>Custom</li>
+</ul>
+<h3 id="82-feed-record">8.2 Feed record</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;feed_uuid&quot;</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Home Weather Radio&quot;</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;locations&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;loc_home&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;segments&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;identity&quot;</span><span class="ot">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;critical_alerts&quot;</span><span class="ot">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;current_conditions&quot;</span><span class="ot">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;next_six_hours&quot;</span><span class="ot">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;today_tonight&quot;</span><span class="ot">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;extended_forecast&quot;</span><span class="ot">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;hazardous_outlook&quot;</span><span class="ot">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;source_status&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;repeat_interval_minutes&quot;</span><span class="fu">:</span> <span class="dv">15</span><span class="fu">,</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;speak_only_changes_after_first_cycle&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;alert_interruption_policy&quot;</span><span class="fu">:</span> <span class="st">&quot;critical_immediate&quot;</span><span class="fu">,</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;voice_profile_id&quot;</span><span class="fu">:</span> <span class="st">&quot;voice_home_radio&quot;</span><span class="fu">,</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;output_device_id&quot;</span><span class="fu">:</span> <span class="st">&quot;default&quot;</span><span class="fu">,</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;live_stream_fallback_policy&quot;</span><span class="fu">:</span> <span class="st">&quot;generated_audio&quot;</span><span class="fu">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;enabled&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="83-content-segments">8.3 Content segments</h3>
+<p>Supported segment types include:</p>
+<ul>
+<li>Feed identification</li>
+<li>Location identification</li>
+<li>Active alert summary</li>
+<li>Critical alert details</li>
+<li>Current conditions</li>
+<li>Observation details</li>
+<li>Feels-like conditions</li>
+<li>Today</li>
+<li>Tonight</li>
+<li>Next period</li>
+<li>Next 3, 6, 12, or 24 hours</li>
+<li>Hourly precipitation timeline</li>
+<li>Temperature trend</li>
+<li>Wind trend</li>
+<li>Visibility</li>
+<li>Humidity and dew point</li>
+<li>Sunrise and sunset, through an appropriate provider</li>
+<li>Extended forecast</li>
+<li>Hazardous weather outlook</li>
+<li>Text products</li>
+<li>Marine forecast</li>
+<li>Fire weather forecast</li>
+<li>Air quality, through an appropriate provider</li>
+<li>NWR transmitter details</li>
+<li>Live stream</li>
+<li>Source and freshness status</li>
+<li>Custom deterministic template</li>
+</ul>
+<p>Every segment exposes:</p>
+<ul>
+<li>Source</li>
+<li>Issue/update time</li>
+<li>Valid time range</li>
+<li>Data age</li>
+<li>Missing-field behavior</li>
+<li>Speech template</li>
+<li>Voice scenario</li>
+<li>Repeat policy</li>
+<li>Change detection policy</li>
+</ul>
+<hr />
+<h2 id="9-voice-and-speech-scenario-framework">9. Voice and Speech
+Scenario Framework</h2>
+<h3 id="91-design-principle">9.1 Design principle</h3>
+<p>The QUILL speech framework is not merely a text-to-speech output
+switch. For QUILL Weather it becomes a <strong>scenario
+router</strong>.</p>
+<p>A scenario answers:</p>
+<ul>
+<li>What is being spoken?</li>
+<li>Why is it being spoken?</li>
+<li>For which feed and location?</li>
+<li>How important is it?</li>
+<li>Which provider and voice should speak it?</li>
+<li>At what rate, pitch, volume, and language?</li>
+<li>Which pronunciation rules apply?</li>
+<li>What should it interrupt?</li>
+<li>Should an earcon play?</li>
+<li>Should the full source text or a concise deterministic version be
+spoken?</li>
+<li>Can it repeat?</li>
+<li>What happens if the selected voice is unavailable?</li>
+</ul>
+<h3 id="92-speech-scopes">9.2 Speech scopes</h3>
+<p>Rules can be assigned at these levels, from broadest to most
+specific:</p>
+<ol type="1">
+<li>Global QUILL default</li>
+<li>QUILL Weather default</li>
+<li>Output device</li>
+<li>Feed</li>
+<li>Location group</li>
+<li>Location</li>
+<li>Content type</li>
+<li>Alert priority</li>
+<li>Alert event type</li>
+<li>Alert lifecycle event</li>
+<li>Language</li>
+<li>Temporary session override</li>
+</ol>
+<p>The most specific enabled rule wins. The resolved rule is
+inspectable.</p>
+<h3 id="93-voice-scenario-record">9.3 Voice scenario record</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;scenario_uuid&quot;</span><span class="fu">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Critical Warning Voice&quot;</span><span class="fu">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;match&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;content_domain&quot;</span><span class="fu">:</span> <span class="st">&quot;alert&quot;</span><span class="fu">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;severity&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Extreme&quot;</span><span class="ot">,</span> <span class="st">&quot;Severe&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;urgency&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Immediate&quot;</span><span class="ot">,</span> <span class="st">&quot;Expected&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;event_types&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Tornado Warning&quot;</span><span class="ot">,</span> <span class="st">&quot;Flash Flood Warning&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;feed_ids&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;*&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;location_ids&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;*&quot;</span><span class="ot">]</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;speech&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;provider_id&quot;</span><span class="fu">:</span> <span class="st">&quot;sapi5&quot;</span><span class="fu">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;voice_id&quot;</span><span class="fu">:</span> <span class="st">&quot;Microsoft David Desktop&quot;</span><span class="fu">,</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;rate&quot;</span><span class="fu">:</span> <span class="dv">-1</span><span class="fu">,</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pitch&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;volume&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;en-US&quot;</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;pronunciation_dictionary_id&quot;</span><span class="fu">:</span> <span class="st">&quot;weather_terms&quot;</span><span class="fu">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;number_style&quot;</span><span class="fu">:</span> <span class="st">&quot;natural&quot;</span><span class="fu">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;time_style&quot;</span><span class="fu">:</span> <span class="st">&quot;local_explicit&quot;</span><span class="fu">,</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;units_style&quot;</span><span class="fu">:</span> <span class="st">&quot;spoken_full&quot;</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;presentation&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;earcon_id&quot;</span><span class="fu">:</span> <span class="st">&quot;warning_critical&quot;</span><span class="fu">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;earcon_before&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;earcon_after&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;priority&quot;</span><span class="fu">:</span> <span class="st">&quot;critical&quot;</span><span class="fu">,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;interruption&quot;</span><span class="fu">:</span> <span class="st">&quot;immediate&quot;</span><span class="fu">,</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;duck_other_audio_percent&quot;</span><span class="fu">:</span> <span class="dv">80</span><span class="fu">,</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;repeat_policy&quot;</span><span class="fu">:</span> <span class="st">&quot;until_acknowledged_or_changed&quot;</span><span class="fu">,</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;repeat_interval_minutes&quot;</span><span class="fu">:</span> <span class="dv">5</span><span class="fu">,</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;maximum_repeats&quot;</span><span class="fu">:</span> <span class="dv">3</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;fallbacks&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;weather_default_voice&quot;</span><span class="ot">,</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;system_default_voice&quot;</span><span class="ot">,</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;screen_reader_announcement&quot;</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="94-recommended-built-in-scenarios">9.4 Recommended built-in
+scenarios</h3>
+<p>QUILL ships with editable defaults:</p>
+<ul>
+<li>Routine Conditions</li>
+<li>Forecast Narrator</li>
+<li>Watch Announcement</li>
+<li>Warning Announcement</li>
+<li>Immediate Life-Safety Warning</li>
+<li>Alert Update</li>
+<li>Alert Cancellation or Expiration</li>
+<li>Location Identification</li>
+<li>Source and Freshness Status</li>
+<li>System Error</li>
+<li>Live Stream Identification</li>
+<li>Spanish Alert</li>
+<li>Test Alert</li>
+</ul>
+<h3 id="95-per-feed-voices">9.5 Per-feed voices</h3>
+<p>A user can make each generated feed sound distinct.</p>
+<p>Example:</p>
+<ul>
+<li>Home Weather Radio: Piper voice A</li>
+<li>Family Alert Scan: SAPI voice B</li>
+<li>Travel Watch: eSpeak NG voice C</li>
+<li>Tornado and Flash Flood Warnings: high-clarity SAPI voice D</li>
+<li>System and source errors: QUILL system voice</li>
+<li>Spanish CAP content: Spanish-capable provider voice</li>
+</ul>
+<p>A feed may also use multiple voices internally:</p>
+<ul>
+<li>Announcer voice for headings</li>
+<li>Forecast voice for routine content</li>
+<li>Warning voice for urgent content</li>
+<li>Location voice for each city</li>
+<li>Status voice for source and freshness messages</li>
+</ul>
+<h3 id="96-speech-rendering-rules">9.6 Speech rendering rules</h3>
+<p>The renderer must correctly handle:</p>
+<ul>
+<li>Temperature symbols</li>
+<li>Units</li>
+<li>Decimal values</li>
+<li>Percentages</li>
+<li>Wind directions</li>
+<li>Cardinal and intercardinal abbreviations</li>
+<li>Time zones</li>
+<li>UTC versus local time</li>
+<li>SAME and NWS codes</li>
+<li>Call signs</li>
+<li>County and parish names</li>
+<li>Highway names</li>
+<li>Coordinates</li>
+<li>Acronyms</li>
+<li>Meteorological abbreviations</li>
+<li>VTEC codes in expert mode</li>
+<li>Repeated punctuation</li>
+<li>URLs, which are omitted from routine speech unless requested</li>
+</ul>
+<p>Examples:</p>
+<ul>
+<li><code>WSW 8 mph</code> becomes “west southwest wind at 8 miles per
+hour.”</li>
+<li><code>40%</code> becomes “a 40 percent chance.”</li>
+<li><code>AZC013</code> is normally spoken as “Maricopa County,” with
+the code available in details.</li>
+<li><code>KPHX</code> can be spoken as “K P H X” or “Phoenix Sky
+Harbor,” based on context.</li>
+</ul>
+<h3 id="97-pronunciation-dictionaries">9.7 Pronunciation
+dictionaries</h3>
+<p>Weather Voice Studio supports:</p>
+<ul>
+<li>Global dictionary</li>
+<li>Provider-specific dictionary</li>
+<li>Voice-specific dictionary</li>
+<li>Location dictionary</li>
+<li>Feed dictionary</li>
+<li>Alert dictionary</li>
+</ul>
+<p>Users can correct local names without modifying source text.</p>
+<h3 id="98-voice-failure-behavior">9.8 Voice failure behavior</h3>
+<p>If a selected voice or engine fails:</p>
+<ol type="1">
+<li>Try the configured fallback voice.</li>
+<li>Try the QUILL Weather default voice.</li>
+<li>Try the system default voice.</li>
+<li>Send an accessible screen-reader or OS notification.</li>
+<li>Log the failure.</li>
+<li>Never silently discard a critical alert.</li>
+</ol>
+<hr />
+<h2 id="10-alert-architecture">10. Alert Architecture</h2>
+<h3 id="101-alert-sources">10.1 Alert sources</h3>
+<h4 id="initial-source-nws-alerts-api">Initial source: NWS Alerts
+API</h4>
+<p>Default endpoint patterns include:</p>
+<ul>
+<li>Active alerts for a point</li>
+<li>Active alerts for a county or forecast zone</li>
+<li>Active alerts for a state</li>
+<li>Individual alert retrieval</li>
+<li>Alert type metadata</li>
+</ul>
+<p>The default local polling interval is 30 seconds, matching NWS
+guidance not to request alert updates more frequently.</p>
+<h4 id="optional-fast-source-quill-alert-relay">Optional fast source:
+QUILL Alert Relay</h4>
+<p>The relay can receive NOAA Weather Wire Service products through
+NWWS-OI, which requires NWS-issued credentials and an XMPP client. The
+relay:</p>
+<ul>
+<li>Receives pushed products</li>
+<li>Parses CAP and text products</li>
+<li>Normalizes alert messages</li>
+<li>Matches zone subscriptions</li>
+<li>Pushes updates to clients</li>
+<li>Reconciles against the NWS API</li>
+<li>Falls back to public API polling</li>
+<li>Reports relay status and latency</li>
+</ul>
+<h4 id="future-source-fema-ipaws">Future source: FEMA IPAWS</h4>
+<p>A future provider may add FEMA IPAWS for non-weather and broader
+all-hazards alerts, subject to access requirements, agreements, testing,
+and explicit provenance.</p>
+<h3 id="102-local-first-and-relay-modes">10.2 Local-first and relay
+modes</h3>
+<h4 id="local-mode">Local mode</h4>
+<ul>
+<li>No account required</li>
+<li>Client communicates directly with official NWS endpoints</li>
+<li>Alert polling no more frequent than every 30 seconds</li>
+<li>Uses conditional requests and provider caching guidance</li>
+<li>Best privacy</li>
+<li>Slight polling delay</li>
+</ul>
+<h4 id="relay-assisted-mode">Relay-assisted mode</h4>
+<ul>
+<li>Optional</li>
+<li>Uses coarse zones or opaque subscriptions where possible</li>
+<li>Receives server-pushed alert changes</li>
+<li>Falls back locally if relay is unavailable</li>
+<li>Does not require the relay to store exact addresses</li>
+<li>Shows connection and last-message status</li>
+</ul>
+<h4 id="hybrid-mode">Hybrid mode</h4>
+<p>Recommended default after the relay is production ready:</p>
+<ul>
+<li>Relay for speed</li>
+<li>NWS API for verification and reconciliation</li>
+<li>Local cache for continuity</li>
+<li>Independent periodic checks to detect missed messages</li>
+</ul>
+<h3 id="103-alert-normalization">10.3 Alert normalization</h3>
+<p>The normalized alert model must preserve at least:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;provider&quot;</span><span class="fu">:</span> <span class="st">&quot;nws&quot;</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;source_id&quot;</span><span class="fu">:</span> <span class="st">&quot;official-alert-id&quot;</span><span class="fu">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;Actual&quot;</span><span class="fu">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;message_type&quot;</span><span class="fu">:</span> <span class="st">&quot;Alert&quot;</span><span class="fu">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;scope&quot;</span><span class="fu">:</span> <span class="st">&quot;Public&quot;</span><span class="fu">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sent&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;effective&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;onset&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;expires&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;ends&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;event&quot;</span><span class="fu">:</span> <span class="st">&quot;Flash Flood Warning&quot;</span><span class="fu">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sender&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;sender_name&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;headline&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;instruction&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;response&quot;</span><span class="fu">:</span> <span class="st">&quot;Shelter&quot;</span><span class="fu">,</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;urgency&quot;</span><span class="fu">:</span> <span class="st">&quot;Immediate&quot;</span><span class="fu">,</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;severity&quot;</span><span class="fu">:</span> <span class="st">&quot;Severe&quot;</span><span class="fu">,</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;certainty&quot;</span><span class="fu">:</span> <span class="st">&quot;Observed&quot;</span><span class="fu">,</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;area_description&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;geometry&quot;</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;geocodes&quot;</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;affected_zones&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;references&quot;</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;parameters&quot;</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;en-US&quot;</span><span class="fu">,</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;raw_payload_hash&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;received_at&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;normalized_at&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Raw payloads are retained according to the user’s history setting so
+developers and users can verify interpretation.</p>
+<h3 id="104-alert-matching">10.4 Alert matching</h3>
+<p>An alert can match a location through:</p>
+<ul>
+<li>Direct point query result</li>
+<li>Point-in-polygon calculation</li>
+<li>County or zone code</li>
+<li>Forecast zone</li>
+<li>Fire zone</li>
+<li>Marine zone</li>
+<li>State or territory</li>
+<li>NWR SAME code</li>
+<li>Explicit user rule</li>
+</ul>
+<p>Where geometry and zone matching disagree, QUILL records the
+discrepancy and follows a configurable conservative policy. Default
+behavior favors notifying the user rather than suppressing a potentially
+relevant warning.</p>
+<h3 id="105-alert-lifecycle-and-deduplication">10.5 Alert lifecycle and
+deduplication</h3>
+<p>QUILL uses:</p>
+<ul>
+<li>Official alert ID</li>
+<li>Message type</li>
+<li>References</li>
+<li>Event code</li>
+<li>Sender</li>
+<li>Sent time</li>
+<li>Payload hash</li>
+<li>Geometry/geocode changes</li>
+<li>Expiration changes</li>
+</ul>
+<p>A revision graph links all related alert versions.</p>
+<p>A repeated provider response with no meaningful change is not
+reannounced unless the user selected periodic reminders.</p>
+<h3 id="106-alert-priority-model">10.6 Alert priority model</h3>
+<p>QUILL does not reduce urgency, severity, and certainty to a single
+hidden number. It preserves all three.</p>
+<p>For delivery, QUILL computes a transparent priority tier:</p>
+<ul>
+<li>Critical</li>
+<li>Urgent</li>
+<li>Important</li>
+<li>Advisory</li>
+<li>Informational</li>
+<li>Test</li>
+</ul>
+<p>Users can inspect why a tier was selected.</p>
+<p>The default mapping considers:</p>
+<ul>
+<li>Event type</li>
+<li>Severity</li>
+<li>Urgency</li>
+<li>Certainty</li>
+<li>Response type</li>
+<li>Observed versus forecast condition</li>
+<li>User rules</li>
+<li>Location role</li>
+<li>Time of day</li>
+<li>Lifecycle event</li>
+</ul>
+<h3 id="107-notification-actions">10.7 Notification actions</h3>
+<p>An accessible notification can offer:</p>
+<ul>
+<li>Hear headline</li>
+<li>Hear official instructions</li>
+<li>Hear full alert</li>
+<li>Open Alert Center</li>
+<li>Acknowledge</li>
+<li>Repeat</li>
+<li>Snooze reminders</li>
+<li>Copy official text</li>
+<li>View source details</li>
+<li>Switch to affected location</li>
+<li>Start the related weather feed</li>
+</ul>
+<h3 id="108-quiet-hours-and-interruption-safety">10.8 Quiet hours and
+interruption safety</h3>
+<p>Users can configure:</p>
+<ul>
+<li>Routine quiet hours</li>
+<li>Advisory quiet hours</li>
+<li>Watch quiet hours</li>
+<li>Warning behavior</li>
+<li>Critical override</li>
+<li>Headphone-only behavior</li>
+<li>Earcon-only behavior</li>
+<li>Notification-only behavior</li>
+<li>Repeat limits</li>
+</ul>
+<p>Default behavior:</p>
+<ul>
+<li>Routine weather respects quiet hours.</li>
+<li>Advisories are logged and optionally notified.</li>
+<li>Watches use the configured important-alert policy.</li>
+<li>Severe and extreme immediate alerts are allowed to interrupt.</li>
+<li>The user can change every default.</li>
+</ul>
+<p>A “Silence all critical alerts” action requires explicit
+confirmation, states the consequence, and can be time-limited.</p>
+<h3 id="109-authoritative-text-and-summaries">10.9 Authoritative text
+and summaries</h3>
+<p>For life-safety alerts:</p>
+<ol type="1">
+<li>The official headline and instructions are always available.</li>
+<li>QUILL can create a deterministic “changes only” summary.</li>
+<li>Optional plain-language assistance must be labeled as a QUILL
+interpretation.</li>
+<li>Generative AI may not replace, suppress, or alter official
+instructions.</li>
+<li>The user can always access the raw source message.</li>
+</ol>
+<hr />
+<h2 id="11-weather-data-architecture">11. Weather Data Architecture</h2>
+<h3 id="111-primary-nws-data-flow">11.1 Primary NWS data flow</h3>
+<p>For each point location:</p>
+<ol type="1">
+<li>Resolve latitude and longitude.</li>
+<li>Request NWS point metadata.</li>
+<li>Cache office, grid, zones, and provider URLs.</li>
+<li>Retrieve forecast periods.</li>
+<li>Retrieve hourly forecast periods.</li>
+<li>Retrieve gridpoint data for detailed time-series values.</li>
+<li>Retrieve nearby stations.</li>
+<li>Select observations using freshness and availability rules.</li>
+<li>Retrieve active alerts.</li>
+<li>Retrieve optional text products.</li>
+<li>Normalize all values.</li>
+<li>store source time, receipt time, and freshness.</li>
+<li>Render views and speech.</li>
+</ol>
+<h3 id="112-provider-interfaces">11.2 Provider interfaces</h3>
+<pre class="text"><code>WeatherProvider
+  get_capabilities()
+  resolve_point_metadata()
+  get_forecast()
+  get_hourly_forecast()
+  get_grid_data()
+  get_observation_stations()
+  get_latest_observations()
+  get_alerts()
+  get_alert()
+  get_zones()
+  get_text_products()
+  get_source_status()
+
+GeocoderProvider
+  search()
+  reverse_geocode()
+  normalize_result()
+
+AlertPushProvider
+  connect()
+  subscribe()
+  unsubscribe()
+  receive()
+  acknowledge_cursor()
+  get_status()
+
+NwrMetadataProvider
+  search_transmitters()
+  get_county_coverage()
+  get_transmitter_status()
+  get_same_codes()
+
+WeatherAudioStreamProvider
+  search_streams()
+  resolve_stream()
+  verify_health()
+  get_provenance()</code></pre>
+<p>Providers register capabilities through stable contribution points.
+Provider provenance is available in text and speech.</p>
+<h3 id="113-normalized-weather-model">11.3 Normalized weather model</h3>
+<p>QUILL stores:</p>
+<ul>
+<li>Raw source value</li>
+<li>Source unit</li>
+<li>Normalized SI value</li>
+<li>Display value</li>
+<li>Display unit</li>
+<li>Valid time interval</li>
+<li>Source update time</li>
+<li>QUILL receipt time</li>
+<li>Quality or status metadata</li>
+<li>Provider identity</li>
+<li>Missing or null reason, when known</li>
+</ul>
+<h3 id="114-time-series-understanding">11.4 Time-series
+understanding</h3>
+<p>NWS gridpoint data may represent values across ISO 8601 time
+intervals rather than one record per hour. QUILL’s interval engine
+must:</p>
+<ul>
+<li>Expand intervals only when needed</li>
+<li>Preserve original valid intervals</li>
+<li>Avoid creating false precision</li>
+<li>Merge identical adjacent values for speech</li>
+<li>Select the value valid at a requested time</li>
+<li>Handle gaps explicitly</li>
+<li>Convert to the location’s time zone</li>
+<li>handle daylight-saving transitions</li>
+<li>distinguish issue time from valid time</li>
+</ul>
+<h3 id="115-units">11.5 Units</h3>
+<p>QUILL supports:</p>
+<ul>
+<li>Fahrenheit and Celsius</li>
+<li>Miles per hour, kilometers per hour, knots, and meters per
+second</li>
+<li>Inches, millimeters, and centimeters</li>
+<li>Miles, kilometers, feet, and meters</li>
+<li>Inches of mercury, millibars/hectopascals, and pascals</li>
+</ul>
+<p>The user can set units globally, by feed, or by content type.</p>
+<p>The source value is never destroyed when converted.</p>
+<h3 id="116-observations">11.6 Observations</h3>
+<p>Observation station selection considers:</p>
+<ul>
+<li>Distance</li>
+<li>Data freshness</li>
+<li>Missing values</li>
+<li>Station availability</li>
+<li>Quality-control status when exposed</li>
+<li>User preference</li>
+<li>Airport or station identity</li>
+</ul>
+<p>QUILL states the observation source and age.</p>
+<p>It must distinguish:</p>
+<ul>
+<li>Reported observation</li>
+<li>Forecast value</li>
+<li>Derived display value</li>
+<li>Missing value</li>
+</ul>
+<h3 id="117-freshness-and-staleness">11.7 Freshness and staleness</h3>
+<p>Every view and speech response can expose:</p>
+<ul>
+<li>Issued time</li>
+<li>Updated time</li>
+<li>Valid time</li>
+<li>Retrieved time</li>
+<li>Age</li>
+<li>Next refresh</li>
+<li>Source status</li>
+</ul>
+<p>Default stale thresholds are content-specific.</p>
+<p>Example:</p>
+<blockquote>
+<p>Current conditions were last observed 47 minutes ago and may be
+stale. The forecast was updated 18 minutes ago.</p>
+</blockquote>
+<p>QUILL must not hide stale data behind a generic “updated” label.</p>
+<h3 id="118-caching">11.8 Caching</h3>
+<p>QUILL honors:</p>
+<ul>
+<li>Cache-Control</li>
+<li>Last-Modified</li>
+<li>ETag, when available</li>
+<li>If-Modified-Since</li>
+<li>If-None-Match</li>
+<li>Retry-After</li>
+</ul>
+<p>The client avoids cache-busting query parameters.</p>
+<p>Point-to-grid mapping is cached long-term and refreshed on provider
+errors, source changes, or a scheduled maintenance interval.</p>
+<h3 id="119-failure-and-fallback">11.9 Failure and fallback</h3>
+<p>When a request fails:</p>
+<ol type="1">
+<li>Keep the last successful data.</li>
+<li>Mark it stale.</li>
+<li>Attempt a bounded retry with exponential backoff and jitter.</li>
+<li>Use a secondary provider only when configured.</li>
+<li>Announce source changes when they affect meaning.</li>
+<li>Never merge conflicting provider values without attribution.</li>
+<li>Keep alert monitoring prioritized over routine refreshes.</li>
+<li>Record errors in diagnostics.</li>
+</ol>
+<hr />
+<h2 id="12-system-tray-and-background-experience">12. System Tray and
+Background Experience</h2>
+<h3 id="121-tray-states">12.1 Tray states</h3>
+<p>The tray item has an accessible name reflecting state:</p>
+<ul>
+<li>QUILL Weather: no active alerts</li>
+<li>QUILL Weather: 2 active alerts, highest priority warning</li>
+<li>QUILL Weather: critical alert</li>
+<li>QUILL Weather: data stale</li>
+<li>QUILL Weather: offline</li>
+<li>QUILL Weather: monitoring paused</li>
+<li>QUILL Weather: relay disconnected, local monitoring active</li>
+</ul>
+<p>Visual icons may differ, but text state is authoritative.</p>
+<h3 id="122-tray-menu">12.2 Tray menu</h3>
+<p>Keyboard-accessible commands:</p>
+<ul>
+<li>Speak Quick Weather</li>
+<li>Active Alerts</li>
+<li>Repeat Last Alert</li>
+<li>Open Official Instructions</li>
+<li>Open Weather Center</li>
+<li>Start or Stop Current Weather Feed</li>
+<li>Choose Location</li>
+<li>Choose Location Group</li>
+<li>Mute Routine Speech</li>
+<li>Snooze Non-Critical Notifications</li>
+<li>Pause Monitoring</li>
+<li>Source Status</li>
+<li>Last Successful Update</li>
+<li>Settings</li>
+<li>Exit Monitoring</li>
+</ul>
+<p>Destructive or safety-relevant commands include confirmation and a
+clear status announcement.</p>
+<h3 id="123-accessible-notifications">12.3 Accessible notifications</h3>
+<p>Notifications must:</p>
+<ul>
+<li>Use plain, concise titles</li>
+<li>Identify location</li>
+<li>Identify alert type</li>
+<li>State expiration when relevant</li>
+<li>Expose useful actions</li>
+<li>Avoid icon-only meaning</li>
+<li>Avoid rapidly replacing an unread notification</li>
+<li>Link to the exact alert revision</li>
+<li>remain represented in Alert History</li>
+</ul>
+<h3 id="124-global-commands">12.4 Global commands</h3>
+<p>Global commands are opt-in and configurable.</p>
+<p>Suggested defaults:</p>
+<ul>
+<li>Speak Quick Weather</li>
+<li>Open Active Alerts</li>
+<li>Repeat Last Weather Message</li>
+<li>Silence Current Speech</li>
+<li>Open Weather Center</li>
+</ul>
+<p>QUILL checks for conflicts and allows reassignment.</p>
+<h3 id="125-startup-and-shutdown">12.5 Startup and shutdown</h3>
+<p>Settings include:</p>
+<ul>
+<li>Start Weather Guardian at sign-in</li>
+<li>Start minimized to tray</li>
+<li>Restore last feed</li>
+<li>Speak startup status</li>
+<li>Check alerts immediately</li>
+<li>Continue monitoring after Weather Center closes</li>
+<li>Confirm before exiting monitoring</li>
+<li>Resume pending alert speech after restart</li>
+</ul>
+<hr />
+<h2 id="13-settings">13. Settings</h2>
+<h3 id="131-general">13.1 General</h3>
+<ul>
+<li>Primary location</li>
+<li>Default location group</li>
+<li>Start at sign-in</li>
+<li>Start minimized</li>
+<li>Default Weather Center section</li>
+<li>Compact or detailed mode</li>
+<li>Time format</li>
+<li>Unit system</li>
+<li>Language</li>
+<li>Data retention</li>
+<li>History retention</li>
+<li>Offline cache size</li>
+<li>Diagnostic logging level</li>
+</ul>
+<h3 id="132-location">13.2 Location</h3>
+<p>Per location:</p>
+<ul>
+<li>Friendly name</li>
+<li>Location role</li>
+<li>Monitoring enabled</li>
+<li>Forecast enabled</li>
+<li>Alerts enabled</li>
+<li>Alert radius or zone policy</li>
+<li>Time zone override</li>
+<li>Observation station preference</li>
+<li>NWR transmitter preference</li>
+<li>Sync behavior</li>
+<li>Privacy precision</li>
+<li>Quiet hours</li>
+<li>Voice profile</li>
+<li>Alert profile</li>
+</ul>
+<h3 id="133-alerts">13.3 Alerts</h3>
+<ul>
+<li>Polling interval, constrained by provider rules</li>
+<li>Relay enabled</li>
+<li>Local fallback enabled</li>
+<li>Event filters</li>
+<li>Severity filters</li>
+<li>Urgency filters</li>
+<li>Certainty filters</li>
+<li>Test alert behavior</li>
+<li>Update announcement style</li>
+<li>Repeat intervals</li>
+<li>Acknowledgment behavior</li>
+<li>Expiration behavior</li>
+<li>Quiet hours</li>
+<li>Critical override</li>
+<li>OS notifications</li>
+<li>Speech</li>
+<li>Earcons</li>
+<li>Tray flashing or animation, when accessible</li>
+<li>Alert history retention</li>
+</ul>
+<h3 id="134-speech">13.4 Speech</h3>
+<ul>
+<li>Default provider</li>
+<li>Default voice</li>
+<li>Per-feed voices</li>
+<li>Per-location voices</li>
+<li>Per-alert voices</li>
+<li>Rate</li>
+<li>Pitch</li>
+<li>Volume</li>
+<li>Units speaking style</li>
+<li>Time speaking style</li>
+<li>Wind speaking style</li>
+<li>Alert verbosity</li>
+<li>Routine verbosity</li>
+<li>Heading announcements</li>
+<li>Earcons</li>
+<li>Audio ducking</li>
+<li>Interruption policy</li>
+<li>Pronunciation dictionaries</li>
+<li>Fallback chain</li>
+<li>Output device</li>
+<li>Screen-reader-only mode</li>
+<li>Self-voicing mode</li>
+<li>Combined mode</li>
+</ul>
+<h3 id="135-feeds">13.5 Feeds</h3>
+<ul>
+<li>Segment selection</li>
+<li>Segment order</li>
+<li>Repeat interval</li>
+<li>Changes-only mode</li>
+<li>Alert interruption</li>
+<li>Voice profile</li>
+<li>Location sequence</li>
+<li>Silence between segments</li>
+<li>Intro and closing</li>
+<li>Source identification</li>
+<li>Freshness announcement</li>
+<li>Live stream preference</li>
+<li>Generated fallback</li>
+<li>Playback speed</li>
+<li>Output device</li>
+<li>Resume behavior</li>
+</ul>
+<h3 id="136-privacy-and-sync">13.6 Privacy and sync</h3>
+<ul>
+<li>Local-only mode</li>
+<li>QuilleSync enabled</li>
+<li>Items to sync</li>
+<li>Exact versus coarse location sync</li>
+<li>Current-location use</li>
+<li>Location history</li>
+<li>Clear history</li>
+<li>Export settings</li>
+<li>Delete cloud copy</li>
+<li>Relay subscription privacy</li>
+</ul>
+<h3 id="137-advanced">13.7 Advanced</h3>
+<ul>
+<li>Provider selection</li>
+<li>Provider priority</li>
+<li>Raw data inspector</li>
+<li>Request diagnostics</li>
+<li>Cache controls</li>
+<li>NWWS relay status</li>
+<li>Alert matching strategy</li>
+<li>Conservative matching</li>
+<li>Station selection</li>
+<li>Geocoder provider</li>
+<li>Developer mode</li>
+<li>Simulated alert testing</li>
+<li>Import/export</li>
+</ul>
+<hr />
+<h2 id="14-accessibility-requirements">14. Accessibility
+Requirements</h2>
+<h3 id="141-foundational-requirements">14.1 Foundational
+requirements</h3>
+<ul>
+<li>Full keyboard operation</li>
+<li>Predictable tab order</li>
+<li>Native controls whenever practical</li>
+<li>Correct accessible names, roles, states, values, and
+descriptions</li>
+<li>No unlabeled controls</li>
+<li>No custom-drawn control without a complete accessibility
+implementation</li>
+<li>No color-only, icon-only, position-only, or sound-only meaning</li>
+<li>Screen-reader browse and focus behavior tested</li>
+<li>High contrast support</li>
+<li>Text scaling</li>
+<li>Reduced motion</li>
+<li>Accessible error recovery</li>
+<li>Logical headings and landmarks</li>
+<li>Reviewable, selectable alert and forecast text</li>
+</ul>
+<h3 id="142-screen-reader-behavior">14.2 Screen-reader behavior</h3>
+<ul>
+<li>Routine background refreshes do not constantly interrupt the
+user.</li>
+<li>New alert announcements use an explicit priority model.</li>
+<li>Changes in alert count are announced only when meaningful.</li>
+<li>Focus is never stolen merely because data refreshed.</li>
+<li>Opening a notification places focus on the alert heading.</li>
+<li>Alert instructions have a direct command and heading.</li>
+<li>Tables provide useful row and column context.</li>
+<li>Charts always have equivalent lists, summaries, and data
+tables.</li>
+<li>Maps are optional visual enhancements, not required navigation
+surfaces.</li>
+</ul>
+<h3 id="143-keyboard-behavior">14.3 Keyboard behavior</h3>
+<p>Every context menu is reachable through keyboard commands and
+Shift+F10 where applicable.</p>
+<p>List items support:</p>
+<ul>
+<li>Arrow navigation</li>
+<li>First-letter navigation</li>
+<li>Search</li>
+<li>Sort</li>
+<li>Filter</li>
+<li>Details</li>
+<li>Context menu</li>
+<li>Multi-select where meaningful</li>
+</ul>
+<h3 id="144-audio-accessibility">14.4 Audio accessibility</h3>
+<ul>
+<li>Earcons are optional and never the sole signal.</li>
+<li>Speech can be repeated.</li>
+<li>Speech can be paused or stopped without dismissing the alert.</li>
+<li>Critical alert text remains available if audio fails.</li>
+<li>Volume can be configured separately from routine QUILL speech where
+the platform allows.</li>
+<li>Headphone removal does not silently lose alerts; a fallback rule
+applies.</li>
+<li>Audio ducking is configurable.</li>
+<li>Every continuous feed has a Stop command that is always
+available.</li>
+</ul>
+<h3 id="145-cognitive-accessibility">14.5 Cognitive accessibility</h3>
+<ul>
+<li>Compact summaries</li>
+<li>Plain labels</li>
+<li>Consistent alert structure</li>
+<li>Changes-only views</li>
+<li>Optional definitions</li>
+<li>No unnecessary meteorological codes in default mode</li>
+<li>One-action access to official instructions</li>
+<li>Time expressed with context, such as “until 4:45 PM today”</li>
+<li>Clear distinction between current, forecast, and historical
+information</li>
+</ul>
+<hr />
+<h2 id="15-safety-trust-and-integrity">15. Safety, Trust, and
+Integrity</h2>
+<h3 id="151-safety-notice">15.1 Safety notice</h3>
+<p>QUILL Weather displays a concise notice during onboarding and in
+About:</p>
+<blockquote>
+<p>QUILL Weather is an additional accessible weather information tool.
+Delivery can be delayed or interrupted by network, device, provider, or
+software failures. Do not rely on QUILL Weather as your only source of
+emergency information.</p>
+</blockquote>
+<h3 id="152-source-attribution">15.2 Source attribution</h3>
+<p>Every weather object has:</p>
+<ul>
+<li>Provider</li>
+<li>Issuing organization</li>
+<li>Source identifier</li>
+<li>Issue/update time</li>
+<li>Retrieval time</li>
+<li>Validity</li>
+<li>Original text or raw data access</li>
+</ul>
+<p>Generated audio identifies itself as QUILL-generated weather using
+official data.</p>
+<h3 id="153-no-silent-transformation">15.3 No silent transformation</h3>
+<p>QUILL does not silently:</p>
+<ul>
+<li>Shorten official instructions</li>
+<li>Change an alert’s severity</li>
+<li>Replace source wording with AI wording</li>
+<li>Merge two conflicting alerts</li>
+<li>Convert an expiration into an all-clear</li>
+<li>Hide a stale source</li>
+<li>suppress a warning because a visual geometry calculation failed</li>
+</ul>
+<h3 id="154-test-and-exercise-alerts">15.4 Test and exercise alerts</h3>
+<p>Test alerts are clearly identified through:</p>
+<ul>
+<li>Spoken prefix</li>
+<li>Text prefix</li>
+<li>Unique earcon</li>
+<li>Notification title</li>
+<li>History classification</li>
+</ul>
+<p>Users can choose to announce, log, or ignore provider-designated
+tests, but development simulation mode cannot impersonate an actual
+alert without a persistent simulation label.</p>
+<hr />
+<h2 id="16-data-storage">16. Data Storage</h2>
+<h3 id="161-local-database">16.1 Local database</h3>
+<p>SQLite is recommended for:</p>
+<ul>
+<li>Locations</li>
+<li>Location groups</li>
+<li>Feeds</li>
+<li>Feed segments</li>
+<li>Voice scenarios</li>
+<li>Alert rules</li>
+<li>Alert revisions</li>
+<li>Delivery history</li>
+<li>Acknowledgments</li>
+<li>Provider metadata</li>
+<li>Observation and forecast cache</li>
+<li>NWR metadata</li>
+<li>Stream health</li>
+<li>Diagnostic events</li>
+</ul>
+<h3 id="162-suggested-entities">16.2 Suggested entities</h3>
+<ul>
+<li><code>locations</code></li>
+<li><code>location_groups</code></li>
+<li><code>location_group_members</code></li>
+<li><code>provider_point_metadata</code></li>
+<li><code>weather_snapshots</code></li>
+<li><code>forecast_periods</code></li>
+<li><code>time_series_values</code></li>
+<li><code>observation_stations</code></li>
+<li><code>observations</code></li>
+<li><code>alerts</code></li>
+<li><code>alert_revisions</code></li>
+<li><code>alert_location_matches</code></li>
+<li><code>alert_deliveries</code></li>
+<li><code>alert_acknowledgments</code></li>
+<li><code>feeds</code></li>
+<li><code>feed_segments</code></li>
+<li><code>voice_profiles</code></li>
+<li><code>voice_scenarios</code></li>
+<li><code>pronunciation_entries</code></li>
+<li><code>nwr_transmitters</code></li>
+<li><code>nwr_coverage</code></li>
+<li><code>weather_streams</code></li>
+<li><code>stream_health_checks</code></li>
+<li><code>source_status_events</code></li>
+<li><code>settings</code></li>
+</ul>
+<h3 id="163-retention">16.3 Retention</h3>
+<p>Defaults:</p>
+<ul>
+<li>Active alert revisions: retained while active</li>
+<li>Expired alert history: 30 days</li>
+<li>Delivery logs: 30 days</li>
+<li>Forecast cache: provider-driven plus bounded history</li>
+<li>Observations: 7 days</li>
+<li>Raw payloads: 7 days or user-selected</li>
+<li>Location history: off</li>
+<li>Diagnostics: 14 days</li>
+</ul>
+<p>All are configurable within safe storage limits.</p>
+<hr />
+<h2 id="17-quill-alert-relay">17. QUILL Alert Relay</h2>
+<h3 id="171-purpose">17.1 Purpose</h3>
+<p>The relay exists to improve speed, scalability, and resilience—not to
+make local weather dependent on the cloud.</p>
+<h3 id="172-responsibilities">17.2 Responsibilities</h3>
+<ul>
+<li>Maintain NWWS-OI connection</li>
+<li>Receive CAP and related NWS products</li>
+<li>Parse and validate</li>
+<li>Deduplicate</li>
+<li>Normalize</li>
+<li>Maintain revision graph</li>
+<li>Index by zones, states, offices, and event types</li>
+<li>Push to subscribed clients</li>
+<li>Reconcile with NWS API</li>
+<li>Expose relay health</li>
+<li>Record end-to-end latency</li>
+<li>Avoid retaining precise client coordinates</li>
+<li>Apply backpressure and retry</li>
+<li>Support multiple relay regions later</li>
+</ul>
+<h3 id="173-subscription-privacy">17.3 Subscription privacy</h3>
+<p>Clients preferably subscribe using:</p>
+<ul>
+<li>County zone IDs</li>
+<li>Forecast zone IDs</li>
+<li>Fire zones</li>
+<li>Marine zones</li>
+<li>State codes</li>
+<li>Opaque server-derived subscription sets</li>
+</ul>
+<p>Exact addresses are not sent.</p>
+<p>For point-specific polygon matching, options are:</p>
+<ol type="1">
+<li>Match locally after receiving relevant coarse-zone alerts.</li>
+<li>Send a short-lived encrypted or coarse point token.</li>
+<li>Use privacy-preserving regional subscriptions.</li>
+</ol>
+<p>The first option is the preferred initial design.</p>
+<h3 id="174-client-connection">17.4 Client connection</h3>
+<p>Recommended protocol:</p>
+<ul>
+<li>Secure WebSocket for live updates</li>
+<li>HTTPS reconciliation endpoint</li>
+<li>Monotonic event cursor</li>
+<li>Resume after disconnect</li>
+<li>Heartbeats</li>
+<li>Signed message envelope</li>
+<li>Schema version</li>
+<li>Compression</li>
+<li>Rate limiting</li>
+<li>Anonymous client mode</li>
+<li>Optional authenticated QuilleSync mode</li>
+</ul>
+<h3 id="175-reliability">17.5 Reliability</h3>
+<p>The client continuously knows:</p>
+<ul>
+<li>Relay connected or disconnected</li>
+<li>Last heartbeat</li>
+<li>Last alert received</li>
+<li>Local fallback status</li>
+<li>Last successful official API check</li>
+<li>Current subscription set</li>
+</ul>
+<p>A relay failure automatically activates local polling if enabled.</p>
+<hr />
+<h2 id="18-noaa-weather-radio-and-community-audio">18. NOAA Weather
+Radio and Community Audio</h2>
+<h3 id="181-metadata">18.1 Metadata</h3>
+<p>QUILL imports and normalizes official transmitter information:</p>
+<ul>
+<li>Station call sign</li>
+<li>Transmitter location</li>
+<li>Frequency</li>
+<li>State</li>
+<li>NWS office</li>
+<li>County coverage</li>
+<li>SAME code</li>
+<li>Partial-county information</li>
+<li>Power, when available</li>
+<li>Status: normal, degraded, or out of service</li>
+<li>Last metadata refresh</li>
+</ul>
+<h3 id="182-stream-catalog">18.2 Stream catalog</h3>
+<p>A stream record includes:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;stream_uuid&quot;</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;call_sign&quot;</span><span class="fu">:</span> <span class="st">&quot;WXL30&quot;</span><span class="fu">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;transmitter_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Phoenix&quot;</span><span class="fu">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;stream_url&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;provider_name&quot;</span><span class="fu">:</span> <span class="st">&quot;Community Receiver Operator&quot;</span><span class="fu">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;provider_type&quot;</span><span class="fu">:</span> <span class="st">&quot;community&quot;</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;official_noaa_stream&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;codec&quot;</span><span class="fu">:</span> <span class="st">&quot;MP3&quot;</span><span class="fu">,</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bitrate&quot;</span><span class="fu">:</span> <span class="dv">32</span><span class="fu">,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;last_verified&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;health&quot;</span><span class="fu">:</span> <span class="st">&quot;online&quot;</span><span class="fu">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;terms&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;redistribution_allowed&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="183-stream-rules">18.3 Stream rules</h3>
+<ul>
+<li>Do not scrape or redistribute streams contrary to provider
+terms.</li>
+<li>Verify stream health.</li>
+<li>Clearly identify community sources.</li>
+<li>Never use stream silence as the only alert detector.</li>
+<li>The structured alert engine remains independent.</li>
+<li>Allow a warning to interrupt the live stream.</li>
+<li>Offer generated weather audio when the live stream is
+unavailable.</li>
+</ul>
+<h3 id="184-receiver-network">18.4 Receiver network</h3>
+<p>A later QUILL Community Receiver program may provide:</p>
+<ul>
+<li>Documented receiver hardware</li>
+<li>RTL-SDR or radio line-in support</li>
+<li>Secure stream publishing</li>
+<li>Receiver status</li>
+<li>Silence detection</li>
+<li>Audio-quality checks</li>
+<li>Volunteer attribution</li>
+<li>Geographic gap analysis</li>
+<li>Automated failover among receivers</li>
+</ul>
+<hr />
+<h2 id="19-user-interface-information-architecture">19. User Interface
+Information Architecture</h2>
+<h3 id="191-weather-now">19.1 Weather Now</h3>
+<p>Recommended reading order:</p>
+<ol type="1">
+<li>Location</li>
+<li>Active alert summary</li>
+<li>Temperature and condition</li>
+<li>Feels-like condition</li>
+<li>Wind</li>
+<li>Observation age and station</li>
+<li>Next meaningful forecast</li>
+<li>Quick actions</li>
+</ol>
+<h3 id="192-active-alerts-list">19.2 Active Alerts list</h3>
+<p>Default sort:</p>
+<ol type="1">
+<li>Critical priority</li>
+<li>Urgency</li>
+<li>Severity</li>
+<li>Most recently updated</li>
+<li>Location</li>
+</ol>
+<p>Each item speaks:</p>
+<blockquote>
+<p>Tornado Warning. Pima County. Immediate, extreme, observed. Updated 2
+minutes ago. Expires at 4:45 PM.</p>
+</blockquote>
+<h3 id="193-alert-details">19.3 Alert details</h3>
+<p>Headings:</p>
+<ul>
+<li>Alert headline</li>
+<li>What changed</li>
+<li>Official instructions</li>
+<li>Description</li>
+<li>Affected areas</li>
+<li>Timing</li>
+<li>Severity, urgency, and certainty</li>
+<li>Locations you monitor</li>
+<li>Source</li>
+<li>Revision history</li>
+<li>Delivery history</li>
+<li>Raw message</li>
+</ul>
+<h3 id="194-forecast-timeline">19.4 Forecast timeline</h3>
+<p>Accessible list alternatives:</p>
+<ul>
+<li>Period-by-period</li>
+<li>Hour-by-hour</li>
+<li>Meaningful changes</li>
+<li>Temperature trend</li>
+<li>Precipitation windows</li>
+<li>Wind windows</li>
+<li>Hazard windows</li>
+</ul>
+<p>A visual chart may be included but never replaces the list.</p>
+<h3 id="195-settings-search">19.5 Settings search</h3>
+<p>All settings are searchable by plain language.</p>
+<p>Example search terms:</p>
+<ul>
+<li>tornado voice</li>
+<li>quiet hours</li>
+<li>home location</li>
+<li>alert repeat</li>
+<li>system tray</li>
+<li>Celsius</li>
+<li>NOAA radio</li>
+<li>current location privacy</li>
+<li>provider status</li>
+</ul>
+<p>Search results explain the setting path and current value.</p>
+<hr />
+<h2 id="20-commands-and-extensibility">20. Commands and
+Extensibility</h2>
+<p>Suggested command IDs:</p>
+<pre class="text"><code>weather.openCenter
+weather.speakQuick
+weather.openAlerts
+weather.repeatLastMessage
+weather.stopSpeech
+weather.startFeed
+weather.stopFeed
+weather.switchLocation
+weather.addLocation
+weather.openAlertInstructions
+weather.acknowledgeAlert
+weather.openVoiceStudio
+weather.openSourceStatus
+weather.refresh
+weather.pauseMonitoring
+weather.resumeMonitoring</code></pre>
+<p>Extension-contributed commands use the QUILL extension naming
+convention, such as:</p>
+<pre class="text"><code>ext.vendor.weatherCommand</code></pre>
+<p>Extensions may contribute:</p>
+<ul>
+<li>Weather providers</li>
+<li>Geocoders</li>
+<li>Air-quality providers</li>
+<li>Audio stream catalogs</li>
+<li>Feed segments</li>
+<li>Speech templates</li>
+<li>Pronunciation packs</li>
+<li>Alert classification rules</li>
+<li>Exporters</li>
+</ul>
+<p>An extension cannot silently suppress critical alerts. Any
+suppression capability requires explicit user authorization and is
+visible in diagnostics.</p>
+<hr />
+<h2 id="21-diagnostics-and-supportability">21. Diagnostics and
+Supportability</h2>
+<h3 id="211-user-facing-status">21.1 User-facing status</h3>
+<p>Source Status answers:</p>
+<ul>
+<li>Is Weather Guardian running?</li>
+<li>Is the network available?</li>
+<li>Is the NWS API responding?</li>
+<li>Is the Alert Relay connected?</li>
+<li>When was each location last checked?</li>
+<li>When was the last alert received?</li>
+<li>Is any data stale?</li>
+<li>Is the selected voice available?</li>
+<li>Is a feed playing?</li>
+<li>Are notifications permitted by the OS?</li>
+</ul>
+<h3 id="212-diagnostic-package">21.2 Diagnostic package</h3>
+<p>The user can create a privacy-reviewed support bundle containing:</p>
+<ul>
+<li>App version</li>
+<li>Platform version</li>
+<li>Provider versions</li>
+<li>Redacted request timeline</li>
+<li>HTTP status codes</li>
+<li>Cache behavior</li>
+<li>Alert lifecycle events</li>
+<li>Voice resolution results</li>
+<li>Relay state</li>
+<li>Stream health</li>
+<li>Accessibility settings relevant to reproduction</li>
+</ul>
+<p>Precise coordinates, addresses, alert text, and account identifiers
+are excluded by default and require explicit inclusion.</p>
+<h3 id="213-raw-data-inspector">21.3 Raw data inspector</h3>
+<p>Expert users and developers can inspect:</p>
+<ul>
+<li>Raw JSON or CAP</li>
+<li>Normalized object</li>
+<li>Provider headers</li>
+<li>Cache metadata</li>
+<li>Rule match trace</li>
+<li>Voice scenario resolution</li>
+<li>Delivery decision</li>
+<li>Location-match explanation</li>
+</ul>
+<p>The inspector is fully accessible and supports copying selected
+sections.</p>
+<hr />
+<h2 id="22-performance-requirements">22. Performance Requirements</h2>
+<ul>
+<li>Fresh cached Quick Weather response: target under 3 seconds.</li>
+<li>Initial uncached location resolution and weather: target under 10
+seconds under normal network conditions, excluding geocoder delays.</li>
+<li>Main Weather Center initial usable state: target under 2 seconds
+with cached content.</li>
+<li>Alert processing after receipt: target under 1 second.</li>
+<li>Speech start for critical alert after processing: target under 2
+seconds.</li>
+<li>Tray command response: target under 500 milliseconds.</li>
+<li>Background idle CPU: negligible under normal conditions.</li>
+<li>Memory use: bounded and documented.</li>
+<li>Local database operations must not block the UI thread.</li>
+<li>Provider requests, parsing, audio generation, and stream health
+checks run asynchronously.</li>
+<li>Alert processing has priority over routine forecast work.</li>
+</ul>
+<hr />
+<h2 id="23-security-requirements">23. Security Requirements</h2>
+<ul>
+<li>HTTPS for all remote providers.</li>
+<li>Validate TLS certificates.</li>
+<li>Validate and bound all remote payloads.</li>
+<li>Treat provider text as untrusted content for rendering.</li>
+<li>No HTML execution from alert content.</li>
+<li>No arbitrary command execution from feed templates.</li>
+<li>Protect local secrets with OS secure storage.</li>
+<li>Relay messages are authenticated and schema validated.</li>
+<li>Stream URLs are validated before use.</li>
+<li>Redirects are bounded.</li>
+<li>Diagnostic exports are redacted.</li>
+<li>Dependencies are pinned and monitored.</li>
+<li>No API credentials embedded in the open-source client.</li>
+<li>NWWS credentials remain on the relay, never in distributed
+clients.</li>
+<li>QuilleSync encryption keys are not stored in plaintext.</li>
+</ul>
+<hr />
+<h2 id="24-testing-strategy">24. Testing Strategy</h2>
+<h3 id="241-unit-tests">24.1 Unit tests</h3>
+<ul>
+<li>Unit conversion</li>
+<li>Time-zone conversion</li>
+<li>DST transitions</li>
+<li>Interval expansion</li>
+<li>Alert deduplication</li>
+<li>Revision linking</li>
+<li>Geometry matching</li>
+<li>Zone matching</li>
+<li>Priority classification</li>
+<li>Voice-rule resolution</li>
+<li>Speech rendering</li>
+<li>Pronunciation</li>
+<li>Cache behavior</li>
+<li>Retry behavior</li>
+<li>Stale thresholds</li>
+</ul>
+<h3 id="242-contract-tests">24.2 Contract tests</h3>
+<p>Saved fixtures for:</p>
+<ul>
+<li>Point metadata</li>
+<li>Forecast</li>
+<li>Hourly forecast</li>
+<li>Grid data</li>
+<li>Stations</li>
+<li>Observations</li>
+<li>CAP alerts</li>
+<li>Alert updates</li>
+<li>Cancellations</li>
+<li>Missing fields</li>
+<li>Null values</li>
+<li>Malformed payloads</li>
+<li>Provider errors</li>
+</ul>
+<h3 id="243-alert-simulation-laboratory">24.3 Alert simulation
+laboratory</h3>
+<p>A built-in developer and QA laboratory can simulate:</p>
+<ul>
+<li>Tornado Warning</li>
+<li>Flash Flood Warning</li>
+<li>Severe Thunderstorm Watch</li>
+<li>Heat Advisory</li>
+<li>Red Flag Warning</li>
+<li>Marine Warning</li>
+<li>Alert update</li>
+<li>Area expansion</li>
+<li>Expiration extension</li>
+<li>Cancellation</li>
+<li>Test message</li>
+<li>Duplicate delivery</li>
+<li>Relay disconnect</li>
+<li>API outage</li>
+<li>Voice failure</li>
+<li>Audio device change</li>
+</ul>
+<p>Every simulation is unmistakably marked as a simulation.</p>
+<h3 id="244-accessibility-tests">24.4 Accessibility tests</h3>
+<p>Test with:</p>
+<ul>
+<li>JAWS</li>
+<li>NVDA</li>
+<li>Narrator</li>
+<li>VoiceOver on macOS</li>
+<li>Keyboard only</li>
+<li>High contrast</li>
+<li>200% and greater text scaling</li>
+<li>Reduced motion</li>
+<li>Multiple speech providers</li>
+<li>Screen-reader-only mode</li>
+<li>Self-voicing mode</li>
+</ul>
+<h3 id="245-real-world-tests">24.5 Real-world tests</h3>
+<ul>
+<li>Multiple locations in one county</li>
+<li>Locations near county borders</li>
+<li>Partial-county alerting</li>
+<li>Locations covered by out-of-state NWR transmitters</li>
+<li>Mountain and rural areas</li>
+<li>Marine zones</li>
+<li>Network interruption</li>
+<li>Sleep and resume</li>
+<li>Clock and time-zone change</li>
+<li>Long-running tray session</li>
+<li>System restart with active alerts</li>
+<li>Multiple simultaneous alerts</li>
+<li>Alert flood during a major event</li>
+</ul>
+<hr />
+<h2 id="25-acceptance-criteria">25. Acceptance Criteria</h2>
+<h3 id="251-location-and-forecast">25.1 Location and forecast</h3>
+<ul>
+<li>User can add a location entirely by keyboard.</li>
+<li>Ambiguous search results are understandable.</li>
+<li>NWS point metadata is cached.</li>
+<li>Current, hourly, and period forecasts are available.</li>
+<li>Data source and freshness are exposed.</li>
+<li>Missing data is identified rather than invented.</li>
+</ul>
+<h3 id="252-background-monitoring">25.2 Background monitoring</h3>
+<ul>
+<li>Weather Guardian can run without the Weather Center open.</li>
+<li>User can enable startup without administrator access.</li>
+<li>Tray state has an accurate accessible name.</li>
+<li>Monitoring failure is announced and logged.</li>
+<li>Local API fallback works when relay mode fails.</li>
+</ul>
+<h3 id="253-alerts">25.3 Alerts</h3>
+<ul>
+<li>Active alerts can be queried for every monitored location.</li>
+<li>Default API polling does not exceed NWS guidance.</li>
+<li>New and updated alerts are distinguished.</li>
+<li>Alert revisions are linked.</li>
+<li>Instructions are available in one action.</li>
+<li>Critical alert speech has a fallback.</li>
+<li>Expiration does not produce a false “all clear.”</li>
+<li>Acknowledgment does not delete the alert.</li>
+<li>Test alerts are unmistakable.</li>
+</ul>
+<h3 id="254-speech">25.4 Speech</h3>
+<ul>
+<li>User can assign a voice per feed.</li>
+<li>User can assign a voice per alert priority.</li>
+<li>User can assign location identification voices.</li>
+<li>Missing voice falls back safely.</li>
+<li>Speech can be repeated and stopped.</li>
+<li>Stopping speech does not dismiss the alert.</li>
+<li>Official text remains accessible.</li>
+<li>Units and abbreviations are spoken naturally.</li>
+</ul>
+<h3 id="255-accessibility">25.5 Accessibility</h3>
+<ul>
+<li>No critical function requires a mouse.</li>
+<li>No alert meaning depends only on color, icon, or sound.</li>
+<li>Data refresh does not steal focus.</li>
+<li>Every chart has a text equivalent.</li>
+<li>Alert history is searchable and filterable.</li>
+<li>Settings are searchable.</li>
+<li>Accessible names and states pass automated and manual
+inspection.</li>
+</ul>
+<hr />
+<h2 id="26-delivery-phases">26. Delivery Phases</h2>
+<h3 id="phase-0-architecture-and-prototypes">Phase 0: Architecture and
+prototypes</h3>
+<ul>
+<li>Normalized weather schema</li>
+<li>NWS provider prototype</li>
+<li>Location resolution prototype</li>
+<li>Alert lifecycle prototype</li>
+<li>QUILL speech scenario prototype</li>
+<li>Accessible tray prototype</li>
+<li>Alert simulation laboratory</li>
+<li>Threat and privacy review</li>
+</ul>
+<h3 id="phase-1-windows-minimum-lovable-product">Phase 1: Windows
+minimum lovable product</h3>
+<ul>
+<li>Weather Center</li>
+<li>Saved locations</li>
+<li>Current conditions</li>
+<li>Forecast and hourly forecast</li>
+<li>Direct NWS alert polling</li>
+<li>Weather Guardian</li>
+<li>System tray</li>
+<li>Accessible notifications</li>
+<li>Quick Weather command</li>
+<li>Active Alert Center</li>
+<li>Basic per-content voices</li>
+<li>Data freshness and diagnostics</li>
+<li>Local-only operation</li>
+</ul>
+<h3 id="phase-2-weather-channels-and-voice-studio">Phase 2: Weather
+Channels and Voice Studio</h3>
+<ul>
+<li>Feed builder</li>
+<li>Continuous generated audio</li>
+<li>Per-feed and per-location voices</li>
+<li>Earcons</li>
+<li>Pronunciation dictionaries</li>
+<li>Advanced interruption rules</li>
+<li>Location groups</li>
+<li>Morning/evening briefings</li>
+<li>Changes-only announcements</li>
+<li>Import/export</li>
+</ul>
+<h3 id="phase-3-quill-alert-relay">Phase 3: QUILL Alert Relay</h3>
+<ul>
+<li>NWWS-OI integration</li>
+<li>Secure push</li>
+<li>Zone subscriptions</li>
+<li>Local reconciliation</li>
+<li>Relay status</li>
+<li>Latency metrics</li>
+<li>Failover</li>
+<li>Privacy validation</li>
+<li>Production monitoring</li>
+</ul>
+<h3 id="phase-4-nwr-explorer-and-community-audio">Phase 4: NWR Explorer
+and community audio</h3>
+<ul>
+<li>Official transmitter metadata</li>
+<li>County and SAME mapping</li>
+<li>Transmitter status</li>
+<li>Curated stream catalog</li>
+<li>Stream verification</li>
+<li>Generated fallback</li>
+<li>Alert interruption over live audio</li>
+<li>Community receiver toolkit design</li>
+</ul>
+<h3 id="phase-5-quillesync-and-macos">Phase 5: QuilleSync and macOS</h3>
+<ul>
+<li>Encrypted settings sync</li>
+<li>Saved location and feed sync</li>
+<li>Voice mapping portability</li>
+<li>macOS Weather Guardian</li>
+<li>macOS status menu</li>
+<li>VoiceOver testing</li>
+<li>Cross-device acknowledgment policy</li>
+</ul>
+<h3 id="phase-6-expanded-services">Phase 6: Expanded services</h3>
+<p>Potential future additions:</p>
+<ul>
+<li>Air quality</li>
+<li>Sunrise and sunset</li>
+<li>Lightning</li>
+<li>Radar data and accessible radar interpretation</li>
+<li>River gauges</li>
+<li>Tropical products</li>
+<li>Space weather</li>
+<li>Earthquake and tsunami providers</li>
+<li>FEMA IPAWS</li>
+<li>iOS companion</li>
+<li>Route and corridor monitoring</li>
+<li>Community receiver network</li>
+</ul>
+<p>Each addition must preserve provider provenance and
+accessibility.</p>
+<hr />
+<h2 id="27-product-risks-and-mitigations">27. Product Risks and
+Mitigations</h2>
+<h3
+id="risk-users-assume-quill-is-guaranteed-life-safety-delivery">Risk:
+Users assume QUILL is guaranteed life-safety delivery</h3>
+<p><strong>Mitigation:</strong> Clear safety notice, source-status
+visibility, failure announcements, no claims of certification, and
+encouragement to use multiple official channels.</p>
+<h3 id="risk-duplicate-or-noisy-alerts">Risk: Duplicate or noisy
+alerts</h3>
+<p><strong>Mitigation:</strong> Revision graph, deterministic change
+comparison, acknowledgment, changes-only announcements, and configurable
+repeat rules.</p>
+<h3 id="risk-over-customization-suppresses-important-warnings">Risk:
+Over-customization suppresses important warnings</h3>
+<p><strong>Mitigation:</strong> Transparent rule trace, critical-silence
+confirmation, safety review, reset-to-safe-defaults command, and
+diagnostics showing suppressed events.</p>
+<h3 id="risk-nws-api-outage-or-rate-limiting">Risk: NWS API outage or
+rate limiting</h3>
+<p><strong>Mitigation:</strong> Conditional requests, centralized relay
+for scale, backoff, cache, local fallback, stale-state communication,
+and provider abstraction.</p>
+<h3 id="risk-voice-provider-failure">Risk: Voice provider failure</h3>
+<p><strong>Mitigation:</strong> Multi-step fallback chain,
+screen-reader/OS notification fallback, and delivery logging.</p>
+<h3 id="risk-incorrect-location-matching">Risk: Incorrect location
+matching</h3>
+<p><strong>Mitigation:</strong> Combine point, geometry, and zone
+methods; conservative default; match explanation; testing near
+boundaries; user-selected county/zone override.</p>
+<h3 id="risk-community-stream-disappears">Risk: Community stream
+disappears</h3>
+<p><strong>Mitigation:</strong> Health checks, multiple streams,
+generated audio fallback, and independent structured alert
+monitoring.</p>
+<h3 id="risk-generative-summaries-change-meaning">Risk: Generative
+summaries change meaning</h3>
+<p><strong>Mitigation:</strong> No generative rewrite as the
+authoritative alert; official text always primary; deterministic
+summaries; explicit labels.</p>
+<h3 id="risk-precise-location-privacy">Risk: Precise location
+privacy</h3>
+<p><strong>Mitigation:</strong> local-first storage, no default history,
+optional coarse subscriptions, encrypted sync, redacted diagnostics, and
+explicit permissions.</p>
+<hr />
+<h2 id="28-recommended-technical-shape">28. Recommended Technical
+Shape</h2>
+<h3 id="281-client-modules">28.1 Client modules</h3>
+<pre class="text"><code>quill_weather/
+  providers/
+    nws/
+    geocoding/
+    nwr/
+    streams/
+  domain/
+    locations/
+    forecasts/
+    observations/
+    alerts/
+    feeds/
+    speech/
+  services/
+    weather_guardian/
+    alert_monitor/
+    feed_engine/
+    cache/
+    sync/
+    notifications/
+  ui/
+    weather_center/
+    alert_center/
+    location_manager/
+    feed_builder/
+    voice_studio/
+    settings/
+    diagnostics/
+  platform/
+    windows/
+    macos/
+  storage/
+  tests/</code></pre>
+<h3 id="282-threading-and-process-model">28.2 Threading and process
+model</h3>
+<ul>
+<li>UI process remains responsive.</li>
+<li>Weather Guardian can run as a separate user process.</li>
+<li>Database writes are serialized safely.</li>
+<li>Provider calls use asynchronous workers.</li>
+<li>Alert intake has a high-priority queue.</li>
+<li>Speech uses a serialized, priority-aware dispatcher.</li>
+<li>Critical speech can preempt routine feed speech.</li>
+<li>Crashes do not corrupt alert state or settings.</li>
+<li>Restart recovery checks active alerts immediately.</li>
+</ul>
+<h3 id="283-speech-dispatcher-priorities">28.3 Speech dispatcher
+priorities</h3>
+<ol type="1">
+<li>Emergency stop and user control</li>
+<li>Critical alert</li>
+<li>Urgent alert update</li>
+<li>User-requested speech</li>
+<li>Watch or important alert</li>
+<li>Advisory</li>
+<li>Routine weather feed</li>
+<li>Background status</li>
+</ol>
+<p>The user can modify the mapping, but the dispatcher always exposes
+the active queue and allows immediate stop.</p>
+<hr />
+<h2 id="29-example-built-in-profiles">29. Example Built-In Profiles</h2>
+<h3 id="291-calm-and-complete">29.1 Calm and complete</h3>
+<ul>
+<li>Speaks all watches and warnings</li>
+<li>Reads official instructions</li>
+<li>Uses one clear voice</li>
+<li>Routine brief every 30 minutes</li>
+<li>No repeat after acknowledgment</li>
+<li>Critical alerts interrupt</li>
+</ul>
+<h3 id="292-minimal">29.2 Minimal</h3>
+<ul>
+<li>Critical and urgent alerts only</li>
+<li>Headline plus instructions</li>
+<li>No routine speech</li>
+<li>Tray and notifications remain active</li>
+</ul>
+<h3 id="293-weather-radio">29.3 Weather radio</h3>
+<ul>
+<li>Continuous generated channel</li>
+<li>Forecast cycles every 10 minutes</li>
+<li>Alert interruption</li>
+<li>Station-style identification</li>
+<li>Separate alert voice</li>
+<li>Optional community NWR stream</li>
+</ul>
+<h3 id="294-family-guardian">29.4 Family guardian</h3>
+<ul>
+<li>Multiple locations</li>
+<li>Location spoken first</li>
+<li>Warnings repeat until acknowledged</li>
+<li>Watches announce once</li>
+<li>Combined location scan</li>
+<li>Distinct voice per family location</li>
+</ul>
+<h3 id="295-screen-reader-integrated">29.5 Screen-reader integrated</h3>
+<ul>
+<li>Uses screen-reader announcement path where possible</li>
+<li>No duplicate self-voicing</li>
+<li>Earcons optional</li>
+<li>Opens alert details in accessible text</li>
+<li>Speech provider used only for continuous feeds</li>
+</ul>
+<hr />
+<h2 id="30-example-spoken-output">30. Example Spoken Output</h2>
+<h3 id="quick-weather">Quick Weather</h3>
+<blockquote>
+<p>Home, Phoenix. 108 degrees and mostly sunny. It feels like 112.
+Southwest wind at 8 miles per hour. An Excessive Heat Warning is active
+until 8 PM Monday. The observation is 6 minutes old.</p>
+</blockquote>
+<h3 id="new-warning">New warning</h3>
+<blockquote>
+<p>Critical weather alert for Home. Flash Flood Warning. Immediate,
+severe, and observed. In effect until 6:30 PM. Move to higher ground
+now. Do not drive through flooded roadways. Press the Alert Details
+command to hear the complete official message.</p>
+</blockquote>
+<h3 id="update">Update</h3>
+<blockquote>
+<p>Update for Home. The Flash Flood Warning has been extended until 7:15
+PM. The affected area now includes northern Maricopa County. Official
+instructions are unchanged.</p>
+</blockquote>
+<h3 id="stale-data">Stale data</h3>
+<blockquote>
+<p>Weather data for Travel Location may be stale. QUILL last reached the
+National Weather Service 38 minutes ago. Alert monitoring is
+retrying.</p>
+</blockquote>
+<h3 id="relay-fallback">Relay fallback</h3>
+<blockquote>
+<p>QUILL Alert Relay is unavailable. Direct National Weather Service
+alert monitoring remains active and checks every 30 seconds.</p>
+</blockquote>
+<hr />
+<h2 id="31-research-basis-and-official-sources">31. Research Basis and
+Official Sources</h2>
+<p>The initial design is grounded in these official NWS capabilities and
+constraints:</p>
+<ol type="1">
+<li><p>The NWS API provides forecasts, alerts, observations, and other
+weather data as open data without usage fees, subject to reasonable rate
+limits.<br />
+<a
+href="https://www.weather.gov/documentation/services-web-api">https://www.weather.gov/documentation/services-web-api</a></p></li>
+<li><p>NWS forecast lookup begins with latitude and longitude through
+<code>/points/{lat},{lon}</code>, which returns forecast, hourly
+forecast, and gridpoint metadata. The point mapping can be cached.<br />
+<a
+href="https://weather-gov.github.io/api/general-faqs">https://weather-gov.github.io/api/general-faqs</a></p></li>
+<li><p>The NWS alerts service supports JSON-LD, CAP v1.2, and Atom. NWS
+recommends requesting new alerts no more frequently than every 30
+seconds.<br />
+<a
+href="https://www.weather.gov/documentation/services-web-alerts">https://www.weather.gov/documentation/services-web-alerts</a></p></li>
+<li><p>NWS CAP fields such as urgency, severity, and certainty are
+specifically intended to support decision tools and synthesized voice
+applications.<br />
+<a
+href="https://www.weather.gov/documentation/services-web-alerts">https://www.weather.gov/documentation/services-web-alerts</a></p></li>
+<li><p>NOAA Weather Wire Service is described by NWS as its fastest
+method of receiving text alerts and weather information, within
+approximately 10 seconds of issuance. NWWS-OI requires NWS-issued
+credentials and an XMPP client.<br />
+<a
+href="https://www.weather.gov/nwws/faq">https://www.weather.gov/nwws/faq</a></p></li>
+<li><p>NOAA Weather Radio is a nationwide network of more than 1,000
+transmitters broadcasting continuous official information on seven VHF
+frequencies. It is fundamentally a radio transmitter service and
+requires a compatible receiver.<br />
+<a
+href="https://www.weather.gov/nwr">https://www.weather.gov/nwr</a></p></li>
+<li><p>Official NWR station search and county coverage information
+includes call signs, frequencies, SAME codes, and transmitter
+coverage.<br />
+<a
+href="https://www.weather.gov/nwr/station_search">https://www.weather.gov/nwr/station_search</a><br />
+<a
+href="https://www.weather.gov/nwr/county_coverage">https://www.weather.gov/nwr/county_coverage</a></p></li>
+</ol>
+<hr />
+<h2 id="32-final-product-statement">32. Final Product Statement</h2>
+<p>QUILL Weather should feel like a trusted weather desk that belongs to
+the user.</p>
+<p>It should be fast without being frantic, detailed without being
+overwhelming, configurable without becoming inaccessible, and powerful
+without hiding what it is doing.</p>
+<p>The product’s defining achievement will not simply be that it speaks
+the weather. It will be that it understands the structure, timing,
+source, priority, location, and lifecycle of weather information—and
+then gives every user direct control over how that information reaches
+them.</p>
+<p>QUILL Weather will turn official data into an accessible living
+service:</p>
+<ul>
+<li>A Weather Center when the user wants to explore</li>
+<li>A Weather Guardian when the user needs protection</li>
+<li>A Weather Channel when the user wants to listen</li>
+<li>An Alert Center when every second and every word matters</li>
+<li>A Voice Studio when one voice is not enough</li>
+<li>A QuillVille service built around inclusion, clarity, choice, and
+trust</li>
+</ul>
 </body>
 </html>
