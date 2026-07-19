@@ -18,9 +18,13 @@ from quill.apps.radio import RadioAppFrame
 
 
 class _FakeKeyEvent:
-    def __init__(self, *, key_code: int, alt: bool) -> None:
+    def __init__(
+        self, *, key_code: int, alt: bool, shift: bool = False, ctrl: bool = False
+    ) -> None:
         self._key_code = key_code
         self._alt = alt
+        self._shift = shift
+        self._ctrl = ctrl
         self.skipped = False
 
     def GetKeyCode(self) -> int:
@@ -28,6 +32,12 @@ class _FakeKeyEvent:
 
     def AltDown(self) -> bool:
         return self._alt
+
+    def ShiftDown(self) -> bool:
+        return self._shift
+
+    def ControlDown(self) -> bool:
+        return self._ctrl
 
     def Skip(self) -> None:
         self.skipped = True

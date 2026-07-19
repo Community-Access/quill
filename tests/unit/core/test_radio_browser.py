@@ -102,6 +102,20 @@ def test_search_stations_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(stations) == 1 and stations[0].name == "WXYZ"
 
 
+def test_weather_stations_queries_the_weather_tag(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+
+    def fake_urlopen(request, *a, **k):
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        return _FakeResponse(json.dumps([{"name": "NWR Tucson", "url": "https://x/w"}]).encode())
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    stations = rb.weather_stations(limit=25)
+    assert "tag=weather" in seen["url"]
+    assert [s.name for s in stations] == ["NWR Tucson"]
+
+
 def test_popular_stations_hits_topvote_and_parses(monkeypatch: pytest.MonkeyPatch) -> None:
     _stub_mirrors(monkeypatch, ["mirror1.example.com"])
     seen: dict[str, str] = {}

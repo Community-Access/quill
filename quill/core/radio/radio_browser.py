@@ -212,6 +212,18 @@ def popular_stations(limit: int = 100, *, safe_mode: bool = False) -> list[Radio
     return stations_from_json(_http_json(path))
 
 
+def weather_stations(limit: int = 100, *, safe_mode: bool = False) -> list[RadioStation]:
+    """Weather / NOAA-style stations -- internet re-streams tagged ``weather``.
+
+    NOAA Weather Radio itself is over-air VHF with no streaming API, but its
+    re-streams (and other weather stations) are in the community RadioBrowser
+    directory under the ``weather`` tag, so a "Weather / NOAA" browse category
+    can list them. One GET through the same reviewed egress site as search.
+    """
+    refuse_in_safe_mode(safe_mode)
+    return search_stations("", tag="weather", limit=limit, safe_mode=safe_mode)
+
+
 def lookup_station(station_uuid: str, *, safe_mode: bool = False) -> RadioStation | None:
     """Fresh directory data for one station -- the stream-fallback path.
 

@@ -1587,6 +1587,29 @@ class RadioMixin:
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
 
+    def open_browse_stations(self, *, initial_source: str | None = None) -> None:
+        """The dedicated, search-free Browse Stations tree: every source as a
+        branch you expand to reveal its stations (Search Stations... stays the
+        field-based dialog)."""
+        if self._safe_mode:
+            self._show_message_box(
+                _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
+            )
+            return
+        from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
+
+        dlg = BrowseTreeDialog(
+            self.frame,
+            controller=self._radio_controller,
+            favorites_store=self._radio_favorites,
+            task_manager=self._task_manager,
+            safe_mode=self._safe_mode,
+            announce_cb=self._announce,
+            on_favorites_changed=self._save_radio_favorites,
+        )
+        dlg.show(initial_source=initial_source)
+        self._refresh_statusbar()
+
     def _radio_open_add_custom(self, prefill: RadioStation | None) -> None:
         dlg = AddStationDialog(
             self.frame,
