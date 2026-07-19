@@ -21,7 +21,7 @@ classifiers = [
   "Operating System :: MacOS",
 ]
 dependencies = [
-    "regex>=2026.6.28",
+    "regex>=2026.7.19",
     "defusedxml>=0.7.1",
     # Podcast RSS/Atom feed parsing (Tools > Media > Podcasts). Real-world feeds
     # are too messy (malformed XML, mixed RSS/Atom/iTunes/Podcasting-2.0
