@@ -268,13 +268,11 @@ def test_optilab_coerces_invalid_values(tmp_path: Path) -> None:
     import json
 
     (tmp_path / "radio_history.json").write_text(
-        json.dumps(
-            {
-                "optilab_mode": "bogus",
-                "optilab_input_db": "not-a-number",
-                "optilab_auto_adapt": 500,
-            }
-        ),
+        json.dumps({
+            "optilab_mode": "bogus",
+            "optilab_input_db": "not-a-number",
+            "optilab_auto_adapt": 500,
+        }),
         encoding="utf-8",
     )
     loaded = load_history(tmp_path)

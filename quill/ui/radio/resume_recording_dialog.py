@@ -147,9 +147,7 @@ class ResumeRecordingsBatchDialog:
         listing.SetMinSize((420, min(200, 24 * max(1, count) + 16)))
         root.Add(listing, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        prompt = wx.StaticText(
-            self.dialog, label="Resume all of them for their remaining time?"
-        )
+        prompt = wx.StaticText(self.dialog, label="Resume all of them for their remaining time?")
         prompt.SetName("Resume prompt")
         root.Add(prompt, 0, wx.EXPAND | wx.ALL, 10)
 

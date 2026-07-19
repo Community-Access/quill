@@ -117,9 +117,7 @@ def _engine_available(frame: Any) -> dict[str, bool]:
     s = frame.settings
     return {
         "sapi5": True,
-        "dectalk": discover_dectalk_executable(
-            getattr(s, "read_aloud_dectalk_executable", "")
-        )
+        "dectalk": discover_dectalk_executable(getattr(s, "read_aloud_dectalk_executable", ""))
         is not None,
         "piper": discover_piper_executable() is not None,
         # Kokoro must be reported ready only when it can ACTUALLY synthesize --
@@ -131,9 +129,7 @@ def _engine_available(frame: Any) -> dict[str, bool]:
         # true-readiness check the Speech Hub and the editor's own engine map
         # use, so all three surfaces now agree on whether Kokoro is usable.
         "kokoro": kokoro_engine_ready(),
-        "espeak": discover_espeak_executable(
-            getattr(s, "read_aloud_espeak_executable", "")
-        )
+        "espeak": discover_espeak_executable(getattr(s, "read_aloud_espeak_executable", ""))
         is not None,
         "macos": macos_say_available(),
     }

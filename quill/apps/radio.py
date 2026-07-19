@@ -496,11 +496,10 @@ class RadioAppFrame(
             return
         stations = parse_m3u(text)
         if not stations:
-            wx.MessageBox(
+            self._show_message_box(
                 "No radio stations were found in that playlist.",
                 "Import Stations",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         folder = prompt_import_target(

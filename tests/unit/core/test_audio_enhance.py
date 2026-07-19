@@ -456,11 +456,17 @@ def test_optilab_auto_adapt_changes_the_chain() -> None:
     from quill.core.audio_enhance import build_filter_graph
 
     neutral = build_filter_graph(
-        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="podcast",
+        *FLAT,
+        compressor_enabled=False,
+        optilab_enabled=True,
+        optilab_mode="podcast",
         optilab_auto_adapt=0,
     )
     adapted = build_filter_graph(
-        *FLAT, compressor_enabled=False, optilab_enabled=True, optilab_mode="podcast",
+        *FLAT,
+        compressor_enabled=False,
+        optilab_enabled=True,
+        optilab_mode="podcast",
         optilab_auto_adapt=100,
     )
     assert neutral != adapted  # adapt leans the leveling/density more assertive

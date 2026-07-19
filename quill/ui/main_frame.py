@@ -5650,9 +5650,7 @@ class MainFrame(
                     _safe_set_focus()
         return result
 
-    def _show_message_box(
-        self, message: str, caption: str, style: int | None = None
-    ) -> int:
+    def _show_message_box(self, message: str, caption: str, style: int | None = None) -> int:
         # Default to a plain OK box (like wx.MessageBox itself) so callers that
         # only need to surface a message can omit the style -- omitting it used
         # to raise TypeError and crash the error path trying to report a failure.
