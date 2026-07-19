@@ -106,6 +106,16 @@ class RadioHistory:
     #: Night mode -- real-time loudness normalization (lifts quiet program
     #: material), the complement to the compressor's "tame the loud parts".
     night_mode_enabled: bool = False
+    #: Favorites sort order for the tree/menus: "az" (A-Z, the default so a
+    #: fresh list is alphabetized), "za" (Z-A), or "manual" (the hand-arranged
+    #: Move Up/Down order). Applies to folders and to stations; a folder may
+    #: override it for its own contents via ``folder_sort_orders``. This is a
+    #: display-only order -- the stored manual order is never destroyed, so
+    #: switching back to "manual" restores it.
+    favorites_sort: str = "az"
+    #: Per-folder sort overrides (folder path -> "az"|"za"|"manual"). A folder
+    #: absent here follows ``favorites_sort``.
+    folder_sort_orders: dict[str, str] = field(default_factory=dict)
     #: Alt+F4 sends the app to the system tray (still playing) instead of
     #: closing the window. Off by default -- Alt+F4 keeps its Windows-wide
     #: meaning unless the listener opts in. Separate from close_action,
@@ -194,6 +204,18 @@ def load_history(data_dir: Path) -> RadioHistory:
         else:
             history.channel_mode = "mono" if bool(raw.get("mono_enabled", False)) else "stereo"
         history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
+        sort = str(raw.get("favorites_sort", "az"))
+        history.favorites_sort = sort if sort in ("az", "za", "manual") else "az"
+        raw_folder_sorts = raw.get("folder_sort_orders", {})
+        history.folder_sort_orders = (
+            {
+                str(path): str(order)
+                for path, order in raw_folder_sorts.items()
+                if str(order) in ("az", "za", "manual")
+            }
+            if isinstance(raw_folder_sorts, dict)
+            else {}
+        )
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
@@ -235,6 +257,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "output_device": history.output_device,
             "playback_engine": history.playback_engine,
             "volume_boost": history.volume_boost,
+            "favorites_sort": history.favorites_sort,
+            "folder_sort_orders": history.folder_sort_orders,
             "channel_mode": history.channel_mode,
             # Keep writing the legacy bool for one release so an older build can
             # still read the mono choice if the user downgrades.

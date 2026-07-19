@@ -205,6 +205,30 @@ def test_channel_mode_defaults_to_stereo_and_round_trips(tmp_path: Path) -> None
         assert load_history(tmp_path).channel_mode == mode
 
 
+def test_favorites_sort_defaults_az_round_trips_and_coerces_invalid(tmp_path: Path) -> None:
+    import json
+
+    assert load_history(tmp_path).favorites_sort == "az"  # alphabetized out of the box
+    for order in ("az", "za", "manual"):
+        save_history(tmp_path, RadioHistory(favorites_sort=order))
+        assert load_history(tmp_path).favorites_sort == order
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"favorites_sort": "bogus"}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).favorites_sort == "az"
+
+
+def test_folder_sort_orders_round_trip_and_drop_invalid(tmp_path: Path) -> None:
+    import json
+
+    save_history(tmp_path, RadioHistory(folder_sort_orders={"News": "za", "Music": "manual"}))
+    assert load_history(tmp_path).folder_sort_orders == {"News": "za", "Music": "manual"}
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"folder_sort_orders": {"News": "az", "Bad": "nope"}}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).folder_sort_orders == {"News": "az"}  # invalid dropped
+
+
 def test_channel_mode_migrates_legacy_mono_enabled(tmp_path: Path) -> None:
     # An older store had a mono_enabled bool; a true value migrates to "mono".
     import json

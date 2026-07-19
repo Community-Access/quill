@@ -249,6 +249,47 @@ class RadioFavoritesStore:
                 seen.append(favorite.folder)
         return seen
 
+    def folders_in_display_order(self, sort: str = "manual") -> list[str]:
+        """Folder paths in display order: alphabetical for "az"/"za", else the
+        stored (manual) folder order from :meth:`folder_names`."""
+        names = self.folder_names()
+        if sort == "az":
+            return sorted(names, key=str.casefold)
+        if sort == "za":
+            return sorted(names, key=str.casefold, reverse=True)
+        return names
+
+    def favorites_in_display_order(
+        self, sort: str = "manual", folder_sorts: dict[str, str] | None = None
+    ) -> list[FavoriteStation]:
+        """Favorites arranged for display: within each folder (and at the top
+        level) the stations follow that folder's effective sort -- a per-folder
+        override from *folder_sorts* when present, else the global *sort*. Never
+        mutates the stored list, so the manual Move Up/Down order (used by
+        "manual", and restored when a listener switches back to it) survives."""
+        overrides = folder_sorts or {}
+
+        def _ordered(items: list[FavoriteStation], order: str) -> list[FavoriteStation]:
+            if order == "az":
+                return sorted(items, key=lambda f: f.display_label.casefold())
+            if order == "za":
+                return sorted(items, key=lambda f: f.display_label.casefold(), reverse=True)
+            return list(items)
+
+        groups: dict[str, list[FavoriteStation]] = {}
+        for fav in self.favorites:
+            groups.setdefault(fav.folder, []).append(fav)
+        result: list[FavoriteStation] = []
+        for folder in ["", *self.folders_in_display_order(sort)]:
+            items = groups.pop(folder, None)
+            if items is None:
+                continue
+            order = overrides.get(folder, sort) if folder else sort
+            result.extend(_ordered(items, order))
+        for items in groups.values():  # any uncovered folder, stored order
+            result.extend(items)
+        return result
+
     def rename_folder(self, old: str, new: str) -> int:
         """Rename a folder everywhere it appears; returns entries touched.
 

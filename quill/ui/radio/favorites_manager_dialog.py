@@ -72,6 +72,8 @@ class FavoritesManagerDialog:
         controller: object,
         announce_cb: Callable[[str], None] | None = None,
         on_changed: Callable[[], None] | None = None,
+        sort: str = "manual",
+        folder_sorts: dict[str, str] | None = None,
     ) -> None:
         import wx
 
@@ -80,6 +82,10 @@ class FavoritesManagerDialog:
         self._controller = controller
         self._announce = announce_cb or (lambda _m: None)
         self._on_changed = on_changed or (lambda: None)
+        # Display order for the tree; when it is not "manual" the Move buttons
+        # are disabled for stations in a sorted folder (reordering is moot).
+        self._sort = sort
+        self._folder_sorts = folder_sorts or {}
         self._marked_key: str | None = None
 
         self.dialog = wx.Dialog(
@@ -254,9 +260,9 @@ class FavoritesManagerDialog:
                 folder_items[path] = item
                 return item
 
-            for path in self._store.folder_names():
+            for path in self._store.folders_in_display_order(self._sort):
                 folder_item(path)
-            for favorite in self._store.favorites:
+            for favorite in self._store.favorites_in_display_order(self._sort, self._folder_sorts):
                 parent = folder_item(favorite.folder)
                 item = tree.AppendItem(parent, favorite.display_label)
                 tree.SetItemData(item, ("station", favorite.key))
@@ -300,13 +306,20 @@ class FavoritesManagerDialog:
         playing = is_station and self._is_favorite_playing(self._selected_favorite())
         self._play_btn.SetLabel("&Stop" if playing else "&Play")
         self._play_btn.SetName("Stop this station" if playing else "Play the selected station")
-        for button in (self._play_btn, self._remove_btn, self._up_btn, self._down_btn):
-            button.Enable(is_station)
+        self._play_btn.Enable(is_station)
+        self._remove_btn.Enable(is_station)
         self._folder_btn.Enable(is_station)
         self._mark_btn.Enable(is_station)
+        # Reordering (Move Up/Down/Above/Below) only makes sense when this
+        # station's folder is in manual order -- a sorted folder ignores hand
+        # placement, so the buttons are disabled there.
+        fav = self._selected_favorite() if is_station else None
+        manual_here = fav is not None and self._folder_sorts.get(fav.folder, self._sort) == "manual"
+        self._up_btn.Enable(manual_here)
+        self._down_btn.Enable(manual_here)
         marked = self._marked_key is not None
-        self._above_btn.Enable(is_station and marked)
-        self._below_btn.Enable(is_station and marked)
+        self._above_btn.Enable(manual_here and marked)
+        self._below_btn.Enable(manual_here and marked)
         self._rename_btn.Enable(is_station or is_folder)
         self._delete_folder_btn.Enable(is_folder)
 

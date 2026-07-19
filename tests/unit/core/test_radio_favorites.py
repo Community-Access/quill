@@ -39,6 +39,40 @@ def test_per_station_channel_mode_defaults_to_stereo(tmp_path: Path) -> None:
     assert load_favorites(tmp_path).find(_STATION_A.station_uuid).channel_mode == "stereo"
 
 
+def test_favorites_in_display_order_az_za_manual_non_mutating() -> None:
+    store = RadioFavoritesStore()
+    store.add(RadioStation(name="Charlie", stream_url="https://c"))
+    store.add(RadioStation(name="alpha", stream_url="https://a"))
+    store.add(RadioStation(name="Bravo", stream_url="https://b"))
+
+    def labels(order: str) -> list[str]:
+        return [f.display_label for f in store.favorites_in_display_order(order)]
+
+    assert labels("az") == ["alpha", "Bravo", "Charlie"]  # case-insensitive
+    assert labels("za") == ["Charlie", "Bravo", "alpha"]
+    assert labels("manual") == ["Charlie", "alpha", "Bravo"]  # insertion order
+    # The stored list is never mutated, so "manual" always restores hand order.
+    assert [f.display_label for f in store.favorites] == ["Charlie", "alpha", "Bravo"]
+
+
+def test_per_folder_sort_override_beats_the_global() -> None:
+    store = RadioFavoritesStore()
+    store.add(RadioStation(name="Zoo", stream_url="https://z"), folder="News")
+    store.add(RadioStation(name="Ant", stream_url="https://a"), folder="News")
+    ordered = store.favorites_in_display_order("za", {"News": "az"})
+    news = [f.display_label for f in ordered if f.folder == "News"]
+    assert news == ["Ant", "Zoo"]  # az inside News despite the global za
+
+
+def test_folders_in_display_order_sorts_case_insensitively() -> None:
+    store = RadioFavoritesStore()
+    store.add(RadioStation(name="s1", stream_url="https://1"), folder="Zeta")
+    store.add(RadioStation(name="s2", stream_url="https://2"), folder="alpha")
+    assert store.folders_in_display_order("az") == ["alpha", "Zeta"]
+    assert store.folders_in_display_order("za") == ["Zeta", "alpha"]
+    assert store.folders_in_display_order("manual") == ["Zeta", "alpha"]  # insertion order
+
+
 def test_load_favorites_missing_file_returns_empty(tmp_path: Path) -> None:
     store = load_favorites(tmp_path)
     assert store.favorites == []

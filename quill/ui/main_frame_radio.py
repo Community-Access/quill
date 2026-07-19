@@ -1094,7 +1094,9 @@ class RadioMixin:
             folder_menus[path] = child
             return child
 
-        for favorite in favorites.favorites:
+        for favorite in favorites.favorites_in_display_order(
+            self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
+        ):
             station = favorite.station
             item_id = wx.NewIdRef()
             folder_menu(favorite.folder).Append(item_id, favorite.display_label)
@@ -1339,6 +1341,8 @@ class RadioMixin:
             controller=self._radio_controller,
             announce_cb=self._announce,
             on_changed=self._save_radio_favorites,
+            sort=self._radio_history.favorites_sort,
+            folder_sorts=self._radio_history.folder_sort_orders,
         )
         dlg.show()
         self._refresh_statusbar()

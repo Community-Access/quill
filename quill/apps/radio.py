@@ -59,6 +59,8 @@ _OUTPUT_DEVICE_HELP = (
 #: escape hatch / insist options.
 _ENGINE_LABELS = ("Automatic (recommended)", "Windows Media (classic)", "mpv")
 _ENGINE_VALUES = ("auto", "wx", "mpv")
+_FAVORITES_SORT_LABELS = ("Ascending (A to Z)", "Descending (Z to A)", "Unsorted (manual order)")
+_FAVORITES_SORT_VALUES = ("az", "za", "manual")
 _ENGINE_HELP = (
     "Which audio engine plays the radio. Automatic uses mpv when it is "
     "installed -- that is what enables the output device choice, pausing "
@@ -193,9 +195,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             return item
 
         store = self._radio_favorites
-        for path in store.folder_names():
+        sort = self._radio_history.favorites_sort
+        folder_sorts = self._radio_history.folder_sort_orders
+        for path in store.folders_in_display_order(sort):
             folder_item(path)
-        for favorite in store.favorites:
+        for favorite in store.favorites_in_display_order(sort, folder_sorts):
             item = tree.AppendItem(folder_item(favorite.folder), favorite.display_label)
             tree.SetItemData(item, ("station", favorite.key))
             if favorite.key == keep_key:
@@ -285,6 +289,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         else:
             entries = [
                 ("Rena&me Folder...\tF2", self._on_tree_rename),
+                ("&Sort This Folder...", self._on_sort_folder),
                 ("&Delete Folder...", self._on_tree_remove),
                 ("New F&older...\tCtrl+Shift+E", self._on_new_folder),
                 ("Manage Fa&vorites...", self.open_manage_radio_favorites),
@@ -367,6 +372,110 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         ):
             self._save_radio_favorites()
             self._reload_favorites_tree()
+
+    def _on_sort_folder(self) -> None:
+        """Give the selected folder its own sort order -- A to Z, Z to A,
+        Unsorted, or follow the global default -- applied to its stations and
+        remembered (per-folder override of Favorites sort order)."""
+        selected = self._selected_tree_data()
+        if selected is None or selected[0] != "folder":
+            return
+        path = selected[1]
+        labels = [
+            "Follow the default",
+            "Ascending (A to Z)",
+            "Descending (Z to A)",
+            "Unsorted (manual order)",
+        ]
+        values: list[str | None] = [None, "az", "za", "manual"]
+        current = self._radio_history.folder_sort_orders.get(path)
+        with wx.SingleChoiceDialog(
+            self.frame, f'Sort order for the folder "{path}":', "Sort Folder", labels
+        ) as dlg:
+            dlg.SetSelection(values.index(current) if current in values else 0)
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            chosen = values[dlg.GetSelection()]
+        orders = dict(self._radio_history.folder_sort_orders)
+        if chosen is None:
+            orders.pop(path, None)
+        else:
+            orders[path] = chosen
+        self._radio_history.folder_sort_orders = orders
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        radio_history.save_history(app_data_dir(), self._radio_history)
+        self._reload_favorites_tree()
+        self._announce(f"{path}: {dict(zip(values, labels, strict=True))[chosen]}.")
+
+    def import_stations_from_playlist(self) -> None:
+        """Station > Import Stations from Playlist...: read an M3U/M3U8 file,
+        pick (or create) a target folder at any depth, handle any duplicates
+        against the current favorites, and add the rest."""
+        from pathlib import Path
+
+        from quill.core.radio.playlist_import import parse_m3u, split_new_and_duplicates
+        from quill.ui.radio.import_stations_dialog import prompt_import_target
+
+        wx = self._wx
+        with wx.FileDialog(
+            self.frame,
+            "Choose a playlist to import",
+            wildcard="Playlists (*.m3u;*.m3u8)|*.m3u;*.m3u8|All files (*.*)|*.*",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as file_dialog:
+            if file_dialog.ShowModal() != wx.ID_OK:
+                return
+            source = Path(file_dialog.GetPath())
+        try:
+            text = source.read_text(encoding="utf-8", errors="replace")
+        except OSError as exc:
+            self._announce(f"Could not read the playlist: {exc}")
+            return
+        stations = parse_m3u(text)
+        if not stations:
+            wx.MessageBox(
+                "No radio stations were found in that playlist.",
+                "Import Stations",
+                wx.OK | wx.ICON_INFORMATION,
+                self.frame,
+            )
+            return
+        folder = prompt_import_target(
+            self.frame, self._radio_favorites.folder_names(), len(stations)
+        )
+        if folder is None:
+            return
+        existing = {favorite.key for favorite in self._radio_favorites.favorites}
+        new, duplicates = split_new_and_duplicates(stations, existing)
+        to_import = stations
+        if duplicates:
+            labels = [
+                f"Skip the {len(duplicates)} already in your favorites -- "
+                f"import the {len(new)} new one(s)",
+                f"Import everything, including the {len(duplicates)} duplicate(s)",
+            ]
+            with wx.SingleChoiceDialog(
+                self.frame,
+                f"{len(duplicates)} of the {len(stations)} stations are already in "
+                "your favorites. How should I handle them?",
+                "Import Stations -- Duplicates Found",
+                labels,
+            ) as dup_dialog:
+                if dup_dialog.ShowModal() != wx.ID_OK:
+                    return
+                to_import = stations if dup_dialog.GetSelection() == 1 else new
+        if not to_import:
+            self._announce("Nothing to import -- every station was already a favorite.")
+            return
+        for station in to_import:
+            self._radio_favorites.add(station, folder=folder)
+        self._save_radio_favorites()
+        self._reload_favorites_tree()
+        where = f'the "{folder}" folder' if folder else "your favorites"
+        plural = "station" if len(to_import) == 1 else "stations"
+        self._announce(f"Imported {len(to_import)} {plural} into {where}.")
 
     def _on_tree_move_to_folder(self) -> None:
         from quill.ui.radio import favorite_actions
@@ -469,6 +578,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         new_folder_id = wx.NewIdRef()
         station_menu.Append(new_folder_id, "New F&older...\tCtrl+Shift+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_new_folder(), id=new_folder_id)
+        import_id = wx.NewIdRef()
+        station_menu.Append(import_id, "&Import Stations from Playlist...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
@@ -810,6 +924,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                     device_labels,
                     device_index,
                 ),
+                PreferenceChoice(
+                    "&Favorites sort order:",
+                    "How your favorites are ordered in the list. Ascending (A to "
+                    "Z) and Descending (Z to A) sort folders and stations by name "
+                    "and re-sort when you add one; Unsorted keeps your "
+                    "hand-arranged Move Up/Down order. A folder can override this "
+                    "for its own stations from its context menu.",
+                    list(_FAVORITES_SORT_LABELS),
+                    _FAVORITES_SORT_VALUES.index(history.favorites_sort),
+                ),
             ],
             texts=[
                 PreferenceText(
@@ -862,6 +986,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             # Reconnects a playing station through the right engine; a
             # station already on air moves to the new device immediately.
             self._radio_controller.set_output_device(chosen_device)
+        chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[3]]
+        if chosen_sort != history.favorites_sort:
+            history.favorites_sort = chosen_sort
+            self._reload_favorites_tree()
         new_template = text_values[0].strip()
         history.now_playing_template = new_template or _DEFAULT_NOW_PLAYING_TEMPLATE
         new_log_dir = text_values[1].strip()
