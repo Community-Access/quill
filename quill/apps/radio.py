@@ -266,7 +266,44 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             if code == wx.WXK_DOWN:
                 self.radio_volume_down()
                 return
+        # Alt+Shift+Up / Alt+Shift+Down reorder the selected favorite in manual
+        # order (like moving an item in Microsoft Teams), announcing where it
+        # landed -- "Moved down, now above X".
+        if event.AltDown() and event.ShiftDown() and not event.ControlDown():
+            if code == wx.WXK_UP:
+                self._move_selected_favorite(-1)
+                return
+            if code == wx.WXK_DOWN:
+                self._move_selected_favorite(1)
+                return
         event.Skip()
+
+    def _move_selected_favorite(self, delta: int) -> None:
+        """Move the selected favorite up (-1) or down (+1) within its folder,
+        only when that folder is in manual order, and speak where it landed."""
+        favorite = self._selected_favorite()
+        if favorite is None:
+            self._announce("Select a station to move it.")
+            return
+        folder_sort = self._radio_history.folder_sort_orders.get(
+            favorite.folder, self._radio_history.favorites_sort
+        )
+        if folder_sort != "manual":
+            self._announce(
+                "Reordering works in manual order. Set Favorites sort order to "
+                "Unsorted (manual order) in Preferences, or from a folder's Sort menu."
+            )
+            return
+        from quill.ui.radio.favorites_manager_dialog import move_announcement
+
+        if not self._radio_favorites.move(favorite.key, delta=delta):
+            self._announce("Already at the edge of its folder.")
+            return
+        # Speak the new position before the tree reload re-announces the item, so
+        # "Moved down, now above X" is what the listener hears.
+        self._announce(move_announcement(self._radio_favorites, favorite.key, delta))
+        self._save_radio_favorites()
+        self._reload_favorites_tree(keep_key=favorite.key)
 
     def _on_favorites_context_menu(self, _event: object) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState

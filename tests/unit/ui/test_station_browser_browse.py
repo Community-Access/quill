@@ -14,7 +14,6 @@ from typing import Any
 from quill.ui.radio.station_browser_dialog import (
     _CATEGORIES,
     _M3U_GENRES,
-    _NFB_RADIO,
     _POPULAR,
     _SOMAFM,
     StationBrowserDialog,
@@ -63,16 +62,8 @@ def _dialog() -> Any:
         SetSelection=lambda i: None,
     )
     d._wx = SimpleNamespace(NOT_FOUND=-1)
+    d._set_tunein_view = lambda show: None  # tree/list swap tested separately
     return d
-
-
-def test_show_nfb_category_fills_the_bundled_station() -> None:
-    d = _dialog()
-    d._show_category(_NFB_RADIO)
-    stations, status = d._filled[-1]
-    assert len(stations) == 1
-    assert "NFBRN" in stations[0].name
-    assert "National Federation of the Blind" in status
     assert d._genre_ctrl.enabled is False  # genre picker only for Music Genres
 
 
@@ -149,78 +140,142 @@ def test_on_genre_selected_ignores_no_selection() -> None:
     d._on_genre_selected(None)  # no-op, no exception
 
 
-def _tunein_row(kind: str, guide_id: str = "c9"):
-    from quill.core.radio import tunein
+# --- TuneIn tree (folders lazily expand; a station resolves and plays) -------
+
+
+class _TNode:
+    def __init__(self, ok: bool = True) -> None:
+        self._ok = ok
+
+    def IsOk(self) -> bool:  # noqa: N802 - wx shape
+        return self._ok
+
+
+class _FakeTree:
+    def __init__(self) -> None:
+        self._data: dict = {}
+        self.children: dict = {}
+        self._shown = True
+        self._selection = _TNode(False)
+
+    def IsShown(self):  # noqa: N802
+        return self._shown
+
+    def AddRoot(self, _label):  # noqa: N802
+        return _TNode()
+
+    def AppendItem(self, parent, label):  # noqa: N802
+        node = _TNode()
+        self.children.setdefault(parent, []).append((node, label))
+        return node
+
+    def SetItemData(self, node, data):  # noqa: N802
+        self._data[node] = data
+
+    def GetItemData(self, node):  # noqa: N802
+        return self._data.get(node)
+
+    def DeleteChildren(self, node):  # noqa: N802
+        self.children[node] = []
+
+    def GetSelection(self):  # noqa: N802
+        return self._selection
+
+    def GetFirstChild(self, node):  # noqa: N802
+        kids = self.children.get(node, [])
+        return (kids[0][0] if kids else _TNode(False), None)
+
+    def SelectItem(self, node):  # noqa: N802
+        self._selection = node
+
+    def SetFocus(self):  # noqa: N802
+        pass
+
+
+def _tree_dialog() -> Any:
+    d = StationBrowserDialog.__new__(StationBrowserDialog)
+    d._tunein_tree = _FakeTree()
+    d._status = _FakeStatus()
+    d._announced = []
+    d._announce = d._announced.append
+    d._details = SimpleNamespace(SetValue=lambda _v: None)
+    d._play_btn = SimpleNamespace(Enable=lambda _v: None)
+    d._favorite_btn = SimpleNamespace(Enable=lambda _v: None)
+    return d
+
+
+def test_add_tunein_children_builds_folders_and_station_leaves() -> None:
     from quill.core.radio.tunein import TuneInResult
 
-    if kind == "up":
-        return tunein.nav_up_row()
-    return tunein.browse_row_to_station(
-        TuneInResult(guide_id=guide_id, title="Music", is_station=(kind == "station"))
+    d = _tree_dialog()
+    root = d._tunein_tree.AddRoot("TuneIn")
+    d._tunein_root = root
+    d._add_tunein_children(
+        root,
+        [
+            TuneInResult(guide_id="c2", title="Jazz", is_station=False),
+            TuneInResult(guide_id="s9", title="Jazz FM", is_station=True),
+        ],
     )
+    labels = [label for _node, label in d._tunein_tree.children[root]]
+    assert any("[folder]" in label for label in labels)  # folder marked
+    assert "Jazz FM" in labels  # station leaf
+    assert "1 folder" in d._status.label and "1 station" in d._status.label
 
 
-def _play_dialog(selected):
-    calls: list[str] = []
-    d = StationBrowserDialog.__new__(StationBrowserDialog)
-    d._tunein_stack = ["c1"]
-    d._selected_station = lambda: selected
-    d._tunein_browse = lambda gid: calls.append(f"browse:{gid!r}")
-    d._play_tunein_station = lambda station, gid: calls.append(f"resolve:{gid}")
-    d._controller = SimpleNamespace(
-        play_station=lambda s: calls.append(f"play:{s.name}"), stop=lambda: None
+def test_tunein_activate_station_plays_folder_expands() -> None:
+    d = _tree_dialog()
+    played: list = []
+    d._play_tunein_station = lambda gid, title: played.append((gid, title))
+    skipped: list = []
+
+    station_node = _TNode()
+    d._tunein_tree._data[station_node] = {"kind": "station", "guide_id": "s1", "title": "Jazz FM"}
+    d._on_tunein_activated(SimpleNamespace(GetItem=lambda: station_node, Skip=lambda: None))
+    assert played == [("s1", "Jazz FM")]
+
+    folder_node = _TNode()
+    d._tunein_tree._data[folder_node] = {"kind": "category", "guide_id": "c1", "title": "Music"}
+    d._on_tunein_activated(
+        SimpleNamespace(GetItem=lambda: folder_node, Skip=lambda: skipped.append(True))
     )
-    d._is_station_playing = lambda s: False
-    d._announce = lambda m: None
-    d._refresh_play_button = lambda: None
-    return d, calls
+    assert skipped == [True]  # a folder toggles open via the default handler
 
 
-def test_tunein_category_row_drills_in() -> None:
-    d, calls = _play_dialog(_tunein_row("category", "c42"))
+def test_tunein_folder_lazy_loads_once() -> None:
+    d = _tree_dialog()
+    fetched: list = []
+    d._fetch_tunein_children = lambda node, gid: fetched.append(gid)
+    node = _TNode()
+    data = {"kind": "category", "guide_id": "c5", "loaded": False, "title": "Music"}
+    d._tunein_tree._data[node] = data
+
+    d._on_tunein_expanding(SimpleNamespace(GetItem=lambda: node))
+    assert fetched == ["c5"] and data["loaded"] is True
+    d._on_tunein_expanding(SimpleNamespace(GetItem=lambda: node))  # again -> no refetch
+    assert fetched == ["c5"]
+
+
+def test_play_button_on_tree_plays_selected_station() -> None:
+    d = _tree_dialog()
+    played: list = []
+    d._play_tunein_station = lambda gid, title: played.append((gid, title))
+    node = _TNode()
+    d._tunein_tree._data[node] = {"kind": "station", "guide_id": "s7", "title": "WJAZZ"}
+    d._tunein_tree._selection = node
     d._on_play(None)
-    assert calls == ["browse:'c42'"]
-    assert d._tunein_stack == ["c1", "c42"]  # pushed
+    assert played == [("s7", "WJAZZ")]
 
 
-def test_tunein_up_row_pops_and_rebrowses() -> None:
-    d, calls = _play_dialog(_tunein_row("up"))
+def test_play_button_on_tree_folder_does_nothing() -> None:
+    d = _tree_dialog()
+    played: list = []
+    d._play_tunein_station = lambda gid, title: played.append((gid, title))
+    node = _TNode()
+    d._tunein_tree._data[node] = {"kind": "category", "guide_id": "c1", "title": "Music"}
+    d._tunein_tree._selection = node
     d._on_play(None)
-    assert d._tunein_stack == []  # popped the only entry
-    assert calls == ["browse:''"]  # back to top level
-
-
-def test_tunein_station_row_resolves_then_plays() -> None:
-    d, calls = _play_dialog(_tunein_row("station", "s500"))
-    d._on_play(None)
-    assert calls == ["resolve:s500"]
-
-
-def test_normal_station_still_plays_directly() -> None:
-    from quill.core.radio.models import RadioStation
-
-    d, calls = _play_dialog(RadioStation(name="WXYZ", stream_url="https://x/s", station_uuid="u1"))
-    d._on_play(None)
-    assert calls == ["play:WXYZ"]  # untouched by the TuneIn nav handling
-
-
-def test_tunein_browse_done_builds_up_and_rows() -> None:
-    from quill.core.radio.tunein import TuneInResult
-
-    d = StationBrowserDialog.__new__(StationBrowserDialog)
-    d._tunein_stack = ["c1"]  # drilled in -> an Up row is prepended
-    d._filled: list = []
-    d._fill_results = lambda rows, *, status: d._filled.append((rows, status))
-    d._announce = lambda m: None
-    results = [
-        TuneInResult(guide_id="c2", title="Jazz", is_station=False),
-        TuneInResult(guide_id="s9", title="Jazz FM", is_station=True),
-    ]
-    d._tunein_browse_done(results)
-    rows, status = d._filled[-1]
-    assert rows[0].name == "[Up one level]"
-    assert len(rows) == 3  # up + category + station
-    assert "1 categor" in status and "1 station" in status
+    assert played == []
 
 
 def test_on_refresh_routes_to_genres_when_music_genres_active() -> None:

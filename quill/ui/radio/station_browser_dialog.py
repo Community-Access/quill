@@ -19,7 +19,6 @@ from typing import Any
 from quill.core.radio import (
     acb_media,
     m3u_catalog,
-    nfb_media,
     radio_browser,
     soma_fm,
     tunein,
@@ -36,12 +35,13 @@ from quill.ui.dialog_contract import apply_modal_ids
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
-_NFB_RADIO = nfb_media.CATEGORY_LABEL
 _SOMAFM = "SomaFM"
 #: TuneIn's category tree (Music, Talk, Sports, Local, ...), browsed as folders.
 _TUNEIN_BROWSE = "TuneIn"
 #: Community M3U (junguler catalog): a genre-picker category, browsed on demand.
 _M3U_GENRES = "Music Genres"
+# NFB Radio is a single stream, so it lives only on the Station menu (next to ACB
+# Media), not as a browse category here -- there is nothing to "browse".
 #: Xiph/Icecast public directory: the other genre-picker (browse-by-genre) source.
 _XIPH_DIR = "Xiph Directory"
 #: RadioBrowser's most-voted stations -- browse what everyone's listening to.
@@ -54,7 +54,6 @@ _CATEGORIES = (
     _FAVORITES,
     _POPULAR,
     _ACB_MEDIA,
-    _NFB_RADIO,
     _SOMAFM,
     _TUNEIN_BROWSE,
     _M3U_GENRES,
@@ -77,7 +76,6 @@ _SOURCE_FACETS = (
     "TuneIn",
     "SomaFM",
     "ACB Media",
-    _NFB_RADIO,
     m3u_catalog.CATEGORY_LABEL,
     xiph.CATEGORY_LABEL,
     "Website",
@@ -258,9 +256,9 @@ class StationBrowserDialog:
         cat_col.Add(wx.StaticText(self.dialog, label="&Category"), 0, wx.BOTTOM, 4)
         self._category_list = wx.ListBox(self.dialog, choices=list(_CATEGORIES))
         self._category_list.SetName(
-            "Station category; Favorites, Popular Stations, ACB Media, NFB Radio, "
-            "SomaFM, TuneIn, Music Genres, and the Xiph Directory browse without "
-            "a search, Search Results appears after a search"
+            "Station category; Favorites, Popular Stations, ACB Media, SomaFM, "
+            "TuneIn (a folder tree), Music Genres, and the Xiph Directory browse "
+            "without a search, Search Results appears after a search"
         )
         self._category_list.SetSelection(0)
         cat_col.Add(self._category_list, 1, wx.EXPAND)
@@ -297,6 +295,19 @@ class StationBrowserDialog:
         self._results.InsertColumn(2, "Format", width=110)
         self._results.InsertColumn(3, "Source", width=110)
         results_col.Add(self._results, 1, wx.EXPAND)
+        # TuneIn's directory is a real tree, so it browses in a TreeCtrl that
+        # takes the results area's place while the TuneIn category is selected:
+        # folders expand (lazily fetched), Enter opens a folder or plays a
+        # station. Hidden until TuneIn is chosen.
+        self._tunein_tree = wx.TreeCtrl(
+            self.dialog,
+            style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT | wx.BORDER_SIMPLE,
+        )
+        self._tunein_tree.SetName(
+            "TuneIn categories; press Enter to open a folder or play a station"
+        )
+        self._tunein_tree.Hide()
+        results_col.Add(self._tunein_tree, 1, wx.EXPAND)
         body.Add(results_col, 2, wx.EXPAND)
         root.Add(body, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
@@ -369,6 +380,9 @@ class StationBrowserDialog:
         self._country_ctrl.Bind(wx.EVT_CHOICE, self._on_search)
         self._search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         self._category_list.Bind(wx.EVT_LISTBOX, self._on_category_selected)
+        self._tunein_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_tunein_expanding)
+        self._tunein_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_tunein_activated)
+        self._tunein_tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_tunein_tree_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_activate)
         self._results.Bind(wx.EVT_CONTEXT_MENU, self._on_results_context_menu)
@@ -610,6 +624,8 @@ class StationBrowserDialog:
             self._category_list.SetSelection(index)
         # The genre picker applies to the genre-source categories only.
         self._genre_ctrl.Enable(category in _GENRE_SOURCES)
+        # TuneIn browses in its own tree, which swaps in for the results list.
+        self._set_tunein_view(category == _TUNEIN_BROWSE)
         if category == _FAVORITES:
             stations = [f.station for f in self._favorites.favorites]
             status = (
@@ -621,13 +637,6 @@ class StationBrowserDialog:
         elif category == _ACB_MEDIA:
             stations = acb_media.acb_media_stations()
             status = f"{len(stations)} ACB Media stations from the American Council of the Blind."
-            self._fill_results(stations, status=status)
-        elif category == _NFB_RADIO:
-            stations = nfb_media.nfb_media_stations()
-            status = (
-                f"{len(stations)} station from the National Federation of the Blind "
-                "Radio Network."
-            )
             self._fill_results(stations, status=status)
         elif category == _POPULAR:
             self._browse_async(
@@ -644,8 +653,7 @@ class StationBrowserDialog:
                 error="Could not reach SomaFM",
             )
         elif category == _TUNEIN_BROWSE:
-            self._tunein_stack = []
-            self._tunein_browse("")
+            self._populate_tunein_tree()
         elif category in _GENRE_SOURCES:
             self._genre_source = _GENRE_SOURCES[category]
             self._load_genres()
@@ -743,16 +751,33 @@ class StationBrowserDialog:
             error=f"Could not load {display}",
         )
 
-    # -- TuneIn category browse (folders + resolve-on-play) ---------------------
+    # -- TuneIn category browse (a real tree) -----------------------------------
 
-    def _tunein_browse(self, guide_id: str) -> None:
-        """Browse one level of TuneIn's category tree off-thread; results are
-        shown as folder rows (drill in) and unresolved station rows."""
+    def _set_tunein_view(self, show_tree: bool) -> None:
+        """Swap the TuneIn tree in for the results list (or back), one visible
+        at a time in the same space."""
+        if self._tunein_tree.IsShown() == show_tree:
+            return
+        self._tunein_tree.Show(show_tree)
+        self._results.Show(not show_tree)
+        self.dialog.Layout()
+
+    def _populate_tunein_tree(self) -> None:
+        """Fill the TuneIn tree's top level (Music, Talk, Sports, Local, ...)."""
+        tree = self._tunein_tree
+        tree.DeleteAllItems()
+        self._details.SetValue("")
+        self._play_btn.Enable(False)
+        self._favorite_btn.Enable(False)
         if self._safe_mode:
             self._status.SetLabel("The TuneIn directory is disabled in Safe Mode.")
             return
-        self._genre_ctrl.Enable(False)
-        self._status.SetLabel("Loading TuneIn..." if not guide_id else "Loading TuneIn category...")
+        self._tunein_root = tree.AddRoot("TuneIn")
+        self._status.SetLabel("Loading TuneIn...")
+        self._fetch_tunein_children(self._tunein_root, "")
+
+    def _fetch_tunein_children(self, node: Any, guide_id: str) -> None:
+        """Fetch a node's TuneIn children off-thread and add them under it."""
 
         def _work(**_kwargs: Any) -> list[Any]:
             try:
@@ -762,30 +787,88 @@ class StationBrowserDialog:
 
         def _ok(_op: str, results: object) -> None:
             self._wx.CallAfter(
-                self._tunein_browse_done, results if isinstance(results, list) else []
+                self._add_tunein_children, node, results if isinstance(results, list) else []
             )
 
         self._task_manager.submit("radio-tunein-browse", _work, on_success=_ok, on_failure=None)
 
-    def _tunein_browse_done(self, results: list[Any]) -> None:
-        rows: list[RadioStation] = []
-        if getattr(self, "_tunein_stack", []):
-            rows.append(tunein.nav_up_row())
-        rows.extend(tunein.browse_row_to_station(r) for r in results)
+    def _add_tunein_children(self, node: Any, results: list[Any]) -> None:
+        tree = self._tunein_tree
+        if not node.IsOk():
+            return
+        tree.DeleteChildren(node)  # clear the "Loading..." placeholder, if any
+        for result in results:
+            label = result.title if result.is_station else f"{result.title}  [folder]"
+            child = tree.AppendItem(node, label)
+            tree.SetItemData(
+                child,
+                {
+                    "kind": "station" if result.is_station else "category",
+                    "guide_id": result.guide_id,
+                    "title": result.title,
+                    "subtitle": result.subtitle,
+                    "loaded": False,
+                },
+            )
+            if not result.is_station:
+                # A placeholder child gives the folder an expand arrow; it is
+                # replaced by the real children the first time it is opened.
+                placeholder = tree.AppendItem(child, "Loading...")
+                tree.SetItemData(placeholder, {"kind": "placeholder"})
         categories = sum(1 for r in results if not r.is_station)
         stations = len(results) - categories
         status = (
-            f"TuneIn: {categories} categor{'y' if categories == 1 else 'ies'}, "
-            f"{stations} station{'' if stations == 1 else 's'}. Open a folder with Enter."
+            f"TuneIn: {categories} folder{'' if categories == 1 else 's'}, "
+            f"{stations} station{'' if stations == 1 else 's'}. Enter opens a folder or plays."
             if results
-            else "Nothing here -- use Up one level to go back."
+            else "Nothing to browse here."
         )
-        self._fill_results(rows, status=status)
-        self._announce(status)
+        self._status.SetLabel(status)
+        if node == getattr(self, "_tunein_root", None):
+            self._announce(status)
+            tree.SetFocus()
+            first, _cookie = tree.GetFirstChild(node)
+            if first.IsOk():
+                tree.SelectItem(first)
 
-    def _play_tunein_station(self, station: RadioStation, guide_id: str) -> None:
-        """Resolve a TuneIn browse station's stream off-thread, then play it."""
-        self._status.SetLabel(f"Resolving {station.name}...")
+    def _selected_tunein_data(self) -> dict | None:
+        selection = self._tunein_tree.GetSelection()
+        if not selection.IsOk():
+            return None
+        data = self._tunein_tree.GetItemData(selection)
+        return data if isinstance(data, dict) else None
+
+    def _on_tunein_expanding(self, event: Any) -> None:
+        data = self._tunein_tree.GetItemData(event.GetItem())
+        if not isinstance(data, dict) or data.get("kind") != "category" or data.get("loaded"):
+            return
+        data["loaded"] = True  # fetch once; a failed/empty fetch just leaves it empty
+        self._status.SetLabel(f"Opening {data.get('title', 'folder')}...")
+        self._fetch_tunein_children(event.GetItem(), data["guide_id"])
+
+    def _on_tunein_activated(self, event: Any) -> None:
+        data = self._tunein_tree.GetItemData(event.GetItem())
+        if isinstance(data, dict) and data.get("kind") == "station":
+            self._play_tunein_station(data["guide_id"], data["title"])
+            return
+        event.Skip()  # a folder: let the tree toggle it open/closed
+
+    def _on_tunein_tree_selected(self, event: Any) -> None:
+        data = self._tunein_tree.GetItemData(event.GetItem())
+        is_station = isinstance(data, dict) and data.get("kind") == "station"
+        if is_station:
+            subtitle = data.get("subtitle") or ""
+            self._details.SetValue(
+                f"{data['title']}\n{subtitle}\nTuneIn -- press Enter or Play to tune in.".strip()
+            )
+        else:
+            self._details.SetValue("")
+        self._play_btn.Enable(is_station)
+        self._favorite_btn.Enable(False)  # a TuneIn station has no stream until it plays
+
+    def _play_tunein_station(self, guide_id: str, title: str) -> None:
+        """Resolve a TuneIn station's stream off-thread, then play it."""
+        self._status.SetLabel(f"Resolving {title}...")
 
         def _work(**_kwargs: Any) -> list[str]:
             try:
@@ -795,25 +878,19 @@ class StationBrowserDialog:
 
         def _ok(_op: str, streams: object) -> None:
             self._wx.CallAfter(
-                self._play_resolved_tunein, station, streams if isinstance(streams, list) else []
+                self._play_resolved_tunein, title, streams if isinstance(streams, list) else []
             )
 
         self._task_manager.submit("radio-tunein-resolve", _work, on_success=_ok, on_failure=None)
 
-    def _play_resolved_tunein(self, station: RadioStation, streams: list[str]) -> None:
+    def _play_resolved_tunein(self, title: str, streams: list[str]) -> None:
         if not streams:
-            self._status.SetLabel(f"Could not get a stream for {station.name}.")
-            self._announce(f"Could not play {station.name}.")
+            self._status.SetLabel(f"Could not get a stream for {title}.")
+            self._announce(f"Could not play {title}.")
             return
-        resolved = RadioStation(
-            name=station.name,
-            stream_url=streams[0],
-            station_uuid="",
-            tags=station.tags,
-            source="TuneIn",
-        )
-        self._controller.play_station(resolved)
-        self._announce(f"Playing {station.name}")
+        station = RadioStation(name=title, stream_url=streams[0], source="TuneIn")
+        self._controller.play_station(station)
+        self._announce(f"Playing {title}")
         self._refresh_play_button()
 
     def _on_refresh(self, _event: object) -> None:
@@ -1070,23 +1147,15 @@ class StationBrowserDialog:
         self._play_btn.SetName("Stop this station" if stopping else "Play the selected station")
 
     def _on_play(self, _event: object) -> None:
+        # While the TuneIn tree is showing, Play acts on the selected tree node:
+        # a station resolves and plays; a folder does nothing (Enter opens it).
+        if self._tunein_tree.IsShown():
+            data = self._selected_tunein_data()
+            if isinstance(data, dict) and data.get("kind") == "station":
+                self._play_tunein_station(data["guide_id"], data["title"])
+            return
         station = self._selected_station()
         if station is None:
-            return
-        # TuneIn browse rows (folders / unresolved stations) are handled here and
-        # never reach ordinary playback; a normal station has kind == "".
-        kind, guide_id = tunein.classify_nav(station)
-        if kind == "up":
-            if getattr(self, "_tunein_stack", []):
-                self._tunein_stack.pop()
-            self._tunein_browse(self._tunein_stack[-1] if self._tunein_stack else "")
-            return
-        if kind == "category":
-            self._tunein_stack = [*getattr(self, "_tunein_stack", []), guide_id]
-            self._tunein_browse(guide_id)
-            return
-        if kind == "station":
-            self._play_tunein_station(station, guide_id)
             return
         # One button, honest label: it stops the station it started.
         if self._is_station_playing(station):
@@ -1141,12 +1210,13 @@ class StationBrowserDialog:
             self._mute_btn.SetValue(state.muted)
 
     def _on_toggle_favorite(self, _event: object) -> None:
+        # A TuneIn station has no resolved stream until it plays, so it can't be
+        # saved straight from the browse tree.
+        if self._tunein_tree.IsShown():
+            self._announce("Play a TuneIn station first to add it to Favorites.")
+            return
         station = self._selected_station()
         if station is None:
-            return
-        # A TuneIn browse folder / unresolved row has no playable stream to save.
-        if tunein.classify_nav(station)[0]:
-            self._announce("Open this to play it before adding it to Favorites.")
             return
         if self._favorites.contains(station):
             self._favorites.remove(station.station_uuid or station.stream_url)

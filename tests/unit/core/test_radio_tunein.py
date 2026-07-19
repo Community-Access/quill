@@ -7,38 +7,11 @@ import pytest
 import quill.core.radio.tunein as tunein
 from quill.core.radio.tunein import (
     TuneInError,
-    TuneInResult,
-    browse_row_to_station,
-    classify_nav,
     guide_id_from_page,
-    nav_up_row,
     parse_directory_results,
     parse_tune_response,
     refuse_in_safe_mode,
 )
-
-
-def test_browse_row_and_classify_roundtrip() -> None:
-    cat = browse_row_to_station(TuneInResult(guide_id="c9", title="Music", is_station=False))
-    assert classify_nav(cat) == ("category", "c9")
-    assert "[browse]" in cat.name  # a screen reader hears it's a folder
-    assert cat.stream_url == ""
-
-    sta = browse_row_to_station(
-        TuneInResult(guide_id="s42", title="Jazz FM", subtitle="smooth", is_station=True)
-    )
-    assert classify_nav(sta) == ("station", "s42")
-    assert sta.name == "Jazz FM" and sta.source == "TuneIn"
-    assert sta.stream_url == ""  # unresolved until played
-
-    assert classify_nav(nav_up_row()) == ("up", "")
-
-
-def test_classify_nav_leaves_normal_stations_untouched() -> None:
-    from quill.core.radio.models import RadioStation
-
-    normal = RadioStation(name="WXYZ", stream_url="https://x/s", station_uuid="abc-123")
-    assert classify_nav(normal) == ("", "")  # not a browse row -> normal playback
 
 
 def test_refuse_in_safe_mode() -> None:

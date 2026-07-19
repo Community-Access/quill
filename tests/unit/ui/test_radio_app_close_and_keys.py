@@ -61,8 +61,63 @@ def _favorites_key_frame() -> tuple[SimpleNamespace, list[str]]:
         _on_favorites_activated=lambda _e: calls.append("activated"),
         _on_tree_remove=lambda: calls.append("remove"),
         _on_tree_rename=lambda: calls.append("rename"),
+        _move_selected_favorite=lambda delta: calls.append(f"move:{delta}"),
     )
     return frame, calls
+
+
+def test_alt_shift_up_down_reorder_the_selected_favorite() -> None:
+    frame, calls = _favorites_key_frame()
+    up, _sk = _key_event(wx.WXK_UP, alt=True, shift=True)
+    RadioAppFrame._on_favorites_key(frame, up)  # type: ignore[arg-type]
+    down, _sk2 = _key_event(wx.WXK_DOWN, alt=True, shift=True)
+    RadioAppFrame._on_favorites_key(frame, down)  # type: ignore[arg-type]
+    assert calls == ["move:-1", "move:1"]  # up moves toward the top, down toward the bottom
+
+
+def _move_frame(*, folder_sort: str, moved: bool = True):
+    calls: list[str] = []
+    favorite = SimpleNamespace(key="k1", folder="")
+    store = SimpleNamespace(
+        move=lambda key, *, delta: calls.append(f"store.move({delta})") or moved,
+    )
+    frame = SimpleNamespace(
+        _selected_favorite=lambda: favorite,
+        _radio_history=SimpleNamespace(folder_sort_orders={}, favorites_sort=folder_sort),
+        _radio_favorites=store,
+        _announce=lambda m: calls.append(f"say:{m}"),
+        _save_radio_favorites=lambda: calls.append("save"),
+        _reload_favorites_tree=lambda keep_key=None: calls.append(f"reload:{keep_key}"),
+    )
+    return frame, calls
+
+
+def test_move_favorite_manual_order_reorders_and_announces(monkeypatch) -> None:
+    # move_announcement is imported inside the method; stub it to a known phrase.
+    import quill.ui.radio.favorites_manager_dialog as fm
+
+    monkeypatch.setattr(
+        fm, "move_announcement", lambda store, key, delta: "Moved down, now above X"
+    )
+    frame, calls = _move_frame(folder_sort="manual")
+    RadioAppFrame._move_selected_favorite(frame, 1)  # type: ignore[arg-type]
+    assert "store.move(1)" in calls
+    assert any("Moved down, now above X" in c for c in calls)
+    assert "save" in calls and "reload:k1" in calls
+
+
+def test_move_favorite_blocked_when_not_manual_order() -> None:
+    frame, calls = _move_frame(folder_sort="az")
+    RadioAppFrame._move_selected_favorite(frame, -1)  # type: ignore[arg-type]
+    assert not any("store.move" in c for c in calls)  # nothing moved
+    assert any("manual order" in c.lower() for c in calls)  # told how to enable it
+
+
+def test_move_favorite_at_edge_announces_and_does_not_reload() -> None:
+    frame, calls = _move_frame(folder_sort="manual", moved=False)
+    RadioAppFrame._move_selected_favorite(frame, -1)  # type: ignore[arg-type]
+    assert any("edge" in c.lower() for c in calls)
+    assert not any(c.startswith("reload") for c in calls)
 
 
 def test_ctrl_up_triggers_volume_up_without_skipping() -> None:
