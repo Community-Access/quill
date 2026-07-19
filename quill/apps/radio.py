@@ -266,16 +266,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             if code == wx.WXK_DOWN:
                 self.radio_volume_down()
                 return
-        # Alt+Shift+Up / Alt+Shift+Down reorder the selected favorite in manual
-        # order (like moving an item in Microsoft Teams), announcing where it
-        # landed -- "Moved down, now above X".
-        if event.AltDown() and event.ShiftDown() and not event.ControlDown():
-            if code == wx.WXK_UP:
-                self._move_selected_favorite(-1)
-                return
-            if code == wx.WXK_DOWN:
-                self._move_selected_favorite(1)
-                return
+        # Alt+Shift+Up/Down reordering is handled in the frame char hook
+        # (_on_radio_char_hook) -- Windows steals Alt+arrow for the menu before
+        # a focused TreeCtrl's EVT_KEY_DOWN can see it.
         event.Skip()
 
     def _move_selected_favorite(self, delta: int) -> None:
@@ -947,6 +940,21 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             and getattr(self._radio_history, "alt_f4_to_tray", False)
         ):
             self._send_to_tray()
+            return
+        # Alt+Shift+Up / Alt+Shift+Down reorder the selected favorite (manual
+        # order), Teams-style. Caught here in the frame's char hook rather than
+        # the tree's EVT_KEY_DOWN because Windows routes Alt+arrow to the menu
+        # system before a focused TreeCtrl ever sees it. Only acts when the
+        # favorites tree actually has focus.
+        code = event.GetKeyCode()
+        if (
+            event.AltDown()
+            and event.ShiftDown()
+            and not event.ControlDown()
+            and code in (wx.WXK_UP, wx.WXK_DOWN)
+            and wx.Window.FindFocus() is getattr(self, "_favorites_tree", None)
+        ):
+            self._move_selected_favorite(-1 if code == wx.WXK_UP else 1)
             return
         event.Skip()
 

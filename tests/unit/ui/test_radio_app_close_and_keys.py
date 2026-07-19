@@ -66,13 +66,37 @@ def _favorites_key_frame() -> tuple[SimpleNamespace, list[str]]:
     return frame, calls
 
 
-def test_alt_shift_up_down_reorder_the_selected_favorite() -> None:
-    frame, calls = _favorites_key_frame()
+def test_alt_shift_up_down_reorder_via_char_hook_when_tree_focused(monkeypatch) -> None:
+    # Handled in the frame char hook (Windows steals Alt+arrow from the tree's
+    # own key handler), and only when the favorites tree has focus.
+    calls: list[str] = []
+    tree = object()
+    frame = SimpleNamespace(
+        _favorites_tree=tree,
+        _move_selected_favorite=lambda delta: calls.append(f"move:{delta}"),
+        _radio_history=SimpleNamespace(alt_f4_to_tray=False),
+        _send_to_tray=lambda: calls.append("tray"),
+    )
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: tree))
     up, _sk = _key_event(wx.WXK_UP, alt=True, shift=True)
-    RadioAppFrame._on_favorites_key(frame, up)  # type: ignore[arg-type]
+    RadioAppFrame._on_radio_char_hook(frame, up)  # type: ignore[arg-type]
     down, _sk2 = _key_event(wx.WXK_DOWN, alt=True, shift=True)
-    RadioAppFrame._on_favorites_key(frame, down)  # type: ignore[arg-type]
-    assert calls == ["move:-1", "move:1"]  # up moves toward the top, down toward the bottom
+    RadioAppFrame._on_radio_char_hook(frame, down)  # type: ignore[arg-type]
+    assert calls == ["move:-1", "move:1"]
+
+
+def test_alt_shift_ignored_when_tree_not_focused(monkeypatch) -> None:
+    calls: list[str] = []
+    frame = SimpleNamespace(
+        _favorites_tree=object(),
+        _move_selected_favorite=lambda delta: calls.append(f"move:{delta}"),
+        _radio_history=SimpleNamespace(alt_f4_to_tray=False),
+        _send_to_tray=lambda: None,
+    )
+    monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: object()))  # something else
+    up, skipped = _key_event(wx.WXK_UP, alt=True, shift=True)
+    RadioAppFrame._on_radio_char_hook(frame, up)  # type: ignore[arg-type]
+    assert calls == [] and skipped == [True]  # passes through untouched
 
 
 def _move_frame(*, folder_sort: str, moved: bool = True):
