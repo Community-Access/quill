@@ -94,7 +94,7 @@ class RadioPlayerController:
         on_register_click: Callable[[str], None] | None = None,
         before_play: Callable[[], None] | None = None,
         on_enhance_error: Callable[[str], None] | None = None,
-        resolve_enhancement: Callable[[RadioStation], tuple[float, float, float, bool]]
+        resolve_enhancement: Callable[[RadioStation], tuple[float, float, float, bool, str]]
         | None = None,
         resolve_volume: Callable[[RadioStation], int] | None = None,
         output_device: str = "",
@@ -167,7 +167,7 @@ class RadioPlayerController:
         self._eq_mid_db = 0.0
         self._eq_treble_db = 0.0
         self._compressor_enabled = False
-        self._mono_enabled = False
+        self._channel_mode = "stereo"
         self._night_mode_enabled = False
         #: Volume Boost: amplify up to 50% past 100 (mpv engine only; the
         #: wx engine clamps at 100, so it silently does nothing there).
@@ -199,6 +199,7 @@ class RadioPlayerController:
                 self._eq_mid_db,
                 self._eq_treble_db,
                 self._compressor_enabled,
+                self._channel_mode,
             ) = self._resolve_enhancement(station)
         self._state.station = station
         if self._resolve_volume is not None:
@@ -310,7 +311,7 @@ class RadioPlayerController:
             self._eq_mid_db,
             self._eq_treble_db,
             compressor_enabled=self._compressor_enabled,
-            mono_enabled=self._mono_enabled,
+            channel_mode=self._channel_mode,
             night_mode_enabled=self._night_mode_enabled,
         )
 
@@ -338,7 +339,7 @@ class RadioPlayerController:
                 mid_db=self._eq_mid_db,
                 treble_db=self._eq_treble_db,
                 compressor_enabled=self._compressor_enabled,
-                mono_enabled=self._mono_enabled,
+                channel_mode=self._channel_mode,
                 night_mode_enabled=self._night_mode_enabled,
             )
         except EnhanceError as error:
@@ -381,12 +382,12 @@ class RadioPlayerController:
         self._compressor_enabled = compressor_enabled
         self._apply_sound_change()
 
-    def set_sound_options(self, *, mono_enabled: bool, night_mode_enabled: bool) -> None:
-        """Change the listener-level sound options (mono downmix, night
-        mode); same live-apply/reconnect behavior as ``set_enhancement``."""
-        if (mono_enabled, night_mode_enabled) == (self._mono_enabled, self._night_mode_enabled):
+    def set_sound_options(self, *, channel_mode: str, night_mode_enabled: bool) -> None:
+        """Change the listener-level sound options (channel mode, night mode);
+        same live-apply/reconnect behavior as ``set_enhancement``."""
+        if (channel_mode, night_mode_enabled) == (self._channel_mode, self._night_mode_enabled):
             return
-        self._mono_enabled = mono_enabled
+        self._channel_mode = channel_mode
         self._night_mode_enabled = night_mode_enabled
         self._apply_sound_change()
 

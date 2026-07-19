@@ -2313,6 +2313,18 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.radio_whats_playing(), id=id_radio_whats_playing
             )
+            id_radio_whats_playing_details = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_whats_playing_details,
+                self._menu_label(
+                    _("What's Playing - Re&view and Copy..."), "radio.whats_playing_details"
+                ),
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.radio_whats_playing_details(),
+                id=id_radio_whats_playing_details,
+            )
             id_radio_announce_titles = wx.NewIdRef()
             media_menu.AppendCheckItem(
                 id_radio_announce_titles,

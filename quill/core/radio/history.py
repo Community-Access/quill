@@ -97,10 +97,12 @@ class RadioHistory:
     #: streams. No effect on the wx.media engine, which caps at 100.
     volume_boost: bool = False
     #: Sound options (listener-level, so global rather than per-station):
-    #: mono downmix -- both channels blended into one, for single-sided
-    #: hearing or a single earbud, where hard-panned stereo content simply
-    #: disappears otherwise.
-    mono_enabled: bool = False
+    #: channel mode -- "stereo" (default), "mono" (both channels blended into
+    #: one, for single-sided hearing or a single earbud where hard-panned
+    #: content otherwise disappears), or "left"/"right" (send just that source
+    #: channel to both ears, so the radio can play in one ear while a screen
+    #: reader uses the other). Replaces the earlier ``mono_enabled`` bool.
+    channel_mode: str = "stereo"
     #: Night mode -- real-time loudness normalization (lifts quiet program
     #: material), the complement to the compressor's "tame the loud parts".
     night_mode_enabled: bool = False
@@ -184,7 +186,13 @@ def load_history(data_dir: Path) -> RadioHistory:
         engine = str(raw.get("playback_engine", "auto"))
         history.playback_engine = engine if engine in ("auto", "wx", "mpv") else "auto"
         history.volume_boost = bool(raw.get("volume_boost", False))
-        history.mono_enabled = bool(raw.get("mono_enabled", False))
+        # channel_mode replaces the legacy mono_enabled bool; migrate an old
+        # store (mono_enabled: true -> "mono") so an upgrade keeps the setting.
+        raw_channel = str(raw.get("channel_mode", "") or "")
+        if raw_channel in ("stereo", "mono", "left", "right"):
+            history.channel_mode = raw_channel
+        else:
+            history.channel_mode = "mono" if bool(raw.get("mono_enabled", False)) else "stereo"
         history.night_mode_enabled = bool(raw.get("night_mode_enabled", False))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.debug_mode = bool(raw.get("debug_mode", False))
@@ -227,7 +235,10 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "output_device": history.output_device,
             "playback_engine": history.playback_engine,
             "volume_boost": history.volume_boost,
-            "mono_enabled": history.mono_enabled,
+            "channel_mode": history.channel_mode,
+            # Keep writing the legacy bool for one release so an older build can
+            # still read the mono choice if the user downgrades.
+            "mono_enabled": history.channel_mode == "mono",
             "night_mode_enabled": history.night_mode_enabled,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "debug_mode": history.debug_mode,

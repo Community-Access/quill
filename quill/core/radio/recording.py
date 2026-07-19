@@ -78,13 +78,24 @@ _STDERR_ERROR_RE = re.compile(
 )
 
 #: R4/13.3 -- ffmpeg stderr markers that mean the failure is *fatal* (the stream
-#: is gone or the disk is full), not a transient drop worth spending a reconnect
-#: attempt on. A 5xx, a network timeout, or a bare EOF is treated as transient.
+#: is gone for good or the disk is full), not a transient drop worth spending a
+#: reconnect attempt on. Only genuinely-terminal HTTP codes count: 404 Not Found,
+#: 410 Gone, 451 Unavailable. A 5xx, a network timeout, a bare EOF, and crucially
+#: a transient 403 Forbidden (an expired/rotating CDN token -- common, and
+#: recoverable) or a 408/409 are treated as transient and DO reconnect, so a
+#: hiccup no longer cuts a recording short after a minute.
 _FATAL_STDERR_RE = re.compile(
     r"(?i)(no space left|disk full|enospc|read-only|"
-    r"server returned 40[0-9]|http error 40[0-9]|http/[0-9.]+ 40[0-9]|"
-    r"403 forbidden|404 not found|410 gone|451 unavailable)"
+    r"server returned 4(?:04|10|51)|http error 4(?:04|10|51)|http/[0-9.]+ 4(?:04|10|51)|"
+    r"404 not found|410 gone|451 unavailable)"
 )
+
+#: Evidence in ffmpeg's stderr that it (re)connected and is making forward
+#: progress -- an ``Opening '...' for reading`` reconnect line or a progress stat
+#: line. Any earlier error was recovered from, so the recent-stderr tail is
+#: cleared on this signal, preventing a transient error ffmpeg already rode out
+#: from poisoning the fatal/transient verdict of a later, unrelated drop.
+_RECOVERY_STDERR_RE = re.compile(r"(?i)(opening .+ for reading|\btime=\d)")
 
 _PROBE_TIMEOUT_SECONDS = 10.0
 _DEFAULT_BITRATE_KBPS = 192
@@ -439,7 +450,12 @@ class RadioRecorder:
                 if not line:
                     continue
                 # R4/13.3: keep the recent stderr so _monitor can classify a drop
-                # as fatal (disk full / HTTP 4xx -> no reconnect) vs transient.
+                # as fatal (disk full / gone-for-good HTTP) vs transient. When
+                # ffmpeg shows it reconnected/made progress, clear the tail first
+                # so an error it already recovered from cannot poison a later
+                # verdict.
+                if _RECOVERY_STDERR_RE.search(line):
+                    self._stderr_tail.clear()
                 self._stderr_tail.append(line)
                 safe = redact_source_tokens(line)
                 if _STDERR_ERROR_RE.search(line):

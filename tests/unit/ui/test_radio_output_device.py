@@ -336,7 +336,7 @@ def test_sound_change_applies_live_on_mpv_without_reconnect(
     controller._on_loaded(0)
     loads_before = len(fake_mpv.loads)
     controller.set_enhancement(bass_db=6.0, mid_db=0.0, treble_db=2.0, compressor_enabled=True)
-    controller.set_sound_options(mono_enabled=True, night_mode_enabled=True)
+    controller.set_sound_options(channel_mode="mono", night_mode_enabled=True)
     # Heard immediately via af -- never a reconnect on the mpv engine.
     assert len(fake_mpv.loads) == loads_before
     assert "pan=mono" in fake_mpv.filter_graphs[-1]

@@ -196,3 +196,24 @@ def test_alt_f4_to_tray_round_trips_and_defaults_off(tmp_path: Path) -> None:
     assert load_history(tmp_path).alt_f4_to_tray is False
     save_history(tmp_path, RadioHistory(alt_f4_to_tray=True))
     assert load_history(tmp_path).alt_f4_to_tray is True
+
+
+def test_channel_mode_defaults_to_stereo_and_round_trips(tmp_path: Path) -> None:
+    assert load_history(tmp_path).channel_mode == "stereo"
+    for mode in ("mono", "left", "right", "stereo"):
+        save_history(tmp_path, RadioHistory(channel_mode=mode))
+        assert load_history(tmp_path).channel_mode == mode
+
+
+def test_channel_mode_migrates_legacy_mono_enabled(tmp_path: Path) -> None:
+    # An older store had a mono_enabled bool; a true value migrates to "mono".
+    import json
+
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"mono_enabled": True}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).channel_mode == "mono"
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"mono_enabled": False}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).channel_mode == "stereo"

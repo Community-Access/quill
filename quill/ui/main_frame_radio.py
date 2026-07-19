@@ -89,7 +89,7 @@ class RadioMixin:
             compressor_enabled=self._radio_history.compressor_enabled,
         )
         self._radio_controller.set_sound_options(
-            mono_enabled=self._radio_history.mono_enabled,
+            channel_mode=self._radio_history.channel_mode,
             night_mode_enabled=self._radio_history.night_mode_enabled,
         )
         self._radio_controller.set_volume_boost(self._radio_history.volume_boost)
@@ -461,7 +461,9 @@ class RadioMixin:
         except RecordingError as error:
             self._announce(str(error))
             return
-        self._announce(f"Recording {station.name}")
+        # "Recording started" (not the label-like "Recording X") so it is
+        # unmistakable that pressing the command actually began a capture.
+        self._announce(f"Recording started: {station.name}.")
         self._refresh_statusbar()
 
     def _radio_recording_filter_graph(self) -> str:
@@ -477,7 +479,7 @@ class RadioMixin:
             history.eq_mid_db,
             history.eq_treble_db,
             compressor_enabled=history.compressor_enabled,
-            mono_enabled=history.mono_enabled,
+            channel_mode=history.channel_mode,
             night_mode_enabled=history.night_mode_enabled,
         )
 
@@ -662,6 +664,47 @@ class RadioMixin:
             self._announce(self._radio_now_playing_phrase(self._radio_track_title))
             return
         self._radio_fetch_track_title(announce_result=True)
+
+    def _radio_now_playing_text(self) -> str:
+        """The current now-playing title/artist as clean text -- no "Now
+        playing:" prefix -- for copying or character-by-character review
+        (#1134). Empty when nothing is playing / no title has been read yet."""
+        from quill.core.radio.now_playing import render_now_playing
+
+        title = self._radio_track_title
+        if not title:
+            return ""
+        template = getattr(self._radio_history, "now_playing_template", "") or None
+        return render_now_playing(title, template) if template else render_now_playing(title)
+
+    def radio_copy_whats_playing(self) -> None:
+        """Copy the current now-playing text to the clipboard (#1134)."""
+        text = self._radio_now_playing_text()
+        if not text:
+            self._announce("Nothing is playing to copy. Try What's Playing first.")
+            return
+        if self._copy_to_clipboard(text):
+            self._announce("Copied.")
+        else:
+            self._announce("Could not copy to the clipboard.")
+
+    def radio_whats_playing_details(self) -> None:
+        """Open a reviewable, copyable view of the current now-playing text so a
+        listener can note the spelling of a song or artist, or paste it into a
+        lyrics or store search (#1134)."""
+        text = self._radio_now_playing_text()
+        if not text:
+            self._announce("Nothing is playing. Try What's Playing first.")
+            return
+        from quill.ui.radio.now_playing_dialog import NowPlayingDialog
+
+        NowPlayingDialog(
+            self.frame,
+            text,
+            self._show_modal_dialog,
+            self._copy_to_clipboard,
+            self._announce,
+        ).show()
 
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
 
@@ -867,7 +910,7 @@ class RadioMixin:
         except RecordingError as error:
             self._announce(str(error))
             return
-        self._announce(f"Recording {station.display_name} for {minutes} minutes.")
+        self._announce(f"Recording started: {station.display_name}, for {minutes} minutes.")
         self._refresh_statusbar()
 
     def radio_play_last(self) -> None:
@@ -1125,11 +1168,13 @@ class RadioMixin:
         this is an announcement, not a blocking dialog (#1076)."""
         self._announce(message)
 
-    def _radio_resolve_enhancement(self, station: RadioStation) -> tuple[float, float, float, bool]:
-        """(bass_db, mid_db, treble_db, compressor_enabled) for *station*:
-        its own remembered Sound Enhancements if it's a favorite with an
-        override, else the shared default -- called by RadioPlayerController
-        on every play_station."""
+    def _radio_resolve_enhancement(
+        self, station: RadioStation
+    ) -> tuple[float, float, float, bool, str]:
+        """(bass_db, mid_db, treble_db, compressor_enabled, channel_mode) for
+        *station*: its own remembered Sound Enhancements if it's a favorite
+        with an override, else the shared default -- called by
+        RadioPlayerController on every play_station."""
         key = station.station_uuid or station.stream_url
         favorite = self._radio_favorites.find(key)
         if favorite is not None and favorite.has_sound_enhancement_override:
@@ -1138,6 +1183,7 @@ class RadioMixin:
                 favorite.eq_mid_db,
                 favorite.eq_treble_db,
                 favorite.compressor_enabled,
+                favorite.channel_mode,
             )
         history = self._radio_history
         return (
@@ -1145,6 +1191,7 @@ class RadioMixin:
             history.eq_mid_db,
             history.eq_treble_db,
             history.compressor_enabled,
+            history.channel_mode,
         )
 
     def _radio_resolve_volume(self, station: RadioStation) -> int:
@@ -1187,6 +1234,7 @@ class RadioMixin:
                 favorite.eq_treble_db,
                 favorite.compressor_enabled,
             )
+            channel = favorite.channel_mode
         else:
             bass, mid, treble, compressor = (
                 history.eq_bass_db,
@@ -1194,6 +1242,7 @@ class RadioMixin:
                 history.eq_treble_db,
                 history.compressor_enabled,
             )
+            channel = history.channel_mode
         on_reset = None
         if favorite is not None and favorite.has_sound_enhancement_override:
 
@@ -1211,6 +1260,10 @@ class RadioMixin:
                         treble_db=history.eq_treble_db,
                         compressor_enabled=history.compressor_enabled,
                     )
+                    self._radio_controller.set_sound_options(
+                        channel_mode=history.channel_mode,
+                        night_mode_enabled=history.night_mode_enabled,
+                    )
                 self._announce(
                     f"Sound Enhancements for {favorite.display_label}: back to the shared default."
                 )
@@ -1223,7 +1276,7 @@ class RadioMixin:
             compressor_enabled=compressor,
             subject=favorite.display_label if favorite is not None else "station",
             show_sound_options=True,
-            mono_enabled=history.mono_enabled,
+            channel_mode=channel,
             night_mode_enabled=history.night_mode_enabled,
             announce_cb=self._announce,
             on_reset=on_reset,
@@ -1232,16 +1285,14 @@ class RadioMixin:
         if result is None:
             return
         bass_db, mid_db, treble_db, compressor_enabled, _smart_speed_not_applicable = result
-        # Listener-level sound options: always shared (they describe the
-        # listener, not a station), regardless of a per-station EQ override.
-        mono_enabled, night_mode_enabled = dialog.sound_options
-        if (mono_enabled, night_mode_enabled) != (history.mono_enabled, history.night_mode_enabled):
-            history.mono_enabled = mono_enabled
+        channel_mode, night_mode_enabled = dialog.sound_options
+        # Night mode is always shared (it describes the listener, not a station);
+        # channel mode rides with the EQ -- per-station when a favorite is
+        # playing, else the shared default -- so a station can be routed to one
+        # ear and remembered.
+        if night_mode_enabled != history.night_mode_enabled:
             history.night_mode_enabled = night_mode_enabled
             radio_history.save_history(app_data_dir(), history)
-            self._radio_controller.set_sound_options(
-                mono_enabled=mono_enabled, night_mode_enabled=night_mode_enabled
-            )
         if favorite is not None:
             self._radio_favorites.set_enhancement(
                 favorite.key,
@@ -1249,6 +1300,7 @@ class RadioMixin:
                 mid_db=mid_db,
                 treble_db=treble_db,
                 compressor_enabled=compressor_enabled,
+                channel_mode=channel_mode,
             )
             self._save_radio_favorites()
             target = favorite.display_label
@@ -1257,8 +1309,12 @@ class RadioMixin:
             history.eq_mid_db = mid_db
             history.eq_treble_db = treble_db
             history.compressor_enabled = compressor_enabled
+            history.channel_mode = channel_mode
             radio_history.save_history(app_data_dir(), history)
             target = "the shared default"
+        self._radio_controller.set_sound_options(
+            channel_mode=channel_mode, night_mode_enabled=night_mode_enabled
+        )
         self._radio_controller.set_enhancement(
             bass_db=bass_db,
             mid_db=mid_db,
@@ -1386,6 +1442,16 @@ class RadioMixin:
                 "radio.whats_playing",
                 "Internet Radio: What's Playing?",
                 self.radio_whats_playing,
+            ),
+            (
+                "radio.whats_playing_details",
+                "Internet Radio: What's Playing - Review and Copy...",
+                self.radio_whats_playing_details,
+            ),
+            (
+                "radio.copy_whats_playing",
+                "Internet Radio: Copy What's Playing",
+                self.radio_copy_whats_playing,
             ),
             (
                 "radio.toggle_title_announcements",

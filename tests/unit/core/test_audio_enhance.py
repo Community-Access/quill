@@ -352,41 +352,54 @@ def test_relay_handler_rejects_a_second_concurrent_connection() -> None:
         thread.join(timeout=5)
 
 
-# -- mono downmix + night mode (1.1.0 sound options) ---------------------------
+# -- channel mode (stereo/mono/left/right) + night mode (sound options) --------
 
 
-def test_is_enhancement_active_true_for_mono_or_night_mode_alone() -> None:
+def test_is_enhancement_active_true_for_channel_mode_or_night_mode_alone() -> None:
     from quill.core.audio_enhance import is_enhancement_active
 
-    assert is_enhancement_active(0, 0, 0, compressor_enabled=False, mono_enabled=True)
+    for mode in ("mono", "left", "right"):
+        assert is_enhancement_active(0, 0, 0, compressor_enabled=False, channel_mode=mode), mode
+    # Stereo (the default) engages nothing on its own.
+    assert not is_enhancement_active(0, 0, 0, compressor_enabled=False, channel_mode="stereo")
     assert is_enhancement_active(0, 0, 0, compressor_enabled=False, night_mode_enabled=True)
 
 
-def test_filter_graph_orders_mono_first_and_night_mode_last() -> None:
+def test_filter_graph_orders_channel_first_and_night_mode_last() -> None:
     from quill.core.audio_enhance import build_filter_graph
 
     graph = build_filter_graph(
-        6.0, 0.0, 2.0, compressor_enabled=True, mono_enabled=True, night_mode_enabled=True
+        6.0, 0.0, 2.0, compressor_enabled=True, channel_mode="mono", night_mode_enabled=True
     )
-    # mono feeds everything downstream; night mode levels the shaped result.
+    # channel routing feeds everything downstream; night mode levels the result.
     assert graph.startswith("pan=mono")
     assert graph.endswith("p=0.9")
-    assert graph.index("pan=mono") < graph.index("equalizer")
+    assert graph.index("pan=") < graph.index("equalizer")
     assert graph.index("acompressor") < graph.index("dynaudnorm")
 
 
-def test_filter_graph_empty_when_nothing_engaged_including_new_options() -> None:
+def test_filter_graph_left_and_right_route_one_channel_to_both_ears() -> None:
+    from quill.core.audio_enhance import build_filter_graph
+
+    left = build_filter_graph(0, 0, 0, compressor_enabled=False, channel_mode="left")
+    right = build_filter_graph(0, 0, 0, compressor_enabled=False, channel_mode="right")
+    # Left source channel (c0) sent to both output channels, and vice versa.
+    assert left == "pan=stereo|c0=c0|c1=c0"
+    assert right == "pan=stereo|c0=c1|c1=c1"
+
+
+def test_filter_graph_empty_when_nothing_engaged_including_stereo() -> None:
     from quill.core.audio_enhance import build_filter_graph
 
     assert (
         build_filter_graph(
-            0.0, 0.0, 0.0, compressor_enabled=False, mono_enabled=False, night_mode_enabled=False
+            0.0, 0.0, 0.0, compressor_enabled=False, channel_mode="stereo", night_mode_enabled=False
         )
         == ""
     )
 
 
-def test_relay_command_threads_mono_and_night_mode_into_the_graph() -> None:
+def test_relay_command_threads_channel_and_night_mode_into_the_graph() -> None:
     from quill.core.audio_enhance import build_relay_command
 
     args = build_relay_command(
@@ -396,11 +409,11 @@ def test_relay_command_threads_mono_and_night_mode_into_the_graph() -> None:
         mid_db=0.0,
         treble_db=0.0,
         compressor_enabled=False,
-        mono_enabled=True,
+        channel_mode="right",
         night_mode_enabled=True,
     )
     graph = args[args.index("-af") + 1]
-    assert "pan=mono" in graph
+    assert "pan=stereo|c0=c1|c1=c1" in graph
     assert "dynaudnorm" in graph
 
 

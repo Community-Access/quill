@@ -519,6 +519,64 @@ def test_reconnect_flags_only_for_http_and_when_enabled() -> None:
     assert "-reconnect" not in local_file
 
 
+def test_fatal_classification_only_terminal_codes() -> None:
+    # A transient drop must NOT be classified fatal, so auto-reconnect kicks in.
+    # 403 (rotating CDN token), 408/409, 5xx, and a bare EOF are transient.
+    for transient in (
+        "server returned 403 Forbidden",
+        "HTTP error 403 Forbidden",
+        "server returned 408 Request Timeout",
+        "server returned 409 Conflict",
+        "server returned 500 Internal Server Error",
+        "Failed to reconnect to server",
+        "End of file",
+    ):
+        assert recording._FATAL_STDERR_RE.search(transient) is None, transient
+    # Genuinely gone / disk full is fatal (no point spending the attempt budget).
+    for fatal in (
+        "server returned 404 Not Found",
+        "HTTP error 404 Not Found",
+        "HTTP/1.1 410 Gone",
+        "451 Unavailable For Legal Reasons",
+        "No space left on device",
+        "disk full",
+    ):
+        assert recording._FATAL_STDERR_RE.search(fatal) is not None, fatal
+
+
+def test_stderr_tail_cleared_on_recovery_so_stale_403_does_not_poison() -> None:
+    # A 403 ffmpeg logged then recovered from (an Opening reconnect line) must
+    # not linger in the tail and poison the verdict when the stream later dies
+    # of an unrelated transient cause -- otherwise the recording would stop
+    # instead of reconnecting.
+    class _FakeStderr:
+        def __init__(self, lines: list[bytes]) -> None:
+            self._lines = iter(lines)
+
+        def readline(self) -> bytes:
+            return next(self._lines, b"")
+
+        def close(self) -> None:
+            pass
+
+    class _FakeProcess:
+        def __init__(self, lines: list[bytes]) -> None:
+            self.stderr = _FakeStderr(lines)
+
+    lines = [
+        b"server returned 403 Forbidden\n",
+        b"Opening 'https://cdn.example.com/live' for reading\n",
+        b"size=    1024kB time=00:01:03.20 bitrate= 132.9kbits/s\n",
+        b"Failed to reconnect to server\n",
+        b"",
+    ]
+    recorder = RadioRecorder()
+    recorder._drain_stderr(_FakeProcess(lines), "WQXR")  # type: ignore[arg-type]
+    tail = list(recorder._stderr_tail)
+    assert not any(recording._FATAL_STDERR_RE.search(line) for line in tail)
+    assert any("Failed to reconnect" in line for line in tail)
+
+
 def test_reconnect_settings_round_trip_and_clamps() -> None:
     from quill.core.radio.recording import RecordingSettings
 

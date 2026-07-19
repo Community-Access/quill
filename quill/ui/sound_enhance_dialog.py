@@ -29,6 +29,9 @@ from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
 _PRESET_NAMES = ("Custom", *EQ_PRESETS)
 
+#: Channel-mode RadioBox order -- index maps to the stored ``channel_mode``.
+_CHANNEL_ORDER = ("stereo", "mono", "left", "right")
+
 
 class SoundEnhanceDialog:
     """Returns ``(bass_db, mid_db, treble_db, compressor_enabled,
@@ -48,7 +51,7 @@ class SoundEnhanceDialog:
         show_smart_speed: bool = False,
         smart_speed_enabled: bool = False,
         show_sound_options: bool = False,
-        mono_enabled: bool = False,
+        channel_mode: str = "stereo",
         night_mode_enabled: bool = False,
         announce_cb: Callable[[str], None] | None = None,
         on_reset: Callable[[], None] | None = None,
@@ -60,7 +63,7 @@ class SoundEnhanceDialog:
         self._show_smart_speed = show_smart_speed
         self._on_reset = on_reset
         self._result: tuple[float, float, float, bool, bool] | None = None
-        self._sound_options: tuple[bool, bool] = (mono_enabled, night_mode_enabled)
+        self._sound_options: tuple[str, bool] = (channel_mode, night_mode_enabled)
         # wx.Window.SetName() is inert for MSAA/UIA on Windows (see
         # quill.ui.accessible_names) -- screen readers there normally infer a
         # name from the adjacent wx.StaticText instead, but that inference
@@ -129,16 +132,24 @@ class SoundEnhanceDialog:
 
         # Listener-level sound options (radio: shared, not per-station --
         # they describe the listener's ears and situation, not a station).
-        self._mono_check: wx.CheckBox | None = None
+        self._channel_radio: wx.RadioBox | None = None
         self._night_mode_check: wx.CheckBox | None = None
         if show_sound_options:
-            self._mono_check = wx.CheckBox(self.dialog, label="Com&bine channels into mono")
-            self._mono_check.SetName(
-                "Combine channels into mono -- both stereo channels blended into "
-                "one, so nothing is lost with single-sided hearing or one earbud"
+            # A RadioBox (not a checkbox): Stereo / Mono / Left only / Right only.
+            # Left/Right send just that channel to both ears, so the radio can
+            # play in one ear while a screen reader uses the other. Self-labeling
+            # and arrow-selectable, so no SetName inference workaround is needed.
+            self._channel_radio = wx.RadioBox(
+                self.dialog,
+                label="C&hannel mode",
+                choices=["Stereo", "Mono", "Left only", "Right only"],
+                majorDimension=1,
+                style=wx.RA_SPECIFY_COLS,
             )
-            self._mono_check.SetValue(mono_enabled)
-            root.Add(self._mono_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+            self._channel_radio.SetSelection(
+                _CHANNEL_ORDER.index(channel_mode) if channel_mode in _CHANNEL_ORDER else 0
+            )
+            root.Add(self._channel_radio, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
             self._night_mode_check = wx.CheckBox(self.dialog, label="&Night mode (even loudness)")
             self._night_mode_check.SetName(
                 "Night mode -- automatically lifts quiet passages toward a "
@@ -240,11 +251,11 @@ class SoundEnhanceDialog:
         self.dialog.EndModal(self._wx.ID_CANCEL)
 
     @property
-    def sound_options(self) -> tuple[bool, bool]:
-        """(mono_enabled, night_mode_enabled) as applied -- only meaningful
-        after an OK ``show`` with ``show_sound_options=True``. A separate
-        property (not part of the ``show`` tuple) so existing callers'
-        5-tuple contract is untouched."""
+    def sound_options(self) -> tuple[str, bool]:
+        """(channel_mode, night_mode_enabled) as applied -- only meaningful
+        after an OK ``show`` with ``show_sound_options=True``. ``channel_mode``
+        is one of stereo/mono/left/right. A separate property (not part of the
+        ``show`` tuple) so existing callers' 5-tuple contract is untouched."""
         return self._sound_options
 
     def _on_apply(self, _event: object) -> None:
@@ -252,7 +263,7 @@ class SoundEnhanceDialog:
         smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
         self._result = (bass, mid, treble, self._compressor_check.GetValue(), smart_speed)
         self._sound_options = (
-            bool(self._mono_check.GetValue()) if self._mono_check else False,
+            _CHANNEL_ORDER[self._channel_radio.GetSelection()] if self._channel_radio else "stereo",
             bool(self._night_mode_check.GetValue()) if self._night_mode_check else False,
         )
         self.dialog.EndModal(self._wx.ID_OK)

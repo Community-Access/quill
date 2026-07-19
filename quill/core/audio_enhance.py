@@ -88,10 +88,18 @@ _COMPRESSOR_FILTER = "acompressor=threshold=-18dB:ratio=3:attack=20:release=250:
 # music is often intentional.
 _SMART_SPEED_FILTER = "silenceremove=stop_periods=-1:stop_duration=0.5:stop_threshold=-40dB"
 
-# Mono downmix: both channels blended equally into a single channel -- an
-# accessibility option for single-sided hearing (or a single earbud), where
-# hard-panned stereo content simply disappears otherwise.
-_MONO_FILTER = "pan=mono|c0=0.5*c0+0.5*c1"
+# Channel mode: accessibility routing for single-sided hearing or a single
+# earbud, and for listening to the radio in one ear while a screen reader (or
+# anything else) uses the other. "mono" blends both channels (so hard-panned
+# content never disappears); "left"/"right" send just that one source channel to
+# BOTH output channels, so the chosen side is heard in whichever single ear the
+# user listens with. "stereo" (the default) engages no filter.
+_CHANNEL_FILTERS = {
+    "mono": "pan=mono|c0=0.5*c0+0.5*c1",
+    "left": "pan=stereo|c0=c0|c1=c0",
+    "right": "pan=stereo|c0=c1|c1=c1",
+}
+CHANNEL_MODES = ("stereo", "mono", "left", "right")
 
 # Night mode: real-time loudness normalization (dynaudnorm) -- lifts quiet
 # program material toward a consistent level, the "boost the quiet parts"
@@ -115,7 +123,7 @@ def is_enhancement_active(
     *,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
-    mono_enabled: bool = False,
+    channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
 ) -> bool:
     """True when these settings would change the audio at all."""
@@ -123,7 +131,7 @@ def is_enhancement_active(
         bool(bass_db or mid_db or treble_db)
         or compressor_enabled
         or smart_speed_enabled
-        or mono_enabled
+        or channel_mode in _CHANNEL_FILTERS
         or night_mode_enabled
     )
 
@@ -135,7 +143,7 @@ def build_filter_graph(
     *,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
-    mono_enabled: bool = False,
+    channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
 ) -> str:
     """Build the ffmpeg ``-af`` filter graph for the three-band equalizer
@@ -156,7 +164,7 @@ def build_filter_graph(
     identically everywhere.
     """
     gains = (clamp_eq_gain(bass_db), clamp_eq_gain(mid_db), clamp_eq_gain(treble_db))
-    filters = [_MONO_FILTER] if mono_enabled else []
+    filters = [_CHANNEL_FILTERS[channel_mode]] if channel_mode in _CHANNEL_FILTERS else []
     filters += [
         f"equalizer=f={freq}:t=q:w=1:g={gain}"
         for freq, gain in zip(_EQ_BAND_FREQUENCIES, gains, strict=True)
@@ -180,7 +188,7 @@ def build_relay_command(
     treble_db: float,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
-    mono_enabled: bool = False,
+    channel_mode: str = "stereo",
     night_mode_enabled: bool = False,
     start_seconds: float = 0.0,
 ) -> list[str]:
@@ -205,7 +213,7 @@ def build_relay_command(
         treble_db,
         compressor_enabled=compressor_enabled,
         smart_speed_enabled=smart_speed_enabled,
-        mono_enabled=mono_enabled,
+        channel_mode=channel_mode,
         night_mode_enabled=night_mode_enabled,
     )
     if filter_graph:
@@ -320,7 +328,7 @@ class EnhanceRelay:
         treble_db: float = 0.0,
         compressor_enabled: bool,
         smart_speed_enabled: bool = False,
-        mono_enabled: bool = False,
+        channel_mode: str = "stereo",
         night_mode_enabled: bool = False,
         start_seconds: float = 0.0,
     ) -> str:
@@ -344,7 +352,7 @@ class EnhanceRelay:
             treble_db=treble_db,
             compressor_enabled=compressor_enabled,
             smart_speed_enabled=smart_speed_enabled,
-            mono_enabled=mono_enabled,
+            channel_mode=channel_mode,
             night_mode_enabled=night_mode_enabled,
             start_seconds=start_seconds,
         )

@@ -44,7 +44,7 @@ def _frame(monkeypatch: pytest.MonkeyPatch, *, playing: RadioStation | None) -> 
         eq_mid_db=2.0,
         eq_treble_db=3.0,
         compressor_enabled=True,
-        mono_enabled=False,
+        channel_mode="stereo",
         night_mode_enabled=False,
     )
     frame._radio_favorites = RadioFavoritesStore()
@@ -127,7 +127,11 @@ def test_on_reset_pushes_live_update_when_that_station_is_playing(
         (
             "set_enhancement",
             {"bass_db": 1.0, "mid_db": 2.0, "treble_db": 3.0, "compressor_enabled": True},
-        )
+        ),
+        (
+            "set_sound_options",
+            {"channel_mode": "stereo", "night_mode_enabled": False},
+        ),
     ]
 
 

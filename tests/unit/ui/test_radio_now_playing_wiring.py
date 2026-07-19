@@ -51,3 +51,31 @@ def test_missing_template_falls_back_to_the_default() -> None:
     frame._radio_track_title = "Elton John - Your Song"
     frame.radio_whats_playing()
     assert frame._announced == ["Now playing: Your Song by Elton John"]
+
+
+def test_now_playing_text_is_clean_with_no_prefix() -> None:
+    # #1134: the copyable/reviewable text has no "Now playing:" prefix, so it
+    # pastes cleanly into a lyrics or store search.
+    frame = _frame()
+    frame._radio_track_title = _REPORTED
+    assert frame._radio_now_playing_text() == "YOUR SONG by Elton John"
+
+
+def test_copy_whats_playing_puts_clean_text_on_the_clipboard() -> None:
+    frame = _frame()
+    frame._radio_track_title = _REPORTED
+    copied: list[str] = []
+    frame._copy_to_clipboard = lambda text: (copied.append(text) or True)  # type: ignore[attr-defined]
+    frame.radio_copy_whats_playing()
+    assert copied == ["YOUR SONG by Elton John"]
+    assert frame._announced == ["Copied."]
+
+
+def test_copy_whats_playing_when_nothing_is_playing() -> None:
+    frame = _frame()
+    frame._radio_track_title = ""
+    called: list[str] = []
+    frame._copy_to_clipboard = lambda text: (called.append(text) or True)  # type: ignore[attr-defined]
+    frame.radio_copy_whats_playing()
+    assert called == []  # never touches the clipboard
+    assert frame._announced == ["Nothing is playing to copy. Try What's Playing first."]

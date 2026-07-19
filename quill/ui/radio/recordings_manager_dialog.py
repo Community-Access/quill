@@ -123,6 +123,11 @@ class RecordingsManagerDialog:
         self._list.Bind(wx.EVT_LIST_ITEM_DESELECTED, lambda _e: self._on_selection_changed())
         self._list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, lambda _e: self._on_play())
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_key)
+        # Ctrl+Up/Down adjusts playback volume from anywhere in this modal dialog
+        # -- a played recording runs through the same controller/engine as live
+        # radio, so it can be turned down just like a live stream (the modal
+        # otherwise hides the Playback menu's volume shortcuts).
+        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         # Live status: the active row's size and elapsed grow and a Recording
         # flips to Recorded without a manual refresh. The in-place diff means
@@ -306,6 +311,32 @@ class RecordingsManagerDialog:
         self._open_btn.Enable(bool(is_file))
         self._remove_btn.Enable(bool(is_done))
         self._stop_btn.Enable(bool(getattr(self._recorder, "is_recording", False)))
+
+    def _on_char_hook(self, event: object) -> None:
+        """Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the dialog, so a
+        recording being played back can be turned down like a live stream;
+        everything else passes through untouched."""
+        wx = self._wx
+        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
+            code = event.GetKeyCode()
+            if code == wx.WXK_UP:
+                self._adjust_volume(up=True)
+                return
+            if code == wx.WXK_DOWN:
+                self._adjust_volume(up=False)
+                return
+        event.Skip()
+
+    def _adjust_volume(self, *, up: bool) -> None:
+        """Step the shared radio volume (recording playback runs through the same
+        controller/engine as live radio) and announce the new level."""
+        if up:
+            self._controller.volume_up()
+        else:
+            self._controller.volume_down()
+        state = getattr(self._controller, "state", None)
+        if state is not None:
+            self._announce(f"Volume {state.volume_percent}")
 
     # -- actions ------------------------------------------------------------------
 

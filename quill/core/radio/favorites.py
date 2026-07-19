@@ -58,12 +58,17 @@ class FavoriteStation:
     #: has_sound_enhancement_override is True (mirrors PodcastSettings'
     #: whole-record show override -- see PodcastLibrary.apply_show_override).
     #: While False the fields below are unused; the station follows
-    #: RadioHistory's shared eq_bass_db/mid/treble/compressor_enabled.
+    #: RadioHistory's shared eq_bass_db/mid/treble/compressor_enabled and
+    #: channel_mode.
     has_sound_enhancement_override: bool = False
     eq_bass_db: float = 0.0
     eq_mid_db: float = 0.0
     eq_treble_db: float = 0.0
     compressor_enabled: bool = False
+    #: Channel mode (stereo/mono/left/right) for this station, part of the same
+    #: per-station override; falls back to RadioHistory.channel_mode when the
+    #: override is off. Lets a listener route one station to a single ear.
+    channel_mode: str = "stereo"
 
     @property
     def key(self) -> str:
@@ -200,10 +205,11 @@ class RadioFavoritesStore:
         mid_db: float,
         treble_db: float,
         compressor_enabled: bool,
+        channel_mode: str = "stereo",
     ) -> bool:
         """Give this station its own Sound Enhancements, overriding the
-        shared default (RadioHistory.eq_bass_db/mid/treble/compressor_enabled)
-        for this station only."""
+        shared default (RadioHistory.eq_bass_db/mid/treble/compressor_enabled
+        and channel_mode) for this station only."""
         favorite = self.find(key)
         if favorite is None:
             return False
@@ -212,6 +218,7 @@ class RadioFavoritesStore:
         favorite.eq_mid_db = mid_db
         favorite.eq_treble_db = treble_db
         favorite.compressor_enabled = compressor_enabled
+        favorite.channel_mode = channel_mode
         return True
 
     def clear_enhancement_override(self, key: str) -> bool:
@@ -354,6 +361,11 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
                 eq_mid_db=clamp_eq_gain(_coerce_float(entry.get("eq_mid_db"), 0.0)),
                 eq_treble_db=clamp_eq_gain(_coerce_float(entry.get("eq_treble_db"), 0.0)),
                 compressor_enabled=bool(entry.get("compressor_enabled", False)),
+                channel_mode=(
+                    str(entry.get("channel_mode"))
+                    if entry.get("channel_mode") in ("stereo", "mono", "left", "right")
+                    else "stereo"
+                ),
             )
         )
     return store
@@ -379,6 +391,7 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                     "eq_mid_db": favorite.eq_mid_db,
                     "eq_treble_db": favorite.eq_treble_db,
                     "compressor_enabled": favorite.compressor_enabled,
+                    "channel_mode": favorite.channel_mode,
                 }
                 for favorite in store.favorites
             ],

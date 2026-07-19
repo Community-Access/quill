@@ -11,6 +11,34 @@ _STATION_A = RadioStation(name="A", stream_url="https://a.example.com", station_
 _STATION_B = RadioStation(name="B", stream_url="https://b.example.com")  # custom, no uuid
 
 
+def test_per_station_channel_mode_is_stored_and_round_trips(tmp_path: Path) -> None:
+    # A station can be routed to one ear as part of its own Sound Enhancements
+    # override, and that choice is remembered across save/load.
+    store = RadioFavoritesStore()
+    store.add(_STATION_A)
+    assert store.set_enhancement(
+        _STATION_A.station_uuid,
+        bass_db=0.0,
+        mid_db=0.0,
+        treble_db=0.0,
+        compressor_enabled=False,
+        channel_mode="left",
+    )
+    fav = store.find(_STATION_A.station_uuid)
+    assert fav is not None and fav.has_sound_enhancement_override and fav.channel_mode == "left"
+
+    save_favorites(tmp_path, store)
+    reloaded = load_favorites(tmp_path).find(_STATION_A.station_uuid)
+    assert reloaded is not None and reloaded.channel_mode == "left"
+
+
+def test_per_station_channel_mode_defaults_to_stereo(tmp_path: Path) -> None:
+    store = RadioFavoritesStore()
+    store.add(_STATION_A)
+    save_favorites(tmp_path, store)
+    assert load_favorites(tmp_path).find(_STATION_A.station_uuid).channel_mode == "stereo"
+
+
 def test_load_favorites_missing_file_returns_empty(tmp_path: Path) -> None:
     store = load_favorites(tmp_path)
     assert store.favorites == []

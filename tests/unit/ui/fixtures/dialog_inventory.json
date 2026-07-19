@@ -468,6 +468,7 @@
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_delete_folder::wx.MessageBox": "native",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_rename_folder::wx.TextEntryDialog": "native",
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/now_playing_dialog.py::NowPlayingDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/record_station_dialog.py::RecordStationDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog._on_browse::wx.DirDialog": "native",
