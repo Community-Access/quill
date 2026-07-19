@@ -55,6 +55,7 @@ class PointMetadata:
     county_zone: str
     city: str
     state: str
+    time_zone: str = ""  # IANA name, e.g. "America/Phoenix"
 
 
 # -- unit helpers -------------------------------------------------------------
@@ -129,6 +130,7 @@ def point_from_json(data: object) -> PointMetadata:
             county_zone=str(props.get("county", "")).rsplit("/", 1)[-1],
             city=str(rel.get("city", "")),
             state=str(rel.get("state", "")),
+            time_zone=str(props.get("timeZone", "")),
         )
     except (TypeError, ValueError) as error:
         raise WeatherError("The weather service location metadata was unreadable.") from error
@@ -300,6 +302,7 @@ def fetch_report(
         office=point.office,
         forecast_zone=point.forecast_zone,
         county_zone=point.county_zone,
+        time_zone=point.time_zone,
     )
     if point.city and not location.resolved_name:
         location.resolved_name = f"{point.city}, {point.state}".strip(", ")

@@ -321,11 +321,10 @@ class WeatherCenterDialog:
             block = render.current_conditions_block(
                 result.current, today, self._settings, result.air_quality
             )
-            when = (
-                f" Observed {render.friendly_datetime(result.current.observed_at)}."
-                if result.current.observed_at
-                else ""
-            )
+            when = ""
+            if result.current.observed_at:
+                observed = render.friendly_datetime(result.current.observed_at, result.time_zone)
+                when = f" Observed {observed}."
             self._current.SetValue(f"Weather for {place}. {block}{when}")
         else:
             self._current.SetValue(f"Current conditions for {place} are unavailable right now.")

@@ -104,36 +104,45 @@ def uv_phrase(index: int | None) -> str:
     return f"The ultraviolet index reaches {index} today, which is {level}."
 
 
-def friendly_datetime(iso: str) -> str:
-    """'2026-07-19T18:30:00-07:00' -> 'July 19 at 6:30 PM' (pure display of the
-    local time the provider already returned; no time-zone math)."""
+_MONTHS = (
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
+
+def friendly_datetime(iso: str, tz_name: str = "") -> str:
+    """'2026-07-19T20:55:00+00:00' -> 'July 19 at 1:55 PM', converting a
+    timestamp that carries a UTC offset into the location's local zone when
+    ``tz_name`` (an IANA name like 'America/Phoenix') is given. Pure: it parses
+    an existing timestamp, it never reads the clock."""
+    from datetime import datetime
+
     if not isinstance(iso, str) or "T" not in iso:
         return ""
-    date_part, rest = iso.split("T", 1)
-    months = (
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    )
     try:
-        _year, month, day = (int(p) for p in date_part.split("-"))
-        hour, minute = (int(p) for p in rest[:5].split(":"))
-    except (ValueError, IndexError):
+        moment = datetime.fromisoformat(iso)
+    except (ValueError, TypeError):
         return ""
-    if not 1 <= month <= 12:
-        return ""
-    suffix = "AM" if hour < 12 else "PM"
-    hour12 = hour % 12 or 12
-    return f"{months[month - 1]} {day} at {hour12}:{minute:02d} {suffix}"
+    if tz_name and moment.tzinfo is not None:
+        try:
+            from zoneinfo import ZoneInfo
+
+            moment = moment.astimezone(ZoneInfo(tz_name))
+        except Exception:  # noqa: BLE001 - unknown zone: fall back to the given time
+            pass
+    suffix = "AM" if moment.hour < 12 else "PM"
+    hour12 = moment.hour % 12 or 12
+    return f"{_MONTHS[moment.month - 1]} {moment.day} at {hour12}:{moment.minute:02d} {suffix}"
 
 
 def air_quality_phrase(air: object) -> str:
