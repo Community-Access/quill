@@ -186,6 +186,12 @@ def test_friendly_datetime() -> None:
     assert render.friendly_datetime("2026-07-19T18:30:00-07:00") == "July 19 at 6:30 PM"
     assert render.friendly_datetime("2026-07-19T05:05") == "July 19 at 5:05 AM"
     assert render.friendly_datetime("bad") == ""
+    # A UTC observation converts into the location's local zone (Arizona is
+    # UTC-7 and does not observe daylight saving): 8:55 PM UTC -> 1:55 PM local.
+    assert (
+        render.friendly_datetime("2026-07-19T20:55:00+00:00", "America/Phoenix")
+        == "July 19 at 1:55 PM"
+    )
 
 
 def test_current_conditions_block_is_complete_and_toggleable() -> None:

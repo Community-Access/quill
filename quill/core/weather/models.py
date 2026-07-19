@@ -199,6 +199,7 @@ class WeatherReport:
     office: str = ""
     forecast_zone: str = ""
     county_zone: str = ""
+    time_zone: str = ""  # IANA name, for showing observation times in local time
     retrieved_at: str = ""  # ISO 8601, stamped by the caller (wx-free: no clock here)
     #: Non-fatal notes (e.g. "observation unavailable"); shown in status.
     notes: list[str] = field(default_factory=list)
