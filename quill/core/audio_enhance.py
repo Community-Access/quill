@@ -90,14 +90,15 @@ _SMART_SPEED_FILTER = "silenceremove=stop_periods=-1:stop_duration=0.5:stop_thre
 
 # Channel mode: accessibility routing for single-sided hearing or a single
 # earbud, and for listening to the radio in one ear while a screen reader (or
-# anything else) uses the other. "mono" blends both channels (so hard-panned
-# content never disappears); "left"/"right" send just that one source channel to
-# BOTH output channels, so the chosen side is heard in whichever single ear the
-# user listens with. "stereo" (the default) engages no filter.
+# anything else) uses the other. "mono" blends both channels into both outputs
+# (so hard-panned content never disappears). "left"/"right" blend the WHOLE
+# stereo field into a single output channel and silence the other, so the
+# listener hears all of the audio in just their left (or right) ear, leaving the
+# other ear free. "stereo" (the default) engages no filter.
 _CHANNEL_FILTERS = {
     "mono": "pan=mono|c0=0.5*c0+0.5*c1",
-    "left": "pan=stereo|c0=c0|c1=c0",
-    "right": "pan=stereo|c0=c1|c1=c1",
+    "left": "pan=stereo|c0=0.5*c0+0.5*c1|c1=0*c0",
+    "right": "pan=stereo|c0=0*c0|c1=0.5*c0+0.5*c1",
 }
 CHANNEL_MODES = ("stereo", "mono", "left", "right")
 

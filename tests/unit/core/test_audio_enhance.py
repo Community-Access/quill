@@ -378,14 +378,16 @@ def test_filter_graph_orders_channel_first_and_night_mode_last() -> None:
     assert graph.index("acompressor") < graph.index("dynaudnorm")
 
 
-def test_filter_graph_left_and_right_route_one_channel_to_both_ears() -> None:
+def test_filter_graph_left_and_right_send_whole_mix_to_one_ear() -> None:
     from quill.core.audio_enhance import build_filter_graph
 
     left = build_filter_graph(0, 0, 0, compressor_enabled=False, channel_mode="left")
     right = build_filter_graph(0, 0, 0, compressor_enabled=False, channel_mode="right")
-    # Left source channel (c0) sent to both output channels, and vice versa.
-    assert left == "pan=stereo|c0=c0|c1=c0"
-    assert right == "pan=stereo|c0=c1|c1=c1"
+    # The whole stereo field (both source channels blended) goes to the chosen
+    # output channel; the other output is silenced, so the listener hears all of
+    # the audio in just one ear.
+    assert left == "pan=stereo|c0=0.5*c0+0.5*c1|c1=0*c0"
+    assert right == "pan=stereo|c0=0*c0|c1=0.5*c0+0.5*c1"
 
 
 def test_filter_graph_empty_when_nothing_engaged_including_stereo() -> None:
@@ -413,7 +415,7 @@ def test_relay_command_threads_channel_and_night_mode_into_the_graph() -> None:
         night_mode_enabled=True,
     )
     graph = args[args.index("-af") + 1]
-    assert "pan=stereo|c0=c1|c1=c1" in graph
+    assert "pan=stereo|c0=0*c0|c1=0.5*c0+0.5*c1" in graph
     assert "dynaudnorm" in graph
 
 
