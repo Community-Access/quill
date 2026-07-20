@@ -148,7 +148,7 @@ def _speech_setup_required_kwargs() -> set[str]:
                     a = item.args
                     return {
                         arg.arg
-                        for arg, default in zip(a.kwonlyargs, a.kw_defaults)
+                        for arg, default in zip(a.kwonlyargs, a.kw_defaults, strict=True)
                         if default is None
                     }
     return set()

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+dist/
+build/
+payload/
+*.zip
+.venv/
+
+# Build logs
+*.log

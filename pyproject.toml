@@ -327,6 +327,10 @@ target-version = "py312"
 # must not be linted or format-checked.
 extend-exclude = [
     "build",
+    # Standalone-product build tooling (Radio/Cast/Audio Studio wrappers:
+    # launcher, PyInstaller spec, installer, docs). Packaging shells that
+    # bundle the quill package into per-product exes -- not first-party source.
+    "standalone",
     "windows-distribution",
     "installer-smoke",
     "installer-smoke-2",

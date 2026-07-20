@@ -102,6 +102,8 @@ def test_queue_advances_after_finish_then_close(app, tmp_path, monkeypatch) -> N
         from quill.core.audio_studio.play_queue import (
             PlayQueue,
             QueueEntry,
+        )
+        from quill.core.audio_studio.play_queue import (
             add as queue_add,
         )
         q = PlayQueue()
@@ -141,6 +143,8 @@ def test_auto_advance_skips_a_missing_next_file(app, tmp_path, monkeypatch) -> N
         from quill.core.audio_studio.play_queue import (
             PlayQueue,
             QueueEntry,
+        )
+        from quill.core.audio_studio.play_queue import (
             add as queue_add,
         )
         q = PlayQueue()
@@ -175,6 +179,8 @@ def test_auto_advance_all_missing_says_end_of_book(app, tmp_path, monkeypatch) -
         from quill.core.audio_studio.play_queue import (
             PlayQueue,
             QueueEntry,
+        )
+        from quill.core.audio_studio.play_queue import (
             add as queue_add,
         )
         q = PlayQueue()

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-cast"
+version = "1.0.0"
+description = "QUILL Cast -- accessible, screen-reader-first podcasts as a standalone app"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+]
+# The whole app lives in the quill package (quill.apps.podcasts); this
+# project is the thin product wrapper: entry point, docs, installer.
+dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git"]
+
+[project.gui-scripts]
+quill-cast = "quill_cast:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill-cast"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_cast"]
