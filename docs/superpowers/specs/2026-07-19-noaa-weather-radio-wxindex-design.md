@@ -71,6 +71,28 @@ Public functions (all return domain objects, never raw JSON):
 `WxStation` carries callsign, frequency (MHz), state, counties/SAME covered, WFO
 code, coordinates, and the ordered list of re-stream feed URLs (best first).
 
+### Refreshing the directory (user-facing)
+
+Anyone can pull the latest directory on demand, not just wait for the 7-day
+background refresh:
+
+- A **"Update NOAA Weather Radio directory"** command (in the Weather menu next
+  to "Your Local NOAA Weather Radio", and reachable from the Browse dialog's
+  existing per-source "Reload from internet"). It re-fetches the full directory
+  from the live API (states + `/stations/all-known` + WFO) **atomically** into
+  the app-data cache tier, off the UI thread, with progress and cancel, blocked
+  in Safe Mode.
+- On success it announces the outcome — station/state counts and the upstream
+  freshness from `/health` — and stamps a **"directory last updated"** time that
+  the station-detail read-out and the command surface. On failure (offline / API
+  down) it reports clearly and leaves the existing cache/snapshot intact.
+- Precedence is unchanged: a manual refresh writes the **cache** tier, which
+  already takes priority over the bundled snapshot, so the fresh data is used
+  immediately without a restart. The bundled snapshot is never overwritten (it
+  is the permanent floor); "reset to bundled" is available by clearing the cache.
+- The Browse dialog's per-source "Reload from internet" refreshes just the
+  highlighted branch (e.g. one state) for a lighter, targeted pull.
+
 ### Snapshot build script — `scripts/snapshot_wxindex.py`
 
 Walks `/v1/states`, every state's stations, `/v1/stations/all-known`, and
@@ -152,6 +174,9 @@ favorites. The UI never sees raw HTTP or JSON.
   `to_radio_station` mapping; SAME/callsign/county query routing in §3.
 - Resolver: live-ok, live-fail->cache, cache-miss->snapshot, Safe-Mode-blocked —
   with a fake fetcher (no real network in unit tests).
+- Manual refresh: writes the full directory atomically to the cache tier, stamps
+  "last updated", takes precedence over the snapshot on the next read, and leaves
+  cache/snapshot intact on a failed/cancelled pull.
 - `local_stations`: county/SAME match and nearest-by-coordinate fallback on
   fixture data.
 - Snapshot script: runs against a small fixture server / recorded fixtures and
