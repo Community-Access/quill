@@ -4423,6 +4423,69 @@ They are stored the same way named bookmarks are — under generated names like
 Jumping to a slot that has not been set announces that clearly rather than
 failing silently.
 
+##### Marks, bookmarks, and selecting a block — which is which
+
+These three are easy to confuse because they all "mark a spot," so here is
+exactly what each one is and the command that drives it.
+
+**Bookmarks are named, saved places.** A bookmark is a *permanent* jump point
+that travels with the file (see above). Commands: **Set Bookmark...**,
+**Go To Bookmark...**, **List Bookmarks...**. Use these when you want to name a
+location and come back to it days later.
+
+**The mark ring is temporary jump points — navigation only, not selection.**
+The mark ring is a short stack of scratch positions that lasts only for the
+current session and is never saved. Commands:
+
+- **Set Mark** — drop a temporary point at the cursor (the status bar confirms
+  "Mark ring point set at line …, column … (temporary jump)").
+- **Pop Mark** — jump back to the most recent mark (and remove it from the ring).
+- **Exchange Point and Mark** — move the cursor to the mark.
+- **List Marks** — show the marks currently in the ring.
+
+The important clarification: these commands **only move the cursor. They do not
+select text and they do not copy anything.** Unlike some editors (and unlike
+what an older tutorial may have implied), QUILL's mark is *not* a drop-an-anchor,
+move-away, then-cut/copy tool. It is purely a way to leave a breadcrumb and jump
+back to it.
+
+**To copy or cut from one point to another, use an ordinary selection.** Put the
+cursor at the start, then either hold **Shift** while you move to the end (arrows,
+Ctrl+arrows, Page keys, Home/End), or use a structural selection command, and
+then **Copy** (Ctrl+C) or **Cut** (Ctrl+X). There is no separate "copy from the
+mark to the cursor" command — the selection *is* the region you copy.
+
+**Selecting a block (or a line, or a paragraph).** A "block" here means the
+**indented block at the cursor** — a run of lines at the same indentation, the
+kind of thing you get inside a list item or a code block — not an arbitrary
+group you picked. The selection commands (in **Edit → Selection**) are:
+
+- **Select Line** — the current line.
+- **Select Paragraph** — the paragraph around the cursor.
+- **Select Block** (Ctrl+Shift+B) — the indented block at the cursor.
+- **Select to Start/End of Line** and **Select to Start/End of Document**.
+- **Expand Selection** — grow the current selection outward to the next larger
+  structural unit (word → line → paragraph → block → document), announcing the
+  new scope each time.
+
+Each announces what it selected and how many words, so you always know the exact
+extent before you copy or delete it.
+
+**"Structure" versus "heading."** These are both navigation, at different
+grains:
+
+- **Next Heading / Previous Heading** move between **Markdown headings only**
+  (the `#`, `##`, `###` lines) — the document's table of contents.
+- **Next Structure / Previous Structure** move between **all structural
+  elements** — headings *plus* list items, code blocks, tables, and block
+  quotes — so you step through the document's full outline, not just its
+  headings.
+- **Next Region / Previous Region** cycle the larger top-level regions of the
+  window.
+
+So a *heading* is one kind of *structure*; "Next Structure" is the broader
+sweep, "Next Heading" is the heading-only subset.
+
 ##### Favorite folders — a short, curated list for instant access
 
 A short list of folders you mark as favorites, distinct from Windows' recent-folders
