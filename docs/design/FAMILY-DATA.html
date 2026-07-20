@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FAMILY-DATA</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="family-datamd--the-quillville-shared-data-contract">FAMILY-DATA.md —
+the QuillVille shared data contract</h1>
+<p>Status: initial ownership map, 2026-07-20. This is the file the QUILL
+PRD §35.3 requires: every file the family writes under the shared data
+directory, its schema owner, its readers, and its release-to-release
+posture. It is the map the store has lacked; keep it in step with
+<code>quill/tools/persistence_audit.py</code> (the gate that classifies
+every <code>write_json_atomic</code> site) — that gate is the
+enforcement, this document is the human-readable contract.</p>
+<h2 id="the-shared-directory">The shared directory</h2>
+<p>All Windows apps read and write
+<strong><code>%APPDATA%\Quill</code></strong> (macOS:
+<code>~/Library/Application Support/Quill</code>), resolved through the
+<code>QUILL_DATA_DIR</code> / <code>QUILL_PORTABLE</code> /
+<code>QUILL_APP_ROOT</code> environment contract. Portable builds keep a
+<code>data\</code> folder beside the executable with a
+<code>storage-mode.json</code> marker. Every app in the family points at
+the same store — that shared store, not a shared binary, is what makes
+the apps a family.</p>
+<h2 id="posture-classifications">Posture classifications</h2>
+<p>Mirrors <code>persistence_audit.py::_CLASSIFICATIONS</code>:</p>
+<ul>
+<li><strong>versioned</strong> — schema/epoch stamped, with a migration
+path (the contract).</li>
+<li><strong>framework</strong> — the persistence/migration machinery
+itself.</li>
+<li><strong>content</strong> — user-created data; additive,
+self-describing; a corrupt file degrades to empty. No changed-default
+risk.</li>
+<li><strong>cache</strong> — regenerable recency/usage/log; loss is
+harmless.</li>
+<li><strong>marker</strong> — a small boolean/state flag, trivially
+defaulted.</li>
+<li><strong>secret</strong> — via the OS credential store; no
+JSON-schema concern.</li>
+<li><strong>export</strong> — user-initiated output to a chosen file;
+not a store.</li>
+<li><strong>needs-versioning</strong> — real user <em>config</em> that
+should adopt the versioned contract but has not yet. The tracked
+backlog, not a free pass.</li>
+</ul>
+<h2 id="shared-contract-files-readwritten-by-multiple-apps">Shared
+contract files (read/written by multiple apps)</h2>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>File (under %APPDATA%\Quill)</th>
+<th>Owner</th>
+<th>Readers</th>
+<th>Posture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App settings</td>
+<td><code>settings.json</code></td>
+<td><code>core/settings.py</code></td>
+<td>all apps</td>
+<td>versioned</td>
+</tr>
+<tr>
+<td>Keymap</td>
+<td><code>keymap.json</code></td>
+<td><code>core/keymap.py</code></td>
+<td>all apps</td>
+<td>versioned</td>
+</tr>
+<tr>
+<td>Feature flags</td>
+<td>(features store)</td>
+<td><code>core/features.py</code></td>
+<td>all apps</td>
+<td>versioned</td>
+</tr>
+<tr>
+<td>Storage-mode marker</td>
+<td><code>data/storage-mode.json</code></td>
+<td><code>core/storage_mode.py</code></td>
+<td>all apps</td>
+<td>framework</td>
+</tr>
+<tr>
+<td>Feature kill-switch cache</td>
+<td>(safety lock)</td>
+<td><code>core/safety/feature_lock.py</code></td>
+<td>all apps</td>
+<td>cache</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rule (Tier 1, mandatory):</strong> on rewrite, preserve
+unknown fields; rewrite on load only when genuinely legacy; stamp
+<code>last_written_by</code> (app + version). This is what stops a newer
+app from silently downgrading an older app's data. Until that lands,
+concurrent QUILL + Radio/Cast sessions are last-writer-wins on these
+files — a known, documented risk.</p>
+<h2 id="per-app-stores-namespaced-an-app-owns-its-own">Per-app stores
+(namespaced; an app owns its own)</h2>
+<h3 id="quill-radio-coreradio">Quill Radio
+(<code>core/radio/*</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Owner</th>
+<th>Posture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Favorites (folders, custom names, per-station volume)</td>
+<td><code>favorites.py::save_favorites</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>History / recently played</td>
+<td><code>history.py::save_history</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Recording settings</td>
+<td><code>recording.py::save_recording_settings</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Recording schedule</td>
+<td><code>recording_schedule.py::save_schedule</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Active-recording resume marker</td>
+<td><code>recording_resume.py::save_marker</code></td>
+<td>marker</td>
+</tr>
+<tr>
+<td>Wake timer</td>
+<td><code>wake_timer.py::save_wake_setting</code></td>
+<td>content</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-cast-corepodcasts">Quill Cast
+(<code>core/podcasts/*</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Owner</th>
+<th>Posture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscriptions</td>
+<td><code>subscriptions.py::save_library</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>History</td>
+<td><code>history.py::save_history</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Episode notes</td>
+<td><code>episode_notes.py::save_episode_notes</code></td>
+<td>content</td>
+</tr>
+</tbody>
+</table>
+<h3 id="audio-studio-coreaudio_studio-appsstudiopy">Audio Studio
+(<code>core/audio_studio/*</code>, <code>apps/studio.py</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Owner</th>
+<th>Posture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Book library (folders/favorites)</td>
+<td><code>library.py::save_library</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Per-book prefs (volume/mute)</td>
+<td><code>book_prefs.py::save_prefs</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Recently played</td>
+<td><code>history.py::save_history</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Play queue</td>
+<td><code>play_queue.py::save_queue</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Sleep timer</td>
+<td><code>sleep_timer.py::save_sleep_setting</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>App-shell prefs (close action, …)</td>
+<td><code>apps/studio.py::_save_app_prefs</code></td>
+<td>needs-versioning</td>
+</tr>
+</tbody>
+</table>
+<h3 id="publishing-shared-by-caststudio">Publishing (shared by
+Cast/Studio)</h3>
+<table>
+<thead>
+<tr>
+<th>Store</th>
+<th>Owner</th>
+<th>Posture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SFTP/publish destinations</td>
+<td><code>core/publish/destinations.py</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Feed-folder show config</td>
+<td><code>core/publish/feed_folder.py</code></td>
+<td>content</td>
+</tr>
+<tr>
+<td>Publish secrets</td>
+<td><code>core/publishing.py::save_publishing_secret</code></td>
+<td>secret</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-beacon-independent-today">QUILL Beacon (independent
+today)</h3>
+<p>Beacon keeps its <strong>own</strong> store
+(<code>%APPDATA%\QuillBeacon</code>, SQLite + FTS5), not the shared
+contract. When it converges to <code>quill/apps/beacon.py</code> its
+beacons remain an <strong>app-private</strong> SQLite index in a per-app
+namespace; only the cross-app data it wants to share (places via
+QuillSync) joins the shared contract.</p>
+<h2 id="rules">Rules</h2>
+<ol type="1">
+<li><strong>Shared contract files are JSON</strong> under the hardened
+versioned-store rules. <strong>App-private indexes may be
+SQLite</strong> in a per-app namespace (Beacon's engine; a future Audio
+Studio library index).</li>
+<li><strong>Never widen a shared file's schema without the versioned
+contract</strong> — preserve-unknown-fields makes cross-app coexistence
+safe; a schema bump is a suite-major event (PRD §35.4).</li>
+<li><strong>Adding any <code>write_json_atomic</code> site fails the
+persistence gate until it is classified here and in
+<code>persistence_audit.py</code>.</strong> That is the enforcement that
+keeps this document honest.</li>
+<li><strong>Secrets never go in JSON</strong> — they use the OS
+credential store (<code>secret</code>).</li>
+</ol>
+<h2 id="backlog-needs-versioning">Backlog (needs-versioning)</h2>
+<p>Real config not yet on the versioned contract: Weather settings
+(<code>core/weather/settings.py</code>), Audio Studio app-shell prefs
+(<code>apps/studio.py::_save_app_prefs</code>). These should route
+through <code>versioned_store</code> before the QuillVille 1 suite
+freezes its contract.</p>
+</body>
+</html>

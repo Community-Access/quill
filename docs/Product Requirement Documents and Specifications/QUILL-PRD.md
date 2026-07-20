@@ -9510,6 +9510,130 @@ the source of truth the running app reads.
 
 ---
 
+## §35. The QuillVille family: apps, build-time sharing, and the data contract (2026-07-20)
+
+QUILL is no longer a single application. It is the source of truth for a
+**family of screen-reader-first apps** that share one codebase, one accessible
+design system, and one on-disk data contract, while each ships and versions on
+its own cadence. This section states the family architecture as product
+requirements. It supersedes the ad-hoc per-app arrangements catalogued in
+`docs/design/2026-07-17-audio-studio-migration-audit.md` (whose sections 20-25
+decided this direction); that audit is the working record, this is the contract.
+
+### §35.1 The apps
+
+All app front-ends live in `quill/apps/` as small frames on the shared
+`quill.ui.app_shell.AppShellFrame`, reusing the same feature mixins QUILL uses:
+
+- **QUILL** (`quill.__main__`) — the writing and document environment; the
+  full `MainFrame`. Version 0.9.0 (final feature beta before 1.0).
+- **Quill Radio** (`quill/apps/radio.py`) — accessible internet radio.
+  Shipping; **2.1.1** current.
+- **Quill Cast** (`quill/apps/podcasts.py`) — the podcast client. Not yet
+  shipped; targets a clean **1.0.0**.
+- **Audio Studio** (`quill/apps/studio.py`) — the audiobook/narration studio.
+  Reverse-vendored from the former standalone `quill-audio-studio` repo
+  (Option D); targets a clean **1.0.0**.
+- **QUILL Beacon** — location beacons and QuillSync. Currently an independent
+  repo (`quille-beacon`, own SQLite store); converges to `quill/apps/beacon.py`
+  on the shared shell once its data-integrity and security fixes land (staged;
+  not before its Tier-1 fixes).
+
+Each standalone app is a **thin wrapper repo** (launcher + PyInstaller spec +
+installer + docs) that pins `quill @ <tag>` and calls `quill.apps.<app>:main`.
+Quill Radio and Quill Cast already follow this shape; Audio Studio adopts it as
+its reverse-vendor completes.
+
+### §35.2 Code sharing model: build-time, not a runtime shared library
+
+**Requirement:** apps share code at **build time**, not as a single shared
+runtime on the user's disk. Each app ships its own frozen copy of `quill/`
+built against a **pinned tag**. Rationale:
+
+- **Per-app hotfix freedom.** A fix for one app is a pin bump and a one-app
+  rebuild; releasing one app never forces releasing the others.
+- **Apps can never break each other.** There is no shared-core
+  compatibility-matrix: upgrading one app cannot regress another, because no
+  code is shared on disk at runtime.
+- **The disk argument is already answered elsewhere.** The heavy assets —
+  ffmpeg, libmpv, the neural engine packs, downloaded voices, models — already
+  **runtime-share** in `%APPDATA%\Quill` and are used by every app. The Python
+  code each app "duplicates" is tens of megabytes, the smallest part of an
+  install, so a shared code runtime would trade a small disk win for a real
+  side-by-side-versioning and support burden.
+
+A single shared Python runtime on disk (so Radio and Cast would not each carry
+Python) is therefore **explicitly not the near-term model**. If it is ever
+pursued, it must be **side-by-side versioned** (per-app compat floors, GC of
+old versions) so hotfixing one app cannot break another — that is the only form
+that preserves §35.2's guarantees, and it is a deliberate future project, not a
+default. The near-term win for "don't install Python twice" is instead an
+**optional shared-runtime installer variant** layered on the same build-time
+codebase, evaluated only after the reverse-vendors and packaging toolkit land.
+
+### §35.3 The real shared component: the data contract and core seams
+
+What makes the apps a family is not a shared binary; it is:
+
+- **The shared store** at `%APPDATA%\Quill`: `settings.json`, `keymap.json`,
+  favorites, history, recordings, schedules, timers — read and written by every
+  app through `versioned_store.py`.
+- **The wx-free `quill/core` seams**: player, recorder, speech, publish,
+  versioned-store — consumed at build time by every app and by the macOS port.
+
+**Requirement (Tier 1, mandatory before more apps pin/vendor):** harden the
+shared store so a newer app cannot silently downgrade an older app's data —
+preserve unknown fields on rewrite, rewrite-on-load only when genuinely legacy,
+and stamp `last_written_by` (app + version). And publish **`FAMILY-DATA.md`**: a
+per-file ownership map (every `%APPDATA%\Quill` file, its schema owner, and its
+readers). Shared core state stays shared; each app gets **namespaced keys** for
+its private state. SQLite is permitted for app-private indexes (Beacon's engine,
+a future Audio Studio library index) in per-app namespaces; the shared contract
+files stay JSON under the hardened versioned-store rules.
+
+### §35.4 Suite versioning
+
+Each app carries its own version; the **QuillVille suite** carries a major
+version above them as the compatibility anchor. Every app released under suite
+major *N* honors the same `FAMILY-DATA.md` schemas and the same core API line;
+apps version independently within a suite major (Audio Studio 1.0.0, Radio
+2.1.1, Cast 1.0.0 can all be QuillVille 1). A suite-major bump is the only place
+breaking changes to shared spaces are allowed, coordinated across all apps.
+About boxes and diagnostics show both ("Quill Radio 2.1.1 — QuillVille 1") so
+support knows the contract vintage at a glance.
+
+### §35.5 Consolidation roadmap
+
+1. **Tier 0 hygiene** — commit stray working trees; resolve the `pr.md`/`pr.html`
+   press releases; keep the GATE suite green in each repo. (Largely done.)
+2. **Tier 1 data-store hardening + `FAMILY-DATA.md`** — the prerequisite for
+   everything below.
+3. **Audio Studio reverse-vendor** — `quill/apps/studio.py` (Phase A landed
+   under the GATE suite), then the thin-wrapper cutover and closure deletion
+   (Phase B/C, validated build).
+4. **Cast 1.0.0** — Cast has never shipped: reset the version chaos to a single
+   1.0.0 (pyproject, `apps/podcasts.py` `_VERSION`, installer AppVersion +
+   VersionInfoVersion, changelog), add the missing libmpv staging, ship one
+   clean release.
+5. **Packaging toolkit** — one parameterized spec/installer/build script
+   consumed by QUILL, Radio, Cast, and Audio Studio, retiring the four forks;
+   PyInstaller onedir for Radio/Cast/Beacon, embeddable-CPython for apps with
+   on-demand engine installs (Audio Studio, QUILL).
+6. **Beacon convergence** — after Beacon's data-loss and security fixes, fold it
+   into `quill/apps/beacon.py` on the shared shell; QuillSync becomes the family
+   handshake (adapter order: Beacon, then radio favorites, then settings/keymaps).
+
+### §35.6 One update path and one feedback path
+
+Every app resolves updates from its own GitHub Releases (Radio/Cast/Studio read
+`api.github.com/repos/<repo>/releases`; QUILL uses the signed manifest feed).
+The target is **one shared, signed-manifest update module** (Ed25519) with
+per-app repo slugs, adopted as each app moves onto the pinned-tag model, and one
+shared accessible **feedback path** (the bundled issues-token flow) used by all
+apps.
+
+---
+
 # Appendix: Engineering documentation
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13._
