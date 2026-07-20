@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CHANGELOG</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="changelog">Changelog</h1>
+<p>All notable changes to QUILL Audio Studio are documented in this
+file.</p>
+<p>The format is based on <a
+href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
+this project adheres to <a
+href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased">[Unreleased]</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Update in one click -- Audio Studio installs it and restarts
+itself.</strong> When an update is available, choose Download, then
+<strong>Install and restart now</strong>: Audio Studio applies the
+update (extracting the new portable files over your folder, or running
+the installer silently) and relaunches automatically, keeping all your
+settings and data. No more closing the app, unzipping, and swapping
+folders by hand. Shared across every Quill app.</li>
+</ul>
+<h2 id="100---2026-07-18">[1.0.0] - 2026-07-18</h2>
+<p>First release: the QUILL editor's Audio Studio as a self-contained
+standalone app for Windows and macOS, screen-reader-first
+throughout.</p>
+<h3 id="added-1">Added</h3>
+<ul>
+<li>Standalone app frame (<code>quillas.apps.studio</code>): home window
+with the three journey buttons and a "Your books" library, menu bar,
+status bar with spoken 25/50/75 percent run milestones, system tray
+(Open Audio Studio, Resume last book), Ctrl+Shift+P command palette, and
+in-app update checks against this repo's GitHub releases.</li>
+<li>The Audio Studio wizard with three journeys: Narrate Documents
+(source/filters, engine + voice with previews, round-robin rotation,
+voice casting rules, translated editions, chapter shaping with title
+preview, output and diagnostics, book details with Open Library /
+MusicBrainz lookup, plain-sentence summary), Build From Recordings
+(folder of audio to one chaptered master, library mode, silence
+trimming, pre-build chapter review), and Edit a Book.</li>
+<li>The Chapter Workbench: chapter-aware player (mpv engine with
+wx.media fallback, resume positions, pitch-preserved speed, "Where am
+I?"), split at playhead, set start to playhead, merge, rename, restore,
+silence-based chapter proposals, AI-proposed chapter titles (local
+transcription, text-only to the configured AI, reviewable), ACX check,
+chapter list import/export in five formats, split into per-chapter
+files, in-place MP3 saves and lossless M4B Save As.</li>
+<li>The listening layer: the home-window "Your books" library is a tree
+(Favorites, In Progress, Recently Played, Inbox, plus your own folders)
+that populates as you open books, with a keyboard-complete context menu
+(Open, Reveal in Folder, Favorite, Move to Folder, New Folder, Remove)
+built on <code>quillas/ui/audio_studio/library_tree.py</code> over
+<code>quillas/core/audio_studio/library.py</code>; Resume on launch
+(Studio menu, opt-in) that reopens the most recently played book at its
+saved position, silently skipping if the file is gone; a Recently Played
+submenu (Studio menu); media keys while a Workbench is open (Play/Pause,
+Stop, Next chapter, Previous chapter route to the active player,
+unregistered on exit); per-book volume and mute (each book remembers its
+own level and mute state, Ctrl+M toggles mute); a Sleep Timer (Book
+Tools menu) that stops playback after N minutes or at the end of the
+current chapter, with a cancellable watcher; and a Play Queue (Book
+Tools menu) that auto-advances to the next book when the current one
+finishes and the Workbench is closed.
+<code>open_book_in_workbench</code> threads optional host callbacks
+(<code>on_player_ready</code>, <code>on_finished</code>,
+<code>on_volume</code>, <code>on_mute</code>, <code>on_closed</code>) to
+the player so the shell drives media keys, per-book prefs, history, and
+queue auto-advance.</li>
+<li>Voice engines with on-demand downloads: Windows SAPI 5, DECtalk,
+Piper, Kokoro, eSpeak-NG, macOS say; ElevenLabs (installs on demand) and
+OpenAI/Gemini/ElevenLabs cloud voices with user-supplied keys. Speech
+Hub, Manage Speech Models, Pronunciation Dictionaries, Download Optional
+Components (with Test/Remove), and Get FFmpeg in the Voices menu. A
+"Generating preview, please wait" spoken cue for slow live previews (on
+by default).</li>
+<li>AI menu with the Set Up AI wizard (cloud provider with your own key,
+or local via Ollama) powering AI chapter titles, translated editions,
+and cloud narration voices.</li>
+<li>Book Tools menu: Publish a Finished Book (local RSS feed, folder
+show feed with accessible show notes, SFTP upload with Credential
+Manager storage, Auphonic mastering), Make a Podcast Feed From a Folder,
+ACX Compliance Check with plain-language recommendations, plus Sleep
+Timer, Play Queue, and Mute Playback.</li>
+<li><code>.quilljob</code> job files: save an exact run from the summary
+page; re-run it from Studio &gt; Open Job File or the wizard's first
+page.</li>
+<li>Preferences (Ctrl+Comma): automatic update checks, Alt+F4-to-tray
+(opt-in), spoken run milestones, and the close-window policy (Ask when
+work is running / Exit / Minimize to Tray), stored app-locally so shared
+QUILL settings stay untouched.</li>
+<li>Save-a-diagnostics-bundle offer after a component-install failure: a
+redacted zip support can read.</li>
+<li>Safe Mode (<code>QUILL_SAFE_MODE=1</code> or
+<code>--safe-mode</code>): disables AI, publishing, and component
+downloads.</li>
+<li>Shared data store with QUILL, Quill Radio, and QUILL Cast
+(<code>%APPDATA%\Quill</code>), with full portable mode via a
+<code>data</code> folder next to the exe containing a
+<code>storage-mode.json</code> marker
+(<code>{"mode": "portable"}</code>).</li>
+<li>Packaging: PyInstaller onedir build
+(<code>quill-audio-studio.spec</code>, <code>launcher.py</code>), Inno
+Setup installer (<code>installer/quill-audio-studio.iss</code>),
+portable zip, bundled ffmpeg and mpv; vendoring tooling
+(<code>scripts/vendor_from_quill.py</code>,
+<code>scripts/vendor_tests.py</code>) to re-sync from the QUILL
+monorepo; vendored unit test suite.</li>
+</ul>
+</body>
+</html>

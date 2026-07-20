@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quill-audio-studio">QUILL Audio Studio</h1>
+<p>Accessible, screen-reader-first audiobook and audio production as a
+standalone Windows and macOS desktop app - the QUILL editor's Audio
+Studio, extracted into its own self-contained product.</p>
+<p>Turn a folder of documents into a chaptered audiobook read by any
+voice (or a whole cast), stitch a folder of recordings into one
+chaptered master, and fix a finished book entirely by ear in the Chapter
+Workbench - then check it against ACX and publish it as a podcast feed,
+over SFTP, or through Auphonic. Every surface is keyboard-first and
+announced through your screen reader.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Three journeys</strong> in one guided wizard: Narrate
+Documents (.docx/.md/.html/.txt to speech audio or an M4B/MP3
+audiobook), Build From Recordings (a folder of audio to one chaptered
+master), and Edit a Book (the Chapter Workbench).</li>
+<li><strong>Voice engines</strong>: Windows SAPI 5, DECtalk, Piper and
+Kokoro (neural, fully offline), eSpeak-NG, macOS <code>say</code>;
+ElevenLabs plus OpenAI/Gemini/ElevenLabs multilingual cloud voices with
+your own API key. Engines and models download on demand; every voice
+previews with the same comparable phrase.</li>
+<li><strong>Casting and translation</strong>: round-robin voice
+rotation, glob-based casting rules per chapter, and translated editions
+via a configured AI provider or local LibreTranslate.</li>
+<li><strong>Production honesty</strong>: audition mode, dry runs,
+incremental rebuilds, ACX loudness normalization, fades and tempo,
+spoken opening/closing credits, spoken progress milestones, and portable
+<code>.quilljob</code> recipe files.</li>
+<li><strong>Chapter Workbench</strong>: chapter-aware player (resume
+positions, 0.75x-2x pitch-preserved speed, "Where am I?"),
+split-at-playhead surgery, silence-based chapter proposals, AI-proposed
+chapter titles (local transcription, text-only to your AI, always
+reviewable), tags and cover, chapter list import/export (Audacity, CUE,
+timestamps, Podcasting 2.0 JSON, CSV), split into per-chapter
+files.</li>
+<li><strong>Publishing</strong>: local RSS feed, whole-folder show feed
+with accessible show notes, SFTP upload (credentials in the Windows
+Credential Manager, strict host keys), and Auphonic mastering - each
+explicit, consented, cancellable, and announced.</li>
+<li><strong>Listening layer</strong>: the home window's Your-books
+library is a tree (Favorites, In Progress, Recently Played, Inbox, plus
+your own folders) that fills in as you open books; resume-on-launch, a
+Recently Played list, media keys, per-book volume and mute (Ctrl+M), a
+sleep timer (including stop-at-end-of-chapter), and a play queue that
+opens the next book for you.</li>
+<li><strong>App comforts</strong>: system tray with Resume-last-book,
+opt-in Alt+F4-to-tray, Ctrl+Shift+P command palette, in-app update
+checks, Safe Mode.</li>
+</ul>
+<h2 id="quick-start">Quick start</h2>
+<p>From source (Python 3.12+):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pip install <span class="op">-</span>e <span class="st">&quot;.[ui]&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quillas</span></code></pre></div>
+<p>Or just run <code>run-quill-audio-studio.bat</code>, which finds a
+suitable environment (this repo's <code>.venv</code>, a sibling
+<code>S:\QUILL\.venv</code>, or <code>python</code> on PATH).
+<code>run-quill-audio-studio-safe-mode.bat</code> launches with AI,
+publishing, and downloads disabled.</p>
+<p>Optional extras:</p>
+<ul>
+<li><code>pip install -e ".[ui,kokoro]"</code> - the Kokoro neural TTS
+runtime (models download on demand in-app).</li>
+<li><code>pip install -e ".[ui,ssh]"</code> - SFTP publishing
+(paramiko).</li>
+<li><code>pip install -e ".[ui,dev]"</code> - pytest and ruff for
+development.</li>
+</ul>
+<p>End-user documentation lives in <code>docs/userguide.md</code> (also
+opened in-app via Help &gt; User Guide).</p>
+<h2 id="repo-layout">Repo layout</h2>
+<ul>
+<li><code>quillas/</code> - the application package: the complete Audio
+Studio dependency closure vendored from the QUILL monorepo (with
+<code>quill.*</code> imports rewritten to <code>quillas.*</code>), plus
+the standalone app shell. <code>quillas/apps/studio.py</code> is the app
+frame and entry point; <code>quillas/ui/audio_studio/</code> is the
+wizard, Chapter Workbench, player, and publish surfaces.</li>
+<li><code>scripts/vendor_from_quill.py</code> - re-syncs the vendored
+closure from <code>S:/QUILL</code> (copies seed packages/modules,
+rewrites imports, chases the import graph). Re-runnable; never touches
+hand-written files.</li>
+<li><code>scripts/vendor_tests.py</code> - vendors the matching test
+suite the same way.</li>
+<li><code>tests/</code> - the vendored unit tests plus the audio corpus;
+run with <code>pytest -q</code>.</li>
+<li><code>launcher.py</code> and <code>quill-audio-studio.spec</code> -
+the PyInstaller entry script (portable-mode detection, bundled-tools
+anchoring) and onedir build spec.</li>
+<li><code>installer/quill-audio-studio.iss</code> - the Inno Setup
+script for the installer; <code>scripts/build_release.ps1</code> stages
+ffmpeg/libmpv/docs into <code>dist/QuillAudioStudio</code> and drives
+both the installer and the portable zip.</li>
+<li><code>assets/</code> - the app icon.</li>
+</ul>
+<h2 id="building-releases">Building releases</h2>
+<p><code>scripts/build_release.ps1</code> builds the PyInstaller onedir
+bundle, stages the bundled tools and rendered docs, then produces the
+installer (via ISCC on <code>installer/quill-audio-studio.iss</code>)
+and the portable zip. The installed copy uses the shared
+<code>%APPDATA%\Quill</code> store; the portable zip ships a
+<code>data</code> folder next to the exe that keeps everything
+self-contained.</p>
+<h2 id="relationship-to-quill-quill-radio-and-quill-cast">Relationship
+to QUILL, Quill Radio, and QUILL Cast</h2>
+<ul>
+<li><strong>QUILL</strong> (<code>Community-Access/quill</code>) is the
+upstream: the Studio's wizard, Workbench, batch pipeline, and publish
+code are the same code QUILL ships, vendored here so this repo builds
+and runs without the monorepo. <code>scripts/vendor_from_quill.py</code>
+keeps the copy honest.</li>
+<li><strong>Quill Radio</strong> and <strong>QUILL Cast</strong> are
+sibling standalone apps built on the same <code>AppShellFrame</code>
+shell (tray, palette, updates, bug reporting). Unlike them - thin
+wrappers that depend on the <code>quill</code> package - this repo is
+self-contained.</li>
+<li>All four apps share one data store (<code>%APPDATA%\Quill</code>, or
+the portable <code>data</code> folder): settings, voices, downloaded
+engines, and your book library are configured once and available
+everywhere.</li>
+</ul>
+<h2 id="license">License</h2>
+<p>MIT - see <code>LICENSE</code>.</p>
+</body>
+</html>
