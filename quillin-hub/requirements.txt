@@ -8,8 +8,6 @@ flask-cors==6.0.0
 pygithub==2.3.0
 python-dotenv==1.2.2
 Werkzeug==3.1.8
-bandit==1.7.9
-Werkzeug==3.1.6
 bandit==1.9.4
 gunicorn==22.0.0
 # Direct requirement: quill.tools.signing uses nacl.signing for Ed25519.
