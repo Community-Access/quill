@@ -165,6 +165,8 @@ def load_reading_services() -> list[RadioStation]:
         stream_url = str(svc.get("stream_url", "")).strip()
         if not name or not stream_url:
             continue
+        state = str(svc.get("state", "")).strip()
+        tags = ("reading service", "blind") + ((state,) if state else ())
         stations.append(
             RadioStation(
                 name=name,
@@ -172,7 +174,7 @@ def load_reading_services() -> list[RadioStation]:
                 station_uuid=str(svc.get("station_uuid", "")),
                 homepage=str(svc.get("homepage", "")),
                 country="United States",
-                tags=("reading service", "blind"),
+                tags=tags,
                 source="Radio Reading Service",
             )
         )

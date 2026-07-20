@@ -39,3 +39,9 @@ def test_load_reading_services_bundled_snapshot():
     for station in stations:
         assert station.stream_url
         assert station.source == "Radio Reading Service"
+
+
+def test_load_reading_services_includes_state_in_tags():
+    """Verify that state names from the bundled snapshot are in station tags."""
+    stations = rs.load_reading_services()
+    assert any("Michigan" in s.tags for s in stations)
