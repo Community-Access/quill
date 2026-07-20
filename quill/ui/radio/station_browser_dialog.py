@@ -28,6 +28,7 @@ from quill.core.radio.directory_search import (
     iheart_search_stations,
     merge_and_rank,
     reading_services_search_stations,
+    station_source_labels,
     tunein_search_stations,
     wxindex_search_stations,
 )
@@ -509,7 +510,10 @@ class StationBrowserDialog:
         choice = self._source_facet.GetStringSelection() or _ALL_SOURCES
         if choice == _ALL_SOURCES:
             return stations
-        return [s for s in stations if self._source_label(s) == choice]
+        # Match against every source that carried the station, not just the
+        # winning label, so a SomaFM channel RadioBrowser also lists still
+        # shows under the SomaFM facet (directory_search de-dups the two).
+        return [s for s in stations if choice in station_source_labels(s)]
 
     def _fill_results(self, stations: list[RadioStation], *, status: str) -> None:
         # Keep the full list so the Source facet can filter without re-searching.
