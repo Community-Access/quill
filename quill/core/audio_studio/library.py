@@ -97,9 +97,7 @@ def _find(state: LibraryState, path: str) -> BookEntry | None:
     return None
 
 
-def add_book(
-    state: LibraryState, path: str, title: str = "", *, now: float = 0.0
-) -> BookEntry:
+def add_book(state: LibraryState, path: str, title: str = "", *, now: float = 0.0) -> BookEntry:
     """Add ``path`` to the library if absent; return its entry either way.
 
     This is the library's ingestion point -- the reason the "Your books" tree

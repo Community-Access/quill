@@ -206,9 +206,7 @@ class SoundEnhanceDialog:
             # Apache-2.0). A bypass checkbox so the chosen mode is remembered
             # while turned off, a Mode choice, an Input trim (0 dB by default),
             # and an Auto-Adapt amount.
-            optilab_box = wx.StaticBoxSizer(
-                wx.VERTICAL, self.dialog, "Broadcast polish (OptiLab)"
-            )
+            optilab_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "Broadcast polish (OptiLab)")
             self._optilab_check = wx.CheckBox(
                 self.dialog, label="&Apply broadcast polish (OptiLab)"
             )
@@ -248,8 +246,7 @@ class SoundEnhanceDialog:
                 initial=int(round(optilab_input_db)),
             )
             self._optilab_input_ctrl.SetName(
-                "Input level in decibels for broadcast polish; zero leaves the level "
-                "unchanged"
+                "Input level in decibels for broadcast polish; zero leaves the level unchanged"
             )
             input_row.Add(self._optilab_input_ctrl, 0, wx.LEFT, 8)
             optilab_box.Add(input_row, 0, wx.EXPAND | wx.ALL, 6)
@@ -420,8 +417,14 @@ class SoundEnhanceDialog:
         the compressor, Smart Speed, and the listener-level options."""
         bass, mid, treble = self._current_band_values()
         smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
-        return (bass, mid, treble, self._compressor_check.GetValue(), smart_speed,
-                self._read_sound_options())
+        return (
+            bass,
+            mid,
+            treble,
+            self._compressor_check.GetValue(),
+            smart_speed,
+            self._read_sound_options(),
+        )
 
     def _schedule_live_preview(self) -> None:
         if self._on_live_change is None:

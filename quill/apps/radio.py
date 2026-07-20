@@ -13,6 +13,8 @@ import sys
 import wx
 
 from quill.core import http_client
+from quill.core.radio import reading_services
+from quill.core.radio.radio_browser import RadioBrowserError
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_adp import AdpMixin
@@ -69,6 +71,29 @@ _ENGINE_HELP = (
     "-- and Windows Media otherwise. Windows Media (classic) is exactly "
     "the pre-1.1 behavior."
 )
+
+#: Station > Update Radio Reading Services... Safe Mode refusal (mirrors
+#: WeatherMixin's _SAFE_MODE_WEATHER wording for Update NOAA Weather Radio
+#: Directory).
+_SAFE_MODE_RRS = (
+    "Radio Reading Services is a network service and is turned off in Safe Mode. "
+    "Restart without Safe Mode to use it."
+)
+
+
+def reading_services_refresh_summary(*, safe_mode: bool = False) -> str:
+    """Live-refresh the Radio Reading Services directory and summarize the
+    result as a plain string (pure, no wx) -- so the text
+    ``RadioAppFrame.update_reading_services_directory`` announces is
+    unit-testable without wx. Mirrors ``main_frame_weather``'s
+    ``update_noaa_radio_directory``: a Safe Mode refusal or RadioBrowser
+    error comes back as a clear failure string instead of raising.
+    """
+    try:
+        result = reading_services.refresh_reading_services(safe_mode=safe_mode)
+    except RadioBrowserError as exc:
+        return f"Could not update Radio Reading Services. {exc}"
+    return f"Radio Reading Services updated: {result.count} services."
 
 
 class RadioAppFrame(
@@ -496,11 +521,10 @@ class RadioAppFrame(
             return
         stations = parse_m3u(text)
         if not stations:
-            wx.MessageBox(
+            self._show_message_box(
                 "No radio stations were found in that playlist.",
                 "Import Stations",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         folder = prompt_import_target(
@@ -537,6 +561,30 @@ class RadioAppFrame(
         where = f'the "{folder}" folder' if folder else "your favorites"
         plural = "station" if len(to_import) == 1 else "stations"
         self._announce(f"Imported {len(to_import)} {plural} into {where}.")
+
+    # -- Radio Reading Services -------------------------------------------------
+
+    def update_reading_services_directory(self) -> None:
+        """Station > Update Radio Reading Services...: force a live pull of
+        the Radio Reading Services directory off-thread, then announce the
+        refreshed count. Mirrors Weather > Update NOAA Weather Radio
+        Directory (``main_frame_weather.WeatherMixin.update_noaa_radio_directory``)."""
+        if self._safe_mode:
+            self._show_message_box(
+                _SAFE_MODE_RRS, "Radio Reading Services", wx.ICON_INFORMATION | wx.OK
+            )
+            return
+        self._announce("Updating Radio Reading Services...")
+
+        def _work(**_kwargs: object) -> str:
+            return reading_services_refresh_summary(safe_mode=self._safe_mode)
+
+        def _done(_op: str, result: object) -> None:
+            self._wx.CallAfter(self._announce, str(result))
+
+        self._task_manager.submit(
+            "radio-reading-services-update", _work, on_success=_done, on_failure=None
+        )
 
     def _on_tree_move_to_folder(self) -> None:
         from quill.ui.radio import favorite_actions
@@ -654,6 +702,13 @@ class RadioAppFrame(
         )
         station_menu.Append(browse_id, "&Browse Stations...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_browse_stations(), id=browse_id)
+        rrs_update_id = wx.NewIdRef()
+        station_menu.Append(rrs_update_id, "Update Radio Reading &Services...")
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.update_reading_services_directory(),
+            id=rrs_update_id,
+        )
         station_menu.Append(search_id, "&Search Stations...")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_internet_radio(focus_search=True), id=search_id
@@ -839,6 +894,7 @@ class RadioAppFrame(
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
             browse_id,
+            rrs_update_id,
             search_id,
             add_id,
             find_id,

@@ -548,10 +548,17 @@ def test_native_layer_is_inert_off_macos(monkeypatch) -> None:
     real native path and call ``objc.objc_object(c_void_p=...)`` on the fake
     ``_HandleTextCtrl`` handle (0xBEEF). Dereferencing that garbage NSView in
     Cocoa is a SIGSEGV -- not a Python exception the helper's try/except can
-    catch -- and it took down the whole test job (exit 139)."""
+    catch -- and it took down the whole test job (exit 139).
+
+    ``_objc_cache`` is reset because it is a process-global the real native
+    path populates with the ``objc`` module the first time it runs: on the
+    macOS runner an earlier test leaves it set, so asserting ``is None`` off a
+    clean baseline is what actually proves *this* call never took the native
+    path (which would repopulate it)."""
     import quill.ui.accessible_names as an
 
     monkeypatch.setattr(an.sys, "platform", "win32")
+    monkeypatch.setattr(an, "_objc_cache", None)
     ctrl = _HandleTextCtrl(name="text")
     set_accessible_name(ctrl, "Port:")
 

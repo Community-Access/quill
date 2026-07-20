@@ -240,9 +240,7 @@ def _known_setting_keys() -> set[str]:
     return {f.name for f in fields(Settings)} | set(RETIRED_SETTINGS_KEYS)
 
 
-def reconcile_unknown_overrides(
-    raw: dict[str, Any], desired: dict[str, Any]
-) -> dict[str, Any]:
+def reconcile_unknown_overrides(raw: dict[str, Any], desired: dict[str, Any]) -> dict[str, Any]:
     """Return ``desired`` with override keys this build does not recognize
     carried forward from ``raw`` -- verbatim, in their original group.
 

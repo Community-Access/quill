@@ -542,9 +542,7 @@ def test_engine_available_kokoro_uses_true_readiness(monkeypatch) -> None:
     monkeypatch.setattr(ra, "discover_piper_executable", lambda *_a, **_k: None)
     monkeypatch.setattr(ra, "macos_say_available", lambda: False)
     frame = SimpleNamespace(
-        settings=SimpleNamespace(
-            read_aloud_dectalk_executable="", read_aloud_espeak_executable=""
-        )
+        settings=SimpleNamespace(read_aloud_dectalk_executable="", read_aloud_espeak_executable="")
     )
 
     monkeypatch.setattr(ra, "kokoro_engine_ready", lambda *_a, **_k: True)

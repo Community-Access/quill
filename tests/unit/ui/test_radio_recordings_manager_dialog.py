@@ -175,11 +175,17 @@ def test_per_row_stop_and_stop_all_target_jobs(tmp_path: Path) -> None:
     stop_all_calls: list[bool] = []
     jobs = [
         SimpleNamespace(
-            job_id="ja", destination=a, station_name="A", stream_url="https://x/a",
+            job_id="ja",
+            destination=a,
+            station_name="A",
+            stream_url="https://x/a",
             started_at=datetime.now(),
         ),
         SimpleNamespace(
-            job_id="jb", destination=b, station_name="B", stream_url="https://x/b",
+            job_id="jb",
+            destination=b,
+            station_name="B",
+            stream_url="https://x/b",
             started_at=datetime.now(),
         ),
     ]

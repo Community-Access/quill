@@ -1,4 +1,5 @@
-"""Blend the TuneIn and iHeart directory clients into RadioStation results.
+"""Blend the TuneIn, iHeart, and NOAA Weather Radio directory clients into
+RadioStation results.
 
 The station browser fans a search out across several sources and merges the
 results into one list. RadioBrowser and SomaFM already return
@@ -6,25 +7,30 @@ results into one list. RadioBrowser and SomaFM already return
 iHeart return their own directory rows whose playable stream must still be
 resolved. These two helpers do that resolution and the conversion, bounded and
 failure-tolerant, so the UI's off-thread search worker can just call them and
-concatenate.
+concatenate. NOAA Weather Radio (``wxindex``) already returns
+directly-playable feeds -- its helper below just adapts and filters.
 
-Both resolve at most ``cap`` matches per search, because each resolve is a live
-network round trip (TuneIn's ``Tune.ashx``; an iHeart station page) -- the
-blended sources add a handful of immediately-playable results without turning
-one search into dozens of GETs. Any hiccup (the search itself, or a single
-resolve) is swallowed so a down source never blanks the surrounding list.
+Both TuneIn and iHeart resolve at most ``cap`` matches per search, because each
+resolve is a live network round trip (TuneIn's ``Tune.ashx``; an iHeart station
+page) -- the blended sources add a handful of immediately-playable results
+without turning one search into dozens of GETs. Any hiccup (the search itself,
+or a single resolve) is swallowed so a down source never blanks the
+surrounding list.
 
 wx-free, strict-typed. Safe Mode is enforced by the underlying clients' own
 ``refuse_in_safe_mode`` (and the browser blocks search entirely in Safe Mode).
+NOAA Weather Radio is the exception: it falls back to its bundled snapshot in
+Safe Mode instead of refusing outright (see ``wxindex.search_stations``).
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable
 
-from quill.core.radio import iheart, tunein
+from quill.core.radio import iheart, reading_services, tunein, wxindex
 from quill.core.radio.iheart import IHeartStation
 from quill.core.radio.models import RadioStation
+from quill.core.radio.wxindex_models import to_radio_station as _wx_to_radio_station
 
 #: Per-search resolve caps for the blended directories (one GET each).
 TUNEIN_RESOLVE_CAP = 10
@@ -128,3 +134,46 @@ def iheart_search_stations(
         if stream:
             stations.append(iheart.to_radio_station(station, stream))
     return stations
+
+
+def wxindex_search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation]:
+    """NOAA Weather Radio stations for *query*, as ``source="NOAA Weather Radio"``.
+
+    Routes through :func:`wxindex.search_stations`, which treats *query* as a
+    SAME code, callsign, ``"County, ST"``, or free-text state/name search (see
+    that function for the routing rules) and already gates on Safe Mode,
+    falling back to the bundled snapshot rather than refusing outright. A
+    station with no live stream feed has nothing to play, so it is dropped
+    here the same way an unresolvable TuneIn or iHeart match is dropped.
+    """
+    if not query.strip():
+        return []
+    try:
+        results = wxindex.search_stations(query, safe_mode=safe_mode)
+    except wxindex.WxIndexError:
+        return []
+    return [_wx_to_radio_station(station) for station in results if station.feeds]
+
+
+def reading_services_search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation]:
+    """Radio Reading Services matching *query*, as ``source="Radio Reading Service"``.
+
+    Routes through :func:`reading_services.list_reading_services` (its own
+    fresh-cache -> live-refresh -> stale-cache -> bundled-snapshot resolver,
+    already Safe-Mode-aware) and keeps the ones whose name, tags, or state --
+    live/cached entries carry the RadioBrowser tags they were resolved with,
+    which can include a state name -- case-insensitively contain *query*. A
+    service with no live stream feed has nothing to play, so it is dropped
+    here the same way an unresolvable TuneIn or iHeart match is dropped.
+    """
+    normalized = query.strip().lower()
+    if not normalized:
+        return []
+    matches: list[RadioStation] = []
+    for station in reading_services.list_reading_services(safe_mode=safe_mode):
+        if not station.stream_url:
+            continue
+        haystack = [station.name, station.country, *station.tags]
+        if any(normalized in field.lower() for field in haystack if field):
+            matches.append(station)
+    return matches

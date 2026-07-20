@@ -137,7 +137,7 @@ OPTILAB_INPUT_MAX_DB = 18.0
 
 
 def _db_to_linear(db: float) -> float:
-    return 10.0 ** (db / 20.0)
+    return float(10.0 ** (db / 20.0))
 
 
 def clamp_optilab_input(value: float) -> float:

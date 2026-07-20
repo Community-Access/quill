@@ -226,6 +226,12 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "HTTPS-only over a verified TLS context with a bounded timeout. "
         "Disabled in Safe Mode via radio_browser.refuse_in_safe_mode."
     ),
+    "core/radio/wxindex_http.py::_default_fetch": (
+        "Single egress site for the NOAA Weather Radio (WeatherIndex) directory: "
+        "states, stations, search, and detail. HTTPS-only over a verified TLS "
+        "context with a bounded timeout. Disabled in Safe Mode via "
+        "`wxindex_http.refuse_in_safe_mode`."
+    ),
     "core/radio/soma_fm.py::_http_text": (
         "Single egress site for the SomaFM station source (a free, keyless, "
         "curated directory), blended into the same Browse Stations search "

@@ -1,5 +1,5 @@
-"""Tests for the TuneIn/iHeart search-blend helpers (no network; the underlying
-directory clients are monkeypatched)."""
+"""Tests for the TuneIn/iHeart/NOAA search-blend helpers (no network; the
+underlying directory clients are monkeypatched)."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import quill.core.radio.directory_search as ds
 from quill.core.radio.iheart import IHeartStation
 from quill.core.radio.models import RadioStation
 from quill.core.radio.tunein import TuneInResult
+from quill.core.radio.wxindex_models import WxStation
 
 
 def _rs(name: str, url: str, *, country: str = "", source: str = "") -> RadioStation:
@@ -152,3 +153,47 @@ def test_iheart_search_swallows_resolve_errors(monkeypatch) -> None:
 
     monkeypatch.setattr(ds.iheart, "resolve_stream", boom)
     assert ds.iheart_search_stations(_index(), "del") == []
+
+
+def test_wxindex_search_adapts_and_stamps_source(monkeypatch) -> None:
+    monkeypatch.setattr(
+        ds.wxindex,
+        "search_stations",
+        lambda q, *, safe_mode=False: [
+            WxStation("KHB36", 162.55, name="Springfield", feeds=("https://noaa/khb36",))
+        ],
+    )
+    stations = ds.wxindex_search_stations("051153")
+    assert len(stations) == 1
+    assert stations[0].source == "NOAA Weather Radio"
+    assert stations[0].stream_url == "https://noaa/khb36"
+
+
+def test_wxindex_search_drops_stations_without_feeds(monkeypatch) -> None:
+    monkeypatch.setattr(
+        ds.wxindex,
+        "search_stations",
+        lambda q, *, safe_mode=False: [
+            WxStation("KHB36", 162.55, feeds=("https://noaa/khb36",)),
+            WxStation("WXL99", 162.40, feeds=()),  # no live feed -> nothing playable
+        ],
+    )
+    stations = ds.wxindex_search_stations("wa")
+    assert [s.station_uuid for s in stations] == ["wxindex:KHB36"]
+
+
+def test_wxindex_search_empty_query_returns_nothing(monkeypatch) -> None:
+    monkeypatch.setattr(
+        ds.wxindex,
+        "search_stations",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no call")),
+    )
+    assert ds.wxindex_search_stations("   ") == []
+
+
+def test_wxindex_search_swallows_errors(monkeypatch) -> None:
+    def boom(q, *, safe_mode=False):
+        raise ds.wxindex.WxIndexError("offline")
+
+    monkeypatch.setattr(ds.wxindex, "search_stations", boom)
+    assert ds.wxindex_search_stations("051153") == []

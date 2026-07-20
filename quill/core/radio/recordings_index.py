@@ -273,13 +273,13 @@ def list_recordings(
     files.sort(key=lambda pair: pair[0], reverse=True)
     entries.extend(entry for _mtime, entry in files)
 
-    for item in scheduled or []:
-        if not bool(getattr(item, "enabled", True)):
+    for sched_item in scheduled or []:
+        if not bool(getattr(sched_item, "enabled", True)):
             continue
-        entry_id = str(getattr(item, "id", "") or "")
+        entry_id = str(getattr(sched_item, "id", "") or "")
         identity = f"schedule:{entry_id}" if entry_id else ""
-        recurrence = str(getattr(item, "recurrence", "once"))
-        last_fired = str(getattr(item, "last_fired_date", "") or "")
+        recurrence = str(getattr(sched_item, "recurrence", "once"))
+        last_fired = str(getattr(sched_item, "last_fired_date", "") or "")
         # A one-time schedule that already ran is Completed, not Scheduled --
         # it must stop counting toward "N scheduled" (R1/10.1). R2 also
         # auto-disables a once entry on success, so this is the legacy path.
@@ -287,7 +287,7 @@ def list_recordings(
             entries.append(
                 RecordingEntry(
                     id=identity,
-                    name=str(getattr(item, "station_name", "") or "Scheduled recording"),
+                    name=str(getattr(sched_item, "station_name", "") or "Scheduled recording"),
                     status=STATUS_COMPLETED,
                     path=None,
                     detail=f"completed -- ran {last_fired}",
@@ -296,16 +296,16 @@ def list_recordings(
             continue
         # While this stream is one of the recordings, the firing schedule is a
         # Recording row above -- do not also list it as Scheduled (10.2).
-        item_url = str(getattr(item, "stream_url", "") or "")
+        item_url = str(getattr(sched_item, "stream_url", "") or "")
         if item_url and item_url in active_urls:
             continue
         entries.append(
             RecordingEntry(
                 id=identity,
-                name=str(getattr(item, "station_name", "") or "Scheduled recording"),
+                name=str(getattr(sched_item, "station_name", "") or "Scheduled recording"),
                 status=STATUS_SCHEDULED,
                 path=None,
-                detail=_schedule_detail(item, now=now),
+                detail=_schedule_detail(sched_item, now=now),
             )
         )
     return entries

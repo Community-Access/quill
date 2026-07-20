@@ -1,0 +1,165 @@
+{
+  "generated_at": "",
+  "services": [
+    {
+      "name": "WKAR Radio Reading Service - East Lansing, MI",
+      "stream_url": "http://mozart.wkar.msu.edu/rrs-64-mp3",
+      "state": "Michigan",
+      "station_uuid": "962cbf85-0601-11e8-ae97-52543be04c81",
+      "homepage": "http://wkar.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "KPBS Radio Reading Service",
+      "stream_url": "https://kpbs-rrs.streamguys1.com/kpbs-rrs",
+      "state": "",
+      "station_uuid": "fb268e54-5a31-4df8-8729-2bf32f50962e",
+      "homepage": "https://superradio.cc/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Down East Radio Reading Service",
+      "stream_url": "http://audio-mp3.ibiblio.org:8000/derrs.mp3",
+      "state": "North Carolina",
+      "station_uuid": "be852519-c430-11e9-8502-52543be04c81",
+      "homepage": "https://downeastreading.org/index.html",
+      "codec": "MP3"
+    },
+    {
+      "name": "WUFT Radio Reading Service",
+      "stream_url": "http://amber.streamguys.com:5230/live",
+      "state": "Florida",
+      "station_uuid": "b729fc66-1c6f-467a-941c-b50290e26125",
+      "homepage": "https://www.wuft.org/rrs",
+      "codec": "MP3"
+    },
+    {
+      "name": "CRIS Radio - The Chicago Lighthouse",
+      "stream_url": "http://chicagolighthouse.streamguys1.com/Live",
+      "state": "Illinois",
+      "station_uuid": "9645983e-0601-11e8-ae97-52543be04c81",
+      "homepage": "http://chicagolighthouse.org/radio/",
+      "codec": "MP3"
+    },
+    {
+      "name": "The Recording Library of West Texas",
+      "stream_url": "http://amber.streamguys.com:5110/listen.pls",
+      "state": "Texas",
+      "station_uuid": "fabab713-c434-11e9-8502-52543be04c81",
+      "homepage": "https://www.recordinglibrary.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "American Council of the Blind",
+      "stream_url": "http://stream.acbradio.org:8000/mainstream.mp3",
+      "state": "Virginia",
+      "station_uuid": "a89caaf8-c42f-11e9-8502-52543be04c81",
+      "homepage": "https://acb.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Connecticut Radio Information System (CRIS)",
+      "stream_url": "http://lin3.ash.fast-serv.com:6064/stream",
+      "state": "Connecticut",
+      "station_uuid": "0e22b8eb-c3ac-11e9-8502-52543be04c81",
+      "homepage": "https://crisradio.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Owl Radio - San Antonio, TX",
+      "stream_url": "http://27033.live.streamtheworld.com/OWL_RADIO_SC",
+      "state": "Texas",
+      "station_uuid": "9648a79c-0601-11e8-ae97-52543be04c81",
+      "homepage": "https://www.owlradio.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Sun Sounds of Arizona",
+      "stream_url": "https://kjzz.streamguys1.com/sunsounds_aac_256",
+      "state": "Arizona",
+      "station_uuid": "faa1f7b9-c431-11e9-8502-52543be04c81",
+      "homepage": "https://www.sunsounds.org/",
+      "codec": "AAC"
+    },
+    {
+      "name": "Audible Local Ledger",
+      "stream_url": "http://198.20.181.68:8000/",
+      "state": "Massachusetts",
+      "station_uuid": "dfca13bf-c429-11e9-8502-52543be04c81",
+      "homepage": "http://www.audiblelocalledger.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "ACB Media 1 - Mainstream",
+      "stream_url": "http://streaming.live365.com/a11911",
+      "state": "",
+      "station_uuid": "c15f66ec-2f7e-4246-b65d-cabed6fbae94",
+      "homepage": "https://www.acbmedia.org/home/streams/media1/",
+      "codec": "MP3"
+    },
+    {
+      "name": "ACB Media 5 - Community",
+      "stream_url": "http://streaming.live365.com/a46090",
+      "state": "",
+      "station_uuid": "dbbc5e20-c92c-45b7-8d52-a1419d829928",
+      "homepage": "https://www.acbmedia.org/home/streams/media5/",
+      "codec": "MP3"
+    },
+    {
+      "name": "ACB Media 3 - Treasure Trove",
+      "stream_url": "http://streaming.live365.com/a17972",
+      "state": "",
+      "station_uuid": "a29de8a6-8003-4b0f-aee2-8c829659a21d",
+      "homepage": "https://www.acbmedia.org/home/streams/media3/",
+      "codec": "MP3"
+    },
+    {
+      "name": "WRBH 88.3 FM Reading Radio",
+      "stream_url": "https://phoebe.streamerr.co:3200/",
+      "state": "Louisiana",
+      "station_uuid": "664ea410-af24-4f7c-bbd0-b384542cb16b",
+      "homepage": "https://www.wrbh.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "ACB Media 4 - Café",
+      "stream_url": "http://streaming.live365.com/a89697",
+      "state": "",
+      "station_uuid": "6c806c9e-2323-49dd-813e-d9d934a6150f",
+      "homepage": "https://www.acbmedia.org/home/streams/media4/",
+      "codec": "MP3"
+    },
+    {
+      "name": "ACB Media 2 - Mainstream 2",
+      "stream_url": "http://streaming.live365.com/a27778",
+      "state": "",
+      "station_uuid": "9128f00f-eb6c-43ef-8d74-42081a13cb51",
+      "homepage": "https://www.acbmedia.org/home/streams/media2/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Voice Corps",
+      "stream_url": "https://audio-edge-qse4n.yyz.g.radiomast.io/cf04120f-69ce-4e6a-9f3f-45a6320194df",
+      "state": "",
+      "station_uuid": "888bde9d-a8ed-4089-b609-84330afbdd7b",
+      "homepage": "https://voicecorps.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "NFBRN -- The national federation of the blind radio network",
+      "stream_url": "http://cast.az-streamingserver.com:8590/stream",
+      "state": "Maryland",
+      "station_uuid": "0e034caa-b0b4-474b-a5cd-2729f3b5d0ed",
+      "homepage": "https://nfb.org/resources/publications-and-media/nfbrn",
+      "codec": "MP3"
+    },
+    {
+      "name": "95alive",
+      "stream_url": "http://95alive.net:8000/radio.mp3",
+      "state": "Delaware",
+      "station_uuid": "d363687a-23ad-4a63-9d6d-1b92c423c96f",
+      "homepage": "http://95alive.net:8000/",
+      "codec": "MP3"
+    }
+  ]
+}

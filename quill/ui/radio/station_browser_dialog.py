@@ -27,7 +27,9 @@ from quill.core.radio import (
 from quill.core.radio.directory_search import (
     iheart_search_stations,
     merge_and_rank,
+    reading_services_search_stations,
     tunein_search_stations,
+    wxindex_search_stations,
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
@@ -988,6 +990,14 @@ class StationBrowserDialog:
                 except soma_fm.SomaFmError:
                     pass
                 extras += tunein_search_stations(query, safe_mode=self._safe_mode)
+                # NOAA Weather Radio: a SAME code, callsign, or "County, ST"/state
+                # query resolves to authoritative stations; anything else just
+                # comes back empty, so this rides along unconditionally.
+                extras += wxindex_search_stations(query, safe_mode=self._safe_mode)
+                # Radio Reading Services: a name/tag/state match against the
+                # curated ~20-service list; empty for anything else, so this
+                # rides along unconditionally too.
+                extras += reading_services_search_stations(query, safe_mode=self._safe_mode)
             if name:
                 extras += iheart_search_stations(
                     self._iheart_index(), name, safe_mode=self._safe_mode
