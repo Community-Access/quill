@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-20-quillville-runtime-and-component-plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quillville-shared-runtime--component-service--plan">QuillVille
+shared runtime &amp; component service — plan</h1>
+<p>Date: 2026-07-20. Builds on the family audit
+(<code>2026-07-17-audio-studio-migration-audit.md</code>, §15–25) and
+the consolidation program
+(<code>2026-07-20-quillville-consolidation-program.md</code>). The
+audit's §22 recommended <strong>build-time sharing only</strong> (each
+app ships its own frozen <code>quill</code> off a pinned tag) and
+explicitly parked <strong>runtime sharing</strong> as "real
+engineering." The owner has since chosen <strong>Option A — a shared
+runtime</strong> all apps resolve at launch and register their
+components against. This document is that engineering: how to build it
+so nothing is stored twice where sharing is safe, while still letting
+people install only the apps they want, across every install mode.</p>
+<h2
+id="0-the-finished-system-in-plain-english-the-outcome-when-complete">0.
+The finished system, in plain English (the outcome when complete)</h2>
+<p>This section describes what the world looks like when the plan is
+done, for a non-engineer reader. Everything below is the
+<em>destination</em>; the numbered sections after it are how we get
+there.</p>
+<h3 id="what-a-person-actually-experiences">What a person actually
+experiences</h3>
+<p><strong>Installing one app.</strong> You download "Quill Radio," run
+the installer, and click through it once. Behind the scenes it lays down
+a shared <strong>QuillVille Runtime</strong> (the Python engine + the
+common code, installed one time for the whole family) and the Radio app
+itself, and it fetches the small audio tools Radio needs. Radio opens
+and works. Basic playback and recording work even with no internet.</p>
+<p><strong>Adding a second app.</strong> Later you download "Quill
+Cast." Its installer notices the QuillVille Runtime is already on your
+machine, so it <strong>doesn't install Python or the shared code
+again</strong> — it just adds Cast and the few extra pieces only Cast
+needs. The download and install are small and quick. You now have two
+apps sharing one engine and one set of components.</p>
+<p><strong>Getting the whole suite.</strong> Alternatively you run the
+single "QuillVille" installer, which shows every app as a checkbox. Tick
+the ones you want. They all share the one runtime and one component
+store. You can come back and add or remove apps anytime; nothing is ever
+installed twice.</p>
+<p><strong>Portable (on a USB stick).</strong> You download the portable
+version, unzip it to a stick, and run it on any Windows PC — including
+one that has nothing installed. It carries its own copy of everything
+and leaves nothing behind on the host machine. A portable copy is
+deliberately self-contained: it trades disk space for the freedom to run
+anywhere. <strong>If you want several apps on one stick</strong>, use
+the portable <em>suite</em> folder and add apps into it — the apps in
+that one folder share a single engine and a single set of components on
+the stick, just like a normal install shares them on a PC. What you
+cannot do is make two <em>separate</em> portable copies (different
+folders or different sticks) share with each other — each one is
+self-contained by design, so each carries its own.</p>
+<p><strong>Offline (no internet, ever).</strong> For places with no
+reliable connection, the "Offline" installer and the "Offline portable"
+zip come with every engine and voice already inside them. Nothing is
+downloaded, at install or in use.</p>
+<p><strong>Updates.</strong> Each app updates itself on its own
+schedule. When the shared engine gets a fix, every app built for that
+generation of the suite picks it up at once — safely, because a new
+generation of the engine installs <em>next to</em> the old one rather
+than replacing it, so updating one app can never break another.</p>
+<p><strong>Uninstalling.</strong> Removing one app leaves the others
+working perfectly. Any components that only that app used are cleaned up
+(or kept, your choice); anything the remaining apps still need is left
+alone. The shared runtime stays until you remove the last app in the
+family.</p>
+<h3 id="how-packages-and-installers-work">How packages and installers
+work</h3>
+<ul>
+<li><strong>One shared Runtime, installed once.</strong> The Python
+engine and the common <code>quill</code> code live in one place and are
+shared by every installed app. Apps are thin: they find and use the
+runtime rather than each carrying their own.</li>
+<li><strong>App installers are small.</strong> They add the app, tell
+the system which shared runtime generation and which components they
+need, and reuse whatever is already present.</li>
+<li><strong>Two flavours of every build, by design.</strong>
+<em>Standard/Lean</em> is a small install that downloads the big
+optional pieces (neural voices, transcription engines) the first time
+you use them. <em>Offline/Full</em> is a bigger, additive build with all
+of those pieces already inside, for no-internet use. Portable and
+installed versions both come in Lean and Offline flavours — four
+combinations from one payload.</li>
+<li><strong>Every download is verified.</strong> All optional components
+come from one signed catalogue that records each file's exact
+fingerprint and size. A download is only used if its fingerprint and
+signature match; a corrupted or tampered file is refused, never
+run.</li>
+</ul>
+<h3 id="how-the-code-is-laid-out">How the code is laid out</h3>
+<ul>
+<li><strong><code>quill/</code> — one repository, the single source of
+truth.</strong> The shared engine (<code>quill/core</code>), the shared
+interface pieces (<code>quill/ui</code>), and every app side by side
+under <code>quill/apps/</code> (radio, podcasts/Cast, studio/Audio
+Studio, beacon, and later social). The component-download service lives
+in the shared core, so every app downloads things the same audited
+way.</li>
+<li><strong><code>standalone/&lt;app&gt;/</code> — the packaging for
+each product.</strong> A thin launcher, the build recipe, the installer
+script, and the docs for each shippable app. The launcher's job is to
+find the shared runtime and hand off to the app.</li>
+<li><strong>The Runtime build</strong> — the embeddable Python + the
+pinned shared code, produced as one artifact and laid down once per
+machine.</li>
+<li><strong>The small "release" repos</strong> (quill-radio, quill-cast,
+…) hold only the published downloads and drive the in-app updater; they
+carry no code.</li>
+</ul>
+<h3
+id="the-failsafe-guarantees-the-promises-the-finished-system-keeps">The
+failsafe guarantees (the promises the finished system keeps)</h3>
+<p>These are the invariants the design is built to guarantee, in plain
+terms:</p>
+<ol type="1">
+<li><strong>One app can never break another.</strong> A new generation
+of the shared engine is installed alongside the old one, and each app
+states which generation it needs, so upgrading or installing one app
+cannot change the engine another app relies on.</li>
+<li><strong>Your settings are never silently lost or
+downgraded.</strong> When any app writes a shared settings file it keeps
+fields it doesn't recognise (written by a newer app), only rewrites
+old-format files, and stamps who wrote last — so an older app can't
+quietly erase a newer app's preferences.</li>
+<li><strong>Nothing runs unverified.</strong> Every downloaded component
+is checked against a signed catalogue (fingerprint + signature) before
+it is used; a bad file is refused, not executed.</li>
+<li><strong>It always works offline when it must.</strong> Anything
+already downloaded, or staged inside an Offline build, is used without
+touching the network; a missing optional piece produces a clear, guided
+prompt, never a crash or a spurious error.</li>
+<li><strong>Portable means portable.</strong> A portable copy runs on a
+machine with nothing installed and leaves nothing behind — it never
+depends on, or writes to, the host machine's shared install.</li>
+<li><strong>Uninstall is clean and safe.</strong> Removing an app never
+breaks a sibling and never orphans a component another app still needs;
+the shared runtime is only removed when the last family app is
+gone.</li>
+<li><strong>Nothing is stored twice where it can be shared.</strong> On
+a given machine, all installed apps share one runtime and one component
+store; the only duplication is the intentional self-containment of
+portable copies.</li>
+<li><strong>Builds are reproducible and updates never strand a
+user.</strong> Each app is built against an exact pinned version of the
+shared code, and a shipped product's update source is never deleted out
+from under existing users (it is archived, not removed), so "check for
+updates" never breaks.</li>
+</ol>
+<h2
+id="1-what-is-already-done-extracted-from-the-audit--shipped-since">1.
+What is already done (extracted from the audit + shipped since)</h2>
+<p><strong>Code consolidation — done.</strong> All family apps now live
+in the one <code>quill</code> package as the source of truth:
+<code>quill.apps.radio</code>, <code>quill.apps.podcasts</code> (Cast),
+<code>quill.apps.studio</code> (Audio Studio, reverse-vendored), and
+<code>quill.apps.beacon</code> (vendored + GATE-green this week). The
+wx-free <code>quill/core</code> seams (player, recorder, speech,
+publish, versioned-store) are the shared API line. QRM (macOS radio) and
+Social remain to reverse-vendor.</p>
+<p><strong>Heavy assets already runtime-share — done, and it
+works.</strong> ffmpeg, libmpv, engine packs, neural voices, and models
+all resolve to <strong>one</strong> location,
+<code>%APPDATA%\Quill</code>, used by every installed app:</p>
+<ul>
+<li><code>ffmpeg_install.py: managed_ffmpeg_dir()</code> →
+<code>%APPDATA%\Quill\tools\ffmpeg</code></li>
+<li>libmpv → <code>%APPDATA%\Quill\engine-packs\mpv</code></li>
+<li>Piper voices → <code>%APPDATA%\Quill\speech\piper</code>,
+<code>\piper-models</code></li>
+<li>whisper / vosk / kokoro models → the same tree A component
+downloaded by one app is reused by all. <strong>This is the single most
+important fact: the disk-heavy sharing already exists.</strong> What is
+<em>not</em> yet shared is the Python runtime + the <code>quill</code>
+code (tens of MB), and there is no registration/refcount layer so the
+store can't be GC'd safely.</li>
+</ul>
+<p><strong>Packaging model that works — proven.</strong> QUILL ships an
+<strong>embeddable-Python + pip</strong> payload
+(<code>portable/*</code> with pip and a <code>wheels\</code> offline
+cache); on-demand downloads run because pip is present. Two variants
+exist and are proven:</p>
+<ul>
+<li><strong>Standard = LEAN</strong>: runtime + core + ffmpeg/mpv,
+downloads engines/voices on demand (<code>engine_install.py</code>
+already looks in <code>{app}\wheels\&lt;name&gt;</code> then the
+network). Small.</li>
+<li><strong>Offline = FULL</strong>: same payload plus a staged
+wheelhouse (<code>wheels\kokoro|faster-whisper|vosk|mp3</code>) + engine
+binaries, for no-internet use. Additive superset of LEAN. Portable zip =
+payload <strong>with</strong> <code>data\</code> (portable mode);
+installer = same payload <strong>without</strong> <code>data\</code>
+(installed → <code>%APPDATA%\Quill</code>). Radio/Cast today use
+PyInstaller freezes (no pip); Audio Studio needs the embeddable payload
+(pip) for engines and its installer switch is the audit's open build
+task.</li>
+</ul>
+<p><strong>Data-contract groundwork — partly done.</strong>
+<code>FAMILY-DATA.md</code> ownership map exists; the shared-store
+downgrade risk (a newer app's <code>versioned_store</code> rewrite
+dropping an older app's unknown fields) is <strong>confirmed</strong>
+(§17.1) and the preserve-unknown-fields / rewrite-only-on-legacy /
+last-writer-stamp hardening is designed but not yet all landed.
+<strong>This is a hard prerequisite for a shared runtime</strong> — see
+§7.</p>
+<h2 id="2-what-the-runtime-is--two-shared-things-refcounted">2. What
+"the runtime" is — two shared things, refcounted</h2>
+<p>There are <strong>two</strong> distinct shared surfaces. Keep them
+separate; they have different sharing rules.</p>
+<ol type="1">
+<li><strong>The Runtime</strong> = one installed copy of <em>{embeddable
+Python + pip + the <code>quill</code> package}</em>, pinned to a
+<strong>QuillVille suite major</strong> (the compatibility anchor from
+§23). Apps become thin launchers that resolve a compatible runtime at
+startup instead of each freezing their own copy.</li>
+<li><strong>The Component Store</strong> = <code>%APPDATA%\Quill</code>
+(ffmpeg, mpv, engine packs, voices, models). Already shared; this plan
+adds a <strong>registration + refcount + signed-manifest</strong> layer
+so it can dedup, verify, and garbage-collect safely.</li>
+</ol>
+<p>Apps <strong>register</strong> against both: at install/first-run an
+app declares "I need runtime ≥ suite-major N" and "I require components
+{ffmpeg, mpv, …}". The runtime resolves, refcounts, downloads what is
+missing, and reuses what is present.</p>
+<h2 id="3-the-core-principle--and-the-one-law-that-constrains-it">3. The
+core principle — and the one law that constrains it</h2>
+<p><strong>Principle: store once wherever sharing is safe.</strong> Two
+apps on the same machine in system-install mode should share one Runtime
+and one Component Store.</p>
+<p><strong>The law: portability ⊥ dedup.</strong> A <em>portable</em>
+build (runs from a stick, no install, leaves nothing on the host) is by
+definition <strong>self-contained</strong> — it must carry its own
+runtime, components, and data so it works on a machine that has nothing
+installed. Therefore a portable copy <strong>cannot</strong> dedup
+against a system install or against another portable copy. Dedup is
+maximised in system-install mode and is intentionally <em>absent</em>
+across portable copies. Any plan that promises "store once" must state
+this boundary or it will over-promise.</p>
+<p>The practical consequence: <strong>dedup is a property of a
+<em>root</em>, not of the app.</strong> A root is a self-contained
+boundary that holds one runtime + one component store</p>
+<ul>
+<li>one data store. For a system install the root is the machine
+(<code>%LOCALAPPDATA%\QuillVille</code> + <code>%APPDATA%\Quill</code>);
+for a portable build the root is the travelling folder. Apps sharing a
+root dedup; a root never reaches outside itself.</li>
+</ul>
+<p><strong>Multiple portable copies and sharing (the subtle
+case).</strong> "Can several portable apps share components?" depends
+entirely on whether they share a portable <em>root</em>:</p>
+<ul>
+<li><strong>Same portable root → yes, they share.</strong> A
+<code>QuillVille-Portable\</code> folder on a stick can hold several
+apps under one runtime + one component store; adding a second app to
+that same folder reuses everything and only stages its unique pieces.
+The folder as a whole is still self-contained and borrows nothing from
+the host, so the law holds. This is the portable analogue of the
+machine's shared runtime, and it is the supported way to get portable
+dedup.</li>
+<li><strong>Separate portable copies → no, they cannot share.</strong>
+Two independently unzipped per-app portable bundles (different folders,
+or different sticks) are different roots; making one use the other's
+components would require reaching outside a self-contained root, which
+breaks "works on a bare machine / leaves nothing." Not allowed.</li>
+</ul>
+<p>So the mechanism to share across portable apps is <strong>one
+portable root with multiple apps in it</strong> (a "portable suite"),
+not several standalone portable zips placed next to each other. The
+build produces a portable-suite unpacker (pick apps into one root)
+alongside the single-app portable zips; a single-app portable zip may
+also, on the <em>same</em> stick, detect an existing
+<code>QuillVille-Portable\</code> root and install into it (same-root
+only, never the host).</p>
+<h2 id="4-the-shared-runtime--design">4. The shared Runtime —
+design</h2>
+<p><strong>Location &amp; layout (system mode).</strong> Per-user by
+default (no elevation), with an optional all-users install to
+<code>%ProgramFiles%\QuillVille</code> for shared machines:</p>
+<pre><code>%LOCALAPPDATA%\QuillVille\        (or %ProgramFiles%\QuillVille if &quot;all users&quot;)
+  Runtime\&lt;suite-major&gt;\        one embeddable Python + pip + quill\ (pinned)
+  Runtime\&lt;suite-major&gt;\wheels\ offline wheel cache (FULL variant only)
+  Apps\&lt;app&gt;\                   thin launcher, icon, per-app metadata
+  runtimes.json                 registry: installed runtimes + refcounts</code></pre>
+<p><strong>Side-by-side by suite major (the §22 safety answer).</strong>
+Runtimes are keyed by <strong>suite major</strong>, never overwritten in
+place. QuillVille 1 apps resolve <code>Runtime\1</code>; a future
+QuillVille 2 lays down <code>Runtime\2</code> <strong>alongside</strong>
+it. An app declares a <strong>compat floor</strong>
+(<code>min_suite_major</code>, and optionally a
+<code>max_suite_major</code> it was tested against). This removes the
+compatibility-matrix objection: upgrading the QuillVille-2 runtime can
+never break a QuillVille-1 app, because they are different runtimes on
+disk.</p>
+<p><strong>Resolver (app launch).</strong> The thin launcher: (1) reads
+its <code>min/max suite major</code>; (2) finds the highest installed
+<code>Runtime\&lt;major&gt;</code> within range; (3) exports
+<code>QUILL_APP_ROOT</code> + adds the runtime to <code>sys.path</code>
+/ spawns the runtime's python; (4) calls
+<code>quill.apps.&lt;app&gt;:main</code>. If no compatible runtime is
+present (should not happen after install), it points the user at repair.
+This mirrors the launcher shims already in
+<code>standalone/*/quill_*</code> — they become runtime-resolving
+instead of self-contained.</p>
+<p><strong>Refcount &amp; GC.</strong> <code>runtimes.json</code>
+records, per suite major, the set of installed apps referencing it.
+Installing an app adds a ref; uninstalling removes it; when a runtime's
+ref set is empty <strong>and</strong> it is not the newest, it is
+eligible for GC (removed by the uninstaller or a maintenance pass). The
+newest runtime is retained even at zero refs (fast re-install /
+repair).</p>
+<p><strong>Per-app release flexibility (the §22 requirement).</strong>
+An app still releases independently: it bumps the runtime <em>tag</em>
+it pins within its suite major and re-lays that runtime. A hotfix to one
+app never forces releasing the others. Because runtimes are keyed by
+suite major (not by exact tag), a patch-level runtime refresh replaces
+<code>Runtime\1</code> in place <em>only within the same suite
+major</em>, and the data contract guarantees that is safe (§7).
+Cross-major is always side-by-side.</p>
+<h2 id="5-the-component-store--registration-manifest-refcount">5. The
+Component Store — registration, manifest, refcount</h2>
+<p><strong>One signed manifest (the §23 component service).</strong> A
+single, signed <code>components.json</code> in <code>quill/</code>
+(served from the update site, cached in the store) is the source of
+truth for every downloadable:
+<code>{id, kind, url, sha256, size, min_suite_major, provides, license}</code>.
+Verification (SHA-256 + signature) is <strong>mandatory</strong>;
+downloads are resumable; the resolver is <strong>offline-first</strong>
+(see §6). This replaces the three divergent per-app download vintages
+the audit found (Radio/Cast/AS each rolled their own).</p>
+<p><strong>Apps register requirements.</strong> Each app declares the
+components it needs, split into <strong>required</strong> (must be
+present to function — e.g. Radio requires <code>ffmpeg</code>,
+<code>mpv</code>) and <strong>optional/on-demand</strong> (Kokoro,
+Whisper, extra voices). Registration is a small declarative table in the
+app module (e.g.
+<code>quill.apps.radio.REQUIRED_COMPONENTS = ("ffmpeg", "mpv")</code>).</p>
+<p><strong>Refcount in the store.</strong>
+<code>%APPDATA%\Quill\components.state.json</code> records, per
+component, which apps require it and which are installed. A component is
+fetched once; the second app that needs it just adds a ref. When the
+last app that requires a component is removed, that component becomes
+GC-eligible (optional components can be pruned; a "keep downloaded
+components" setting can override). This is what makes "store once" real
+for the heavy assets while still letting people uninstall cleanly.</p>
+<p><strong>"Only some apps" falls out of this for free.</strong> Install
+Radio only → runtime + <code>{ffmpeg, mpv}</code>. Add Cast later →
+runtime <strong>reused</strong> (ref++), Cast's extra requirements
+added, shared ones ref++ not re-downloaded. Remove Radio → components
+<em>exclusively</em> Radio's are GC-eligible; anything Cast still refs
+stays. No component is ever stored twice, and no app carries another
+app's weight.</p>
+<h2 id="6-the-offline-first-resolver-one-code-path-four-inputs">6. The
+offline-first resolver (one code path, four inputs)</h2>
+<p>Every component request resolves in this fixed order, so
+LEAN/FULL/portable all use <strong>one</strong> code path:</p>
+<ol type="1">
+<li><strong>Already in the store</strong> (<code>%APPDATA%\Quill</code>
+or the portable <code>data\</code>)? Use it.</li>
+<li><strong>Staged wheelhouse / engine tree</strong> next to the payload
+(<code>{app}\wheels\&lt;id&gt;</code>, FULL and offline-portable
+variants)? Copy/register it into the store, then use.</li>
+<li><strong>Network</strong> (LEAN/system, if online): download → verify
+against the signed manifest → register into the store.</li>
+<li>Otherwise: a guided, accessible "component needed" prompt (never a
+crash or a bug-report for a normal not-yet-downloaded state — the §7
+guided-installer principle).</li>
+</ol>
+<p>Because step 2 registers staged components <strong>into the shared
+store</strong>, a FULL offline install of a second app finds the first
+app's already-registered components and stages nothing twice.</p>
+<h2 id="7-hard-prerequisites-must-land-before-the-runtime-is-safe">7.
+Hard prerequisites (must land before the runtime is safe)</h2>
+<p>The shared runtime makes the confirmed shared-store downgrade risk
+(§17.1) <strong>more</strong> dangerous, because more apps hit the same
+store through the same core. Before shipping runtime sharing:</p>
+<ul>
+<li><strong>Data-store hardening</strong>: preserve-unknown-fields on
+rewrite, rewrite-only-on-legacy, last-writer stamp — so no app can
+silently downgrade another's settings. (Designed; land on a branch under
+the GATE suite.)</li>
+<li><strong>FAMILY-DATA.md</strong> kept authoritative as the
+schema/ownership map, versioned by suite major.</li>
+<li><strong>Beacon's silo joins the family store</strong>: Beacon still
+uses <code>%APPDATA%\QuillBeacon</code> + its own SQLite; to share the
+runtime it should read the shared store's contract (or at least register
+its components there). Its sync-merge data-loss + plaintext-token
+defects (§16.5) are independent bugs to fix regardless.</li>
+</ul>
+<h2 id="8-install-mode-matrix--exactly-how-dedup-behaves-in-each">8.
+Install-mode matrix — exactly how dedup behaves in each</h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Runtime</th>
+<th>Component Store</th>
+<th>Data</th>
+<th>Dedup across apps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>System (LEAN)</strong></td>
+<td>Shared <code>Program Files\QuillVille\Runtime\&lt;major&gt;</code>,
+refcounted</td>
+<td>Shared <code>%APPDATA%\Quill</code>, downloaded on demand,
+refcounted</td>
+<td><code>%APPDATA%\Quill</code></td>
+<td><strong>Full</strong> — one runtime, one store for all installed
+apps</td>
+</tr>
+<tr>
+<td><strong>System (Offline/FULL, non-portable)</strong></td>
+<td>Same shared runtime; installer also lays a wheelhouse into the
+runtime</td>
+<td>Shared <code>%APPDATA%\Quill</code>; staged components registered in
+on first run (offline-first step 2)</td>
+<td><code>%APPDATA%\Quill</code></td>
+<td><strong>Full</strong> — staged components dedup into the shared
+store</td>
+</tr>
+<tr>
+<td><strong>Portable (LEAN)</strong></td>
+<td>Private runtime inside the portable folder</td>
+<td>Private store in the portable <code>data\</code>; may download on
+demand if online</td>
+<td>portable <code>data\</code></td>
+<td><strong>None across sticks</strong> (self-contained by law §3); full
+<em>within</em> one multi-app portable</td>
+</tr>
+<tr>
+<td><strong>Portable (Offline/FULL)</strong></td>
+<td>Private runtime in the folder</td>
+<td>All components pre-staged in the folder, fully self-contained, no
+network</td>
+<td>portable <code>data\</code></td>
+<td><strong>None across sticks</strong>; full <em>within</em> the one
+folder</td>
+</tr>
+</tbody>
+</table>
+<p>Two design choices make this coherent:</p>
+<ul>
+<li><strong>A multi-app portable is one payload.</strong> If a portable
+bundle carries several apps, they share the <em>one</em> runtime + store
+inside that folder (dedup within). What you cannot do is dedup one
+portable against another, or against a system install — that would break
+portability.</li>
+<li><strong>Offline = "components pre-staged," orthogonal to
+portable.</strong> Offline is about <em>where components come from</em>
+(bundled vs network); portable is about <em>where everything lives</em>
+(travelling folder vs machine). The four modes are the 2×2 of those two
+axes, and the offline-first resolver (§6) makes them one code path.</li>
+</ul>
+<h2 id="9-migration-from-today">9. Migration from today</h2>
+<ol type="1">
+<li>Land the §7 data-store hardening on a branch (GATE suite).</li>
+<li>Add the <strong>component registration + signed manifest +
+refcount</strong> layer to <code>quill/core</code> (one service; retire
+the three per-app download vintages). Backwards-compatible: the store
+paths are unchanged, only a state file + a resolver are added.</li>
+<li>Build the <strong>QuillVille Runtime</strong> artifact (embeddable
+Python + pip + pinned <code>quill</code>) and a <strong>runtime
+installer</strong> that lays <code>Runtime\&lt;major&gt;</code>
+refcounted.</li>
+<li>Convert the standalone shells (<code>standalone/*/</code>) from
+self-contained freezes to <strong>runtime-resolving launchers</strong>
+(the shim already anchors env; point it at the shared runtime; keep a
+portable self-contained build path for the portable modes).</li>
+<li>Do it <strong>one app at a time</strong>, LEAN system-install first
+(highest value, lowest risk), then the offline + portable variants as
+additive builds — exactly the "lean now, full later" discipline that
+already works for QUILL.</li>
+</ol>
+<h2 id="10-decisions-settled-2026-07-20">10. Decisions (settled
+2026-07-20)</h2>
+<p>The four architecture forks were decided with the owner:</p>
+<ol type="1">
+<li><strong>Runtime location — per-user, no elevation.</strong> The
+shared runtime installs to
+<code>%LOCALAPPDATA%\QuillVille\Runtime\&lt;major&gt;</code> with
+<strong>no admin/UAC prompt</strong>, deduping across all apps for that
+Windows user and matching where app data already lives
+(<code>%APPDATA%\Quill</code>). The installer offers an optional
+"install for all users" (<code>Program Files</code>) checkbox for
+shared/lab machines, which is the only path that requires
+elevation.</li>
+<li><strong>Runtime versioning — one runtime per suite major.</strong>
+One runtime per QuillVille generation (<code>Runtime\1</code>);
+patch/minor updates replace it <strong>in place within that
+generation</strong>; a new generation lays <code>Runtime\2</code>
+<strong>side-by-side</strong>. Smallest disk, "one update fixes all apps
+of that generation," and within-generation safety rests on the §7
+data-contract guarantees. A suite-major bump is the only place breaking
+changes to shared spaces are allowed, and it is coordinated across all
+apps.</li>
+<li><strong>Portability — fully self-contained, never borrows.</strong>
+A portable copy carries its own runtime + components + data, runs on a
+bare machine, and leaves nothing behind; it never reads or writes a
+host's shared install (§3's law, confirmed). The cost — a larger
+portable folder — is accepted.</li>
+<li><strong>Component GC — keep by default, manage to prune.</strong>
+Downloaded components stay in the shared store even when no installed
+app currently needs them, so reinstalling an app is instant and a large
+voice/model pack is never re-downloaded. A <strong>Manage
+components</strong> screen lets the user reclaim disk deliberately.
+(Refcounts still track requirement so "prune unused" is precise; they
+just don't auto-delete.)</li>
+</ol>
+<p><strong>One item still open — Beacon's data store.</strong> Beacon
+still uses its own <code>%APPDATA%\QuillBeacon</code> silo + SQLite.
+Recommendation (adopted as the plan unless you say otherwise):
+<strong>register Beacon's components in the shared store now</strong> so
+it participates in dedup immediately, and <strong>migrate its data store
+onto the shared <code>%APPDATA%\Quill</code> contract as part of the §7
+hardening</strong>, after Beacon's confirmed sync-merge data-loss and
+plaintext-token defects (§16.5) are fixed. Flag if you'd rather leave
+Beacon fully siloed for longer.</p>
+<h2 id="11-summary">11. Summary</h2>
+<p>The heavy, disk-dominating sharing (components) already works — this
+plan makes it <em>safe and refcounted</em> via a signed manifest +
+registration, and adds a <strong>side-by-side, suite-major-versioned
+shared runtime</strong> so the Python/code stops duplicating too,
+without the compatibility-matrix trap. "Store once" is achieved in every
+mode where it is physically possible (all system installs; within a
+portable), and the one place it cannot be (across portable copies) is
+stated plainly rather than promised away. Install only the apps you
+want; each adds only its unique components; removing one cleans up only
+what nothing else needs.</p>
+</body>
+</html>
