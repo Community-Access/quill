@@ -39,7 +39,12 @@ msgid ""
 "(turn any on from Profiles and Features). For papers, citations, and a "
 "table of contents, try the Author or Student profile instead."
 msgstr ""
-
+"Un'impostazione incentrata sul 'solo scrivere' — scrittura quotidiana, "
+"formattazione e stampa, senza le funzioni avanzate. IA, revisione GLOW, "
+"file remoti, analisi dei documenti, cartelle monitorate, taccuini e "
+"strumenti di sviluppo sono disattivati (attivane uno qualsiasi da Profili "
+"e Funzionalità). Per articoli, citazioni e un indice, prova invece il "
+"profilo Autore o Studente."
 #: quill/core/features.py:140
 msgid "Author or Student"
 msgstr "Autore o Studente"
@@ -122,23 +127,23 @@ msgstr "Tutto visibile, inclusi i percorsi avanzati e sperimentali."
 
 #: quill/core/platform_nouns.py:32
 msgid "macOS Keychain"
-msgstr ""
+msgstr "Portachiavi MacOS"
 
 #: quill/core/platform_nouns.py:34
 msgid "Windows Credential Manager"
-msgstr ""
+msgstr "Gestore Credenziali di Windows"
 
 #: quill/core/platform_nouns.py:35
 msgid "the system credential store"
-msgstr ""
+msgstr "l'archivio credenziali di sistema"
 
 #: quill/core/platform_nouns.py:47
 msgid "Cmd+Alt"
-msgstr ""
+msgstr "Cmd+Alt"
 
 #: quill/core/platform_nouns.py:48
 msgid "Ctrl+Alt"
-msgstr ""
+msgstr "Ctrl+Alt"
 
 #: quill/ui/agent_editor_host.py:95
 msgid "Run &Agent"
@@ -437,7 +442,12 @@ msgid ""
 "{store}, never in a settings file, and nothing is ever uploaded without a"
 " per-book confirmation."
 msgstr ""
-
+"Auphonic esegue il mastering di audiolibri ed episodi di podcast terminati "
+"(livellamento, riduzione del rumore, codifica). QUILL lo utilizza dal "
+"WorkBench dei capitoli in Audio Studio: Pubblica > Invia a "
+"Auphonic. Il token API è memorizzato nel {store}, mai in un file di "
+"impostazioni, e nulla viene mai caricato senza una conferma per singolo "
+"libro."
 #: quill/ui/ai_hub_dialog.py:581
 msgid "API token:"
 msgstr "Token API"
@@ -1264,7 +1274,7 @@ msgid ""
 "redacted summary below and choose whether to send it to the developers. "
 "Nothing is sent unless you click 'Send report'."
 msgstr ""
-"QUILL ha incontrato un errore inaspettato e si è chiuso. Puoi rivedere un"
+"QUILL ha riscontrato un errore inaspettato e si è chiuso. Puoi rivedere un"
 "  riepilogo anonimo qui sotto e scegliere se inviarlo agli sviluppatori. "
 "Niente viene spedito a meno che non clicchi 'Invia report'."
 
@@ -1569,9 +1579,8 @@ msgid "&Save to GitHub..."
 msgstr "&Salva su Github..."
 
 #: quill/ui/main_frame_menu.py:184
-#, fuzzy
 msgid "GitHub &Items..."
-msgstr "&URL del file Github..."
+msgstr "Element&i Github..."
 
 #: quill/ui/main_frame_menu.py:189
 msgid "&Manage Remote Sites..."
@@ -1697,7 +1706,7 @@ msgstr "Ripristina &versione precedente..."
 
 #: quill/ui/main_frame_menu.py:407
 msgid "&New Notebook..."
-msgstr "&Nuovo blocco note..."
+msgstr "&Nuovo taccuino..."
 
 #: quill/ui/main_frame_menu.py:411
 msgid "New from &Folder..."
@@ -1705,7 +1714,7 @@ msgstr "Nuovo da &Cartella..."
 
 #: quill/ui/main_frame_menu.py:415
 msgid "&Open Notebook..."
-msgstr "&Apri blocco note..."
+msgstr "&Apri taccuino..."
 
 #: quill/ui/main_frame_menu.py:420
 msgid "&Save Version..."
@@ -1721,7 +1730,7 @@ msgstr "&Gestisci versioni..."
 
 #: quill/ui/main_frame_menu.py:430
 msgid "&Notebook"
-msgstr "Blocco &note"
+msgstr "Taccui&no"
 
 #: quill/ui/main_frame_menu.py:433
 msgid "Pa&ge Setup..."
@@ -1732,14 +1741,12 @@ msgid "&Print..."
 msgstr "Stam&pa..."
 
 #: quill/ui/main_frame_menu.py:437
-#, fuzzy
 msgid "Print &Studio..."
-msgstr "Creatore &Storia..."
+msgstr "Studio &Stampa..."
 
 #: quill/ui/main_frame_menu.py:441
-#, fuzzy
 msgid "&Header and Footer..."
-msgstr "Altro formato Pandoc..."
+msgstr "Intesta&zione e piè pagina..."
 
 #: quill/ui/main_frame_menu.py:447
 msgid "&Close Document"
@@ -2085,19 +2092,19 @@ msgstr "Elenc&o segnalibri..."
 
 #: quill/ui/main_frame_menu.py:958
 msgid "Go to &Entry in Notebook..."
-msgstr "Vai a &elemento in blocco note..."
+msgstr "Vai a &elemento in taccuino..."
 
 #: quill/ui/main_frame_menu.py:963
 msgid "Go to &Heading in Notebook..."
-msgstr "Vai a &intestazione in blocco note..."
+msgstr "Vai a &intestazione in taccuino..."
 
 #: quill/ui/main_frame_menu.py:969
 msgid "Go to &Bookmark in Notebook..."
-msgstr "Vai a segnali&bro in blocco note..."
+msgstr "Vai a segnali&bro in taccuino..."
 
 #: quill/ui/main_frame_menu.py:975
 msgid "Go to Sticky &Note in Notebook..."
-msgstr "Vai a &nota importante nel blocco note..."
+msgstr "Vai a &nota importante nel taccuino..."
 
 #: quill/ui/main_frame_menu.py:1032
 msgid "&Bold"
@@ -2409,12 +2416,11 @@ msgstr "Palette di &Comandi..."
 
 #: quill/ui/main_frame_menu.py:1623
 msgid "Story &Studio..."
-msgstr "Creatore &Storia..."
+msgstr "Studio delle &Storie..."
 
 #: quill/ui/main_frame_menu.py:1627
-#, fuzzy
 msgid "Work &Personas..."
-msgstr "Ripristina &Versione..."
+msgstr "&Profili di lavoro..."
 
 #: quill/ui/main_frame_menu.py:1630
 msgid "&Open Vault..."
@@ -3386,7 +3392,7 @@ msgid ""
 "\n"
 "Press Next to begin."
 msgstr ""
-"QUILL è un editor testuale compatibile con gli screen reader costruito "
+"QUILL è un editor di testo compatibile con gli screen reader costruito "
 "fin dall'dalla base \n"
 "per persone che usano NVDA, JAWS, Narrator, o display Braille.\n"
 "\n"
@@ -3614,7 +3620,7 @@ msgstr ""
 
 #: quill/ui/setup_wizard_pages.py:746
 msgid "In my user profile (recommended)"
-msgstr ""
+msgstr "Nel mio profilo utente (consigliato)"
 
 #: quill/ui/setup_wizard_pages.py:755
 msgid "Next to QUILL, on this portable drive"
@@ -5318,7 +5324,9 @@ msgid ""
 "destination. The password is kept in the {store}, never in QUILL's "
 "settings."
 msgstr ""
-
+"Carica tramite SFTP: il libro e i suoi file correlati vanno alla "
+"destinazione scelta. La password è conservata nel {store}, mai nelle "
+"impostazioni di QUILL."
 #: quill/ui/audio_studio/publish_dialog.py:121
 msgid "Destination na&me:"
 msgstr "No&me destinazione:"
