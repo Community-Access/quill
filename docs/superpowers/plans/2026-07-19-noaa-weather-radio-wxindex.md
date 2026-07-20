@@ -937,3 +937,68 @@ git commit -m "chore(radio): release 2.1.1 -- NOAA Weather Radio via wxindex"
 - Confirm the exact reviewed-egress registration mechanism in `quill/tools/network_egress_audit.py` (Task 2 Step 5) — it is an AST/source scan gate; the new `_default_fetch` must be listed like `radio_browser._http_json`.
 - Confirm `directory_search`'s real aggregator function name/shape before Task 7 (the plan assumes a `search(query, *, safe_mode)` that accumulates `RadioStation`s).
 - The Browse dialog may already have a genre-folder type; reuse it instead of the illustrative `_Folder` in Task 6.
+
+---
+
+# Part 2 — Radio Reading Services (also 2.1.1)
+
+**Goal:** Add a "Radio Reading Services" category (audio information services for the print-disabled) to Browse and unified Search, powered by the real reading-service stations already in Radio Browser, with a bundled snapshot floor and an in-Radio refresh. Reuses the existing `radio_browser` client and `RadioStation`.
+
+**Global constraints (Part 2):** same as Part 1, plus: these are public Radio Browser streams; `source="Radio Reading Service"`; only list stations with a non-empty `stream_url`. The curated seed list (21 vetted, health-OK services) is at `<scratch>/rrs/reading_services_curated.json` (WKAR RRS, KPBS RRS, CRIS/Chicago Lighthouse, WUFT RRS, Sun Sounds of Arizona, WRBH Reading Radio, ACB Media 1–5, NFBRN, Voice Corps, Owl Radio, Recording Library of West Texas, Audible Local Ledger, Down East RRS, Connecticut Radio Information System, 95alive). Clean it: replace mangled `�` in ACB names with `-`, and dedupe `95alive` to one entry.
+
+### Task 10: Bundled reading-services snapshot + loader
+
+**Files:** Create `quill/data/reading_services.json`; Create `quill/core/radio/reading_services.py`; Test `tests/unit/core/radio/test_reading_services.py`.
+
+**Interfaces:** Produces `load_reading_services() -> list[RadioStation]` (each `source="Radio Reading Service"`); `reading_services_path() -> Path`. Missing/corrupt -> `[]`, logged, never raises.
+
+- [ ] Step 1 — failing test: monkeypatch `reading_services_path` to a tmp json with one service `{"name":"WRBH","stream_url":"https://s/wrbh","state":"Louisiana"}`; assert `load_reading_services()[0].source == "Radio Reading Service"` and `stream_url` set; and missing-file -> `[]`.
+- [ ] Step 2 — run, confirm fail (module missing).
+- [ ] Step 3 — implement: read `<scratch>/rrs/reading_services_curated.json`, clean per Global Constraints, write it to `quill/data/reading_services.json` as `{"generated_at": "...", "services": [ {name, stream_url, state, station_uuid, homepage, codec}, ... ]}`. Loader parses each into `RadioStation(name=..., stream_url=..., station_uuid=svc.get("station_uuid",""), country="United States", tags=("reading service","blind"), source="Radio Reading Service")`, skipping entries with empty `stream_url`/`name`. Corrupt/missing -> `[]` with `_LOG.warning`.
+- [ ] Step 4 — run, pass.
+- [ ] Step 5 — gates (`pytest`, `mypy quill/core`, ruff) then commit `feat(radio): bundled Radio Reading Services snapshot + loader`.
+
+### Task 11: RRS resolver + live Radio Browser refresh
+
+**Files:** Modify `quill/core/radio/reading_services.py`; Test `tests/unit/core/radio/test_reading_services_resolver.py`.
+
+**Interfaces:** Produces `list_reading_services(*, safe_mode=False, searcher=None) -> list[RadioStation]` (cache -> live -> bundled snapshot); `refresh_reading_services(*, safe_mode=False, searcher=None) -> RrsRefreshResult(count, generated_at)`. `searcher` seam defaults to `radio_browser.search_stations`; live path queries the reading-service keywords ("radio reading", "reading service", "audio information", "reading radio", "blind radio"), keeps stations whose name/tags match a reading-service term AND have a `stream_url`, de-dupes by `stream_url`, writes the app-data cache (`app_data_dir()/radio/reading-services-cache/`); Safe-Mode refuses live and falls to cache/snapshot. Mirror the wxindex three-tier resolver (`quill/core/radio/wxindex.py`).
+
+- [ ] Step 1 — failing test: inject a fake `searcher` returning two RadioBrowser `RadioStation`s (one matching "reading service", one unrelated); assert `list_reading_services` includes the reading-service one with `source` re-stamped and excludes the unrelated one; assert `refresh_reading_services` writes the cache and returns a `RrsRefreshResult` with the right count; assert Safe Mode refuses the live path and returns the bundled snapshot.
+- [ ] Step 2 — run, confirm fail.
+- [ ] Step 3 — implement mirroring `wxindex.py`'s cache tier + `radio_browser.refuse_in_safe_mode`. Reuse `radio_browser.search_stations(keyword, safe_mode=...)` per keyword via the `searcher` seam; re-stamp `source="Radio Reading Service"`.
+- [ ] Step 4 — run, pass.
+- [ ] Step 5 — gates + commit `feat(radio): Radio Reading Services resolver + Radio Browser refresh`.
+
+### Task 12: Browse category + unified-search blend
+
+**Files:** Modify `quill/ui/radio/browse_tree_dialog.py` (add source); Modify `quill/core/radio/directory_search.py` + `quill/ui/radio/station_browser_dialog.py` (search blend); Test `tests/unit/ui/test_reading_services_browse_search.py`.
+
+**Interfaces:** Browse "Radio Reading Services" source loads `list_reading_services` as a flat station list (reuse the existing `"stations"` kind + a `_STATION_LOADERS["reading_services"]` entry — 21 services, no tree needed). Search: add `reading_services_search_stations(query, *, safe_mode=False) -> list[RadioStation]` to `directory_search.py` (case-insensitive name/tag/state match over `list_reading_services`, playable-only) and wire it into `station_browser_dialog._do_search`'s `extras` exactly like Task 7's `wxindex_search_stations`.
+
+- [ ] Step 1 — failing test: `_STATION_LOADERS["reading_services"]` returns `list_reading_services` output (monkeypatched); `reading_services_search_stations("wrbh")` returns the WRBH station with `source=="Radio Reading Service"`; empty query -> `[]`.
+- [ ] Step 2 — run, confirm fail.
+- [ ] Step 3 — implement: add `("Radio Reading Services", "stations", "reading_services")` to `_SOURCES`; `_STATION_LOADERS["reading_services"] = lambda safe: reading_services.list_reading_services(safe_mode=safe)`. Add the search helper and wire into `_do_search` `extras` (mirror Task 7's committed `wxindex_search_stations` wiring).
+- [ ] Step 4 — run, pass; `pytest -q -k "browse or directory_search or station_browser"`.
+- [ ] Step 5 — gates (incl. `check_banned_patterns`) + commit `feat(radio): Radio Reading Services in Browse and Search`.
+
+### Task 13: "Update Radio Reading Services" refresh command
+
+**Files:** Modify the Radio menu builder (find it: grep for where the Radio/Stations menu items are appended — likely `quill/ui/main_frame_radio.py` or `quill/apps/radio.py`); Test `tests/unit/ui/test_reading_services_update.py`.
+
+**Interfaces:** A menu command "Update Radio Reading Services" that runs `reading_services.refresh_reading_services(safe_mode=self._safe_mode)` on the host background-task helper (`self._task_manager`), announces the `RrsRefreshResult` count via `self._announce`, Safe-Mode guarded, `self._show_message_box` on any user-facing message (no raw `wx.MessageBox`). Mirror the wxindex Weather-menu "Update NOAA Weather Radio directory" handler committed in Task 8 (`quill/ui/main_frame_weather.py::update_noaa_radio_directory`).
+
+- [ ] Step 1 — failing test: a pure helper `refresh_reading_services_summary() -> str` (or the resolver call) returns a message containing the count when `refresh_reading_services` is monkeypatched. (Menu wiring itself is wx-bound; test the pure part.)
+- [ ] Step 2 — run, confirm fail.
+- [ ] Step 3 — implement the menu item + handler mirroring `update_noaa_radio_directory`.
+- [ ] Step 4 — run, pass; `pytest -q -k radio`.
+- [ ] Step 5 — gates + commit `feat(radio): 'Update Radio Reading Services' refresh command`.
+
+### Task 14: Combined 2.1.1 release (wxindex + RRS)
+
+**Files:** Modify `s:\quill-radio\pyproject.toml` (`version = "2.1.1"`); Modify `s:\quill-radio\CHANGELOG.md`; Modify the Radio user guide.
+
+- [ ] Step 1 — bump `version = "2.1.1"`.
+- [ ] Step 2 — changelog 2.1.1 entry covering BOTH: "NOAA Weather Radio is now the authoritative WeatherIndex directory (browse by state, search by SAME code/callsign/county, your local transmitter from the Weather menu, on-demand update, works offline). New Radio Reading Services category — audio information services for print-disabled listeners — in Browse and Search, with an on-demand update. Both ship a bundled snapshot so they work offline." Update the user guide Browse/Weather sections.
+- [ ] Step 3 — full sweep: `pytest -q tests/unit/core/radio tests/unit/ui -k "wxindex or noaa or reading or browse or weather or directory_search"`; then `ruff format --check .`, `ruff check .`, `mypy quill/core quill/io`, `python -m quill.tools.check_banned_patterns`, and the error-code audit.
+- [ ] Step 4 — commit `chore(radio): release 2.1.1 — NOAA Weather Radio + Radio Reading Services`.
