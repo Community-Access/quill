@@ -369,6 +369,10 @@ select = ["E", "F", "I", "UP", "B"]
 "scripts/setup_macos.py" = ["E402"]
 # macOS-only platform tests import the module under test after a
 # sys.platform skip guard, so the import is deliberately not at the top.
+# Vendored Beacon dialog/UI tests gate wx behind `wx = pytest.importorskip("wx")`
+# and import the modules under test after it, so those imports are deliberately
+# not at the top of the file (same headless-skip pattern as the macOS tests).
+"tests/unit/apps/beacon/*.py" = ["E402"]
 "tests/unit/platform/macos/test_high_contrast.py" = ["E402"]
 "tests/unit/platform/macos/test_keychain.py" = ["E402"]
 "tests/unit/platform/macos/test_sr_detect.py" = ["E402"]
