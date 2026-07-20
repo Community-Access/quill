@@ -6,6 +6,9 @@ whose top-level branches are the sources -- Favorites (your own saved folders
 and streams, at the top for a quick jump), then Popular, Weather/NOAA, ACB
 Media, NFB Radio, Radio Reading Services, SomaFM, TuneIn, iHeart (its genres,
 each an A-Z sub-directory), and the genre catalogs (Community M3U, Xiph).
+A "Find in this folder" box searches from the highlighted folder downward only
+(loading that subtree, bounded), so results stay scoped and small; Clear drops
+the results and puts the cursor back on the folder you searched from.
 You expand a branch to reveal its stations (or its genres/folders, then their
 stations); internet sources load lazily on first open, off the UI thread, while
 Favorites is built instantly from local data. Enter (or the Play button) plays
@@ -69,6 +72,20 @@ _EXPANDABLE = (
     "iheart-genre",
     "iheart-letter",
 )
+
+#: Expandable kinds whose fetched children are already playable ``RadioStation``
+#: leaves (as opposed to sub-folders that must be recursed). "iheart-genre" is
+#: here because its raw fetch is the genre's stations -- the A-Z letters are
+#: only a display grouping.
+_LEAF_KINDS = frozenset({"stations", "genre", "wx_state", "iheart-genre", "iheart-letter"})
+
+#: Bounds for "Find in this folder": how deep to recurse a subtree, the most
+#: results to collect, and the most folder fetches to spend -- so searching from
+#: a big branch (or TuneIn's remote tree) stays bounded instead of walking the
+#: whole internet. Hitting a bound is reported, never silent.
+_FIND_MAX_DEPTH = 6
+_FIND_MAX_RESULTS = 2000
+_FIND_MAX_FETCHES = 80
 
 
 def _iheart_letter_groups(
@@ -147,6 +164,8 @@ class BrowseTreeDialog:
         self._announce = announce_cb or (lambda _m: None)
         self._on_favorites_changed = on_favorites_changed or (lambda: None)
         self._menu_id_refs: list[object] = []
+        self._find_active = False
+        self._find_return_node: Any = None
 
         self.dialog = wx.Dialog(
             parent, title="Browse Stations", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -169,6 +188,26 @@ class BrowseTreeDialog:
             "Shift+F10 opens all actions"
         )
         root.Add(self._tree, 1, wx.EXPAND | wx.ALL, 10)
+
+        find_row = wx.BoxSizer(wx.HORIZONTAL)
+        find_row.Add(
+            wx.StaticText(self.dialog, label="&Find in this folder:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._find_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+        self._find_ctrl.SetName(
+            "Find stations in the highlighted folder and everything below it; press Enter"
+        )
+        find_row.Add(self._find_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
+        self._find_btn = wx.Button(self.dialog, label="Find")
+        self._find_btn.SetName("Find in this folder")
+        self._find_clear_btn = wx.Button(self.dialog, label="C&lear")
+        self._find_clear_btn.SetName("Clear the search and return to the folder")
+        find_row.Add(self._find_btn, 0, wx.RIGHT, 6)
+        find_row.Add(self._find_clear_btn, 0)
+        root.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._details = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
@@ -217,6 +256,9 @@ class BrowseTreeDialog:
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh_selected())
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute)
+        self._find_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_find)
+        self._find_btn.Bind(wx.EVT_BUTTON, self._on_find)
+        self._find_clear_btn.Bind(wx.EVT_BUTTON, self._clear_find)
 
         state = getattr(self._controller, "state", None)
         if state is not None:
@@ -279,6 +321,193 @@ class BrowseTreeDialog:
         except Exception:  # noqa: BLE001 - a down source shows as empty, never fatal
             return []
         return []
+
+    # -- find in this folder ----------------------------------------------------
+
+    def _subtree_children(self, kind: str, raw: list[Any]) -> list[tuple[str, Any]]:
+        """Map a folder node's fetched *raw* children to ``(kind, payload)``
+        pairs to recurse, mirroring ``_add_children``'s folder mapping."""
+        if kind == "genres":
+            # A "genres" node's payload is the catalog module; it is not passed
+            # here, so callers hand back child ("genre", (module, slug)) pairs.
+            return []  # handled by _collect_leaf_nodes, which has the module
+        if kind == "wx_states":
+            return [("wx_state", state.slug) for state in raw]
+        if kind == "iheart":
+            return [("iheart-genre", genre.genre_id) for genre in raw]
+        return []
+
+    def _leaf_name(self, node_data: dict) -> str:
+        """The display name a search matches against for one collected leaf."""
+        if node_data.get("kind") == "tunein-station":
+            return str(node_data.get("title", ""))
+        station = node_data.get("station")
+        return station.name if station is not None else ""
+
+    def _collect_matches(
+        self, kind: str, payload: Any, ql: str, depth: int, acc: list[dict], budget: dict
+    ) -> bool:
+        """Recurse the subtree under (kind, payload), appending leaf node-data
+        whose name contains *ql*. Returns True if a bound (depth/results/fetches)
+        cut the walk short. Bounded so a search from a big branch or TuneIn's
+        remote tree stays finite."""
+        if len(acc) >= _FIND_MAX_RESULTS:
+            return True
+        if kind == "favorites":
+            for fav in self._favorites.favorites_in_display_order():
+                node = {"kind": "station", "station": fav.station}
+                if ql in self._leaf_name(node).lower():
+                    acc.append(node)
+            return False
+        if depth > _FIND_MAX_DEPTH or budget["fetches"] >= _FIND_MAX_FETCHES:
+            return True
+        budget["fetches"] += 1
+        raw = self._fetch_children(kind, payload)
+        if kind in _LEAF_KINDS:
+            for station in raw:
+                node = {"kind": "station", "station": station}
+                if ql in self._leaf_name(node).lower():
+                    acc.append(node)
+                    if len(acc) >= _FIND_MAX_RESULTS:
+                        return True
+            return False
+        capped = False
+        if kind == "tunein":
+            for result in raw:
+                if getattr(result, "is_station", False):
+                    node = {
+                        "kind": "tunein-station",
+                        "guide_id": result.guide_id,
+                        "title": result.title,
+                    }
+                    if ql in self._leaf_name(node).lower():
+                        acc.append(node)
+                else:
+                    capped = (
+                        self._collect_matches(
+                            "tunein", result.browse_url, ql, depth + 1, acc, budget
+                        )
+                        or capped
+                    )
+                if len(acc) >= _FIND_MAX_RESULTS:
+                    return True
+            return capped
+        if kind == "genres":
+            children = [("genre", (payload, slug)) for slug in raw]
+        else:
+            children = self._subtree_children(kind, raw)
+        for child_kind, child_payload in children:
+            capped = (
+                self._collect_matches(child_kind, child_payload, ql, depth + 1, acc, budget)
+                or capped
+            )
+            if len(acc) >= _FIND_MAX_RESULTS:
+                return True
+        return capped
+
+    def _find_matches(self, kind: str, payload: Any, query: str) -> tuple[list[dict], bool]:
+        """Collect leaf node-data under (kind, payload) matching *query*
+        (case-insensitive), plus whether a bound cut the search short."""
+        acc: list[dict] = []
+        budget = {"fetches": 0}
+        capped = self._collect_matches(kind, payload, query.strip().lower(), 0, acc, budget)
+        return acc, capped
+
+    def _find_anchor_node(self) -> Any:
+        """The folder to search from: the highlighted node if it is a source or
+        folder, else the nearest folder above it (so searching while on a
+        station leaf searches the folder that station is in). None if nothing
+        searchable is selected."""
+        tree = self._tree
+        try:
+            node = tree.GetSelection()
+        except RuntimeError:
+            return None
+        searchable = (*_EXPANDABLE, "favorites")
+        while node is not None and node.IsOk():
+            data = self._node_data(node)
+            if data is not None and data.get("kind") in searchable:
+                return node
+            node = tree.GetItemParent(node)
+        return None
+
+    def _on_find(self, _event: Any = None) -> None:
+        query = self._find_ctrl.GetValue().strip()
+        if not query:
+            self._announce("Type something to find in this folder.")
+            return
+        anchor = self._find_anchor_node()
+        if anchor is None:
+            self._announce("Highlight a source or folder to search in first.")
+            return
+        data = self._node_data(anchor)
+        if data is None:
+            return
+        kind, payload = data["kind"], data.get("payload")
+        label = self._tree.GetItemText(anchor)
+        self._announce(f"Searching {label} for {query}...")
+
+        def _work(**_kwargs: Any) -> tuple[list[dict], bool]:
+            return self._find_matches(kind, payload, query)
+
+        def _ok(_op: str, result: object) -> None:
+            matches, capped = result if isinstance(result, tuple) else ([], False)
+            self._wx.CallAfter(self._show_find_results, anchor, label, matches, capped)
+
+        self._task_manager.submit("radio-browse-find", _work, on_success=_ok, on_failure=None)
+
+    def _show_find_results(
+        self, anchor: Any, label: str, matches: list[dict], capped: bool
+    ) -> None:
+        tree = self._tree
+        if not anchor.IsOk():
+            return
+        self._find_return_node = anchor
+        self._find_active = True
+        tree.DeleteChildren(anchor)
+        for node_data in matches:
+            leaf = tree.AppendItem(anchor, self._leaf_name(node_data))
+            tree.SetItemData(leaf, node_data)
+        if not matches:
+            empty = tree.AppendItem(anchor, f"No matches in {label}.")
+            tree.SetItemData(empty, {"kind": "placeholder"})
+        anchor_data = self._node_data(anchor)
+        if anchor_data is not None:
+            anchor_data["loaded"] = True  # results replace the normal lazy children
+        tree.Expand(anchor)
+        count = len(matches)
+        more = " Showing the first results; search a smaller folder for the rest." if capped else ""
+        self._announce(
+            f"{count} match{'es' if count != 1 else ''} in {label}."
+            f"{more} Clear to return to the folder."
+        )
+        first, _cookie = tree.GetFirstChild(anchor)
+        if first.IsOk():
+            tree.SelectItem(first)
+            tree.SetFocus()
+
+    def _clear_find(self, _event: Any = None) -> None:
+        self._find_ctrl.SetValue("")
+        node = self._find_return_node
+        self._find_return_node = None
+        was_active = self._find_active
+        self._find_active = False
+        if node is None or not node.IsOk():
+            return
+        data = self._node_data(node)
+        if data is not None and data.get("kind") in (*_EXPANDABLE, "favorites"):
+            # Drop the result leaves and reset the folder to its unexpanded state,
+            # so re-opening it browses normally again.
+            data["loaded"] = False
+            self._tree.DeleteChildren(node)
+            self._tree.SetItemData(
+                self._tree.AppendItem(node, "Loading..."), {"kind": "placeholder"}
+            )
+            self._tree.Collapse(node)
+        self._tree.SelectItem(node)  # cursor back on the folder you searched from
+        self._tree.SetFocus()
+        if was_active:
+            self._announce(f"Search cleared. Back on {self._tree.GetItemText(node)}.")
 
     def _add_children(self, node: Any, kind: str, raw: list[Any]) -> None:
         tree = self._tree
