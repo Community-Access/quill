@@ -2,7 +2,6 @@
   "quill/apps/podcasts.py::PodcastsAppFrame._new_library_folder::wx.TextEntryDialog": "native",
   "quill/apps/radio.py::RadioAppFrame._on_sort_folder::wx.SingleChoiceDialog": "native",
   "quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.FileDialog": "native",
-  "quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.MessageBox": "native",
   "quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.SingleChoiceDialog": "native",
   "quill/devtools/console_window.py::ConsoleWindow._save_transcript::wx.FileDialog": "native",
   "quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog.__init__::wx.Dialog": "hardened_custom",
