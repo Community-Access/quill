@@ -314,12 +314,23 @@ class WordDocumentSurface:
         return self.text_ctrl.GetSelection()
 
     def SetSelection(self, start: int, end: int) -> None:
+        # Find/replace and any programmatic selection operate on text_ctrl, but
+        # the structure-view (preview) page is shown by default. Without
+        # switching to the text page first, Find would select in the hidden
+        # text control while the visible preview never moved -- the match looked
+        # like it was never found (#1182). Surface the text editor so the
+        # selection is visible, mirroring Replace/Paste/Cut below.
+        self._ensure_text_mode()
         self.text_ctrl.SetSelection(start, end)
 
     def GetInsertionPoint(self) -> int:
         return self.text_ctrl.GetInsertionPoint()
 
     def SetInsertionPoint(self, position: int) -> None:
+        # See SetSelection: keep the cursor move visible by switching to the
+        # text page, so Find Next in the structure view actually advances the
+        # caret the user can see (#1182).
+        self._ensure_text_mode()
         self.text_ctrl.SetInsertionPoint(position)
 
     def Replace(self, start: int, end: int, value: str) -> None:

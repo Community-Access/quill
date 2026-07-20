@@ -6607,6 +6607,27 @@ class MainFrame(
                 self._trusted_locations.add(selected_path.parent.resolve())
                 save_trusted_locations(self._trusted_locations)
 
+        # #1150: a very large file used to freeze QUILL (and the screen reader
+        # with it) while it was read and pushed into the control on the UI
+        # thread. Warn before opening, and (below) read a large non-office file
+        # on a worker thread so the UI stays responsive while it loads.
+        from quill.ui.large_file_guard import is_large_file, large_file_warning
+
+        try:
+            file_size = selected_path.stat().st_size
+        except OSError:
+            file_size = 0
+        large_file = is_large_file(file_size)
+        if large_file:
+            proceed = self._show_message_box(
+                large_file_warning(selected_path.name, file_size),
+                "Open large file?",
+                self._wx.YES_NO | self._wx.ICON_WARNING | self._wx.NO_DEFAULT,
+            )
+            if proceed != self._wx.YES:
+                self._set_status("Open cancelled")
+                return
+
         suffix = selected_path.suffix.lower()
 
         def finish(result: object) -> None:
@@ -6641,6 +6662,16 @@ class MainFrame(
         csv_mode = None
         if suffix in {".csv", ".tsv"}:
             csv_mode = self._resolve_csv_open_mode(selected_path)
+        if large_file:
+            # #1150 Tier 2: read the large file on a worker thread (like the
+            # office/PDF path above) so the UI and screen reader stay responsive
+            # while it loads, with a cancellable progress surface.
+            self._run_background_task(
+                f"Opening {selected_path.name}",
+                lambda _progress: read_open_document(selected_path, suffix, csv_mode=csv_mode),
+                finish,
+            )
+            return
         finish(read_open_document(selected_path, suffix, csv_mode=csv_mode))
 
     def _docx_read_engine(self) -> str:
