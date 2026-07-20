@@ -186,6 +186,16 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/speech/voice_blacklist.py::save_blacklist": "content",
     "core/verbosity/storage.py::save_custom": "content",
     "core/trust.py::save_trusted_locations": "content",
+    # Weather locations: user-created saved places (display name, lat/lon,
+    # resolved name, query) -- additive and self-describing, and a corrupt file
+    # degrades to empty; content, like trust.py::save_trusted_locations above.
+    "core/weather/locations.py::save_locations": "content",
+    # --- needs-versioning (real config; contract adoption backlogged) ---
+    # Weather settings: real user config (units, forecast/outlook counts, which
+    # current-conditions details and alert severities show). It has no schema
+    # stamp yet, so it is honestly backlogged to adopt the versioned contract
+    # rather than mislabelled as content.
+    "core/weather/settings.py::save_settings": "needs-versioning",
     # --- config stores now stamped per the contract (was: needs-versioning) ---
     "core/assistant_ai.py::save_assistant_connection_settings": "versioned",
     "core/assistant_ai.py::save_provider_model": "versioned",

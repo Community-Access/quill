@@ -17,6 +17,8 @@ def prompt_import_target(parent: object, folders: list[str], station_count: int)
     """
     import wx
 
+    from quill.ui.dialog_contract import apply_modal_ids
+
     dialog = wx.Dialog(parent, title="Import Stations")
     root = wx.BoxSizer(wx.VERTICAL)
     plural = "station" if station_count == 1 else "stations"
@@ -48,6 +50,14 @@ def prompt_import_target(parent: object, folders: list[str], station_count: int)
     if buttons is not None:
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
     dialog.SetSizerAndFit(root)
+    apply_modal_ids(
+        dialog,
+        affirmative_id=wx.ID_OK,
+        affirmative_label="OK",
+        cancel_id=wx.ID_CANCEL,
+        cancel_label="Cancel",
+        escape_id=wx.ID_CANCEL,
+    )
     wx.CallAfter(combo.SetFocus)
 
     chosen: str | None = None
