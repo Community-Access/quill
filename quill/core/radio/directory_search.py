@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from quill.core.radio import iheart, tunein, wxindex
+from quill.core.radio import iheart, reading_services, tunein, wxindex
 from quill.core.radio.iheart import IHeartStation
 from quill.core.radio.models import RadioStation
 from quill.core.radio.wxindex_models import to_radio_station as _wx_to_radio_station
@@ -153,3 +153,27 @@ def wxindex_search_stations(query: str, *, safe_mode: bool = False) -> list[Radi
     except wxindex.WxIndexError:
         return []
     return [_wx_to_radio_station(station) for station in results if station.feeds]
+
+
+def reading_services_search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation]:
+    """Radio Reading Services matching *query*, as ``source="Radio Reading Service"``.
+
+    Routes through :func:`reading_services.list_reading_services` (its own
+    fresh-cache -> live-refresh -> stale-cache -> bundled-snapshot resolver,
+    already Safe-Mode-aware) and keeps the ones whose name, tags, or state --
+    live/cached entries carry the RadioBrowser tags they were resolved with,
+    which can include a state name -- case-insensitively contain *query*. A
+    service with no live stream feed has nothing to play, so it is dropped
+    here the same way an unresolvable TuneIn or iHeart match is dropped.
+    """
+    normalized = query.strip().lower()
+    if not normalized:
+        return []
+    matches: list[RadioStation] = []
+    for station in reading_services.list_reading_services(safe_mode=safe_mode):
+        if not station.stream_url:
+            continue
+        haystack = [station.name, station.country, *station.tags]
+        if any(normalized in field.lower() for field in haystack if field):
+            matches.append(station)
+    return matches

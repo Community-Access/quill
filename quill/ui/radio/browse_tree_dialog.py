@@ -4,7 +4,8 @@ A dedicated, search-free browse experience (its counterpart, Search Stations,
 keeps the old field-based dialog). The whole window is a single ``wx.TreeCtrl``
 whose top-level branches are the sources -- Favorites (your own saved folders
 and streams, at the top for a quick jump), then Popular, Weather/NOAA, ACB
-Media, NFB Radio, SomaFM, TuneIn, and the genre catalogs (Community M3U, Xiph).
+Media, NFB Radio, Radio Reading Services, SomaFM, TuneIn, and the genre
+catalogs (Community M3U, Xiph).
 You expand a branch to reveal its stations (or its genres/folders, then their
 stations); internet sources load lazily on first open, off the UI thread, while
 Favorites is built instantly from local data. Enter (or the Play button) plays
@@ -25,6 +26,7 @@ from quill.core.radio import (
     m3u_catalog,
     nfb_media,
     radio_browser,
+    reading_services,
     soma_fm,
     tunein,
     wxindex,
@@ -45,6 +47,7 @@ _SOURCES: tuple[tuple[str, str, Any], ...] = (
     ("Weather / NOAA", "wx_states", None),
     ("ACB Media", "stations", "acb"),
     ("NFB Radio", "stations", "nfb"),
+    ("Radio Reading Services", "stations", "reading_services"),
     ("SomaFM", "stations", "soma"),
     ("TuneIn", "tunein", ""),
     ("Community M3U (Music Genres)", "genres", m3u_catalog),
@@ -588,5 +591,6 @@ _STATION_LOADERS: dict[str, Callable[[bool], list[RadioStation]]] = {
     "popular": lambda safe: radio_browser.popular_stations(safe_mode=safe),
     "acb": lambda _safe: acb_media.acb_media_stations(),
     "nfb": lambda _safe: nfb_media.nfb_media_stations(),
+    "reading_services": lambda safe: reading_services.list_reading_services(safe_mode=safe),
     "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
 }
