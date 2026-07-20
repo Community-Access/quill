@@ -8,6 +8,8 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 
+from quill.core.error_codes import CodedError
+
 _BASE = "https://api.wxindex.org"
 _TIMEOUT_SECONDS = 15.0
 _USER_AGENT = "QUILL-Radio/2.1.1 (+https://github.com/Community-Access/quill)"
@@ -15,8 +17,10 @@ _USER_AGENT = "QUILL-Radio/2.1.1 (+https://github.com/Community-Access/quill)"
 Fetcher = Callable[[str], str]
 
 
-class WxIndexError(Exception):
+class WxIndexError(CodedError):
     """A WeatherIndex request failed, was refused, or returned bad data."""
+
+    code = "QUILL-RADIO-WXINDEX-REQUEST"
 
 
 def refuse_in_safe_mode(safe_mode: bool) -> None:
@@ -35,7 +39,8 @@ def _default_fetch(url: str) -> str:
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
-            return resp.read().decode("utf-8")
+            body: bytes = resp.read()
+            return body.decode("utf-8")
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise WxIndexError(f"Could not reach the NOAA Weather Radio directory: {error}") from error
 
