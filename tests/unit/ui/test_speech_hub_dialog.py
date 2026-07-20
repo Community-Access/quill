@@ -131,3 +131,42 @@ def test_open_speech_hub_callers_use_named_tab_constants() -> None:
         p.read_text(encoding="utf-8") for p in sorted(ui.glob("main_frame_speech*.py"))
     )
     assert "self.open_speech_hub(TAB_DICTATION_OFFLINE)" in speech_setup_src
+
+
+def _speech_setup_required_kwargs() -> set[str]:
+    """Required (no-default) keyword-only params of ``SpeechSetupDialog.__init__``."""
+    import ast
+
+    src = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "speech_setup_dialog.py"
+    ).read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef) and node.name == "SpeechSetupDialog":
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef) and item.name == "__init__":
+                    a = item.args
+                    return {
+                        arg.arg
+                        for arg, default in zip(a.kwonlyargs, a.kw_defaults)
+                        if default is None
+                    }
+    return set()
+
+
+def test_speech_hub_passes_every_required_speech_setup_kwarg() -> None:
+    """Regression for #1135 / #1177: the offline dictation panel constructed
+    SpeechSetupDialog without kokoro_ok / kokoro_can_install (added as required
+    keyword-only args on 2026-06-26 but not passed by the Speech Hub until
+    0.9.0 beta 3), so 0.9.0 beta 2 crashed with a missing-argument TypeError.
+
+    Guard the contract: every required keyword-only arg of SpeechSetupDialog
+    must be supplied by the Speech Hub -- either in main_frame's common
+    dictation kwargs (``"name":``) or explicitly at the call site (``name=``) --
+    so a newly-required kwarg can never silently drop again."""
+    required = _speech_setup_required_kwargs()
+    # The two that broke are indeed required (signature sanity).
+    assert {"kokoro_ok", "kokoro_can_install"} <= required
+    provided = _read_main_frame_source() + _read_source()
+    missing = [n for n in required if f'"{n}"' not in provided and f"{n}=" not in provided]
+    assert not missing, f"Speech Hub never passes required SpeechSetupDialog kwargs: {missing}"

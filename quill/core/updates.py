@@ -657,6 +657,17 @@ def download_release_asset(
                     progress(done, total)
 
 
+#: Uncompressed-size ceiling for a portable *update* extraction. A full app
+#: bundle (Python runtime + ffmpeg + mpv + libraries) uncompresses well past the
+#: generic 512 MiB safe-archive cap -- Quill Radio's portable zip alone is ~422
+#: MiB compressed and over 1 GiB expanded -- so the 512 MiB default refused the
+#: legitimate update and "Install and restart" failed (#1183). This path only
+#: ever runs on Quill's own HTTPS + trusted-host-verified release asset, and the
+#: per-entry compression-ratio guard still catches a classic bomb, so a
+#: bundle-sized ceiling here is safe.
+UPDATE_MAX_UNCOMPRESSED = 4 * 1024 * 1024 * 1024  # 4 GiB
+
+
 def extract_portable_update(
     zip_path: str | os.PathLike[str],
     dest_dir: str | os.PathLike[str],
@@ -682,13 +693,13 @@ def extract_portable_update(
     this only ever runs against Quill's own HTTPS+trusted-host-verified
     release asset, never arbitrary user-supplied input.
     """
-    from quill.core.safe_archive import MAX_COMPRESSION_RATIO, MAX_TOTAL_UNCOMPRESSED, open_zip
+    from quill.core.safe_archive import MAX_COMPRESSION_RATIO, open_zip
 
     dest = Path(dest_dir).resolve()
     dest.mkdir(parents=True, exist_ok=True)
     with open_zip(
         Path(zip_path),
-        max_total=max_total if max_total is not None else MAX_TOTAL_UNCOMPRESSED,
+        max_total=max_total if max_total is not None else UPDATE_MAX_UNCOMPRESSED,
         max_ratio=max_ratio if max_ratio is not None else MAX_COMPRESSION_RATIO,
     ) as archive:
         for member in archive.infolist():

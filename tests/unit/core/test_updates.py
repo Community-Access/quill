@@ -599,3 +599,27 @@ def test_extract_portable_update_rejects_decompression_bomb(tmp_path) -> None:
     dest = tmp_path / "extracted"
     with pytest.raises(DecompressionBombError):
         extract_portable_update(zip_path, dest, max_total=10)
+
+
+def test_extract_portable_update_default_cap_fits_a_full_app_bundle(tmp_path) -> None:
+    """Regression for #1183: the generic 512 MiB safe-archive cap refused Quill
+    Radio's legitimate portable update (a full app bundle -- Python + ffmpeg +
+    mpv -- uncompresses past 512 MiB), so "Install and restart" failed. The
+    update path only runs on Quill's own trusted release asset and keeps the
+    per-entry compression-ratio guard, so its default ceiling must fit a full
+    bundle while a truly tiny explicit cap still rejects."""
+    from quill.core.safe_archive import MAX_TOTAL_UNCOMPRESSED
+    from quill.core.updates import UPDATE_MAX_UNCOMPRESSED, extract_portable_update
+
+    assert UPDATE_MAX_UNCOMPRESSED > MAX_TOTAL_UNCOMPRESSED
+    assert UPDATE_MAX_UNCOMPRESSED >= 1024 * 1024 * 1024  # at least 1 GiB
+
+    # The default path (no explicit cap) still extracts a normal update.
+    import zipfile
+
+    zip_path = tmp_path / "update.zip"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("QuillRadio/QuillRadio.exe", "binary" * 100)
+    dest = tmp_path / "out"
+    extract_portable_update(zip_path, dest)  # no max_total -> UPDATE_MAX_UNCOMPRESSED
+    assert (dest / "QuillRadio" / "QuillRadio.exe").is_file()

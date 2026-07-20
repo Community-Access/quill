@@ -229,8 +229,19 @@ def load_history(data_dir: Path) -> RadioHistory:
             history.optilab_auto_adapt = max(0, min(100, raw_adapt))
         except (TypeError, ValueError):
             history.optilab_auto_adapt = 0
-        sort = str(raw.get("favorites_sort", "az"))
-        history.favorites_sort = sort if sort in ("az", "za", "manual") else "az"
+        # Favorites sort order (added in 2.0.2). A store written before that
+        # release has no key and kept favorites in the user's hand-arranged
+        # order; defaulting an absent key to "az" silently re-sorted 30-plus
+        # carefully ordered stations A-Z on upgrade (#1168, #1178). Treat a
+        # missing key as "manual" so an existing order is preserved; only an
+        # explicit stored value re-sorts. (The display sort is non-mutating,
+        # so a user re-sorted by the old default can restore their order by
+        # choosing Unsorted in Preferences.)
+        if "favorites_sort" in raw:
+            sort = str(raw.get("favorites_sort", "az"))
+            history.favorites_sort = sort if sort in ("az", "za", "manual") else "az"
+        else:
+            history.favorites_sort = "manual"
         raw_folder_sorts = raw.get("folder_sort_orders", {})
         history.folder_sort_orders = (
             {

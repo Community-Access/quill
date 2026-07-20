@@ -279,3 +279,28 @@ def test_optilab_coerces_invalid_values(tmp_path: Path) -> None:
     assert loaded.optilab_mode == "off"  # unknown mode -> off
     assert loaded.optilab_input_db == 0.0  # unparseable -> 0
     assert loaded.optilab_auto_adapt == 100  # clamped into 0..100
+
+
+def _write_history(tmp_path: Path, raw: dict) -> None:
+    import json
+
+    from quill.core.radio.history import _store_path
+
+    _store_path(tmp_path).write_text(json.dumps(raw), encoding="utf-8")
+
+
+def test_absent_favorites_sort_preserves_manual_order(tmp_path) -> None:
+    """Regression for #1168 / #1178: a store written before 2.0.2 (no
+    ``favorites_sort`` key) kept favorites in the user's hand-arranged order;
+    it must load as "manual", not be silently re-sorted A-Z on upgrade."""
+    _write_history(tmp_path, {"resume_on_launch": False})  # pre-feature store, no key
+    assert load_history(tmp_path).favorites_sort == "manual"
+
+
+def test_explicit_favorites_sort_is_honored(tmp_path) -> None:
+    for value in ("az", "za", "manual"):
+        _write_history(tmp_path, {"favorites_sort": value})
+        assert load_history(tmp_path).favorites_sort == value
+    # A garbage stored value falls back to the A-Z default, not manual.
+    _write_history(tmp_path, {"favorites_sort": "bogus"})
+    assert load_history(tmp_path).favorites_sort == "az"
