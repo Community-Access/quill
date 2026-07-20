@@ -45,6 +45,68 @@ code. The serious problems cluster in four places:
    Root cause: the import-rewrite regex misses quill.build_info,
    quill.branding, quill.__main__, and quill._feedback_token.
 
+## Status update -- 2026-07-20 (what has shipped since this audit)
+
+This audit was written 2026-07-17. Since then:
+
+- **Part 2 (recordings) is done and shipped** -- R1-R4 in Quill Radio
+  2.0.0-2.0.2 (Part 2 below is now collapsed to a pointer).
+- **Quill Radio 2.1.0-2.1.1 shipped** on top: a text-first Weather menu (NWS),
+  the unified Browse Stations tree, one-click updates, then the NOAA Weather
+  Radio (WeatherIndex) authoritative directory, Radio Reading Services, iHeart
+  in Browse, and "Find in this folder" -- all in the shared `quill` package.
+- **16.1 unpinned dependency: FIXED.** quill-radio's pyproject now pins
+  `quill @ <SHA>` (build-time reproducibility per the section 20 decision); the
+  release build ships that exact commit.
+- **Tier 0.1 (qrm git init): DONE** -- qrm is now under version control.
+- **The GATE suite is healthy on `main`** (module-size, persistence,
+  accessible-name / dialog inventory, dialog-hardening, docs-artifact) after a
+  2026-07-20 cleanup pass.
+
+Still open from Tier 0: the stray `pr.md` / `pr.html` press releases in
+quill-radio (and quill-cast) -- finish or delete. Audio Studio's own P1 set
+(section 1) has not been reverified against current code and is kept below.
+
+## Where we go from here (2026-07-20 recommendation)
+
+The strategic questions -- merge Audio Studio into QUILL as an app? standalone
+vs integrated? a shared runtime component future apps rely on? -- were already
+decided in sections 20 and 22-25 and remain the right calls. Current state
+makes the next move concrete:
+
+1. **Merge Audio Studio into QUILL as `quill/apps/studio.py` (the Option D
+   reverse-vendor, section 25).** The feature code already lives in `quill/` as
+   the source of truth; `quillas/` is only a vendored snapshot, so this is a
+   move + wrapper conversion, not a rewrite. It puts Audio Studio beside
+   `radio.py` / `podcasts.py`, deletes the 283-file vendored closure and its
+   drift tooling, and -- most valuable -- brings Audio Studio under the same
+   GATE suite that just kept Radio 2.1.1 clean. Highest-leverage structural
+   step, and the literal answer to "merge it in as an app."
+
+2. **Build-time sharing, NOT a runtime shared library (section 22).** Each app
+   ships its own frozen copy of `quill/` off a **pinned tag**; a per-app hotfix
+   is a pin bump, and one app can never break another. The heavy assets
+   (ffmpeg, libmpv, engine packs, neural voices) already runtime-share in
+   `%APPDATA%\Quill`, which is where the real disk win is; runtime-sharing the
+   Python code would add a compatibility-matrix support burden for little gain.
+   Radio 2.1.1's pinned-SHA build already proves this model end to end.
+
+3. **The "component future apps rely on" is the data contract + core seams, not
+   a shared install.** What makes the apps a family is the shared
+   `%APPDATA%\Quill` store and the wx-free `quill/core` seams (player, recorder,
+   speech, publish, versioned-store), consumed at build time. The concrete
+   enabling work is **Tier 1 data-store hardening** (preserve unknown fields on
+   rewrite, rewrite-only-on-legacy, last-writer stamp) plus a **FAMILY-DATA.md**
+   ownership map -- do this before more apps pin/vendor, so a newer app can't
+   silently downgrade an older app's settings.
+
+**Recommended order:** (a) finish Tier 0 hygiene (the pr files); (b) land Tier 1
+data-store hardening on a branch with the GATE suite; (c) reverse-vendor Audio
+Studio into `quill/apps/studio.py` per section 25 and pin its wrapper to a QUILL
+tag; (d) then unify the four packaging stacks into one parameterized toolkit
+(section 24). Audio Studio being "in good shape for now" is exactly the moment
+to reverse-vendor it -- before it drifts further from `quill/` HEAD.
+
 ## 1. Critical bugs (P1)
 
 ### 1.1 Library never shows any books [BOTH-HIDDEN]
@@ -451,371 +513,27 @@ upstreamed, so that delta can retire from the local-deltas list.
 
 ---
 
-# Part 2: QUILL Radio recordings audit
+# Part 2: QUILL Radio recordings audit -- COMPLETED (shipped)
 
-Scope: the radio recording scheduler, recorder, and Recordings Manager in
-S:\QUILL (quill/core/radio/, quill/ui/radio/, quill/ui/main_frame_radio.py,
-quill/apps/radio.py). Both hosts (standalone Quill Radio and embedded
-QUILL) share RadioMixin and the single RecordingsManagerDialog, so one fix
-covers both - except where noted, the missed-recording reporting exists
-only in the standalone. Note: quill/core/radio/recovery.py is stream-URL
-self-healing, not crash recovery; no recording-resume mechanism exists
-anywhere today.
+Sections 9-14 (the recordings scheduler, recorder, and Recordings Manager
+audit, plus the R1-R4 remediation plan) are **done and shipped**. All four
+phases landed in `quill/` on 2026-07-17 and reached users in **Quill Radio
+2.0.0-2.0.2**:
 
-## 9. Recordings dialog: constant refresh and cursor reset (user report)
+- **R1** -- flicker-free, place-keeping Recordings list; temp-dir active-row
+  visibility; honest scheduled/active counts; live elapsed time; tray
+  "(recording)".
+- **R2** -- next-due-timestamp scheduler (fires throughout the window, launch
+  catch-up); lock-guarded catch-log-continue thread; success-only stamping;
+  busy-defer; shared missed-recording reporting for embedded QUILL.
+- **R3** -- crash-resume across restart (active-recording marker, temp-stray
+  reconciliation, ask/always/never launch dialog); periodic last-seen stamp.
+- **R4** -- absolute end-time across reconnects; filename uniquify (no `-y`
+  overwrite); fatal-vs-transient drop classification; Windows job-object child
+  + off-thread stop.
 
-Root-caused. RecordingsManagerDialog._refresh
-(quill/ui/radio/recordings_manager_dialog.py:163-197):
-
-- A wx.Timer fires every 2000 ms (_REFRESH_MS, created at :115-117) and
-  unconditionally tears the list down (DeleteAllItems at :174) and
-  re-inserts every row - there is no dirty/equality check, so identical
-  data is rebuilt and Select(restore)+Focus(restore) re-fire selection and
-  focus events every 2 seconds. That is the constant re-announcement and
-  place loss.
-- Selection is restored by matching (name, status) (:164-168, 188-196).
-  When the selected recording finishes, its status flips Recording ->
-  Recorded, the key no longer matches, restore stays 0, and Select(0)/
-  Focus(0) yanks the cursor to the top (:195-196).
-- The manual Refresh button always jumps to the top: it is wired through
-  an arg-less lambda (:99, :132) that calls _refresh() with
-  keep_selection=False.
-- Scroll position is never preserved.
-- The existing mitigation (pause the timer while the ListCtrl has focus,
-  :118-123, 146-155) stops working the moment focus moves to any button in
-  the dialog, so the rebuild resumes while the user is still working in it.
-- Contrast: the Schedule dialog's list (schedule_recording_dialog.py:
-  353-365) rebuilds only on add/update/remove and restores selection by
-  stable id. That is the correct pattern.
-
-Fix shape: no timer teardown-rebuild. Diff the new snapshot against the
-current rows and update in place (SetItem per changed cell, insert/delete
-only actual additions/removals), key rows by stable identity (full path,
-not name+status), restore selection by that key, fix the Refresh button to
-keep_selection=True, and skip the refresh entirely when the snapshot is
-unchanged.
-
-## 10. Recordings display-logic bugs
-
-- 10.1 Fired "once" schedules count as "scheduled" forever [CONFIRMED].
-  recordings_index.py:116-129 includes any enabled entry regardless of
-  last_fired_date; _fire (recording_schedule.py:396) stamps but never
-  disables a completed once entry. The dialog shows "1 scheduled"
-  indefinitely and a phantom Scheduled row until manual deletion.
-- 10.2 Double-count while a scheduled recording runs [CONFIRMED]. The
-  same show is counted as "recording now" (the growing file) and still as
-  "scheduled" (the enabled entry), so the count line
-  (recordings_manager_dialog.py:184-187) reads "1 recording now, 1
-  scheduled" for a single recording.
-- 10.3 Temp dir makes the active recording invisible [CONFIRMED]. With
-  settings.temp_dir set, ffmpeg writes to temp and current_destination
-  points there (recording.py:248-277, 314), but list_recordings scans only
-  the destination folder (recordings_index.py:83-114) and the active flag
-  requires path equality (:100). Result: no "Recording" row, "0 recording
-  now", while the Stop button (gated on is_recording,
-  recordings_manager_dialog.py:227) stays enabled - a visible
-  contradiction. This is the main "didn't show it started" cause.
-- 10.4 No elapsed/remaining time exists at all. The only length shown is
-  the scheduled duration string. A live elapsed readout for the active
-  recording (and remaining for scheduled ones) is a needed addition, not
-  a fix.
-- 10.5 Tray tooltip never reflects recording state [PLAUSIBLE].
-  main_frame_radio.py:641 builds the tooltip from playback status only;
-  the "(recording)" suffix exists only in the status bar (:661-664). A
-  recording with playback stopped shows a blank tooltip (:646).
-- 10.6 Scheduled detail drops the timezone [PLAUSIBLE].
-  recordings_index.py:121-126 renders run_at wall-clock with no zone
-  label; the Schedule dialog shows the zone. Cross-zone entries read
-  wrong in the Recordings dialog.
-- 10.7 Brief "0 recording now" flicker at start before ffmpeg creates the
-  file [PLAUSIBLE, low].
-
-Cleared: cross-thread wx updates are correctly marshaled via wx.CallAfter;
-pluralization is fine; duration is enforced by ffmpeg -t, not a UI timer.
-
-## 11. Scheduler lifecycle bugs (why scheduled items miss or vanish)
-
-- 11.1 Exact-minute matching drops occurrences [CONFIRMED].
-  recording_schedule.py:164 - daily/weekly entries fire only if a 20 s
-  poll lands inside the exact target minute. Sleep or a stall across that
-  minute silently drops the occurrence with no catch-up, even though the
-  app is running. ("once" entries do fire late, :157.) This is the most
-  likely cause of "scheduled items were not started."
-- 11.2 Failed starts still consume the occurrence [CONFIRMED]. _fire
-  (:396-398) stamps last_fired_date even when start() raised (recorder
-  busy, ffmpeg missing). A once entry is permanently consumed; a daily
-  entry is blocked for the day. One error announcement, no retry.
-- 11.3 Same-minute schedules: the second is rejected and burned
-  [CONFIRMED]. One shared recorder allows one active recording
-  (recording.py:234-236); the second fire raises and 11.2 marks it done.
-  Same for a scheduled fire during a manual recording.
-- 11.4 Unlocked list race can kill the scheduler thread [CONFIRMED race].
-  due_entries iterates self.entries (:188) on the scheduler thread while
-  add/update/remove mutate it on the UI thread with no lock. A concurrent
-  mutation can raise RuntimeError inside _run (:377), which is uncaught
-  and permanently kills the thread - every future scheduled recording is
-  silently dropped for the session. No watchdog restarts it.
-- 11.5 update() during a fire can double-fire [PLAUSIBLE]. _fire stamps
-  the entry object it holds; if update() replaced that index meanwhile,
-  the stamp lands on an orphan and the replacement can fire again.
-- 11.6 Embedded QUILL never reports missed recordings [CONFIRMED]. The
-  missed-occurrence announcement and history.last_seen stamping exist
-  only in apps/radio.py:100-123, 1067-1072; main_frame.py has neither. In
-  embedded QUILL a missed schedule is never surfaced.
-- 11.7 Contradictory announcements for late "once" entries [PLAUSIBLE].
-  Startup can announce "was missed", then ~20 s later fire it late and
-  announce "started".
-
-## 12. Restart behavior and the resume gap
-
-Current behavior, precisely:
-
-- Clean close finalizes an in-progress recording (q to ffmpeg stdin, 5 s
-  grace, recording.py:446-465) - the file is playable, but no "was
-  recording" marker is persisted, so restart knows nothing.
-- No resume-on-start or ask-to-resume exists for recordings; the only
-  resume feature is last-station playback (apps/radio.py:952-958).
-- A daily/weekly schedule whose window is open at launch does not start
-  late (11.1's exact-minute check); a "once" whose time passed does start
-  late but records a fresh full duration from now (recording.py:278-280),
-  overshooting the intended end.
-- Missed reporting is announce-only, standalone-only, capped at 62 days,
-  and windowed on history.last_seen - which is stamped only at startup
-  and clean close, so after a crash the window wrongly includes time the
-  app was running.
-- Crash/kill orphans the bare ffmpeg Popen (no job object,
-  recording.py:295-310); it runs to its -t cap, and if a temp dir is
-  configured the finished file is stranded in temp forever - the monitor
-  thread that moves it is gone and nothing reconciles temp at startup.
-
-## 13. Other pipeline bugs
-
-- 13.1 Reconnect ignores the scheduled end [CONFIRMED]. On a stream drop,
-  _maybe_reconnect (recording.py:403-444) restarts with the original full
-  duration and a fresh -t (recording_commands.py:143), so a 60-minute
-  recording that drops at minute 55 can run up to another 60 minutes per
-  part, times reconnect_max_attempts (default 5). No absolute end time.
-- 13.2 Filename collisions silently overwrite [CONFIRMED]. -y is always
-  passed (recording_commands.py:143) and build_filename (:66-76) has no
-  uniqueness check. A user pattern without {time} loses earlier
-  recordings.
-- 13.3 Disk-full and dead streams burn the reconnect budget identically
-  to transient drops [PLAUSIBLE], leaving strings of tiny part files.
-- 13.4 Continuation parts rebuild the filename from now() (recording.py:
-  261-265), so "part 2" carries a different timestamp than part 1 and
-  name-based grouping breaks [PLAUSIBLE].
-- 13.5 shutdown() runs the up-to-5 s stop wait synchronously on the close
-  path (apps/radio.py:1075) - a wedged ffmpeg delays exit.
-- 13.6 Index has no stale entries (live scan - good), but nothing
-  reconciles temp-dir strays (see 12).
-
-## 14. Proposed plan: recordings fixes and resume-on-restart (for approval)
-
-All work lands in quill/ (S:\QUILL) - none of this code is vendored into
-QUILL-AS. Ordered:
-
-Phase R1 - stop the bleeding (display and dialog):
-- Rewrite RecordingsManagerDialog refresh as an in-place diff keyed by
-  full path: no DeleteAllItems, no-op when the snapshot is unchanged,
-  selection/focus/scroll preserved, status flips update the existing row,
-  Refresh button keeps selection. Kill the focus-pause workaround once
-  the rebuild is gone.
-- Count the active recording via recorder.is_recording plus
-  current_destination regardless of folder (fixes temp-dir invisibility,
-  10.3) and stop double-counting a firing schedule (10.2).
-- Exclude completed "once" entries from the scheduled count and list, and
-  either auto-disable them on completion or show them as "Completed"
-  (10.1).
-- Add elapsed time for the active recording (from actual start, ticking
-  once per second in the existing timer, announced only on demand) and
-  show scheduled entries' zone-labeled times (10.4, 10.6).
-- Tray tooltip includes "(recording)" (10.5).
-
-Phase R2 - make schedules fire reliably:
-- Replace exact-minute matching with a next-due-timestamp model: compute
-  each entry's next occurrence as an absolute time; an entry fires when
-  now >= next_due and now < occurrence_end (start + duration), starting
-  late with the remaining minutes. This fixes 11.1 and gives launch-time
-  catch-up for free.
-- Stamp last_fired_date only on successful start; on failure, retry on
-  the next poll within the window (11.2).
-- Guard self.entries with a lock shared by scheduler and UI threads, and
-  wrap _run's body in a catch-log-continue so the thread can never die
-  silently; stamp fires by entry id, not object identity (11.4, 11.5).
-- Queue same-minute fires: when the recorder is busy, hold the entry as
-  pending within its window instead of burning it (11.3), and announce
-  the conflict.
-- Port missed-recording reporting and last_seen stamping into embedded
-  QUILL's host (11.6); suppress the "missed" announcement for entries
-  that are about to start late (11.7).
-
-Phase R3 - resume across restart (the new feature):
-- Persist an active-recording marker (station, url, output path, temp
-  path, scheduled end, entry id) written at start and removed on clean
-  stop - the one missing building block.
-- On startup: reconcile temp-dir strays (move finished orphans to the
-  destination, index them); if a marker exists or a schedule's window is
-  still open within a configurable grace limit (default suggestion: 10
-  minutes, settable), either auto-resume with the remaining duration or
-  ask - one accessible dialog at launch: "A recording of X was in
-  progress / is scheduled until HH:MM. Resume for the remaining N
-  minutes?" with Resume / Skip / Always resume choices persisted as a
-  setting.
-- Update last_seen periodically (e.g. once a minute alongside the poll)
-  so crash windows are accurate.
-
-Phase R4 - pipeline hardening:
-- Absolute end-time enforcement across reconnects: each continuation part
-  gets remaining = end - now, never the full duration (13.1).
-- Uniquify output filenames instead of -y overwrite (append " (2)" etc.)
-  and derive continuation part names from the original start timestamp
-  (13.2, 13.4).
-- Distinguish fatal failures (disk full, HTTP 4xx) from transient drops
-  before spending reconnect attempts (13.3).
-- Launch ffmpeg in a Windows job object so a crashed host takes the child
-  down with it, and move the close-path stop wait off the UI thread
-  (13.5, orphan case in 12).
-
-Each phase is independently shippable; R1 and R2 directly address the
-reported symptoms. Tests: headless oracles for schedule math (next-due,
-late-start remaining minutes, lock/race), an index test for temp-dir
-active rows, and a dialog test asserting the refresh is a no-op on
-unchanged snapshots and preserves selection by path.
-
-### 14.1 Implementation status (R1-R4, landed 2026-07-17, branch feature/recordings-r1-r4)
-
-All four phases implemented in S:\QUILL\quill (nothing vendored into
-QUILL-AS, per the plan). 74 radio unit tests pass; ruff + mypy
-(scoped to quill/core/radio) clean; module-size budget green (every
-growth rebaselined with a dated note); dialog inventory + button-contract
-gates green; smoke subset green (27 passed, 2 skipped).
-
-R1 - display and dialog (DONE pre-session, confirmed still green):
-- RecordingsManagerDialog refresh rewritten as an in-place diff keyed by
-  full path (no DeleteAllItems; no-op when the snapshot is unchanged;
-  selection/focus/scroll preserved). Focus-pause workaround removed.
-- Active recording counted via recorder.is_recording +
-  current_destination regardless of folder (temp-dir visibility 10.3);
-  firing schedule no longer double-counted (10.2).
-- Completed "once" entries excluded from the scheduled count/list (10.1).
-- Elapsed time for the active recording from actual start (10.4);
-  scheduled entries show zone-labeled times (10.6); tray tooltip carries
-  "(recording)" (10.5).
-- recordings_index.py: mypy-narrowed Optional active (active/active_path/
-  active_resolved all-not-None guard).
-
-R2 - scheduler reliability (DONE):
-- recording_schedule.py rewritten (~523 lines) onto the next-due-timestamp
-  window model. occurrence_start(entry, now); is_due = enabled AND not
-  fired today AND start <= now < start+duration (fires throughout the
-  window, not at the exact minute - fixes 11.1, gives launch catch-up for
-  free); remaining_minutes for a late start; missed_occurrences filters
-  out windows still open at now (so launch catch-up is not double-
-  announced - 11.7); describe_missed.
-- RecordingScheduler: self._lock is an RLock shared by scheduler + UI;
-  _run body wrapped in try/except log-continue (thread can never die
-  silently - 11.4); _fire stamps last_fired by entry id only on success
-  (11.2); once entries auto-disable on a successful fire; on a busy
-  recorder the fire defers via on_busy and announces once (11.3, via
-  self._announced).
-- Missed reporting + last_seen stamping moved into the shared RadioMixin
-  (_report_missed_recordings, _stamp_radio_last_seen) so embedded QUILL
-  gets the same behavior as standalone (11.6); _shutdown_radio consolidates
-  teardown and shrinks the frozen main_frame.py (19310 -> 19302).
-
-R3 - resume across restart (DONE):
-- New wx-free quill/core/radio/recording_resume.py: ActiveRecordingMarker
-  dataclass (station_name, stream_url, temp_path, output_path, started_at,
-  scheduled_end, duration_minutes, entry_id); strict-discard from_dict
-  (TypeError/ValueError -> None, so a corrupt marker never drives a bogus
-  resume); load/save/clear_marker; remaining_minutes(marker, now) floored
-  at 0; within_resume_grace (DEFAULT_RESUME_GRACE_MINUTES = 10);
-  reconcile_temp_strays (moves recording-extension files from temp_dir to
-  dest_root when mtime is older than _STILL_WRITING_SECS = 30, leaves a
-  file still being written untouched, ignores non-recording files, no-op
-  when no temp_dir or temp == dest).
-- RadioHistory gained recording_resume_choice ("ask"|"always"|"never",
-  default "ask"; bad value degrades to "ask").
-- RadioMixin: _persist_radio_recording_marker builds the marker from the
-  recorder's live state on start (via _apply_radio_recording_changed),
-  _clear_radio_recording_marker on clean stop; a crash leaves it for next
-  launch. _reconcile_and_offer_radio_resume runs at launch (CallAfter):
-  reconcile temp strays, then per recording_resume_choice ask/always/
-  never offer to resume for the remaining minutes. _ask_radio_resume /
-  _start_radio_resume. A periodic _radio_last_seen_timer (60 s) keeps the
-  missed-recording window accurate across a crash.
-- New quill/ui/radio/resume_recording_dialog.py: Resume (affirmative,
-  Enter) / Skip (escape) / "Don't ask me again" checkbox; returns
-  (action, remember); None when dismissed (treated as skip, marker left to
-  age out past grace). Goes through the shared dialog contract
-  (apply_modal_ids / show_modal_dialog); registered in dialog_inventory.
-
-R4 - pipeline hardening (DONE):
-- 13.1 absolute end-time: RadioRecorder gained _scheduled_end (set to
-  started + duration on a _continuation_part==0 start). _maybe_reconnect
-  reads it under the lock and records only the remaining minutes
-  (ceil((end - now)/60), floored at 1; gives up when <= 0 - the show is
-  over). A fresh full duration is never passed to a continuation.
-- 13.2/13.4 filenames: uniquify() (recording_commands.py) replaces the
-  unconditional -y overwrite (append " (2)".." (999)" before the
-  extension; returns the path unchanged if it does not exist). The -y flag
-  was removed from build_record_command. Continuation parts keep the
-  ORIGINAL start timestamp in their {date}/{time} tokens (grouped by name),
-  with " (part N)" appended, instead of rebuilding from now().
-- 13.3 fatal vs transient: _stderr_tail (deque maxlen 32) captured in
-  _drain_stderr; _FATAL_STDERR_RE (no space left | disk full | enospc |
-  read-only | HTTP 4xx / 403 / 404 / 410 / 451). _monitor classifies a drop
-  as fatal when any tail line matches and then skips _maybe_reconnect - a
-  stream the server took down with a 404 is gone; reconnecting only wastes
-  the budget and spams continuation files. A 5xx / network timeout / bare
-  EOF stays transient and is retried.
-- 13.5 host-tied child + off-thread stop: _assign_kill_on_close_job puts
-  ffmpeg in a Windows job object with JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-  (ctypes against kernel32, best-effort - returns None off-Windows or on
-  any failure, degrading to the pre-job behavior). A crashed/killed QUILL
-  closes the handle and the OS kills the child, so a bare ffmpeg can no
-  longer strand itself in the temp dir (the 12 orphan case). stop() now
-  sends 'q' synchronously (just a pipe write) and spawns a daemon
-  _await_stop thread for the wait/terminate fallback (wait
-  _STOP_GRACE_SECONDS, then terminate if still alive), so the UI/close
-  path never blocks. _monitor closes the job handle after process.wait()
-  returns (child already dead) so a long session leaks no handles.
-
-Files touched (quill/):
-- core/radio/recording.py (R1 props + R4 lifecycle; 620 -> 811, rebaselined)
-- core/radio/recording_commands.py (uniquify; -y removed)
-- core/radio/recording_schedule.py (R2 rewrite)
-- core/radio/recording_resume.py (R3, new)
-- core/radio/recordings_index.py (R1 mypy narrowing)
-- core/radio/history.py (recording_resume_choice)
-- ui/main_frame_radio.py (R2 + R3 mixin methods; 1175 -> 1453, rebaselined)
-- ui/main_frame.py (close path -> _shutdown_radio; 19310 -> 19302)
-- ui/radio/resume_recording_dialog.py (R3, new)
-- apps/radio.py (inherits shared missed reporting; close path uses the
-  mixin's stamp + clear)
-- tests/unit/core/test_radio_recording_schedule.py (R2)
-- tests/unit/core/test_radio_recording_resume.py (R3, new, 11 tests)
-- tests/unit/ui/fixtures/dialog_inventory.json (regenerated, 543 surfaces)
-- tools/module_size_budgets.json (three dated rebaseline notes)
-
-Corrections to the audit (findings vs what the code actually showed):
-- 10.7 "0 recording now" flicker: not addressed as a separate item; the
-  in-place diff (R1) makes the row update rather than flicker, and the
-  active-row count is driven by recorder.is_recording, which is false
-  until ffmpeg is up. Filed as cosmetic follow-up if a user still sees it.
-- 13.6 "index has no stale entries (live scan - good)": unchanged - the
-  index stays a live scan; R3's reconcile_temp_strays handles the temp-dir
-  orphan case the index could not see, which is the real gap.
-- 11.5 "update() during a fire can double-fire": the R2 lock + stamp-by-id
-  model makes the described double-fire unreachable (a fire that did not
-  stamp cannot consume the occurrence), so no separate guard was needed.
-
-Not done here (out of scope for R1-R4, left for later waves):
-- The broader Part 3 family consolidation, reverse-vendor, packaging
-  toolkit, hub, qrm - these are post-Wave-1 structural work per section 20.
-- Quill Radio / Cast standalone packaging of these fixes (their
-  thin-wrapper builds pick them up on the next re-vendor off a QUILL tag;
-  docs updated in-repo per the user's follow-up).
+Shipped wording is in the Quill Radio CHANGELOG (2.0.0-2.0.2); the code lives
+in `quill/core/radio/` and `quill/ui/radio/`. Nothing in Part 2 remains open.
 
 ---
 
