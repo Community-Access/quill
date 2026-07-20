@@ -4,8 +4,8 @@ A dedicated, search-free browse experience (its counterpart, Search Stations,
 keeps the old field-based dialog). The whole window is a single ``wx.TreeCtrl``
 whose top-level branches are the sources -- Favorites (your own saved folders
 and streams, at the top for a quick jump), then Popular, Weather/NOAA, ACB
-Media, NFB Radio, Radio Reading Services, SomaFM, TuneIn, and the genre
-catalogs (Community M3U, Xiph).
+Media, NFB Radio, Radio Reading Services, SomaFM, TuneIn, iHeart (its genres,
+each an A-Z sub-directory), and the genre catalogs (Community M3U, Xiph).
 You expand a branch to reveal its stations (or its genres/folders, then their
 stations); internet sources load lazily on first open, off the UI thread, while
 Favorites is built instantly from local data. Enter (or the Play button) plays
@@ -23,6 +23,7 @@ from typing import Any
 
 from quill.core.radio import (
     acb_media,
+    iheart,
     m3u_catalog,
     nfb_media,
     radio_browser,
@@ -50,13 +51,52 @@ _SOURCES: tuple[tuple[str, str, Any], ...] = (
     ("Radio Reading Services", "stations", "reading_services"),
     ("SomaFM", "stations", "soma"),
     ("TuneIn", "tunein", ""),
+    ("iHeart", "iheart", None),
     ("Community M3U (Music Genres)", "genres", m3u_catalog),
     ("Xiph / Icecast Directory", "genres", xiph),
 )
 
 
 #: Node kinds that lazily load children when expanded.
-_EXPANDABLE = ("stations", "genres", "genre", "tunein", "wx_states", "wx_state")
+_EXPANDABLE = (
+    "stations",
+    "genres",
+    "genre",
+    "tunein",
+    "wx_states",
+    "wx_state",
+    "iheart",
+    "iheart-genre",
+    "iheart-letter",
+)
+
+
+def _iheart_letter_groups(
+    stations: list[RadioStation],
+) -> list[tuple[str, list[RadioStation]]]:
+    """Group iHeart stations into A-Z folders (case-insensitive by first
+    letter), with a "0-9" bucket for digit-led names and a "#" bucket for
+    anything else. Letters come first in A-Z order, then "0-9", then "#" --
+    so a genre's stations read as an alphabetised sub-directory."""
+    buckets: dict[str, list[RadioStation]] = {}
+    for station in stations:
+        first = (station.name or "").strip()[:1].upper()
+        if first.isalpha():
+            key = first
+        elif first.isdigit():
+            key = "0-9"
+        else:
+            key = "#"
+        buckets.setdefault(key, []).append(station)
+
+    def _order(key: str) -> tuple[int, str]:
+        if key == "0-9":
+            return (1, key)
+        if key == "#":
+            return (2, key)
+        return (0, key)
+
+    return [(key, buckets[key]) for key in sorted(buckets, key=_order)]
 
 
 def _wx_state_folders(*, safe_mode: bool) -> list[WxState]:
@@ -220,6 +260,12 @@ class BrowseTreeDialog:
                 return list(_wx_state_folders(safe_mode=self._safe_mode))
             if kind == "wx_state":
                 return _wx_playable_stations(payload, safe_mode=self._safe_mode)
+            if kind == "iheart":
+                return list(iheart.fetch_genres(safe_mode=self._safe_mode))
+            if kind == "iheart-genre":
+                return list(iheart.fetch_genre_stations(payload, safe_mode=self._safe_mode))
+            if kind == "iheart-letter":
+                return list(payload)  # already-fetched stations, no network
         except Exception:  # noqa: BLE001 - a down source shows as empty, never fatal
             return []
         return []
@@ -242,6 +288,20 @@ class BrowseTreeDialog:
                 child = tree.AppendItem(node, f"{state.name} ({state.station_count})")
                 tree.SetItemData(
                     child, {"kind": "wx_state", "payload": state.slug, "loaded": False}
+                )
+                tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
+        elif kind == "iheart":
+            for genre in raw:
+                child = tree.AppendItem(node, genre.name)
+                tree.SetItemData(
+                    child, {"kind": "iheart-genre", "payload": genre.genre_id, "loaded": False}
+                )
+                tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
+        elif kind == "iheart-genre":
+            for letter, stations in _iheart_letter_groups(raw):
+                child = tree.AppendItem(node, letter)
+                tree.SetItemData(
+                    child, {"kind": "iheart-letter", "payload": stations, "loaded": False}
                 )
                 tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
         elif kind == "tunein":

@@ -19,13 +19,20 @@ So a station's stream is resolved **lazily, on demand** with one page GET (the
 same inline-string extraction :mod:`quill.core.radio.link_finder` already does),
 never by bulk-fetching thousands of pages just to refresh the list.
 
-Everything here is a plain HTTPS GET of a public iHeart page -- no browser, no
-JavaScript, no API terms to violate -- resolving only what the sitemap and each
-page already advertise. Requests funnel through the single reviewed egress site
-(:func:`_fetch` -- see ``quill/tools/network_egress_audit.py``), HTTPS-only over
-a verified TLS context with a bounded timeout, reached only by an explicit
-refresh/play action and disabled in Safe Mode via :func:`refuse_in_safe_mode`.
-wx-free, strict-typed.
+Browse-by-genre uses iHeart's free, keyless JSON content API
+(``us.api.iheart.com``): ``/content/genre`` for the genre list and
+``/content/liveStations?genreId=`` for one genre's stations, where each row
+already embeds its own stream URLs -- so a genre's stations resolve in a single
+GET, no per-station page fetch. The XML sitemap has no genre data, which is why
+the browse path uses this API while Search stays on the sitemap.
+
+Every request is a plain HTTPS GET of a public iHeart endpoint -- no browser, no
+JavaScript, no key or auth -- resolving only what the sitemap, each page, or the
+content API already advertise. Requests funnel through the single reviewed
+egress site (:func:`_fetch` -- see ``quill/tools/network_egress_audit.py``),
+HTTPS-only over a verified TLS context with a bounded timeout, reached only by
+an explicit refresh/browse/play action and disabled in Safe Mode via
+:func:`refuse_in_safe_mode`. wx-free, strict-typed.
 """
 
 from __future__ import annotations
@@ -38,6 +45,15 @@ from quill.core.error_codes import CodedError
 from quill.core.radio.models import RadioStation
 
 _SITEMAP_INDEX = "https://www.iheart.com/sitemap.xml"
+#: iHeart's free, keyless JSON content API, used for browse-by-genre (the XML
+#: sitemap carries no category). Genres list + live stations for one genre;
+#: each station row embeds its own stream URLs, so no per-station page GET.
+_API_GENRES = "https://us.api.iheart.com/api/v2/content/genre"
+_API_LIVE_STATIONS = "https://us.api.iheart.com/api/v2/content/liveStations"
+#: Stations pulled per genre for the browse tree (bounded; one genre is then
+#: grouped A-Z under its folder). Generous enough to cover a genre in full
+#: without an unbounded pull.
+_GENRE_STATION_LIMIT = 250
 _USER_AGENT: str | None = None  # set lazily to avoid a module-load version import
 _TIMEOUT_SECONDS = 15.0
 _MAX_BYTES = 4_000_000
@@ -69,6 +85,30 @@ class IHeartStation:
     slug: str
     page_url: str
     stream_url: str = ""
+
+
+@dataclass(slots=True)
+class IHeartGenre:
+    """One browsable iHeart genre from the JSON content API."""
+
+    genre_id: int
+    name: str
+
+
+#: iHeart's per-station ``streams`` dict, most-preferred key first (HTTPS HLS
+#: before plain, HLS before PLS playlist).
+_STREAM_KEYS = ("secure_hls_stream", "secure_pls_stream", "hls_stream", "pls_stream")
+
+
+def _best_stream(streams: object) -> str:
+    """The most-preferred playable URL from a station's ``streams`` dict, or ""."""
+    if not isinstance(streams, dict):
+        return ""
+    for key in _STREAM_KEYS:
+        value = streams.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
 
 
 def refuse_in_safe_mode(safe_mode: bool) -> None:
@@ -275,3 +315,97 @@ def to_radio_station(station: IHeartStation, stream_url: str = "") -> RadioStati
         homepage=station.page_url,
         source="iHeart",
     )
+
+
+# --- genre browse (JSON content API) ----------------------------------------
+
+
+def parse_genres(json_text: str) -> list[IHeartGenre]:
+    """Parse the genre-list JSON into displayable genres, in the API's sort
+    order. Undisplayed genres are dropped; malformed input yields ``[]``."""
+    import json
+
+    try:
+        data = json.loads(json_text)
+    except (ValueError, TypeError):
+        return []
+    hits = data.get("hits") if isinstance(data, dict) else None
+    if not isinstance(hits, list):
+        return []
+    rows: list[tuple[int, IHeartGenre]] = []
+    for hit in hits:
+        if not isinstance(hit, dict) or not hit.get("display", True):
+            continue
+        genre_id = hit.get("id")
+        name = hit.get("name")
+        if not isinstance(genre_id, int) or not isinstance(name, str) or not name.strip():
+            continue
+        sort = hit.get("sort")
+        rows.append((
+            sort if isinstance(sort, int) else 10_000,
+            IHeartGenre(genre_id, name.strip()),
+        ))
+    rows.sort(key=lambda row: row[0])
+    return [genre for _sort, genre in rows]
+
+
+def parse_genre_stations(json_text: str) -> list[RadioStation]:
+    """Parse a genre's live-station JSON into playable RadioStations.
+
+    Each station row carries its own ``streams`` dict, so the stream is
+    resolved here with no extra GET. A station with no usable stream is
+    dropped; malformed input yields ``[]``.
+    """
+    import json
+
+    try:
+        data = json.loads(json_text)
+    except (ValueError, TypeError):
+        return []
+    hits = data.get("hits") if isinstance(data, dict) else None
+    if not isinstance(hits, list):
+        return []
+    stations: list[RadioStation] = []
+    for hit in hits:
+        if not isinstance(hit, dict):
+            continue
+        station_id = hit.get("id")
+        name = hit.get("name")
+        stream = _best_stream(hit.get("streams"))
+        if not isinstance(station_id, int) or not isinstance(name, str) or not name.strip():
+            continue
+        if not stream:
+            continue
+        call_letters = hit.get("callLetters")
+        tags = (call_letters,) if isinstance(call_letters, str) and call_letters.strip() else ()
+        stations.append(
+            RadioStation(
+                name=name.strip(),
+                stream_url=stream,
+                station_uuid=f"iheart:{station_id}",
+                homepage=f"https://www.iheart.com/live/{station_id}/",
+                tags=tags,
+                source="iHeart",
+            )
+        )
+    return stations
+
+
+def fetch_genres(*, safe_mode: bool = False) -> list[IHeartGenre]:
+    """The iHeart browsable-genre list -- one keyless JSON GET.
+
+    Raises :class:`IHeartError` on a network failure or a Safe Mode refusal.
+    """
+    refuse_in_safe_mode(safe_mode)
+    return parse_genres(_fetch(_API_GENRES))
+
+
+def fetch_genre_stations(
+    genre_id: int, *, limit: int = _GENRE_STATION_LIMIT, safe_mode: bool = False
+) -> list[RadioStation]:
+    """The live stations for one iHeart genre -- one keyless JSON GET, streams
+    already embedded (no per-station page fetch). Raises :class:`IHeartError`
+    on a network failure or a Safe Mode refusal."""
+    refuse_in_safe_mode(safe_mode)
+    url = f"{_API_LIVE_STATIONS}?genreId={int(genre_id)}&limit={int(limit)}"
+    return parse_genre_stations(_fetch(url))

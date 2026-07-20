@@ -132,3 +132,86 @@ def test_fetch_station_index_refused_in_safe_mode(monkeypatch) -> None:
     )
     with pytest.raises(IHeartError):
         iheart.fetch_station_index(safe_mode=True)
+
+
+# --- genre browse (us.api.iheart.com JSON content API) ----------------------
+
+_GENRES_JSON = """
+{"total": 3, "hits": [
+  {"id": 5, "name": "Country", "sort": 2, "display": true},
+  {"id": 16, "name": "Top 40 & Pop", "sort": 1, "display": true},
+  {"id": 99, "name": "Hidden", "sort": 3, "display": false}
+]}
+"""
+
+_GENRE_STATIONS_JSON = """
+{"total": 3, "hits": [
+  {"id": 2804, "name": "97.3 KBCO", "callLetters": "KBCO-FM", "freq": "97.3",
+   "streams": {"secure_hls_stream": "https://stream.revma.ihrhls.com/zc2804/hls.m3u8",
+               "hls_stream": "http://stream.revma.ihrhls.com/zc2804/hls.m3u8"}},
+  {"id": 4846, "name": "Delilah",
+   "streams": {"pls_stream": "http://playerservices.streamtheworld.com/pls/DELILAH.pls"}},
+  {"id": 7, "name": "No Stream Station", "streams": {}}
+]}
+"""
+
+
+def test_parse_genres_filters_undisplayed_and_sorts() -> None:
+    genres = iheart.parse_genres(_GENRES_JSON)
+    # "Hidden" (display false) dropped; ordered by the API 'sort' key.
+    assert [(g.genre_id, g.name) for g in genres] == [(16, "Top 40 & Pop"), (5, "Country")]
+
+
+def test_parse_genre_stations_picks_best_stream_and_stamps_source() -> None:
+    stations = iheart.parse_genre_stations(_GENRE_STATIONS_JSON)
+    by_id = {s.station_uuid: s for s in stations}
+    # The no-stream station is dropped; the other two survive.
+    assert set(by_id) == {"iheart:2804", "iheart:4846"}
+    kbco = by_id["iheart:2804"]
+    assert kbco.source == "iHeart"
+    assert kbco.stream_url == "https://stream.revma.ihrhls.com/zc2804/hls.m3u8"  # secure preferred
+    assert kbco.homepage == "https://www.iheart.com/live/2804/"
+    # A pls-only station still resolves (last-choice stream).
+    assert by_id["iheart:4846"].stream_url.endswith("/pls/DELILAH.pls")
+
+
+def test_fetch_genres_one_get(monkeypatch) -> None:
+    calls: list[str] = []
+
+    def fake_fetch(url: str) -> str:
+        calls.append(url)
+        return _GENRES_JSON
+
+    monkeypatch.setattr(iheart, "_fetch", fake_fetch)
+    genres = iheart.fetch_genres()
+    assert [g.name for g in genres] == ["Top 40 & Pop", "Country"]
+    assert len(calls) == 1
+    assert calls[0].startswith("https://us.api.iheart.com/")
+
+
+def test_fetch_genre_stations_queries_by_id(monkeypatch) -> None:
+    calls: list[str] = []
+
+    def fake_fetch(url: str) -> str:
+        calls.append(url)
+        return _GENRE_STATIONS_JSON
+
+    monkeypatch.setattr(iheart, "_fetch", fake_fetch)
+    stations = iheart.fetch_genre_stations(5)
+    assert len(stations) == 2
+    assert "genreId=5" in calls[0]
+
+
+def test_fetch_genres_refused_in_safe_mode(monkeypatch) -> None:
+    monkeypatch.setattr(
+        iheart, "_fetch", lambda url: (_ for _ in ()).throw(AssertionError("no net"))
+    )
+    with pytest.raises(IHeartError):
+        iheart.fetch_genres(safe_mode=True)
+    with pytest.raises(IHeartError):
+        iheart.fetch_genre_stations(5, safe_mode=True)
+
+
+def test_parse_genres_tolerates_junk() -> None:
+    assert iheart.parse_genres("not json") == []
+    assert iheart.parse_genre_stations("{}") == []
