@@ -188,6 +188,15 @@ class QuillKeyMixin:
             return True
 
         if self._quill_key_prefix_matches(event):
+            # #1185: a sticky lock is entered by *double-pressing* the QUILL key,
+            # which leaves that key held -- its OS auto-repeat lands here as
+            # another QUILL-key event and used to instantly exit the mode we had
+            # just locked, so follow-on letters typed into the document. A locked
+            # mode exits only on Escape (exactly as its own "stays active until
+            # you press Escape" message promises), so swallow the QUILL key here
+            # instead of exiting. Non-sticky browse (entered with N) is unchanged.
+            if self._quill_key_mode_sticky:
+                return True
             self._exit_quill_key_mode("Exited QUILL browse mode")
             return True
 

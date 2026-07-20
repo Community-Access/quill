@@ -163,6 +163,32 @@ def test_double_press_prefix_enters_sticky_locked_mode() -> None:
     assert any("locked" in message.lower() for message in frame._feedback)
 
 
+def test_sticky_lock_survives_entry_key_autorepeat() -> None:
+    # #1185: double-pressing the QUILL key locks sticky browse mode, but the
+    # second (entry) key is still physically held, so the OS auto-repeats it.
+    # That repeat arrived as another QUILL-key event while browse mode was now
+    # active and instantly exited the mode we had just locked -- so the follow-on
+    # navigation letters (P/S/H) typed into the document instead of navigating,
+    # even though "browse mode locked" had just been announced. A locked mode
+    # must stay locked until Escape, exactly as its own message promises.
+    frame = _build_frame()
+    frame._handle_quill_key_mode_event(_Event(_BACKTICK, ctrl=True, shift=True))  # prefix
+    frame._handle_quill_key_mode_event(_Event(_BACKTICK, ctrl=True, shift=True))  # lock
+    assert frame._quill_key_mode_active is True
+    assert frame._quill_key_mode_sticky is True
+
+    # The held entry key auto-repeats while the lock is active: it must be
+    # swallowed, not treated as a fresh "exit browse mode" gesture.
+    handled = frame._handle_quill_key_mode_event(_Event(_BACKTICK, ctrl=True, shift=True))
+    assert handled is True  # consumed, never typed into the editor
+    assert frame._quill_key_mode_active is True  # regression: used to exit here
+    assert frame._quill_key_mode_sticky is True
+
+    # Escape still exits the lock -- the one documented exit for a locked mode.
+    frame._handle_quill_key_mode_event(_Event(27))
+    assert frame._quill_key_mode_active is False
+
+
 def test_sticky_mode_ignores_timeout() -> None:
     frame = _build_frame(timeout=0.001)
     frame._enter_quill_key_mode(sticky=True)
