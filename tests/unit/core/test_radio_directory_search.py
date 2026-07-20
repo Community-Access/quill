@@ -31,6 +31,35 @@ def test_merge_and_rank_dedupes_by_name_and_country() -> None:
     assert {s.country for s in merged} == {"United States", "Canada"}
 
 
+def test_merge_and_rank_absorbs_dropped_duplicate_source() -> None:
+    # RadioBrowser lists SomaFM channels itself (source=""), and the SomaFM
+    # client returns the same stream URL (source="SomaFM"). The dup is dropped,
+    # but the survivor must remember it came from SomaFM too, so the Source
+    # filter can still show it under SomaFM.
+    rb = [_rs("Groove Salad", "https://ice/gsalad", source="")]
+    soma = [_rs("Groove Salad", "https://ice/gsalad", source="SomaFM")]
+    merged = ds.merge_and_rank([rb, soma])
+    assert len(merged) == 1
+    assert ds.station_source_labels(merged[0]) == {"RadioBrowser", "SomaFM"}
+
+
+def test_station_source_labels_defaults_and_maps_blank_to_radiobrowser() -> None:
+    plain = _rs("KEXP", "https://a", source="")
+    assert ds.station_source_labels(plain) == {"RadioBrowser"}
+    labelled = _rs("WRBH", "https://b", source="Radio Reading Service")
+    assert ds.station_source_labels(labelled) == {"Radio Reading Service"}
+
+
+def test_merge_and_rank_absorbs_name_country_duplicate_source() -> None:
+    # Same station, different mount URL (so URL dedup misses) but same
+    # name+country: the survivor still absorbs the dropped source.
+    a = [_rs("Jazz FM", "https://a/jazz", country="UK", source="")]
+    b = [_rs("Jazz FM", "https://b/jazz", country="UK", source="TuneIn")]
+    merged = ds.merge_and_rank([a, b])
+    assert len(merged) == 1
+    assert ds.station_source_labels(merged[0]) == {"RadioBrowser", "TuneIn"}
+
+
 def test_merge_and_rank_floats_exact_name_matches_first() -> None:
     lists = [
         [_rs("Jazz FM Classics", "https://a")],

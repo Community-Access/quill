@@ -30,6 +30,7 @@ from __future__ import annotations
 import subprocess
 import uuid
 import warnings
+from typing import Any, cast
 
 from quill.platform.credential_validation import validate_credential_identifier
 
@@ -60,13 +61,15 @@ _SECURITY_BINDING: object = None
 _CLI_LEAK_WARNED = False
 
 
-def _security_binding() -> tuple[object, object]:
+def _security_binding() -> tuple[Any, Any]:
     """Return ``(Security module, kCFBooleanTrue)`` or ``(None, None)``.
 
     Probes once and caches the result so repeated secret reads/writes don't
     retry the import. pyobjc (the ``[macos]`` extra) bundles the
     ``Security`` and ``CoreFoundation`` framework bindings; if either is
-    absent we fall back to the ``security`` CLI.
+    absent we fall back to the ``security`` CLI. The framework objects have no
+    type stubs, so the binding is typed ``Any`` -- every ``Security.kSec*`` /
+    ``SecItem*`` access below is a dynamic pyobjc attribute.
     """
     global _SECURITY_BINDING
     if _SECURITY_BINDING is None:
@@ -79,7 +82,7 @@ def _security_binding() -> tuple[object, object]:
             _SECURITY_BINDING = (Security, kCFBooleanTrue)
     if _SECURITY_BINDING == "unavailable":
         return None, None
-    return _SECURITY_BINDING  # type: ignore[return-value]
+    return cast("tuple[Any, Any]", _SECURITY_BINDING)
 
 
 def _sec_call(call_result: object) -> tuple[object, int]:
@@ -115,10 +118,12 @@ def _cfdata_to_bytes(ref: object) -> bytes:
         return b""
     if isinstance(ref, (bytes, bytearray, memoryview)):
         return bytes(ref)
+    proxy: Any = ref  # a pyobjc CFDataRef/NSData proxy -- no stubs, dynamic attrs
     try:
-        return bytes(ref)  # CFDataRef/NSData support the buffer protocol
+        raw: bytes = bytes(proxy)  # CFDataRef/NSData support the buffer protocol
     except Exception:  # noqa: BLE001 - proxy without the buffer protocol
-        return bytes(ref.bytes())  # type: ignore[union-attr]
+        raw = bytes(proxy.bytes())
+    return raw
 
 
 def _pyobjc_set(account: str, secret: str, service: str) -> None:

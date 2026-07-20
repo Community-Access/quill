@@ -53,8 +53,8 @@ def merge_and_rank(
     merged order, so each source's own relevance ordering is preserved beneath
     the exact hits. An empty *query* just de-dups without re-ordering.
     """
-    seen_urls: set[str] = set()
-    seen_name_country: set[tuple[str, str]] = set()
+    survivor_by_url: dict[str, RadioStation] = {}
+    survivor_by_name_country: dict[tuple[str, str], RadioStation] = {}
     merged: list[RadioStation] = []
     for stations in result_lists:
         for station in stations:
@@ -62,13 +62,17 @@ def merge_and_rank(
             name_key = (station.name or "").strip().lower()
             country_key = (station.country or "").strip().lower()
             name_country = (name_key, country_key)
-            if url_key and url_key in seen_urls:
-                continue
-            if name_key and name_country in seen_name_country:
+            survivor: RadioStation | None = None
+            if url_key and url_key in survivor_by_url:
+                survivor = survivor_by_url[url_key]
+            elif name_key and name_country in survivor_by_name_country:
+                survivor = survivor_by_name_country[name_country]
+            if survivor is not None:
+                _absorb_source(survivor, station.source)
                 continue
             if url_key:
-                seen_urls.add(url_key)
-            seen_name_country.add(name_country)
+                survivor_by_url[url_key] = station
+            survivor_by_name_country[name_country] = station
             merged.append(station)
     normalized_query = query.strip().lower()
     if not normalized_query:
@@ -76,6 +80,30 @@ def merge_and_rank(
     exact = [s for s in merged if (s.name or "").strip().lower() == normalized_query]
     rest = [s for s in merged if (s.name or "").strip().lower() != normalized_query]
     return exact + rest
+
+
+def _absorb_source(survivor: RadioStation, dropped_source: str) -> None:
+    """Record that ``dropped_source`` also carried the station kept as
+    ``survivor`` during de-dup, so the Source filter can still match it there.
+
+    The survivor's own ``source`` is already represented; we only add the
+    dropped duplicate's source when it is genuinely a different directory.
+    """
+    if dropped_source == survivor.source:
+        return
+    if dropped_source in survivor.alt_sources:
+        return
+    survivor.alt_sources = (*survivor.alt_sources, dropped_source)
+
+
+def station_source_labels(station: RadioStation) -> set[str]:
+    """Every Source-filter label a merged station should match: its own source
+    plus any it absorbed as a duplicate. A blank source maps to "RadioBrowser"
+    (the default facet for an unlabelled RadioBrowser result)."""
+    labels = {station.source or "RadioBrowser"}
+    for src in station.alt_sources:
+        labels.add(src or "RadioBrowser")
+    return labels
 
 
 def tunein_search_stations(

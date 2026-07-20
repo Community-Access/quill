@@ -6,7 +6,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 def _coerce_int(value: object, default: int = 0) -> int:
@@ -46,6 +46,13 @@ class RadioStation:
     #: Stations source badge/filter. Empty for stations loaded before this
     #: field existed (back-compat).
     source: str = ""
+    #: Other sources that also carried this exact station and were merged away
+    #: as duplicates (see ``directory_search.merge_and_rank``). A search-only,
+    #: transient field: it lets the Source filter still show a station under a
+    #: directory it appeared in even when a different directory won the de-dup
+    #: (e.g. a SomaFM channel RadioBrowser also lists). Not persisted, and
+    #: excluded from equality so it never changes a station's identity.
+    alt_sources: tuple[str, ...] = field(default=(), compare=False)
 
     @property
     def display_name(self) -> str:
