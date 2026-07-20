@@ -24,7 +24,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "2.1.0"
+_VERSION = "2.1.1"
 _REPO = "Community-Access/quill-radio"
 http_client.set_product_identity(_TITLE, _VERSION)  # radio User-Agent identity (#6)
 
