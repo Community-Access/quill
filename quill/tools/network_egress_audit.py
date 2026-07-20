@@ -550,6 +550,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "model and voices files from GitHub releases. Both use HTTPS, show a progress dialog "
         "with Cancel, and reopen Manage Voices via switch_to_ok on completion."
     ),
+    "apps/studio.py::_run": (
+        "Audio Studio's twin of ui/main_frame.py::_run (reverse-vendored into "
+        "quill/apps/studio.py): the on-demand Piper voice model download, triggered "
+        "only when the user chooses Download Voice for read-aloud. Fetches the voice's "
+        ".onnx and .onnx.json from the pinned catalog URL over HTTPS with a bounded "
+        "timeout, off the UI thread, behind a progress dialog with Cancel. Same posture "
+        "as the MainFrame entry above."
+    ),
     "core/ai/tts.py::request_speech": (
         "OpenAI TTS speech synthesis. Triggered only by an explicit user action: "
         "AI > Read Selection Aloud or AI > Read Document Aloud. The user must have "
