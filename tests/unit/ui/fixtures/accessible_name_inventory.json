@@ -1,6 +1,7 @@
 {
   "quill/apps/podcasts.py::PodcastsAppFrame._build_main_panel::wx.TreeCtrl": "named",
   "quill/apps/radio.py::RadioAppFrame._build_main_panel::wx.TreeCtrl": "named",
+  "quill/apps/studio.py::StudioAppFrame._build_main_panel::wx.TreeCtrl": "named",
   "quill/devtools/console_window.py::ConsoleWindow._build::wx.Choice": "named",
   "quill/devtools/console_window.py::ConsoleWindow._build::wx.TextCtrl": "named",
   "quill/devtools/console_window.py::ConsoleWindow._build::wx.TextCtrl#2": "named",

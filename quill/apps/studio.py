@@ -2562,7 +2562,11 @@ def main() -> int:
     # held here for the app's lifetime.
     _checker = wx.SingleInstanceChecker(f"quill-audio-studio-{wx.GetUserId()}")
     if _checker.IsAnotherRunning():
-        wx.MessageBox(f"{_TITLE} is already running.", _TITLE, wx.OK | wx.ICON_INFORMATION)
+        # Pre-MainLoop single-instance guard: no AppShellFrame exists yet, so the
+        # SR-announcement wrapper (self._show_message_box) is unavailable here.
+        wx.MessageBox(  # MSGBOX-OK: pre-frame single-instance guard, no shell yet
+            f"{_TITLE} is already running.", _TITLE, wx.OK | wx.ICON_INFORMATION
+        )
         log_listener.stop()
         return 0
     frame = StudioAppFrame(safe_mode=safe_mode)

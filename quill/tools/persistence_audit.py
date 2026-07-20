@@ -191,6 +191,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # degrades to empty; content, like trust.py::save_trusted_locations above.
     "core/weather/locations.py::save_locations": "content",
     # --- needs-versioning (real config; contract adoption backlogged) ---
+    # Audio Studio app-shell prefs (close-window action, etc.) written by the
+    # reverse-vendored quill/apps/studio.py. Small app config with no schema
+    # stamp yet -- backlogged like the other app prefs rather than mislabelled.
+    "apps/studio.py::_save_app_prefs": "needs-versioning",
     # Weather settings: real user config (units, forecast/outlook counts, which
     # current-conditions details and alert severities show). It has no schema
     # stamp yet, so it is honestly backlogged to adopt the versioned contract
