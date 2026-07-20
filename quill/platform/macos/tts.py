@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,10 +85,11 @@ def list_voices() -> list[MacosVoice]:
 
 # Persistent synthesizer for the announcement self-voice. Built lazily on first
 # use and reused so frequent short announcements don't pay per-call init cost.
-_synth: object = None
+# Typed ``Any``: it is a pyobjc NSSpeechSynthesizer proxy with no type stubs.
+_synth: Any = None
 
 
-def _get_synth(voice: str | None = None, rate: int | None = None) -> object:
+def _get_synth(voice: str | None = None, rate: int | None = None) -> Any:
     """Return the cached ``NSSpeechSynthesizer``, applying *voice*/*rate* if given."""
     global _synth
     import AppKit  # type: ignore[import-not-found]
@@ -95,9 +97,9 @@ def _get_synth(voice: str | None = None, rate: int | None = None) -> object:
     if _synth is None:
         _synth = AppKit.NSSpeechSynthesizer.alloc().init()
     if voice:
-        _synth.setVoice_(voice)  # type: ignore[union-attr]
+        _synth.setVoice_(voice)
     if rate is not None:
-        _synth.setRate_(float(rate))  # type: ignore[union-attr]
+        _synth.setRate_(float(rate))
     return _synth
 
 
@@ -116,7 +118,7 @@ def speak_announcement(text: str, *, voice: str | None = None, rate: int | None 
     except Exception:  # noqa: BLE001 - pyobjc missing or AppKit unreachable
         return False
     try:
-        return bool(synth.startSpeakingString_(text))  # type: ignore[union-attr]
+        return bool(synth.startSpeakingString_(text))
     except Exception:  # noqa: BLE001
         return False
 
@@ -126,6 +128,6 @@ def stop_announcement() -> None:
     if _synth is None:
         return
     try:
-        _synth.stopSpeaking()  # type: ignore[union-attr]
+        _synth.stopSpeaking()
     except Exception:  # noqa: BLE001
         pass
