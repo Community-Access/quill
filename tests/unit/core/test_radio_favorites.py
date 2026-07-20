@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from quill.core.radio.favorites import RadioFavoritesStore, load_favorites, save_favorites
@@ -9,6 +10,32 @@ from quill.core.radio.models import RadioStation
 
 _STATION_A = RadioStation(name="A", stream_url="https://a.example.com", station_uuid="uuid-a")
 _STATION_B = RadioStation(name="B", stream_url="https://b.example.com")  # custom, no uuid
+
+
+def test_save_favorites_keeps_rolling_backup(tmp_path: Path) -> None:
+    # #1186: favorites have no versioned-store backup, so save_favorites keeps a
+    # small ring of timestamped copies of the PRIOR state under
+    # backups/radio-favorites, letting a bad change be rolled back.
+    backups_dir = tmp_path / "backups" / "radio-favorites"
+
+    store = RadioFavoritesStore()
+    store.add(RadioStation(name="First", stream_url="https://first.example.com", station_uuid="u1"))
+    save_favorites(tmp_path, store)  # no prior file yet -> nothing to back up
+    assert not backups_dir.exists() or not list(backups_dir.glob("*.json"))
+
+    # A second save backs up the prior (single-station) state before overwriting.
+    store.add(
+        RadioStation(name="Second", stream_url="https://second.example.com", station_uuid="u2")
+    )
+    save_favorites(tmp_path, store)
+    backups = sorted(backups_dir.glob("radio_favorites-*.json"))
+    assert len(backups) == 1
+    prior = json.loads(backups[0].read_text(encoding="utf-8"))
+    assert [entry["station"]["name"] for entry in prior["favorites"]] == ["First"]
+
+    # An identical save adds no duplicate backup.
+    save_favorites(tmp_path, store)
+    assert len(sorted(backups_dir.glob("radio_favorites-*.json"))) == 1
 
 
 def test_per_station_channel_mode_is_stored_and_round_trips(tmp_path: Path) -> None:

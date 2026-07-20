@@ -24,7 +24,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "2.1.2"
+_VERSION = "2.2.0"
 _REPO = "Community-Access/quill-radio"
 http_client.set_product_identity(_TITLE, _VERSION)  # radio User-Agent identity (#6)
 
@@ -314,10 +314,10 @@ class RadioAppFrame(
         )
         switched = False
         if folder_sort != "manual":
-            # Force the point: rather than refuse, bake the current on-screen
-            # order in as the manual order (so nothing visibly jumps) and switch
-            # to manual, then do the move -- pressing the reorder key is a clear
-            # intent to reorder.
+            # Reordering is a clear intent to reorder: switch to manual order
+            # (revealing the preserved hand-arranged order, announced below) and
+            # move within it. No longer bakes the sorted view over the stored
+            # order, which used to destroy it (#1186).
             self._force_favorites_manual_order()
             switched = True
         from quill.ui.radio.favorites_manager_dialog import move_announcement
@@ -335,20 +335,20 @@ class RadioAppFrame(
         self._reload_favorites_tree(keep_key=favorite.key)
 
     def _force_favorites_manual_order(self) -> None:
-        """Commit the current display order as the stored (manual) order and set
-        the sort to manual, so Alt+Shift+Up/Down can reorder without the list
-        first jumping to a different order."""
+        """Switch favorites to manual order so Alt+Shift+Up/Down can reorder.
+
+        Must NOT rewrite the stored list: it already *is* the hand-arranged
+        manual order (A-Z / Z-A are display-only views). Baking the sorted view
+        in used to overwrite the listener's real order on the first reorder from
+        a sorted view, unrecoverably (#1186); switching to manual just reveals
+        the preserved order.
+        """
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
 
-        ordered = self._radio_favorites.favorites_in_display_order(
-            self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
-        )
-        self._radio_favorites.favorites = list(ordered)
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
         radio_history.save_history(app_data_dir(), self._radio_history)
-        self._save_radio_favorites()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState

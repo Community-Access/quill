@@ -12,6 +12,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+import datetime
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -442,34 +443,72 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
     return store
 
 
+#: Directory (under the data dir's ``backups``) and retention for the rolling
+#: favorites backup. Radio favorites are not a versioned store, so this is the
+#: only safety net against an accidental reorder/edit (#1186).
+_BACKUP_DIRNAME = "radio-favorites"
+_BACKUP_KEEP = 20
+
+
+def _backup_favorites_file(data_dir: Path, new_payload: dict) -> None:
+    """Snapshot the prior favorites file when a save actually changes it.
+
+    Keeps a small ring of timestamped copies of the *previous* state under
+    ``{data_dir}/backups/radio-favorites`` so a listener (or support) can roll
+    back a bad change -- radio favorites have no versioned-store backup of their
+    own (#1186). Only snapshots when ``new_payload`` differs from the stored
+    file, so an unchanged re-save adds nothing. Best-effort: a backup failure
+    must never block the actual save.
+    """
+    src = _store_path(data_dir)
+    try:
+        if not src.is_file():
+            return
+        old_bytes = src.read_bytes()
+        try:
+            unchanged = json.loads(old_bytes) == new_payload
+        except ValueError:
+            unchanged = False  # corrupt prior file: keep it, it may be recoverable
+        if unchanged:
+            return
+        backups_dir = data_dir / "backups" / _BACKUP_DIRNAME
+        backups_dir.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        (backups_dir / f"radio_favorites-{stamp}.json").write_bytes(old_bytes)
+        for old in sorted(backups_dir.glob("radio_favorites-*.json"))[:-_BACKUP_KEEP]:
+            old.unlink(missing_ok=True)
+    except OSError:
+        return
+
+
 def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
-    """Persist favorites atomically."""
+    """Persist favorites atomically, backing up the prior state before a change."""
     from quill.core.storage import write_json_atomic
 
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "folders": list(store.folders),
-            "favorites": [
-                {
-                    "station": favorite.station.to_dict(),
-                    "folder": favorite.folder,
-                    "custom": favorite.custom,
-                    "custom_name": favorite.custom_name,
-                    "volume_percent": favorite.volume_percent,
-                    "has_sound_enhancement_override": favorite.has_sound_enhancement_override,
-                    "eq_bass_db": favorite.eq_bass_db,
-                    "eq_mid_db": favorite.eq_mid_db,
-                    "eq_treble_db": favorite.eq_treble_db,
-                    "compressor_enabled": favorite.compressor_enabled,
-                    "channel_mode": favorite.channel_mode,
-                    "night_mode_enabled": favorite.night_mode_enabled,
-                    "optilab_enabled": favorite.optilab_enabled,
-                    "optilab_mode": favorite.optilab_mode,
-                    "optilab_input_db": favorite.optilab_input_db,
-                    "optilab_auto_adapt": favorite.optilab_auto_adapt,
-                }
-                for favorite in store.favorites
-            ],
-        },
-    )
+    payload = {
+        "folders": list(store.folders),
+        "favorites": [
+            {
+                "station": favorite.station.to_dict(),
+                "folder": favorite.folder,
+                "custom": favorite.custom,
+                "custom_name": favorite.custom_name,
+                "volume_percent": favorite.volume_percent,
+                "has_sound_enhancement_override": favorite.has_sound_enhancement_override,
+                "eq_bass_db": favorite.eq_bass_db,
+                "eq_mid_db": favorite.eq_mid_db,
+                "eq_treble_db": favorite.eq_treble_db,
+                "compressor_enabled": favorite.compressor_enabled,
+                "channel_mode": favorite.channel_mode,
+                "night_mode_enabled": favorite.night_mode_enabled,
+                "optilab_enabled": favorite.optilab_enabled,
+                "optilab_mode": favorite.optilab_mode,
+                "optilab_input_db": favorite.optilab_input_db,
+                "optilab_auto_adapt": favorite.optilab_auto_adapt,
+            }
+            for favorite in store.favorites
+        ],
+    }
+
+    _backup_favorites_file(data_dir, payload)
+    write_json_atomic(_store_path(data_dir), payload)

@@ -2,6 +2,11 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-2.0.md` for the fuller narrative version of the latest release.
 
+## 2.2.0 -- 2026-07-20
+
+- **Rearranging favorites can no longer wipe your order (#1186).** Pressing the reorder key (Alt+Shift+Up/Down) while your favorites were showing A-Z used to bake that alphabetized view in as your new "manual" order, permanently overwriting the sequence you had arranged by hand -- with no way to get it back. Reordering from a sorted view now simply switches to manual order first (announced) and moves the station within your preserved hand-arranged order; the stored order is never overwritten by a sorted view.
+- **Favorites now keep a rolling backup.** Every change that alters your favorites first snapshots the previous version into `backups/radio-favorites` (the last 20 are kept), so a bad edit can be rolled back. Radio favorites previously had no backup of any kind.
+
 ## 2.1.2 -- 2026-07-20
 
 A fast-follow fixing three reported issues, two of them from 2.1.1. All in the shared `quill` package, so QUILL gets them too.
