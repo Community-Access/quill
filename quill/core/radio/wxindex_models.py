@@ -42,12 +42,12 @@ def parse_states(data: object) -> list[WxState]:
     for row in data if isinstance(data, list) else []:
         if not isinstance(row, dict):
             continue
-        slug = str(row.get("slug", "")).strip()
+        slug = str(row.get("state_slug", "")).strip()
         if slug:
             out.append(
                 WxState(
                     slug,
-                    str(row.get("name", slug)),
+                    str(row.get("state_name", slug)),
                     int(_f(row.get("station_count"), 0)),
                 )
             )
@@ -57,7 +57,9 @@ def parse_states(data: object) -> list[WxState]:
 def _feeds(row: dict) -> tuple[str, ...]:
     urls: list[str] = []
     for feed in row.get("feeds", []) or []:
-        url = str((feed or {}).get("url", "")).strip() if isinstance(feed, dict) else ""
+        if not isinstance(feed, dict):
+            continue
+        url = str(feed.get("stream_url") or feed.get("url") or "").strip()
         if url:
             urls.append(url)
     return tuple(urls)
@@ -72,11 +74,11 @@ def parse_station(data: object) -> WxStation | None:
     return WxStation(
         callsign=callsign,
         frequency_mhz=_f(data.get("frequency")),
-        name=str(data.get("name", "")).strip(),
-        state=str(data.get("state", "")).strip(),
+        name=str(data.get("city", "")).strip(),
+        state=str(data.get("state_slug", "")).strip(),
         counties=tuple(str(c).strip() for c in data.get("counties", []) or [] if str(c).strip()),
         same_codes=tuple(str(c).strip() for c in data.get("same", []) or [] if str(c).strip()),
-        wfo=str(data.get("wfo", "")).strip(),
+        wfo=str(data.get("wfo_code") or data.get("wfo") or "").strip(),
         latitude=_f(data.get("latitude")),
         longitude=_f(data.get("longitude")),
         feeds=_feeds(data),
