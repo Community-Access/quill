@@ -9,16 +9,28 @@ tier is wx-free; the only network egress is the reviewed site in
 from __future__ import annotations
 
 import json
+import math
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import quote
 
 from quill.core.paths import app_data_dir
 from quill.core.radio.wxindex_http import Fetcher, WxIndexError, http_json, refuse_in_safe_mode
-from quill.core.radio.wxindex_models import WxState, WxStation, parse_states, parse_stations
+from quill.core.radio.wxindex_models import (
+    WxState,
+    WxStation,
+    parse_states,
+    parse_station,
+    parse_stations,
+)
 from quill.core.radio.wxindex_snapshot import load_snapshot
 
 _DEFAULT_MAX_AGE_SECONDS = 7 * 24 * 3600  # 7 days
+
+_SAME = re.compile(r"^\d{6}$")
+_CALLSIGN = re.compile(r"^[A-Z]{2,3}\d{2,3}$", re.IGNORECASE)
 
 
 @dataclass(slots=True, frozen=True)
@@ -146,3 +158,79 @@ def refresh_directory(
         state_count=state_count,
         generated_at=generated_at,
     )
+
+
+def station_detail(
+    callsign: str, *, safe_mode: bool = False, fetcher: Fetcher | None = None
+) -> WxStation | None:
+    try:
+        refuse_in_safe_mode(safe_mode)
+        return parse_station(http_json(f"/v1/stations/{quote(callsign)}", fetcher=fetcher))
+    except WxIndexError:
+        for s in load_snapshot().stations:
+            if s.callsign.lower() == callsign.lower():
+                return s
+        return None
+
+
+def search_stations(
+    query: str, *, safe_mode: bool = False, fetcher: Fetcher | None = None
+) -> list[WxStation]:
+    """Route a query to the right WeatherIndex search endpoint.
+
+    A 6-digit query is treated as a SAME code (``?same=``); a callsign-shaped
+    query (``ABC123``) hits the station-detail endpoint; ``"County, ST"``
+    routes to ``?c=&s=``; anything else is treated as free-text state/name
+    search (``?s=``). Falls back to a substring match over the bundled
+    snapshot when the live request is refused or fails.
+    """
+    q = query.strip()
+    if not q:
+        return []
+    try:
+        refuse_in_safe_mode(safe_mode)
+        if _SAME.match(q):
+            return parse_stations(http_json(f"/v1/station_search?same={quote(q)}", fetcher=fetcher))
+        if _CALLSIGN.match(q):
+            s = station_detail(q, safe_mode=safe_mode, fetcher=fetcher)
+            return [s] if s else []
+        if "," in q:  # "County, ST"
+            county, _, st = q.partition(",")
+            return parse_stations(
+                http_json(
+                    f"/v1/station_search?c={quote(county.strip())}&s={quote(st.strip())}",
+                    fetcher=fetcher,
+                )
+            )
+        return parse_stations(http_json(f"/v1/station_search?s={quote(q)}", fetcher=fetcher))
+    except WxIndexError:
+        ql = q.lower()
+        return [
+            s
+            for s in load_snapshot().stations
+            if ql in s.callsign.lower()
+            or ql in s.state.lower()
+            or any(ql in c.lower() for c in s.counties)
+            or q in s.same_codes
+        ]
+
+
+def local_stations(
+    latitude: float,
+    longitude: float,
+    *,
+    county: str = "",
+    safe_mode: bool = False,
+    fetcher: Fetcher | None = None,
+) -> list[WxStation]:
+    """Resolve nearby stations: county/SAME match first, else nearest-by-coordinate."""
+    if county:
+        hits = search_stations(county, safe_mode=safe_mode, fetcher=fetcher)
+        if hits:
+            return hits
+    stations = load_snapshot().stations
+
+    def dist(s: WxStation) -> float:
+        return math.hypot(s.latitude - latitude, s.longitude - longitude)
+
+    return sorted((s for s in stations if s.latitude or s.longitude), key=dist)[:5]
