@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-beacon"
+version = "0.1.0"
+description = "QuillBeacon -- accessible, screen-reader-first bookmark and location manager as a standalone app"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+]
+# First slice: self-contained engine + wx shell. The production target moves
+# the engine into quill/apps/beacon.py and depends on quill[ui], matching
+# quill-cast and quill-radio (see Docs/PRD.md section 44.1).
+# PyNaCl ships in every product build (QUILL ui extra, Radio, Cast) for
+# Ed25519 signature verification of signed update manifests and Quillins;
+# Beacon carries it too so the update/signing path works the day it lands.
+# When a PyInstaller spec is added, mirror quill-radio.spec's explicit
+# collect_all("nacl") -- the signing imports are lazy and the wheel's
+# _sodium extension must reach the frozen binaries.
+dependencies = ["wxPython>=4.2.0", "PyNaCl>=1.6.2"]
+
+[project.gui-scripts]
+quill-beacon = "quill_beacon:main"
+
+[project.scripts]
+quill-beacon-cli = "quill_beacon.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/Quill-Beacon"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_beacon"]

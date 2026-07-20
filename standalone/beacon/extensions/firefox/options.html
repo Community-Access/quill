@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>QuillBeacon Options</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 16px; max-width: 480px; }
+    label { display: block; font-size: 0.9rem; margin-top: 10px; }
+    input[type="text"] { width: 100%; box-sizing: border-box; font-size: 0.95rem; padding: 4px; }
+    button { margin-top: 12px; padding: 6px 14px; }
+    #status { margin-top: 10px; font-size: 0.9rem; }
+    .ok { color: #060; } .err { color: #b00; }
+    p { font-size: 0.85rem; color: #444; }
+  </style>
+</head>
+<body>
+  <h1>QuillBeacon Capture - Options</h1>
+  <p>Set the local capture bridge URL and the shared token shown in the
+     QuillBeacon desktop app (Settings &gt; Capture Bridge). The bridge runs on
+     127.0.0.1 only; captures never leave your machine.</p>
+  <label for="base">Bridge base URL</label>
+  <input type="text" id="base" aria-label="Bridge base URL"
+         value="http://127.0.0.1:8752" />
+  <label for="token">Bridge token</label>
+  <input type="text" id="token" aria-label="Bridge shared token" />
+  <button id="save" aria-label="Save options">Save</button>
+  <button id="test" aria-label="Test bridge connection">Test connection</button>
+  <div id="status" role="status" aria-live="polite"></div>
+  <script src="options.js"></script>
+</body>
+</html>

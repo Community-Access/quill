@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>QuillBeacon Capture</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 12px; min-width: 320px; }
+    h1 { font-size: 1rem; margin: 0 0 8px; }
+    .row { margin-bottom: 6px; }
+    label { display: block; font-size: 0.85rem; margin-bottom: 2px; }
+    input[type="text"], textarea { width: 100%; box-sizing: border-box; font-size: 0.9rem; padding: 3px; }
+    textarea { height: 48px; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+    button { padding: 6px; font-size: 0.85rem; }
+    #status { min-height: 1.2em; font-size: 0.85rem; margin-top: 6px; }
+    .err { color: #b00; }
+    .ok { color: #060; }
+    a { font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <h1>QuillBeacon Capture</h1>
+  <div class="row">
+    <label for="note">Note (optional)</label>
+    <textarea id="note" aria-label="Optional note to attach to the capture"></textarea>
+  </div>
+  <div class="row">
+    <label for="tags">Tags (comma separated)</label>
+    <input type="text" id="tags" aria-label="Tags, comma separated" />
+  </div>
+  <div class="row">
+    <label for="collection">Collection (optional)</label>
+    <input type="text" id="collection" aria-label="Collection to add the capture to" />
+  </div>
+  <div class="btns">
+    <button id="b-page" aria-label="Capture the current page">Page</button>
+    <button id="b-selection" aria-label="Capture the current selection">Selection</button>
+    <button id="b-heading" aria-label="Capture the nearest heading and quote">Heading</button>
+    <button id="b-link" aria-label="Capture the selected link">Link</button>
+    <button id="b-media" aria-label="Capture the current media time point">Media time</button>
+    <button id="b-all" aria-label="Capture all open tabs as a batch">All tabs</button>
+  </div>
+  <div>
+    <button id="b-search" aria-label="Open QuillBeacon search">Open search</button>
+    <a href="#" id="opts">Options</a>
+  </div>
+  <div id="status" role="status" aria-live="polite"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

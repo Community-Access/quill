@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "QuillBeacon Capture",
+  "version": "0.1.0",
+  "description": "Capture pages, selections, links, headings, and media time points into QuillBeacon via the local capture bridge.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "quillbeacon-capture@quillville.app",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs", "nativeMessaging"],
+  "host_permissions": ["http://127.0.0.1:8752/*"],
+  "action": {
+    "default_title": "QuillBeacon Capture",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "commands": {
+    "capture-page": { "suggested_key": { "default": "Alt+Shift+B" }, "description": "Capture current page into QuillBeacon" },
+    "capture-selection": { "description": "Capture the current selection into QuillBeacon" }
+  }
+}
