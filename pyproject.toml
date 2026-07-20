@@ -195,7 +195,7 @@ pages = ["keynote-parser>=1.14.4.0"]
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
     "pdfplumber>=0.11.10",
-    "pypdf>=6.11.0",
+    "pypdf>=6.14.2",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
 # xlsx, pdf, epub, md). quill-glow-core is the thin, stable service contract
