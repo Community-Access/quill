@@ -28,7 +28,7 @@ dependencies = [
     # namespaces) for a hand-rolled ElementTree walk to handle reliably; this is
     # the standard Python choice. Pure Python, no C extension, tiny -- a normal
     # dependency, not an on-demand optional component like Pandoc/speech engines.
-    "feedparser>=6.0.11",
+    "feedparser>=6.0.12",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
     "platform_utils>=1.6.2",
