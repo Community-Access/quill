@@ -212,22 +212,6 @@ def popular_stations(limit: int = 100, *, safe_mode: bool = False) -> list[Radio
     return stations_from_json(_http_json(path))
 
 
-def noaa_weather_stations(limit: int = 100, *, safe_mode: bool = False) -> list[RadioStation]:
-    """NOAA Weather Radio (NWR) internet re-streams, most-listened first.
-
-    NOAA provides no audio API -- NWR is broadcast over-air on VHF -- but many
-    individual NWR transmitters are re-streamed to the internet, and those
-    re-streams are in the community RadioBrowser directory, reliably named
-    "NOAA Weather Radio ..." (with the transmitter's call sign and frequency,
-    e.g. "NOAA Weather Radio - KHB36 - Manassas, VA - 162.550 MHz"). A *name*
-    search finds them; the ``weather`` tag does not (it is full of unrelated
-    general/music stations), so we search the name. One GET through the same
-    reviewed egress site as search.
-    """
-    refuse_in_safe_mode(safe_mode)
-    return search_stations("NOAA Weather Radio", limit=limit, safe_mode=safe_mode)
-
-
 def lookup_station(station_uuid: str, *, safe_mode: bool = False) -> RadioStation | None:
     """Fresh directory data for one station -- the stream-fallback path.
 

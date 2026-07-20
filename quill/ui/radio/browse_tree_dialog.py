@@ -27,19 +27,22 @@ from quill.core.radio import (
     radio_browser,
     soma_fm,
     tunein,
+    wxindex,
     xiph,
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
+from quill.core.radio.wxindex_models import WxState, to_radio_station
 from quill.ui.dialog_contract import apply_modal_ids
 
 #: Top-level sources, in tree order: (label, kind, payload). "stations" sources
 #: expand straight to stations; "genres" sources expand to genre folders; the
-#: "tunein" source expands to TuneIn's own folder tree.
+#: "tunein" source expands to TuneIn's own folder tree; "wx_states" expands to
+#: State folders (see below).
 _SOURCES: tuple[tuple[str, str, Any], ...] = (
     ("Favorites", "favorites", None),
     ("Popular Stations", "stations", "popular"),
-    ("Weather / NOAA", "stations", "weather"),
+    ("Weather / NOAA", "wx_states", None),
     ("ACB Media", "stations", "acb"),
     ("NFB Radio", "stations", "nfb"),
     ("SomaFM", "stations", "soma"),
@@ -50,7 +53,23 @@ _SOURCES: tuple[tuple[str, str, Any], ...] = (
 
 
 #: Node kinds that lazily load children when expanded.
-_EXPANDABLE = ("stations", "genres", "genre", "tunein")
+_EXPANDABLE = ("stations", "genres", "genre", "tunein", "wx_states", "wx_state")
+
+
+def _wx_state_folders(*, safe_mode: bool) -> list[WxState]:
+    """The wxindex State directory -- raw provider data for the "wx_states"
+    folder; ``_add_children`` turns each into a "wx_state" tree node."""
+    return wxindex.list_states(safe_mode=safe_mode)
+
+
+def _wx_playable_stations(slug: str, *, safe_mode: bool) -> list[RadioStation]:
+    """Station leaves for one State, filtered to those with a live internet
+    re-stream feed. NOAA Weather Radio is broadcast over VHF; wxindex lists
+    every known transmitter (~1035), but only a minority (~144) are also
+    re-streamed to the internet. A transmitter with no feed has nothing to
+    play, so it never appears in this tree."""
+    stations = wxindex.stations_for_state(slug, safe_mode=safe_mode)
+    return [to_radio_station(s) for s in stations if s.feeds]
 
 
 class BrowseTreeDialog:
@@ -194,6 +213,10 @@ class BrowseTreeDialog:
                 return list(module.fetch_genre_stations(slug, safe_mode=self._safe_mode))
             if kind == "tunein":
                 return list(tunein.browse(payload, safe_mode=self._safe_mode))
+            if kind == "wx_states":
+                return list(_wx_state_folders(safe_mode=self._safe_mode))
+            if kind == "wx_state":
+                return _wx_playable_stations(payload, safe_mode=self._safe_mode)
         except Exception:  # noqa: BLE001 - a down source shows as empty, never fatal
             return []
         return []
@@ -209,6 +232,13 @@ class BrowseTreeDialog:
                 child = tree.AppendItem(node, module.genre_display(slug))
                 tree.SetItemData(
                     child, {"kind": "genre", "payload": (module, slug), "loaded": False}
+                )
+                tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
+        elif kind == "wx_states":
+            for state in raw:
+                child = tree.AppendItem(node, f"{state.name} ({state.station_count})")
+                tree.SetItemData(
+                    child, {"kind": "wx_state", "payload": state.slug, "loaded": False}
                 )
                 tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
         elif kind == "tunein":
@@ -229,7 +259,7 @@ class BrowseTreeDialog:
                         child, {"kind": "tunein", "payload": result.browse_url, "loaded": False}
                     )
                     tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
-        else:  # "stations" or "genre" -> RadioStation leaves
+        else:  # "stations", "genre", or "wx_state" -> RadioStation leaves
             for station in raw:
                 child = tree.AppendItem(node, station.display_name)
                 tree.SetItemData(child, {"kind": "station", "station": station})
@@ -556,7 +586,6 @@ class BrowseTreeDialog:
 #: Off-thread station loaders for the flat "stations" sources, keyed by payload.
 _STATION_LOADERS: dict[str, Callable[[bool], list[RadioStation]]] = {
     "popular": lambda safe: radio_browser.popular_stations(safe_mode=safe),
-    "weather": lambda safe: radio_browser.noaa_weather_stations(safe_mode=safe),
     "acb": lambda _safe: acb_media.acb_media_stations(),
     "nfb": lambda _safe: nfb_media.nfb_media_stations(),
     "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
