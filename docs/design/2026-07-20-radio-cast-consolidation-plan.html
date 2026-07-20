@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-20-radio-cast-consolidation-plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="consolidating-quill-radio-and-quill-cast-into-quill--safely">Consolidating
+Quill Radio and Quill Cast into quill — safely</h1>
+<p>Date: 2026-07-20. Companion to the Audio Studio reverse-vendor
+(<code>2026-07-17-audio-studio-migration-audit.md</code> §25) and the
+family architecture (QUILL-PRD §35). This one is different from Audio
+Studio and must be handled carefully, because <strong>both wrapper
+products are already shipped and their in-app updaters point at their
+own GitHub repos.</strong></p>
+<h2 id="the-critical-constraint-why-this-is-not-like-audio-studio">The
+critical constraint (why this is not like Audio Studio)</h2>
+<p>Audio Studio was safe to fold in and delete because it was
+<strong>never shipped and never pushed</strong> — no users, no releases,
+no updater. Radio and Cast are the opposite:</p>
+<ul>
+<li><strong>The code is already in quill.</strong>
+<code>quill/apps/radio.py</code> and <code>quill/apps/podcasts.py</code>
+are the standalone frames; the feature code lives in <code>quill/</code>
+and is shared with embedded QUILL (<code>RadioMixin</code>,
+<code>PodcastsMixin</code>). The <code>quill-radio</code> /
+<code>quill-cast</code> repos are <strong>thin wrappers only</strong>
+(launcher, spec, installer, docs, a <code>quill @ tag</code> pin). There
+is no vendored code to merge — that part is already done.</li>
+<li><strong>Both are shipped.</strong> quill-radio has published
+releases 2.0.2 → 2.1.2; quill-cast has published 1.0.0. Real users are
+running them.</li>
+<li><strong>The in-app updater polls each product's own repo.</strong>
+<code>radio.py: _REPO = "Community-Access/quill-radio"</code>,
+<code>podcasts.py: _REPO = "Community-Access/quill-cast"</code>. Every
+installed copy calls
+<code>api.github.com/repos/&lt;repo&gt;/releases</code> to check for
+updates.</li>
+</ul>
+<p><strong>Therefore: deleting either GitHub repo would 404 every
+existing user's update check — breaking updates for everyone already on
+Radio or Cast.</strong> The local folder is re-clonable (it is on
+GitHub), but the <em>GitHub repo</em> is a live piece of infrastructure
+users depend on. It cannot be abruptly removed.</p>
+<h2 id="what-consolidation-actually-means-here">What "consolidation"
+actually means here</h2>
+<p>The valuable consolidation — one codebase, no drift — is
+<strong>already achieved</strong>: the wrapper repos hold no code, only
+packaging. They cannot drift from quill because they build
+<code>quill @ &lt;pinned tag&gt;</code>. So there is little left to do
+beyond tidying, and one genuinely hard step (retiring the repos) that
+must be tiered.</p>
+<h2 id="tiered-plan">Tiered plan</h2>
+<h3 id="tier-0--tidy-now-safe-no-user-impact--done-this-pass">Tier 0 —
+tidy now (safe, no user impact) — DONE THIS PASS</h3>
+<ol type="1">
+<li><strong>Move the open issues to quill</strong>, where the code and
+every other radio/cast bug already live (feedback-hub already files
+"[Quill]" reports to quill). Transferred (GitHub leaves a redirect from
+the old numbers):
+<ul>
+<li>quill-radio #15 → <strong>quill #1187</strong> (weather: worldwide
+locations).</li>
+<li>quill-radio #8 → <strong>quill #1188</strong> (jump cursor to radio
+list).</li>
+<li>quill-cast #2 → <strong>quill #1189</strong> (episodes don't load
+after subscribe; wants tree-expand + shortcuts).</li>
+</ul></li>
+<li><strong>Docs stay where they are.</strong> Do <em>not</em> copy the
+product docs into quill: because Tier 1 keeps the wrapper repos,
+duplicating their user guides / changelogs / release notes into quill
+would create two diverging copies (drift) — the exact failure mode this
+consolidation exists to remove. The docs live in the wrapper repos next
+to the builds that ship them. (Only if a repo is ever <em>retired</em>
+under Tier 2 do its docs move to quill — at that point there is one
+copy, not two.)</li>
+</ol>
+<h3
+id="tier-1--the-consolidated-steady-state-safe--recommended-end-state">Tier
+1 — the consolidated steady state (safe) — RECOMMENDED END STATE</h3>
+<p>Keep the <code>quill-radio</code> and <code>quill-cast</code> repos
+as <strong>thin release-and-build shells</strong>: launcher + spec +
+installer + docs + <code>quill @ tag</code> pin. They:</p>
+<ul>
+<li>host the GitHub releases users download and the updater polls,</li>
+<li>build the standalone products,</li>
+<li>cannot drift from quill (no code of their own).</li>
+</ul>
+<p>This is the same shape as the target Audio Studio wrapper. There is
+nothing unsafe here and nothing more that <em>needs</em> doing — the
+family is already one codebase. Do <strong>not</strong> delete these
+repos in this tier.</p>
+<h3
+id="tier-2--retiring-a-wrapper-repo-deferred-only-if-going-quill-only">Tier
+2 — retiring a wrapper repo (deferred; only if going QUILL-only)</h3>
+<p>Only pursue this if the decision is to stop shipping a standalone
+product and make it QUILL-only. It is a <strong>multi-release,
+multi-month migration</strong>, never an abrupt delete, because existing
+installs poll the old repo until they update:</p>
+<ol type="1">
+<li><strong>Repoint the updater</strong> in quill: change
+<code>_REPO</code> to a repo that will persist (e.g. a single long-lived
+<code>Community-Access/quill-releases</code>, or the quill repo's own
+releases), and give the updater a small fallback that tries the new
+target and then the old.</li>
+<li><strong>Ship one transitional release from the OLD repo</strong>
+carrying that repointed updater, so users update once from where they
+are already pointed and their app then polls the new target.</li>
+<li><strong>Publish all future releases at the new target.</strong></li>
+<li><strong>Wait for adoption</strong> (weeks/months). Late updaters
+still poll the old repo.</li>
+<li><strong>Archive, do not delete, the old repo.</strong> GitHub
+"Archive" keeps the releases and the API alive (no 404) while freezing
+the repo. Deleting it would break every user who has not yet updated —
+possibly forever.</li>
+</ol>
+<p>Never skip 1–4. A deleted <code>/&lt;repo&gt;/releases</code>
+endpoint is an unrecoverable break for anyone still pointed at it.</p>
+<h2 id="cast-specifics">Cast specifics</h2>
+<p>Cast is shipped (v1.0.0) but carries the version-chaos and
+libmpv-staging issues noted in the audit (Tier 2 item 10 there). Before
+any Cast repo action, land the Cast 1.0.x housekeeping in quill
+(<code>apps/podcasts.py</code> <code>_VERSION</code>, installer
+AppVersion + VersionInfoVersion, changelog, libmpv staging). Same
+updater constraint as Radio.</p>
+<h2 id="recommendation">Recommendation</h2>
+<p>Do <strong>Tier 0</strong> now (issues + docs to quill — done this
+pass). Adopt <strong>Tier 1</strong> as the steady state: one codebase,
+thin release shells, no drift, updates intact. Treat <strong>Tier
+2</strong> (deleting a repo) as a deliberate, migration-gated project,
+not a cleanup — and even then, <em>archive</em> rather than delete, so
+no user's update check ever 404s.</p>
+</body>
+</html>
