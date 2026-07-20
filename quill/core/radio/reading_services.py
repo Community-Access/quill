@@ -208,13 +208,32 @@ def refresh_reading_services(
     return RrsRefreshResult(count=len(stations), generated_at=generated_at)
 
 
-def list_reading_services(
-    *, safe_mode: bool = False, searcher: Searcher | None = None
+def _merge_curated_and_discovered(
+    curated: list[RadioStation], discovered: list[RadioStation]
 ) -> list[RadioStation]:
-    """Resolve reading services: fresh cache -> live refresh (then cache) ->
-    stale cache -> bundled snapshot. Never raises -- every tier degrades to
-    the next rather than surfacing a network or Safe Mode error to a reader.
-    """
+    """Curated bundled services first, then any RadioBrowser-discovered services
+    not already present (de-duped by stream URL). The curated list is a
+    hand-vetted superset -- most of its services (ACB Media, WRBH, Sun Sounds,
+    ...) are not named "radio reading" and so never come back from the keyword
+    search -- so it must always be the floor, never replaced by the narrower
+    live result."""
+    seen = {(s.stream_url or "").strip().lower() for s in curated if s.stream_url}
+    merged = list(curated)
+    for station in discovered:
+        key = (station.stream_url or "").strip().lower()
+        if key and key in seen:
+            continue
+        if key:
+            seen.add(key)
+        merged.append(station)
+    return merged
+
+
+def _discovered_reading_services(
+    *, safe_mode: bool, searcher: Searcher | None
+) -> list[RadioStation]:
+    """The cache/live discovery tier only (no bundled floor): fresh cache ->
+    live refresh (then cache) -> stale cache -> ``[]``. Never raises."""
     cached = _read_cache()
     if cached is not None and cached[1] <= _DEFAULT_MAX_AGE_SECONDS:
         return cached[0]
@@ -228,4 +247,19 @@ def list_reading_services(
             return fresh[0]
     if cached is not None:
         return cached[0]  # stale cache beats a live failure
-    return load_reading_services()
+    return []
+
+
+def list_reading_services(
+    *, safe_mode: bool = False, searcher: Searcher | None = None
+) -> list[RadioStation]:
+    """Resolve reading services: the bundled curated list is always shown, and
+    any services RadioBrowser discovers (fresh cache -> live -> stale cache) are
+    unioned on top, de-duped by stream URL. Never raises -- a network or Safe
+    Mode failure just leaves the curated list. Unlike wxindex, the live tier
+    *augments* rather than *replaces* the snapshot, because the curated list is
+    a vetted superset the keyword search cannot reproduce.
+    """
+    curated = load_reading_services()
+    discovered = _discovered_reading_services(safe_mode=safe_mode, searcher=searcher)
+    return _merge_curated_and_discovered(curated, discovered)

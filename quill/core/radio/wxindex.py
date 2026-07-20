@@ -133,6 +133,40 @@ def stations_for_state(
     return parse_stations(data)
 
 
+def _directory_stations(*, max_age_seconds: float = _DEFAULT_MAX_AGE_SECONDS) -> list[WxStation]:
+    """Every known transmitter *with feed data*, from the full-directory tier.
+
+    The per-state live endpoint (``/v1/states/{slug}/stations``) returns only a
+    ``feed_count``, never the feed URLs -- so stations parsed from it are never
+    playable. Feed URLs live only in the full ``/stations/all-known`` dump: the
+    bundled snapshot, or a fresher copy in the ``directory.json`` cache written
+    by :func:`refresh_directory`. This reads that full-directory tier (fresh
+    cache, else bundled snapshot) so callers get real, playable feeds. No live
+    call and no per-state fetch -- it is a local read.
+    """
+    cached = _read_cache("directory.json")
+    if cached is not None and cached[1] <= max_age_seconds and isinstance(cached[0], dict):
+        return parse_stations(cached[0].get("stations", []))
+    return load_snapshot().stations
+
+
+def playable_stations_for_state(
+    slug: str, *, max_age_seconds: float = _DEFAULT_MAX_AGE_SECONDS
+) -> list[WxStation]:
+    """This state's transmitters that have a playable internet re-stream.
+
+    Sourced from the full-directory tier (:func:`_directory_stations`), because
+    only that tier carries feed URLs -- the per-state live endpoint does not.
+    This is what the Browse tree lists, so a state's folder is never silently
+    empty online while the bundled snapshot clearly has feeds for it.
+    """
+    return [
+        s
+        for s in _directory_stations(max_age_seconds=max_age_seconds)
+        if s.state.lower() == slug.lower() and s.feeds
+    ]
+
+
 def refresh_directory(
     *,
     safe_mode: bool = False,

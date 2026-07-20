@@ -14,6 +14,11 @@ class WxState:
     slug: str
     name: str
     station_count: int = 0
+    #: How many of this state's transmitters have a playable internet re-stream
+    #: (the WeatherIndex ``stations_with_feeds`` count). Most NWR transmitters
+    #: are VHF-only with no feed, so this is usually far below ``station_count``;
+    #: the Browse tree uses it to hide states with nothing to play.
+    stations_with_feeds: int = 0
 
 
 @dataclass(slots=True, frozen=True)
@@ -49,6 +54,7 @@ def parse_states(data: object) -> list[WxState]:
                     slug,
                     str(row.get("state_name", slug)),
                     int(_f(row.get("station_count"), 0)),
+                    int(_f(row.get("stations_with_feeds"), 0)),
                 )
             )
     return out

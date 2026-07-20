@@ -90,10 +90,13 @@ def reading_services_refresh_summary(*, safe_mode: bool = False) -> str:
     error comes back as a clear failure string instead of raising.
     """
     try:
-        result = reading_services.refresh_reading_services(safe_mode=safe_mode)
+        reading_services.refresh_reading_services(safe_mode=safe_mode)
     except RadioBrowserError as exc:
         return f"Could not update Radio Reading Services. {exc}"
-    return f"Radio Reading Services updated: {result.count} services."
+    # Report the total the user will actually see -- the curated bundled list
+    # plus anything the live refresh discovered -- not just the live count.
+    total = len(reading_services.list_reading_services(safe_mode=safe_mode))
+    return f"Radio Reading Services updated: {total} services."
 
 
 class RadioAppFrame(

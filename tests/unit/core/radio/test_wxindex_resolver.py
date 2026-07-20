@@ -51,3 +51,44 @@ def test_safe_mode_refuses_live(tmp_path, monkeypatch):
     monkeypatch.setattr(wxindex, "_cache_dir", lambda: tmp_path)
     with pytest.raises(wxindex.WxIndexError):
         wxindex.refresh_directory(safe_mode=True, fetcher=lambda url: "[]")
+
+
+def test_playable_stations_for_state_reads_feeds_from_bundled_snapshot(monkeypatch, tmp_path):
+    # No directory.json cache -> falls to the bundled snapshot, which carries
+    # feeds (the per-state live endpoint does not, so browse must use this).
+    monkeypatch.setattr(wxindex, "_cache_dir", lambda: tmp_path)
+    from quill.core.radio import wxindex_snapshot
+    from quill.core.radio.wxindex_models import WxStation
+    from quill.core.radio.wxindex_snapshot import Snapshot
+
+    snap = Snapshot(
+        stations=[
+            WxStation("KHB36", 162.55, state="VA", feeds=("https://s/khb36",)),
+            WxStation("KEC99", 162.40, state="VA", feeds=()),  # no feed -> excluded
+            WxStation("WXL58", 162.55, state="MD", feeds=("https://s/wxl58",)),  # other state
+        ]
+    )
+    monkeypatch.setattr(wxindex_snapshot, "load_snapshot", lambda: snap)
+    monkeypatch.setattr(wxindex, "load_snapshot", lambda: snap)
+    got = wxindex.playable_stations_for_state("VA")
+    assert [s.callsign for s in got] == ["KHB36"]  # only VA with a feed
+
+
+def test_playable_stations_for_state_prefers_fresh_directory_cache(monkeypatch, tmp_path):
+    monkeypatch.setattr(wxindex, "_cache_dir", lambda: tmp_path)
+    (tmp_path / "directory.json").write_text(
+        json.dumps({
+            "stations": [
+                {
+                    "callsign": "KHB36",
+                    "frequency": "162.550",
+                    "state_slug": "VA",
+                    "feeds": [{"stream_url": "https://fresh/khb36"}],
+                }
+            ]
+        }),
+        encoding="utf-8",
+    )
+    got = wxindex.playable_stations_for_state("VA")
+    assert len(got) == 1
+    assert got[0].feeds == ("https://fresh/khb36",)

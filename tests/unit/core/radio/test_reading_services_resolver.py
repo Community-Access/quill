@@ -63,7 +63,7 @@ def test_refresh_reading_services_refuses_in_safe_mode(tmp_path, monkeypatch):
     assert not (tmp_path / "directory.json").exists()
 
 
-def test_list_reading_services_serves_fresh_cache(tmp_path, monkeypatch):
+def test_list_reading_services_unions_curated_bundle_with_fresh_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(rs, "_cache_dir", lambda: tmp_path)
     calls: list[tuple[str, bool]] = []
     rs.refresh_reading_services(searcher=_fake_searcher(calls))
@@ -71,23 +71,45 @@ def test_list_reading_services_serves_fresh_cache(tmp_path, monkeypatch):
 
     stations = rs.list_reading_services(searcher=_fake_searcher(calls))
 
-    # No further searcher calls -- served straight from the fresh cache.
+    # No further searcher calls -- discovery served straight from the fresh cache.
     assert len(calls) == len(rs._READING_KEYWORDS)
-    assert len(stations) == 1
-    assert stations[0].stream_url == "https://s/metro-reading"
-    assert stations[0].source == "Radio Reading Service"
+    bundled = rs.load_reading_services()
+    # The curated bundle is always present, plus the one discovered service.
+    assert len(stations) == len(bundled) + 1
+    urls = {s.stream_url for s in stations}
+    assert "https://s/metro-reading" in urls  # the discovered one
+    assert all(b.stream_url in urls for b in bundled)  # every curated one survives
 
 
-def test_list_reading_services_refreshes_when_no_cache(tmp_path, monkeypatch):
+def test_list_reading_services_curated_only_when_no_discovery(tmp_path, monkeypatch):
     monkeypatch.setattr(rs, "_cache_dir", lambda: tmp_path)
-    calls: list[tuple[str, bool]] = []
 
-    stations = rs.list_reading_services(searcher=_fake_searcher(calls))
+    # Searcher returns nothing new; the curated bundle still shows in full.
+    stations = rs.list_reading_services(searcher=lambda *a, **k: [])
 
-    assert len(calls) == len(rs._READING_KEYWORDS)
-    assert len(stations) == 1
-    assert stations[0].source == "Radio Reading Service"
-    assert (tmp_path / "directory.json").exists()
+    bundled = rs.load_reading_services()
+    assert len(stations) == len(bundled)
+    assert {s.stream_url for s in stations} == {b.stream_url for b in bundled}
+
+
+def test_list_reading_services_dedupes_discovery_against_bundle(tmp_path, monkeypatch):
+    monkeypatch.setattr(rs, "_cache_dir", lambda: tmp_path)
+    bundled = rs.load_reading_services()
+    dup_url = bundled[0].stream_url
+
+    def searcher(keyword, *, safe_mode=False):
+        return [
+            RadioStation(
+                name="Dup Reading Service",
+                stream_url=dup_url,  # same stream as a curated service
+                tags=("reading service",),
+                source="RadioBrowser",
+            )
+        ]
+
+    stations = rs.list_reading_services(searcher=searcher)
+    # The duplicate stream collapses -- no double entry.
+    assert len(stations) == len(bundled)
 
 
 def test_list_reading_services_safe_mode_falls_back_to_bundled_snapshot(tmp_path, monkeypatch):
@@ -99,5 +121,5 @@ def test_list_reading_services_safe_mode_falls_back_to_bundled_snapshot(tmp_path
     assert calls == []
     assert not (tmp_path / "directory.json").exists()
     bundled = rs.load_reading_services()
-    assert [s.stream_url for s in stations] == [s.stream_url for s in bundled]
+    assert {s.stream_url for s in stations} == {s.stream_url for s in bundled}
     assert len(stations) == len(bundled)

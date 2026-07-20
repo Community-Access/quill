@@ -28,10 +28,11 @@ def test_iheart_letter_groups_buckets_and_orders() -> None:
         _st("!Weird"),
     ])
     labels = [label for label, _stations in groups]
-    # Letters A-Z first (case-insensitive), then a digits bucket, then other.
-    assert labels == ["A", "W", "0-9", "#"]
+    # Digits bucket first, then A-Z (case-insensitive), then symbols last.
+    assert labels == ["0-9", "A", "W", "#"]
+    # Stations inside a bucket are name-sorted, case-insensitively.
     a_bucket = dict(groups)["A"]
-    assert {s.name for s in a_bucket} == {"Alt 92.3", "acid jazz"}
+    assert [s.name for s in a_bucket] == ["acid jazz", "Alt 92.3"]
 
 
 def test_fetch_children_iheart_loads_genres(monkeypatch) -> None:

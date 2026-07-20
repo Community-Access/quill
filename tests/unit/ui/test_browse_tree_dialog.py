@@ -156,6 +156,26 @@ def test_toggle_favorite_adds_and_removes() -> None:
     assert not d._favorites.contains(station)
 
 
+def test_toggle_favorite_refreshes_open_favorites_branch() -> None:
+    # Adding a favorite while the Browse window is open updates the Favorites
+    # branch live, without the user reopening the window.
+    d = _dialog()
+    fav_node = _Node()
+    d._favorites_root = fav_node
+    d._tree.SetItemData(fav_node, {"kind": "favorites", "payload": None, "loaded": True})
+    d._add_favorites(fav_node)  # branch built (empty placeholder for now)
+
+    station = RadioStation(name="WJAZZ", stream_url="https://x/s", station_uuid="u1")
+    sel = _Node()
+    d._tree._data[sel] = {"kind": "station", "station": station}
+    d._tree._selection = sel
+    d._toggle_favorite()
+
+    # The Favorites branch now lists the just-added station.
+    labels = [label for _n, label in d._tree.children[fav_node]]
+    assert any("WJAZZ" in label for label in labels)
+
+
 def test_add_favorites_builds_unfiled_stations_then_folders() -> None:
     d = _dialog()
     top = RadioStation(name="Top FM", stream_url="https://x/t", station_uuid="t")

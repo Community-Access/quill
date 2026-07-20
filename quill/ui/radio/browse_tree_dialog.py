@@ -74,10 +74,10 @@ _EXPANDABLE = (
 def _iheart_letter_groups(
     stations: list[RadioStation],
 ) -> list[tuple[str, list[RadioStation]]]:
-    """Group iHeart stations into A-Z folders (case-insensitive by first
-    letter), with a "0-9" bucket for digit-led names and a "#" bucket for
-    anything else. Letters come first in A-Z order, then "0-9", then "#" --
-    so a genre's stations read as an alphabetised sub-directory."""
+    """Group iHeart stations into an alphabetised sub-directory: a "0-9" bucket
+    for digit-led names first, then A-Z folders (case-insensitive by first
+    letter), then a "#" bucket for anything else. Stations inside each bucket
+    are sorted by name, case-insensitively, so the whole list reads in order."""
     buckets: dict[str, list[RadioStation]] = {}
     for station in stations:
         first = (station.name or "").strip()[:1].upper()
@@ -91,28 +91,36 @@ def _iheart_letter_groups(
 
     def _order(key: str) -> tuple[int, str]:
         if key == "0-9":
-            return (1, key)
+            return (0, key)  # digits before letters
         if key == "#":
-            return (2, key)
-        return (0, key)
+            return (2, key)  # symbols last
+        return (1, key)
 
-    return [(key, buckets[key]) for key in sorted(buckets, key=_order)]
+    return [
+        (key, sorted(buckets[key], key=lambda s: (s.name or "").lower()))
+        for key in sorted(buckets, key=_order)
+    ]
 
 
 def _wx_state_folders(*, safe_mode: bool) -> list[WxState]:
-    """The wxindex State directory -- raw provider data for the "wx_states"
-    folder; ``_add_children`` turns each into a "wx_state" tree node."""
-    return wxindex.list_states(safe_mode=safe_mode)
+    """The wxindex State directory, limited to states that actually have a
+    playable transmitter. NOAA Weather Radio is broadcast over VHF; most of the
+    ~1035 known transmitters have no internet re-stream, and whole states
+    (American Samoa, say) have none at all. Listing a state whose folder would
+    be empty just strands the user on it, so states with zero
+    ``stations_with_feeds`` are dropped here. ``_add_children`` turns each
+    survivor into a "wx_state" tree node."""
+    return [s for s in wxindex.list_states(safe_mode=safe_mode) if s.stations_with_feeds > 0]
 
 
 def _wx_playable_stations(slug: str, *, safe_mode: bool) -> list[RadioStation]:
-    """Station leaves for one State, filtered to those with a live internet
-    re-stream feed. NOAA Weather Radio is broadcast over VHF; wxindex lists
-    every known transmitter (~1035), but only a minority (~144) are also
-    re-streamed to the internet. A transmitter with no feed has nothing to
-    play, so it never appears in this tree."""
-    stations = wxindex.stations_for_state(slug, safe_mode=safe_mode)
-    return [to_radio_station(s) for s in stations if s.feeds]
+    """Station leaves for one State: its transmitters that have a playable
+    internet re-stream feed. Sourced via ``wxindex.playable_stations_for_state``
+    from the full-directory tier (bundled snapshot or the refreshed
+    directory cache), which is the only tier that carries feed URLs -- the
+    per-state live endpoint returns just a feed count, so building the tree
+    from it would leave every state's folder empty online."""
+    return [to_radio_station(s) for s in wxindex.playable_stations_for_state(slug)]
 
 
 class BrowseTreeDialog:
@@ -240,6 +248,8 @@ class BrowseTreeDialog:
             node = tree.AppendItem(root, label)
             tree.SetItemData(node, {"kind": kind, "payload": payload, "loaded": False})
             tree.SetItemData(tree.AppendItem(node, "Loading..."), {"kind": "placeholder"})
+            if kind == "favorites":
+                self._favorites_root = node  # kept so a favorite add/remove can refresh it live
         first, _cookie = tree.GetFirstChild(root)
         if first.IsOk():
             tree.SelectItem(first)
@@ -285,7 +295,7 @@ class BrowseTreeDialog:
                 tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
         elif kind == "wx_states":
             for state in raw:
-                child = tree.AppendItem(node, f"{state.name} ({state.station_count})")
+                child = tree.AppendItem(node, f"{state.name} ({state.stations_with_feeds})")
                 tree.SetItemData(
                     child, {"kind": "wx_state", "payload": state.slug, "loaded": False}
                 )
@@ -333,11 +343,13 @@ class BrowseTreeDialog:
             if first.IsOk():
                 tree.SelectItem(first)
 
-    def _add_favorites(self, node: Any) -> None:
+    def _add_favorites(self, node: Any, *, select: bool = True) -> None:
         """Build the local Favorites branch: unfiled stations first, then a
         node per folder holding its stations. Favorite leaves reuse the plain
         "station" kind, so Play / Add-Remove Favorite / context menu all work
-        unchanged. Local data, so no network fetch."""
+        unchanged. Local data, so no network fetch. ``select=False`` rebuilds
+        the branch without moving the selection (used for a live refresh after
+        a favorite is added/removed, so focus stays where the user is)."""
         tree = self._tree
         if not node.IsOk():
             return
@@ -358,10 +370,25 @@ class BrowseTreeDialog:
         if not count:
             empty = tree.AppendItem(node, "No favorites yet -- add stations from any source below.")
             tree.SetItemData(empty, {"kind": "placeholder"})
+        if not select:
+            return
         self._announce(f"Favorites: {count} item{'' if count == 1 else 's'}.")
         first, _cookie = tree.GetFirstChild(node)
         if first.IsOk():
             tree.SelectItem(first)
+
+    def _refresh_favorites_branch(self) -> None:
+        """Rebuild the Favorites branch in place after a favorite is added or
+        removed, so the change shows immediately while the Browse window is
+        open. A no-op until the branch has been expanded once (it builds fresh
+        on first open) and it never moves the selection."""
+        node = getattr(self, "_favorites_root", None)
+        if node is None:
+            return
+        data = self._node_data(node)
+        if not data or not data.get("loaded"):
+            return
+        self._add_favorites(node, select=False)
 
     # -- events -----------------------------------------------------------------
 
@@ -509,6 +536,7 @@ class BrowseTreeDialog:
             self._announce(f"Added {station.display_name} to Favorites")
         self._update_favorite_label(station)
         self._on_favorites_changed()
+        self._refresh_favorites_branch()
 
     def _favorite_folder(self, node: Any) -> None:
         """Add every loaded station under a folder to Favorites in one go.
@@ -535,6 +563,7 @@ class BrowseTreeDialog:
             return
         if added:
             self._on_favorites_changed()
+            self._refresh_favorites_branch()
         self._announce(
             f"Added {added} station{'' if added == 1 else 's'} to Favorites."
             if added
