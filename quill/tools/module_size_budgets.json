@@ -1,4 +1,5 @@
 {
+  "_rebaseline_2026_07_20_cast_playback_shortcuts": "podcasts.py 908->913, main_frame_podcasts.py 1007->1017: Cast playback keyboard shortcuts (#1189 follow-up) -- Stop (Ctrl+.), Skip Forward/Back (Ctrl+Right/Left), and new Volume Up/Down (Ctrl+Up/Down, matching Radio) in the Episode menu. Feature growth.",
   "_rebaseline_2026_07_20_cast_episodes_item_key": "manager_dialog.py 1195->1214 (+19) for #1189: added the _item_key helper (int of the wx tree-item voidptr) so the item->show/folder maps key by a stable id -- selecting a podcast now loads its episodes instead of silently missing every lookup. Bug-fix growth.",
   "_rebaseline_2026_07_20_radio_mark_and_move": "radio.py 1458->1505 (+47) for #1190: Mark-and-Move in the favorites context menu (Mark for Move, then Move Marked Above/Below in one step, via the store's move_relative_to) so listeners stop nudging a station 20-30 times with Alt+Shift+Up/Down. Mirrors the Favorites Manager. Feature growth in the app shell.",
   "_rebaseline_2026_07_20_beacon_msgbox_wrap": "beacon app.py 1856->1859, dialogs.py 2483->2497: the accessible-MessageBox migration (raw wx.MessageBox -> quill.ui.dialog_contract.show_message_box, GATE-16) wrapped a few multi-arg calls, landing just after the budgets were set in the vendor commit. Same wx-UI modules, no feature growth.",
@@ -574,7 +575,7 @@
     "quill/ui/podcasts/manager_dialog.py": 1214,
     "quill/ui/podcasts/manager_phase4.py": 761,
     "_rebaseline_2026_07_14_podcasts_phase4_ui_wiring": "Phase 4 UI wiring. manager_dialog.py 1045 -> 1059 (+14): the ManagerPhase4Mixin base + hook calls (filter row build, virtual-view tree nodes, virtual-selection dispatch, episode filter, phase4 context-menu items) -- the mixin bodies live in the new manager_phase4.py. quill/ui/main_frame_podcasts.py enters the budget at 656 (was under the 600 default cap): position-checkpoint persistence, Play Queue auto-advance, Always Sync backfill, download-time audio processing, Add Local Podcast, watched-folder scan, ACB Media directory subscribe, Add Episode Note, and the four command registrations.",
-    "quill/ui/main_frame_podcasts.py": 1007,
+    "quill/ui/main_frame_podcasts.py": 1017,
     "_rebaseline_2026_07_16_podcasts_lazy_dialog_imports": "main_frame_podcasts.py 1000 -> 1007 (+7): deferring the Add Podcast and Podcast Manager dialog imports off the cold-start path (they pull feedparser via feed_reader) adds a TYPE_CHECKING block plus two function-level imports at the dialog open sites. Net-negative for startup import cost; the small line growth is the deferral scaffolding.",
     "_rebaseline_2026_07_14_podcasts_phase4_manager_folder_ops": "manager_dialog.py 837 -> 1045 (+208): Phase 4 folder management -- Move to Folder... (position-preserving: _neighbor_anchor_for_show/_restore_tree_anchor keep selection on the moved show's nearest former neighbor instead of snapping to the tree top), F2 rename for folders/shows/episodes, Delete Folder... with an explicit contents choice (promote to parent, or unsubscribe + optional downloaded-file cleanup via _delete_downloaded_files_for_removed_shows), inbox-folder delete, the context-menu items for all of it, and the module-level _shows_in_folder_subtree helper. The CQ-1 decomposition of this dialog (episode ops / folder ops / build) remains the long-term path; this pass keeps all folder ops in one reviewable place first.",
     "quill/ui/prompt_library_dialog.py": 514,
@@ -601,7 +602,7 @@
     "quill/ui/main_frame_local_git.py": 696,
     "quill/ui/main_frame_github_extras.py": 335,
     "quill/core/browser_preview.py": 606,
-    "quill/apps/podcasts.py": 908,
+    "quill/apps/podcasts.py": 913,
     "_rebaseline_2026_07_17_alt_f4_to_tray_cast": "apps/podcasts.py 884 -> 908 (+24): the opt-in Alt+F4-minimizes-to-tray preference -- the EVT_CHAR_HOOK bind + handler and the Preferences checkbox/save wiring. Mirrors Quill Radio; the field lives in core/podcasts/history.py.",
     "quill/apps/studio.py": 2581,
     "_rebaseline_2026_07_20_reverse_vendor_audio_studio": "apps/studio.py enters the tracked list at 2577 (a new file over the 600 default cap): the Audio Studio app shell reverse-vendored from the standalone quill-audio-studio (quillas/apps/studio.py) into quill/apps beside radio.py/podcasts.py, per docs/design/2026-07-17-audio-studio-migration-audit.md section 25 (Option D). It is the StudioAppFrame (library tree, Chapter Workbench launch, play queue, sleep timer, voice preview, Speech Hub, transcribe, pronunciation) on the shared quill.ui.app_shell.AppShellFrame; all feature code already lives in quill/core/audio_studio + quill/ui/audio_studio. DECOMPOSITION CANDIDATE like the other app shells; deferred as a faithful move so the reverse-vendor stays reviewable.",

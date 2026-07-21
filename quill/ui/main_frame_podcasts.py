@@ -433,6 +433,16 @@ class PodcastsMixin:
         self._podcast_controller.toggle_mute()
         self._announce("Podcasts muted" if self._podcast_controller.muted else "Podcasts unmuted")
 
+    def podcast_volume_up(self) -> None:
+        controller = self._podcast_controller
+        controller.set_volume(controller.volume_percent + 5)
+        self._announce(f"Podcasts volume {controller.volume_percent}")
+
+    def podcast_volume_down(self) -> None:
+        controller = self._podcast_controller
+        controller.set_volume(controller.volume_percent - 5)
+        self._announce(f"Podcasts volume {controller.volume_percent}")
+
     def _on_podcast_enhance_error(self, message: str) -> None:
         """Sound Enhancements couldn't start (ffmpeg missing, relay failed);
         playback still proceeds unenhanced, so this is an announcement, not a
