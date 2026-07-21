@@ -222,6 +222,13 @@ def test_ui_font_scale_defaults_round_trips_and_clamps(tmp_path: Path) -> None:
     assert load_history(tmp_path).ui_font_scale == 1.0
 
 
+def test_prevent_sleep_defaults_on_and_round_trips(tmp_path: Path) -> None:
+    # On by default: playing radio should keep the machine awake unless opted out.
+    assert load_history(tmp_path).prevent_sleep is True
+    save_history(tmp_path, RadioHistory(prevent_sleep=False))
+    assert load_history(tmp_path).prevent_sleep is False
+
+
 def test_channel_mode_defaults_to_stereo_and_round_trips(tmp_path: Path) -> None:
     assert load_history(tmp_path).channel_mode == "stereo"
     for mode in ("mono", "left", "right", "stereo"):

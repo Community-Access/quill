@@ -1380,6 +1380,13 @@ class RadioAppFrame(
                     "hard-to-reproduce problem. Off by default (it is chatty)",
                     history.debug_mode,
                 ),
+                PreferenceCheckbox(
+                    "&Keep the computer awake while playing or recording",
+                    "Stop Windows from going to sleep while a station is playing "
+                    "or a recording is running, so the audio does not cut off. "
+                    "On by default. (The screen may still turn off.)",
+                    history.prevent_sleep,
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -1444,6 +1451,7 @@ class RadioAppFrame(
             history.recover_from_website,
             history.alt_f4_to_tray,
             history.debug_mode,
+            history.prevent_sleep,
         ) = checkbox_values
         # Apply verbose logging immediately (quill-radio #5) so it takes effect
         # this session, not just the next launch.
@@ -1482,6 +1490,9 @@ class RadioAppFrame(
                 target = Path(new_log_dir) if new_log_dir else app_data_dir() / "logs"
                 relocate_log(listener, target)
         radio_history.save_history(app_data_dir(), history)
+        # Apply the Prevent Sleep choice now: acquire the keep-awake lock if a
+        # station is already playing, or release it if the user just turned it off.
+        self._update_sleep_inhibitor()
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)

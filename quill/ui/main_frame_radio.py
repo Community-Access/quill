@@ -355,6 +355,7 @@ class RadioMixin:
     ) -> None:
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
+        self._update_sleep_inhibitor()
         if is_recording:
             # R3: persist a per-recording marker (keyed by job id) so a restart
             # can offer to resume this exact recording. Built from the recorder's
@@ -636,6 +637,30 @@ class RadioMixin:
                 save_settings(self.settings)
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
+        self._update_sleep_inhibitor()
+
+    def _update_sleep_inhibitor(self) -> None:
+        """Keep the machine awake while a station plays or a recording runs (and
+        the Prevent Sleep preference is on), releasing the request otherwise.
+        Windows-only; a no-op elsewhere. Called on every playback/recording
+        state change and when the preference is toggled."""
+        from quill.platform.keep_awake import set_keep_awake
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        controller = getattr(self, "_radio_controller", None)
+        playing = controller is not None and controller.state.state in (
+            RadioPlayerState.PLAYING,
+            RadioPlayerState.CONNECTING,
+        )
+        recorder = getattr(self, "_radio_recorder", None)
+        recording = int(getattr(recorder, "active_count", 0) or 0) > 0
+        want = (playing or recording) and bool(
+            getattr(self._radio_history, "prevent_sleep", True)
+        )
+        if want == getattr(self, "_sleep_inhibited", False):
+            return
+        set_keep_awake(want)
+        self._sleep_inhibited = want
 
     def _radio_track_history_and_volume(self, state: RadioPlaybackState) -> None:
         """Two memories, updated on every playback state change: the
