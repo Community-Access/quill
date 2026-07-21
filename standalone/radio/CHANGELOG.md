@@ -16,6 +16,9 @@ Everything since 2.1.2, in one release. All in the shared `quill` package, so QU
 - **Exit really exits (#1193).** Choosing Exit -- from the menu or the system tray -- now quits for real instead of bouncing back into the tray when your close setting was "minimize to tray."
 - **The menu bar is reachable the instant the app opens (#1193).** Pressing Alt right after launch now opens the app menu instead of the window's system menu; keyboard focus lands inside the window as soon as it appears.
 - **NOAA Weather states show the stations they promise.** A state under Weather / NOAA that read "9 items" could still expand to nothing, because the folder count and the station list came from two different data sources. Both now come from the same directory, so a state's count always matches what expanding it shows.
+- **Weather is worldwide (#1187).** The Weather menu could only find and forecast US places; location search now resolves anywhere ("Brno, Czech Republic" and beyond), and non-US locations get a real current-conditions + up-to-16-day forecast (with air quality) from the keyless Open-Meteo service, while US locations still use the authoritative NWS report. Local watches/warnings remain US-only (NWS), noted on worldwide reports.
+- **Browse no longer yanks your cursor into the station list (#1188).** Expanding a country or genre in Browse Stations used to jump the cursor straight into the station list; it now stays on the folder you expanded (the count is still announced) so you arrow down when you are ready.
+- **"Install and restart" no longer hangs (#1191).** The self-update helper launched detached, so its wait-loop spawned a stray visible terminal that stole focus and stalled the update; it now runs in a single hidden console the children inherit, so Install-and-restart completes cleanly.
 
 ## 2.1.2 -- 2026-07-20
 
