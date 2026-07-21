@@ -114,6 +114,14 @@ class RadioAppFrame(
 
         set_transition_announcement_policy(lambda: self._radio_history.announce_dialog_transitions)
         self._init_media_sleep_timer()
+        from quill.ui.window_menu import WindowManager
+
+        # Shared &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 traversal
+        # across the main window and the modeless radio surfaces. RadioMixin's
+        # open_* methods pass this to each surface, which becomes a modeless
+        # frame in the standalone app; embedded QUILL passes no manager, so the
+        # same surfaces stay modal there.
+        self._windows = WindowManager(wx)
         self._build_menu_bar()
         self._build_main_panel()
         self._register_radio_commands()
@@ -1057,7 +1065,12 @@ class RadioAppFrame(
         menu_bar.Append(view_menu, "&View")
         menu_bar.Append(help_menu, "&Help")
 
+        # Persistent &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 on the
+        # main window; each modeless surface installs the same on its own bar so
+        # the numbered traversal reaches every open radio window.
+        self._windows.install(self.frame, menu_bar)
         self.frame.SetMenuBar(menu_bar)
+        self._windows.register(self.frame, _TITLE)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
             browse_id,

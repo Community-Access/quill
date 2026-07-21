@@ -156,6 +156,7 @@ class BrowseTreeDialog:
         announce_cb: Callable[[str], None] | None = None,
         on_favorites_changed: Callable[[], None] | None = None,
         show_details: bool = True,
+        windows: object | None = None,
     ) -> None:
         import wx
 
@@ -169,21 +170,35 @@ class BrowseTreeDialog:
         self._menu_id_refs: list[object] = []
         self._find_active = False
         self._find_return_node: Any = None
-
-        self.dialog = wx.Dialog(
-            parent, title="Browse Stations", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((560, 460))
+        # When a WindowManager is supplied (standalone Radio), this surface is a
+        # modeless wx.Frame carrying the persistent menu bar + &Window menu, with
+        # its controls on an inner panel for keyboard traversal; otherwise
+        # (embedded QUILL) it stays a modal wx.Dialog, unchanged.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._win = wx.Frame(parent, title="Browse Stations", style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._win = wx.Dialog(
+                parent, title="Browse Stations", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+            )
+            self._surface = self._win
+        self.dialog = self._win  # back-compat alias for callers that reference it
+        self._win.SetMinSize((560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
-            wx.StaticText(self.dialog, label="&Stations (expand a source to browse it):"),
+            wx.StaticText(self._surface, label="&Stations (expand a source to browse it):"),
             0,
             wx.LEFT | wx.TOP,
             10,
         )
         self._tree = wx.TreeCtrl(
-            self.dialog,
+            self._surface,
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT | wx.BORDER_SIMPLE,
         )
         self._tree.SetName(
@@ -194,26 +209,26 @@ class BrowseTreeDialog:
 
         find_row = wx.BoxSizer(wx.HORIZONTAL)
         find_row.Add(
-            wx.StaticText(self.dialog, label="&Find in this folder:"),
+            wx.StaticText(self._surface, label="&Find in this folder:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._find_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+        self._find_ctrl = wx.TextCtrl(self._surface, style=wx.TE_PROCESS_ENTER)
         self._find_ctrl.SetName(
             "Find stations in the highlighted folder and everything below it; press Enter"
         )
         find_row.Add(self._find_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._find_btn = wx.Button(self.dialog, label="Find")
+        self._find_btn = wx.Button(self._surface, label="Find")
         self._find_btn.SetName("Find in this folder")
-        self._find_clear_btn = wx.Button(self.dialog, label="C&lear")
+        self._find_clear_btn = wx.Button(self._surface, label="C&lear")
         self._find_clear_btn.SetName("Clear the search and return to the folder")
         find_row.Add(self._find_btn, 0, wx.RIGHT, 6)
         find_row.Add(self._find_clear_btn, 0)
         root.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._details = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._details.SetName("Details of the highlighted station")
         root.Add(self._details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -222,26 +237,26 @@ class BrowseTreeDialog:
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
         volume_row.Add(
-            wx.StaticText(self.dialog, label="Radio &volume:"),
+            wx.StaticText(self._surface, label="Radio &volume:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._volume_slider = wx.Slider(self.dialog, value=100, minValue=0, maxValue=100)
+        self._volume_slider = wx.Slider(self._surface, value=100, minValue=0, maxValue=100)
         self._volume_slider.SetName("Internet Radio volume")
         volume_row.Add(self._volume_slider, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._mute_btn = wx.ToggleButton(self.dialog, label="&Mute")
+        self._mute_btn = wx.ToggleButton(self._surface, label="&Mute")
         volume_row.Add(self._mute_btn, 0)
         root.Add(volume_row, 0, wx.EXPAND | wx.ALL, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._play_btn = wx.Button(self.dialog, label="&Play")
+        self._play_btn = wx.Button(self._surface, label="&Play")
         self._play_btn.Enable(False)
-        self._favorite_btn = wx.Button(self.dialog, label="Add to &Favorites")
+        self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
         self._favorite_btn.Enable(False)
-        self._refresh_btn = wx.Button(self.dialog, label="&Refresh")
+        self._refresh_btn = wx.Button(self._surface, label="&Refresh")
         self._refresh_btn.SetName("Reload the highlighted source from the internet")
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
@@ -250,7 +265,11 @@ class BrowseTreeDialog:
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
 
         self._tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_expanding)
         self._tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_activated)
@@ -274,17 +293,55 @@ class BrowseTreeDialog:
 
     # -- lifecycle --------------------------------------------------------------
 
-    def show(self, *, initial_source: str | None = None) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
-        from quill.ui.dialog_contract import show_modal_dialog
+    def _build_surface_menu_bar(self) -> None:
+        """A small menu bar for the modeless frame: a &Close item plus the shared
+        &Window menu, so Alt always lands on a real menu and Ctrl+Tab / Ctrl+1..9
+        reach every open radio window."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Browse")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
 
+    def _on_char_hook(self, event: object) -> None:
+        # A frame has no automatic Escape->Cancel; wire it to close.
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+            self._win.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: object) -> None:
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        self._announce("Exited Browse Stations")
+        self._on_favorites_changed()
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
+    def show(self, *, initial_source: str | None = None) -> None:
         if initial_source is not None:
             self._expand_source(initial_source)
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, "Browse Stations")
+            show_modeless_surface(self._win, "Browse Stations", announce=self._announce)
+            return
+        self._win.CentreOnParent()
+        apply_modal_ids(self._win, cancel_id=self._wx.ID_CANCEL)
+        from quill.ui.dialog_contract import show_modal_dialog
+
         try:
-            show_modal_dialog(self.dialog, "Browse Stations", announce=self._announce)
+            show_modal_dialog(self._win, "Browse Stations", announce=self._announce)
         finally:
-            self.dialog.Destroy()
+            self._win.Destroy()
 
     # -- tree population --------------------------------------------------------
 

@@ -1684,6 +1684,7 @@ class RadioMixin:
             announce_cb=self._announce,
             on_favorites_changed=self._save_radio_favorites,
             show_details=self._radio_history.show_station_details,
+            windows=getattr(self, "_windows", None),
         )
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
