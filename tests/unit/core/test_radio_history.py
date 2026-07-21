@@ -205,6 +205,23 @@ def test_show_status_bar_defaults_on_and_round_trips(tmp_path: Path) -> None:
     assert load_history(tmp_path).show_status_bar is False
 
 
+def test_ui_font_scale_defaults_round_trips_and_clamps(tmp_path: Path) -> None:
+    import json
+
+    assert load_history(tmp_path).ui_font_scale == 1.0  # normal out of the box
+    save_history(tmp_path, RadioHistory(ui_font_scale=1.25))
+    assert load_history(tmp_path).ui_font_scale == 1.25
+    # An out-of-range or garbage value is clamped/coerced into [1.0, 2.0].
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"ui_font_scale": 9.0}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).ui_font_scale == 2.0
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"ui_font_scale": "big"}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).ui_font_scale == 1.0
+
+
 def test_channel_mode_defaults_to_stereo_and_round_trips(tmp_path: Path) -> None:
     assert load_history(tmp_path).channel_mode == "stereo"
     for mode in ("mono", "left", "right", "stereo"):

@@ -67,6 +67,8 @@ _ENGINE_LABELS = ("Automatic (recommended)", "Windows Media (classic)", "mpv")
 _ENGINE_VALUES = ("auto", "wx", "mpv")
 _FAVORITES_SORT_LABELS = ("Ascending (A to Z)", "Descending (Z to A)", "Unsorted (manual order)")
 _FAVORITES_SORT_VALUES = ("az", "za", "manual")
+#: View > Text Size choices: (menu label, font scale). Normal is the wx default.
+_TEXT_SIZE_SCALES = (("&Normal", 1.0), ("&Large", 1.25), ("La&rger", 1.5))
 _ENGINE_HELP = (
     "Which audio engine plays the radio. Automatic uses mpv when it is "
     "installed -- that is what enables the output device choice, pausing "
@@ -219,6 +221,7 @@ class RadioAppFrame(
         self._main_panel = panel
         self._reload_favorites_tree()
         self._status_bar.refresh()
+        self._apply_text_size()
         self._favorites_tree.SetFocus()
 
     def _focus_initial_control(self) -> None:
@@ -1019,6 +1022,38 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
         )
+        view_menu.AppendSeparator()
+        # Sort Favorites: the same setting Preferences carries, surfaced here as
+        # radio items so it is one keystroke away and its current value is visible.
+        sort_menu = wx.Menu()
+        self._sort_item_ids = [wx.NewIdRef() for _ in _FAVORITES_SORT_VALUES]
+        sort_accels = ("\tCtrl+Shift+A", "\tCtrl+Shift+Z", "")
+        for item_id, label, value, accel in zip(
+            self._sort_item_ids, _FAVORITES_SORT_LABELS, _FAVORITES_SORT_VALUES, sort_accels,
+            strict=True,
+        ):
+            sort_menu.AppendRadioItem(item_id, label + accel)
+            sort_menu.Check(item_id, self._radio_history.favorites_sort == value)
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e, v=value: self._set_favorites_sort(v), id=item_id
+            )
+        view_menu.AppendSubMenu(sort_menu, "Sort &Favorites")
+        expand_id, collapse_id = wx.NewIdRef(), wx.NewIdRef()
+        view_menu.Append(expand_id, "&Expand All Folders")
+        view_menu.Append(collapse_id, "&Collapse All Folders")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(True), id=expand_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(False), id=collapse_id)
+        view_menu.AppendSeparator()
+        # Text Size: scale the main window's fonts for low-vision listeners.
+        text_menu = wx.Menu()
+        self._text_size_item_ids = [wx.NewIdRef() for _ in _TEXT_SIZE_SCALES]
+        for item_id, (label, scale) in zip(
+            self._text_size_item_ids, _TEXT_SIZE_SCALES, strict=True
+        ):
+            text_menu.AppendRadioItem(item_id, label)
+            text_menu.Check(item_id, abs(self._radio_history.ui_font_scale - scale) < 0.01)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, s=scale: self._set_text_size(s), id=item_id)
+        view_menu.AppendSubMenu(text_menu, "&Text Size")
         menu_bar.Append(view_menu, "&View")
         menu_bar.Append(help_menu, "&Help")
 
@@ -1067,6 +1102,10 @@ class RadioAppFrame(
             about_id,
             show_details_id,
             self._status_bar_item_id,
+            expand_id,
+            collapse_id,
+            *self._sort_item_ids,
+            *self._text_size_item_ids,
         )
 
     def _open_radio_doc(self, stem: str) -> None:
@@ -1151,6 +1190,67 @@ class RadioAppFrame(
             if history.show_status_bar:
                 status_bar.refresh()
         self._announce("Status bar shown." if history.show_status_bar else "Status bar hidden.")
+
+    def _set_favorites_sort(self, value: str) -> None:
+        """View > Sort Favorites: change the favorites sort order and reload the
+        tree. Same setting Preferences carries; announced so the change is heard."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        if history.favorites_sort == value:
+            return
+        history.favorites_sort = value
+        radio_history.save_history(app_data_dir(), history)
+        self._reload_favorites_tree()
+        labels = dict(zip(_FAVORITES_SORT_VALUES, _FAVORITES_SORT_LABELS, strict=True))
+        self._announce(f"Sorted favorites: {labels[value]}")
+
+    def _expand_all_folders(self, expand: bool) -> None:
+        """View > Expand/Collapse All Folders on the favorites tree."""
+        tree = getattr(self, "_favorites_tree", None)
+        if tree is None:
+            return
+        if expand:
+            tree.ExpandAll()
+            self._announce("Expanded all folders.")
+        else:
+            tree.CollapseAll()
+            self._announce("Collapsed all folders.")
+
+    def _set_text_size(self, scale: float) -> None:
+        """View > Text Size: persist the font scale and apply it right away."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        if abs(history.ui_font_scale - scale) < 0.01:
+            return
+        history.ui_font_scale = scale
+        radio_history.save_history(app_data_dir(), history)
+        self._apply_text_size()
+        names = {1.0: "Normal", 1.25: "Large", 1.5: "Larger"}
+        self._announce(f"Text size: {names.get(scale, 'Normal')}")
+
+    def _apply_text_size(self) -> None:
+        """Scale the main window's fonts (tree, buttons, now-playing line, status
+        bar) to the saved ui_font_scale. A no-op at 1.0 beyond restoring the base
+        font, so toggling back to Normal returns to the system default."""
+        scale = float(getattr(self._radio_history, "ui_font_scale", 1.0) or 1.0)
+        panel = getattr(self, "_main_panel", None)
+        if panel is None:
+            return
+        base = self._wx.SystemSettings.GetFont(self._wx.SYS_DEFAULT_GUI_FONT)
+        font = base.Scaled(scale) if scale != 1.0 else base
+        for name in ("_now_playing_text", "_favorites_tree", "_play_stop_btn",
+                     "_favorite_toggle_btn", "_record_btn"):
+            widget = getattr(self, name, None)
+            if widget is not None:
+                widget.SetFont(font)
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.set_font(font)
+        panel.Layout()
 
     def _focus_status_bar(self) -> None:
         """F6: move focus into the status bar, or back out of it if already there.

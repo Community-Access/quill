@@ -298,6 +298,25 @@ class RadioStatusBar:
         if parent is not None:
             parent.Layout()
 
+    def set_font(self, font: Any) -> None:
+        """Apply *font* to the bar and every cell (View > Text Size scaling)."""
+        panel = self._panel
+        if panel is not None:
+            try:
+                panel.SetFont(font)
+            except RuntimeError:
+                pass
+        for cell in self._cells:
+            try:
+                cell.button.SetFont(font)
+            except RuntimeError:
+                continue
+        if panel is not None:
+            try:
+                panel.Layout()
+            except RuntimeError:
+                pass
+
     def has_focus(self) -> bool:
         """True when keyboard focus is on one of this bar's cells."""
         wx = self._wx
