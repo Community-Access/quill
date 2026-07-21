@@ -378,6 +378,7 @@ class RadioAppFrame(
             )
             entries = [
                 ("&Stop" if playing else "&Play", self._on_play_stop_context),
+                ("Station &Details...", self._on_favorite_details),
                 ("Rena&me...\tF2", self._on_tree_rename),
                 ("Move to F&older...", self._on_tree_move_to_folder),
                 ("&Remove...\tDelete", self._on_tree_remove),
@@ -426,6 +427,25 @@ class RadioAppFrame(
         else:
             self._radio_controller.play_station(favorite.station)
             self._announce(f"Playing {favorite.display_label}")
+
+    def _on_favorite_details(self) -> None:
+        """Show the selected favorite's details (name, source, stream, format,
+        country) in the same reviewable, copyable window the search results use,
+        so a listener can arrow through them and copy -- reachable per favorite."""
+        favorite = self._selected_favorite()
+        if favorite is None:
+            self._announce("Select a station to see its details.")
+            return
+        from quill.ui.radio.now_playing_dialog import NowPlayingDialog
+
+        NowPlayingDialog(
+            self.frame,
+            favorite.station.details_text,
+            self._show_modal_dialog,
+            self._copy_to_clipboard,
+            self._announce,
+            title=f"Details: {favorite.display_name}",
+        ).show()
 
     def _on_mark_favorite(self) -> None:
         """Mark-and-Move step 1 (#1190): remember the selected station so a
