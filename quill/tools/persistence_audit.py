@@ -99,6 +99,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/audio_studio/library.py::save_library": "content",
     "core/audio_studio/play_queue.py::save_queue": "content",
     "core/audio_studio/sleep_timer.py::save_sleep_setting": "content",
+    # Component refcounts: which installed apps still need each shared component.
+    # Regenerable -- each app re-asserts its REQUIRED_COMPONENTS on launch -- so
+    # loss is self-healing, not user data.
+    "core/components.py::_save": "cache",
     "core/radio/favorites.py::save_favorites": "content",
     "core/radio/history.py::save_history": "content",
     "core/radio/wake_timer.py::save_wake_setting": "content",
