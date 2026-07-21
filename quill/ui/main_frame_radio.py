@@ -620,6 +620,7 @@ class RadioMixin:
             on_update=self._radio_scheduler.update,
             favorites=self._radio_favorites,
             announce_cb=self._announce,
+            windows=getattr(self, "_windows", None),
         ).show()
 
     def _on_radio_state_changed(self, state: RadioPlaybackState) -> None:

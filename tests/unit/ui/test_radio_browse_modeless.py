@@ -17,6 +17,7 @@ import wx
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
 from quill.ui.radio.favorites_manager_dialog import FavoritesManagerDialog
+from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
 from quill.ui.window_menu import WindowManager
 
@@ -125,5 +126,35 @@ def test_modal_favorites_stays_a_dialog(_app: wx.App) -> None:
     try:
         assert isinstance(dlg._win, wx.Dialog)
         assert dlg.dialog is dlg._win
+    finally:
+        dlg._win.Destroy()
+
+
+def _make_schedule(windows: object | None) -> ScheduleRecordingDialog:
+    return ScheduleRecordingDialog(
+        None,
+        entries=[],
+        on_add=lambda _e: None,
+        on_remove=lambda _id: True,
+        announce_cb=lambda _m: None,
+        windows=windows,
+    )
+
+
+def test_modeless_schedule_is_a_frame_with_window_menu(_app: wx.App) -> None:
+    dlg = _make_schedule(WindowManager(wx))
+    try:
+        assert isinstance(dlg._win, wx.Frame)
+        bar = dlg._win.GetMenuBar()
+        titles = [bar.GetMenuLabelText(i) for i in range(bar.GetMenuCount())]
+        assert "Window" in titles
+    finally:
+        dlg._win.Destroy()
+
+
+def test_modal_schedule_stays_a_dialog(_app: wx.App) -> None:
+    dlg = _make_schedule(None)
+    try:
+        assert isinstance(dlg._win, wx.Dialog)
     finally:
         dlg._win.Destroy()

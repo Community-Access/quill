@@ -109,10 +109,12 @@ class ScheduleRecordingDialog:
         on_update: Callable[[RecordingScheduleEntry], bool] | None = None,
         favorites: object | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        windows: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._menu_id_refs: list[object] = []
         self._entries = list(entries)
         self._on_add = on_add
         self._on_remove = on_remove
@@ -123,38 +125,55 @@ class ScheduleRecordingDialog:
         #: Changes) rather than adding a new one.
         self._editing_id: str | None = None
 
-        self.dialog = wx.Dialog(
-            parent, title="Schedule Recording", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((560, 520))
+        # Modeless wx.Frame (menu bar + &Window menu, controls on an inner panel)
+        # when standalone Radio supplies a WindowManager; modal wx.Dialog for
+        # embedded QUILL.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._win = wx.Frame(parent, title="Schedule Recording", style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._win = wx.Dialog(
+                parent, title="Schedule Recording",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
+            self._surface = self._win
+        self.dialog = self._win  # back-compat alias for callers that reference it
+        self._win.SetMinSize((560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        root.Add(wx.StaticText(self.dialog, label="&Scheduled recordings"), 0, wx.LEFT | wx.TOP, 10)
-        self._list = wx.ListBox(self.dialog)
+        root.Add(
+            wx.StaticText(self._surface, label="&Scheduled recordings"), 0, wx.LEFT | wx.TOP, 10
+        )
+        self._list = wx.ListBox(self._surface)
         self._list.SetName(
             "Scheduled recordings; Delete removes the selected one, Shift+F10 for actions"
         )
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
 
         list_btns = wx.BoxSizer(wx.HORIZONTAL)
-        self._edit_btn = wx.Button(self.dialog, label="&Edit")
+        self._edit_btn = wx.Button(self._surface, label="&Edit")
         self._edit_btn.SetName("Edit the selected schedule")
         self._edit_btn.Enable(False)
-        self._duplicate_btn = wx.Button(self.dialog, label="D&uplicate")
+        self._duplicate_btn = wx.Button(self._surface, label="D&uplicate")
         self._duplicate_btn.SetName("Duplicate the selected schedule for a quick variation")
         self._duplicate_btn.Enable(False)
-        self._toggle_btn = wx.Button(self.dialog, label="Disab&le")
+        self._toggle_btn = wx.Button(self._surface, label="Disab&le")
         self._toggle_btn.SetName("Enable or disable the selected schedule")
         self._toggle_btn.Enable(False)
-        self._remove_btn = wx.Button(self.dialog, label="&Remove")
+        self._remove_btn = wx.Button(self._surface, label="&Remove")
         self._remove_btn.SetName("Remove the selected schedule")
         self._remove_btn.Enable(False)
         for btn in (self._edit_btn, self._duplicate_btn, self._toggle_btn, self._remove_btn):
             list_btns.Add(btn, 0, wx.RIGHT, 6)
         root.Add(list_btns, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        root.Add(wx.StaticLine(self.dialog), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-        root.Add(wx.StaticText(self.dialog, label="Add a new schedule"), 0, wx.ALL, 10)
+        root.Add(wx.StaticLine(self._surface), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        root.Add(wx.StaticText(self._surface, label="Add a new schedule"), 0, wx.ALL, 10)
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
@@ -164,12 +183,12 @@ class ScheduleRecordingDialog:
         favorite_entries = list(getattr(self._favorites, "favorites", []) or [])
         if favorite_entries:
             grid.Add(
-                wx.StaticText(self.dialog, label="&Favorite station:"),
+                wx.StaticText(self._surface, label="&Favorite station:"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL,
             )
             labels = ["(type the details below)"] + [f.display_label for f in favorite_entries]
-            self._favorite_choice = wx.Choice(self.dialog, choices=labels)
+            self._favorite_choice = wx.Choice(self._surface, choices=labels)
             self._favorite_choice.SetName(
                 "Pick a favorite to record; it fills the station name and stream URL for you"
             )
@@ -186,49 +205,51 @@ class ScheduleRecordingDialog:
             self._favorite_choice.Bind(wx.EVT_CHOICE, _on_pick)
             grid.Add(self._favorite_choice, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(self.dialog, label="Station &name:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._name_ctrl = wx.TextCtrl(self.dialog, value=default_station_name)
+        grid.Add(wx.StaticText(self._surface, label="Station &name:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._name_ctrl = wx.TextCtrl(self._surface, value=default_station_name)
         self._name_ctrl.SetName("Station name for this schedule")
         grid.Add(self._name_ctrl, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(self.dialog, label="Stream &URL:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._url_ctrl = wx.TextCtrl(self.dialog, value=default_stream_url)
+        grid.Add(wx.StaticText(self._surface, label="Stream &URL:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._url_ctrl = wx.TextCtrl(self._surface, value=default_stream_url)
         self._url_ctrl.SetName("Stream URL to record")
         grid.Add(self._url_ctrl, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(self.dialog, label="&Repeats:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._recurrence_choice = wx.Choice(self.dialog, choices=["Once", "Daily", "Weekly"])
+        grid.Add(wx.StaticText(self._surface, label="&Repeats:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._recurrence_choice = wx.Choice(self._surface, choices=["Once", "Daily", "Weekly"])
         self._recurrence_choice.SetName("How often this recording repeats")
         self._recurrence_choice.SetSelection(0)
         grid.Add(self._recurrence_choice, 0)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="On &day (weekly only):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="On &day (weekly only):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
         )
-        self._weekday_choice = wx.Choice(self.dialog, choices=list(_WEEKDAYS))
+        self._weekday_choice = wx.Choice(self._surface, choices=list(_WEEKDAYS))
         self._weekday_choice.SetName("Day of the week, for a weekly schedule")
         self._weekday_choice.SetSelection(0)
         grid.Add(self._weekday_choice, 0)
 
         default_date = datetime.now() + timedelta(minutes=5)
         grid.Add(
-            wx.StaticText(self.dialog, label="&Date (once only):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="&Date (once only):"), 0, wx.ALIGN_CENTER_VERTICAL
         )
-        self._date_ctrl = wx.TextCtrl(self.dialog, value=default_date.strftime("%Y-%m-%d"))
+        self._date_ctrl = wx.TextCtrl(self._surface, value=default_date.strftime("%Y-%m-%d"))
         self._date_ctrl.SetName("Date for a one-time schedule, as YYYY-MM-DD")
         grid.Add(self._date_ctrl, 0)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="&Time (7:30 PM or 19:30):"),
+            wx.StaticText(self._surface, label="&Time (7:30 PM or 19:30):"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
-        self._time_ctrl = wx.TextCtrl(self.dialog, value=default_date.strftime("%H:%M"))
+        self._time_ctrl = wx.TextCtrl(self._surface, value=default_date.strftime("%H:%M"))
         self._time_ctrl.SetName("Time of day; accepts 12-hour like 7:30 PM or 24-hour like 19:30")
         grid.Add(self._time_ctrl, 0)
 
-        grid.Add(wx.StaticText(self.dialog, label="Time &zone:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._timezone_choice = wx.Choice(self.dialog, choices=list(_TIMEZONE_CHOICES))
+        grid.Add(wx.StaticText(self._surface, label="Time &zone:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._timezone_choice = wx.Choice(self._surface, choices=list(_TIMEZONE_CHOICES))
         self._timezone_choice.SetName(
             "Time zone for this recording; local time by default. Choose a zone to record a "
             "show in another region at its own local time"
@@ -237,32 +258,36 @@ class ScheduleRecordingDialog:
         grid.Add(self._timezone_choice, 0)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="&Duration (minutes):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="&Duration (minutes):"), 0, wx.ALIGN_CENTER_VERTICAL
         )
-        self._duration_ctrl = wx.SpinCtrl(self.dialog, min=1, max=1440)
+        self._duration_ctrl = wx.SpinCtrl(self._surface, min=1, max=1440)
         self._duration_ctrl.SetValue(60)
         self._duration_ctrl.SetName("How many minutes to record")
         grid.Add(self._duration_ctrl, 0)
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
-        self._status = wx.StaticText(self.dialog, label="")
+        self._status = wx.StaticText(self._surface, label="")
         self._status.SetName("Status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._add_btn = wx.Button(self.dialog, label="&Add Schedule")
-        self._new_btn = wx.Button(self.dialog, label="Ne&w")
+        self._add_btn = wx.Button(self._surface, label="&Add Schedule")
+        self._new_btn = wx.Button(self._surface, label="Ne&w")
         self._new_btn.SetName("Clear the form and stop editing")
         self._new_btn.Enable(False)
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._new_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
 
         self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove_click)
         self._edit_btn.Bind(wx.EVT_BUTTON, self._on_edit_click)
@@ -340,15 +365,48 @@ class ScheduleRecordingDialog:
         self._list.PopupMenu(menu)
         menu.Destroy()
 
+    def _build_surface_menu_bar(self) -> None:
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Schedule")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
+
+    def _on_char_hook(self, event: object) -> None:
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+            self._win.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: object) -> None:
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        self._announce("Exited Schedule Recording")
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
     def show(self) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, "Schedule Recording")
+            show_modeless_surface(self._win, "Schedule Recording", announce=self._announce)
+            return
+        self._win.CentreOnParent()
+        apply_modal_ids(self._win, cancel_id=self._wx.ID_CANCEL)
         from quill.ui.dialog_contract import show_modal_dialog
 
         try:
-            show_modal_dialog(self.dialog, "Schedule Recording", announce=self._announce)
+            show_modal_dialog(self._win, "Schedule Recording", announce=self._announce)
         finally:
-            self.dialog.Destroy()
+            self._win.Destroy()
 
     def _refresh_list(self, keep_id: str | None = None) -> None:
         self._list.Clear()
