@@ -373,8 +373,16 @@ class RadioAppFrame(
                 ("Move to F&older...", self._on_tree_move_to_folder),
                 ("&Remove...\tDelete", self._on_tree_remove),
                 ("New F&older...\tCtrl+Shift+E", self._on_new_folder),
-                ("Manage Fa&vorites...", self.open_manage_radio_favorites),
             ]
+            # Mark-and-Move (#1190): pick a station up once, then drop it above
+            # or below any destination in one step -- no Alt+Shift+Up/Down 30
+            # times. Mirrors the Favorites Manager's Mark for Move.
+            marked = getattr(self, "_marked_favorite_key", None)
+            entries.append(("&Mark for Move", self._on_mark_favorite))
+            if marked is not None and (favorite is None or marked != favorite.key):
+                entries.append(("Move Marked A&bove", lambda: self._on_move_marked_favorite(True)))
+                entries.append(("Move Marked Belo&w", lambda: self._on_move_marked_favorite(False)))
+            entries.append(("Manage Fa&vorites...", self.open_manage_radio_favorites))
         else:
             entries = [
                 ("Rena&me Folder...\tF2", self._on_tree_rename),
@@ -409,6 +417,45 @@ class RadioAppFrame(
         else:
             self._radio_controller.play_station(favorite.station)
             self._announce(f"Playing {favorite.display_label}")
+
+    def _on_mark_favorite(self) -> None:
+        """Mark-and-Move step 1 (#1190): remember the selected station so a
+        single Move Marked Above/Below drops it, instead of nudging one step at
+        a time with Alt+Shift+Up/Down."""
+        favorite = self._selected_favorite()
+        if favorite is None:
+            return
+        self._marked_favorite_key = favorite.key
+        self._announce(
+            f"Marked {favorite.display_label}. Select a destination, then choose "
+            "Move Marked Above or Move Marked Below from this menu."
+        )
+
+    def _on_move_marked_favorite(self, before: bool) -> None:
+        """Mark-and-Move step 2 (#1190): drop the marked station directly above
+        or below the currently selected one (adopting its folder)."""
+        target = self._selected_favorite()
+        marked_key = getattr(self, "_marked_favorite_key", None)
+        if target is None or marked_key is None:
+            return
+        if marked_key == target.key:
+            self._announce("Select a different station as the destination.")
+            return
+        # Reordering only makes sense in manual order; switch to it first. This
+        # reveals your preserved hand-arranged order -- it never overwrites it.
+        folder_sort = self._radio_history.folder_sort_orders.get(
+            target.folder, self._radio_history.favorites_sort
+        )
+        if folder_sort != "manual":
+            self._force_favorites_manual_order()
+        if self._radio_favorites.move_relative_to(marked_key, target.key, before=before):
+            self._marked_favorite_key = None
+            self._save_radio_favorites()
+            self._reload_favorites_tree(keep_key=marked_key)
+            where = "above" if before else "below"
+            self._announce(f"Moved {where} {target.display_label}.")
+        else:
+            self._announce("Could not move the marked station there.")
 
     def _on_tree_rename(self) -> None:
         from quill.ui.radio import favorite_actions
