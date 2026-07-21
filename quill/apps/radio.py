@@ -801,7 +801,8 @@ class RadioAppFrame(
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
         station_menu.Append(exit_id, "E&xit")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
+        # Explicit Exit must quit for real, not minimize-to-tray (#1193).
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
         menu_bar.Append(station_menu, "&Station")
 
         playback_menu = wx.Menu()
@@ -1388,7 +1389,14 @@ class RadioAppFrame(
             event.Veto()
             return
         history = self._radio_history
-        action = history.close_action
+        if getattr(self, "_exit_requested", False):
+            self._exit_requested = False
+            # An explicit menu/tray Exit quits for real: never bounce back to the
+            # tray via minimize-on-close, and skip the accidental-Alt+F4 confirm
+            # (the user deliberately chose Exit) -- #1193.
+            action = "exit"
+        else:
+            action = history.close_action
         if action == "ask":
             from quill.ui.radio.player_controller import RadioPlayerState
 

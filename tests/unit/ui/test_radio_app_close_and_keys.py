@@ -144,29 +144,31 @@ def test_move_favorite_non_manual_forces_manual_then_moves(monkeypatch) -> None:
     assert any("Switched to manual order" in c for c in calls)
 
 
-def test_force_favorites_manual_order_bakes_order_and_persists(monkeypatch) -> None:
+def test_force_favorites_manual_order_switches_without_rewriting_the_list(monkeypatch) -> None:
+    # #1186: switching to manual order must NOT bake the sorted display view into
+    # the stored list (that overwrote the listener's real hand-arranged order on
+    # the first reorder from an A-Z view). It only flips the sort mode to manual,
+    # clears the per-folder sort overrides, and persists -- the stored order is
+    # left exactly as-is because it already IS the manual order.
     from quill.core.radio import history as rh
 
+    monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
     saved: dict = {}
     monkeypatch.setattr(
         rh, "save_history", lambda data_dir, history: saved.setdefault("h", history)
     )
-    calls: list[str] = []
+    original = ["c", "a", "b"]  # the listener's real manual order
     store = SimpleNamespace(
-        favorites_in_display_order=lambda sort, folder_sorts: ["a", "b", "c"],
-        favorites=[],
+        favorites_in_display_order=lambda sort, folder_sorts: ["a", "b", "c"],  # A-Z view
+        favorites=list(original),
     )
     hist = SimpleNamespace(favorites_sort="az", folder_sort_orders={"News": "az"})
-    frame = SimpleNamespace(
-        _radio_favorites=store,
-        _radio_history=hist,
-        _save_radio_favorites=lambda: calls.append("save"),
-    )
+    frame = SimpleNamespace(_radio_favorites=store, _radio_history=hist)
     RadioAppFrame._force_favorites_manual_order(frame)  # type: ignore[arg-type]
-    assert store.favorites == ["a", "b", "c"]  # display order baked in as manual
+    assert store.favorites == original, "stored order preserved, not baked from the view"
     assert hist.favorites_sort == "manual"
     assert hist.folder_sort_orders == {}
-    assert saved["h"] is hist and "save" in calls
+    assert saved["h"] is hist
 
 
 def test_move_favorite_at_edge_announces_and_does_not_reload() -> None:
@@ -522,3 +524,41 @@ def test_closing_in_progress_resets_even_if_dialog_raises(
         "the guard must reset even when the dialog itself raises, or every "
         "close attempt after a crash would be silently vetoed forever"
     )
+
+
+def test_explicit_exit_bypasses_minimize_on_close(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1193: with close_action == "minimize", a normal close minimizes to tray --
+    # but an explicit menu/tray Exit (which sets _exit_requested) must quit for
+    # real, or Exit just bounces back into the tray and the app can never close.
+    frame, calls = _close_frame(
+        monkeypatch, close_action="minimize", player_state=RadioPlayerState.PLAYING
+    )
+    frame._exit_requested = True
+    event, skipped, vetoed = _close_event()
+
+    frame._on_radio_app_close(event)
+
+    assert vetoed == [], "an explicit Exit must not veto/minimize"
+    assert "send_to_tray" not in calls
+    assert skipped == [True], "Exit proceeds to a real close"
+    assert "controller.shutdown" in calls and "recorder.shutdown" in calls
+    assert frame._exit_requested is False, "the one-shot flag is cleared"
+    assert _FakeCloseConfirmDialog.instances == [], "explicit Exit skips the confirm prompt"
+
+
+def test_explicit_exit_skips_confirm_even_while_recording(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A deliberate Exit does not re-prompt even mid-recording; the recorder's
+    # shutdown finalizes the file, so nothing is silently lost.
+    frame, calls = _close_frame(
+        monkeypatch, close_action="ask", recording_active=True,
+        player_state=RadioPlayerState.PLAYING,
+    )
+    frame._exit_requested = True
+    event, skipped, vetoed = _close_event()
+
+    frame._on_radio_app_close(event)
+
+    assert _FakeCloseConfirmDialog.instances == []
+    assert skipped == [True]
+    assert vetoed == []
+    assert "recorder.shutdown" in calls

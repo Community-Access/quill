@@ -65,6 +65,10 @@ class AppShellFrame:
         self._announcement_engine = AnnouncementEngine(self.settings.announcement_backend)
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
+        # Set by an explicit menu/tray "Exit" so the app's close handler quits for
+        # real instead of honoring minimize-on-close -- otherwise Exit is swallowed
+        # straight back into the tray and the app can never be closed (#1193).
+        self._exit_requested = False
 
     # -- MainFrame-mixin host protocol ---------------------------------------
 
@@ -171,6 +175,19 @@ class AppShellFrame:
         )
         self._tray_icon = taskbar_icon
 
+    def _exit_application(self) -> None:
+        """Quit for real from an explicit menu/tray "Exit".
+
+        Flags the request so the app's EVT_CLOSE handler bypasses
+        minimize-on-close (and the accidental-Alt+F4 confirm) -- a deliberate
+        Exit must never bounce back into the tray (#1193). Restores the window
+        first so any shutdown UI is visible rather than stuck behind the tray.
+        """
+        self._exit_requested = True
+        if self._tray_icon is not None:
+            self._restore_from_tray()
+        self.frame.Close()
+
     def _remove_tray_icon(self) -> None:
         if self._tray_icon is None:
             return
@@ -195,7 +212,7 @@ class AppShellFrame:
         build_menu(menu)
         menu.AppendSeparator()
         menu.Append(exit_id, f"Exit {title}")
-        menu.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
 
