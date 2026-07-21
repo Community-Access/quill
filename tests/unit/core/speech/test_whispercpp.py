@@ -282,84 +282,58 @@ def test_list_installed_models_prefers_recorded_over_bundled(
     assert installed[0].installed_at  # the real, recorded entry, not the synthesized one
 
 
-def test_download_to_file_uses_hf_hub_download(
+def test_download_to_file_uses_the_assets_v1_mirror(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    huggingface_hub = pytest.importorskip("huggingface_hub")
+    from quill.core.speech import model_mirrors
 
     payload = b"hello model bytes"
-    calls: dict[str, object] = {}
+    used = {"mirror": False}
 
-    def _fake_hf_hub_download(**kwargs):
-        calls.update(kwargs)
-        cached = tmp_path / "cached" / kwargs["filename"]
-        cached.parent.mkdir(parents=True, exist_ok=True)
-        cached.write_bytes(payload)
-        return str(cached)
+    def _fetch(_asset, dest, **_kwargs):
+        used["mirror"] = True
+        Path(dest).write_bytes(payload)
+        return Path(dest)
 
-    monkeypatch.setattr(huggingface_hub, "hf_hub_download", _fake_hf_hub_download)
-    info = _sample_model_info(hashlib.sha256(payload).hexdigest())
+    monkeypatch.setattr(model_mirrors, "fetch_mirror_file", _fetch)
+    info = _sample_model_info("0" * 64)  # id "small" -> mirrored on assets-v1
     target = tmp_path / "ggml-small.bin"
 
     whispercpp._download_to_file(info, target, None)
 
+    assert used["mirror"] is True
     assert target.read_bytes() == payload
-    assert calls["repo_id"] == "ggerganov/whisper.cpp"
-    assert calls["filename"] == "ggml-small.bin"
-    assert calls["revision"] == "5359861c739e955e79d9a303bcbc70fb988958b1"
 
 
-def test_download_to_file_stale_pin_raises_coded_error(
+def test_download_to_file_mirror_failure_raises_coded_error(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    huggingface_hub = pytest.importorskip("huggingface_hub")
-    from huggingface_hub.errors import EntryNotFoundError
+    from quill.core.release_assets import ReleaseAssetError
+    from quill.core.speech import model_mirrors
 
-    def _fake_hf_hub_download(**kwargs):
-        raise EntryNotFoundError("404 for ggml-small.bin")
+    def _boom(_asset, _dest, **_kwargs):
+        raise ReleaseAssetError("network down")
 
-    monkeypatch.setattr(huggingface_hub, "hf_hub_download", _fake_hf_hub_download)
+    monkeypatch.setattr(model_mirrors, "fetch_mirror_file", _boom)
     info = _sample_model_info("0" * 64)
-    target = tmp_path / "ggml-small.bin"
-
-    with pytest.raises(SpeechError, match=r"\[QUILL-SPEECH-WHISPER-DL-404\]"):
-        whispercpp._download_to_file(info, target, None)
-
-
-def test_download_to_file_checksum_mismatch_raises_coded_error(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    huggingface_hub = pytest.importorskip("huggingface_hub")
-
-    def _fake_hf_hub_download(**kwargs):
-        cached = tmp_path / "cached" / kwargs["filename"]
-        cached.parent.mkdir(parents=True, exist_ok=True)
-        cached.write_bytes(b"wrong bytes")
-        return str(cached)
-
-    monkeypatch.setattr(huggingface_hub, "hf_hub_download", _fake_hf_hub_download)
-    info = _sample_model_info(hashlib.sha256(b"expected bytes").hexdigest())
-    target = tmp_path / "ggml-small.bin"
-
-    with pytest.raises(SpeechError, match=r"\[QUILL-SPEECH-WHISPER-DL-CHK\]"):
-        whispercpp._download_to_file(info, target, None)
-    assert not target.exists()
-
-
-def test_download_to_file_network_error_raises_coded_error(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    huggingface_hub = pytest.importorskip("huggingface_hub")
-
-    def _fake_hf_hub_download(**kwargs):
-        raise TimeoutError("timed out")
-
-    monkeypatch.setattr(huggingface_hub, "hf_hub_download", _fake_hf_hub_download)
-    info = _sample_model_info("0" * 64)
-    target = tmp_path / "ggml-small.bin"
 
     with pytest.raises(SpeechError, match=r"\[QUILL-SPEECH-WHISPER-DL-NET\]"):
-        whispercpp._download_to_file(info, target, None)
+        whispercpp._download_to_file(info, tmp_path / "ggml-small.bin", None)
+
+
+def test_download_to_file_unmirrored_model_gives_manual_message(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # No Hugging Face fallback: an unmirrored model (only large-v3) points the
+    # user at a manual install rather than making a network call.
+    from quill.core.speech import model_mirrors
+
+    monkeypatch.setattr(model_mirrors, "mirror_for", lambda _p, _m: None)
+    info = _sample_model_info("0" * 64)
+
+    with pytest.raises(SpeechError, match=r"\[QUILL-SPEECH-WHISPER-DL-404\]") as excinfo:
+        whispercpp._download_to_file(info, tmp_path / "ggml-large-v3.bin", None)
+    assert "too large" in str(excinfo.value)
 
 
 def test_progress_tqdm_survives_no_console_stderr(

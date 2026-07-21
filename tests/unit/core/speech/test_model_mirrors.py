@@ -135,13 +135,13 @@ def test_fetch_mirror_archive_rejects_a_zip_missing_the_member(monkeypatch, tmp_
 # --------------------------------------------------------------------------- #
 
 
-def test_whispercpp_prefers_the_mirror_over_hugging_face(monkeypatch, tmp_path) -> None:
+def test_whispercpp_downloads_from_the_mirror(monkeypatch, tmp_path) -> None:
     info = catalog.model_by_id("small")
     assert info is not None
     monkeypatch.setattr(
         model_mirrors, "mirror_for", lambda _p, _m: MirrorAsset("ggml-small.bin", info.sha256)
     )
-    used = {"mirror": False, "hf": False}
+    used = {"mirror": False}
 
     def _fetch(_asset, dest, **_kwargs):
         used["mirror"] = True
@@ -149,19 +149,14 @@ def test_whispercpp_prefers_the_mirror_over_hugging_face(monkeypatch, tmp_path) 
         return Path(dest)
 
     monkeypatch.setattr(model_mirrors, "fetch_mirror_file", _fetch)
-    import huggingface_hub
-
-    monkeypatch.setattr(
-        huggingface_hub, "hf_hub_download", lambda **_k: used.__setitem__("hf", True)
-    )
     target = tmp_path / "ggml-small.bin"
     whispercpp._download_to_file(info, target, None)
     assert used["mirror"] is True
-    assert used["hf"] is False
     assert target.read_bytes() == b"ggml"
 
 
-def test_whispercpp_falls_back_to_hugging_face_when_the_mirror_fails(monkeypatch, tmp_path) -> None:
+def test_whispercpp_no_hugging_face_fallback_on_mirror_failure(monkeypatch, tmp_path) -> None:
+    # HF is gone: a mirror failure surfaces a coded error, it does not reach HF.
     info = catalog.model_by_id("small")
     assert info is not None
     monkeypatch.setattr(
@@ -169,21 +164,14 @@ def test_whispercpp_falls_back_to_hugging_face_when_the_mirror_fails(monkeypatch
     )
 
     def _boom(_asset, _dest, **_kwargs):
-        raise ReleaseAssetError("mirror not uploaded yet (404)")
+        raise ReleaseAssetError("mirror not reachable")
 
     monkeypatch.setattr(model_mirrors, "fetch_mirror_file", _boom)
-    import huggingface_hub
-
-    def _hf(**_kwargs):
-        raise RuntimeError("REACHED_HUGGING_FACE")
-
-    monkeypatch.setattr(huggingface_hub, "hf_hub_download", _hf)
-    # Reaching (and failing at) the HF path proves the fallback ran.
-    with pytest.raises(whispercpp.WhisperModelDownloadNetworkError, match="REACHED_HUGGING_FACE"):
+    with pytest.raises(whispercpp.WhisperModelDownloadNetworkError):
         whispercpp._download_to_file(info, tmp_path / "ggml-small.bin", None)
 
 
-def test_fasterwhisper_prefers_the_mirror_over_hugging_face(monkeypatch, tmp_path) -> None:
+def test_fasterwhisper_downloads_from_the_mirror(monkeypatch, tmp_path) -> None:
     info = catalog.fw_model_by_id("small")
     assert info is not None
     monkeypatch.setattr(
@@ -198,12 +186,15 @@ def test_fasterwhisper_prefers_the_mirror_over_hugging_face(monkeypatch, tmp_pat
         return target
 
     monkeypatch.setattr(model_mirrors, "fetch_mirror_archive", _fetch)
-    import huggingface_hub
-
-    monkeypatch.setattr(
-        huggingface_hub,
-        "snapshot_download",
-        lambda **_k: (_ for _ in ()).throw(RuntimeError("REACHED_HUGGING_FACE")),
-    )
     fw._download_repo("Systran/faster-whisper-small", tmp_path / "out", info, None)
     assert used["mirror"] is True
+
+
+def test_fasterwhisper_unmirrored_model_gives_manual_message(monkeypatch, tmp_path) -> None:
+    from quill.core.speech.provider import SpeechError
+
+    info = catalog.fw_model_by_id("large-v3")
+    assert info is not None
+    monkeypatch.setattr(model_mirrors, "mirror_for", lambda _p, _m: None)
+    with pytest.raises(SpeechError, match="too large"):
+        fw._download_repo("Systran/faster-whisper-large-v3", tmp_path / "out", info, None)

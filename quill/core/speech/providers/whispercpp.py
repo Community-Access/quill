@@ -3,9 +3,8 @@
 The default offline provider. It drives a whisper.cpp command-line executable
 (``whisper-cli`` / ``main``) as a subprocess via
 :func:`quill.stability.safe_subprocess.run_subprocess_safely`, and downloads GGML
-models over HTTPS from the Hugging Face Hub whisper.cpp repository
-(``ggerganov/whisper.cpp``) — the source listed in #617 — without adding a heavy
-``huggingface_hub`` dependency.
+models over HTTPS from QUILL's own SHA-256-verified ``assets-v1`` release — no
+Hugging Face, and no ``huggingface_hub`` dependency.
 
 Design rules (#617 section 8.2 / section 17):
 
@@ -23,7 +22,6 @@ download paths are thin wrappers over them.
 
 from __future__ import annotations
 
-import hashlib
 import io
 import json
 import os
@@ -458,98 +456,43 @@ class WhisperModelDownloadNetworkError(SpeechError):
 def _download_to_file(
     info: SpeechModelInfo, target: Path, progress: ProgressCallback | None
 ) -> None:
-    """Fetch a whisper.cpp GGML file from the Hugging Face Hub.
+    """Fetch a whisper.cpp GGML file from QUILL's own assets-v1 mirror.
 
-    GATE-9 / network-egress: this is the only outbound call here; it runs only on
-    an explicit user "download model" action and is blocked in Safe Mode by the
-    caller. Uses ``huggingface_hub.hf_hub_download`` (a base QUILL runtime
-    dependency -- see [project].dependencies in pyproject.toml -- because this
-    default engine's downloads must work without the optional Faster Whisper
-    extra) instead of a hand-rolled urllib request, so a
-    stale pin surfaces as a typed, distinguishable error instead of a generic
-    "download failed" -- and so retries/redirects/etag caching are the Hub's
-    battle-tested implementation, not ours. The file is sha256-verified when a
-    hash is known, as defense in depth alongside the Hub's own integrity checks.
+    QUILL no longer contacts Hugging Face: every offered model is re-hosted on the
+    ``assets-v1`` release and downloaded + SHA-256-verified through the shared
+    download core. The only unmirrored model is ``large-v3`` (~3 GB, above
+    GitHub's 2 GiB/file release-asset limit); selecting it raises a clear
+    manual-install message instead of a network call.
+
+    GATE-9 / network-egress: the only outbound call is the shared, verified
+    ``release_assets`` download; it runs only on an explicit user "download model"
+    action and is blocked in Safe Mode by the caller.
     """
-    repo_id = info.download_url or ""
-    filename = info.hf_filename or target.name
-    if not repo_id:
-        raise SpeechError(f"No download is available for the '{info.id}' model.")
-
-    # Prefer a self-hosted assets-v1 mirror when one is configured (HF-removal
-    # prep): SHA-verified through the shared download core, with Hugging Face as a
-    # fallback so a not-yet-uploaded or transiently-failing mirror never blocks a
-    # download. When every model is mirrored this HF path can be removed.
     from quill.core.release_assets import ReleaseAssetError
     from quill.core.speech import model_mirrors
 
     mirror = model_mirrors.mirror_for(PROVIDER_ID, info.id)
-    if mirror is not None:
-        try:
-            model_mirrors.fetch_mirror_file(
-                mirror, target, progress=progress, label=f"Downloading {info.display_name}..."
-            )
-            return
-        except ReleaseAssetError:
-            pass  # mirror unavailable/failed verification -- fall back to Hugging Face
-
+    if mirror is None:
+        raise WhisperModelReferenceStaleError(_manual_install_message(info, target))
     try:
-        from huggingface_hub import hf_hub_download
-        from huggingface_hub.errors import (
-            EntryNotFoundError,
-            HfHubHTTPError,
-            RepositoryNotFoundError,
-            RevisionNotFoundError,
+        model_mirrors.fetch_mirror_file(
+            mirror, target, progress=progress, label=f"Downloading {info.display_name}..."
         )
-    except ImportError as exc:
-        raise SpeechError(
-            "Downloading whisper.cpp models needs the 'huggingface_hub' package."
-        ) from exc
-
-    from quill.core.speech.hf_auth import load_hf_token
-
-    token = load_hf_token()
-    tqdm_cls = _make_progress_tqdm(info, progress) if progress is not None else None
-    try:
-        downloaded_path = hf_hub_download(
-            repo_id=repo_id,
-            filename=filename,
-            revision=info.revision or None,
-            local_dir=str(target.parent),
-            token=token or None,
-            etag_timeout=_DOWNLOAD_TIMEOUT_S,
-            tqdm_class=tqdm_cls,
-        )
-    except (RepositoryNotFoundError, RevisionNotFoundError, EntryNotFoundError) as exc:
-        raise WhisperModelReferenceStaleError(_STALE_MODEL_MESSAGE) from exc
-    except HfHubHTTPError as exc:
-        from quill.core.speech.hf_auth import RATE_LIMIT_HELP, looks_rate_limited
-
-        status = getattr(exc.response, "status_code", None)
-        if status in (404, 410):
-            raise WhisperModelReferenceStaleError(_STALE_MODEL_MESSAGE) from exc
-        if looks_rate_limited(exc):
-            raise SpeechError(RATE_LIMIT_HELP) from exc
-        raise WhisperModelDownloadNetworkError(
-            f"The model download failed: check your connection and retry. ({exc})"
-        ) from exc
-    except Exception as exc:  # noqa: BLE001 - connection/timeout/etc.
+    except ReleaseAssetError as exc:
         raise WhisperModelDownloadNetworkError(
             f"The model download failed: check your connection and retry. ({exc})"
         ) from exc
 
-    downloaded = Path(downloaded_path)
-    if info.sha256:
-        digest = hashlib.sha256()
-        with downloaded.open("rb") as fh:
-            for chunk in iter(lambda: fh.read(1 << 20), b""):
-                digest.update(chunk)
-        if digest.hexdigest().lower() != info.sha256.lower():
-            downloaded.unlink(missing_ok=True)
-            raise WhisperModelChecksumError(_STALE_MODEL_MESSAGE)
-    if downloaded != target:
-        target.parent.mkdir(parents=True, exist_ok=True)
-        os.replace(downloaded, target)
+
+def _manual_install_message(info: SpeechModelInfo, target: Path) -> str:
+    """Guidance for a model too large to auto-download (only ``large-v3`` today)."""
+    return (
+        f"The '{info.display_name}' model is too large to download automatically "
+        f"(about {info.approximate_size_mb} MB, over the hosting size limit). "
+        f"To use it, obtain the file '{target.name}' from the whisper.cpp model "
+        f"distribution and place it in:\n  {target.parent}\n"
+        "Smaller models (Tiny through Medium) download automatically."
+    )
 
 
 def _make_progress_tqdm(info: SpeechModelInfo, progress: ProgressCallback) -> type | None:
