@@ -1,0 +1,252 @@
+"""RadioBrowser client: free, keyless internet-radio station directory.
+
+Ported near-verbatim from upstream ``quill.core.radio.radio_browser``.
+RadioBrowser (radio-browser.info) is a community-run, open-data
+directory of internet radio streams with no API key and no commercial
+terms to violate.
+
+The service round-robins across community-hosted mirrors; per its own
+docs, resolving ``all.api.radio-browser.info`` to a concrete mirror
+host once per session (rather than hammering a single hardcoded host)
+spreads load fairly. Every request funnels through the single reviewed
+egress site (:func:`_http_json`), HTTPS-only with a verified TLS
+context, disabled in Safe Mode via :func:`refuse_in_safe_mode`.
+wx-free, strict-typed.
+
+Threading contract: pure request-building/parsing functions plus
+blocking network calls; the UI (a later task) calls the network
+functions off the UI thread, same as upstream.
+
+macOS notes: none -- fully platform-neutral; ``urllib``/``ssl`` behave
+the same on macOS as elsewhere.
+"""
+
+from __future__ import annotations
+
+import json
+import random
+import socket
+import ssl
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from quill_radio_mac import __version__
+from quill_radio_mac.core.error_codes import CodedError
+from quill_radio_mac.core.models import RadioStation, _coerce_int
+
+_USER_AGENT = f"QuillRadioMac/{__version__}"
+_ALL_HOSTS = "all.api.radio-browser.info"
+_TIMEOUT_SECONDS = 10.0
+_DEFAULT_LIMIT = 50
+
+_cached_mirrors: list[str] | None = None
+
+
+class RadioBrowserError(CodedError):
+    """A RadioBrowser request failed (network, or Safe Mode refusal)."""
+
+    code = "QUILL-RADIO-BROWSER-REQUEST"
+
+
+def refuse_in_safe_mode(safe_mode: bool) -> None:
+    """Raise :class:`RadioBrowserError` when Safe Mode is active.
+
+    Safe Mode disables every network service. Internet Radio is a
+    network service, so the UI calls this before constructing a
+    request. Kept in core (with the flag passed in) so the refusal is
+    unit-testable without wx.
+    """
+    if safe_mode:
+        raise RadioBrowserError(
+            "Internet Radio is disabled in Safe Mode. "
+            "Restart Quill Radio normally to browse or play stations."
+        )
+
+
+def _resolve_mirrors() -> list[str]:
+    """Every current RadioBrowser mirror host, shuffled, resolved once and
+    cached for the process. Mirrors the project's own documented recipe: a
+    DNS lookup of ``all.api.radio-browser.info`` returns every mirror's IP;
+    reverse-resolving each IP gives a real hostname (needed for TLS
+    certificate validation -- the mirrors don't serve valid certs for a bare
+    IP); the caller then tries hosts in random order and fails over to the
+    next on error, which spreads load fairly instead of hammering one
+    hardcoded host. Falls back to the round-robin host itself if DNS
+    resolution fails outright (still a working endpoint, just without
+    client-side load spreading).
+    """
+    global _cached_mirrors
+    if _cached_mirrors is not None:
+        return _cached_mirrors
+    hosts: list[str] = []
+    try:
+        addr_info = socket.getaddrinfo(_ALL_HOSTS, 80, 0, 0, socket.IPPROTO_TCP)
+        seen_ips: set[str] = set()
+        for _family, *_rest, sockaddr in addr_info:
+            ip = str(sockaddr[0])
+            if ip in seen_ips:
+                continue
+            seen_ips.add(ip)
+            try:
+                hostname, _aliases, _addrs = socket.gethostbyaddr(ip)
+            except OSError:
+                continue
+            if hostname not in hosts:
+                hosts.append(hostname)
+    except OSError:
+        pass
+    if not hosts:
+        hosts = [_ALL_HOSTS]
+    random.shuffle(hosts)
+    _cached_mirrors = hosts
+    return hosts
+
+
+def _http_json(url_path: str) -> object:
+    """One HTTPS GET (given a path+query, mirror host chosen internally)
+    returning decoded JSON -- the reviewed egress site. Tries each known
+    mirror in turn, per RadioBrowser's own documented failover recipe;
+    raises only once every mirror has failed."""
+    last_error: BaseException | None = None
+    for host in _resolve_mirrors():
+        url = f"https://{host}{url_path}"
+        request = urllib.request.Request(
+            url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
+        )
+        context = ssl.create_default_context()
+        try:
+            with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
+                payload = resp.read().decode("utf-8")
+        except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
+            last_error = error
+            continue
+        try:
+            return json.loads(payload) if payload else []
+        except ValueError as error:
+            raise RadioBrowserError(
+                "The station directory returned an unreadable reply."
+            ) from error
+    raise RadioBrowserError(f"Could not reach the station directory: {last_error}")
+
+
+def _station_from_json(entry: dict[str, object]) -> RadioStation | None:
+    """Build one :class:`RadioStation` from a RadioBrowser JSON entry, or
+    ``None`` when it lacks a name or resolvable URL."""
+    name = str(entry.get("name", "")).strip()
+    stream_url = str(entry.get("url_resolved") or entry.get("url") or "").strip()
+    if not name or not stream_url:
+        return None
+    tags_raw = str(entry.get("tags", ""))
+    tags = tuple(t.strip() for t in tags_raw.split(",") if t.strip())
+    bitrate = _coerce_int(entry.get("bitrate"))
+    votes = _coerce_int(entry.get("votes"))
+    return RadioStation(
+        name=name,
+        stream_url=stream_url,
+        station_uuid=str(entry.get("stationuuid", "")),
+        homepage=str(entry.get("homepage", "")),
+        favicon=str(entry.get("favicon", "")),
+        country=str(entry.get("country", "")),
+        language=str(entry.get("language", "")),
+        tags=tags,
+        codec=str(entry.get("codec", "")),
+        bitrate_kbps=bitrate,
+        votes=votes,
+    )
+
+
+def stations_from_json(data: object) -> list[RadioStation]:
+    """Parse a RadioBrowser station-list payload (pure; tolerant of junk)."""
+    stations: list[RadioStation] = []
+    for entry in data if isinstance(data, list) else []:
+        if not isinstance(entry, dict):
+            continue
+        station = _station_from_json(entry)
+        if station is not None:
+            stations.append(station)
+    return stations
+
+
+def search_stations(
+    query: str = "",
+    *,
+    tag: str = "",
+    country: str = "",
+    limit: int = _DEFAULT_LIMIT,
+    offset: int = 0,
+    safe_mode: bool = False,
+) -> list[RadioStation]:
+    """Stations matching *query* (name search), optionally narrowed by tag or
+    country; ordered by community click count (most-listened first).
+
+    *offset* skips that many results before returning *limit* of them, so a
+    caller can page through a large result set (RadioBrowser caps a single
+    request at 200); the stable ``clickcount`` order keeps paging consistent.
+    """
+    refuse_in_safe_mode(safe_mode)
+    params: dict[str, object] = {
+        "limit": max(1, min(limit, 200)),
+        "offset": max(0, offset),
+        "hidebroken": "true",
+        "order": "clickcount",
+        "reverse": "true",
+    }
+    if query:
+        params["name"] = query
+    if tag:
+        params["tag"] = tag
+    if country:
+        params["country"] = country
+    path = f"/json/stations/search?{urllib.parse.urlencode(params)}"
+    return stations_from_json(_http_json(path))
+
+
+def lookup_station(station_uuid: str, *, safe_mode: bool = False) -> RadioStation | None:
+    """Fresh directory data for one station -- the stream-fallback path.
+
+    Streams move; RadioBrowser usually knows the current URL before a saved
+    favorite does. Returns None when the uuid is unknown (or blank)."""
+    refuse_in_safe_mode(safe_mode)
+    uuid = station_uuid.strip()
+    if not uuid:
+        return None
+    path = f"/json/stations/byuuid?{urllib.parse.urlencode({'uuids': uuid})}"
+    stations = stations_from_json(_http_json(path))
+    return stations[0] if stations else None
+
+
+def _names_from_json(data: object) -> list[str]:
+    if not isinstance(data, list):
+        return []
+    return [str(entry["name"]) for entry in data if isinstance(entry, dict) and entry.get("name")]
+
+
+def list_tags(limit: int = 100, *, safe_mode: bool = False) -> list[str]:
+    """The most-used station tags/genres, most popular first."""
+    refuse_in_safe_mode(safe_mode)
+    params = {"limit": max(1, min(limit, 500)), "order": "stationcount", "reverse": "true"}
+    path = f"/json/tags?{urllib.parse.urlencode(params)}"
+    return _names_from_json(_http_json(path))
+
+
+def list_countries(limit: int = 300, *, safe_mode: bool = False) -> list[str]:
+    """Countries with at least one station, most stations first."""
+    refuse_in_safe_mode(safe_mode)
+    params = {"limit": max(1, min(limit, 1000)), "order": "stationcount", "reverse": "true"}
+    path = f"/json/countries?{urllib.parse.urlencode(params)}"
+    return _names_from_json(_http_json(path))
+
+
+def register_click(station_uuid: str, *, safe_mode: bool = False) -> None:
+    """Tell RadioBrowser the station was played (community click-count vote).
+
+    Best-effort: called once playback actually starts, from a background
+    thread; failures are swallowed by the caller (a missed vote is not worth
+    interrupting playback over).
+    """
+    refuse_in_safe_mode(safe_mode)
+    if not station_uuid:
+        return
+    path = f"/json/url/{urllib.parse.quote(station_uuid)}"
+    _http_json(path)

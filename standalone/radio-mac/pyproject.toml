@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quill-radio-mac"
+version = "1.0.0"
+description = "Quill Radio for Mac -- accessible, screen-reader-first internet radio, standalone wxPython app for macOS"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: MacOS",
+  "Environment :: MacOS X :: Cocoa",
+  "Intended Audience :: End Users/Desktop",
+  "Topic :: Multimedia :: Sound/Audio :: Players",
+]
+dependencies = [
+  "wxPython>=4.2",
+]
+
+[project.optional-dependencies]
+macos = [
+  "pyobjc-framework-Cocoa",
+  "pyobjc-framework-MediaPlayer",
+]
+dev = [
+  "pytest",
+]
+
+[project.scripts]
+quill-radio-mac = "quill_radio_mac.app:main"
+
+[project.gui-scripts]
+quill-radio-mac-gui = "quill_radio_mac.app:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill-radio-mac"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.setuptools.packages.find]
+include = ["quill_radio_mac*"]

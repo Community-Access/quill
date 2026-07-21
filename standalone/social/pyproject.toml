@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-social"
+version = "0.3.0"
+description = "QUILL Social -- accessibility-first, screen-reader-first social reading, publishing, and community workspace for Mastodon and Bluesky"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+  { name = "Jeff Bishop" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+]
+# First slice: a self-contained engine + accessible wx shell, following the
+# quill-beacon / quill-audio-studio pattern (a package that vendors its own
+# dependency closure so it builds and runs from this one repo). The production
+# target moves the engine onto quill.ui.app_shell.AppShellFrame and depends on
+# quill[ui], matching quill-radio and quill-cast (see PRD section 44).
+#
+# The P0 slice runs entirely against local storage and a deterministic mock
+# network, so wxPython is the only hard runtime dependency. Live Mastodon and
+# Bluesky adapters add their client libraries under the [networks] extra.
+dependencies = ["wxPython>=4.2.0"]
+
+[project.optional-dependencies]
+# Live network adapters. The app runs and is fully navigable without these
+# (the mock adapter drives the P0 experience); installing them lights up real
+# Mastodon and Bluesky accounts.
+networks = [
+  "Mastodon.py>=1.8.1",
+  "atproto>=0.0.55",
+]
+# Embedded media playback (PRD 19.2). Falls back to the OS default player
+# when absent.
+media = [
+  "python-mpv>=1.0.7",
+]
+dev = [
+  "pytest>=9.1.1",
+  "pytest-timeout>=2.4.0",
+  "ruff>=0.15.21",
+]
+
+[project.gui-scripts]
+quill-social = "quill_social:main"
+
+[project.scripts]
+quill-social-cli = "quill_social.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill-social"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_social"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 120
