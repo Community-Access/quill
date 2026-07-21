@@ -28,6 +28,15 @@ def test_whispercpp_everyday_models_are_mirrored() -> None:
     assert model_mirrors.mirror_for("whispercpp", "large-v3") is None
 
 
+def test_faster_whisper_models_that_fit_are_mirrored() -> None:
+    for model_id in ("tiny", "base", "small", "medium", "distil-large-v3"):
+        asset = model_mirrors.mirror_for("fasterwhisper", model_id)
+        assert asset is not None
+        assert asset.archive_member == "model.bin"  # zip integrity guard
+    # large-v3 (~3 GB fp16) exceeds the 2 GiB release-asset limit -> not mirrored.
+    assert model_mirrors.mirror_for("fasterwhisper", "large-v3") is None
+
+
 def test_mirrored_whisper_sha_matches_the_catalog_pin() -> None:
     # The mirror is a re-publish of the same GGML file, so its pin must equal the
     # catalog's -- a guard against the two drifting apart.

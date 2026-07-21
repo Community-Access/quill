@@ -76,6 +76,34 @@ _MIRRORS: dict[str, MirrorAsset] = {
     "whispercpp:medium": MirrorAsset(
         "ggml-medium.bin", "6c14d5adee5f86394037b4e4e8b59f1673b6cee10e3cf0b11bbdbee79c156208"
     ),
+    # Faster Whisper CT2 repos, re-published as a zip of the model directory
+    # (model.bin + config/tokenizer/vocabulary). archive_member catches a
+    # malformed archive. large-v3 (~3 GB fp16) exceeds the 2 GiB limit -> manual.
+    "fasterwhisper:tiny": MirrorAsset(
+        "faster-whisper-tiny.zip",
+        "282000cdb6f6dca5118b76de274f1dc2a2953f256b0d8becc613cdf943624caa",
+        archive_member="model.bin",
+    ),
+    "fasterwhisper:base": MirrorAsset(
+        "faster-whisper-base.zip",
+        "e424c5666c734f22b485edd87aad4d2cc630ba0d5d55d27598c786ddc7396fdb",
+        archive_member="model.bin",
+    ),
+    "fasterwhisper:small": MirrorAsset(
+        "faster-whisper-small.zip",
+        "b5c5ecf5d8e8e92a6ff6cbe9d1ee3d75f95c6b9dc062a26c4ebe5bc2b9380e91",
+        archive_member="model.bin",
+    ),
+    "fasterwhisper:medium": MirrorAsset(
+        "faster-whisper-medium.zip",
+        "309249ec507d5287b103ff629148dc57f6c18841835913b17c8dfb49fad5c5a4",
+        archive_member="model.bin",
+    ),
+    "fasterwhisper:distil-large-v3": MirrorAsset(
+        "faster-whisper-distil-large-v3.zip",
+        "a3b581e2c385bcebd11f27ae388e52d72e6a48a4a27fc5b22132149581c28436",
+        archive_member="model.bin",
+    ),
 }
 
 
