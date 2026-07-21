@@ -3,9 +3,9 @@
 A dedicated, search-free browse experience (its counterpart, Search Stations,
 keeps the old field-based dialog). The whole window is a single ``wx.TreeCtrl``
 whose top-level branches are the sources -- Favorites (your own saved folders
-and streams, at the top for a quick jump), then Popular, Weather/NOAA, ACB
-Media, NFB Radio, Radio Reading Services, SomaFM, TuneIn, iHeart (its genres,
-each an A-Z sub-directory), and the genre catalogs (Community M3U, Xiph).
+and streams, at the top for a quick jump), then Popular, Radio Browser (by
+Genre), Weather/NOAA, ACB Media, NFB Radio, Radio Reading Services, SomaFM,
+TuneIn, iHeart (A-Z genre sub-directories), and the catalogs (Community M3U, Xiph).
 A "Find in this folder" box searches from the highlighted folder downward only
 (loading that subtree, bounded), so results stay scoped and small; Clear drops
 the results and puts the cursor back on the folder you searched from.
@@ -48,6 +48,9 @@ from quill.ui.dialog_contract import apply_modal_ids
 _SOURCES: tuple[tuple[str, str, Any], ...] = (
     ("Favorites", "favorites", None),
     ("Popular Stations", "stations", "popular"),
+    # #1194: a first-class Radio Browser node, browsable by genre via the same
+    # "genres" protocol as Xiph/M3U (radio_browser.fetch_genres/genre_stations).
+    ("Radio Browser (by Genre)", "genres", radio_browser),
     ("Weather / NOAA", "wx_states", None),
     ("ACB Media", "stations", "acb"),
     ("NFB Radio", "stations", "nfb"),

@@ -82,11 +82,15 @@ BROWSE_MENU_CATEGORIES: tuple[str, ...] = (
 
 #: Source-facet choices (the Unified Find Stations filter). "All sources" is the
 #: default; the rest match RadioStation.source values a search can produce. A
-#: RadioBrowser result has an empty source, so it filters under "RadioBrowser".
+#: RadioBrowser result has an empty source, so it filters under "Radio Browser".
+#: #1194: this facet reads "Radio Browser" (two words), not the internal
+#: "RadioBrowser" -- a screen-reader user hearing the run-together word thought
+#: the source was gone. The label is spelled the human way here and everywhere it
+#: is derived (directory_search.station_source_labels, _source_label below).
 _ALL_SOURCES = "All sources"
 _SOURCE_FACETS = (
     _ALL_SOURCES,
-    "RadioBrowser",
+    "Radio Browser",
     "iHeart",
     "TuneIn",
     "SomaFM",
@@ -502,8 +506,8 @@ class StationBrowserDialog:
     # Population
 
     def _source_label(self, station: RadioStation) -> str:
-        """The Source-column/facet label for *station* (RadioBrowser default)."""
-        return station.source or "RadioBrowser"
+        """The Source-column/facet label for *station* (Radio Browser default)."""
+        return station.source or "Radio Browser"
 
     def _apply_source_facet(self, stations: list[RadioStation]) -> list[RadioStation]:
         """Filter *stations* by the current Source facet (All = everything)."""
@@ -526,11 +530,11 @@ class StationBrowserDialog:
         self._current_results = stations
         self._results.DeleteAllItems()
         for row, station in enumerate(stations):
-            # Blended non-RadioBrowser sources name themselves in the row so a
+            # Blended non-Radio-Browser sources name themselves in the row so a
             # listener can tell where a station came from (iHeart, TuneIn, ...).
             label = station.display_name
             source = self._source_label(station)
-            if source != "RadioBrowser":
+            if source != "Radio Browser":
                 label = f"{label} - via {source}"
             self._results.InsertItem(row, label)
             self._results.SetItem(row, 1, station.country)

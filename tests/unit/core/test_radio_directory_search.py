@@ -40,12 +40,12 @@ def test_merge_and_rank_absorbs_dropped_duplicate_source() -> None:
     soma = [_rs("Groove Salad", "https://ice/gsalad", source="SomaFM")]
     merged = ds.merge_and_rank([rb, soma])
     assert len(merged) == 1
-    assert ds.station_source_labels(merged[0]) == {"RadioBrowser", "SomaFM"}
+    assert ds.station_source_labels(merged[0]) == {"Radio Browser", "SomaFM"}
 
 
-def test_station_source_labels_defaults_and_maps_blank_to_radiobrowser() -> None:
+def test_station_source_labels_defaults_and_maps_blank_to_radio_browser() -> None:
     plain = _rs("KEXP", "https://a", source="")
-    assert ds.station_source_labels(plain) == {"RadioBrowser"}
+    assert ds.station_source_labels(plain) == {"Radio Browser"}
     labelled = _rs("WRBH", "https://b", source="Radio Reading Service")
     assert ds.station_source_labels(labelled) == {"Radio Reading Service"}
 
@@ -57,7 +57,7 @@ def test_merge_and_rank_absorbs_name_country_duplicate_source() -> None:
     b = [_rs("Jazz FM", "https://b/jazz", country="UK", source="TuneIn")]
     merged = ds.merge_and_rank([a, b])
     assert len(merged) == 1
-    assert ds.station_source_labels(merged[0]) == {"RadioBrowser", "TuneIn"}
+    assert ds.station_source_labels(merged[0]) == {"Radio Browser", "TuneIn"}
 
 
 def test_merge_and_rank_floats_exact_name_matches_first() -> None:

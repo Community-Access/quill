@@ -248,6 +248,29 @@ def list_countries(limit: int = 300, *, safe_mode: bool = False) -> list[str]:
     return _names_from_json(_http_json(path))
 
 
+# -- Browse-tree "genres" protocol -------------------------------------------
+# The Browse Stations tree drives a genre source through three module functions
+# (fetch_genres -> genre_display -> fetch_genre_stations), the same shape Xiph
+# and the Community M3U catalog implement. These thin adapters expose the
+# RadioBrowser tag directory as a browsable "Radio Browser (by Genre)" node, so
+# a listener can walk RadioBrowser by genre without typing a search.
+
+
+def fetch_genres(*, safe_mode: bool = False) -> list[str]:
+    """The most-used RadioBrowser tags, as genre slugs for the Browse tree."""
+    return list_tags(safe_mode=safe_mode)
+
+
+def genre_display(slug: str) -> str:
+    """Human-readable label for a tag slug (e.g. ``classic hits`` -> ``Classic Hits``)."""
+    return slug.replace("-", " ").replace("_", " ").strip().title() or slug
+
+
+def fetch_genre_stations(genre: str, *, safe_mode: bool = False) -> list[RadioStation]:
+    """Stations carrying the RadioBrowser tag *genre*, most-listened first."""
+    return search_stations(tag=genre, safe_mode=safe_mode)
+
+
 def register_click(station_uuid: str, *, safe_mode: bool = False) -> None:
     """Tell RadioBrowser the station was played (community click-count vote).
 

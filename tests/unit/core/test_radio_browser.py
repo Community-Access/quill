@@ -204,3 +204,43 @@ def test_register_click_noop_without_uuid(monkeypatch: pytest.MonkeyPatch) -> No
 
     monkeypatch.setattr(rb, "_http_json", fail_if_called)
     register_click("")  # no raise, no network call
+
+
+# -- Browse-tree "genres" adapters (Radio Browser by Genre node) -------------
+
+
+def test_genre_display_titlecases_a_tag_slug() -> None:
+    assert rb.genre_display("classic hits") == "Classic Hits"
+    assert rb.genre_display("drum-and-bass") == "Drum And Bass"
+    assert rb.genre_display("news") == "News"
+
+
+def test_fetch_genres_lists_the_top_tags(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+
+    def fake_urlopen(request, *a, **k):
+        return _FakeResponse(b'[{"name":"jazz","stationcount":9},{"name":"news","stationcount":4}]')
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    genres = rb.fetch_genres()
+    assert "jazz" in genres
+    assert "news" in genres
+
+
+def test_fetch_genre_stations_queries_the_tag_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_mirrors(monkeypatch, ["mirror1.example.com"])
+    seen: dict[str, str] = {}
+
+    def fake_urlopen(request, *a, **k):
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        return _FakeResponse(b"[]")
+
+    monkeypatch.setattr(rb.urllib.request, "urlopen", fake_urlopen)
+    rb.fetch_genre_stations("jazz")
+    assert "/json/stations/search" in seen["url"]
+    assert "tag=jazz" in seen["url"]
+
+
+def test_fetch_genre_stations_refuses_in_safe_mode() -> None:
+    with pytest.raises(RadioBrowserError):
+        rb.fetch_genre_stations("jazz", safe_mode=True)

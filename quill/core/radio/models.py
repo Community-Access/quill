@@ -41,10 +41,10 @@ class RadioStation:
     codec: str = ""
     bitrate_kbps: int = 0
     votes: int = 0
-    #: Which directory this station came from ("RadioBrowser", "iHeart",
-    #: "TuneIn", "SomaFM", "ACB Media", "Website"), for the unified Find
-    #: Stations source badge/filter. Empty for stations loaded before this
-    #: field existed (back-compat).
+    #: Which directory this station came from ("iHeart", "TuneIn", "SomaFM",
+    #: "ACB Media", "Website"), for the unified Find Stations source badge/filter.
+    #: Empty means a Radio Browser result (it filters/labels under "Radio Browser")
+    #: -- also the value for stations loaded before this field existed (back-compat).
     source: str = ""
     #: Other sources that also carried this exact station and were merged away
     #: as duplicates (see ``directory_search.merge_and_rank``). A search-only,
