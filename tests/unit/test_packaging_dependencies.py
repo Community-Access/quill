@@ -42,15 +42,19 @@ def _names(requirements: list[str]) -> set[str]:
     return out
 
 
-def test_huggingface_hub_is_a_base_runtime_dependency(project: dict) -> None:
-    """The default whisper.cpp downloader needs huggingface_hub on a clean install.
+def test_huggingface_hub_is_not_a_base_dependency(project: dict) -> None:
+    """A clean QUILL install is Hugging-Face-free.
 
-    It must be in [project].dependencies -- not only the optional [fasterwhisper]
-    extra -- so speech-to-text model downloads work without opting into Faster
-    Whisper. Regression guard for QUILL-SPEECH-PROVIDER-FAILED "needs the
-    'huggingface_hub' package" on a fresh install.
+    The default speech models (whisper.cpp, Faster Whisper) and Piper voices now
+    download from QUILL's own SHA-verified assets-v1 release, not Hugging Face, so
+    huggingface_hub must NOT be a base dependency. It is only pulled in by the
+    optional [fasterwhisper] extra (transitively via faster-whisper) and by a
+    user-installed pyannote for the opt-in diarization upgrade. Regression guard
+    against huggingface_hub creeping back into the default install.
     """
-    assert "huggingface-hub" in _names(project["dependencies"])
+    assert "huggingface-hub" not in _names(project["dependencies"])
+    # ...but it stays available to the Faster Whisper extra.
+    assert "huggingface-hub" in _names(project["optional-dependencies"]["fasterwhisper"])
 
 
 def test_pynacl_is_bundled_in_the_ui_extra_for_quillin_signature_verification(

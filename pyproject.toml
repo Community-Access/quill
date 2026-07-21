@@ -37,13 +37,12 @@ dependencies = [
     "tzdata>=2026.3",
     # Native .docx reading/writing without requiring Pandoc.
     "python-docx>=1.2.0",
-    # Hugging Face Hub client. NOT optional: the default, out-of-the-box
-    # speech-to-text engine (whisper.cpp) downloads its GGML models via
-    # huggingface_hub.hf_hub_download (quill/core/speech/providers/whispercpp.py),
-    # so it must be present on a clean install -- not only when the optional
-    # Faster Whisper extra ([fasterwhisper]) is installed. Keep the floor in sync
-    # with that extra.
-    "huggingface_hub>=1.22.0",
+    # NOTE: huggingface_hub is deliberately NOT a base dependency. QUILL's default
+    # speech models (whisper.cpp, Faster Whisper) and Piper voices download from
+    # QUILL's own SHA-verified assets-v1 release, not Hugging Face, so a clean
+    # install is Hugging-Face-free. huggingface_hub is only pulled in by the
+    # optional [fasterwhisper] extra (a transitive dep of faster-whisper) and by a
+    # user-installed pyannote for the opt-in diarization upgrade.
 ]
 
 [project.optional-dependencies]
