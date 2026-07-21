@@ -131,7 +131,7 @@ class SpeechDownloadsMixin:
             "Downloading FFmpeg",
             "Preparing to download ffmpeg...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading ffmpeg.")
@@ -545,7 +545,7 @@ class SpeechDownloadsMixin:
             "Setting up offline speech",
             "Preparing to set up offline speech...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Setting up offline speech.")
@@ -673,7 +673,7 @@ class SpeechDownloadsMixin:
             "Downloading Audio Extras",
             "Preparing to download...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading the audio pack.")
@@ -1039,7 +1039,7 @@ class SpeechDownloadsMixin:
             "Downloading Pandoc",
             "Preparing to download Pandoc...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading Pandoc.")
@@ -1116,7 +1116,7 @@ class SpeechDownloadsMixin:
             "Downloading Offline Speech Engine",
             "Preparing to download the offline speech engine...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading the offline speech engine.")
@@ -1208,7 +1208,7 @@ class SpeechDownloadsMixin:
             "Installing Faster Whisper",
             "Preparing to install Faster Whisper...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Installing Faster Whisper.")
@@ -1293,7 +1293,7 @@ class SpeechDownloadsMixin:
             "Installing Vosk",
             "Preparing to install Vosk...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Installing Vosk.")
@@ -1375,7 +1375,7 @@ class SpeechDownloadsMixin:
             self.frame,
             "Downloading DECtalk",
             "Downloading DECtalk runtime...",
-            on_cancel=None,
+            on_cancel=None, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading DECtalk runtime.")
@@ -1455,7 +1455,7 @@ class SpeechDownloadsMixin:
             "Downloading Piper",
             "Preparing download...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading Piper TTS engine.")
@@ -1540,7 +1540,7 @@ class SpeechDownloadsMixin:
             "Downloading Node.js",
             "Preparing download...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading the Node.js runtime.")
@@ -1629,7 +1629,7 @@ class SpeechDownloadsMixin:
             "Downloading eSpeak-NG",
             "Preparing download...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Downloading eSpeak-NG.")
@@ -1799,7 +1799,7 @@ class SpeechDownloadsMixin:
             "Installing Kokoro ONNX",
             "Preparing to install Kokoro ONNX...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce("Installing Kokoro ONNX.")
@@ -1910,7 +1910,7 @@ class SpeechDownloadsMixin:
             "Downloading Speech Model",
             f"Preparing to download the {model_id} model...",
             on_cancel=cancel.set,
-            status_fn=self._set_status,
+            status_fn=self._set_status, announce_fn=self._announce,
         )
         progress.show()
         self._announce(f"Downloading the {model_id} speech model.")

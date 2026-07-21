@@ -301,6 +301,7 @@ class AIProgressDialog:
         message: str,
         on_cancel: Callable[[], None] | None = None,
         status_fn: Callable[[str], None] | None = None,
+        announce_fn: Callable[[str], None] | None = None,
     ) -> None:
         import wx
 
@@ -310,6 +311,15 @@ class AIProgressDialog:
         # the dialog while the download keeps running, with progress mirrored to
         # the status bar.
         self._status_fn = status_fn
+        # Opt-in spoken milestones: when a long install passes its screen-reader
+        # announcer, the dialog speaks a periodic "<title> 50 percent" so the
+        # wait is not silent between the start and completion announcements.
+        self._announce_fn = announce_fn
+        self._milestone: object | None = None
+        if announce_fn is not None:
+            from quill.ui.spoken_progress import MilestoneSpeaker
+
+            self._milestone = MilestoneSpeaker(label=title)
         self._title = title
         self._minimized = False
         # Set only once switch_to_ok() has run -- the caller's reopen-the-hub
@@ -404,6 +414,12 @@ class AIProgressDialog:
         if self._minimized and self._status_fn is not None and message is not None:
             pct = f" ({max(0, min(100, int(percent)))}%)" if percent >= 0 else ""
             self._wx.CallAfter(self._status_fn, f"{self._title}: {message}{pct}")
+        # Speak a periodic milestone (25/50/75%) so a long install is not silent
+        # for a screen-reader user between its start and completion announcements.
+        if self._milestone is not None and self._announce_fn is not None:
+            phrase = self._milestone.phrase_for(int(percent))  # type: ignore[attr-defined]
+            if phrase:
+                self._wx.CallAfter(self._announce_fn, phrase)
 
     def switch_to_ok(
         self,
