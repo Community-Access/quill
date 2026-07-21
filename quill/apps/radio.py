@@ -776,6 +776,15 @@ class RadioAppFrame(
         import_id = wx.NewIdRef()
         station_menu.Append(import_id, "&Import Stations from Playlist...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id)
+        # #1193: move your stations/settings/recordings to a new device or recover
+        # after a reinstall. Thin wiring lives in backup_ui (radio.py is at budget).
+        from quill.ui.radio.backup_ui import back_up_radio_data, restore_radio_data
+
+        backup_id, restore_id = wx.NewIdRef(), wx.NewIdRef()
+        station_menu.Append(backup_id, "Back &Up Stations and Settings...")
+        station_menu.Append(restore_id, "&Restore from Backup...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: back_up_radio_data(self), id=backup_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: restore_radio_data(self), id=restore_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_manage_radio_favorites(), id=manage_id)
