@@ -67,13 +67,22 @@ Name: "shellverbs"; Description: "Add ""Send to Quill"" actions (OCR, Open, Read
 Name: "companionicons"; Description: "Create desktop icons for Quill Radio and QUILL Cast (the standalone radio and podcast apps)"; GroupDescription: "Companion apps:"; Flags: unchecked
 Name: "addtopath"; Description: "Add Quill to PATH (lets you run ""quill"" from a terminal or a shortcut Target field without the full path)"; GroupDescription: "Command line:"; Flags: unchecked
 
-; No [Types] or [Components] section: every optional component is fetched
-; on demand from its verified source, so the installer shows no setup-type
-; or component-selection page at all. Pandoc, Piper, Node.js, the braille
-; pack, whisper.cpp, Kokoro, DECtalk, and eSpeak-NG all download at point
-; of use (PRD 10.2.x footprint unbundle). Quill's core -- the Writing
-; Assistant and everything else -- ships unconditionally in the main
-; bundle below.
+; Install profiles + component selection. The large optional extras (Pandoc,
+; Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk, eSpeak-NG)
+; are still NOT installer components -- they download on demand from their
+; verified sources at point of use (PRD 10.2.x footprint unbundle), so they
+; never appear here. What the profile/component page governs is the bundled
+; payload: the core program (always) and the offline documentation (optional).
+; Quill's core -- the Writing Assistant and everything else -- ships
+; unconditionally in the main bundle below.
+[Types]
+Name: "full"; Description: "Full installation (recommended)"
+Name: "compact"; Description: "Compact installation (program only, no bundled documentation)"
+Name: "custom"; Description: "Custom installation"; Flags: iscustom
+
+[Components]
+Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
+Name: "docs"; Description: "Documentation (User Guide, help pages)"; Types: full custom
 
 [InstallDelete]
 ; Upgrade hygiene -- the single most important fix for reliable upgrades.
@@ -114,7 +123,8 @@ Type: filesandordirs; Name: "{app}\python"
 ; needed now that migration protects the data.
 
 [Files]
-Source: "..\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "docs\QUILL-PRD.md,tools\nodejs\*,tools\speech\piper\*,_tool-download\*,_speech-download\*,*\__pycache__\*,tools\pandoc\*,tools\speech\dectalk\*,tools\speech\espeak-ng\*,tools\speech\whispercpp\*,vendor\braille-pack\*,kokoro-models\*,speech-models-bundled\*,wheels\kokoro\*,wheels\faster-whisper\*,wheels\vosk\*,wheels\mp3\*"
+Source: "..\portable\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "docs\*,tools\nodejs\*,tools\speech\piper\*,_tool-download\*,_speech-download\*,*\__pycache__\*,tools\pandoc\*,tools\speech\dectalk\*,tools\speech\espeak-ng\*,tools\speech\whispercpp\*,vendor\braille-pack\*,kokoro-models\*,speech-models-bundled\*,wheels\kokoro\*,wheels\faster-whisper\*,wheels\vosk\*,wheels\mp3\*"
+Source: "..\portable\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "QUILL-PRD.md"
 ; Only Quill's core bundle is installed. Every optional component --
 ; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,
 ; and eSpeak-NG -- is fetched on demand to %APPDATA%\Quill (verified,
@@ -127,7 +137,7 @@ Source: "..\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs c
 Name: "{group}\{#AppName}"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; WorkingDir: "{app}"; Check: HasBundledLauncher
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Check: not HasBundledLauncher
 Name: "{group}\{#AppName} README"; Filename: "{app}\README.txt"
-Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; WorkingDir: "{app}"; Check: HasBundledLauncher
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Check: not HasBundledLauncher
