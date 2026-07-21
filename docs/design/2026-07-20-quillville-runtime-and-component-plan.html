@@ -728,6 +728,54 @@ tool. Today each <code>.iss</code> installs a fully self-contained
 frozen app; the shared-runtime model makes them thin apps that resolve
 one runtime. That <code>.iss</code> redesign is required regardless of
 the installer choice.</p>
+<h2 id="10b-component-service--settled-design-2026-07-20">10b. Component
+service — settled design (2026-07-20)</h2>
+<p>Built to the "written once, breaks everywhere, smallest footprint"
+rule. It unifies the existing pieces
+(<code>release_assets.fetch_file</code>, the per-tool
+<code>*_install.py</code> modules, the <code>optional_components</code>
+registry) rather than adding a parallel system.</p>
+<ul>
+<li><strong>Store: our GitHub releases, SHA-256 pinned. No HuggingFace
+for core models.</strong> Extend <code>release_assets.py</code>'s proven
+pattern (a Community-Access release tag, each component pinned by
+SHA-256, download+verify+atomic-install via <code>fetch_file</code>).
+The public speech models -- whisper.cpp GGML (<code>ggerganov</code>),
+Piper voices (<code>rhasspy</code>), Faster Whisper
+(<code>systran</code>) -- are <strong>mirrored to our release
+store</strong> and pinned, removing <code>huggingface_hub</code> and the
+HF-token dance for the whole speech stack. (Verify each model's license
+permits redistribution before mirroring; whisper.cpp is permissive,
+Piper voices vary.)</li>
+<li><strong>HuggingFace shrinks to one isolated opt-in.</strong> The
+only gated model, <strong>pyannote speaker-diarization</strong>, stays
+an optional advanced feature on HF + token; everything else leaves HF.
+Reduces fragility to a single, clearly- optional surface.</li>
+<li><strong>Manifest: in-code, pinned per build</strong> (not a remote
+signed feed for now) -- reproducible, no extra network/signature layer;
+new/updated components arrive via a normal app update.</li>
+<li><strong>One download core.</strong> Every tool
+(ffmpeg/mpv/piper/whisper/tesseract/pandoc/ node/...) routes its
+download+verify+extract+install through the single
+<code>fetch_file</code>-based core; the per-tool modules become thin
+specs, deleting the duplicated download logic.</li>
+<li><strong>Refcount: app-owned + thin installer hook.</strong> Each app
+declares <code>REQUIRED_COMPONENTS</code>; on launch it registers refs
+in <code>%APPDATA%\Quill\components.state.json</code>; the Inno
+uninstaller calls a tiny Python "unregister" step. The dedup/GC logic
+lives in one testable place; the installer stays thin.</li>
+<li><strong>Spoken progress (Leasey-style), in the app.</strong> The
+core takes a progress callback; the app speaks periodic updates
+("Downloading the offline speech engine, 45 percent") through its own
+speech engine -- the long installs happen in-app, post-install, where we
+fully control speech. The Inno wizard stays screen-reader-native
+(frequent accessible status text); SAPI speech in the wizard is an
+optional, off-by-default extra so it never talks over a running screen
+reader.</li>
+<li><strong>Offline-first resolver, one code path:</strong> store -&gt;
+staged wheelhouse (Offline builds) -&gt; our GitHub-release network
+-&gt; a guided, spoken "component needed" prompt (never a crash).</li>
+</ul>
 <h2 id="11-summary">11. Summary</h2>
 <p>The heavy, disk-dominating sharing (components) already works — this
 plan makes it <em>safe and refcounted</em> via a signed manifest +
