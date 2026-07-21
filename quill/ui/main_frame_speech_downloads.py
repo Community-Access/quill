@@ -180,9 +180,19 @@ class SpeechDownloadsMixin:
         wx = self._wx
         frame = self
 
+        # Per-app filtering: the editor (no allowlist) sees the whole catalog; a
+        # companion app that declares ``_optional_component_allowlist`` (e.g. Audio
+        # Studio -> speech engines, voices, and the audio pack) sees only those,
+        # so document/editor-only extras (Pandoc, PDF/OCR, braille, MathCAT, Node,
+        # Git, gh, spell dictionaries) never appear where they cannot be used.
+        allowlist = getattr(frame, "_optional_component_allowlist", None)
+
         class _Controller:
             def components(self) -> list:
-                return oc.gather_optional_components()
+                items = oc.gather_optional_components()
+                if allowlist is None:
+                    return items
+                return [c for c in items if c.component_id in allowlist]
 
             def removable(self, component_id: str) -> bool:
                 return oc.removable_path(component_id) is not None
