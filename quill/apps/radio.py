@@ -205,9 +205,20 @@ class RadioAppFrame(
         buttons.Add(browse_btn, 0, wx.RIGHT, 6)
         root.Add(buttons, 0, wx.ALL, 8)
 
+        # The arrow-navigable status bar lives along the bottom (F6 to reach it,
+        # View > Show Status Bar to hide it). Its cells and behaviour live in
+        # RadioStatusBar; the panel keeps radio.py's own footprint small.
+        from quill.ui.radio.status_bar import RadioStatusBar
+
+        self._status_bar = RadioStatusBar(self)
+        status_panel = self._status_bar.build(panel)
+        root.Add(status_panel, 0, wx.EXPAND | wx.ALL, 2)
+        self._status_bar.set_visible(self._radio_history.show_status_bar)
+
         panel.SetSizer(root)
         self._main_panel = panel
         self._reload_favorites_tree()
+        self._status_bar.refresh()
         self._favorites_tree.SetFocus()
 
     def _focus_initial_control(self) -> None:
@@ -1002,6 +1013,12 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_show_station_details(), id=show_details_id
         )
+        self._status_bar_item_id = wx.NewIdRef()
+        view_menu.AppendCheckItem(self._status_bar_item_id, "Show Status &Bar")
+        view_menu.Check(self._status_bar_item_id, self._radio_history.show_status_bar)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
+        )
         menu_bar.Append(view_menu, "&View")
         menu_bar.Append(help_menu, "&Help")
 
@@ -1048,6 +1065,8 @@ class RadioAppFrame(
             redeem_id,
             updates_id,
             about_id,
+            show_details_id,
+            self._status_bar_item_id,
         )
 
     def _open_radio_doc(self, stem: str) -> None:
@@ -1115,6 +1134,39 @@ class RadioAppFrame(
             else "Station details will be hidden."
         )
 
+    def _toggle_show_status_bar(self) -> None:
+        """Flip Show Status Bar, persist it, and show/hide the bar right away."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        history.show_status_bar = not history.show_status_bar
+        radio_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._status_bar_item_id), history.show_status_bar)
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.set_visible(history.show_status_bar)
+            if history.show_status_bar:
+                status_bar.refresh()
+        self._announce("Status bar shown." if history.show_status_bar else "Status bar hidden.")
+
+    def _focus_status_bar(self) -> None:
+        """F6: move focus into the status bar, or back out of it if already there.
+
+        Does nothing (beyond a nudge) when the bar is hidden -- there is nowhere
+        to land, so the key is a no-op the way an empty region would be."""
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is None or not status_bar.is_shown():
+            return
+        if status_bar.has_focus():
+            self._focus_initial_control()
+            self._announce("Returned to favorite stations")
+            return
+        status_bar.refresh()
+        status_bar.focus_bar(return_focus=getattr(self, "_favorites_tree", None))
+
     def _toggle_resume_on_launch(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
@@ -1148,6 +1200,11 @@ class RadioAppFrame(
         # system before a focused TreeCtrl ever sees it. Only acts when the
         # favorites tree actually has focus.
         code = event.GetKeyCode()
+        # F6 jumps focus into the status bar (and a second F6 hands it back),
+        # the same region key the QUILL editor uses.
+        if code == wx.WXK_F6 and not event.AltDown() and not event.ControlDown():
+            self._focus_status_bar()
+            return
         if (
             event.AltDown()
             and event.ShiftDown()
@@ -1434,6 +1491,9 @@ class RadioAppFrame(
         now_playing = getattr(self, "_now_playing_text", None)
         if now_playing is not None:
             now_playing.SetLabel(text)
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.refresh()
         self._refresh_play_stop_button()
         self._refresh_record_button()
 

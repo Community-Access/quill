@@ -198,6 +198,13 @@ def test_alt_f4_to_tray_round_trips_and_defaults_off(tmp_path: Path) -> None:
     assert load_history(tmp_path).alt_f4_to_tray is True
 
 
+def test_show_status_bar_defaults_on_and_round_trips(tmp_path: Path) -> None:
+    # On by default: the arrow-navigable status bar is visible out of the box.
+    assert load_history(tmp_path).show_status_bar is True
+    save_history(tmp_path, RadioHistory(show_status_bar=False))
+    assert load_history(tmp_path).show_status_bar is False
+
+
 def test_channel_mode_defaults_to_stereo_and_round_trips(tmp_path: Path) -> None:
     assert load_history(tmp_path).channel_mode == "stereo"
     for mode in ("mono", "left", "right", "stereo"):
