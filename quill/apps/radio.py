@@ -210,6 +210,18 @@ class RadioAppFrame(
         self._reload_favorites_tree()
         self._favorites_tree.SetFocus()
 
+    def _focus_initial_control(self) -> None:
+        """Land keyboard focus on the favorites tree after the window is shown so
+        the menu bar is reachable straight away (#1193): a pre-show SetFocus does
+        not stick, which left the window opening with no control focused -- the
+        first Alt then opened the window's system menu instead of the app menu."""
+        tree = getattr(self, "_favorites_tree", None)
+        if tree is not None:
+            try:
+                tree.SetFocus()
+            except Exception:  # noqa: BLE001 - initial focus is best-effort
+                pass
+
     # -- favorites tree ---------------------------------------------------------
 
     def _reload_favorites_tree(self, keep_key: str | None = None) -> None:
@@ -338,20 +350,26 @@ class RadioAppFrame(
         self._reload_favorites_tree(keep_key=favorite.key)
 
     def _force_favorites_manual_order(self) -> None:
-        """Switch favorites to manual order so Alt+Shift+Up/Down can reorder.
-
-        Must NOT rewrite the stored list: it already *is* the hand-arranged
-        manual order (A-Z / Z-A are display-only views). Baking the sorted view
-        in used to overwrite the listener's real order on the first reorder from
-        a sorted view, unrecoverably (#1186); switching to manual just reveals
-        the preserved order.
+        """Commit the current *display* order as the stored (manual) order, then
+        set the sort to manual -- so Alt+Shift+Up/Down reorders exactly what the
+        listener sees instead of the list first jumping to a different (stored)
+        order. Only reached from a sorted view (A-Z/Z-A); a genuinely
+        hand-arranged manual order is already in manual mode, so this is never
+        called for it and nothing is overwritten. #1186 dropped this bake, which
+        regressed reordering from the default A-Z view (the list scrambled and
+        move up/down looked broken for two reporters); restored here.
         """
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
 
+        ordered = self._radio_favorites.favorites_in_display_order(
+            self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
+        )
+        self._radio_favorites.favorites = list(ordered)
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
         radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_favorites()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState
@@ -372,6 +390,7 @@ class RadioAppFrame(
             )
             entries = [
                 ("&Stop" if playing else "&Play", self._on_play_stop_context),
+                ("Station &Details...", self._on_favorite_details),
                 ("Rena&me...\tF2", self._on_tree_rename),
                 ("Move to F&older...", self._on_tree_move_to_folder),
                 ("&Remove...\tDelete", self._on_tree_remove),
@@ -420,6 +439,25 @@ class RadioAppFrame(
         else:
             self._radio_controller.play_station(favorite.station)
             self._announce(f"Playing {favorite.display_label}")
+
+    def _on_favorite_details(self) -> None:
+        """Show the selected favorite's details (name, source, stream, format,
+        country) in the same reviewable, copyable window the search results use,
+        so a listener can arrow through them and copy -- reachable per favorite."""
+        favorite = self._selected_favorite()
+        if favorite is None:
+            self._announce("Select a station to see its details.")
+            return
+        from quill.ui.radio.now_playing_dialog import NowPlayingDialog
+
+        NowPlayingDialog(
+            self.frame,
+            favorite.station.details_text,
+            self._show_modal_dialog,
+            self._copy_to_clipboard,
+            self._announce,
+            title=f"Details: {favorite.display_name}",
+        ).show()
 
     def _on_mark_favorite(self) -> None:
         """Mark-and-Move step 1 (#1190): remember the selected station so a
@@ -863,7 +901,10 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_rewind(), id=rewind_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_forward(), id=forward_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_jump_to_live(), id=live_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_whats_playing(), id=whats_playing_id)
+        # Ctrl+T opens the reviewable Now Playing window (fetch-and-speak fallback).
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_whats_playing_details(), id=whats_playing_id
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.radio_toggle_title_announcements(),
@@ -1517,6 +1558,8 @@ def main() -> int:
     frame = RadioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     frame.frame.Show()
+    frame.frame.Raise()
+    wx.CallAfter(frame._focus_initial_control)  # #1193: menu bar reachable on launch
     try:
         app.MainLoop()
     finally:

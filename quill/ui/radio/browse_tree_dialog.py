@@ -123,14 +123,13 @@ def _iheart_letter_groups(
 
 
 def _wx_state_folders(*, safe_mode: bool) -> list[WxState]:
-    """The wxindex State directory, limited to states that actually have a
-    playable transmitter. NOAA Weather Radio is broadcast over VHF; most of the
-    ~1035 known transmitters have no internet re-stream, and whole states
-    (American Samoa, say) have none at all. Listing a state whose folder would
-    be empty just strands the user on it, so states with zero
-    ``stations_with_feeds`` are dropped here. ``_add_children`` turns each
-    survivor into a "wx_state" tree node."""
-    return [s for s in wxindex.list_states(safe_mode=safe_mode) if s.stations_with_feeds > 0]
+    """States with a playable NOAA transmitter, counted from the SAME
+    full-directory tier the station leaves come from -- so a folder's "(N items)"
+    always matches what expanding it shows (never "9 items" then nothing).
+    Most NWR transmitters have no internet re-stream and whole states have none,
+    so feedless states are omitted; ``_add_children`` turns each into a
+    "wx_state" node."""
+    return wxindex.states_with_playable_feeds(safe_mode=safe_mode)
 
 
 def _wx_playable_stations(slug: str, *, safe_mode: bool) -> list[RadioStation]:

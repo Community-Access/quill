@@ -39,6 +39,8 @@ class NowPlayingDialog:
         show_modal_dialog: Callable,
         copy_to_clipboard: Callable[[str], bool],
         announce: Callable[[str], None] | None = None,
+        *,
+        title: str = "Now Playing",
     ) -> None:
         import wx
 
@@ -47,7 +49,7 @@ class NowPlayingDialog:
         self._show_modal = show_modal_dialog
         self._copy = copy_to_clipboard
         self._announce = announce
-        self._title = "Now Playing"
+        self._title = title
 
         self.dialog = wx.Dialog(
             parent,

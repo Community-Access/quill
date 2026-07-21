@@ -808,7 +808,7 @@ class RadioMixin:
         lyrics or store search (#1134)."""
         text = self._radio_now_playing_text()
         if not text:
-            self._announce("Nothing is playing. Try What's Playing first.")
+            self.radio_whats_playing()  # no cached title: fetch-and-speak fallback
             return
         from quill.ui.radio.now_playing_dialog import NowPlayingDialog
 

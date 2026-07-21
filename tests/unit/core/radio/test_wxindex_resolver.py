@@ -92,3 +92,32 @@ def test_playable_stations_for_state_prefers_fresh_directory_cache(monkeypatch, 
     got = wxindex.playable_stations_for_state("VA")
     assert len(got) == 1
     assert got[0].feeds == ("https://fresh/khb36",)
+
+
+def test_states_with_playable_feeds_match_the_directory_not_the_live_count(monkeypatch) -> None:
+    # Regression: NOAA state folders showed a live /v1/states count ("IL 9 items")
+    # but expanding them yielded no stations, because the leaves come from the
+    # directory tier. The folder count now comes from that same tier.
+    from quill.core.radio.wxindex_models import WxState, WxStation
+
+    stations = [
+        WxStation("KHB01", 162.55, name="A", state="HI", feeds=("u1",)),
+        WxStation("KHB02", 162.40, name="B", state="IL", feeds=("u2",)),
+        WxStation("KHB03", 162.45, name="C", state="IL", feeds=("u3",)),
+        WxStation("KHB04", 162.50, name="D", state="IL", feeds=()),  # no feed -> not counted
+    ]
+    monkeypatch.setattr(wxindex, "_directory_stations", lambda **_k: stations)
+    monkeypatch.setattr(
+        wxindex,
+        "list_states",
+        lambda **_k: [
+            WxState(slug="HI", name="Hawaii", stations_with_feeds=99),  # inflated live count
+            WxState(slug="IL", name="Illinois", stations_with_feeds=99),
+        ],
+    )
+    folders = {f.slug: f for f in wxindex.states_with_playable_feeds()}
+    assert folders["hi"].stations_with_feeds == 1
+    assert folders["il"].stations_with_feeds == 2  # not 99, and not 3 (D has no feed)
+    assert folders["hi"].name == "Hawaii"
+    # The count equals exactly what expanding the folder will show.
+    assert len(wxindex.playable_stations_for_state("IL")) == folders["il"].stations_with_feeds
