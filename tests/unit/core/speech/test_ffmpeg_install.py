@@ -64,6 +64,33 @@ def test_install_rejects_unsupported_platform(monkeypatch, tmp_path) -> None:
         fi.install_ffmpeg(dest_dir=tmp_path)
 
 
+def test_download_source_defaults_to_moving_upstream_unpinned() -> None:
+    """Until a mirror is uploaded, the source is the moving Gyan.dev URL, no SHA."""
+    url, sha = fi.ffmpeg_download_source()
+    assert url == fi.FFMPEG_DOWNLOAD_URL
+    assert sha == ""
+
+
+def test_download_source_activates_pinned_mirror_when_sha_is_real(monkeypatch) -> None:
+    """Filling FFMPEG_PINNED_FILENAME + a real SHA flips to the assets-v1 mirror."""
+    real_sha = "a" * 64
+    monkeypatch.setattr(fi, "FFMPEG_PINNED_FILENAME", "ffmpeg-7.1-essentials_build.zip")
+    monkeypatch.setattr(fi, "FFMPEG_PINNED_SHA256", real_sha)
+    url, sha = fi.ffmpeg_download_source()
+    assert url == fi._ASSETS_V1_BASE + "ffmpeg-7.1-essentials_build.zip"
+    assert url.startswith("https://github.com/Community-Access/quill/releases/download/assets-v1/")
+    assert sha == real_sha
+
+
+def test_download_source_ignores_placeholder_sha(monkeypatch) -> None:
+    """A blank or short (placeholder) SHA does not activate the mirror."""
+    monkeypatch.setattr(fi, "FFMPEG_PINNED_FILENAME", "ffmpeg-7.1-essentials_build.zip")
+    monkeypatch.setattr(fi, "FFMPEG_PINNED_SHA256", "PENDING")
+    url, sha = fi.ffmpeg_download_source()
+    assert url == fi.FFMPEG_DOWNLOAD_URL
+    assert sha == ""
+
+
 def test_install_surfaces_shared_core_download_error(monkeypatch, tmp_path) -> None:
     """A shared-core download failure (HTTPS refusal, network, mismatch) surfaces
     as an FFmpegInstallError. HTTPS enforcement itself lives in release_assets."""

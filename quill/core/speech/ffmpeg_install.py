@@ -30,8 +30,45 @@ ProgressCallback = Callable[[float, str], None]
 # Official Gyan.dev "essentials" Windows build (the download ffmpeg.org links to).
 # The named URL 303-redirects to the current versioned zip; urllib follows it.
 FFMPEG_DOWNLOAD_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+
+# Pinned mirror on QUILL's own assets-v1 release. This auto-activates the moment
+# a real 64-hex SHA-256 is filled in below: QUILL then fetches the byte-pinned
+# zip from assets-v1 (SHA-verified, self-hosted, no moving upstream), exactly
+# like the eSpeak-NG and Tesseract installers. Until then FFMPEG_PINNED_SHA256 is
+# empty and QUILL keeps using the moving Gyan.dev URL above (retry/resume/HTTPS
+# via the shared core, but unpinned).
+#
+# To activate (one-time, no code change beyond these three constants):
+#   1. Download the exact Gyan "essentials" zip you want to pin.
+#   2. Upload it to the assets-v1 release; note the asset's filename.
+#   3. Set FFMPEG_PINNED_FILENAME to that name, FFMPEG_PINNED_VERSION to the
+#      ffmpeg version, and FFMPEG_PINNED_SHA256 to the file's SHA-256.
+FFMPEG_PINNED_VERSION = ""  # e.g. "7.1"
+FFMPEG_PINNED_FILENAME = ""  # e.g. "ffmpeg-7.1-essentials_build.zip"
+FFMPEG_PINNED_SHA256 = ""  # 64-hex digest; empty until the zip is mirrored
+_ASSETS_V1_BASE = "https://github.com/Community-Access/quill/releases/download/assets-v1/"
+
 _DOWNLOAD_TIMEOUT_S = 1800.0
 _WANTED = ("ffmpeg.exe", "ffprobe.exe")
+
+
+def _is_real_sha256(value: str) -> bool:
+    """True for a genuine 64-hex SHA-256 (not a blank/placeholder)."""
+    digest = value.strip().lower()
+    return len(digest) == 64 and all(c in "0123456789abcdef" for c in digest)
+
+
+def ffmpeg_download_source() -> tuple[str, str]:
+    """Return ``(url, sha256)`` for the ffmpeg zip download.
+
+    Prefers the pinned assets-v1 mirror once :data:`FFMPEG_PINNED_SHA256` is a
+    real digest (byte-verified, self-hosted). Until the mirror is uploaded it
+    returns the moving Gyan.dev upstream URL with an empty SHA -- unpinned, but
+    still retry/resume/HTTPS via the shared download core.
+    """
+    if FFMPEG_PINNED_FILENAME and _is_real_sha256(FFMPEG_PINNED_SHA256):
+        return _ASSETS_V1_BASE + FFMPEG_PINNED_FILENAME, FFMPEG_PINNED_SHA256
+    return FFMPEG_DOWNLOAD_URL, ""
 
 
 class FFmpegInstallError(CodedError):
@@ -78,12 +115,14 @@ def install_ffmpeg(
     tmp_zip = Path(raw)
     try:
         try:
-            # No SHA pin yet: the Gyan.dev "release-essentials" URL moves to the
-            # current build. Routed through the shared core for retry/resume/mirror
-            # + HTTPS enforcement; a pin lands once the zip is mirrored to assets-v1.
+            # Pinned assets-v1 mirror (SHA-verified) once uploaded; the moving
+            # Gyan.dev upstream (unpinned) until then. Either way it runs through
+            # the shared core: retry/resume/mirror-fallback + HTTPS enforcement.
+            url, sha256 = ffmpeg_download_source()
             release_assets.download_verified(
-                FFMPEG_DOWNLOAD_URL,
+                url,
                 tmp_zip,
+                sha256=sha256,
                 progress=progress,
                 timeout=timeout_seconds,
                 label="Downloading ffmpeg...",
