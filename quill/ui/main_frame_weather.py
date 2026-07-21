@@ -110,6 +110,7 @@ class WeatherMixin:
             task_manager=self._task_manager,
             safe_mode=self._safe_mode,
             announce_cb=self._announce,
+            windows=getattr(self, "_windows", None),
         ).show(focus_alerts=focus_alerts)
 
     def open_weather_add_location(self) -> None:

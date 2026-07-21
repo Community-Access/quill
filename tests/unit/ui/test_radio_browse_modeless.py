@@ -158,3 +158,36 @@ def test_modal_schedule_stays_a_dialog(_app: wx.App) -> None:
         assert isinstance(dlg._win, wx.Dialog)
     finally:
         dlg._win.Destroy()
+
+
+def _make_weather(windows: object | None, tmp_path):  # type: ignore[no-untyped-def]
+    from quill.ui.weather.weather_center_dialog import WeatherCenterDialog
+
+    return WeatherCenterDialog(
+        None,
+        data_dir=tmp_path,
+        task_manager=SimpleNamespace(),
+        safe_mode=True,
+        announce_cb=lambda _m: None,
+        windows=windows,
+    )
+
+
+def test_modeless_weather_is_a_frame_with_window_menu(_app: wx.App, tmp_path) -> None:
+    dlg = _make_weather(WindowManager(wx), tmp_path)
+    try:
+        assert isinstance(dlg._win, wx.Frame)
+        bar = dlg._win.GetMenuBar()
+        titles = [bar.GetMenuLabelText(i) for i in range(bar.GetMenuCount())]
+        assert "Window" in titles
+        assert dlg.dialog is dlg._win  # child dialogs parent to the top-level window
+    finally:
+        dlg._win.Destroy()
+
+
+def test_modal_weather_stays_a_dialog(_app: wx.App, tmp_path) -> None:
+    dlg = _make_weather(None, tmp_path)
+    try:
+        assert isinstance(dlg._win, wx.Dialog)
+    finally:
+        dlg._win.Destroy()

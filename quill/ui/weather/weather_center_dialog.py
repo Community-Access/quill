@@ -92,10 +92,12 @@ class WeatherCenterDialog:
         task_manager: object,
         safe_mode: bool,
         announce_cb: Callable[[str], None] | None = None,
+        windows: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._menu_id_refs: list[object] = []
         self._data_dir = data_dir
         self._task_manager = task_manager
         self._safe_mode = safe_mode
@@ -105,70 +107,88 @@ class WeatherCenterDialog:
         self._report: WeatherReport | None = None
         self._shown_alerts: list[Any] = []
 
-        self.dialog = wx.Dialog(
-            parent, title="Weather Center", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((620, 560))
+        # Modeless wx.Frame (menu bar + &Window menu, controls on an inner panel)
+        # when standalone Radio supplies a WindowManager; modal wx.Dialog for
+        # embedded QUILL. self._win is the top-level window, so the child
+        # Add Location / Settings dialogs parent to it correctly.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._win = wx.Frame(parent, title="Weather Center", style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._win = wx.Dialog(
+                parent, title="Weather Center",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
+            self._surface = self._win
+        self.dialog = self._win  # top-level window; child dialogs parent to it
+        self._win.SetMinSize((620, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # -- location row --
         loc_row = wx.BoxSizer(wx.HORIZONTAL)
         loc_row.Add(
-            wx.StaticText(self.dialog, label="&Location:"),
+            wx.StaticText(self._surface, label="&Location:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._location_choice = wx.Choice(self.dialog)
+        self._location_choice = wx.Choice(self._surface)
         set_accessible_name(self._location_choice, "Weather location")
         loc_row.Add(self._location_choice, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._refresh_btn = wx.Button(self.dialog, label="&Refresh")
-        self._add_btn = wx.Button(self.dialog, label="&Add Location...")
-        self._remove_btn = wx.Button(self.dialog, label="Re&move Location")
-        self._settings_btn = wx.Button(self.dialog, label="&Settings...")
+        self._refresh_btn = wx.Button(self._surface, label="&Refresh")
+        self._add_btn = wx.Button(self._surface, label="&Add Location...")
+        self._remove_btn = wx.Button(self._surface, label="Re&move Location")
+        self._settings_btn = wx.Button(self._surface, label="&Settings...")
         for b in (self._refresh_btn, self._add_btn, self._remove_btn, self._settings_btn):
             loc_row.Add(b, 0, wx.RIGHT, 4)
         root.Add(loc_row, 0, wx.EXPAND | wx.ALL, 10)
 
         # -- active alerts --
-        self._alerts_label = wx.StaticText(self.dialog, label="Active &Alerts:")
+        self._alerts_label = wx.StaticText(self._surface, label="Active &Alerts:")
         root.Add(self._alerts_label, 0, wx.LEFT | wx.RIGHT, 10)
-        self._alerts_list = wx.ListBox(self.dialog)
+        self._alerts_list = wx.ListBox(self._surface)
         set_accessible_name(self._alerts_list, "Active weather alerts")
         root.Add(self._alerts_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         # A StaticText immediately before the field is what actually names a
         # read-only TextCtrl for a screen reader (the ADP dialog's pattern);
         # set_accessible_name alone does not stick on a read-only multiline box.
-        self._alert_detail_label = wx.StaticText(self.dialog, label="Selected aler&t (read-only):")
+        self._alert_detail_label = wx.StaticText(
+            self._surface, label="Selected aler&t (read-only):"
+        )
         root.Add(self._alert_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._alert_detail = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._alert_detail, "Selected alert, full official text")
         root.Add(self._alert_detail, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- current conditions --
         root.Add(
-            wx.StaticText(self.dialog, label="&Current conditions:"), 0, wx.LEFT | wx.RIGHT, 10
+            wx.StaticText(self._surface, label="&Current conditions:"), 0, wx.LEFT | wx.RIGHT, 10
         )
         self._current = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._current, "Current conditions")
         self._current.SetMinSize((-1, 150))
         root.Add(self._current, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- forecast --
-        root.Add(wx.StaticText(self.dialog, label="&Forecast:"), 0, wx.LEFT | wx.RIGHT, 10)
-        self._forecast_list = wx.ListBox(self.dialog)
+        root.Add(wx.StaticText(self._surface, label="&Forecast:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._forecast_list = wx.ListBox(self._surface)
         set_accessible_name(self._forecast_list, "Forecast periods")
         root.Add(self._forecast_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self._period_detail_label = wx.StaticText(
-            self.dialog, label="Selected &period (read-only):"
+            self._surface, label="Selected &period (read-only):"
         )
         root.Add(self._period_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._period_detail = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._period_detail, "Selected forecast period, details")
         self._period_detail.SetMinSize((-1, 72))
@@ -176,33 +196,37 @@ class WeatherCenterDialog:
 
         # -- extended daily outlook (Open-Meteo, past the NWS 7 days) --
         root.Add(
-            wx.StaticText(self.dialog, label="&Daily outlook (extended):"),
+            wx.StaticText(self._surface, label="&Daily outlook (extended):"),
             0,
             wx.LEFT | wx.RIGHT,
             10,
         )
-        self._daily_list = wx.ListBox(self.dialog)
+        self._daily_list = wx.ListBox(self._surface)
         set_accessible_name(self._daily_list, "Extended daily outlook, one line per day")
         root.Add(self._daily_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
-        self._daily_detail_label = wx.StaticText(self.dialog, label="Selected &day (read-only):")
+        self._daily_detail_label = wx.StaticText(self._surface, label="Selected &day (read-only):")
         root.Add(self._daily_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._daily_detail = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._daily_detail, "Selected day, full details")
         self._daily_detail.SetMinSize((-1, 60))
         root.Add(self._daily_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- status + close --
-        self._status = wx.TextCtrl(self.dialog, style=wx.TE_READONLY)
+        self._status = wx.TextCtrl(self._surface, style=wx.TE_READONLY)
         set_accessible_name(self._status, "Weather source and freshness status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         btn_row.AddStretchSpacer()
-        btn_row.Add(wx.Button(self.dialog, wx.ID_CANCEL, "Close"))
+        btn_row.Add(wx.Button(self._surface, wx.ID_CANCEL, "Close"))
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
 
         self._location_choice.Bind(wx.EVT_CHOICE, lambda _e: self._on_location_chosen())
         self._location_choice.Bind(wx.EVT_KEY_DOWN, self._on_location_key)
@@ -230,11 +254,34 @@ class WeatherCenterDialog:
 
     # -- lifecycle --------------------------------------------------------------
 
-    def show(self, *, focus_alerts: bool = False) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
-        from quill.ui.dialog_contract import show_modal_dialog
+    def _build_surface_menu_bar(self) -> None:
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Weather")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
 
+    def _on_char_hook(self, event: object) -> None:
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+            self._win.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: object) -> None:
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        self._announce("Exited Weather Center")
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
+    def show(self, *, focus_alerts: bool = False) -> None:
         if self._store.locations:
             if self._settings.refresh_on_open:
                 self._refresh()
@@ -243,10 +290,20 @@ class WeatherCenterDialog:
         else:
             self._status.SetValue("No locations yet. Choose Add Location to begin.")
             self._announce("No weather locations yet. Choose Add Location to begin.")
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, "Weather Center")
+            show_modeless_surface(self._win, "Weather Center", announce=self._announce)
+            return
+        self._win.CentreOnParent()
+        apply_modal_ids(self._win, cancel_id=self._wx.ID_CANCEL)
+        from quill.ui.dialog_contract import show_modal_dialog
+
         try:
-            show_modal_dialog(self.dialog, "Weather Center", announce=self._announce)
+            show_modal_dialog(self._win, "Weather Center", announce=self._announce)
         finally:
-            self.dialog.Destroy()
+            self._win.Destroy()
 
     # -- location chooser -------------------------------------------------------
 
@@ -344,7 +401,7 @@ class WeatherCenterDialog:
         self._show_field(self._daily_detail_label, self._daily_detail, bool(result.daily))
 
         self._status.SetValue(self._status_line(result))
-        self.dialog.Layout()
+        self._surface.Layout()
 
         n = len(alerts)
         summary = f"Weather for {place}. "
@@ -438,7 +495,7 @@ class WeatherCenterDialog:
             (self._daily_detail_label, self._daily_detail),
         ):
             self._show_field(label_ctrl, field, False)
-        self.dialog.Layout()
+        self._surface.Layout()
         self._announce(f"Removed {label}. No locations left. Choose Add Location to begin.")
 
     # -- sub-dialogs ------------------------------------------------------------
@@ -447,7 +504,7 @@ class WeatherCenterDialog:
         from quill.ui.weather.add_location_dialog import AddLocationDialog
 
         dlg = AddLocationDialog(
-            self.dialog,
+            self._win,
             store=self._store,
             data_dir=self._data_dir,
             task_manager=self._task_manager,
@@ -462,7 +519,7 @@ class WeatherCenterDialog:
         from quill.ui.weather.settings_dialog import WeatherSettingsDialog
 
         dlg = WeatherSettingsDialog(
-            self.dialog,
+            self._win,
             settings=self._settings,
             data_dir=self._data_dir,
             announce_cb=self._announce,
