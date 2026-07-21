@@ -863,7 +863,10 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_rewind(), id=rewind_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_forward(), id=forward_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_jump_to_live(), id=live_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_whats_playing(), id=whats_playing_id)
+        # Ctrl+T opens the reviewable Now Playing window (fetch-and-speak fallback).
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_whats_playing_details(), id=whats_playing_id
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.radio_toggle_title_announcements(),
