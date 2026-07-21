@@ -114,10 +114,11 @@ class RadioStatusBar:
                 key="now_playing",
                 name="Now playing",
                 text=self._text_now_playing,
-                activate=lambda: _call(host, "radio_whats_playing_details"),
+                activate=lambda: _call(host, "radio_now_playing_full_details"),
                 help=(
-                    "What's playing. Press Enter for the Now Playing window; "
-                    "right-click for Play/Pause, Mute, Record, and favorites."
+                    "What's playing. Press Enter for full details -- station, "
+                    "format, stream, and the current track; right-click for "
+                    "Play/Pause, Mute, Record, and favorites."
                 ),
                 build_menu=self._menu_now_playing,
             ),

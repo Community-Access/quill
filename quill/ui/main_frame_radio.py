@@ -845,6 +845,45 @@ class RadioMixin:
             self._announce,
         ).show()
 
+    def radio_now_playing_full_details(self) -> None:
+        """Everything known about what's playing right now -- the station's own
+        details (source, format, country, stream URL), the current track
+        title/artist, and the live playback status -- in one reviewable,
+        copyable window. This is the status bar's Now Playing action (Enter);
+        with nothing on air it falls back to the track-only view."""
+        controller = getattr(self, "_radio_controller", None)
+        station = controller.state.station if controller is not None else None
+        if station is None:
+            self.radio_whats_playing_details()
+            return
+        track = self._radio_now_playing_text()
+        lines = [
+            station.details_text,
+            "",
+            f"Now playing: {track}" if track else "Now playing: no track information yet",
+        ]
+        state = controller.state
+        volume = f"Volume: {int(getattr(state, 'volume_percent', 0) or 0)}%"
+        if getattr(state, "muted", False):
+            volume += " (muted)"
+        if getattr(self._radio_history, "volume_boost", False):
+            volume += " (boosted)"
+        lines.append(volume)
+        recorder = getattr(self, "_radio_recorder", None)
+        count = int(getattr(recorder, "active_count", 0) or 0)
+        if count:
+            lines.append(f"Recording: {count} in progress")
+        from quill.ui.radio.now_playing_dialog import NowPlayingDialog
+
+        NowPlayingDialog(
+            self.frame,
+            "\n".join(lines),
+            self._show_modal_dialog,
+            self._copy_to_clipboard,
+            self._announce,
+            title=f"Now Playing: {station.display_name}",
+        ).show()
+
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
 
     def radio_rewind(self) -> None:
