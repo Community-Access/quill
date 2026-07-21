@@ -179,10 +179,12 @@ class StationBrowserDialog:
         on_open_add_custom: Callable[[RadioStation | None], None] | None = None,
         on_open_link_finder: Callable[[], None] | None = None,
         show_details: bool = True,
+        windows: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._menu_id_refs: list[object] = []
         self._controller = controller
         self._favorites = favorites_store
         self._task_manager = task_manager
@@ -216,20 +218,33 @@ class StationBrowserDialog:
         self._search_offset = 0
         self._search_more_available = False
 
-        self.dialog = wx.Dialog(
-            parent, title="Internet Radio", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        self.dialog.SetMinSize((700, 520))
-        self.dialog.SetSize((820, 600))
+        # Modeless wx.Frame (with the persistent menu bar + &Window menu, controls
+        # on an inner panel) when a WindowManager is supplied by standalone Radio;
+        # otherwise an unchanged modal wx.Dialog for embedded QUILL.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._win = wx.Frame(parent, title="Internet Radio", style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._win = wx.Dialog(
+                parent, title="Internet Radio", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+            )
+            self._surface = self._win
+        self.dialog = self._win  # back-compat alias for callers that reference it
+        self._win.SetMinSize((700, 520))
+        self._win.SetSize((820, 600))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Search Stations")
+        search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self._surface, "Search Stations")
         search_grid = wx.FlexGridSizer(cols=2, gap=(6, 4))
         search_grid.AddGrowableCol(1, 1)
 
         def _labeled_field(label: str, *, accessible_name: str) -> wx.TextCtrl:
-            search_grid.Add(wx.StaticText(self.dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
-            ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+            search_grid.Add(wx.StaticText(self._surface, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
+            ctrl = wx.TextCtrl(self._surface, style=wx.TE_PROCESS_ENTER)
             ctrl.SetName(accessible_name)
             search_grid.Add(ctrl, 1, wx.EXPAND)
             return ctrl
@@ -242,20 +257,20 @@ class StationBrowserDialog:
         # free text. Tag stays an editable combo so a rare custom tag still
         # works; Country is a plain choice with an "Any" default.
         search_grid.Add(
-            wx.StaticText(self.dialog, label="&Tag/genre (optional):"),
+            wx.StaticText(self._surface, label="&Tag/genre (optional):"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
-        self._tag_ctrl = wx.ComboBox(self.dialog, style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
+        self._tag_ctrl = wx.ComboBox(self._surface, style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
         self._tag_ctrl.SetName(
             "Tag or genre to narrow the search; pick one from the list or type your own, e.g. jazz"
         )
         search_grid.Add(self._tag_ctrl, 1, wx.EXPAND)
 
         search_grid.Add(
-            wx.StaticText(self.dialog, label="&Country (optional):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="&Country (optional):"), 0, wx.ALIGN_CENTER_VERTICAL
         )
-        self._country_ctrl = wx.Choice(self.dialog, choices=[_ANY_COUNTRY])
+        self._country_ctrl = wx.Choice(self._surface, choices=[_ANY_COUNTRY])
         self._country_ctrl.SetName(
             "Country to narrow the search; choose from the list, or leave as Any country"
         )
@@ -263,7 +278,7 @@ class StationBrowserDialog:
         search_grid.Add(self._country_ctrl, 1, wx.EXPAND)
         search_box.Add(search_grid, 1, wx.EXPAND | wx.ALL, 6)
         search_col = wx.BoxSizer(wx.VERTICAL)
-        self._search_btn = wx.Button(self.dialog, label="&Search")
+        self._search_btn = wx.Button(self._surface, label="&Search")
         self._search_btn.SetName("Search for stations matching these fields")
         # No alignment flag: vertical alignment flags assert-fail inside a
         # vertical sizer (wx 4.2+), which killed the dialog before it opened.
@@ -273,8 +288,8 @@ class StationBrowserDialog:
 
         body = wx.BoxSizer(wx.HORIZONTAL)
         cat_col = wx.BoxSizer(wx.VERTICAL)
-        cat_col.Add(wx.StaticText(self.dialog, label="&Category"), 0, wx.BOTTOM, 4)
-        self._category_list = wx.ListBox(self.dialog, choices=list(_CATEGORIES))
+        cat_col.Add(wx.StaticText(self._surface, label="&Category"), 0, wx.BOTTOM, 4)
+        self._category_list = wx.ListBox(self._surface, choices=list(_CATEGORIES))
         self._category_list.SetName(
             "Station category; Favorites, Popular Stations, ACB Media, SomaFM, "
             "TuneIn (a folder tree), Music Genres, and the Xiph Directory browse "
@@ -285,30 +300,30 @@ class StationBrowserDialog:
         body.Add(cat_col, 1, wx.EXPAND | wx.RIGHT, 10)
 
         results_col = wx.BoxSizer(wx.VERTICAL)
-        results_col.Add(wx.StaticText(self.dialog, label="&Stations"), 0, wx.BOTTOM, 4)
+        results_col.Add(wx.StaticText(self._surface, label="&Stations"), 0, wx.BOTTOM, 4)
         facet_row = wx.BoxSizer(wx.HORIZONTAL)
         facet_row.Add(
-            wx.StaticText(self.dialog, label="So&urce:"),
+            wx.StaticText(self._surface, label="So&urce:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             4,
         )
-        self._source_facet = wx.Choice(self.dialog, choices=list(_SOURCE_FACETS))
+        self._source_facet = wx.Choice(self._surface, choices=list(_SOURCE_FACETS))
         self._source_facet.SetName("Show only results from one source")
         self._source_facet.SetSelection(0)
         facet_row.Add(self._source_facet, 0, wx.RIGHT, 12)
         # Genre picker for the Music Genres (Community M3U) category. Empty and
         # disabled until that category is selected, then filled from the live
         # genre list; picking a genre browses it.
-        self._genre_label = wx.StaticText(self.dialog, label="&Genre:")
+        self._genre_label = wx.StaticText(self._surface, label="&Genre:")
         facet_row.Add(self._genre_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
-        self._genre_ctrl = wx.Choice(self.dialog, choices=[])
+        self._genre_ctrl = wx.Choice(self._surface, choices=[])
         self._genre_ctrl.SetName("Music genre to browse (Community M3U catalog)")
         self._genre_ctrl.Enable(False)
         self._genre_slugs: list[str] = []
         facet_row.Add(self._genre_ctrl, 0)
         results_col.Add(facet_row, 0, wx.BOTTOM, 4)
-        self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        self._results = wx.ListCtrl(self._surface, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Station results; arrow through to hear details of each")
         self._results.InsertColumn(0, "Name", width=240)
         self._results.InsertColumn(1, "Country", width=120)
@@ -320,7 +335,7 @@ class StationBrowserDialog:
         # folders expand (lazily fetched), Enter opens a folder or plays a
         # station. Hidden until TuneIn is chosen.
         self._tunein_tree = wx.TreeCtrl(
-            self.dialog,
+            self._surface,
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT | wx.BORDER_SIMPLE,
         )
         self._tunein_tree.SetName(
@@ -331,10 +346,10 @@ class StationBrowserDialog:
         body.Add(results_col, 2, wx.EXPAND)
         root.Add(body, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        details_label = wx.StaticText(self.dialog, label="Station details")
+        details_label = wx.StaticText(self._surface, label="Station details")
         root.Add(details_label, 0, wx.LEFT | wx.TOP, 10)
         self._details = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._details.SetName("Read-only details of the selected station")
         root.Add(self._details, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
@@ -342,47 +357,47 @@ class StationBrowserDialog:
             root.Hide(details_label)
             root.Hide(self._details)  # View > Show Station Details (honored per surface)
 
-        self._status = wx.StaticText(self.dialog, label="")
+        self._status = wx.StaticText(self._surface, label="")
         self._status.SetName("Status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
         volume_row.Add(
-            wx.StaticText(self.dialog, label="Radio &volume:"),
+            wx.StaticText(self._surface, label="Radio &volume:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._volume_slider = wx.Slider(self.dialog, value=100, minValue=0, maxValue=100)
+        self._volume_slider = wx.Slider(self._surface, value=100, minValue=0, maxValue=100)
         self._volume_slider.SetName(
             "Internet Radio's own volume, separate from your system volume and screen reader"
         )
         volume_row.Add(self._volume_slider, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._mute_btn = wx.ToggleButton(self.dialog, label="&Mute")
+        self._mute_btn = wx.ToggleButton(self._surface, label="&Mute")
         self._mute_btn.SetName("Mute or unmute Internet Radio")
         volume_row.Add(self._mute_btn, 0)
         root.Add(volume_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._play_btn = wx.Button(self.dialog, label="&Play")
+        self._play_btn = wx.Button(self._surface, label="&Play")
         self._play_btn.SetName("Play the selected station")
         self._play_btn.Enable(False)
-        self._favorite_btn = wx.Button(self.dialog, label="Add to &Favorites")
+        self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
         self._favorite_btn.SetName("Add or remove the selected station from Favorites")
         self._favorite_btn.Enable(False)
-        self._more_btn = wx.Button(self.dialog, label="&More Stations")
+        self._more_btn = wx.Button(self._surface, label="&More Stations")
         self._more_btn.SetName("Load the next page of search results")
         self._more_btn.Enable(False)
-        add_custom_btn = wx.Button(self.dialog, label="Add &Custom Station...")
+        add_custom_btn = wx.Button(self._surface, label="Add &Custom Station...")
         add_custom_btn.SetName("Add a station by typing its own stream link")
-        link_finder_btn = wx.Button(self.dialog, label="Find Streams from a &Website...")
+        link_finder_btn = wx.Button(self._surface, label="Find Streams from a &Website...")
         link_finder_btn.SetName("Scan a website you type in for stream links")
-        self._refresh_btn = wx.Button(self.dialog, label="&Refresh")
+        self._refresh_btn = wx.Button(self._surface, label="&Refresh")
         self._refresh_btn.SetName(
             "Re-fetch the current source from the internet -- the Music Genres "
             "list/stations, or the iHeart directory used by search"
         )
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
@@ -394,7 +409,11 @@ class StationBrowserDialog:
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
 
         self._name_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         self._tag_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
@@ -427,7 +446,7 @@ class StationBrowserDialog:
         # CHAR_HOOK catches the Ctrl chord before any child control sees it,
         # regardless of where focus sits (list, slider, buttons), and leaves
         # bare Up/Down untouched so list navigation and the slider still work.
-        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         state = getattr(self._controller, "state", None)
         if state is not None:
@@ -486,11 +505,31 @@ class StationBrowserDialog:
 
     # ------------------------------------------------------------------
 
-    def show(self, *, initial_category: str | None = None, focus_search: bool = False) -> None:
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
-        from quill.ui.dialog_contract import show_modal_dialog
+    def _build_surface_menu_bar(self) -> None:
+        """Menu bar for the modeless frame: a &Close item + the shared &Window
+        menu, so Alt lands on a real menu and Ctrl+Tab / Ctrl+1..9 traverse."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Search")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
 
+    def _on_close(self, event: object) -> None:
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        self._announce("Exited Search Stations")
+        self._on_favorites_changed()
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
+    def show(self, *, initial_category: str | None = None, focus_search: bool = False) -> None:
         # Opened straight to a browse source (the Station menu's Browse submenu),
         # or focused on the search box (Search Stations...). Default stays the
         # Favorites view the constructor set.
@@ -498,10 +537,20 @@ class StationBrowserDialog:
             self._show_category(initial_category)
         if focus_search:
             self._wx.CallAfter(self._name_ctrl.SetFocus)
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, "Search Stations")
+            show_modeless_surface(self._win, "Search Stations", announce=self._announce)
+            return
+        self._win.CentreOnParent()
+        apply_modal_ids(self._win, cancel_id=self._wx.ID_CANCEL)
+        from quill.ui.dialog_contract import show_modal_dialog
+
         try:
-            show_modal_dialog(self.dialog, "Internet Radio", announce=self._announce)
+            show_modal_dialog(self._win, "Internet Radio", announce=self._announce)
         finally:
-            self.dialog.Destroy()
+            self._win.Destroy()
 
     def refresh_favorites_view(self) -> None:
         if self._category_list.GetSelection() == _CATEGORIES.index(_FAVORITES):
@@ -794,7 +843,7 @@ class StationBrowserDialog:
             return
         self._tunein_tree.Show(show_tree)
         self._results.Show(not show_tree)
-        self.dialog.Layout()
+        self._surface.Layout()
 
     def _populate_tunein_tree(self) -> None:
         """Fill the TuneIn tree's top level (Music, Talk, Sports, Local, ...)."""
@@ -1213,8 +1262,11 @@ class StationBrowserDialog:
 
     def _on_char_hook(self, event: object) -> None:
         """Handle Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the
-        dialog (#1070); everything else passes through untouched."""
+        dialog (#1070); Escape closes the modeless frame; else pass through."""
         wx = self._wx
+        if self._modeless and event.GetKeyCode() == wx.WXK_ESCAPE:
+            self._win.Close()
+            return
         if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
             code = event.GetKeyCode()
             if code == wx.WXK_UP:

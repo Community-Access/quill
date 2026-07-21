@@ -1660,6 +1660,7 @@ class RadioMixin:
             on_open_add_custom=self._radio_open_add_custom,
             on_open_link_finder=self._radio_open_link_finder,
             show_details=self._radio_history.show_station_details,
+            windows=getattr(self, "_windows", None),
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
