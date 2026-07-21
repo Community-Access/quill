@@ -338,20 +338,26 @@ class RadioAppFrame(
         self._reload_favorites_tree(keep_key=favorite.key)
 
     def _force_favorites_manual_order(self) -> None:
-        """Switch favorites to manual order so Alt+Shift+Up/Down can reorder.
-
-        Must NOT rewrite the stored list: it already *is* the hand-arranged
-        manual order (A-Z / Z-A are display-only views). Baking the sorted view
-        in used to overwrite the listener's real order on the first reorder from
-        a sorted view, unrecoverably (#1186); switching to manual just reveals
-        the preserved order.
+        """Commit the current *display* order as the stored (manual) order, then
+        set the sort to manual -- so Alt+Shift+Up/Down reorders exactly what the
+        listener sees instead of the list first jumping to a different (stored)
+        order. Only reached from a sorted view (A-Z/Z-A); a genuinely
+        hand-arranged manual order is already in manual mode, so this is never
+        called for it and nothing is overwritten. #1186 dropped this bake, which
+        regressed reordering from the default A-Z view (the list scrambled and
+        move up/down looked broken for two reporters); restored here.
         """
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
 
+        ordered = self._radio_favorites.favorites_in_display_order(
+            self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
+        )
+        self._radio_favorites.favorites = list(ordered)
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
         radio_history.save_history(app_data_dir(), self._radio_history)
+        self._save_radio_favorites()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState

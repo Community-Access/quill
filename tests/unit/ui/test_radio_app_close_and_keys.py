@@ -144,12 +144,12 @@ def test_move_favorite_non_manual_forces_manual_then_moves(monkeypatch) -> None:
     assert any("Switched to manual order" in c for c in calls)
 
 
-def test_force_favorites_manual_order_switches_without_rewriting_the_list(monkeypatch) -> None:
-    # #1186: switching to manual order must NOT bake the sorted display view into
-    # the stored list (that overwrote the listener's real hand-arranged order on
-    # the first reorder from an A-Z view). It only flips the sort mode to manual,
-    # clears the per-folder sort overrides, and persists -- the stored order is
-    # left exactly as-is because it already IS the manual order.
+def test_force_favorites_manual_order_bakes_the_display_order(monkeypatch) -> None:
+    # Restored after #1186: switching from a sorted view (A-Z/Z-A) to manual
+    # commits the CURRENT display order as the stored order, so Alt+Shift+Up/Down
+    # reorders exactly what the listener sees instead of the list jumping to a
+    # different stored order (which made move up/down look broken). A genuine
+    # hand-arranged order is already in manual mode, so this is never called for it.
     from quill.core.radio import history as rh
 
     monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
@@ -157,18 +157,23 @@ def test_force_favorites_manual_order_switches_without_rewriting_the_list(monkey
     monkeypatch.setattr(
         rh, "save_history", lambda data_dir, history: saved.setdefault("h", history)
     )
-    original = ["c", "a", "b"]  # the listener's real manual order
+    calls: list[str] = []
     store = SimpleNamespace(
         favorites_in_display_order=lambda sort, folder_sorts: ["a", "b", "c"],  # A-Z view
-        favorites=list(original),
+        favorites=["c", "a", "b"],  # a different stored order the user is not seeing
     )
     hist = SimpleNamespace(favorites_sort="az", folder_sort_orders={"News": "az"})
-    frame = SimpleNamespace(_radio_favorites=store, _radio_history=hist)
+    frame = SimpleNamespace(
+        _radio_favorites=store,
+        _radio_history=hist,
+        _save_radio_favorites=lambda: calls.append("save"),
+    )
     RadioAppFrame._force_favorites_manual_order(frame)  # type: ignore[arg-type]
-    assert store.favorites == original, "stored order preserved, not baked from the view"
+    assert store.favorites == ["a", "b", "c"], "the visible order is committed as manual"
     assert hist.favorites_sort == "manual"
     assert hist.folder_sort_orders == {}
     assert saved["h"] is hist
+    assert "save" in calls
 
 
 def test_move_favorite_at_edge_announces_and_does_not_reload() -> None:
