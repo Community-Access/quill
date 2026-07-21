@@ -1,7 +1,12 @@
 @echo off
-rem Run QuillBeacon from source on Windows.
-rem Usage: run-quill-beacon.bat
+rem Dev launcher for testing. Prefers this repo's venv, then the QUILL
+rem checkout's venv (which has quill installed editable), then PATH python.
 setlocal
-set QUILLBEACON_DATA=%~dp0data
-python "%~dp0launcher.py" %*
-endlocal
+if exist "%~dp0.venv\Scripts\python.exe" (
+    set "PY=%~dp0.venv\Scripts\python.exe"
+) else if exist "S:\QUILL\.venv\Scripts\python.exe" (
+    set "PY=S:\QUILL\.venv\Scripts\python.exe"
+) else (
+    set "PY=python"
+)
+"%PY%" -m quill.apps.beacon %*

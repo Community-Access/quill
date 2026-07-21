@@ -42,7 +42,7 @@ import wx
 
 from quill.core.audio_enhance import EnhanceError, EnhanceRelay
 from quill.core.radio.models import RadioStation
-from quill.ui.audio_studio.audio_engine import WxMediaEngine
+from quill.ui.audio.audio_engine import WxMediaEngine
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine, mpv_output_device_available
 
 _log = logging.getLogger(__name__)

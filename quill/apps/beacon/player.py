@@ -1,29 +1,26 @@
 """Built-in accessible media player (PRD 11.5, 11.6, Phase 3).
 
-A small wx frame with ``wx.media.MediaCtrl`` transport, a chapter list, a
-transcript view, and time-point capture. Keyboard-first: Space play/pause,
-Left/Right skip, J/L jump by skip interval, K add time point, N/P next/prev
-chapter. Every control has an accessible name; the status line announces
-chapter and time (PRD 18.4, A11Y-013).
+A small wx frame with a chapter list, a transcript view, and time-point
+capture. Keyboard-first: Space play/pause, Left/Right skip, J/L jump by skip
+interval, K add time point, N/P next/prev chapter. Every control has an
+accessible name; the status line announces chapter and time (PRD 18.4,
+A11Y-013).
 
-Playback depends on the platform media backend; the UI is built so it
-constructs and runs even when a backend is absent (it announces "media
-backend unavailable" rather than crashing).
+Playback goes through the family's shared audio layer
+(:mod:`quill.ui.audio.audio_engine`) -- the same ``AudioEngine`` protocol
+Radio, Cast, and Audio Studio use, with the default wx.media/WMP backend and
+the opt-in libmpv backend (gapless, exact seeking, output-device routing) for
+free. The UI is built so it constructs and runs even when no backend is
+available (it announces "media backend unavailable" rather than crashing).
 """
 
 from __future__ import annotations
 
 import wx
 
-try:
-    import wx.media
-
-    _HAS_MEDIA = True
-except ImportError:  # pragma: no cover - depends on build
-    _HAS_MEDIA = False
-
 from quill.apps.beacon import capture, media
 from quill.apps.beacon.announce import Announcer
+from quill.ui.audio.audio_engine import AudioEngine, create_engine
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -42,6 +39,8 @@ class PlayerFrame(wx.Frame):
         self.announcer = Announcer(self)
         self.chapters: list = []
         self._skip_ms = 15000
+        self.engine: AudioEngine | None = None
+        self._length_ms = 0
         self._timer = wx.Timer(self)
 
         self._build()
@@ -60,24 +59,23 @@ class PlayerFrame(wx.Frame):
         _name(self.title_lbl, "Now playing episode title")
         root.Add(self.title_lbl, 0, wx.ALL, 8)
 
-        self.media = None
-        if _HAS_MEDIA:
-            try:
-                self.media = wx.media.MediaCtrl(self)
-                _name(self.media, "Media playback area")
-                url = self.resource.primary_uri if self.resource else ""
-                if url:
-                    self.media.Load(url)
-                    # Seek to a saved time point once the media is ready.
-                    self.media.Bind(wx.media.EVT_MEDIA_LOADED, self._on_loaded)
-            except Exception:  # pragma: no cover - backend-dependent
-                self.media = None
-        if self.media is None:
+        # Playback goes through the shared audio engine (a hidden control --
+        # audio only). It resolves libmpv when available, else wx.media/WMP,
+        # and reports readiness via _on_loaded (which seeks to a saved point).
+        self.engine = create_engine(
+            self,
+            on_loaded=self._on_loaded,
+            on_finished=self._on_finished,
+            on_error=self._on_error,
+        )
+        if self.engine is None:
             self.status = wx.StaticText(self, label="Media backend unavailable.")
             _name(self.status, "Media backend unavailable")
             root.Add(self.status, 0, wx.ALL, 8)
         else:
-            root.Add(self.media, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+            url = self.resource.primary_uri if self.resource else ""
+            if url:
+                self.engine.load(url)
 
         # Transport
         transport = wx.BoxSizer(wx.HORIZONTAL)
@@ -146,15 +144,14 @@ class PlayerFrame(wx.Frame):
     # -- transport ------------------------------------------------------------
 
     def _on_play(self, _e=None) -> None:
-        if not self.media:
+        if not self.engine:
             self.announcer.say("Media backend unavailable")
             return
-        state = self.media.GetState()
-        if state == wx.media.MEDIASTATE_PLAYING:
-            self.media.Pause()
+        if self.engine.is_playing():
+            self.engine.pause()
             self.announcer.say("Paused")
         else:
-            self.media.Play()
+            self.engine.play()
             self.announcer.say("Playing")
 
     def _on_back(self, _e=None) -> None:
@@ -164,25 +161,25 @@ class PlayerFrame(wx.Frame):
         self._seek_delta(self._skip_ms)
 
     def _seek_delta(self, delta_ms: int) -> None:
-        if not self.media:
+        if not self.engine:
             return
-        pos = self.media.Tell() + delta_ms
-        pos = max(0, min(pos, self.media.Length() or 0))
-        self.media.Seek(pos)
+        pos = self.engine.position_ms() + delta_ms
+        pos = max(0, min(pos, self.engine.length_ms() or 0))
+        self.engine.seek(pos)
         self.announcer.say(media.fmt_time(pos), "verbose")
 
     def _on_chapter_select(self, _e) -> None:
         sel = self.chapter_list.GetSelection()
-        if sel < 0 or not self.media:
+        if sel < 0 or not self.engine:
             return
         ch = self.chapter_list.GetClientData(sel)
-        self.media.Seek(ch.start_ms)
+        self.engine.seek(ch.start_ms)
         self.announcer.say(f"Chapter: {ch.title}, {media.fmt_time(ch.start_ms)}")
 
     def _on_add_point(self, _e=None) -> None:
         if not self.resource:
             return
-        pos = self.media.Tell() if self.media else 0
+        pos = self.engine.position_ms() if self.engine else 0
         ch = self._chapter_at(pos)
         beacon, res = capture.capture(
             self.resource.primary_uri,
@@ -208,20 +205,29 @@ class PlayerFrame(wx.Frame):
         return last
 
     def _on_timer(self, _e) -> None:
-        if not self.media:
+        if not self.engine:
             return
-        pos = self.media.Tell()
-        length = self.media.Length() or 0
+        pos = self.engine.position_ms()
+        length = self.engine.length_ms() or self._length_ms
         self.time_lbl.SetLabel(f"{media.fmt_time(pos)} / {media.fmt_time(length)}")
 
-    def _on_loaded(self, _e) -> None:
-        """Seek to a saved time point once the media backend is ready."""
-        if self.beacon and self.beacon.locations:
+    def _on_loaded(self, length_ms: int) -> None:
+        """The shared engine reports readiness; seek to any saved time point."""
+        self._length_ms = length_ms
+        if self.engine and self.beacon and self.beacon.locations:
             start = self.beacon.locations[0].media_start_ms
             if start:
-                self.media.Seek(start)
+                self.engine.seek(start)
                 self.announcer.say(f"Resumed at {media.fmt_time(start)}", "normal")
+
+    def _on_finished(self) -> None:
+        self.announcer.say("Finished", "normal")
+
+    def _on_error(self, message: str) -> None:
+        self.announcer.say(message, "normal")
 
     def _on_close(self, _e) -> None:
         self._timer.Stop()
+        if self.engine:
+            self.engine.close()
         self.Destroy()

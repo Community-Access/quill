@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from quill.ui.audio_studio.mpv_engine import find_libmpv, mpv_pack_dir
+from quill.ui.audio.mpv_engine import find_libmpv, mpv_pack_dir
 
 
 def test_find_libmpv_env_override_file(tmp_path: Path, monkeypatch) -> None:
@@ -21,7 +21,7 @@ def test_find_libmpv_env_override_folder(tmp_path: Path, monkeypatch) -> None:
 
 
 def test_find_libmpv_pack_dir(tmp_path: Path, monkeypatch) -> None:
-    import quill.ui.audio_studio.mpv_engine as me
+    import quill.ui.audio.mpv_engine as me
 
     monkeypatch.delenv("QUILL_LIBMPV", raising=False)
     pack = tmp_path / "engine-packs" / "mpv"
@@ -32,7 +32,7 @@ def test_find_libmpv_pack_dir(tmp_path: Path, monkeypatch) -> None:
 
 
 def test_find_libmpv_absent(monkeypatch, tmp_path: Path) -> None:
-    import quill.ui.audio_studio.mpv_engine as me
+    import quill.ui.audio.mpv_engine as me
 
     monkeypatch.delenv("QUILL_LIBMPV", raising=False)
     monkeypatch.setattr(me, "mpv_pack_dir", lambda: tmp_path / "empty")
@@ -41,8 +41,8 @@ def test_find_libmpv_absent(monkeypatch, tmp_path: Path) -> None:
 
 
 def test_preferred_backend_tracks_dll_presence(monkeypatch, tmp_path: Path) -> None:
-    import quill.ui.audio_studio.mpv_engine as me
-    from quill.ui.audio_studio.audio_engine import preferred_backend
+    import quill.ui.audio.mpv_engine as me
+    from quill.ui.audio.audio_engine import preferred_backend
 
     monkeypatch.delenv("QUILL_LIBMPV", raising=False)
     monkeypatch.setattr(me, "mpv_pack_dir", lambda: tmp_path / "empty")

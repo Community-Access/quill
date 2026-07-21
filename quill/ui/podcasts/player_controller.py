@@ -40,7 +40,7 @@ from quill.core.audio_enhance import (
     is_enhancement_active,
     probe_source_duration_ms,
 )
-from quill.ui.audio_studio.audio_engine import AudioEngine, create_engine
+from quill.ui.audio.audio_engine import AudioEngine, create_engine
 
 _log = logging.getLogger(__name__)
 

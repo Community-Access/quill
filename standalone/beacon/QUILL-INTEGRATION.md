@@ -17,11 +17,17 @@ remote), so this is now the safe, version-controlled home for it:
 - `launcher.py`, `scripts/`, `run-quill-beacon.bat`, `pyproject.toml`,
   `README.md`, `CHANGELOG.md` — the original build/tooling scaffolding.
 
+## Build shell (done)
+`standalone/beacon/` is now a working build shell modeled on `standalone/radio/`:
+`launcher.py` + `quill/apps/beacon/__main__.py` (so `python -m quill.apps.beacon`
+runs), `quill-beacon.spec`, `scripts/build_release.ps1`, and
+`installer/quill-beacon.iss`. Beacon plays through the **shared audio layer**
+(`quill.ui.audio.audio_engine`) like Radio/Cast/Studio, so the build stages
+libmpv only *optionally* (wx.media/WMP is the default backend). Still needs a
+real build+install+launch to validate, and a `quill-beacon.ico` (the spec ships
+the default icon until one is added).
+
 ## Not yet done (follow-ups)
-- **No standalone build shell yet.** There is no PyInstaller spec or installer
-  for Beacon (the original never had one). Building a standalone Beacon means
-  adding a `quill-beacon.spec` + installer here modeled on `standalone/radio/`,
-  targeting `quill.apps.beacon:main`.
 - **Known defects to fix before shipping** (from the family audit §16.5): the
   sync-merge data loss (locations dropped on merge), plaintext device bearer
   token, capture-bridge origin check, and the scrypt-params forward-compat trap.

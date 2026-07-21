@@ -6,7 +6,7 @@ Previous/Next chapter, Rewind/Forward (configurable step), a position slider
 that speaks human time, and a volume slider. The current chapter is announced
 as playback crosses into it ("Chapter 4: The Long Road").
 
-Pure UI over :mod:`quill.ui.audio_studio.audio_engine`; chapter math stays in
+Pure UI over :mod:`quill.ui.audio.audio_engine`; chapter math stays in
 :mod:`quill.core.speech.chapters`.
 """
 
@@ -21,7 +21,7 @@ from quill.core.audio_studio.book_prefs import BookPrefs
 from quill.core.i18n import _
 from quill.core.speech.chapter_io import format_timestamp
 from quill.core.speech.chapters import Chapter
-from quill.ui.audio_studio.audio_engine import AudioEngine, create_engine
+from quill.ui.audio.audio_engine import AudioEngine, create_engine
 from quill.ui.audio_studio.pages_base import set_accessible_name
 
 _log = logging.getLogger(__name__)

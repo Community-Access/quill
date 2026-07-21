@@ -46,7 +46,7 @@ from collections.abc import Callable
 
 import wx
 
-from quill.ui.audio_studio.mpv_engine import _MpvClient, find_libmpv
+from quill.ui.audio.mpv_engine import _MpvClient, find_libmpv
 
 _log = logging.getLogger(__name__)
 
