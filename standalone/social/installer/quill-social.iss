@@ -1,29 +1,33 @@
-; QUILL Cast installer -- ships the staged onedir build.
-; Compile via scripts\build_release.ps1 (which stages ffmpeg/docs into
-; ..\dist\QUILLCast first), or directly:  ISCC quill-cast.iss
+; QUILL Social installer -- ships the staged onedir build.
+; Compile via scripts\build_release.ps1 (which renders + stages docs into
+; ..\dist\QuillSocial first), or directly:  ISCC quill-social.iss
 ;
 ; Everything the app needs is bundled -- no downloads at install or runtime.
-; The staged folder deliberately contains NO data\ subfolder here: that
-; folder is the portable-mode switch (see the portable zip), and an
-; installed copy must keep using the shared %APPDATA%\Quill store.
+; The staged folder deliberately contains NO data\ subfolder here: that folder
+; is the portable-mode switch (see the portable zip and launcher.py), and an
+; installed copy keeps using the platform app-data / shared %APPDATA%\Quill store.
 
-#define AppName "QUILL Cast"
-#define AppVersion "1.0.5"
+#define AppName "QUILL Social"
+; Version is single-sourced from build_release.ps1, which passes
+; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
+; manual ISCC run and must be kept in step with build_release.ps1's $version.
+#ifndef AppVersion
+  #define AppVersion "0.3.0"
+#endif
 #define AppPublisher "Community Access"
-#define AppURL "https://github.com/Community-Access/quill-cast"
-#define AppExeName "QUILLCast.exe"
+#define AppURL "https://github.com/Community-Access/quill-social"
+#define AppExeName "QuillSocial.exe"
 
 [Setup]
-AppId={{316B5D30-E16B-4973-95B6-968F5D897FD7}}
+AppId={{76E44E58-70E4-492C-ACAE-B59BE03C94DC}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=1.0.1.0
 VersionInfoCompany={#AppPublisher}
-VersionInfoDescription={#AppName} accessible podcast player
+VersionInfoDescription={#AppName} accessible social networking
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableDirPage=no
@@ -34,7 +38,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
-OutputBaseFilename=QUILL-Cast-Setup-{#AppVersion}
+OutputBaseFilename=QUILL-Social-Setup-{#AppVersion}
 Compression=lzma2/ultra
 SolidCompression=yes
 WizardStyle=modern
@@ -42,7 +46,6 @@ CloseApplications=force
 RestartApplications=no
 UninstallDisplayName={#AppName} {#AppVersion}
 UninstallDisplayIcon={app}\{#AppExeName}
-SetupIconFile=..\assets\quill-cast.ico
 LicenseFile=..\LICENSE
 SetupLogging=yes
 
@@ -56,7 +59,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
-Name: "docs"; Description: "Documentation (User Guide)"; Types: full custom
+Name: "docs"; Description: "Documentation (User Guide, architecture, keymap)"; Types: full custom
 
 [InstallDelete]
 ; Upgrade hygiene: the onedir layout's _internal tree is wholly ours; wipe it
@@ -65,12 +68,12 @@ Name: "docs"; Description: "Documentation (User Guide)"; Types: full custom
 Type: filesandordirs; Name: "{app}\_internal"
 
 [Files]
-Source: "..\dist\QUILLCast\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,docs\*"
-Source: "..\dist\QUILLCast\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\QuillSocial\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,docs\*"
+Source: "..\dist\QuillSocial\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
-Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\USER_GUIDE.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
@@ -83,7 +86,7 @@ Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; Flags: postin
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\_internal"
 
-; Deliberately NO data-wipe prompt on uninstall: QUILL Cast shares its
-; settings, subscriptions, and downloads store (%APPDATA%\Quill) with QUILL
-; and Quill Radio. Removing this app must never destroy data a sibling app
-; still uses; the full QUILL uninstaller owns that decision.
+; Deliberately NO data-wipe prompt on uninstall: QUILL Social's local store
+; may live in the shared %APPDATA%\Quill area alongside its sibling apps.
+; Removing this app must never destroy data a sibling still uses; the full
+; QUILL uninstaller owns that decision.

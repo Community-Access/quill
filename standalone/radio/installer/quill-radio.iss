@@ -54,6 +54,15 @@ SetupLogging=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Types]
+Name: "full"; Description: "Full installation (recommended)"
+Name: "compact"; Description: "Compact installation (program only, no bundled documentation)"
+Name: "custom"; Description: "Custom installation"; Flags: iscustom
+
+[Components]
+Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
+Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
+
 [InstallDelete]
 ; Upgrade hygiene: the onedir layout's _internal tree is wholly ours; wipe it
 ; before [Files] re-lays it so renamed/removed modules never linger and cause
@@ -61,11 +70,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Type: filesandordirs; Name: "{app}\_internal"
 
 [Files]
-Source: "..\dist\QuillRadio\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*"
+Source: "..\dist\QuillRadio\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,docs\*"
+Source: "..\dist\QuillRadio\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
-Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 
