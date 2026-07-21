@@ -194,6 +194,101 @@ Stations. More on that below.</p>
 and QUILL share one codebase and one data store, so these fixes arrive
 in both at once -- nothing here is vendored into the Quill Radio
 wrapper.</p>
+<h2 id="update-220">Update 2.2.0</h2>
+<p>Quill Radio 2.2.0 collects everything since 2.1.2 -- a round of fixes
+and small conveniences straight from your testing, and a piece many of
+you have asked for: a proper backup you can carry to a new device.</p>
+<ul>
+<li><strong>Back up and restore -- take your radio with you.</strong>
+Two new items on the Station menu, <strong>Back Up Stations and
+Settings...</strong> and <strong>Restore from Backup...</strong>, save
+your favorites, settings, wake timer, and recording schedule -- and, if
+you want, your recorded audio -- into a single <code>.qrbackup</code>
+file. Copy it to a new PC (or your new BrailleNote), restore, and
+everything is back. Made for exactly the moment you switch machines or
+reinstall Windows.</li>
+<li><strong>Favorites keep a rolling backup, automatically.</strong>
+Every change to your favorites now snapshots the previous version aside
+(the last 20 are kept), so a bad edit or an accidental delete can be
+recovered.</li>
+<li><strong>Ctrl+T shows the now-playing text, not just speaks
+it.</strong> "What's Playing?" now opens a small window with the current
+title and artist you can arrow through character by character and copy
+-- to note a song's spelling or paste it into a search. It still speaks
+the title, and falls back to speaking when a stream hasn't sent its
+track info yet. The window was mentioned in the notes but nothing
+actually opened it; now Ctrl+T does.</li>
+<li><strong>Details for any favorite.</strong> Bring up a favorite's
+context menu (Applications key or Shift+F10) and choose <strong>Station
+Details...</strong> for the same reviewable readout the search results
+give -- source, stream, format, country.</li>
+<li><strong>Moving favorites up and down works the way you see
+them.</strong> From the default A-Z view, Alt+Shift+Up/Down now reorders
+exactly the order you are looking at -- it commits that view as your
+manual order and moves the station within it -- instead of jumping the
+whole list to a different order. A list you have already hand-arranged
+is untouched.</li>
+<li><strong>Move a favorite in one step with Mark and Move.</strong>
+Instead of nudging a station up or down thirty times, open a favorite's
+context menu (Applications key or Shift+F10) and choose <strong>Mark for
+Move</strong>; then go to wherever you want it, open the menu again, and
+pick <strong>Move Marked Above</strong> or <strong>Move Marked
+Below</strong>. The marked station jumps straight there (adopting that
+spot's folder). It works on the main favorites list and in the Favorites
+Manager.</li>
+<li><strong>Exit means exit.</strong> If you set Radio to minimize to
+the tray on close, choosing Exit -- even from the tray menu -- used to
+just hide it again, with no way to quit short of a reboot. Exit now
+genuinely closes the app.</li>
+<li><strong>The menus are there the moment you open the app.</strong>
+Pressing Alt right after launch used to bring up the window's own
+Minimize/Maximize menu instead of Radio's menu bar. Focus now lands
+inside the window immediately, so Alt opens the app menu from the first
+keystroke.</li>
+<li><strong>NOAA weather states that say "9 stations" now have nine
+stations.</strong> A state under Weather / NOAA could show a count and
+then expand to nothing; the count and the list were reading from two
+different places. They read from the same directory now, so what you see
+is what you get.</li>
+<li><strong>Weather goes worldwide.</strong> The Weather menu used to
+find and forecast only US places. Location search now resolves anywhere
+in the world, and a non-US location gets a real forecast -- current
+conditions and up to a 16-day outlook, with air quality -- from the free
+Open-Meteo service, while US places keep the authoritative National
+Weather Service report. (Local watches and warnings are still US-only;
+worldwide reports say so.)</li>
+<li><strong>Browse keeps your place.</strong> Expanding a country or
+genre in Browse Stations no longer jerks your cursor down into the
+station list; it stays on the folder you opened (you still hear its
+count), so you move into the list when you choose to.</li>
+<li><strong>"Install and restart" doesn't hang anymore.</strong>
+One-click updating could stall behind a stray, focus-stealing terminal
+window the updater spawned; it now runs fully hidden and completes.</li>
+<li><strong>"Radio Browser," spelled out -- and browsable by
+genre.</strong> The Search source picker now says <strong>Radio
+Browser</strong> in two words (a screen reader could make the old
+run-together spelling sound like the option was gone), and Browse
+Stations has a new <strong>Radio Browser (by Genre)</strong> branch so
+you can wander that huge directory by genre instead of only searching
+it.</li>
+<li><strong>A new View menu, with a status bar you can read.</strong> A
+<strong>View</strong> menu joins the menu bar. <strong>Show Station
+Details</strong> turns the read-only details box in Browse and Search
+Stations on or off -- hide it if you would rather not tab past it, and
+every station surface honors your choice. <strong>Show Status
+Bar</strong> adds a strip along the bottom of the main window that
+always shows what is going on: what is playing, the volume (and whether
+Volume Boost is on), whether a recording is running, the sleep timer,
+how many favorites you have, and the time. Press <strong>F6</strong> to
+land in it, arrow left and right across the cells (Home and End jump to
+the ends), and press <strong>Enter</strong> on a cell to act on it --
+Enter on Now Playing opens the What's Playing window, Enter on Volume
+mutes, Enter on Recording starts or stops recording, Enter on the Sleep
+timer opens the timer. Right-click (or Applications key) any cell for
+more: play/pause, mute, volume up and down, Volume Boost, stop all
+recordings. Escape (or a second F6) hands focus straight back to your
+favorites. Both toggles are remembered between sessions.</li>
+</ul>
 <h2 id="update-212">Update 2.1.2</h2>
 <p>Quill Radio 2.1.2 is a quick fix-up for three things you reported --
 two of them from 2.1.1 itself. Thank you for the fast, specific

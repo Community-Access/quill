@@ -545,6 +545,14 @@ defects. Track-title announcements are opt-in so ambient chatter never
 surprises anyone.</li>
 <li>A-5. Full keyboard operation including manager reordering and the
 tray menu; Delete/F2/Enter conventions consistent across lists.</li>
+<li>A-6. The main window exposes a focusable, arrow-navigable status bar
+(F6 to enter, a second F6 or Escape to leave) whose cells announce live
+state and act on Enter, with a per-cell context menu -- a keyboard- and
+screen-reader-first alternative to a passive, sighted-only status line.
+It is user-hideable (View &gt; Show Status Bar).</li>
+<li>A-7. View-menu visibility toggles (Show Station Details, Show Status
+Bar) persist across sessions and are honored by every surface that owns
+the affected control; a hidden control is never a focus stop.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -594,6 +602,70 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>2.2.0 (upstream <code>quill/core/radio/backup.py</code>,
+<code>ui/radio/backup_ui.py</code>, <code>apps/radio.py</code>,
+<code>ui/main_frame_radio.py</code>,
+<code>core/radio/radio_browser.py</code>,
+<code>core/radio/wxindex.py</code>,
+<code>core/radio/favorites.py</code>,
+<code>ui/dialog_contract.py</code>, <code>ui/app_shell.py</code>).
+Everything since 2.1.2; 2.2.0 was never shipped as a separate
+build.</strong>
+<ul>
+<li><em>Backup / restore (import &amp; export).</em>
+<code>core/radio/backup.py</code> bundles the state files (favorites,
+history/settings, wake timer, recording schedule) and, on request, the
+recorded audio into a single SHA-manifested <code>.qrbackup</code> zip;
+<code>restore_backup</code> validates it, accepts only the known state
+filenames, is zip-slip-guarded, and reloads the running app.
+Station-menu UI in <code>ui/radio/backup_ui.py</code> (worker-threaded,
+native file dialogs). Directly serves R-3 device migration.</li>
+<li><em>Now Playing window on Ctrl+T (#1134 wiring).</em> Ctrl+T
+("What's Playing?") now opens the reviewable
+<code>NowPlayingDialog</code> (arrow/copy the title+artist) instead of
+only speaking it; the window existed but had no menu item or key.
+Fetch-and-speak fallback when no title is cached.</li>
+<li><em>Per-favorite Station Details.</em> Favorites context menu -&gt;
+Station Details... shows <code>RadioStation.details_text</code> in the
+same reviewable window the search results use.</li>
+<li><em>Radio Browser clarity + genre browse (#1194).</em> The Search
+source facet reads "Radio Browser" (two words) and the derived label is
+spelled the human way everywhere; a first-class "Radio Browser (by
+Genre)" node joins the Browse tree via
+<code>radio_browser.fetch_genres/genre_display/fetch_genre_stations</code>
+over the existing tag/search API.</li>
+<li><em>View menu.</em> A new top-level <strong>View</strong> menu
+(<code>apps/radio.py</code>) with two persisted visibility toggles.
+<em>Show Station Details</em>
+(<code>RadioHistory.show_station_details</code>, default on) shows/hides
+the read-only details pane in Browse and Search Stations, threaded to
+<code>BrowseTreeDialog</code>/<code>StationBrowserDialog</code> via a
+<code>show_details</code> param that <code>root.Hide</code>s the control
+(and its label) so a hidden pane is never a focus stop. <em>Show Status
+Bar</em> (<code>RadioHistory.show_status_bar</code>, default on)
+shows/hides the main-window status bar.</li>
+<li><em>Focusable status bar (A-6).</em> A self-contained
+<code>ui/radio/status_bar.py</code> (<code>RadioStatusBar</code>) builds
+an arrow-navigable status strip along the bottom of the main window --
+cells for Now Playing, Volume (Volume Boost indicator), Recording, Sleep
+timer, Favorites count, and time. F6 enters it (a second F6 / Escape
+returns focus to the favorites tree), Left/Right/Home/End navigate,
+Enter/Space activates (reusing the existing <code>radio_*</code> actions
+and <code>_build_radio_status_bar_menu</code>), and each cell has a
+context menu. The bar refreshes on every
+<code>_refresh_statusbar</code>; <code>apps/radio.py</code> only wires
+it (build, View toggle, F6 char-hook branch), so the same bar can serve
+embedded QUILL radio later.</li>
+<li><em>Fixes.</em> Alt+Shift+Up/Down reorder from a sorted view commits
+the visible order as manual again (restores the pre-#1186 bake that
+#1186 dropped, which had regressed the default A-Z case); explicit Exit
+(menu/tray) quits for real instead of bouncing to the tray under
+minimize-on-close (#1193); keyboard focus lands inside the window after
+show so Alt reaches the menu bar on launch (#1193); NOAA state folders
+count from the same directory tier the leaves come from, so "(N items)"
+always matches what expanding shows
+(<code>wxindex.states_with_playable_feeds</code>).</li>
+</ul></li>
 <li><strong>2.1.1 (upstream <code>quill/core/radio/wxindex*.py</code>,
 <code>core/radio/reading_services.py</code>,
 <code>core/radio/directory_search.py</code>,

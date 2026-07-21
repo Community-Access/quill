@@ -30,6 +30,7 @@ Tab order: the now-playing line, the favorites tree, then four buttons.
 - **Now playing** (read-only text): what is on right now; also mirrored in the status bar and the Playback menu.
 - **Favorite stations** (tree): the same nested folder structure you build in the Favorites Manager, right on the main page. Enter plays a station, Delete removes it (with confirmation), F2 renames a station or folder, and Shift+F10 opens the full context menu -- Play/Stop, **Station Details...** (a reviewable, copyable readout of the station's source, stream, format, and country -- the same view the search results give), Rename, Move to Folder, Remove, New Folder, Mark for Move, and Manage Favorites. Your custom names are used everywhere.
 - Buttons: **Play** (it becomes **Stop** while connecting or playing -- one transport control, never a dead button), **Add to Favorites** (it becomes **Remove from Favorites** when the playing station is already saved -- perfect for keeping something you found in ACB Media or Recently Played), **Record**, **Browse Stations...**
+- **Status bar** (along the bottom): a row of cells that always show what is going on -- Now playing, Volume (with a note when Volume Boost is on), Recording, Sleep timer, Favorites count, and the time. Press **F6** to move focus into it; a second F6, or Escape, hands focus back to the favorites tree. Arrow **Left** and **Right** to move across the cells (**Home** and **End** jump to the first and last), press **Enter** or **Space** to act on the cell you are on (Now playing opens the What's Playing window, Volume mutes or unmutes, Recording starts or stops recording, Sleep timer opens the timer dialog, Favorites jumps back to the list, Time speaks the full date and time), and press the **Applications key** or right-click for a context menu with more actions (play/pause, mute, volume up and down, Volume Boost, stop all recordings, and Hide Status Bar). Turn the whole bar off from **View > Show Status Bar** if you would rather not have it.
 
 ## Menus
 
@@ -110,6 +111,11 @@ To stop recordings: **Record Now** stops the recording of the station you are li
 The **Raw stream -- exactly as sent, no re-encoding (lossless)** format in Recording Settings saves a recording that is bit-for-bit identical to what the station broadcasts. The MP3/OGG/FLAC/WAV formats decode the incoming audio and re-encode it to your chosen format; the raw option skips all of that and copies the station's own audio packets straight to disk, untouched. Choose it when you want the cleanest possible source to edit or convert yourself, with no quality lost to a second encoding.
 
 Quill Radio picks the file type for you from the stream's own format: an MP3 stream is saved as a `.mp3` file, AAC as `.aac`, Ogg Vorbis as `.ogg`, Opus as `.opus`, FLAC as `.flac`. Anything unusual is saved into a Matroska `.mka` file, a container that holds any kind of audio losslessly and opens in players like VLC. Because nothing is being re-encoded, the Bitrate setting and Apply Sound Enhancements have no effect on a raw recording and are simply ignored. If a recording is interrupted and continues into a "(part 2)" file, that part keeps the same file type as the recording it continues.
+
+### View (Alt+V)
+
+- **Show Station Details** -- shows or hides the read-only details box (source, stream, format, country) in Browse Stations and Search Stations. On by default; turn it off if you would rather not tab past it. Every station surface honors the choice, and it is remembered between sessions.
+- **Show Status Bar** -- shows or hides the status strip along the bottom of the main window (Now playing, Volume, Recording, Sleep timer, Favorites count, and the time). On by default. Reach the bar with **F6** and arrow across it; see "The main window" above for the full navigation.
 
 ### Help (Alt+H)
 
@@ -337,11 +343,14 @@ window is closed. See the Product Requirements document (Help > Product Requirem
 | New Folder | Ctrl+Shift+E |
 | Command Palette | Ctrl+Shift+P |
 | Play selected favorite | Enter (in the list) |
+| Focus the status bar (a second press returns) | F6 |
 | Rename (manager) | F2 |
 | Remove (manager / recordings) | Delete |
+| Reorder selected favorite | Alt+Shift+Up / Alt+Shift+Down |
 | Station menu | Alt+S |
 | Playback menu | Alt+P |
 | Record menu | Alt+R |
+| View menu | Alt+V |
 | Help menu | Alt+H |
 
 These keys belong to Quill Radio's own menus and are kept separate from QUILL's keymap, so nothing here collides with editor shortcuts.
