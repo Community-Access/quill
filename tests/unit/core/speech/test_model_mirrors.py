@@ -20,9 +20,22 @@ from quill.core.speech.providers import whispercpp
 # --------------------------------------------------------------------------- #
 
 
-def test_mirror_manifest_ships_empty() -> None:
-    # Nothing is mirrored yet, so every model still resolves to Hugging Face.
-    assert model_mirrors.mirror_for("whispercpp", "small") is None
+def test_whispercpp_everyday_models_are_mirrored() -> None:
+    # The everyday whisper.cpp models are hosted on assets-v1 now.
+    for model_id in ("tiny", "base", "small", "small.en-tdrz", "medium"):
+        assert model_mirrors.mirror_for("whispercpp", model_id) is not None
+    # large-v3 (~3.1 GB) exceeds GitHub's 2 GiB/file limit, so it is not mirrored.
+    assert model_mirrors.mirror_for("whispercpp", "large-v3") is None
+
+
+def test_mirrored_whisper_sha_matches_the_catalog_pin() -> None:
+    # The mirror is a re-publish of the same GGML file, so its pin must equal the
+    # catalog's -- a guard against the two drifting apart.
+    for model_id in ("tiny", "base", "small", "small.en-tdrz", "medium"):
+        info = catalog.model_by_id(model_id)
+        mirror = model_mirrors.mirror_for("whispercpp", model_id)
+        assert info is not None and mirror is not None
+        assert mirror.sha256.lower() == (info.sha256 or "").lower()
 
 
 def test_mirror_for_ignores_placeholder_sha(monkeypatch) -> None:

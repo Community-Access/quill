@@ -52,17 +52,30 @@ class MirrorAsset:
 # key -> MirrorAsset. Keys are ``f"{provider_id}:{model_id}"`` --
 # e.g. ``"whispercpp:small"``, ``"fasterwhisper:small"``.
 #
-# EMPTY until the assets are uploaded. Fill in an entry (and only then) once its
-# file is live on the assets-v1 release; a placeholder/blank SHA is ignored so a
-# provider keeps using Hugging Face for any model not yet mirrored.
+# Fill in an entry only once its file is live on the assets-v1 release; a
+# placeholder/blank SHA is ignored, so a provider keeps using Hugging Face for
+# any model not yet mirrored. The whisper.cpp SHAs are byte-identical to the
+# catalog.py pins (the mirror is a re-publish of the same GGML file).
+#
+# large-v3 (~3.1 GB) exceeds GitHub's 2 GiB/file release-asset limit and is NOT
+# mirrored; it falls back to Hugging Face / the manual-obtain path.
 _MIRRORS: dict[str, MirrorAsset] = {
-    # "whispercpp:tiny": MirrorAsset(
-    #     "ggml-tiny.bin",
-    #     "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
-    # ),
-    # "fasterwhisper:small": MirrorAsset(
-    #     "faster-whisper-small.zip", "<64-hex>", archive_member="model.bin"
-    # ),
+    "whispercpp:tiny": MirrorAsset(
+        "ggml-tiny.bin", "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21"
+    ),
+    "whispercpp:base": MirrorAsset(
+        "ggml-base.bin", "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe"
+    ),
+    "whispercpp:small": MirrorAsset(
+        "ggml-small.bin", "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b"
+    ),
+    "whispercpp:small.en-tdrz": MirrorAsset(
+        "ggml-small.en-tdrz.bin",
+        "ceac3ec06d1d98ef71aec665283564631055fd6129b79d8e1be4f9cc33cc54b4",
+    ),
+    "whispercpp:medium": MirrorAsset(
+        "ggml-medium.bin", "6c14d5adee5f86394037b4e4e8b59f1673b6cee10e3cf0b11bbdbee79c156208"
+    ),
 }
 
 
