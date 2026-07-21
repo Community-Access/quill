@@ -92,6 +92,68 @@ _REPO`). Therefore:
   That is what was done to quill-cast.
 - Audio Studio and any never-shipped product are exempt (no users, no updater).
 
+## Status (2026-07-21)
+
+- **Radio, Cast, Beacon, Audio Studio** each have a full `standalone/<product>/`
+  build shell (launcher, PyInstaller spec, Inno `.iss` supporting per-user OR
+  per-machine, `build_release.ps1` producing an installer `.exe` + a portable
+  `.zip`, docs). Beacon is reverse-vendored into `quill/apps/beacon`; Radio /
+  Cast / Studio *are* `quill.apps.*` entry points.
+- **QUILL Social and the macOS Radio port (QRM)** are captured verbatim into
+  `standalone/social/` and `standalone/radio-mac/` with `MIGRATION.md` notes;
+  the external `s:\quill-social` and `s:\qrm` repos are removed (content lives in
+  quill + git history). Social's build shell and the QRM→shared-Radio merge are
+  the remaining follow-ups.
+- The shared runtime is **Hugging-Face-free by default**: whisper.cpp, Faster
+  Whisper, and all Piper voices are mirrored, SHA-verified, on QUILL's own
+  `assets-v1` release; `huggingface_hub` is no longer a base dependency (only the
+  gated pyannote diarization extra pulls it).
+
+## Benefits of this approach (distribution and beyond)
+
+Why one repo of shared code with thin per-product shells beats separate
+per-product codebases:
+
+**Distribution.**
+- One `onedir` build per product feeds *both* deliverables — zip it for the
+  portable, point Inno Setup at it for the installer — and each `.iss` carries
+  per-user **and** per-machine install in one script (`PrivilegesRequired=lowest`
+  + dialog override). One build recipe, two install types, every product.
+- Everything is bundled (no install- or first-run downloads); the heavy speech
+  engines are fetched on demand through the shared, **SHA-256-verified**
+  `assets-v1` component system, so base builds stay small and no product depends
+  on a third-party host (Hugging Face) staying up.
+- Every product inherits the same verified self-update path (Quill's signed
+  release feed + the decompression-safety fix), so "Install and restart" behaves
+  identically everywhere.
+
+**Maintenance and correctness.**
+- Single source of truth: a fix or feature written once in the `quill` package
+  reaches *every* product at once — no vendoring, no re-pinning, no drift. The
+  design rule holds: "if it breaks, it breaks everywhere," so a defect surfaces
+  once across the whole family instead of hiding in a stale copy.
+- One gate suite guards all shared code — ruff, strict mypy on `core`/`io`,
+  module-size budgets, the dialog-surface inventory, the accessible-name audit,
+  the network-egress audit, and the banned-pattern check — so quality is uniform,
+  not per-repo.
+- Apps declare `REQUIRED_COMPONENTS` and a refcount registry shares downloaded
+  components (ffmpeg, mpv) across co-installed products, so a listener with Radio
+  *and* Studio downloads ffmpeg once.
+
+**Accessibility.** One accessibility contract (`dialog_contract`, accessible-name
+inference, region-entry/-exit announcements, the transition-cue policy) is
+enforced across every surface of every product, so the screen-reader experience
+is consistent — a fix to focus or naming lands everywhere.
+
+**Footprint and the user.** A shared `%APPDATA%\Quill` data store means favorites,
+settings, voices, and recordings are shared across QUILL, Radio, Cast, and
+Studio; the total on-disk footprint is one codebase plus small shells; and users
+get every product's fixes automatically.
+
+**Velocity.** Contributors work in one repo with one test suite and one CI; a new
+product is a thin `standalone/` shell over the existing package, not a fork to
+keep in sync.
+
 ## Recommendation
 Phase 1 is safe and finishes the easy consolidation — do it next (strip
 quill-radio to a release-host README; recreate the AS shell). Treat Phase 2

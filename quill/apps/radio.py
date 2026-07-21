@@ -67,6 +67,8 @@ _ENGINE_LABELS = ("Automatic (recommended)", "Windows Media (classic)", "mpv")
 _ENGINE_VALUES = ("auto", "wx", "mpv")
 _FAVORITES_SORT_LABELS = ("Ascending (A to Z)", "Descending (Z to A)", "Unsorted (manual order)")
 _FAVORITES_SORT_VALUES = ("az", "za", "manual")
+#: View > Text Size choices: (menu label, font scale). Normal is the wx default.
+_TEXT_SIZE_SCALES = (("&Normal", 1.0), ("&Large", 1.25), ("La&rger", 1.5))
 _ENGINE_HELP = (
     "Which audio engine plays the radio. Automatic uses mpv when it is "
     "installed -- that is what enables the output device choice, pausing "
@@ -205,9 +207,21 @@ class RadioAppFrame(
         buttons.Add(browse_btn, 0, wx.RIGHT, 6)
         root.Add(buttons, 0, wx.ALL, 8)
 
+        # The arrow-navigable status bar lives along the bottom (F6 to reach it,
+        # View > Show Status Bar to hide it). Its cells and behaviour live in
+        # RadioStatusBar; the panel keeps radio.py's own footprint small.
+        from quill.ui.radio.status_bar import RadioStatusBar
+
+        self._status_bar = RadioStatusBar(self)
+        status_panel = self._status_bar.build(panel)
+        root.Add(status_panel, 0, wx.EXPAND | wx.ALL, 2)
+        self._status_bar.set_visible(self._radio_history.show_status_bar)
+
         panel.SetSizer(root)
         self._main_panel = panel
         self._reload_favorites_tree()
+        self._status_bar.refresh()
+        self._apply_text_size()
         self._favorites_tree.SetFocus()
 
     def _focus_initial_control(self) -> None:
@@ -992,6 +1006,55 @@ class RadioAppFrame(
             id=updates_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
+
+        # &View: show/hide the read-only Station Details pane, honored by every
+        # surface that has one (Browse Stations, Search Stations).
+        view_menu = wx.Menu()
+        show_details_id = wx.NewIdRef()
+        view_menu.AppendCheckItem(show_details_id, "Show Station &Details")
+        view_menu.Check(show_details_id, self._radio_history.show_station_details)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_show_station_details(), id=show_details_id
+        )
+        self._status_bar_item_id = wx.NewIdRef()
+        view_menu.AppendCheckItem(self._status_bar_item_id, "Show Status &Bar")
+        view_menu.Check(self._status_bar_item_id, self._radio_history.show_status_bar)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
+        )
+        view_menu.AppendSeparator()
+        # Sort Favorites: the same setting Preferences carries, surfaced here as
+        # radio items so it is one keystroke away and its current value is visible.
+        sort_menu = wx.Menu()
+        self._sort_item_ids = [wx.NewIdRef() for _ in _FAVORITES_SORT_VALUES]
+        sort_accels = ("\tCtrl+Shift+A", "\tCtrl+Shift+Z", "")
+        for item_id, label, value, accel in zip(
+            self._sort_item_ids, _FAVORITES_SORT_LABELS, _FAVORITES_SORT_VALUES, sort_accels,
+            strict=True,
+        ):
+            sort_menu.AppendRadioItem(item_id, label + accel)
+            sort_menu.Check(item_id, self._radio_history.favorites_sort == value)
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e, v=value: self._set_favorites_sort(v), id=item_id
+            )
+        view_menu.AppendSubMenu(sort_menu, "Sort &Favorites")
+        expand_id, collapse_id = wx.NewIdRef(), wx.NewIdRef()
+        view_menu.Append(expand_id, "&Expand All Folders")
+        view_menu.Append(collapse_id, "&Collapse All Folders")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(True), id=expand_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(False), id=collapse_id)
+        view_menu.AppendSeparator()
+        # Text Size: scale the main window's fonts for low-vision listeners.
+        text_menu = wx.Menu()
+        self._text_size_item_ids = [wx.NewIdRef() for _ in _TEXT_SIZE_SCALES]
+        for item_id, (label, scale) in zip(
+            self._text_size_item_ids, _TEXT_SIZE_SCALES, strict=True
+        ):
+            text_menu.AppendRadioItem(item_id, label)
+            text_menu.Check(item_id, abs(self._radio_history.ui_font_scale - scale) < 0.01)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, s=scale: self._set_text_size(s), id=item_id)
+        view_menu.AppendSubMenu(text_menu, "&Text Size")
+        menu_bar.Append(view_menu, "&View")
         menu_bar.Append(help_menu, "&Help")
 
         self.frame.SetMenuBar(menu_bar)
@@ -1037,6 +1100,12 @@ class RadioAppFrame(
             redeem_id,
             updates_id,
             about_id,
+            show_details_id,
+            self._status_bar_item_id,
+            expand_id,
+            collapse_id,
+            *self._sort_item_ids,
+            *self._text_size_item_ids,
         )
 
     def _open_radio_doc(self, stem: str) -> None:
@@ -1089,6 +1158,115 @@ class RadioAppFrame(
         frame.Raise()
         frame.RequestUserAttention()
 
+    def _toggle_show_station_details(self) -> None:
+        """Flip Show Station Details and persist it. The Browse and Search Stations
+        surfaces read it when they open, so the change takes effect next time you
+        open one."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        history.show_station_details = not history.show_station_details
+        radio_history.save_history(app_data_dir(), history)
+        self._announce(
+            "Station details will be shown." if history.show_station_details
+            else "Station details will be hidden."
+        )
+
+    def _toggle_show_status_bar(self) -> None:
+        """Flip Show Status Bar, persist it, and show/hide the bar right away."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        history.show_status_bar = not history.show_status_bar
+        radio_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._status_bar_item_id), history.show_status_bar)
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.set_visible(history.show_status_bar)
+            if history.show_status_bar:
+                status_bar.refresh()
+        self._announce("Status bar shown." if history.show_status_bar else "Status bar hidden.")
+
+    def _set_favorites_sort(self, value: str) -> None:
+        """View > Sort Favorites: change the favorites sort order and reload the
+        tree. Same setting Preferences carries; announced so the change is heard."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        if history.favorites_sort == value:
+            return
+        history.favorites_sort = value
+        radio_history.save_history(app_data_dir(), history)
+        self._reload_favorites_tree()
+        labels = dict(zip(_FAVORITES_SORT_VALUES, _FAVORITES_SORT_LABELS, strict=True))
+        self._announce(f"Sorted favorites: {labels[value]}")
+
+    def _expand_all_folders(self, expand: bool) -> None:
+        """View > Expand/Collapse All Folders on the favorites tree."""
+        tree = getattr(self, "_favorites_tree", None)
+        if tree is None:
+            return
+        if expand:
+            tree.ExpandAll()
+            self._announce("Expanded all folders.")
+        else:
+            tree.CollapseAll()
+            self._announce("Collapsed all folders.")
+
+    def _set_text_size(self, scale: float) -> None:
+        """View > Text Size: persist the font scale and apply it right away."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        if abs(history.ui_font_scale - scale) < 0.01:
+            return
+        history.ui_font_scale = scale
+        radio_history.save_history(app_data_dir(), history)
+        self._apply_text_size()
+        names = {1.0: "Normal", 1.25: "Large", 1.5: "Larger"}
+        self._announce(f"Text size: {names.get(scale, 'Normal')}")
+
+    def _apply_text_size(self) -> None:
+        """Scale the main window's fonts (tree, buttons, now-playing line, status
+        bar) to the saved ui_font_scale. A no-op at 1.0 beyond restoring the base
+        font, so toggling back to Normal returns to the system default."""
+        scale = float(getattr(self._radio_history, "ui_font_scale", 1.0) or 1.0)
+        panel = getattr(self, "_main_panel", None)
+        if panel is None:
+            return
+        base = self._wx.SystemSettings.GetFont(self._wx.SYS_DEFAULT_GUI_FONT)
+        font = base.Scaled(scale) if scale != 1.0 else base
+        for name in ("_now_playing_text", "_favorites_tree", "_play_stop_btn",
+                     "_favorite_toggle_btn", "_record_btn"):
+            widget = getattr(self, name, None)
+            if widget is not None:
+                widget.SetFont(font)
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.set_font(font)
+        panel.Layout()
+
+    def _focus_status_bar(self) -> None:
+        """F6: move focus into the status bar, or back out of it if already there.
+
+        Does nothing (beyond a nudge) when the bar is hidden -- there is nowhere
+        to land, so the key is a no-op the way an empty region would be."""
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is None or not status_bar.is_shown():
+            return
+        if status_bar.has_focus():
+            self._focus_initial_control()
+            self._announce("Returned to favorite stations")
+            return
+        status_bar.refresh()
+        status_bar.focus_bar(return_focus=getattr(self, "_favorites_tree", None))
+
     def _toggle_resume_on_launch(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
@@ -1122,6 +1300,11 @@ class RadioAppFrame(
         # system before a focused TreeCtrl ever sees it. Only acts when the
         # favorites tree actually has focus.
         code = event.GetKeyCode()
+        # F6 jumps focus into the status bar (and a second F6 hands it back),
+        # the same region key the QUILL editor uses.
+        if code == wx.WXK_F6 and not event.AltDown() and not event.ControlDown():
+            self._focus_status_bar()
+            return
         if (
             event.AltDown()
             and event.ShiftDown()
@@ -1197,6 +1380,13 @@ class RadioAppFrame(
                     "hard-to-reproduce problem. Off by default (it is chatty)",
                     history.debug_mode,
                 ),
+                PreferenceCheckbox(
+                    "&Keep the computer awake while playing or recording",
+                    "Stop Windows from going to sleep while a station is playing "
+                    "or a recording is running, so the audio does not cut off. "
+                    "On by default. (The screen may still turn off.)",
+                    history.prevent_sleep,
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -1261,6 +1451,7 @@ class RadioAppFrame(
             history.recover_from_website,
             history.alt_f4_to_tray,
             history.debug_mode,
+            history.prevent_sleep,
         ) = checkbox_values
         # Apply verbose logging immediately (quill-radio #5) so it takes effect
         # this session, not just the next launch.
@@ -1299,6 +1490,9 @@ class RadioAppFrame(
                 target = Path(new_log_dir) if new_log_dir else app_data_dir() / "logs"
                 relocate_log(listener, target)
         radio_history.save_history(app_data_dir(), history)
+        # Apply the Prevent Sleep choice now: acquire the keep-awake lock if a
+        # station is already playing, or release it if the user just turned it off.
+        self._update_sleep_inhibitor()
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
@@ -1408,6 +1602,9 @@ class RadioAppFrame(
         now_playing = getattr(self, "_now_playing_text", None)
         if now_playing is not None:
             now_playing.SetLabel(text)
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.refresh()
         self._refresh_play_stop_button()
         self._refresh_record_button()
 

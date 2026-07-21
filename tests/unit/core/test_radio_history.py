@@ -198,6 +198,37 @@ def test_alt_f4_to_tray_round_trips_and_defaults_off(tmp_path: Path) -> None:
     assert load_history(tmp_path).alt_f4_to_tray is True
 
 
+def test_show_status_bar_defaults_on_and_round_trips(tmp_path: Path) -> None:
+    # On by default: the arrow-navigable status bar is visible out of the box.
+    assert load_history(tmp_path).show_status_bar is True
+    save_history(tmp_path, RadioHistory(show_status_bar=False))
+    assert load_history(tmp_path).show_status_bar is False
+
+
+def test_ui_font_scale_defaults_round_trips_and_clamps(tmp_path: Path) -> None:
+    import json
+
+    assert load_history(tmp_path).ui_font_scale == 1.0  # normal out of the box
+    save_history(tmp_path, RadioHistory(ui_font_scale=1.25))
+    assert load_history(tmp_path).ui_font_scale == 1.25
+    # An out-of-range or garbage value is clamped/coerced into [1.0, 2.0].
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"ui_font_scale": 9.0}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).ui_font_scale == 2.0
+    (tmp_path / "radio_history.json").write_text(
+        json.dumps({"ui_font_scale": "big"}), encoding="utf-8"
+    )
+    assert load_history(tmp_path).ui_font_scale == 1.0
+
+
+def test_prevent_sleep_defaults_on_and_round_trips(tmp_path: Path) -> None:
+    # On by default: playing radio should keep the machine awake unless opted out.
+    assert load_history(tmp_path).prevent_sleep is True
+    save_history(tmp_path, RadioHistory(prevent_sleep=False))
+    assert load_history(tmp_path).prevent_sleep is False
+
+
 def test_channel_mode_defaults_to_stereo_and_round_trips(tmp_path: Path) -> None:
     assert load_history(tmp_path).channel_mode == "stereo"
     for mode in ("mono", "left", "right", "stereo"):

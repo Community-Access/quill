@@ -355,6 +355,7 @@ class RadioMixin:
     ) -> None:
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
+        self._update_sleep_inhibitor()
         if is_recording:
             # R3: persist a per-recording marker (keyed by job id) so a restart
             # can offer to resume this exact recording. Built from the recorder's
@@ -636,6 +637,30 @@ class RadioMixin:
                 save_settings(self.settings)
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
+        self._update_sleep_inhibitor()
+
+    def _update_sleep_inhibitor(self) -> None:
+        """Keep the machine awake while a station plays or a recording runs (and
+        the Prevent Sleep preference is on), releasing the request otherwise.
+        Windows-only; a no-op elsewhere. Called on every playback/recording
+        state change and when the preference is toggled."""
+        from quill.platform.keep_awake import set_keep_awake
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        controller = getattr(self, "_radio_controller", None)
+        playing = controller is not None and controller.state.state in (
+            RadioPlayerState.PLAYING,
+            RadioPlayerState.CONNECTING,
+        )
+        recorder = getattr(self, "_radio_recorder", None)
+        recording = int(getattr(recorder, "active_count", 0) or 0) > 0
+        want = (playing or recording) and bool(
+            getattr(self._radio_history, "prevent_sleep", True)
+        )
+        if want == getattr(self, "_sleep_inhibited", False):
+            return
+        set_keep_awake(want)
+        self._sleep_inhibited = want
 
     def _radio_track_history_and_volume(self, state: RadioPlaybackState) -> None:
         """Two memories, updated on every playback state change: the
@@ -818,6 +843,45 @@ class RadioMixin:
             self._show_modal_dialog,
             self._copy_to_clipboard,
             self._announce,
+        ).show()
+
+    def radio_now_playing_full_details(self) -> None:
+        """Everything known about what's playing right now -- the station's own
+        details (source, format, country, stream URL), the current track
+        title/artist, and the live playback status -- in one reviewable,
+        copyable window. This is the status bar's Now Playing action (Enter);
+        with nothing on air it falls back to the track-only view."""
+        controller = getattr(self, "_radio_controller", None)
+        station = controller.state.station if controller is not None else None
+        if station is None:
+            self.radio_whats_playing_details()
+            return
+        track = self._radio_now_playing_text()
+        lines = [
+            station.details_text,
+            "",
+            f"Now playing: {track}" if track else "Now playing: no track information yet",
+        ]
+        state = controller.state
+        volume = f"Volume: {int(getattr(state, 'volume_percent', 0) or 0)}%"
+        if getattr(state, "muted", False):
+            volume += " (muted)"
+        if getattr(self._radio_history, "volume_boost", False):
+            volume += " (boosted)"
+        lines.append(volume)
+        recorder = getattr(self, "_radio_recorder", None)
+        count = int(getattr(recorder, "active_count", 0) or 0)
+        if count:
+            lines.append(f"Recording: {count} in progress")
+        from quill.ui.radio.now_playing_dialog import NowPlayingDialog
+
+        NowPlayingDialog(
+            self.frame,
+            "\n".join(lines),
+            self._show_modal_dialog,
+            self._copy_to_clipboard,
+            self._announce,
+            title=f"Now Playing: {station.display_name}",
         ).show()
 
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
@@ -1544,11 +1608,23 @@ class RadioMixin:
             controller=self._radio_controller,
             announce_cb=self._announce,
             on_changed=self._save_radio_favorites,
+            on_switch_to_manual=self._radio_switch_favorites_to_manual,
             sort=self._radio_history.favorites_sort,
             folder_sorts=self._radio_history.folder_sort_orders,
         )
         dlg.show()
         self._refresh_statusbar()
+
+    def _radio_switch_favorites_to_manual(self) -> None:
+        """Persist that favorites are now in manual order after the Favorites
+        Manager reorders from a sorted view (the dialog bakes the store order;
+        this records the sort switch in history so it survives a reload)."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        self._radio_history.favorites_sort = "manual"
+        self._radio_history.folder_sort_orders = {}
+        radio_history.save_history(app_data_dir(), self._radio_history)
 
     def open_radio_recordings(self) -> None:
         """Recordings...: made, in-progress (live status), and scheduled."""
@@ -1583,6 +1659,7 @@ class RadioMixin:
             on_favorites_changed=self._save_radio_favorites,
             on_open_add_custom=self._radio_open_add_custom,
             on_open_link_finder=self._radio_open_link_finder,
+            show_details=self._radio_history.show_station_details,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
@@ -1606,6 +1683,7 @@ class RadioMixin:
             safe_mode=self._safe_mode,
             announce_cb=self._announce,
             on_favorites_changed=self._save_radio_favorites,
+            show_details=self._radio_history.show_station_details,
         )
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()

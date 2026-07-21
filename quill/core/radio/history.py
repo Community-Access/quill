@@ -42,6 +42,20 @@ class RadioHistory:
     #: Off by default -- in QUILL it would interrupt writing; turning it on
     #: is one check item on the radio menus.
     announce_track_titles: bool = False
+    #: Show the read-only Station Details pane in Browse/Search Stations. On by
+    #: default; View > Show Station Details toggles it, honored by every surface.
+    show_station_details: bool = True
+    #: Show the arrow-navigable status bar along the bottom of the main window.
+    #: On by default; View > Show Status Bar toggles it. F6 moves focus into it.
+    show_status_bar: bool = True
+    #: Font scale for the main window (favorites tree, buttons, now-playing line,
+    #: status bar). 1.0 = normal; View > Text Size offers Large (1.25) and
+    #: Larger (1.5) for low-vision users. Clamped to a sane range on load.
+    ui_font_scale: float = 1.0
+    #: Keep the computer awake while a station is playing or a recording is
+    #: running, so audio does not stop when the system would otherwise sleep.
+    #: On by default (Windows only); a Preferences checkbox turns it off.
+    prevent_sleep: bool = True
     #: Silently check GitHub releases for a newer Quill Radio on launch (the
     #: same check Help > Check for Updates runs, just quiet unless a genuine
     #: update is found); on by default, one checkbox in Preferences (Ctrl+,)
@@ -180,6 +194,10 @@ def load_history(data_dir: Path) -> RadioHistory:
     if isinstance(raw, dict):
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
+        history.show_station_details = bool(raw.get("show_station_details", True))
+        history.show_status_bar = bool(raw.get("show_status_bar", True))
+        history.ui_font_scale = min(2.0, max(1.0, _coerce_float(raw.get("ui_font_scale"), 1.0)))
+        history.prevent_sleep = bool(raw.get("prevent_sleep", True))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
         if "eq_bass_db" in raw or "eq_mid_db" in raw or "eq_treble_db" in raw:
@@ -280,6 +298,10 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
         {
             "resume_on_launch": history.resume_on_launch,
             "announce_track_titles": history.announce_track_titles,
+            "show_station_details": history.show_station_details,
+            "show_status_bar": history.show_status_bar,
+            "ui_font_scale": history.ui_font_scale,
+            "prevent_sleep": history.prevent_sleep,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
             "eq_bass_db": history.eq_bass_db,

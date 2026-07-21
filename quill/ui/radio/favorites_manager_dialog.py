@@ -72,6 +72,7 @@ class FavoritesManagerDialog:
         controller: object,
         announce_cb: Callable[[str], None] | None = None,
         on_changed: Callable[[], None] | None = None,
+        on_switch_to_manual: Callable[[], None] | None = None,
         sort: str = "manual",
         folder_sorts: dict[str, str] | None = None,
     ) -> None:
@@ -82,8 +83,12 @@ class FavoritesManagerDialog:
         self._controller = controller
         self._announce = announce_cb or (lambda _m: None)
         self._on_changed = on_changed or (lambda: None)
-        # Display order for the tree; when it is not "manual" the Move buttons
-        # are disabled for stations in a sorted folder (reordering is moot).
+        # Persist "sort is now manual" in the host's history. Called when a
+        # reorder from a sorted view switches the list to manual order.
+        self._on_switch_to_manual = on_switch_to_manual or (lambda: None)
+        # Display order for the tree. When it is not "manual", a reorder first
+        # bakes this visible order as the manual order (matching the main list),
+        # so Move Up/Down works from the default A-Z view instead of being inert.
         self._sort = sort
         self._folder_sorts = folder_sorts or {}
         self._marked_key: str | None = None
@@ -310,16 +315,14 @@ class FavoritesManagerDialog:
         self._remove_btn.Enable(is_station)
         self._folder_btn.Enable(is_station)
         self._mark_btn.Enable(is_station)
-        # Reordering (Move Up/Down/Above/Below) only makes sense when this
-        # station's folder is in manual order -- a sorted folder ignores hand
-        # placement, so the buttons are disabled there.
-        fav = self._selected_favorite() if is_station else None
-        manual_here = fav is not None and self._folder_sorts.get(fav.folder, self._sort) == "manual"
-        self._up_btn.Enable(manual_here)
-        self._down_btn.Enable(manual_here)
+        # Reordering (Move Up/Down/Above/Below) is offered for any station: from
+        # a sorted view the first move switches the list to manual order (baking
+        # what you see), so the buttons are never inertly greyed out.
         marked = self._marked_key is not None
-        self._above_btn.Enable(manual_here and marked)
-        self._below_btn.Enable(manual_here and marked)
+        self._up_btn.Enable(is_station)
+        self._down_btn.Enable(is_station)
+        self._above_btn.Enable(is_station and marked)
+        self._below_btn.Enable(is_station and marked)
         self._rename_btn.Enable(is_station or is_folder)
         self._delete_folder_btn.Enable(is_folder)
 
@@ -366,15 +369,35 @@ class FavoritesManagerDialog:
                 self._marked_key = None
             self._changed()
 
+    def _switch_to_manual_if_needed(self, folder: str) -> bool:
+        """If *folder* is in a sorted order, bake the current display order as the
+        stored (manual) order and switch the whole list to manual -- mirroring the
+        main window's Alt+Shift+Up/Down. Returns True when a switch happened.
+
+        A genuinely hand-arranged manual list is already manual, so this is a
+        no-op for it and never overwrites a hand order (the #1186 lesson)."""
+        if self._folder_sorts.get(folder, self._sort) == "manual":
+            return False
+        ordered = self._store.favorites_in_display_order(self._sort, self._folder_sorts)
+        self._store.favorites = list(ordered)
+        self._sort = "manual"
+        self._folder_sorts = {}
+        self._on_switch_to_manual()
+        return True
+
     def _on_move(self, delta: int) -> None:
         favorite = self._selected_favorite()
         if favorite is None:
             return
+        switched = self._switch_to_manual_if_needed(favorite.folder)
         if not self._store.move(favorite.key, delta=delta):
             self._announce("Already at the edge of its folder.")
+            if switched:
+                self._changed(keep_key=favorite.key)
             return
         self._changed(keep_key=favorite.key)
-        self._announce(move_announcement(self._store, favorite.key, delta))
+        prefix = "Switched to manual order. " if switched else ""
+        self._announce(prefix + move_announcement(self._store, favorite.key, delta))
 
     def _on_mark(self) -> None:
         favorite = self._selected_favorite()
@@ -391,15 +414,19 @@ class FavoritesManagerDialog:
         target = self._selected_favorite()
         if marked is None or target is None:
             return
+        switched = self._switch_to_manual_if_needed(target.folder)
         if not self._store.move_relative_to(marked, target.key, before=before):
             self._announce("Could not move the marked station there.")
+            if switched:
+                self._changed(keep_key=marked)
             return
         moved = self._store.find(marked)
         self._marked_key = None
         self._changed(keep_key=marked)
         where = "above" if before else "below"
         suffix = f", in {moved.folder}" if moved is not None and moved.folder else ""
-        self._announce(f"Moved {where} {target.display_label}{suffix}")
+        prefix = "Switched to manual order. " if switched else ""
+        self._announce(f"{prefix}Moved {where} {target.display_label}{suffix}")
 
     def _on_move_to_folder(self) -> None:
         from quill.ui.radio.favorite_actions import move_favorite_to_folder
