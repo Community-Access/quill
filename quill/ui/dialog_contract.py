@@ -346,6 +346,39 @@ def show_modal_dialog(
     return result
 
 
+def show_modeless_surface(
+    frame: object,
+    label: str,
+    *,
+    announce: Callable[[str], None] | None = None,
+    enter_region: Callable[[str], None] | None = None,
+) -> None:
+    """Show a modeless surface *frame* with the same accessibility onboarding a
+    modal dialog gets from :func:`show_modal_dialog`, minus the blocking loop.
+
+    The radio window model converts heavy surfaces from ``wx.Dialog`` to modeless
+    ``wx.Frame`` (so each carries the persistent menu bar + &Window menu). A
+    modeless frame does not run its own event loop, so this only does the
+    *entry* onboarding: infer accessible names (VoiceOver, #1012), announce
+    region entry, show the frame, and move focus to its first content control.
+    The matching *exit* side (region exit + "Exited ..." cue + WindowManager
+    unregister + raising the previous window) belongs in the frame's own
+    ``EVT_CLOSE`` handler, since teardown is event-driven, not inline.
+    """
+    try:
+        ensure_accessible_names(frame)
+    except Exception:  # noqa: BLE001 - a naming failure must never block the window
+        pass
+    if enter_region is not None:
+        enter_region(label)
+    if announce is not None and _transition_cues_enabled():
+        announce(f"Entered {label}")
+    show = getattr(frame, "Show", None)
+    if callable(show):
+        show()
+    focus_primary_control(frame)
+
+
 def show_message_box(
     message: str,
     caption: str,
