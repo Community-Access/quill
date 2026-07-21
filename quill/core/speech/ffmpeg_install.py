@@ -16,10 +16,8 @@ from __future__ import annotations
 
 import os
 import shutil
-import ssl
 import sys
 import tempfile
-import urllib.request
 import zipfile
 from collections.abc import Callable
 from pathlib import Path
@@ -73,11 +71,25 @@ def install_ffmpeg(
         )
     dest = Path(dest_dir) if dest_dir is not None else managed_ffmpeg_dir()
     dest.mkdir(parents=True, exist_ok=True)
+    from quill.core import release_assets
+
     fd, raw = tempfile.mkstemp(prefix="quill_ffmpeg_", suffix=".zip")
     os.close(fd)
     tmp_zip = Path(raw)
     try:
-        _download_zip(FFMPEG_DOWNLOAD_URL, tmp_zip, progress, timeout_seconds)
+        try:
+            # No SHA pin yet: the Gyan.dev "release-essentials" URL moves to the
+            # current build. Routed through the shared core for retry/resume/mirror
+            # + HTTPS enforcement; a pin lands once the zip is mirrored to assets-v1.
+            release_assets.download_verified(
+                FFMPEG_DOWNLOAD_URL,
+                tmp_zip,
+                progress=progress,
+                timeout=timeout_seconds,
+                label="Downloading ffmpeg...",
+            )
+        except release_assets.ReleaseAssetError as exc:
+            raise FFmpegInstallError(str(exc)) from exc
         if progress is not None:
             progress(0.95, "Extracting ffmpeg...")
         ffmpeg_path = _extract_ffmpeg_from_zip(tmp_zip, dest)
@@ -97,42 +109,6 @@ def _clear_resolver_cache() -> None:
         ffmpeg_tools.find_ffprobe.cache_clear()
     except Exception:  # noqa: BLE001 - cache clearing is best-effort
         pass
-
-
-def _download_zip(
-    url: str, target: Path, progress: ProgressCallback | None, timeout_seconds: float
-) -> None:
-    """Stream the ffmpeg zip over verified HTTPS.
-
-    GATE-9 / network-egress: the only outbound call in this module. It runs on an
-    explicit user "download ffmpeg" action, refuses non-HTTPS URLs, and uses a
-    verified TLS context. A progress callback that raises (user cancel) aborts.
-    """
-    if not url.lower().startswith("https://"):
-        raise FFmpegInstallError("ffmpeg download must use a secure (HTTPS) address.")
-    context = ssl.create_default_context()
-    request = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
-    try:
-        with (
-            urllib.request.urlopen(  # noqa: S310 - HTTPS enforced above
-                request, timeout=timeout_seconds, context=context
-            ) as response,
-            target.open("wb") as out,
-        ):
-            total = int(response.headers.get("Content-Length", 0) or 0)
-            read = 0
-            while True:
-                chunk = response.read(1 << 16)
-                if not chunk:
-                    break
-                out.write(chunk)
-                read += len(chunk)
-                if progress is not None and total > 0:
-                    progress(min(read / total, 0.9), "Downloading ffmpeg...")
-    except FFmpegInstallError:
-        raise
-    except Exception as exc:  # noqa: BLE001 - surface a clean message
-        raise FFmpegInstallError(f"Could not download ffmpeg: {exc}") from exc
 
 
 def _extract_ffmpeg_from_zip(zip_path: Path, dest_dir: Path) -> Path:

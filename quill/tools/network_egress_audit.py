@@ -363,12 +363,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "use, visible progress, blocked in Safe Mode. Supplements the installer "
         "bundling; capability never depends on it."
     ),
-    "core/speech/ffmpeg_install.py::_download_zip": (
-        "User-initiated optional ffmpeg download (#617) from the official Gyan.dev "
-        "Windows build linked by ffmpeg.org; HTTPS enforced (refuses non-https), "
-        "verified TLS context, visible progress, blocked in Safe Mode. ffmpeg is not "
-        "bundled (GPL/LGPL); QUILL only downloads it on an explicit action."
-    ),
     "core/speech/piper_install.py::_download_zip": (
         "User-initiated optional Piper TTS engine download (#669) from the pinned "
         "rhasspy/piper GitHub release (piper_windows_amd64.zip). HTTPS enforced "
@@ -376,14 +370,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Safe Mode, Windows-only. No SHA-256 pin (relies on HTTPS + official GitHub "
         "release asset). Triggered only by an explicit 'Download Piper Engine' action "
         "from the Voice Browser dialog."
-    ),
-    "core/speech/espeak_install.py::_download_msi": (
-        "User-initiated optional eSpeak-NG TTS engine download (#669) from the pinned "
-        "espeak-ng GitHub release (x64 MSI). HTTPS enforced (refuses non-https), "
-        "verified TLS context, visible progress, blocked in Safe Mode, Windows-only. "
-        "MSI is then extracted admin-free via msiexec /a (no elevation, no registry). "
-        "Triggered only by an explicit 'Download eSpeak-NG' action from the Voice "
-        "Browser dialog."
     ),
     "core/datalab_ocr.py::_default_opener": (
         "Consent-gated Tier-3 cloud OCR (Datalab Chandra Convert API; PRD §5.93). "
@@ -396,27 +382,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "in Safe Mode, cancellable while polling. Logs job state transitions "
         "and page counts only — never file contents, OCR output, keys, or "
         "response bodies."
-    ),
-    "core/tesseract_install.py::_download": (
-        "User-initiated optional local Tesseract OCR engine download (free-first "
-        "document conversion, Tier 2) from QUILL's own pinned assets-v1 release "
-        "asset (byte-identical re-publish of the official UB-Mannheim installer, "
-        "Apache-2.0). HTTPS enforced (refuses non-https), verified TLS context, "
-        "SHA-256 pinned (SEC-6), visible progress, blocked in Safe Mode, "
-        "Windows-only. The verified installer is then launched visibly for the "
-        "user to complete — never a silent install or elevation. Triggered only "
-        "by an explicit 'Install Local OCR Engine' action from Tools > OCR and "
-        "Document Conversion."
-    ),
-    "core/pandoc_install.py::_download": (
-        "User-initiated optional Pandoc download (footprint unbundle, PRD "
-        "10.2.x): Pandoc is no longer bundled, so the first document conversion "
-        "that needs it — or an explicit 'Download Optional Components' action — "
-        "fetches the official jgm/pandoc Windows build over verified HTTPS. "
-        "HTTPS enforced (refuses non-https), verified TLS context, SHA-256 "
-        "pinned (SEC-6) to the exact release asset, visible progress, blocked "
-        "in Safe Mode, Windows-only. Extracted to the app-data tools directory; "
-        "core plain-text/Markdown editing never triggers it."
     ),
     "core/speech/cloud_transcribers.py::transcribe_rest": (
         "User-initiated cloud transcription via a Quillin-declared, host-vetted "
@@ -593,16 +558,11 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/node_install.py::_fetch_node_zip_url": (
         "User-initiated Node.js LTS runtime download (Node Quillin support). Fetches "
         "a small SHASUMS256.txt index (~5 KB) from nodejs.org/dist/latest-v{N}.x/ over "
-        "verified HTTPS to resolve the current win-x64 zip filename. Runs only on an "
-        "explicit 'Download Node.js runtime' action in the Quillins settings panel; "
-        "blocked in Safe Mode; Windows-only. No user data is sent."
-    ),
-    "core/node_install.py::_download_node_zip": (
-        "User-initiated Node.js LTS runtime download (Node Quillin support). Streams "
-        "the official nodejs.org win-x64 zip (URL resolved from SHASUMS256.txt by "
-        "_fetch_node_zip_url) over verified HTTPS with a visible progress callback. "
-        "Same gating as _fetch_node_zip_url: explicit action, Safe Mode blocked, "
-        "Windows-only. QUILL never redistributes the binary."
+        "verified HTTPS to resolve the current win-x64 zip filename AND its SHA-256. "
+        "Runs only on an explicit 'Download Node.js runtime' action in the Quillins "
+        "settings panel; blocked in Safe Mode; Windows-only. No user data is sent. "
+        "The zip itself is then fetched + SHA-verified through the shared "
+        "release_assets.download_verified core."
     ),
     "tools/generate_emoji_catalog.py::_fetch": (
         "Dev-only maintainer tool, never imported by the shipped app (quill.core.emoji_data "

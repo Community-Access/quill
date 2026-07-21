@@ -64,6 +64,17 @@ def test_install_rejects_unsupported_platform(monkeypatch, tmp_path) -> None:
         fi.install_ffmpeg(dest_dir=tmp_path)
 
 
-def test_download_zip_refuses_non_https(tmp_path) -> None:
-    with pytest.raises(fi.FFmpegInstallError, match="secure"):
-        fi._download_zip("http://example.com/x.zip", tmp_path / "x.zip", None, 5.0)
+def test_install_surfaces_shared_core_download_error(monkeypatch, tmp_path) -> None:
+    """A shared-core download failure (HTTPS refusal, network, mismatch) surfaces
+    as an FFmpegInstallError. HTTPS enforcement itself lives in release_assets."""
+    from quill.core import release_assets
+
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    monkeypatch.setattr(fi, "ffmpeg_install_supported", lambda: True)
+
+    def _boom(_urls, _dest, **_kwargs):
+        raise release_assets.ReleaseAssetError("Refusing a non-HTTPS download URL.")
+
+    monkeypatch.setattr(release_assets, "download_verified", _boom)
+    with pytest.raises(fi.FFmpegInstallError, match="non-HTTPS"):
+        fi.install_ffmpeg(dest_dir=tmp_path)

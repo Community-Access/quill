@@ -16,11 +16,8 @@ wx-free.
 
 from __future__ import annotations
 
-import hashlib
 import os
-import ssl
 import tempfile
-import urllib.request
 import zipfile
 from collections.abc import Callable
 from pathlib import Path
@@ -88,32 +85,29 @@ def install_pandoc(
             "The managed Pandoc download is Windows-only. On macOS install it "
             "with Homebrew (brew install pandoc); QUILL will find it on PATH."
         )
+    from quill.core import release_assets
+
     fd, raw = tempfile.mkstemp(prefix="quill_pandoc_", suffix=".zip")
     os.close(fd)
     archive = Path(raw)
     try:
-        _download(PANDOC_DOWNLOAD_URL, archive, progress_fn, timeout_seconds)
-        _verify_sha256(archive)
+        try:
+            release_assets.download_verified(
+                PANDOC_DOWNLOAD_URL,
+                archive,
+                sha256=PANDOC_DOWNLOAD_SHA256,
+                progress=progress_fn,
+                timeout=timeout_seconds,
+                label="Downloading Pandoc...",
+            )
+        except release_assets.ReleaseAssetError as exc:
+            raise PandocInstallError(str(exc)) from exc
         executable = _extract_pandoc(archive, progress_fn)
     finally:
         archive.unlink(missing_ok=True)
     if progress_fn is not None:
         progress_fn(1.0, "Pandoc installed.")
     return executable
-
-
-def _verify_sha256(path: Path) -> None:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    actual = digest.hexdigest()
-    if actual.lower() != PANDOC_DOWNLOAD_SHA256.lower():
-        raise PandocInstallError(
-            "The downloaded Pandoc archive failed its integrity check and was discarded.\n"
-            f"  expected: {PANDOC_DOWNLOAD_SHA256}\n"
-            f"  got:      {actual}"
-        )
 
 
 def _extract_pandoc(archive: Path, progress_fn: ProgressCallback | None) -> Path:
@@ -147,45 +141,6 @@ def _extract_pandoc(archive: Path, progress_fn: ProgressCallback | None) -> Path
     if found is None:
         raise PandocInstallError("The downloaded archive did not contain pandoc.exe.")
     return found
-
-
-def _download(
-    url: str,
-    target: Path,
-    progress_fn: ProgressCallback | None,
-    timeout_seconds: float,
-) -> None:
-    """Stream the Pandoc archive over verified HTTPS.
-
-    GATE-9 / network-egress: the only outbound call in this module. Runs on an
-    explicit user action, refuses non-HTTPS URLs, and uses a verified TLS
-    context.
-    """
-    if not url.lower().startswith("https://"):
-        raise PandocInstallError("The Pandoc download must use a secure (HTTPS) address.")
-    context = ssl.create_default_context()
-    request = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
-    try:
-        with (
-            urllib.request.urlopen(  # noqa: S310 - HTTPS enforced above
-                request, timeout=timeout_seconds, context=context
-            ) as response,
-            target.open("wb") as out,
-        ):
-            total = int(response.headers.get("Content-Length", 0) or 0)
-            read = 0
-            while True:
-                chunk = response.read(1 << 16)
-                if not chunk:
-                    break
-                out.write(chunk)
-                read += len(chunk)
-                if progress_fn is not None and total > 0:
-                    progress_fn(min(read / total, 0.95), "Downloading Pandoc...")
-    except PandocInstallError:
-        raise
-    except Exception as exc:  # noqa: BLE001
-        raise PandocInstallError(f"Could not download Pandoc: {exc}") from exc
 
 
 __all__ = [

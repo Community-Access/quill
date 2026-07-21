@@ -14,13 +14,10 @@ blocked in Safe Mode, on an explicit user action only. Windows-only. wx-free.
 
 from __future__ import annotations
 
-import hashlib
 import os
-import ssl
 import subprocess
 import sys
 import tempfile
-import urllib.request
 from collections.abc import Callable
 from pathlib import Path
 
@@ -96,12 +93,23 @@ def install_espeak(
     dest = Path(dest_dir) if dest_dir is not None else managed_espeak_dir()
     dest.mkdir(parents=True, exist_ok=True)
 
+    from quill.core import release_assets
+
     fd, raw = tempfile.mkstemp(prefix="quill_espeak_", suffix=".msi")
     os.close(fd)
     tmp_msi = Path(raw)
     try:
-        _download_msi(ESPEAK_DOWNLOAD_URL, tmp_msi, progress_fn, timeout_seconds)
-        _verify_msi_sha256(tmp_msi)
+        try:
+            release_assets.download_verified(
+                ESPEAK_DOWNLOAD_URL,
+                tmp_msi,
+                sha256=ESPEAK_DOWNLOAD_SHA256,
+                progress=progress_fn,
+                timeout=timeout_seconds,
+                label="Downloading eSpeak-NG...",
+            )
+        except release_assets.ReleaseAssetError as exc:
+            raise EspeakInstallError(str(exc)) from exc
         if progress_fn is not None:
             progress_fn(0.9, "Extracting eSpeak-NG (this may take a moment)...")
         _extract_msi(tmp_msi, dest)
@@ -112,65 +120,6 @@ def install_espeak(
     if progress_fn is not None:
         progress_fn(1.0, "Done.")
     return exe
-
-
-def _verify_msi_sha256(path: Path) -> None:
-    """Verify the downloaded MSI against the pinned SHA-256 (SEC-6).
-
-    Raises :class:`EspeakInstallError` (and leaves the caller to discard the
-    file) if the digest does not match, so a corrupted or substituted download
-    never reaches ``msiexec``.
-    """
-    digest = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            digest.update(chunk)
-    actual = digest.hexdigest()
-    if actual.lower() != ESPEAK_DOWNLOAD_SHA256.lower():
-        raise EspeakInstallError(
-            "Downloaded eSpeak-NG failed its integrity check and was discarded.\n"
-            f"  expected: {ESPEAK_DOWNLOAD_SHA256}\n"
-            f"  got:      {actual}"
-        )
-
-
-def _download_msi(
-    url: str,
-    target: Path,
-    progress_fn: ProgressCallback | None,
-    timeout_seconds: float,
-) -> None:
-    """Stream the eSpeak-NG MSI over verified HTTPS.
-
-    GATE-9 / network-egress: the only outbound call in this module. Runs on an
-    explicit user "download eSpeak-NG" action, refuses non-HTTPS URLs, and uses a
-    verified TLS context.
-    """
-    if not url.lower().startswith("https://"):
-        raise EspeakInstallError("eSpeak-NG download must use a secure (HTTPS) address.")
-    context = ssl.create_default_context()
-    request = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
-    try:
-        with (
-            urllib.request.urlopen(  # noqa: S310 - HTTPS enforced above
-                request, timeout=timeout_seconds, context=context
-            ) as response,
-            target.open("wb") as out,
-        ):
-            total = int(response.headers.get("Content-Length", 0) or 0)
-            read = 0
-            while True:
-                chunk = response.read(1 << 16)
-                if not chunk:
-                    break
-                out.write(chunk)
-                read += len(chunk)
-                if progress_fn is not None and total > 0:
-                    progress_fn(min(read / total, 0.85), "Downloading eSpeak-NG...")
-    except EspeakInstallError:
-        raise
-    except Exception as exc:  # noqa: BLE001
-        raise EspeakInstallError(f"Could not download eSpeak-NG: {exc}") from exc
 
 
 def _extract_msi(msi_path: Path, dest_dir: Path) -> None:

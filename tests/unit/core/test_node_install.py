@@ -86,9 +86,10 @@ class _FakeResponse:
 
 
 def test_resolve_zip_url_picks_win_x64() -> None:
-    url = _resolve_zip_url_from_shasums(_fake_shasums("node-v20.5.1-win-x64.zip"))
+    url, sha = _resolve_zip_url_from_shasums(_fake_shasums("node-v20.5.1-win-x64.zip"))
     assert url.endswith("node-v20.5.1-win-x64.zip")
     assert url.startswith("https://nodejs.org/dist/latest-v20.x/")
+    assert sha == "aabbcc"  # the digest column from SHASUMS256.txt
 
 
 def test_resolve_zip_url_raises_when_not_found() -> None:
@@ -210,16 +211,21 @@ def test_install_node_runtime_downloads_and_extracts(
     shasums_payload = _fake_shasums("node-v20.9.0-win-x64.zip").encode()
     node_zip_payload = _make_node_zip()
 
-    call_count = 0
+    # Step 1: the SHASUMS index fetch still goes through node_install's urllib.
+    monkeypatch.setattr(
+        node_mod.urllib.request,
+        "urlopen",
+        lambda *_a, **_k: _FakeResponse(shasums_payload),
+    )
 
-    def fake_urlopen(request, *, timeout, context):
-        nonlocal call_count
-        call_count += 1
-        if call_count == 1:
-            return _FakeResponse(shasums_payload)
-        return _FakeResponse(node_zip_payload)
+    # Step 2: the zip now downloads through the shared, verified core.
+    from quill.core import release_assets
 
-    monkeypatch.setattr(node_mod.urllib.request, "urlopen", fake_urlopen)
+    def fake_download_verified(_url: str, dest: Path, **_kwargs: object) -> Path:
+        Path(dest).write_bytes(node_zip_payload)
+        return Path(dest)
+
+    monkeypatch.setattr(release_assets, "download_verified", fake_download_verified)
 
     progress_log: list[tuple[float, str]] = []
     node_path = install_node_runtime(
@@ -229,7 +235,6 @@ def test_install_node_runtime_downloads_and_extracts(
 
     assert node_path == tmp_path / "node.exe"
     assert node_path.read_bytes() == b"fake-node-binary"
-    assert call_count == 2
     assert progress_log[-1][0] == 1.0
     assert any("Extracting" in msg for _, msg in progress_log)
 
@@ -253,7 +258,7 @@ def test_install_node_runtime_propagates_network_error(
 def test_install_node_runtime_rejects_http_zip_url(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """_download_node_zip refuses HTTP (non-HTTPS) URLs even if somehow resolved."""
+    """The shared download core refuses HTTP (non-HTTPS) URLs even if resolved."""
     monkeypatch.setattr(node_mod.sys, "platform", "win32")
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
     _patch_ssl_context_for_fake_platform(monkeypatch)
@@ -268,5 +273,5 @@ def test_install_node_runtime_rejects_http_zip_url(
         lambda *_args, **_kwargs: _FakeResponse(http_shasums.encode()),
     )
 
-    with pytest.raises(NodeInstallError, match="secure \\(HTTPS\\)"):
+    with pytest.raises(NodeInstallError, match="non-HTTPS"):
         install_node_runtime(dest_dir=tmp_path)

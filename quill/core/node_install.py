@@ -121,7 +121,9 @@ def install_node_runtime(
 
     if progress is not None:
         progress(0.02, "Checking for the latest Node.js LTS release...")
-    zip_url = _fetch_node_zip_url(timeout_seconds)
+    zip_url, zip_sha = _fetch_node_zip_url(timeout_seconds)
+
+    from quill.core import release_assets
 
     fd, raw = tempfile.mkstemp(prefix="quill_node_", suffix=".zip")
     os.close(fd)
@@ -129,7 +131,19 @@ def install_node_runtime(
     try:
         if progress is not None:
             progress(0.1, "Downloading Node.js runtime (this may take a minute)...")
-        _download_node_zip(zip_url, tmp_zip, progress, timeout_seconds)
+        try:
+            # SHASUMS256.txt gives the per-file digest; verifying it closes the
+            # gap where the runtime was previously downloaded unchecked.
+            release_assets.download_verified(
+                zip_url,
+                tmp_zip,
+                sha256=zip_sha,
+                progress=progress,
+                timeout=timeout_seconds,
+                label="Downloading Node.js runtime...",
+            )
+        except release_assets.ReleaseAssetError as exc:
+            raise NodeInstallError(str(exc)) from exc
         if progress is not None:
             progress(0.92, "Extracting node.exe...")
         node_path = _extract_node_from_zip(tmp_zip, dest)
@@ -141,8 +155,8 @@ def install_node_runtime(
     return node_path
 
 
-def _fetch_node_zip_url(timeout_seconds: float) -> str:
-    """Fetch SHASUMS256.txt from nodejs.org to discover the current win-x64 zip filename.
+def _fetch_node_zip_url(timeout_seconds: float) -> tuple[str, str]:
+    """Fetch SHASUMS256.txt from nodejs.org; return the win-x64 (zip URL, SHA-256).
 
     GATE-9 / network-egress: fetches a small text file (~5 KB) over verified
     HTTPS. Runs only on an explicit user "download Node" action; no user data sent.
@@ -159,57 +173,17 @@ def _fetch_node_zip_url(timeout_seconds: float) -> str:
     return _resolve_zip_url_from_shasums(shasums_text)
 
 
-def _resolve_zip_url_from_shasums(shasums_text: str) -> str:
-    """Parse SHASUMS256.txt and return the win-x64 zip download URL."""
+def _resolve_zip_url_from_shasums(shasums_text: str) -> tuple[str, str]:
+    """Parse SHASUMS256.txt and return the win-x64 (zip download URL, SHA-256)."""
     base = _SHASUMS_URL.rsplit("/", 1)[0]
     for line in shasums_text.splitlines():
         parts = line.split()
         if len(parts) == 2 and parts[1].endswith("-win-x64.zip"):
-            return f"{base}/{parts[1]}"
+            return f"{base}/{parts[1]}", parts[0]
     raise NodeInstallError(
         f"Could not find a win-x64 zip in the Node.js v{NODE_LTS_MAJOR} release index. "
         "The index may have an unexpected format."
     )
-
-
-def _download_node_zip(
-    url: str,
-    target: Path,
-    progress: ProgressCallback | None,
-    timeout_seconds: float,
-) -> None:
-    """Stream the Node.js zip over verified HTTPS.
-
-    GATE-9 / network-egress: the large outbound call in this module. Refuses
-    non-HTTPS URLs; uses a verified TLS context. A progress callback that raises
-    (user cancel) aborts the download.
-    """
-    if not url.lower().startswith("https://"):
-        raise NodeInstallError("Node.js download must use a secure (HTTPS) address.")
-    context = ssl.create_default_context()
-    req = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
-    try:
-        with (
-            urllib.request.urlopen(  # noqa: S310 - HTTPS enforced above
-                req, timeout=timeout_seconds, context=context
-            ) as response,
-            target.open("wb") as out,
-        ):
-            total = int(response.headers.get("Content-Length", 0) or 0)
-            read = 0
-            while True:
-                chunk = response.read(1 << 16)
-                if not chunk:
-                    break
-                out.write(chunk)
-                read += len(chunk)
-                if progress is not None and total > 0:
-                    frac = 0.1 + (read / total) * 0.8
-                    progress(min(frac, 0.9), "Downloading Node.js runtime...")
-    except NodeInstallError:
-        raise
-    except Exception as exc:  # noqa: BLE001
-        raise NodeInstallError(f"Could not download Node.js: {exc}") from exc
 
 
 def _extract_node_from_zip(zip_path: Path, dest_dir: Path) -> Path:
