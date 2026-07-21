@@ -6,14 +6,15 @@ It also widens the net for finding stations: **iHeart and TuneIn now join the se
 
 As always, everything below also lands in QUILL itself. Quill Radio and QUILL share one codebase and one data store, so these fixes arrive in both at once -- nothing here is vendored into the Quill Radio wrapper.
 
-## Update 2.3.0
+## Update 2.2.0
 
-Quill Radio 2.3.0 collects a round of fixes and small conveniences straight from your testing, and adds a piece many of you have asked for: a proper backup you can carry to a new device.
+Quill Radio 2.2.0 collects everything since 2.1.2 -- a round of fixes and small conveniences straight from your testing, and a piece many of you have asked for: a proper backup you can carry to a new device.
 
 - **Back up and restore -- take your radio with you.** Two new items on the Station menu, **Back Up Stations and Settings...** and **Restore from Backup...**, save your favorites, settings, wake timer, and recording schedule -- and, if you want, your recorded audio -- into a single `.qrbackup` file. Copy it to a new PC (or your new BrailleNote), restore, and everything is back. Made for exactly the moment you switch machines or reinstall Windows.
+- **Favorites keep a rolling backup, automatically.** Every change to your favorites now snapshots the previous version aside (the last 20 are kept), so a bad edit or an accidental delete can be recovered.
 - **Ctrl+T shows the now-playing text, not just speaks it.** "What's Playing?" now opens a small window with the current title and artist you can arrow through character by character and copy -- to note a song's spelling or paste it into a search. It still speaks the title, and falls back to speaking when a stream hasn't sent its track info yet. The window was mentioned in the notes but nothing actually opened it; now Ctrl+T does.
 - **Details for any favorite.** Bring up a favorite's context menu (Applications key or Shift+F10) and choose **Station Details...** for the same reviewable readout the search results give -- source, stream, format, country.
-- **Moving favorites up and down works again.** From the default A-Z view, Alt+Shift+Up/Down used to make the whole list jump around instead of nudging the station you picked. It now reorders exactly the order you are looking at. (This corrects an over-cautious change from 2.2.0.)
+- **Moving favorites up and down works the way you see them.** From the default A-Z view, Alt+Shift+Up/Down now reorders exactly the order you are looking at -- it commits that view as your manual order and moves the station within it -- instead of jumping the whole list to a different order. A list you have already hand-arranged is untouched.
 - **Exit means exit.** If you set Radio to minimize to the tray on close, choosing Exit -- even from the tray menu -- used to just hide it again, with no way to quit short of a reboot. Exit now genuinely closes the app.
 - **The menus are there the moment you open the app.** Pressing Alt right after launch used to bring up the window's own Minimize/Maximize menu instead of Radio's menu bar. Focus now lands inside the window immediately, so Alt opens the app menu from the first keystroke.
 - **NOAA weather states that say "9 stations" now have nine stations.** A state under Weather / NOAA could show a count and then expand to nothing; the count and the list were reading from two different places. They read from the same directory now, so what you see is what you get.

@@ -79,7 +79,7 @@ macOS/Linux standalone builds (upstream QUILL covers macOS; the tray pattern doe
 
 ## 8. Since 1.0
 
-- **2.3.0 (upstream `quill/core/radio/backup.py`, `ui/radio/backup_ui.py`, `apps/radio.py`, `ui/main_frame_radio.py`, `core/radio/radio_browser.py`, `core/radio/wxindex.py`, `ui/dialog_contract.py`, `ui/app_shell.py`).**
+- **2.2.0 (upstream `quill/core/radio/backup.py`, `ui/radio/backup_ui.py`, `apps/radio.py`, `ui/main_frame_radio.py`, `core/radio/radio_browser.py`, `core/radio/wxindex.py`, `core/radio/favorites.py`, `ui/dialog_contract.py`, `ui/app_shell.py`). Everything since 2.1.2; 2.2.0 was never shipped as a separate build.**
   - *Backup / restore (import & export).* `core/radio/backup.py` bundles the state files (favorites, history/settings, wake timer, recording schedule) and, on request, the recorded audio into a single SHA-manifested `.qrbackup` zip; `restore_backup` validates it, accepts only the known state filenames, is zip-slip-guarded, and reloads the running app. Station-menu UI in `ui/radio/backup_ui.py` (worker-threaded, native file dialogs). Directly serves R-3 device migration.
   - *Now Playing window on Ctrl+T (#1134 wiring).* Ctrl+T ("What's Playing?") now opens the reviewable `NowPlayingDialog` (arrow/copy the title+artist) instead of only speaking it; the window existed but had no menu item or key. Fetch-and-speak fallback when no title is cached.
   - *Per-favorite Station Details.* Favorites context menu -> Station Details... shows `RadioStation.details_text` in the same reviewable window the search results use.
