@@ -2,6 +2,19 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-2.0.md` for the fuller narrative version of the latest release.
 
+## 2.3.0 -- 2026-07-21
+
+A round of fixes and small features from listener testing. All in the shared `quill` package, so QUILL gets them too.
+
+- **Rearranging favorites works the way you see them again.** Move up/down (Alt+Shift+Up/Down) from the default A-Z view no longer scrambles the list. 2.2.0 stopped "baking" the sorted view when you reordered, but that made the first move jump to a different, hidden order and look broken. Reordering from a sorted view now commits exactly the order you are looking at as your manual order and moves the station within it -- no jump. A genuinely hand-arranged order is already in manual mode, so it is never overwritten. (Corrects the 2.2.0 change to #1186.)
+- **Ctrl+T opens the Now Playing window.** **What's Playing?** (Ctrl+T) now opens a reviewable, focusable Now Playing box -- arrow through the title and artist, copy them -- instead of only speaking the title once. The window existed but nothing opened it; it falls back to speaking the title when no track info has arrived yet.
+- **Each favorite has a Station Details view.** Shift+F10 on a favorite, then **Station Details...**, opens the same reviewable, copyable window the search results use -- the station's source, stream, format, and country.
+- **Back up and restore your stations and settings (#1193).** New **Station > Back Up Stations and Settings...** and **Restore from Backup...** save everything -- favorites, settings, wake timer, recording schedule, and optionally your recorded audio -- to one portable `.qrbackup` file, and bring it back on a new device or after a reinstall.
+- **Exit really exits (#1193).** Choosing Exit -- from the menu or the system tray -- now quits for real instead of bouncing back into the tray when your close setting was "minimize to tray."
+- **The menu bar is reachable the instant the app opens (#1193).** Pressing Alt right after launch now opens the app menu instead of the window's system menu; keyboard focus lands inside the window as soon as it appears.
+- **NOAA Weather states show the stations they promise.** A state under Weather / NOAA that read "9 items" could still expand to nothing, because the folder count and the station list came from two different data sources. Both now come from the same directory, so a state's count always matches what expanding it shows.
+- **"Radio Browser" reads clearly, and you can browse it by genre (#1194).** The Search source filter reads **Radio Browser** (two words) instead of the run-together "RadioBrowser," which a screen reader could make sound like it had gone missing. Browse Stations also gains a **Radio Browser (by Genre)** branch, so you can walk the Radio Browser directory by genre, not only search it.
+
 ## 2.2.0 -- 2026-07-20
 
 - **Rearranging favorites can no longer wipe your order (#1186).** Pressing the reorder key (Alt+Shift+Up/Down) while your favorites were showing A-Z used to bake that alphabetized view in as your new "manual" order, permanently overwriting the sequence you had arranged by hand -- with no way to get it back. Reordering from a sorted view now simply switches to manual order first (announced) and moves the station within your preserved hand-arranged order; the stored order is never overwritten by a sorted view.
