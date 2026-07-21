@@ -8,3 +8,5 @@ payload/
 
 # Build logs
 *.log
+installer/Output/
+Output/
