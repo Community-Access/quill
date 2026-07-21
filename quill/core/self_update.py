@@ -159,16 +159,22 @@ def write_and_launch_helper(script_text: str, helper_dir: Path) -> Path:
 
     ``helper_dir`` MUST be outside the install directory (the system temp dir),
     so overwriting the install never clobbers the running helper. Launched with
-    no console window and fully detached so it outlives this process.
+    a single hidden console (no visible window) so it outlives this process
+    without popping a terminal.
     """
     helper_dir.mkdir(parents=True, exist_ok=True)
     helper = helper_dir / "apply-update.bat"
     helper.write_text(script_text, encoding="utf-8")
     creationflags = 0
     if os.name == "nt":
-        creationflags = (
-            subprocess.CREATE_NO_WINDOW | subprocess.DETACHED_PROCESS  # type: ignore[attr-defined]
-        )
+        # CREATE_NO_WINDOW alone: cmd.exe and the console children it spawns to
+        # wait for us to exit (tasklist, find, robocopy) share ONE hidden
+        # console, so nothing is ever shown. It must NOT be OR'd with
+        # DETACHED_PROCESS: that gives cmd.exe no console at all, so each console
+        # child allocates its own *visible* window and steals focus -- the "find"
+        # terminal that left one-click updates hanging (#1191). The helper still
+        # outlives us: it is an independent child, unaffected by our exit.
+        creationflags = subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
     subprocess.Popen(  # noqa: S603 - our own generated script at a fixed path
         ["cmd.exe", "/c", str(helper)],
         creationflags=creationflags,

@@ -72,6 +72,25 @@ def _shows_in_folder_subtree(library: PodcastLibrary, folder_id: str) -> list[Po
     return shows
 
 
+def _item_key(item: object) -> int:
+    """Stable, hashable identity for a wx.TreeItemId.
+
+    ``GetID()`` returns a fresh ``sip.voidptr`` wrapper on every call; two
+    wrappers for the SAME tree item never compare equal, so keying the
+    item->show / item->folder dicts by the wrapper silently missed every lookup
+    -- ``_selected_show_id`` always returned None, so selecting a podcast showed
+    no episodes (#1189). ``int()`` of the voidptr is the raw pointer value:
+    stable, equal, hashable.
+    """
+    get_id = getattr(item, "GetID", None)
+    if callable(get_id):
+        try:
+            return int(get_id())
+        except (TypeError, ValueError):
+            pass
+    return id(item)
+
+
 def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpisode]:
     """Every episode belonging to a show directly in *folder_id* (not
     subfolders -- the caller recurses those separately)."""
@@ -406,7 +425,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 unheard = self._unheard_count_for_folder(folder.id)
                 label = f"{folder.name} ({unheard} unheard)" if unheard else folder.name
                 item = self._tree.AppendItem(parent_item, label)
-                self._tree_item_folder[item.GetID() if hasattr(item, "GetID") else id(item)] = (
+                self._tree_item_folder[_item_key(item)] = (
                     folder.id
                 )
                 add_folder_children(item, folder.id)
@@ -421,7 +440,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 unheard = sum(1 for e in show.episodes if not e.played)
                 label = f"{show.title} ({unheard} unheard)" if unheard else show.title
                 item = self._tree.AppendItem(parent_item, label)
-                self._tree_item_show[item.GetID() if hasattr(item, "GetID") else id(item)] = show.id
+                self._tree_item_show[_item_key(item)] = show.id
 
         add_folder_children(root, None)
         self._tree.ExpandAll()
@@ -434,14 +453,14 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         item = self._tree.GetSelection()
         if not item.IsOk():
             return None
-        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        key = _item_key(item)
         return self._tree_item_show.get(key)
 
     def _selected_folder_id(self) -> str | None:
         item = self._tree.GetSelection()
         if not item.IsOk():
             return None
-        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        key = _item_key(item)
         return self._tree_item_folder.get(key)
 
     def _on_tree_selection(self, _event: object) -> None:
@@ -532,7 +551,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         stack = [item]
         while stack:
             current = stack.pop()
-            key = current.GetID() if hasattr(current, "GetID") else id(current)
+            key = _item_key(current)
             if mapping.get(key) == target_id:
                 self._tree.SelectItem(current)
                 return

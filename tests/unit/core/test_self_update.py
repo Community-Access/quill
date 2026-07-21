@@ -179,6 +179,31 @@ def test_begin_self_update_raises_in_dev_run(tmp_path, monkeypatch) -> None:
 
 
 @pytest.mark.skipif(not _sys.platform.startswith("win"), reason="Windows helper batch")
+def test_helper_launches_in_hidden_console_not_detached(tmp_path, monkeypatch) -> None:
+    # #1191: the update helper must run in ONE hidden console (CREATE_NO_WINDOW),
+    # NOT DETACHED_PROCESS. Detached gives cmd.exe no console, so its tasklist |
+    # find wait-loop child popped its own visible "find" terminal that stole
+    # focus and left the update hanging.
+    captured: dict = {}
+
+    class _FakeSub:
+        CREATE_NO_WINDOW = 0x08000000
+        DETACHED_PROCESS = 0x00000008
+
+        @staticmethod
+        def Popen(cmd, **kwargs):
+            captured["flags"] = kwargs.get("creationflags", 0)
+            return object()
+
+    monkeypatch.setattr(su, "subprocess", _FakeSub)
+    monkeypatch.setattr(su.os, "name", "nt")
+    su.write_and_launch_helper("@echo off\n", tmp_path)
+
+    flags = captured["flags"]
+    assert flags & _FakeSub.CREATE_NO_WINDOW  # hidden console
+    assert not (flags & _FakeSub.DETACHED_PROCESS)  # never detached (the #1191 bug)
+
+
 def test_portable_helper_batch_copies_and_preserves_data(tmp_path: Path) -> None:
     install = tmp_path / "install"
     (install / "data").mkdir(parents=True)

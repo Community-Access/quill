@@ -567,10 +567,9 @@ class BrowseTreeDialog:
                 tree.SetItemData(child, {"kind": "station", "station": station})
         count = tree.GetChildrenCount(node, False)
         self._announce(f"{count} item{'' if count == 1 else 's'}.")
-        if count:
-            first, _cookie = tree.GetFirstChild(node)
-            if first.IsOk():
-                tree.SelectItem(first)
+        # #1188: leave the cursor on the just-expanded node (country/genre) --
+        # do NOT jump it into the station list. The count announcement says
+        # what's inside; the listener arrows down to enter the list when ready.
 
     def _add_favorites(self, node: Any, *, select: bool = True) -> None:
         """Build the local Favorites branch: unfiled stations first, then a

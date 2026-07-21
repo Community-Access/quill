@@ -6,7 +6,32 @@ from __future__ import annotations
 
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
-from quill.ui.podcasts.manager_dialog import _shows_in_folder_subtree
+from quill.ui.podcasts.manager_dialog import _item_key, _shows_in_folder_subtree
+
+
+def test_item_key_is_stable_across_getid_calls() -> None:
+    # #1189: wx's TreeItemId.GetID() returns a fresh sip.voidptr wrapper on
+    # every call, so keying the item->show dict by the wrapper missed every
+    # lookup and no episodes loaded. _item_key must key by the raw int, so the
+    # store-time key and the lookup-time key are equal.
+    class _VoidPtr:
+        def __init__(self, ptr: int) -> None:
+            self._ptr = ptr
+
+        def __int__(self) -> int:
+            return self._ptr
+
+    class _Item:
+        def __init__(self, ptr: int) -> None:
+            self._ptr = ptr
+
+        def GetID(self) -> _VoidPtr:
+            return _VoidPtr(self._ptr)  # a fresh, non-equal wrapper each call
+
+    item = _Item(0xABCD)
+    assert _item_key(item) == _item_key(item) == 0xABCD  # stable, not identity-of-wrapper
+    plain = object()
+    assert _item_key(plain) == id(plain)  # no GetID -> id() fallback
 
 
 def test_finds_shows_directly_in_the_folder() -> None:
