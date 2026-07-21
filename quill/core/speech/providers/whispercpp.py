@@ -476,6 +476,23 @@ def _download_to_file(
     if not repo_id:
         raise SpeechError(f"No download is available for the '{info.id}' model.")
 
+    # Prefer a self-hosted assets-v1 mirror when one is configured (HF-removal
+    # prep): SHA-verified through the shared download core, with Hugging Face as a
+    # fallback so a not-yet-uploaded or transiently-failing mirror never blocks a
+    # download. When every model is mirrored this HF path can be removed.
+    from quill.core.release_assets import ReleaseAssetError
+    from quill.core.speech import model_mirrors
+
+    mirror = model_mirrors.mirror_for(PROVIDER_ID, info.id)
+    if mirror is not None:
+        try:
+            model_mirrors.fetch_mirror_file(
+                mirror, target, progress=progress, label=f"Downloading {info.display_name}..."
+            )
+            return
+        except ReleaseAssetError:
+            pass  # mirror unavailable/failed verification -- fall back to Hugging Face
+
     try:
         from huggingface_hub import hf_hub_download
         from huggingface_hub.errors import (

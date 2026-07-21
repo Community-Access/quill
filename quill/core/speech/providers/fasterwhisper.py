@@ -282,6 +282,23 @@ def _download_repo(
     explicit user "download model" action and is blocked in Safe Mode by the
     caller. ``huggingface_hub`` verifies TLS and file integrity.
     """
+    # Prefer a self-hosted assets-v1 zip mirror when one is configured (HF-removal
+    # prep): SHA-verified through the shared download core, with Hugging Face as a
+    # fallback so a not-yet-uploaded or transiently-failing mirror never blocks a
+    # download. When every model is mirrored this snapshot path can be removed.
+    from quill.core.release_assets import ReleaseAssetError
+    from quill.core.speech import model_mirrors
+
+    mirror = model_mirrors.mirror_for(PROVIDER_ID, info.id)
+    if mirror is not None:
+        try:
+            model_mirrors.fetch_mirror_archive(
+                mirror, target, progress=progress, label=f"Downloading {info.display_name}..."
+            )
+            return
+        except ReleaseAssetError:
+            shutil.rmtree(target, ignore_errors=True)  # drop a partial mirror unpack
+
     try:
         from huggingface_hub import snapshot_download
     except Exception as exc:  # noqa: BLE001
