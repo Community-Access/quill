@@ -18,18 +18,25 @@ from quill.ui.radio.browse_tree_dialog import (
 from tests.unit.ui.test_browse_tree_dialog import _child_data, _dialog, _Node
 
 
-def test_wx_state_folders_hides_states_with_no_playable_feeds(monkeypatch) -> None:
+def test_wx_state_folders_count_from_the_directory_tier_not_the_live_count(monkeypatch) -> None:
+    # The folder count must come from the same full-directory tier as the leaves,
+    # so a folder's "(N items)" always matches what expanding it shows -- the NOAA
+    # regression was a live /v1/states count that expanded to nothing.
     monkeypatch.setattr(
         wxindex,
-        "list_states",
+        "_directory_stations",
         lambda **_k: [
-            WxState("VA", "Virginia", station_count=10, stations_with_feeds=2),
-            WxState("AS", "American Samoa", station_count=2, stations_with_feeds=0),  # dropped
+            WxStation("KHB1", 162.55, state="VA", feeds=("u1",)),
+            WxStation("KHB2", 162.40, state="VA", feeds=("u2",)),
+            WxStation("KHB3", 162.45, state="AS", feeds=()),  # no playable feed -> AS hidden
         ],
+    )
+    monkeypatch.setattr(
+        wxindex, "list_states", lambda **_k: [WxState("VA", "Virginia", stations_with_feeds=99)]
     )
     states = _wx_state_folders(safe_mode=False)
     assert [s.name for s in states] == ["Virginia"]  # feedless state hidden
-    assert states[0].stations_with_feeds == 2
+    assert states[0].stations_with_feeds == 2  # from the directory tier, not the live 99
 
 
 def test_wx_playable_stations_uses_feed_aware_resolver(monkeypatch) -> None:

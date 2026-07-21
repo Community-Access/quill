@@ -167,6 +167,39 @@ def playable_stations_for_state(
     ]
 
 
+def states_with_playable_feeds(
+    *, safe_mode: bool = False, max_age_seconds: float = _DEFAULT_MAX_AGE_SECONDS
+) -> list[WxState]:
+    """State folders for the Browse tree, counted from the SAME full-directory
+    tier the station leaves come from -- so a state's "(N items)" always equals
+    the transmitters that expanding it will actually show.
+
+    The live ``/v1/states`` endpoint (:func:`list_states`) reports a
+    ``stations_with_feeds`` count that can exceed what the directory tier
+    (snapshot / ``directory.json`` cache) actually carries feed URLs for, which
+    left states looking populated but expanding empty. This groups
+    :func:`_directory_stations` by state (feeds only) for the count, and uses
+    ``list_states`` only for the human state name (offline-safe fallback to the
+    slug). A state with zero playable transmitters here is simply omitted.
+    """
+    names: dict[str, str] = {}
+    try:
+        for state in list_states(safe_mode=safe_mode, max_age_seconds=max_age_seconds):
+            names[state.slug.lower()] = state.name
+    except WxIndexError:
+        pass
+    counts: dict[str, int] = {}
+    for station in _directory_stations(max_age_seconds=max_age_seconds):
+        if station.feeds and station.state:
+            key = station.state.lower()
+            counts[key] = counts.get(key, 0) + 1
+    folders = [
+        WxState(slug=slug, name=names.get(slug, slug.upper()), stations_with_feeds=count)
+        for slug, count in counts.items()
+    ]
+    return sorted(folders, key=lambda state: state.name.lower())
+
+
 def refresh_directory(
     *,
     safe_mode: bool = False,
