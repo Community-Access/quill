@@ -693,6 +693,41 @@ onto the shared <code>%APPDATA%\Quill</code> contract as part of the §7
 hardening</strong>, after Beacon's confirmed sync-merge data-loss and
 plaintext-token defects (§16.5) are fixed. Flag if you'd rather leave
 Beacon fully siloed for longer.</p>
+<h2 id="10a-installer-inno-setup-decided-2026-07-20">10a. Installer:
+Inno Setup (decided 2026-07-20)</h2>
+<p>We stay on <strong>Inno Setup</strong>; we do not move to MSI/WiX or
+MSIX.</p>
+<p>Rationale: the framework's hard parts are runtime-side, not
+installer-side. The component service (signed manifest, verified
+on-demand downloads, the shared <code>%APPDATA%\Quill</code> store,
+dedup/refcount) runs in the app; portable is the ZIP path; per-user vs
+all-users and side-by-side <code>Runtime\&lt;major&gt;</code> folders
+are native to Inno (<code>PrivilegesRequired=lowest</code> +
+<code>{localappdata}</code>/<code>{autopf}</code>). The decisive factor
+is <strong>accessibility</strong> — Inno's wizard is well-behaved with
+NVDA/JAWS, a first-class requirement for our audience that MSI/MSIX
+custom UIs do not match.</p>
+<p>The one thing Inno lacks natively is MSI-style
+<strong>shared-component reference counting</strong> for the shared
+runtime. We handle it ourselves rather than switch tools:</p>
+<ul>
+<li>Keep the refcount + runtime-resolution logic in <strong>one
+place</strong> -- a QuillVille bootstrapper (Inno) or a shared
+<code>[Code]</code> include reused by every app <code>.iss</code> -- not
+copied per app. A per-user registry refcount increments on install and
+decrements on uninstall; <code>Runtime\&lt;major&gt;</code> is GC'd at
+zero (newest retained).</li>
+<li>Sign the installer (Authenticode); component-manifest signing stays
+app-side with the existing Ed25519/PyNaCl.</li>
+<li>Reserve MSI only if a hard requirement later demands native
+cross-installer component refcounting -- weighed against the
+accessibility loss.</li>
+</ul>
+<p>Note: the real work is the <strong>install topology</strong>, not the
+tool. Today each <code>.iss</code> installs a fully self-contained
+frozen app; the shared-runtime model makes them thin apps that resolve
+one runtime. That <code>.iss</code> redesign is required regardless of
+the installer choice.</p>
 <h2 id="11-summary">11. Summary</h2>
 <p>The heavy, disk-dominating sharing (components) already works — this
 plan makes it <em>safe and refcounted</em> via a signed manifest +

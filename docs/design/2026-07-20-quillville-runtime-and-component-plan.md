@@ -409,6 +409,35 @@ the shared `%APPDATA%\Quill` contract as part of the §7 hardening**, after
 Beacon's confirmed sync-merge data-loss and plaintext-token defects (§16.5) are
 fixed. Flag if you'd rather leave Beacon fully siloed for longer.
 
+## 10a. Installer: Inno Setup (decided 2026-07-20)
+
+We stay on **Inno Setup**; we do not move to MSI/WiX or MSIX.
+
+Rationale: the framework's hard parts are runtime-side, not installer-side. The
+component service (signed manifest, verified on-demand downloads, the shared
+`%APPDATA%\Quill` store, dedup/refcount) runs in the app; portable is the ZIP
+path; per-user vs all-users and side-by-side `Runtime\<major>` folders are native
+to Inno (`PrivilegesRequired=lowest` + `{localappdata}`/`{autopf}`). The decisive
+factor is **accessibility** — Inno's wizard is well-behaved with NVDA/JAWS, a
+first-class requirement for our audience that MSI/MSIX custom UIs do not match.
+
+The one thing Inno lacks natively is MSI-style **shared-component reference
+counting** for the shared runtime. We handle it ourselves rather than switch
+tools:
+- Keep the refcount + runtime-resolution logic in **one place** -- a QuillVille
+  bootstrapper (Inno) or a shared `[Code]` include reused by every app `.iss` --
+  not copied per app. A per-user registry refcount increments on install and
+  decrements on uninstall; `Runtime\<major>` is GC'd at zero (newest retained).
+- Sign the installer (Authenticode); component-manifest signing stays app-side
+  with the existing Ed25519/PyNaCl.
+- Reserve MSI only if a hard requirement later demands native cross-installer
+  component refcounting -- weighed against the accessibility loss.
+
+Note: the real work is the **install topology**, not the tool. Today each `.iss`
+installs a fully self-contained frozen app; the shared-runtime model makes them
+thin apps that resolve one runtime. That `.iss` redesign is required regardless
+of the installer choice.
+
 ## 11. Summary
 
 The heavy, disk-dominating sharing (components) already works — this plan makes
