@@ -281,7 +281,7 @@ class WeatherCenterDialog:
 
         def _work(**_kwargs: Any) -> object:
             try:
-                return nws.fetch_report(
+                return nws.fetch_report_worldwide(
                     location,
                     safe_mode=self._safe_mode,
                     daily_days=self._settings.daily_outlook_days,

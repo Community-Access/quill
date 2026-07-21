@@ -162,7 +162,11 @@ class WeatherMixin:
 
         def _work(**_kwargs: Any) -> object:
             try:
-                return nws.fetch_report(location, safe_mode=self._safe_mode)
+                return nws.fetch_report_worldwide(
+                    location,
+                    safe_mode=self._safe_mode,
+                    temperature_unit=settings.temperature_unit,
+                )
             except nws.WeatherError as exc:
                 return exc
 

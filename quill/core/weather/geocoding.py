@@ -99,10 +99,12 @@ def geocode(query: str, *, safe_mode: bool = False) -> GeocodeResult:
 
 def search(query: str, *, limit: int = 10, safe_mode: bool = False) -> list[GeocodeResult]:
     """Search for places matching free text -- a ZIP, city, county, or address
-    -- and return the candidates to choose from (PRD 6.1). Uses the free,
-    keyless Nominatim (OpenStreetMap) US search, which -- unlike a bare ZIP
-    lookup -- disambiguates same-named places. A bare ``lat,lon`` is returned
-    as the single exact point with no request."""
+    -- anywhere in the world, and return the candidates to choose from (PRD 6.1,
+    #1187). Uses the free, keyless Nominatim (OpenStreetMap) search, which --
+    unlike a bare ZIP lookup -- disambiguates same-named places. A bare
+    ``lat,lon`` is returned as the single exact point with no request. US
+    locations get the authoritative NWS forecast; everywhere else falls back to
+    the worldwide Open-Meteo forecast."""
     text = (query or "").strip()
     if not text:
         return []
@@ -112,10 +114,11 @@ def search(query: str, *, limit: int = 10, safe_mode: bool = False) -> list[Geoc
 
     refuse_in_safe_mode(safe_mode)
     limit = max(1, min(20, limit))
+    # No countrycodes filter: worldwide search so places like "Brno, Czech
+    # Republic" resolve, not just US (#1187).
     url = "https://nominatim.openstreetmap.org/search?" + urllib.parse.urlencode({
         "q": text,
         "format": "jsonv2",
-        "countrycodes": "us",
         "limit": limit,
         "addressdetails": 1,
     })

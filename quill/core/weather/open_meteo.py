@@ -14,7 +14,13 @@ from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
 from quill.core.weather._http import HTTP_ERRORS, http_json
-from quill.core.weather.models import AirQuality, DailyOutlook
+from quill.core.weather.models import (
+    AirQuality,
+    CurrentConditions,
+    DailyOutlook,
+    WeatherLocation,
+    WeatherReport,
+)
 
 #: WMO weather interpretation codes -> plain text (Open-Meteo's daily code).
 _WMO_TEXT: dict[int, str] = {
@@ -185,6 +191,87 @@ def fetch(
         daily=daily_from_json(data, unit=unit),
         cloud_cover_percent=round(cloud) if isinstance(cloud, (int, float)) else None,
     )
+
+
+def _to_fahrenheit(value: object, unit: str) -> float | None:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return None
+    return round(float(value) * 9 / 5 + 32, 1) if unit == "C" else round(float(value), 1)
+
+
+def _to_celsius(value: object, unit: str) -> float | None:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return None
+    return round((float(value) - 32) * 5 / 9, 1) if unit == "F" else round(float(value), 1)
+
+
+def _compass(degrees: object) -> str:
+    """Wind direction in degrees -> 8-point compass label (empty if unknown)."""
+    if not isinstance(degrees, (int, float)) or isinstance(degrees, bool):
+        return ""
+    points = ("N", "NE", "E", "SE", "S", "SW", "W", "NW")
+    return points[round(float(degrees) / 45) % 8]
+
+
+def fetch_report(
+    location: WeatherLocation, *, unit: str = "F", days: int = 10, safe_mode: bool = False
+) -> WeatherReport:
+    """A complete worldwide report from Open-Meteo alone -- current conditions
+    plus the daily outlook -- for locations outside the NWS's US coverage
+    (#1187). No NWS-style period narrative or alerts (those are US-only)."""
+    refuse_in_safe_mode(safe_mode)
+    days = max(1, min(16, days))
+    query = urllib.parse.urlencode({
+        "latitude": f"{location.latitude:.4f}",
+        "longitude": f"{location.longitude:.4f}",
+        "current": (
+            "temperature_2m,apparent_temperature,relative_humidity_2m,"
+            "weather_code,wind_speed_10m,wind_direction_10m,cloud_cover"
+        ),
+        "daily": (
+            "weathercode,temperature_2m_max,temperature_2m_min,"
+            "precipitation_probability_max,sunrise,sunset,uv_index_max"
+        ),
+        "temperature_unit": "celsius" if unit == "C" else "fahrenheit",
+        "wind_speed_unit": "mph",
+        "timezone": "auto",
+        "forecast_days": days,
+    })
+    try:
+        data = http_json(f"https://api.open-meteo.com/v1/forecast?{query}")
+    except HTTP_ERRORS as error:
+        raise OpenMeteoError(f"Could not reach the worldwide forecast service: {error}") from error
+    cur = data.get("current") if isinstance(data, dict) else None
+    current: CurrentConditions | None = None
+    if isinstance(cur, dict):
+        humidity = cur.get("relative_humidity_2m")
+        wind = cur.get("wind_speed_10m")
+        cloud = cur.get("cloud_cover")
+        current = CurrentConditions(
+            text_description=weather_code_text(cur.get("weather_code")),
+            temperature_f=_to_fahrenheit(cur.get("temperature_2m"), unit),
+            temperature_c=_to_celsius(cur.get("temperature_2m"), unit),
+            feels_like_f=_to_fahrenheit(cur.get("apparent_temperature"), unit),
+            humidity_percent=float(humidity) if isinstance(humidity, (int, float)) else None,
+            wind_speed_mph=float(wind) if isinstance(wind, (int, float)) else None,
+            wind_direction=_compass(cur.get("wind_direction_10m")),
+            cloud_cover_percent=round(cloud) if isinstance(cloud, (int, float)) else None,
+            observed_at=str(cur.get("time", "")),
+        )
+    report = WeatherReport(
+        location=location,
+        current=current,
+        daily=daily_from_json(data, unit=unit),
+        notes=[
+            "Worldwide forecast from Open-Meteo. Local watches and warnings are "
+            "shown only for US locations."
+        ],
+    )
+    try:
+        report.air_quality = air_quality(location.latitude, location.longitude, safe_mode=safe_mode)
+    except OpenMeteoError:
+        pass
+    return report
 
 
 def daily_forecast(

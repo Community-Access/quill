@@ -284,6 +284,38 @@ def active_alerts(
     return alerts_from_json(data)
 
 
+def fetch_report_worldwide(
+    location: WeatherLocation,
+    *,
+    safe_mode: bool = False,
+    daily_days: int = 10,
+    temperature_unit: str = "F",
+) -> WeatherReport:
+    """US locations get the authoritative NWS report; everywhere else falls back
+    to the worldwide Open-Meteo report (#1187).
+
+    The NWS covers only the United States, so a point-resolution failure means
+    the location is outside its coverage, not a real error -- in that case the
+    Open-Meteo forecast (current conditions + daily outlook) is returned instead.
+    """
+    from quill.core.weather import open_meteo
+
+    try:
+        return fetch_report(
+            location,
+            safe_mode=safe_mode,
+            daily_days=daily_days,
+            temperature_unit=temperature_unit,
+        )
+    except WeatherError:
+        try:
+            return open_meteo.fetch_report(
+                location, unit=temperature_unit, days=daily_days, safe_mode=safe_mode
+            )
+        except open_meteo.OpenMeteoError as exc:
+            raise WeatherError(str(exc)) from exc
+
+
 def fetch_report(
     location: WeatherLocation,
     *,
