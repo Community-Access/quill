@@ -1611,6 +1611,7 @@ class RadioMixin:
             on_switch_to_manual=self._radio_switch_favorites_to_manual,
             sort=self._radio_history.favorites_sort,
             folder_sorts=self._radio_history.folder_sort_orders,
+            windows=getattr(self, "_windows", None),
         )
         dlg.show()
         self._refresh_statusbar()

@@ -75,6 +75,7 @@ class FavoritesManagerDialog:
         on_switch_to_manual: Callable[[], None] | None = None,
         sort: str = "manual",
         folder_sorts: dict[str, str] | None = None,
+        windows: object | None = None,
     ) -> None:
         import wx
 
@@ -92,23 +93,39 @@ class FavoritesManagerDialog:
         self._sort = sort
         self._folder_sorts = folder_sorts or {}
         self._marked_key: str | None = None
-
-        self.dialog = wx.Dialog(
-            parent,
-            title="Manage Favorite Stations",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetMinSize((720, 560))
+        self._menu_id_refs: list[object] = []
+        # Modeless wx.Frame (persistent menu bar + &Window menu, controls on an
+        # inner panel) when standalone Radio supplies a WindowManager; an
+        # unchanged modal wx.Dialog for embedded QUILL. self.dialog stays the
+        # top-level window so child dialogs (rename/move/remove) parent correctly.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._win = wx.Frame(parent, title="Manage Favorite Stations",
+                                 style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._win = wx.Dialog(
+                parent,
+                title="Manage Favorite Stations",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
+            self._surface = self._win
+        self.dialog = self._win  # top-level window; child dialogs parent to it
+        self._win.SetMinSize((720, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)
         search_row.Add(
-            wx.StaticText(self.dialog, label="&Search favorites:"),
+            wx.StaticText(self._surface, label="&Search favorites:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._search_ctrl = wx.TextCtrl(self.dialog)
+        self._search_ctrl = wx.TextCtrl(self._surface)
         self._search_ctrl.SetName(
             "Filter favorites as you type; matches names, countries, tags, and folders"
         )
@@ -116,10 +133,10 @@ class FavoritesManagerDialog:
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 10)
 
         root.Add(
-            wx.StaticText(self.dialog, label="&Favorites and folders"), 0, wx.LEFT | wx.TOP, 10
+            wx.StaticText(self._surface, label="&Favorites and folders"), 0, wx.LEFT | wx.TOP, 10
         )
         self._tree = wx.TreeCtrl(
-            self.dialog, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
+            self._surface, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
         )
         self._tree.SetName(
             "Favorite stations, organized in folders; Enter plays, Delete removes, "
@@ -128,7 +145,7 @@ class FavoritesManagerDialog:
         apply_readable_tree_colours(self._tree)  # low-vision legibility (#3)
         root.Add(self._tree, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
-        self._status = wx.StaticText(self.dialog, label="")
+        self._status = wx.StaticText(self._surface, label="")
         self._status.SetName("Status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
@@ -193,12 +210,16 @@ class FavoritesManagerDialog:
             "Delete the selected folder; its stations return to the top level",
         )
         row2.AddStretchSpacer()
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
+        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close the favorites manager")
         row2.Add(close_btn)
         root.Add(row2, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
 
         self._search_ctrl.Bind(wx.EVT_TEXT, lambda _e: self._refresh_tree())
         self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, lambda _e: self._on_selection_changed())
@@ -212,20 +233,55 @@ class FavoritesManagerDialog:
 
     def _button(self, sizer: Any, label: str, handler: Callable[[], None], accessible: str) -> Any:
         wx = self._wx
-        button = wx.Button(self.dialog, label=label)
+        button = wx.Button(self._surface, label=label)
         button.SetName(accessible)
         button.Bind(wx.EVT_BUTTON, lambda _e: handler())
         sizer.Add(button, 0, wx.RIGHT, 6)
         return button
 
+    def _build_surface_menu_bar(self) -> None:
+        """Menu bar for the modeless frame: &Close + the shared &Window menu."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Favorites")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
+
+    def _on_char_hook(self, event: object) -> None:
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+            self._win.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: object) -> None:
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        self._announce("Exited Manage Favorites")
+        self._on_changed()
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
     def show(self) -> None:
         wx = self._wx
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=wx.ID_CANCEL)
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, "Manage Favorites")
+            show_modeless_surface(self._win, "Manage Favorites", announce=self._announce)
+            return
+        self._win.CentreOnParent()
+        apply_modal_ids(self._win, cancel_id=wx.ID_CANCEL)
         try:
-            show_modal_dialog(self.dialog, "Manage Favorite Stations", announce=self._announce)
+            show_modal_dialog(self._win, "Manage Favorite Stations", announce=self._announce)
         finally:
-            self.dialog.Destroy()
+            self._win.Destroy()
 
     # -- tree -----------------------------------------------------------------
 

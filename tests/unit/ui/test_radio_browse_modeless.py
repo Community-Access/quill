@@ -16,6 +16,7 @@ import wx
 
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
+from quill.ui.radio.favorites_manager_dialog import FavoritesManagerDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
 from quill.ui.window_menu import WindowManager
 
@@ -90,5 +91,39 @@ def test_modal_search_stays_a_dialog(_app: wx.App) -> None:
     try:
         assert isinstance(dlg._win, wx.Dialog)
         assert not isinstance(dlg._win, wx.Frame)
+    finally:
+        dlg._win.Destroy()
+
+
+def _make_favorites(windows: object | None) -> FavoritesManagerDialog:
+    controller = SimpleNamespace(state=SimpleNamespace(volume_percent=100, muted=False))
+    return FavoritesManagerDialog(
+        None,
+        favorites=RadioFavoritesStore(),
+        controller=controller,
+        announce_cb=lambda _m: None,
+        windows=windows,
+    )
+
+
+def test_modeless_favorites_is_a_frame_with_window_menu(_app: wx.App) -> None:
+    dlg = _make_favorites(WindowManager(wx))
+    try:
+        assert isinstance(dlg._win, wx.Frame)
+        bar = dlg._win.GetMenuBar()
+        assert bar is not None
+        titles = [bar.GetMenuLabelText(i) for i in range(bar.GetMenuCount())]
+        assert "Window" in titles
+        # self.dialog aliases the top-level window so child dialogs parent right.
+        assert dlg.dialog is dlg._win
+    finally:
+        dlg._win.Destroy()
+
+
+def test_modal_favorites_stays_a_dialog(_app: wx.App) -> None:
+    dlg = _make_favorites(None)
+    try:
+        assert isinstance(dlg._win, wx.Dialog)
+        assert dlg.dialog is dlg._win
     finally:
         dlg._win.Destroy()
