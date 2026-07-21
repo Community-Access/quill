@@ -1,4 +1,5 @@
 {
+  "_rebaseline_2026_07_20_cast_expand_episodes": "podcasts.py 913->940 (+27) for #1192: expand a podcast in the library tree to see its episodes in place -- episodes hang under each show (shows collapsed by default), Enter on an episode plays it. Play logic refactored into _play_episode_object shared by next-episode and specific-episode. Feature growth.",
   "_rebaseline_2026_07_20_cast_playback_shortcuts": "podcasts.py 908->913, main_frame_podcasts.py 1007->1017: Cast playback keyboard shortcuts (#1189 follow-up) -- Stop (Ctrl+.), Skip Forward/Back (Ctrl+Right/Left), and new Volume Up/Down (Ctrl+Up/Down, matching Radio) in the Episode menu. Feature growth.",
   "_rebaseline_2026_07_20_cast_episodes_item_key": "manager_dialog.py 1195->1214 (+19) for #1189: added the _item_key helper (int of the wx tree-item voidptr) so the item->show/folder maps key by a stable id -- selecting a podcast now loads its episodes instead of silently missing every lookup. Bug-fix growth.",
   "_rebaseline_2026_07_20_radio_mark_and_move": "radio.py 1458->1505 (+47) for #1190: Mark-and-Move in the favorites context menu (Mark for Move, then Move Marked Above/Below in one step, via the store's move_relative_to) so listeners stop nudging a station 20-30 times with Alt+Shift+Up/Down. Mirrors the Favorites Manager. Feature growth in the app shell.",
@@ -602,7 +603,7 @@
     "quill/ui/main_frame_local_git.py": 696,
     "quill/ui/main_frame_github_extras.py": 335,
     "quill/core/browser_preview.py": 606,
-    "quill/apps/podcasts.py": 913,
+    "quill/apps/podcasts.py": 940,
     "_rebaseline_2026_07_17_alt_f4_to_tray_cast": "apps/podcasts.py 884 -> 908 (+24): the opt-in Alt+F4-minimizes-to-tray preference -- the EVT_CHAR_HOOK bind + handler and the Preferences checkbox/save wiring. Mirrors Quill Radio; the field lives in core/podcasts/history.py.",
     "quill/apps/studio.py": 2581,
     "_rebaseline_2026_07_20_reverse_vendor_audio_studio": "apps/studio.py enters the tracked list at 2577 (a new file over the 600 default cap): the Audio Studio app shell reverse-vendored from the standalone quill-audio-studio (quillas/apps/studio.py) into quill/apps beside radio.py/podcasts.py, per docs/design/2026-07-17-audio-studio-migration-audit.md section 25 (Option D). It is the StudioAppFrame (library tree, Chapter Workbench launch, play queue, sleep timer, voice preview, Speech Hub, transcribe, pronunciation) on the shared quill.ui.app_shell.AppShellFrame; all feature code already lives in quill/core/audio_studio + quill/ui/audio_studio. DECOMPOSITION CANDIDATE like the other app shells; deferred as a faithful move so the reverse-vendor stays reviewable.",

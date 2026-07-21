@@ -172,13 +172,25 @@ class PodcastsAppFrame(
 
         for folder in self._podcast_library.folders:
             folder_item(folder.id)
+        from quill.core.podcasts.sorting import sort_episodes
+
         for show in sort_shows(self._podcast_library.shows, "title_az"):
             count = unheard_count(show)
             label = f"{show.title} ({count})" if count else show.title
             item = tree.AppendItem(folder_item(show.folder_id), label)
             tag(item, ("show", show.id))
+            # #1192: episodes hang under the show so it can be expanded in place;
+            # Enter on a show still plays its next episode.
+            for ep in sort_episodes(show.episodes, "newest_first"):
+                ep_item = tree.AppendItem(item, ep.title)
+                tag(ep_item, ("episode", f"{show.id}\x00{ep.guid}"))
 
-        tree.ExpandAll()
+        # Expand favorites/views/folders but leave shows COLLAPSED, so the tree
+        # is not a wall of episodes -- expand a show to reveal its episodes.
+        tree.Expand(root)
+        for fitem in folder_items.values():
+            if fitem is not root:
+                tree.Expand(fitem)
         first, _cookie = tree.GetFirstChild(root)
         if select_item is not None:
             tree.SelectItem(select_item)
@@ -209,6 +221,10 @@ class PodcastsAppFrame(
         kind, key = selected
         if kind == "show":
             self._play_show_next_episode(key)
+            return
+        if kind == "episode":
+            show_id, _, guid = key.partition("\x00")
+            self._play_specific_episode(show_id, guid)
             return
         if kind == "view":
             self.open_podcast_manager()
@@ -378,9 +394,20 @@ class PodcastsAppFrame(
             self._announce(f"{show.title} has no episodes yet.")
             return
         episode = ordered[0]
-        played_note = ""
-        if episode.played:
-            played_note = " (no unplayed episodes; playing the most recent)"
+        note = " (no unplayed episodes; playing the most recent)" if episode.played else ""
+        self._play_episode_object(show, episode, note=note)
+
+    def _play_specific_episode(self, show_id: str, guid: str) -> None:
+        """Play one chosen episode -- Enter on an episode expanded under its show
+        in the library tree (#1192)."""
+        show = self._podcast_library.find_show(show_id)
+        if show is None:
+            return
+        episode = next((e for e in show.episodes if e.guid == guid), None)
+        if episode is not None:
+            self._play_episode_object(show, episode)
+
+    def _play_episode_object(self, show: object, episode: object, *, note: str = "") -> None:
         settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
@@ -397,7 +424,7 @@ class PodcastsAppFrame(
             auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
             auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
-        self._announce(f"Playing {episode.title} from {show.title}{played_note}")
+        self._announce(f"Playing {episode.title} from {show.title}{note}")
 
     # -- transport & favorite controls --------------------------------------
 
