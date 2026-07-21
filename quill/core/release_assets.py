@@ -25,7 +25,7 @@ import tempfile
 import time
 import urllib.request
 import zipfile
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -64,10 +64,20 @@ class ReleaseAsset:
     # Upstream version of the bundled content. Recorded so a future update check
     # can notice a newer pinned version and offer it to the user (PRD 10.2.x).
     version: str = ""
+    #: Optional full HTTPS mirror URLs, tried in order after the primary release
+    #: URL. Same file (same SHA-256), a different host -- so a primary-host
+    #: outage never blocks a component. The SHA-256 check makes every mirror
+    #: equally safe: a wrong or tampered mirror simply fails verification.
+    mirrors: tuple[str, ...] = ()
 
     @property
     def url(self) -> str:
         return f"{_RELEASE_BASE}/{self.tag}/{self.filename}"
+
+    @property
+    def urls(self) -> tuple[str, ...]:
+        """The primary GitHub-release URL first, then any mirrors."""
+        return (self.url, *self.mirrors)
 
 
 # Pinned manifest. Add an entry only for a component we are licensed to
@@ -271,7 +281,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def _download_resumable(
-    url: str,
+    urls: Sequence[str],
     dest: Path,
     progress: ProgressCallback | None,
     *,
@@ -280,50 +290,62 @@ def _download_resumable(
     should_cancel: Callable[[], bool] | None = None,
     label: str = "Downloading...",
 ) -> None:
-    """Download ``url`` to ``dest`` with retry/backoff, resuming a partial file via
-    HTTP Range. HTTPS-only. Raises :class:`ReleaseAssetError` after exhausting retries,
-    or :class:`DownloadCancelled` immediately if ``should_cancel`` becomes true.
+    """Download the first working URL in ``urls`` (primary, then mirrors) to
+    ``dest``.
 
-    GATE-9: this is the module's only network egress; callers gate it on an explicit
-    user action and Safe Mode.
+    Within a URL: retry with backoff, resuming a partial via HTTP Range. When a
+    URL exhausts its retries, drop the partial and fall through to the next
+    mirror. HTTPS-only. Raises :class:`ReleaseAssetError` only when every URL
+    fails, or :class:`DownloadCancelled` immediately if ``should_cancel`` becomes
+    true. The SHA-256 check the caller runs afterward makes every mirror safe.
+
+    GATE-9: this is the module's only network egress; callers gate it on an
+    explicit user action and Safe Mode.
     """
-    if not url.lower().startswith("https://"):
-        raise ReleaseAssetError("Refusing a non-HTTPS download URL.")
+    url_list = list(urls)
+    if not url_list:
+        raise ReleaseAssetError("No download URL for this component.")
     last_error: Exception | None = None
-    for attempt in range(retries):
-        try:
-            if should_cancel is not None and should_cancel():
-                raise DownloadCancelled("Download cancelled.")
-            have = dest.stat().st_size if dest.exists() else 0
-            request = urllib.request.Request(url)
-            if have:
-                request.add_header("Range", f"bytes={have}-")
-            with urllib.request.urlopen(request, timeout=timeout) as resp:  # noqa: S310 - HTTPS enforced
-                status = getattr(resp, "status", 200)
-                # If the server ignored Range (200 not 206), restart from zero.
-                append = bool(have) and status == 206
-                if not append:
-                    have = 0
-                total = have + int(resp.headers.get("Content-Length") or 0)
-                downloaded = have
-                with dest.open("ab" if append else "wb") as out:
-                    while True:
-                        if should_cancel is not None and should_cancel():
-                            raise DownloadCancelled("Download cancelled.")
-                        chunk = resp.read(_CHUNK)
-                        if not chunk:
-                            break
-                        out.write(chunk)
-                        downloaded += len(chunk)
-                        if progress is not None and total > 0:
-                            progress(min(downloaded / total, 0.99), label)
-            return
-        except DownloadCancelled:
-            raise  # a cancel is never retried — surface it immediately
-        except Exception as exc:  # noqa: BLE001 - retry transient network errors
-            last_error = exc
-            time.sleep(min(2**attempt, 8))
-    raise ReleaseAssetError(f"Download failed after {retries} attempts: {last_error}")
+    for url in url_list:
+        if not url.lower().startswith("https://"):
+            raise ReleaseAssetError("Refusing a non-HTTPS download URL.")
+        for attempt in range(retries):
+            try:
+                if should_cancel is not None and should_cancel():
+                    raise DownloadCancelled("Download cancelled.")
+                have = dest.stat().st_size if dest.exists() else 0
+                request = urllib.request.Request(url)
+                if have:
+                    request.add_header("Range", f"bytes={have}-")
+                with urllib.request.urlopen(request, timeout=timeout) as resp:  # noqa: S310 - HTTPS enforced
+                    status = getattr(resp, "status", 200)
+                    # If the server ignored Range (200 not 206), restart from zero.
+                    append = bool(have) and status == 206
+                    if not append:
+                        have = 0
+                    total = have + int(resp.headers.get("Content-Length") or 0)
+                    downloaded = have
+                    with dest.open("ab" if append else "wb") as out:
+                        while True:
+                            if should_cancel is not None and should_cancel():
+                                raise DownloadCancelled("Download cancelled.")
+                            chunk = resp.read(_CHUNK)
+                            if not chunk:
+                                break
+                            out.write(chunk)
+                            downloaded += len(chunk)
+                            if progress is not None and total > 0:
+                                progress(min(downloaded / total, 0.99), label)
+                return
+            except DownloadCancelled:
+                raise  # a cancel is never retried — surface it immediately
+            except Exception as exc:  # noqa: BLE001 - retry transient network errors
+                last_error = exc
+                time.sleep(min(2**attempt, 8))
+        # This URL is exhausted; drop any partial so the next mirror starts clean.
+        if dest.exists():
+            dest.unlink(missing_ok=True)
+    raise ReleaseAssetError(f"Download failed from all sources: {last_error}")
 
 
 def fetch_component(
@@ -359,7 +381,7 @@ def fetch_component(
         archive = tmp / asset.filename
         if progress is not None:
             progress(0.0, label)
-        _download_resumable(asset.url, archive, progress, should_cancel=should_cancel, label=label)
+        _download_resumable(asset.urls, archive, progress, should_cancel=should_cancel, label=label)
 
         actual = _sha256_file(archive)
         if actual.lower() != asset.sha256.lower():
@@ -421,7 +443,7 @@ def fetch_file(
         archive = tmp / asset.filename
         if progress is not None:
             progress(0.0, label)
-        _download_resumable(asset.url, archive, progress, should_cancel=should_cancel, label=label)
+        _download_resumable(asset.urls, archive, progress, should_cancel=should_cancel, label=label)
 
         actual = _sha256_file(archive)
         if actual.lower() != asset.sha256.lower():

@@ -178,3 +178,49 @@ def test_git_gh_bundling_entries_are_pinned_real_uploads(
     assert asset.expect_member == expect_member
     assert asset.url.endswith(f"/assets-v1/{asset.filename}")
     assert asset.version != "PENDING"
+
+
+def test_download_falls_back_to_a_mirror(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    # A primary-host outage must not block a component: the same file is fetched
+    # from a mirror, and the SHA check afterward keeps every mirror safe.
+    calls: list[str] = []
+
+    class _Resp:
+        status = 200
+        headers = {"Content-Length": "3"}
+
+        def __enter__(self):
+            self._sent = False
+            return self
+
+        def __exit__(self, *_a):
+            return False
+
+        def read(self, _n):
+            if self._sent:
+                return b""
+            self._sent = True
+            return b"abc"
+
+    def fake_urlopen(request, timeout):
+        calls.append(request.full_url)
+        if "primary" in request.full_url:
+            raise OSError("primary host is down")
+        return _Resp()
+
+    monkeypatch.setattr(ra.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(ra.time, "sleep", lambda _s: None)
+    dest = tmp_path / "f.bin"
+    ra._download_resumable(
+        ["https://primary.example/f.bin", "https://mirror.example/f.bin"],
+        dest,
+        None,
+        retries=2,
+    )
+    assert dest.read_bytes() == b"abc"
+    assert any("mirror" in url for url in calls)  # fell back after the primary failed
+
+
+def test_release_asset_urls_are_primary_then_mirrors() -> None:
+    asset = ra.ReleaseAsset("x", "assets-v1", "f.zip", "a" * 64, mirrors=("https://m/f.zip",))
+    assert asset.urls == (asset.url, "https://m/f.zip")
