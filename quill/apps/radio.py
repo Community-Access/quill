@@ -26,6 +26,9 @@ from quill.ui.main_frame_weather import WeatherMixin
 _TITLE = "Quill Radio"
 _VERSION = "2.2.0"
 _REPO = "Community-Access/quill-radio"
+#: Shared components this app requires, for the component-refcount registry
+#: (ffmpeg for recording; mpv/libmpv is the playback engine).
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
 http_client.set_product_identity(_TITLE, _VERSION)  # radio User-Agent identity (#6)
 
 #: RadioHistory.close_action's Preferences combo box (see also
@@ -1475,6 +1478,10 @@ def main() -> int:
     if not try_claim_primary_instance(slot=_IPC_SLOT):
         enqueue_open_request(None, slot=_IPC_SLOT)
         return 0
+
+    from quill.core import components
+
+    components.register_running_app("radio", REQUIRED_COMPONENTS)
 
     # Configure file logging before the app comes up so startup records -- and
     # everything radio debug mode raises to DEBUG -- land in quill.log

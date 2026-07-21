@@ -66,6 +66,21 @@ def register(data_dir: Path, app_id: str, component_ids: Iterable[str]) -> None:
     _save(data_dir, refs)
 
 
+def register_running_app(app_id: str, component_ids: Iterable[str]) -> None:
+    """Register the running app's required components in the shared store.
+
+    The one line every app calls at launch -- the ``app_data_dir()`` lookup and
+    the never-crash guard live here, written once. Best-effort: a bad data dir
+    or a read-only disk must never stop the app from starting.
+    """
+    try:
+        from quill.core.paths import app_data_dir
+
+        register(app_data_dir(), app_id, component_ids)
+    except Exception:  # noqa: BLE001 - registering refs must never block launch
+        pass
+
+
 def unregister(data_dir: Path, app_id: str) -> None:
     """Drop all of *app_id*'s refs -- call from the app's uninstaller step."""
     refs = _load(data_dir)

@@ -74,6 +74,9 @@ except ImportError:  # pragma: no cover - non-Windows
 
 _TITLE = "QUILL Audio Studio"
 _VERSION = __version__
+#: Shared components this app requires, for the component-refcount registry
+#: (ffmpeg for audio processing/export; mpv is opt-in, not required).
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
 _REPO = "Community-Access/quill-audio-studio"
 
 # Generate Captions accepts these; ffmpeg transcodes them to 16 kHz mono WAV
@@ -2544,6 +2547,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    from quill.core import components
+
+    components.register_running_app("studio", REQUIRED_COMPONENTS)
     # Put previously-installed on-demand engine packs (Kokoro's kokoro_onnx,
     # Faster-Whisper, Vosk, MP3/mutagen) back on sys.path BEFORE the UI queries
     # readiness. The embeddable-Python launcher's ._pth lists only the stdlib,

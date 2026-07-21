@@ -22,6 +22,9 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 _TITLE = "QUILL Cast"
 _VERSION = "1.0.5"
 _REPO = "Community-Access/quill-cast"
+#: Shared components this app requires, for the component-refcount registry
+#: (ffmpeg for playback/processing; libmpv is intentionally not used -- wx.media).
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
 
 
 class PodcastsAppFrame(
@@ -929,6 +932,9 @@ class PodcastsAppFrame(
 
 def main() -> int:
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
+    from quill.core import components
+
+    components.register_running_app("cast", REQUIRED_COMPONENTS)
     app = wx.App()
     frame = PodcastsAppFrame(safe_mode=safe_mode)
     frame.frame.Show()

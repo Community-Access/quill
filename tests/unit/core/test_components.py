@@ -7,6 +7,26 @@ from pathlib import Path
 from quill.core import components as c
 
 
+def test_register_running_app_writes_to_the_shared_data_dir(tmp_path: Path, monkeypatch) -> None:
+    # The one line apps call at launch resolves the shared data dir itself.
+    import quill.core.paths as paths
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    c.register_running_app("radio", ["ffmpeg", "mpv"])
+    assert c.apps_requiring(tmp_path, "ffmpeg") == ["radio"]
+    assert c.apps_requiring(tmp_path, "mpv") == ["radio"]
+
+
+def test_register_running_app_never_raises_on_bad_data_dir(monkeypatch) -> None:
+    import quill.core.paths as paths
+
+    def _boom() -> Path:
+        raise RuntimeError("no APPDATA")
+
+    monkeypatch.setattr(paths, "app_data_dir", _boom)
+    c.register_running_app("radio", ["ffmpeg"])  # must not raise -- launch guard
+
+
 def test_two_apps_share_one_component(tmp_path: Path) -> None:
     c.register(tmp_path, "radio", ["ffmpeg", "mpv"])
     c.register(tmp_path, "cast", ["ffmpeg"])
