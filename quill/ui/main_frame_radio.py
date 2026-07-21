@@ -1544,11 +1544,23 @@ class RadioMixin:
             controller=self._radio_controller,
             announce_cb=self._announce,
             on_changed=self._save_radio_favorites,
+            on_switch_to_manual=self._radio_switch_favorites_to_manual,
             sort=self._radio_history.favorites_sort,
             folder_sorts=self._radio_history.folder_sort_orders,
         )
         dlg.show()
         self._refresh_statusbar()
+
+    def _radio_switch_favorites_to_manual(self) -> None:
+        """Persist that favorites are now in manual order after the Favorites
+        Manager reorders from a sorted view (the dialog bakes the store order;
+        this records the sort switch in history so it survives a reload)."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        self._radio_history.favorites_sort = "manual"
+        self._radio_history.folder_sort_orders = {}
+        radio_history.save_history(app_data_dir(), self._radio_history)
 
     def open_radio_recordings(self) -> None:
         """Recordings...: made, in-progress (live status), and scheduled."""
