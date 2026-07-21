@@ -64,11 +64,13 @@ def test_install_rejects_unsupported_platform(monkeypatch, tmp_path) -> None:
         fi.install_ffmpeg(dest_dir=tmp_path)
 
 
-def test_download_source_defaults_to_moving_upstream_unpinned() -> None:
-    """Until a mirror is uploaded, the source is the moving Gyan.dev URL, no SHA."""
+def test_download_source_is_the_pinned_assets_v1_mirror() -> None:
+    """ffmpeg is now mirrored on assets-v1 and pinned: the source is that URL + SHA."""
     url, sha = fi.ffmpeg_download_source()
-    assert url == fi.FFMPEG_DOWNLOAD_URL
-    assert sha == ""
+    assert url == fi._ASSETS_V1_BASE + fi.FFMPEG_PINNED_FILENAME
+    assert url.startswith("https://github.com/Community-Access/quill/releases/download/assets-v1/")
+    assert sha == fi.FFMPEG_PINNED_SHA256
+    assert fi._is_real_sha256(sha)
 
 
 def test_download_source_activates_pinned_mirror_when_sha_is_real(monkeypatch) -> None:

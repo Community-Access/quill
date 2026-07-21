@@ -1,11 +1,17 @@
 """Optional in-app ffmpeg download for offline speech (#617 follow-up).
 
 QUILL does not bundle ffmpeg (it is GPL/LGPL). For users who would rather not run
-``winget install Gyan.FFmpeg`` by hand, this downloads an **official Gyan.dev
-Windows build** on an explicit action and extracts ``ffmpeg.exe`` + ``ffprobe.exe``
-into the QUILL-managed tools folder the resolver already searches
-(``<app data>/tools/ffmpeg``). The binaries come straight from the third-party
-builder that ffmpeg.org links to; QUILL never redistributes them.
+``winget install Gyan.FFmpeg`` by hand, this downloads a pinned **Gyan.dev
+"essentials" Windows build** on an explicit action and extracts ``ffmpeg.exe`` +
+``ffprobe.exe`` into the QUILL-managed tools folder the resolver already searches
+(``<app data>/tools/ffmpeg``).
+
+The build is re-hosted on QUILL's own ``assets-v1`` release and pinned by
+SHA-256 -- the same self-hosted, verified model used for the eSpeak-NG (GPL) MSI
+-- so the download does not depend on a third-party host and cannot be swapped
+under us. As GPL/LGPL software, the corresponding source is available upstream
+(ffmpeg.org, and the Gyan.dev build page); the mirrored asset is byte-identical
+to that official build.
 
 Safety mirrors the model-download path: HTTPS-only with a verified TLS context,
 blocked in Safe Mode, on an explicit user action only. Windows-only — on macOS
@@ -43,9 +49,9 @@ FFMPEG_DOWNLOAD_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essenti
 #   2. Upload it to the assets-v1 release; note the asset's filename.
 #   3. Set FFMPEG_PINNED_FILENAME to that name, FFMPEG_PINNED_VERSION to the
 #      ffmpeg version, and FFMPEG_PINNED_SHA256 to the file's SHA-256.
-FFMPEG_PINNED_VERSION = ""  # e.g. "7.1"
-FFMPEG_PINNED_FILENAME = ""  # e.g. "ffmpeg-7.1-essentials_build.zip"
-FFMPEG_PINNED_SHA256 = ""  # 64-hex digest; empty until the zip is mirrored
+FFMPEG_PINNED_VERSION = "8.1.2"
+FFMPEG_PINNED_FILENAME = "ffmpeg-8.1.2-essentials_build.zip"
+FFMPEG_PINNED_SHA256 = "db580001caa24ac104c8cb856cd113a87b0a443f7bdf47d8c12b1d740584a2ec"
 _ASSETS_V1_BASE = "https://github.com/Community-Access/quill/releases/download/assets-v1/"
 
 _DOWNLOAD_TIMEOUT_S = 1800.0
