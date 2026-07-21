@@ -553,6 +553,14 @@ It is user-hideable (View &gt; Show Status Bar).</li>
 <li>A-7. View-menu visibility toggles (Show Station Details, Show Status
 Bar) persist across sessions and are honored by every surface that owns
 the affected control; a hidden control is never a focus stop.</li>
+<li>A-8. A low-vision text-size control (View &gt; Text Size) scales the
+main window's fonts (favorites tree, transport buttons, now-playing
+line, status bar) and persists; reordering and every list action remain
+fully keyboard-operable at every size.</li>
+<li>A-9. Long-running background audio (playback, recording) keeps the
+machine awake so it does not stop unattended; the behavior is
+user-controllable and defaults on, and never inhibits display sleep
+(audio-only need).</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -656,6 +664,31 @@ context menu. The bar refreshes on every
 <code>_refresh_statusbar</code>; <code>apps/radio.py</code> only wires
 it (build, View toggle, F6 char-hook branch), so the same bar can serve
 embedded QUILL radio later.</li>
+<li><em>More View items.</em> A Sort Favorites submenu (radio items over
+<code>RadioHistory.favorites_sort</code>), Expand All / Collapse All
+Folders on the favorites tree, and a Text Size submenu
+(Normal/Large/Larger) driving <code>RadioHistory.ui_font_scale</code>
+(clamped [1.0, 2.0]) applied to the tree, buttons, now-playing line, and
+status bar via <code>_apply_text_size</code> /
+<code>RadioStatusBar.set_font</code> (A-8).</li>
+<li><em>Favorites Manager Move buttons work from a sorted view.</em>
+Move Up/Down/Above/Below in <code>FavoritesManagerDialog</code> were
+disabled unless the folder was already manual; they now bake the visible
+order to manual on the first move
+(<code>_switch_to_manual_if_needed</code> -&gt;
+<code>favorites_in_display_order</code>) and move within it, mirroring
+the main list's Alt+Shift+Up/Down. The host persists the switch via
+<code>_radio_switch_favorites_to_manual</code> (new
+<code>on_switch_to_manual</code> callback).</li>
+<li><em>Keep-awake while playing/recording (A-9).</em>
+<code>platform/keep_awake.set_keep_awake</code> (Windows
+<code>SetThreadExecutionState</code>,
+<code>ES_CONTINUOUS | ES_SYSTEM_REQUIRED</code>; no-op elsewhere) holds
+off system standby while a station plays or a recording runs, released
+when neither is active. <code>_update_sleep_inhibitor</code> reads live
+playback + recorder state and <code>RadioHistory.prevent_sleep</code>
+(default on; Preferences checkbox) on every state change. Display sleep
+is deliberately not inhibited.</li>
 <li><em>Fixes.</em> Alt+Shift+Up/Down reorder from a sorted view commits
 the visible order as manual again (restores the pre-#1186 bake that
 #1186 dropped, which had regressed the default A-Z case); explicit Exit

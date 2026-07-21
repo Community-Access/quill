@@ -456,7 +456,13 @@ turns on detailed logging live, no restart, for when you need to
 diagnose something or attach detail to a bug report) and <strong>Log
 folder</strong> (choose where the log is written so it's easy to find; a
 failed recording captures the recorder's own error output into it as
-well).</li>
+well). Finally, <strong>Keep the computer awake while playing or
+recording</strong> (on by default) stops Windows from going to sleep
+while a station is playing or a recording is running, so the audio never
+cuts off mid-listen; your screen can still turn off, and the moment
+nothing is playing or recording the setting lets the computer sleep
+normally again. Turn it off if you would rather Quill Radio never touch
+your power settings. (Windows only.)</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) -- hide the window; playback
 continues from the notification area.</li>
 <li><strong>Exit</strong> -- quit Quill Radio. Closing the window this
@@ -710,6 +716,18 @@ along the bottom of the main window (Now playing, Volume, Recording,
 Sleep timer, Favorites count, and the time). On by default. Reach the
 bar with <strong>F6</strong> and arrow across it; see "The main window"
 above for the full navigation.</li>
+<li><strong>Sort Favorites</strong> -- Ascending (A to Z), Descending (Z
+to A), or Unsorted (your manual order). This is the same setting as the
+one in Preferences, put here so it is quick to reach; the current order
+is shown with a bullet. Choosing Unsorted reveals the hand-arranged
+order you built with Move Up/Down.</li>
+<li><strong>Expand All Folders</strong> / <strong>Collapse All
+Folders</strong> -- open or close every folder in the favorites tree at
+once.</li>
+<li><strong>Text Size</strong> -- Normal, Large, or Larger. Scales the
+text on the main window (the favorites list, the buttons, the
+now-playing line, and the status bar) up for easier reading. Remembered
+between sessions.</li>
 </ul>
 <h3 id="help-alth">Help (Alt+H)</h3>
 <ul>
@@ -760,10 +778,12 @@ folder.</li>
 <li><strong>Reordering.</strong> Move Up / Move Down within a folder;
 for long hops, <strong>Mark for Move</strong>, select the destination,
 then <strong>Move Above</strong> or <strong>Move Below</strong> -- the
-moved station joins the destination's folder. (Reordering is your
-hand-arranged "Unsorted" order; when a folder is set to Ascending or
-Descending the Move buttons are disabled there, since a sorted folder
-ignores hand placement.)</li>
+moved station joins the destination's folder. Reordering is your
+hand-arranged "Unsorted" order, and the Move buttons work from any view:
+if the list is currently sorted Ascending or Descending, the first move
+commits the order you see as your manual order and moves the station
+within it -- exactly like Alt+Shift+Up/Down on the main page. A list you
+have already hand-arranged is left as it is.</li>
 <li><strong>Sort order.</strong> Preferences (Ctrl+,) sets the default
 order for every folder -- Ascending (A to Z), Descending (Z to A), or
 Unsorted. Any single folder can override that from its context menu
