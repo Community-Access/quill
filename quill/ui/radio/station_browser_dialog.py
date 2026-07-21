@@ -178,6 +178,7 @@ class StationBrowserDialog:
         on_favorites_changed: Callable[[], None] | None = None,
         on_open_add_custom: Callable[[RadioStation | None], None] | None = None,
         on_open_link_finder: Callable[[], None] | None = None,
+        show_details: bool = True,
     ) -> None:
         import wx
 
@@ -330,12 +331,16 @@ class StationBrowserDialog:
         body.Add(results_col, 2, wx.EXPAND)
         root.Add(body, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        root.Add(wx.StaticText(self.dialog, label="Station details"), 0, wx.LEFT | wx.TOP, 10)
+        details_label = wx.StaticText(self.dialog, label="Station details")
+        root.Add(details_label, 0, wx.LEFT | wx.TOP, 10)
         self._details = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._details.SetName("Read-only details of the selected station")
         root.Add(self._details, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        if not show_details:
+            root.Hide(details_label)
+            root.Hide(self._details)  # View > Show Station Details (honored per surface)
 
         self._status = wx.StaticText(self.dialog, label="")
         self._status.SetName("Status")

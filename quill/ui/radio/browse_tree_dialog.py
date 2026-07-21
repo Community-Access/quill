@@ -155,6 +155,7 @@ class BrowseTreeDialog:
         safe_mode: bool,
         announce_cb: Callable[[str], None] | None = None,
         on_favorites_changed: Callable[[], None] | None = None,
+        show_details: bool = True,
     ) -> None:
         import wx
 
@@ -216,6 +217,8 @@ class BrowseTreeDialog:
         )
         self._details.SetName("Details of the highlighted station")
         root.Add(self._details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        if not show_details:
+            root.Hide(self._details)  # View > Show Station Details (honored per surface)
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
         volume_row.Add(

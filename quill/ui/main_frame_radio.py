@@ -1583,6 +1583,7 @@ class RadioMixin:
             on_favorites_changed=self._save_radio_favorites,
             on_open_add_custom=self._radio_open_add_custom,
             on_open_link_finder=self._radio_open_link_finder,
+            show_details=self._radio_history.show_station_details,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
@@ -1606,6 +1607,7 @@ class RadioMixin:
             safe_mode=self._safe_mode,
             announce_cb=self._announce,
             on_favorites_changed=self._save_radio_favorites,
+            show_details=self._radio_history.show_station_details,
         )
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()

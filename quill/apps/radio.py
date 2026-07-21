@@ -992,6 +992,17 @@ class RadioAppFrame(
             id=updates_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
+
+        # &View: show/hide the read-only Station Details pane, honored by every
+        # surface that has one (Browse Stations, Search Stations).
+        view_menu = wx.Menu()
+        show_details_id = wx.NewIdRef()
+        view_menu.AppendCheckItem(show_details_id, "Show Station &Details")
+        view_menu.Check(show_details_id, self._radio_history.show_station_details)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_show_station_details(), id=show_details_id
+        )
+        menu_bar.Append(view_menu, "&View")
         menu_bar.Append(help_menu, "&Help")
 
         self.frame.SetMenuBar(menu_bar)
@@ -1088,6 +1099,21 @@ class RadioAppFrame(
             frame.Iconize(False)
         frame.Raise()
         frame.RequestUserAttention()
+
+    def _toggle_show_station_details(self) -> None:
+        """Flip Show Station Details and persist it. The Browse and Search Stations
+        surfaces read it when they open, so the change takes effect next time you
+        open one."""
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        history.show_station_details = not history.show_station_details
+        radio_history.save_history(app_data_dir(), history)
+        self._announce(
+            "Station details will be shown." if history.show_station_details
+            else "Station details will be hidden."
+        )
 
     def _toggle_resume_on_launch(self) -> None:
         from quill.core.paths import app_data_dir
