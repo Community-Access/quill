@@ -224,3 +224,23 @@ def test_download_falls_back_to_a_mirror(monkeypatch: pytest.MonkeyPatch, tmp_pa
 def test_release_asset_urls_are_primary_then_mirrors() -> None:
     asset = ra.ReleaseAsset("x", "assets-v1", "f.zip", "a" * 64, mirrors=("https://m/f.zip",))
     assert asset.urls == (asset.url, "https://m/f.zip")
+
+
+def test_download_verified_moves_on_match_and_raises_on_mismatch(monkeypatch, tmp_path) -> None:
+    import hashlib
+
+    payload = b"hello component"
+    good = hashlib.sha256(payload).hexdigest()
+
+    def fake_dl(urls, dest, progress, **_kw):
+        dest.write_bytes(payload)
+
+    monkeypatch.setattr(ra, "_download_resumable", fake_dl)
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+
+    out = ra.download_verified(["https://x/f.bin"], tmp_path / "f.bin", sha256=good)
+    assert out == tmp_path / "f.bin"
+    assert out.read_bytes() == payload
+
+    with pytest.raises(ra.ReleaseAssetError):
+        ra.download_verified(["https://x/f.bin"], tmp_path / "g.bin", sha256="0" * 64)

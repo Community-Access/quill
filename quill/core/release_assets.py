@@ -460,3 +460,60 @@ def fetch_file(
         return final
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+
+def download_verified(
+    urls: Sequence[str] | str,
+    dest: Path,
+    *,
+    sha256: str = "",
+    progress: ProgressCallback | None = None,
+    should_cancel: Callable[[], bool] | None = None,
+    label: str = "Downloading...",
+    retries: int = 4,
+    timeout: float = 60.0,
+) -> Path:
+    """Download a single file from *urls* (primary + mirrors) to *dest*, and --
+    when *sha256* is given -- verify it. The one hardened download path every
+    tool shares, for URLs that are NOT release-tag assets (an upstream vendor
+    zip, an installer .exe/.msi): retry/backoff, HTTP-Range resume, mirror
+    fallback, HTTPS-only, and atomic (stage in a temp dir, verify, then move
+    into place). Safe-Mode gated. Returns *dest*.
+
+    Pass ``sha256=""`` only for a source with no stable checksum (a moving
+    "latest" URL); pin a SHA wherever one exists.
+    """
+    if os.environ.get("QUILL_SAFE_MODE") == "1":
+        raise ReleaseAssetError("Downloading components is disabled in Safe Mode.")
+    url_list = [urls] if isinstance(urls, str) else list(urls)
+    dest = Path(dest)
+    tmp = Path(tempfile.mkdtemp(prefix="quill-dl-"))
+    try:
+        staged = tmp / (dest.name or "download.bin")
+        if progress is not None:
+            progress(0.0, label)
+        _download_resumable(
+            url_list,
+            staged,
+            progress,
+            retries=retries,
+            timeout=timeout,
+            should_cancel=should_cancel,
+            label=label,
+        )
+        if sha256:
+            actual = _sha256_file(staged)
+            if actual.lower() != sha256.lower():
+                raise ReleaseAssetError(
+                    f"Checksum mismatch for {dest.name} "
+                    f"(expected {sha256[:12]}..., got {actual[:12]}...)."
+                )
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        if dest.is_file():  # a caller may pre-create the target (e.g. mkstemp)
+            dest.unlink()
+        shutil.move(str(staged), str(dest))
+        if progress is not None:
+            progress(1.0, "Done.")
+        return dest
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)

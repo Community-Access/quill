@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 
 import pytest
@@ -41,41 +40,41 @@ def test_download_is_windows_only(monkeypatch) -> None:
     assert "Homebrew" in str(excinfo.value)
 
 
-def test_sha_mismatch_discards_the_file(tmp_path: Path, monkeypatch) -> None:
+def test_download_failure_raises_and_discards_the_file(monkeypatch) -> None:
+    # The shared download_verified enforces HTTPS + SHA-256; a failure there
+    # (mismatch, network) surfaces as a TesseractInstallError and the temp file
+    # is discarded.
+    from quill.core import release_assets
+
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
     monkeypatch.setattr(tesseract_install.sys, "platform", "win32")
 
-    def _fake_download(url, target, progress_fn, timeout_seconds):
-        Path(target).write_bytes(b"not the real installer")
+    def _boom(_urls, _dest, **_kwargs):
+        raise release_assets.ReleaseAssetError("Checksum mismatch for x.exe (...).")
 
-    monkeypatch.setattr(tesseract_install, "_download", _fake_download)
+    monkeypatch.setattr(release_assets, "download_verified", _boom)
     with pytest.raises(TesseractInstallError) as excinfo:
         download_tesseract_installer()
-    assert "integrity check" in str(excinfo.value)
+    assert "Checksum mismatch" in str(excinfo.value)
 
 
-def test_matching_sha_returns_the_installer_path(monkeypatch) -> None:
+def test_successful_download_returns_the_installer_path(monkeypatch) -> None:
+    from quill.core import release_assets
+
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
     monkeypatch.setattr(tesseract_install.sys, "platform", "win32")
     payload = b"pretend installer bytes"
-    digest = hashlib.sha256(payload).hexdigest()
-    monkeypatch.setattr(tesseract_install, "TESSERACT_DOWNLOAD_SHA256", digest)
 
-    def _fake_download(url, target, progress_fn, timeout_seconds):
-        Path(target).write_bytes(payload)
+    def _ok(_urls, dest, **_kwargs):
+        Path(dest).write_bytes(payload)
+        return Path(dest)
 
-    monkeypatch.setattr(tesseract_install, "_download", _fake_download)
+    monkeypatch.setattr(release_assets, "download_verified", _ok)
     installer = download_tesseract_installer()
     try:
         assert installer.read_bytes() == payload
     finally:
         installer.unlink(missing_ok=True)
-
-
-def test_non_https_url_is_refused(tmp_path: Path) -> None:
-    with pytest.raises(TesseractInstallError) as excinfo:
-        tesseract_install._download("http://example.com/x.exe", tmp_path / "x.exe", None, 5.0)
-    assert "HTTPS" in str(excinfo.value)
 
 
 def test_launch_refuses_missing_installer(tmp_path: Path) -> None:

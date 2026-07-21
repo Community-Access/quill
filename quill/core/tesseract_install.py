@@ -18,13 +18,10 @@ Windows-only. wx-free.
 
 from __future__ import annotations
 
-import hashlib
 import os
-import ssl
 import subprocess
 import sys
 import tempfile
-import urllib.request
 from collections.abc import Callable
 from pathlib import Path
 
@@ -77,12 +74,23 @@ def download_tesseract_installer(
             "On macOS install it with Homebrew (brew install tesseract); "
             "QUILL will find it on PATH."
         )
+    from quill.core import release_assets
+
     fd, raw = tempfile.mkstemp(prefix="quill_tesseract_", suffix=".exe")
     os.close(fd)
     target = Path(raw)
     try:
-        _download(TESSERACT_DOWNLOAD_URL, target, progress_fn, timeout_seconds)
-        _verify_sha256(target)
+        release_assets.download_verified(
+            TESSERACT_DOWNLOAD_URL,
+            target,
+            sha256=TESSERACT_DOWNLOAD_SHA256,
+            progress=progress_fn,
+            timeout=timeout_seconds,
+            label="Downloading the OCR engine...",
+        )
+    except release_assets.ReleaseAssetError as exc:
+        target.unlink(missing_ok=True)
+        raise TesseractInstallError(str(exc)) from exc
     except BaseException:
         target.unlink(missing_ok=True)
         raise
@@ -104,59 +112,6 @@ def launch_tesseract_installer(installer: Path) -> None:
         os.startfile(str(installer))  # noqa: S606 - explicit, user-consented launch
     except OSError as exc:
         raise TesseractInstallError(f"Could not open the installer: {exc}") from exc
-
-
-def _verify_sha256(path: Path) -> None:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    actual = digest.hexdigest()
-    if actual.lower() != TESSERACT_DOWNLOAD_SHA256.lower():
-        raise TesseractInstallError(
-            "The downloaded OCR engine failed its integrity check and was discarded.\n"
-            f"  expected: {TESSERACT_DOWNLOAD_SHA256}\n"
-            f"  got:      {actual}"
-        )
-
-
-def _download(
-    url: str,
-    target: Path,
-    progress_fn: ProgressCallback | None,
-    timeout_seconds: float,
-) -> None:
-    """Stream the installer over verified HTTPS.
-
-    GATE-9 / network-egress: the only outbound call in this module. Runs on an
-    explicit user "install local OCR engine" action, refuses non-HTTPS URLs,
-    and uses a verified TLS context.
-    """
-    if not url.lower().startswith("https://"):
-        raise TesseractInstallError("The OCR engine download must use a secure (HTTPS) address.")
-    context = ssl.create_default_context()
-    request = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
-    try:
-        with (
-            urllib.request.urlopen(  # noqa: S310 - HTTPS enforced above
-                request, timeout=timeout_seconds, context=context
-            ) as response,
-            target.open("wb") as out,
-        ):
-            total = int(response.headers.get("Content-Length", 0) or 0)
-            read = 0
-            while True:
-                chunk = response.read(1 << 16)
-                if not chunk:
-                    break
-                out.write(chunk)
-                read += len(chunk)
-                if progress_fn is not None and total > 0:
-                    progress_fn(min(read / total, 0.95), "Downloading the local OCR engine...")
-    except TesseractInstallError:
-        raise
-    except Exception as exc:  # noqa: BLE001
-        raise TesseractInstallError(f"Could not download the OCR engine: {exc}") from exc
 
 
 def tesseract_version_installed(executable: Path) -> str:
