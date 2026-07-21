@@ -210,6 +210,18 @@ class RadioAppFrame(
         self._reload_favorites_tree()
         self._favorites_tree.SetFocus()
 
+    def _focus_initial_control(self) -> None:
+        """Land keyboard focus on the favorites tree after the window is shown so
+        the menu bar is reachable straight away (#1193): a pre-show SetFocus does
+        not stick, which left the window opening with no control focused -- the
+        first Alt then opened the window's system menu instead of the app menu."""
+        tree = getattr(self, "_favorites_tree", None)
+        if tree is not None:
+            try:
+                tree.SetFocus()
+            except Exception:  # noqa: BLE001 - initial focus is best-effort
+                pass
+
     # -- favorites tree ---------------------------------------------------------
 
     def _reload_favorites_tree(self, keep_key: str | None = None) -> None:
@@ -1546,6 +1558,8 @@ def main() -> int:
     frame = RadioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     frame.frame.Show()
+    frame.frame.Raise()
+    wx.CallAfter(frame._focus_initial_control)  # #1193: menu bar reachable on launch
     try:
         app.MainLoop()
     finally:
