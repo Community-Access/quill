@@ -326,3 +326,97 @@ def _extract_piper_from_zip(zip_path: Path, dest_dir: Path) -> Path:
     if piper_path is None or not piper_path.exists():
         raise PiperInstallError("piper.exe was not found in the downloaded archive.")
     return piper_path
+
+
+def download_piper_voice(
+    voice_id: str,
+    dest_dir: Path,
+    *,
+    progress: ProgressCallback | None = None,
+    should_cancel: Callable[[], bool] | None = None,
+) -> None:
+    """Fetch a Piper voice (its ``.onnx`` + ``.onnx.json``) into ``dest_dir``.
+
+    Prefers QUILL's own SHA-verified ``assets-v1`` mirror -- no Hugging Face -- and
+    for a voice not yet mirrored falls back to the upstream rhasspy/piper-voices
+    files over verified HTTPS. Raises :class:`PiperInstallError` on failure or
+    cancellation. One shared implementation for the read-aloud UI (main window)
+    and Audio Studio, so the voice download lives in one place.
+    """
+    from quill.core.voice_catalog import piper_voice_download_urls
+
+    urls = piper_voice_download_urls(voice_id)
+    if urls is None:
+        raise PiperInstallError(f"Cannot determine the download URL for voice: {voice_id}")
+
+    # Mirror first: a SHA-verified zip of the two voice files, no Hugging Face.
+    from quill.core.speech import model_mirrors
+
+    mirror = model_mirrors.mirror_for("piper", voice_id)
+    if mirror is not None:
+        from quill.core.release_assets import ReleaseAssetError
+
+        try:
+            model_mirrors.fetch_mirror_archive(
+                mirror,
+                dest_dir,
+                progress=progress,
+                label=f"Downloading Piper voice {voice_id}...",
+            )
+            return
+        except ReleaseAssetError:
+            pass  # not uploaded / transient -- fall back to the upstream files
+
+    onnx_url, json_url = urls
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    _download_piper_voice_files(
+        [
+            (onnx_url, dest_dir / f"{voice_id}.onnx"),
+            (json_url, dest_dir / f"{voice_id}.onnx.json"),
+        ],
+        progress,
+        should_cancel,
+    )
+
+
+def _download_piper_voice_files(
+    pairs: list[tuple[str, Path]],
+    progress: ProgressCallback | None,
+    should_cancel: Callable[[], bool] | None,
+) -> None:
+    """Stream the upstream Piper voice files over verified HTTPS.
+
+    GATE-9 / network-egress: the Piper-voice fallback fetch (used only for a voice
+    that is not on QUILL's mirror). Runs only on an explicit user "download voice"
+    action, refuses non-HTTPS URLs, and uses a verified TLS context.
+    """
+    context = ssl.create_default_context()
+    count = len(pairs)
+    for index, (url, path) in enumerate(pairs):
+        if not url.lower().startswith("https://"):
+            raise PiperInstallError("The Piper voice download must use a secure (HTTPS) address.")
+        if should_cancel is not None and should_cancel():
+            raise PiperInstallError("Download cancelled.")
+        request = urllib.request.Request(url, headers={"User-Agent": "QUILL"})
+        try:
+            with urllib.request.urlopen(  # noqa: S310 - HTTPS enforced above
+                request, timeout=120, context=context
+            ) as resp:
+                total = int(resp.headers.get("Content-Length", 0) or 0)
+                got = 0
+                chunks: list[bytes] = []
+                while True:
+                    if should_cancel is not None and should_cancel():
+                        raise PiperInstallError("Download cancelled.")
+                    chunk = resp.read(1 << 16)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                    got += len(chunk)
+                    if progress is not None and total:
+                        progress((index + got / total) / count, f"Downloading {path.name}...")
+        except PiperInstallError:
+            raise
+        except Exception as exc:  # noqa: BLE001 - surface a clean message
+            raise PiperInstallError(f"Could not download the Piper voice: {exc}") from exc
+        path.write_bytes(b"".join(chunks))

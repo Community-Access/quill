@@ -104,6 +104,203 @@ _MIRRORS: dict[str, MirrorAsset] = {
         "a3b581e2c385bcebd11f27ae388e52d72e6a48a4a27fc5b22132149581c28436",
         archive_member="model.bin",
     ),
+    # Piper voices (rhasspy/piper-voices), re-published per-voice as a zip of
+    # the .onnx + .onnx.json. All 39 catalog voices are mirrored -> no Hugging Face.
+    "piper:en_GB-alan-low": MirrorAsset(
+        "piper-voice-en_GB-alan-low.zip",
+        "444a5d52877f83788f05ab8fa3c2f072ebac85798d2dca3b1623e890cdb0266e",
+        archive_member="en_GB-alan-low.onnx",
+    ),
+    "piper:en_GB-alan-medium": MirrorAsset(
+        "piper-voice-en_GB-alan-medium.zip",
+        "080c2cd94744c8788396ebd5c2433bb0bb3eba8db910d476adc1991e9969652f",
+        archive_member="en_GB-alan-medium.onnx",
+    ),
+    "piper:en_GB-alba-medium": MirrorAsset(
+        "piper-voice-en_GB-alba-medium.zip",
+        "aa8faa7e3314d885c7f24539fab1b4df2be03607089d64100d171d0bcbd2c311",
+        archive_member="en_GB-alba-medium.onnx",
+    ),
+    "piper:en_GB-aru-medium": MirrorAsset(
+        "piper-voice-en_GB-aru-medium.zip",
+        "9b8bde03f906d34d58ada4ce765afcdb057ba1cc5c776b96b9279c03a73dcbe8",
+        archive_member="en_GB-aru-medium.onnx",
+    ),
+    "piper:en_GB-cori-high": MirrorAsset(
+        "piper-voice-en_GB-cori-high.zip",
+        "82df6845776fc8493097ff4b36fb02801c7bd57bacb44a67285a68e959cdec1b",
+        archive_member="en_GB-cori-high.onnx",
+    ),
+    "piper:en_GB-cori-medium": MirrorAsset(
+        "piper-voice-en_GB-cori-medium.zip",
+        "e804e7720914817496a5e9bdd6f43b4ef65694cc1ff498e19f55d459ed07a506",
+        archive_member="en_GB-cori-medium.onnx",
+    ),
+    "piper:en_GB-jenny_dioco-medium": MirrorAsset(
+        "piper-voice-en_GB-jenny_dioco-medium.zip",
+        "258637a244a269c9a0c71aa7a6a3c973b29b3b5c2f697a8d16d60cec19ee6551",
+        archive_member="en_GB-jenny_dioco-medium.onnx",
+    ),
+    "piper:en_GB-northern_english_male-medium": MirrorAsset(
+        "piper-voice-en_GB-northern_english_male-medium.zip",
+        "f08d423dcbee5e029069facde29177cf9deb7edd9499d086c5abbad21d5e43ab",
+        archive_member="en_GB-northern_english_male-medium.onnx",
+    ),
+    "piper:en_GB-semaine-medium": MirrorAsset(
+        "piper-voice-en_GB-semaine-medium.zip",
+        "be26f5acac8ba46eb818fb2a09adb0ff9e602a0bf92114f0ee8603652838f740",
+        archive_member="en_GB-semaine-medium.onnx",
+    ),
+    "piper:en_GB-southern_english_female-low": MirrorAsset(
+        "piper-voice-en_GB-southern_english_female-low.zip",
+        "4bd657ff9293ff3c24fe703c6f94fdf6bcb2bb076f6fe0d24d42561233b5c89a",
+        archive_member="en_GB-southern_english_female-low.onnx",
+    ),
+    "piper:en_GB-vctk-medium": MirrorAsset(
+        "piper-voice-en_GB-vctk-medium.zip",
+        "0decd8b48d3055c6eba82421e4fb89dfdb968fa64e9de2b2e99951b48cdda4d7",
+        archive_member="en_GB-vctk-medium.onnx",
+    ),
+    "piper:en_US-amy-low": MirrorAsset(
+        "piper-voice-en_US-amy-low.zip",
+        "5178c8246e9e5e592f41feb9c122ffe428ab00fcbcdd38c7d445f37fad60ef38",
+        archive_member="en_US-amy-low.onnx",
+    ),
+    "piper:en_US-amy-medium": MirrorAsset(
+        "piper-voice-en_US-amy-medium.zip",
+        "d35331aac5dfc1c641e71fe2e060f4350e430058587ee7ea82eea8a155e6cdbb",
+        archive_member="en_US-amy-medium.onnx",
+    ),
+    "piper:en_US-arctic-medium": MirrorAsset(
+        "piper-voice-en_US-arctic-medium.zip",
+        "05f8d7d5a7eb42b8f145d3a9bbbd1b3aa0b8ef61187fd3b144fe2c2b739cb38b",
+        archive_member="en_US-arctic-medium.onnx",
+    ),
+    "piper:en_US-bryce-medium": MirrorAsset(
+        "piper-voice-en_US-bryce-medium.zip",
+        "3a4cd2e48b2eebc87c51d85ba520f3de3d27670c7dbfb8264c6063ba110dfd12",
+        archive_member="en_US-bryce-medium.onnx",
+    ),
+    "piper:en_US-danny-low": MirrorAsset(
+        "piper-voice-en_US-danny-low.zip",
+        "e70fb50a85ae0e79fb77cfa192c9c97c9dd94f50ef5b249d829e626a81726a56",
+        archive_member="en_US-danny-low.onnx",
+    ),
+    "piper:en_US-hfc_female-medium": MirrorAsset(
+        "piper-voice-en_US-hfc_female-medium.zip",
+        "a8547422e841e9c0eddc489b12511018c247a4b1a5672d37cb233f8ca46da846",
+        archive_member="en_US-hfc_female-medium.onnx",
+    ),
+    "piper:en_US-hfc_male-medium": MirrorAsset(
+        "piper-voice-en_US-hfc_male-medium.zip",
+        "76fbc09e1bd7c33970919d2f94af9952fbdf5f4148eda9603a7dcbc812bdd59a",
+        archive_member="en_US-hfc_male-medium.onnx",
+    ),
+    "piper:en_US-joe-medium": MirrorAsset(
+        "piper-voice-en_US-joe-medium.zip",
+        "3f7446384a99c0aef7c0e217550b474068c7cfc1dc07202c13fe45ecfbc9bf5e",
+        archive_member="en_US-joe-medium.onnx",
+    ),
+    "piper:en_US-john-medium": MirrorAsset(
+        "piper-voice-en_US-john-medium.zip",
+        "24c436dfe927910627dd2b99163c4b3fa76fae2cc21445c206c7633ce1e8188c",
+        archive_member="en_US-john-medium.onnx",
+    ),
+    "piper:en_US-kathleen-low": MirrorAsset(
+        "piper-voice-en_US-kathleen-low.zip",
+        "08a70469cfb7a0696af839a53bdc5a30b35fb649c19fac0ce397f22a80dd0525",
+        archive_member="en_US-kathleen-low.onnx",
+    ),
+    "piper:en_US-kristin-medium": MirrorAsset(
+        "piper-voice-en_US-kristin-medium.zip",
+        "f4cd308996326f9a844fd31d5df475d0145c43781ec9b2252eb24338af150742",
+        archive_member="en_US-kristin-medium.onnx",
+    ),
+    "piper:en_US-kusal-medium": MirrorAsset(
+        "piper-voice-en_US-kusal-medium.zip",
+        "3de5ffe5b36f21c6bf0875a919a8154b0cab3e2346fd8157f378e2e948295ce9",
+        archive_member="en_US-kusal-medium.onnx",
+    ),
+    "piper:en_US-l2arctic-medium": MirrorAsset(
+        "piper-voice-en_US-l2arctic-medium.zip",
+        "62e45eba25736d2d6edbb3142c9cd76587a6ebbf473103142ae47f603b825546",
+        archive_member="en_US-l2arctic-medium.onnx",
+    ),
+    "piper:en_US-lessac-high": MirrorAsset(
+        "piper-voice-en_US-lessac-high.zip",
+        "3f4fb60bb93ea1a5c0f3e6c3a00c9a0c68044afa6fd13d1f41946b3b7f3fabc1",
+        archive_member="en_US-lessac-high.onnx",
+    ),
+    "piper:en_US-lessac-low": MirrorAsset(
+        "piper-voice-en_US-lessac-low.zip",
+        "bb7b5cf83dd535423b4e48e2c8dd7e981373ec0eeaaf0713d216e9e2ef057501",
+        archive_member="en_US-lessac-low.onnx",
+    ),
+    "piper:en_US-lessac-medium": MirrorAsset(
+        "piper-voice-en_US-lessac-medium.zip",
+        "77f848d5a665551ca79ae7a37d29cde289e59dcdbd854169209ea97afc3d91af",
+        archive_member="en_US-lessac-medium.onnx",
+    ),
+    "piper:en_US-libritts-high": MirrorAsset(
+        "piper-voice-en_US-libritts-high.zip",
+        "400572c6cfa0631e6d0e4631b0b8241e4e714b6271b8069d99b006b87b5315df",
+        archive_member="en_US-libritts-high.onnx",
+    ),
+    "piper:en_US-libritts_r-medium": MirrorAsset(
+        "piper-voice-en_US-libritts_r-medium.zip",
+        "0c1226ec4cb80b079020966224798d8093f81245a79ec8b8a52bc93d3e6ddf68",
+        archive_member="en_US-libritts_r-medium.onnx",
+    ),
+    "piper:en_US-ljspeech-high": MirrorAsset(
+        "piper-voice-en_US-ljspeech-high.zip",
+        "d76c4635d175b92b8cdcad8ed4e6bb7731ecfd7e778523e340147ce6bb031b00",
+        archive_member="en_US-ljspeech-high.onnx",
+    ),
+    "piper:en_US-ljspeech-medium": MirrorAsset(
+        "piper-voice-en_US-ljspeech-medium.zip",
+        "53bcaeaf124725a8e166c6cd9111e75836a0845b7e170e0d80f7a27e54319953",
+        archive_member="en_US-ljspeech-medium.onnx",
+    ),
+    "piper:en_US-norman-medium": MirrorAsset(
+        "piper-voice-en_US-norman-medium.zip",
+        "3d44a5fbb2b12d92816113e8cfbf4e558adeb21456af6bec121f6c37bb49c1f4",
+        archive_member="en_US-norman-medium.onnx",
+    ),
+    "piper:en_US-reza_ibrahim-medium": MirrorAsset(
+        "piper-voice-en_US-reza_ibrahim-medium.zip",
+        "d412315b4e03b55e4c77c3d2cdb67153fabf7d0d53e40ba79b8431b6b084bb1f",
+        archive_member="en_US-reza_ibrahim-medium.onnx",
+    ),
+    "piper:en_US-ryan-high": MirrorAsset(
+        "piper-voice-en_US-ryan-high.zip",
+        "2b7938e73de31fee1c2ece8df147d93c69b8c88869830b9f3de4882ba4883c7d",
+        archive_member="en_US-ryan-high.onnx",
+    ),
+    "piper:en_US-ryan-low": MirrorAsset(
+        "piper-voice-en_US-ryan-low.zip",
+        "09fa6c668ae3a538cea28e917d094fb2969e693861c8430338d58c2aa1f39589",
+        archive_member="en_US-ryan-low.onnx",
+    ),
+    "piper:en_US-ryan-medium": MirrorAsset(
+        "piper-voice-en_US-ryan-medium.zip",
+        "b4fffce6147c48edeb85a5f54937e7f13a3e8b9420b8bfb47390c63110370fa5",
+        archive_member="en_US-ryan-medium.onnx",
+    ),
+    "piper:en_US-sam-medium": MirrorAsset(
+        "piper-voice-en_US-sam-medium.zip",
+        "1de7932d65b2a66e5446e5b642c7cebd52644147966439a0b83b21276adc152e",
+        archive_member="en_US-sam-medium.onnx",
+    ),
+    "piper:it_IT-paola-medium": MirrorAsset(
+        "piper-voice-it_IT-paola-medium.zip",
+        "ba7be7d8c0849ada891b4afae7de90ece691e2eb0be9808a600f321f8a85f901",
+        archive_member="it_IT-paola-medium.onnx",
+    ),
+    "piper:it_IT-riccardo-x_low": MirrorAsset(
+        "piper-voice-it_IT-riccardo-x_low.zip",
+        "ddc3667e56465b2c6b5d7e8067ace95ce97190d3774f6e2b3633ad9e207bb8a0",
+        archive_member="it_IT-riccardo-x_low.onnx",
+    ),
 }
 
 

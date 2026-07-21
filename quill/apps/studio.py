@@ -1821,8 +1821,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
     def _download_piper_voice(self, voice_id: str) -> None:
         """Download a Piper ONNX voice model in the background."""
-        import urllib.request as _ureq
-
         from quill.core.read_aloud import default_piper_model_dir
         from quill.core.voice_catalog import piper_voice_download_urls
         from quill.ui.ai_transcribe_dialog import AIProgressDialog
@@ -1836,7 +1834,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
                 wx.ICON_WARNING | wx.OK,
             )
             return
-        onnx_url, json_url = urls
         onnx_path = piper_dir / f"{voice_id}.onnx"
         json_path = piper_dir / f"{voice_id}.onnx.json"
         if onnx_path.exists() and json_path.exists():
@@ -1862,41 +1859,19 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._announce(f"Downloading Piper voice {voice_id}.")
 
         def _run() -> None:
+            from quill.core.speech.piper_install import download_piper_voice
+
             try:
-                pairs = [(onnx_url, onnx_path), (json_url, json_path)]
-                for i, (url, path) in enumerate(pairs):
-                    if cancel.is_set():
-                        raise RuntimeError("Cancelled")
-                    wx.CallAfter(
-                        progress.set_progress,
-                        int(i / len(pairs) * 100),
-                        f"Downloading {path.name}...",
-                    )
-                    with _ureq.urlopen(url, timeout=120) as resp:  # noqa: S310 - pinned catalog URL
-                        total = int(resp.headers.get("Content-Length", 0))
-                        got = 0
-                        chunks: list[bytes] = []
-                        while True:
-                            if cancel.is_set():
-                                raise RuntimeError("Cancelled")
-                            chunk = resp.read(65536)
-                            if not chunk:
-                                break
-                            chunks.append(chunk)
-                            got += len(chunk)
-                            if total:
-                                pct = int((i + got / total) / len(pairs) * 100)
-                                wx.CallAfter(
-                                    progress.set_progress, pct, f"Downloading {path.name}..."
-                                )
-                    temp = path.with_suffix(path.suffix + ".part")
-                    temp.write_bytes(b"".join(chunks))
-                    os.replace(temp, path)
+                # Mirror-first (assets-v1, SHA-verified), upstream files as fallback.
+                download_piper_voice(
+                    voice_id,
+                    piper_dir,
+                    progress=lambda fr, msg: wx.CallAfter(
+                        progress.set_progress, int(fr * 100), msg
+                    ),
+                    should_cancel=cancel.is_set,
+                )
             except Exception as error:  # noqa: BLE001 - reported on the UI thread
-                for partial in (onnx_path, json_path):
-                    part = partial.with_suffix(partial.suffix + ".part")
-                    if part.exists():
-                        part.unlink(missing_ok=True)
                 message = "Download cancelled." if cancel.is_set() else f"Download failed: {error}"
                 wx.CallAfter(progress.close)
                 wx.CallAfter(self._set_status, message)

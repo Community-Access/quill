@@ -12499,8 +12499,6 @@ class MainFrame(
 
     def _download_piper_voice(self, voice_id: str) -> None:
         """Download a Piper ONNX voice model in the background."""
-        import urllib.request as _ureq
-
         from quill.core.voice_catalog import piper_voice_download_urls
         from quill.ui.ai_transcribe_dialog import AIProgressDialog
 
@@ -12514,7 +12512,6 @@ class MainFrame(
                 wx.ICON_WARNING | wx.OK,
             )
             return
-        onnx_url, json_url = urls
         onnx_path = piper_dir / f"{voice_id}.onnx"
         json_path = piper_dir / f"{voice_id}.onnx.json"
         if onnx_path.exists() and json_path.exists():
@@ -12541,43 +12538,19 @@ class MainFrame(
         progress.show()
         self._announce(f"Downloading Piper voice {voice_id}.")
 
-        def _run(
-            _ou: str = onnx_url,
-            _ju: str = json_url,
-            _op: Path = onnx_path,
-            _jp: Path = json_path,
-            _vid: str = voice_id,
-        ) -> None:
+        def _run(_vid: str = voice_id) -> None:
+            from quill.core.speech.piper_install import download_piper_voice
+
             try:
-                pairs = [(_ou, _op), (_ju, _jp)]
-                for i, (url, path) in enumerate(pairs):
-                    if cancel.is_set():
-                        raise RuntimeError("Cancelled")
-                    wx.CallAfter(
-                        progress.set_progress,
-                        int(i / len(pairs) * 100),
-                        f"Downloading {path.name}...",
-                    )
-                    with _ureq.urlopen(url, timeout=120) as resp:  # noqa: S310
-                        total = int(resp.headers.get("Content-Length", 0))
-                        got = 0
-                        chunks: list[bytes] = []
-                        while True:
-                            if cancel.is_set():
-                                raise RuntimeError("Cancelled")
-                            chunk = resp.read(65536)
-                            if not chunk:
-                                break
-                            chunks.append(chunk)
-                            got += len(chunk)
-                            if total:
-                                pct = int((i + got / total) / len(pairs) * 100)
-                                wx.CallAfter(
-                                    progress.set_progress,
-                                    pct,
-                                    f"Downloading {path.name}...",
-                                )
-                    path.write_bytes(b"".join(chunks))
+                # Mirror-first (assets-v1, SHA-verified), upstream files as fallback.
+                download_piper_voice(
+                    _vid,
+                    piper_dir,
+                    progress=lambda fr, msg: wx.CallAfter(
+                        progress.set_progress, int(fr * 100), msg
+                    ),
+                    should_cancel=cancel.is_set,
+                )
             except Exception as exc:  # noqa: BLE001
                 wx.CallAfter(progress.close)
                 if cancel.is_set():

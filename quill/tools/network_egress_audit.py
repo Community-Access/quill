@@ -363,6 +363,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "use, visible progress, blocked in Safe Mode. Supplements the installer "
         "bundling; capability never depends on it."
     ),
+    "core/speech/piper_install.py::_download_piper_voice_files": (
+        "Fallback fetch of a Piper voice (.onnx + .onnx.json) from the upstream "
+        "rhasspy/piper-voices files over verified HTTPS, used only when the voice "
+        "is not on QUILL's own assets-v1 mirror (the mirror, SHA-verified via "
+        "release_assets, is preferred). Runs only on an explicit user 'download "
+        "voice' action; refuses non-HTTPS; verified TLS context. Shared by the "
+        "read-aloud UI and Audio Studio so the egress lives in one place."
+    ),
     "core/speech/piper_install.py::_download_zip": (
         "User-initiated optional Piper TTS engine download (#669) from the pinned "
         "rhasspy/piper GitHub release (piper_windows_amd64.zip). HTTPS enforced "
