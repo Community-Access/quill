@@ -205,21 +205,97 @@ def test_blockquote_renders_as_blockquote_in_html() -> None:
     assert "<blockquote>quote one<br>quote two</blockquote>" in html
 
 
-def test_gfm_table_to_docx_is_pipe_text_not_a_real_word_table(tmp_path: Path) -> None:
-    # Documented limitation: a Markdown/HTML table becomes literal pipe-text
-    # paragraphs in Word, not a real Word table object (the content is visible
-    # and navigable, but not an editable Word table). Word tables -> Markdown/
-    # HTML *do* preserve the table.
+def test_gfm_table_to_docx_becomes_a_real_word_table(tmp_path: Path) -> None:
+    # A Markdown/HTML table now becomes a real, editable Word table object --
+    # not literal pipe-text paragraphs.
     docx = pytest.importorskip("docx")
     docx_writer = pytest.importorskip("quill.io.docx_writer")
     if not docx_writer.python_docx_available():
         pytest.skip("python-docx not installed")
-    md = "| A | B |\n| --- | --- |\n| 1 | 2 |"
+    md = "| Name | Qty |\n| --- | --- |\n| Apples | 3 |\n| Pears | 12 |"
     path = tmp_path / "t.docx"
     path.write_bytes(docx_writer.rich_to_docx_bytes(markdown_to_rich(md)))
     doc = docx.Document(str(path))
-    assert len(doc.tables) == 0  # no real Word table
-    assert [p.text for p in doc.paragraphs] == ["| A | B |", "| --- | --- |", "| 1 | 2 |"]
+    assert len(doc.tables) == 1
+    table = doc.tables[0]
+    assert (len(table.rows), len(table.columns)) == (3, 2)  # header + 2 body rows
+    grid = [[cell.text for cell in row.cells] for row in table.rows]
+    assert grid == [["Name", "Qty"], ["Apples", "3"], ["Pears", "12"]]
+    # No stray pipe-text paragraphs left behind.
+    assert not any("|" in p.text for p in doc.paragraphs)
+
+
+def test_gfm_table_to_docx_marks_a_repeating_header_row(tmp_path: Path) -> None:
+    # The header row is a real repeating table header (<w:tblHeader>) so screen
+    # readers announce column headers and Word repeats it across page breaks.
+    pytest.importorskip("docx")
+    docx_writer = pytest.importorskip("quill.io.docx_writer")
+    if not docx_writer.python_docx_available():
+        pytest.skip("python-docx not installed")
+    import docx as _docx
+    from docx.oxml.ns import qn
+
+    md = "| H1 | H2 |\n| --- | --- |\n| a | b |"
+    path = tmp_path / "hdr.docx"
+    path.write_bytes(docx_writer.rich_to_docx_bytes(markdown_to_rich(md)))
+    table = _docx.Document(str(path)).tables[0]
+    header_tr = table.rows[0]._tr
+    assert header_tr.find(qn("w:trPr")).find(qn("w:tblHeader")) is not None
+    # Header cells are bold.
+    assert table.rows[0].cells[0].paragraphs[0].runs[0].bold is True
+
+
+def test_table_round_trips_markdown_to_word_and_back(tmp_path: Path) -> None:
+    # Full loop: Markdown table -> real Word table -> read back -> Markdown table.
+    pytest.importorskip("docx")
+    docx_writer = pytest.importorskip("quill.io.docx_writer")
+    if not docx_writer.python_docx_available():
+        pytest.skip("python-docx not installed")
+    from quill.io.docx_reader import read_docx_rich
+
+    md = "| Fruit | Count |\n| --- | --- |\n| Apples | 3 |\n| Pears | 12 |"
+    path = tmp_path / "rt.docx"
+    path.write_bytes(docx_writer.rich_to_docx_bytes(markdown_to_rich(md)))
+    assert rich_to_markdown(read_docx_rich(path)) == md
+
+
+def test_word_table_survives_save_as_markdown_and_html() -> None:
+    # A Word table (read as GFM paragraphs) exports as a native Markdown table
+    # and a native HTML <table> -- the "Word table -> Markdown/HTML" direction.
+    table_doc = RichDocument(
+        paragraphs=[
+            RichParagraph(spans=[InlineSpan(text="| City | Pop |")]),
+            RichParagraph(spans=[InlineSpan(text="| --- | --- |")]),
+            RichParagraph(spans=[InlineSpan(text="| Reno | 250k |")]),
+        ]
+    )
+    md = rich_to_markdown(table_doc)
+    assert md == "| City | Pop |\n| --- | --- |\n| Reno | 250k |"
+    html = markdown_to_html(md, "t")
+    assert "<table" in html and "<th>City</th>" in html and "<td>Reno</td>" in html
+
+
+def test_table_with_surrounding_paragraphs_and_two_tables(tmp_path: Path) -> None:
+    # Tables detected in a mixed document, and two adjacent tables stay distinct.
+    docx = pytest.importorskip("docx")
+    docx_writer = pytest.importorskip("quill.io.docx_writer")
+    if not docx_writer.python_docx_available():
+        pytest.skip("python-docx not installed")
+    md = "\n".join([
+        "# Title",
+        "| A | B |",
+        "| --- | --- |",
+        "| 1 | 2 |",
+        "| C | D |",
+        "| --- | --- |",
+        "| 3 | 4 |",
+    ])
+    path = tmp_path / "two.docx"
+    path.write_bytes(docx_writer.rich_to_docx_bytes(markdown_to_rich(md)))
+    doc = docx.Document(str(path))
+    assert len(doc.tables) == 2
+    assert [[c.text for c in r.cells] for r in doc.tables[0].rows] == [["A", "B"], ["1", "2"]]
+    assert [[c.text for c in r.cells] for r in doc.tables[1].rows] == [["C", "D"], ["3", "4"]]
 
 
 def test_markdown_source_to_html_is_native() -> None:

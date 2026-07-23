@@ -15,6 +15,7 @@ back to the Pandoc path when it is not, so docx export never hard-fails.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -120,10 +121,8 @@ def rich_to_docx(document: RichDocument) -> Any:
     }
 
     out = docx.Document()
-    for paragraph in document.paragraphs:
-        if paragraph.style == "pagebreak":
-            out.add_page_break()
-            continue
+
+    def add_paragraph(paragraph: RichParagraph) -> None:
         para = out.add_paragraph()
         style = _paragraph_style(paragraph)
         if style is not None:
@@ -187,7 +186,130 @@ def rich_to_docx(document: RichDocument) -> Any:
                     run.font.highlight_color = getattr(WD_COLOR_INDEX, name)
             if span.href and span_runs:
                 _wrap_runs_in_hyperlink(para, span.href, span_runs)
+
+    paras = document.paragraphs
+    index = 0
+    total = len(paras)
+    while index < total:
+        block = _table_block_length(paras, index)
+        if block:
+            _emit_table(out, paras[index : index + block])
+            index += block
+            # Two adjacent tables would merge into one in Word; separate them.
+            if index < total and _table_block_length(paras, index):
+                out.add_paragraph()
+            continue
+        paragraph = paras[index]
+        index += 1
+        if paragraph.style == "pagebreak":
+            out.add_page_break()
+            continue
+        add_paragraph(paragraph)
     return out
+
+
+_SEPARATOR_CELL_RE = re.compile(r"^:?-+:?$")
+
+
+def _split_table_cells(line: str) -> list[str]:
+    """Split a GFM table row (``| a | b |``) into unescaped cell strings.
+
+    Mirrors :func:`quill.io.docx_reader._cell_text`'s escaping: cells escape a
+    literal pipe as ``\\|`` and a backslash as ``\\\\``, so we split on pipes not
+    preceded by a backslash and then unescape.
+    """
+    inner = line.strip()
+    if inner.startswith("|"):
+        inner = inner[1:]
+    if inner.endswith("|"):
+        inner = inner[:-1]
+    cells = re.split(r"(?<!\\)\|", inner)
+    return [c.strip().replace("\\|", "|").replace("\\\\", "\\") for c in cells]
+
+
+def _is_plain_body(paragraph: RichParagraph) -> bool:
+    """A default body paragraph (no heading/list/pagebreak style), the only kind
+    a GFM table row is ever represented as."""
+    return paragraph.style in ("", "paragraph", None)
+
+
+def _is_table_row(text: str) -> bool:
+    stripped = text.strip()
+    return stripped.startswith("|") and stripped.endswith("|") and len(stripped) >= 2
+
+
+def _is_separator_row(text: str) -> bool:
+    if not _is_table_row(text):
+        return False
+    cells = _split_table_cells(text)
+    return bool(cells) and all(_SEPARATOR_CELL_RE.match(c) for c in cells)
+
+
+def _table_block_length(paras: list[RichParagraph], start: int) -> int:
+    """Number of paragraphs forming a GFM table starting at ``start`` (0 if none).
+
+    A table is a header row, a ``---`` separator row, then zero or more body
+    rows -- exactly the shape :func:`docx_reader._table_to_rich_paragraphs`
+    emits and that ``markdown_to_rich`` produces from a Markdown/HTML table.
+    """
+    if start + 1 >= len(paras):
+        return 0
+    if not _is_plain_body(paras[start]) or not _is_table_row(paras[start].text()):
+        return 0
+    if not _is_separator_row(paras[start + 1].text()):
+        return 0
+    length = 2
+    while start + length < len(paras):
+        row = paras[start + length]
+        if not _is_plain_body(row) or not _is_table_row(row.text()):
+            break
+        if _is_separator_row(row.text()):
+            break
+        # A body row that is itself immediately followed by a separator is the
+        # header of the *next* table -- stop so the tables stay distinct.
+        following = paras[start + length + 1] if start + length + 1 < len(paras) else None
+        if following is not None and _is_separator_row(following.text()):
+            break
+        length += 1
+    return length
+
+
+def _emit_table(out: Any, block: list[RichParagraph]) -> None:
+    """Emit ``block`` (header, separator, body rows) as a real Word table.
+
+    Reconstructs an editable ``w:tbl`` -- with a bold, repeated header row
+    marked ``<w:tblHeader>`` so assistive technology announces column headers --
+    instead of leaving the Markdown pipe-text as literal paragraphs.
+    """
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+
+    header = _split_table_cells(block[0].text())
+    body = [_split_table_cells(p.text()) for p in block[2:]]
+    columns = max([len(header)] + [len(r) for r in body] + [1])
+
+    table = out.add_table(rows=1 + len(body), cols=columns)
+    try:
+        table.style = "Table Grid"
+    except KeyError:  # pragma: no cover - template without the built-in style
+        pass
+
+    def _fill(cells: Any, values: list[str], *, bold: bool) -> None:
+        for col, value in enumerate(values[:columns]):
+            paragraph = cells[col].paragraphs[0]
+            run = paragraph.add_run(value)
+            run.bold = bold or None
+
+    header_row = table.rows[0]
+    _fill(header_row.cells, header, bold=True)
+    # Mark the first row as a repeating header (accessibility + long tables).
+    trPr = header_row._tr.get_or_add_trPr()
+    tbl_header = OxmlElement("w:tblHeader")
+    tbl_header.set(qn("w:val"), "true")
+    trPr.append(tbl_header)
+
+    for offset, values in enumerate(body, start=1):
+        _fill(table.rows[offset].cells, values, bold=False)
 
 
 def _wrap_runs_in_hyperlink(paragraph: Any, url: str, runs: list) -> None:

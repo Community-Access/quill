@@ -1688,7 +1688,7 @@ canonical-Markdown hub, so preservation is per-feature, not per-pair.
 <td>Tables</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
-<td style="text-align: center;">◑³</td>
+<td style="text-align: center;">✅</td>
 <td style="text-align: center;">◑³</td>
 <td style="text-align: center;">✕</td>
 </tr>
@@ -1724,10 +1724,16 @@ canonical-Markdown hub, so preservation is per-feature, not per-pair.
 HTML/Word/RTF export.</li>
 <li>Markdown-native and native in HTML; literal markers in Word/RTF (the
 RichDocument model has no blockquote/code/hr structure).</li>
-<li>Word tables <em>read</em> → GFM tables
-(<code>_table_to_rich_paragraphs</code>); Markdown/HTML tables
-<em>written to</em> Word are pipe-text paragraphs, not native
-<code>w:tbl</code> objects.</li>
+<li>Tables round-trip as real tables across Markdown, HTML, and Word:
+Word tables <em>read</em> → GFM tables
+(<code>_table_to_rich_paragraphs</code>), and GFM-table paragraphs
+<em>written to</em> Word are reconstructed into native
+<code>w:tbl</code> objects
+(<code>_table_block_length</code>/<code>_emit_table</code> in
+<code>docx_writer</code>), with the header row bold and marked
+<code>&lt;w:tblHeader&gt;</code> (repeating header,
+screen-reader-announced). RTF remains the exception — a table written to
+RTF is pipe-text, not a native RTF table.</li>
 <li>Image references round-trip in Markdown and render as
 <code>&lt;img&gt;</code> in HTML; images are not embedded into Word, and
 embedded Word images are not read.</li>
@@ -1743,10 +1749,18 @@ through <code>markdown_to_rich</code>/<code>rich_to_markdown</code>
 (identity, keeps a non-1 start), docx <code>List Number</code>
 read/write (sequential numbering assigned on read), and the offset map.
 <code>markdown_to_html</code> now emits <code>&lt;img&gt;</code> for
-images and <code>&lt;blockquote&gt;</code> for quote lines. Remaining
-honest gaps: RTF drops alignment and page breaks; docx drops page breaks
-on read; Markdown→Word tables are pipe-text; Word-embedded images are
-not extracted.</p>
+images and <code>&lt;blockquote&gt;</code> for quote lines. Tables
+round-trip as real tables between Markdown, HTML, and Word:
+<code>docx_writer</code> detects consecutive GFM-table paragraphs
+(<code>_table_block_length</code>) and rebuilds a native
+<code>w:tbl</code> (<code>_emit_table</code>) with a bold, repeating
+<code>&lt;w:tblHeader&gt;</code> header row — so Markdown→Word and
+HTML→Word (via the hub) now produce editable Word tables, and
+Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF
+drops alignment and page breaks and writes tables as pipe-text; docx
+drops page breaks on read; inline formatting inside a Markdown-authored
+table cell flattens to plain text on the way to Word; Word-embedded
+images are not extracted.</p>
 <p><strong>Conversion engine preferences.</strong> Two settings expose
 the engine choice with speakable outcome descriptions:
 <code>docx_read_engine</code> (auto | markitdown | pandoc — auto is

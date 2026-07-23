@@ -409,7 +409,7 @@ The **Insert** menu adds structured content at the cursor.
 - **Heading** submenu: insert Heading 1 through 6, **Decrease Level** / **Increase Level**, and **Style Headings...** (font, size, alignment) for the current level or all levels.
 - **List** submenu: **Bullet**, **Numbered**, **Task**, **List Manager...**, and **Structured List Studio...** (F2).
 - **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
-- **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. Insert Block Quote and Insert Horizontal Rule have no default shortcut — assign one in the Keymap Editor if you use them often (like Insert Table).
+- **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is `Ctrl+Alt+Q`, and **Insert Horizontal Rule** is `Ctrl+Alt+H` — alongside the `Ctrl+Alt+1`–`6` heading chords and `Ctrl+Alt+7`/`8` list chords. All remain rebindable in the Keymap Editor.
 - **Insert Snippet...** and **Manage Snippets...** for reusable text with placeholders.
 - **Special Character...** (`Shift+F2`) opens a symbol picker. (This moved from F2,
   which now opens the Structured List Studio; both keys are remappable.)
@@ -6086,7 +6086,7 @@ QUILL converts through one clean internal form, so what survives a Save As (or a
 | Blockquotes | ✅ | ✅ | ◑² | ◑² | ✕ |
 | Code blocks | ✅ | ✅ | ◑² | ◑² | ✕ |
 | Horizontal rule | ✅ | ✅ | ◑² | ◑² | ✕ |
-| Tables | ✅ | ✅ | ◑³ | ◑³ | ✕ |
+| Tables | ✅ | ✅ | ✅ | ◑³ | ✕ |
 | Images | ◑⁴ | ✅ | ✕⁴ | ✕ | ✕ |
 | Paragraph alignment | ◑¹ | ✅ | ✅ | ✕ | ✕ |
 | Page breaks | ◑¹ | ✅ | ✕ | ✕ | ✕ |
@@ -6095,7 +6095,7 @@ Notes:
 
 1. **In Markdown**, underline, strike, super/subscript, colour, highlight, font, alignment, and page breaks are carried in QUILL's *hidden-codes* markup — invisible while you edit, and materialised natively when you export to HTML, Word, or RTF. Markdown itself has no standard syntax for these, so another Markdown app will show them as QUILL's `[text]{…}` codes rather than the effect.
 2. **Blockquotes, code blocks, and horizontal rules** are Markdown-native and render natively in HTML; in Word/RTF they appear as their literal Markdown markers (`>`, ` ``` `, `---`) rather than a Word blockquote or code style.
-3. **Tables:** a Word table you *open* in QUILL becomes a clean Markdown/GFM table (fully editable and navigable), and Markdown/HTML tables stay native. Saving a table *to* Word writes its content as readable pipe-text rather than a native, resizable Word table object.
+3. **Tables:** tables now travel as real tables between Markdown, HTML, and Word. A Word table you *open* in QUILL becomes a clean Markdown/GFM table (fully editable and navigable); Markdown/HTML tables stay native; and a table you *save to* Word becomes a genuine, editable Word table with a proper repeating header row (so a screen reader announces the column headers). The one exception is RTF: a table saved to `.rtf` is written as readable pipe-text rather than a native RTF table.
 4. **Images:** an image *reference* (`![alt](path)`) round-trips through Markdown and renders as `<img>` in HTML. QUILL does not embed image files into Word, and images embedded in a Word document you open are not carried into the text.
 
 **Plain text (.txt)** never carries formatting — that is the promise of plain text. Use **Save As Plain Text** if you want the markup deliberately flattened (with the option to keep your formatting in an Illumination sidecar).

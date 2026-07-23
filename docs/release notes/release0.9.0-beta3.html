@@ -2334,6 +2334,12 @@ into QUILL recovers the link — it no longer flattens to plain text.</li>
 <li><strong>Numbered lists stay numbered lists</strong> everywhere —
 Markdown, HTML, and Word — and keep their starting number (a list that
 starts at 3 stays 3).</li>
+<li><strong>Tables convert as real tables between Markdown, HTML, and
+Word.</strong> A Markdown or HTML table saved to Word is now a genuine,
+editable Word table — with a proper header row that repeats across pages
+and that your screen reader announces as the column headers — instead of
+a wall of pipe characters. (Word tables already opened in QUILL as
+clean, navigable tables.)</li>
 <li><strong>Images and quotes render properly in exported HTML.</strong>
 An image (<code>![alt](file)</code>) becomes a real
 <code>&lt;img&gt;</code> on the page, and a <code>&gt;</code> quote
@@ -2343,11 +2349,11 @@ characters.</li>
 <p>And we've written down, honestly, <strong>exactly what carries over
 between every format</strong> — see "What carries over between formats"
 in the User Guide. The short version: the common formatting (headings,
-emphasis, links, lists) travels everywhere except plain text; a few
-things are format-specific (a Markdown table saved to Word becomes
-readable text rather than a live Word table; Word-embedded images aren't
-pulled into the text; plain text never carries formatting, by
-design).</p>
+emphasis, links, lists, and now tables) travels between Markdown, HTML,
+and Word; a few things are format-specific (a table saved to RTF is
+written as readable pipe-text rather than a native RTF table;
+Word-embedded images aren't pulled into the text; plain text never
+carries formatting, by design).</p>
 <h3 id="fixes">Fixes</h3>
 <ul>
 <li>Podcast search now returns focus to the results list after you

@@ -1216,7 +1216,28 @@
   {
     "id": "format.insert_table",
     "title": "Insert Table",
-    "body": "Insert a table at the cursor. QUILL asks for the number of rows and columns and writes an accessible table in your document's format.",
+    "body": "Insert a table at the cursor. QUILL asks for the number of rows and columns and writes an accessible table in your document's format. A Markdown or HTML table saved to Word becomes a real, editable Word table with a repeating header row.",
+    "keystrokes": [
+      "Ctrl+Alt+T"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.blockquote",
+    "title": "Insert Block Quote",
+    "body": "Insert a block quote at the cursor, or turn the selected lines into one. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
+    "keystrokes": [
+      "Ctrl+Alt+Q"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.horizontal_rule",
+    "title": "Insert Horizontal Rule",
+    "body": "Insert a horizontal rule (a divider line) at the cursor. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
+    "keystrokes": [
+      "Ctrl+Alt+H"
+    ],
     "user_guide_section": "writing-and-editing"
   },
   {

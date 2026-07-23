@@ -1039,9 +1039,13 @@ table, and image insert Markdown in a Markdown document and HTML in an
 HTML document. If the document's format isn't set yet (a brand-new or
 plain buffer), QUILL asks <strong>"Markdown or HTML?"</strong> the first
 time, then remembers your answer for that document and stops asking.
-Insert Block Quote and Insert Horizontal Rule have no default shortcut —
-assign one in the Keymap Editor if you use them often (like Insert
-Table).</li>
+These carry direct authoring shortcuts: <strong>Insert Table</strong> is
+<code>Ctrl+Alt+T</code>, <strong>Insert Block Quote</strong> is
+<code>Ctrl+Alt+Q</code>, and <strong>Insert Horizontal Rule</strong> is
+<code>Ctrl+Alt+H</code> — alongside the
+<code>Ctrl+Alt+1</code>–<code>6</code> heading chords and
+<code>Ctrl+Alt+7</code>/<code>8</code> list chords. All remain
+rebindable in the Keymap Editor.</li>
 <li><strong>Insert Snippet...</strong> and <strong>Manage
 Snippets...</strong> for reusable text with placeholders.</li>
 <li><strong>Special Character...</strong> (<code>Shift+F2</code>) opens
@@ -26961,7 +26965,7 @@ means it is not preserved.</p>
 <td>Tables</td>
 <td style="text-align: center;">✅</td>
 <td style="text-align: center;">✅</td>
-<td style="text-align: center;">◑³</td>
+<td style="text-align: center;">✅</td>
 <td style="text-align: center;">◑³</td>
 <td style="text-align: center;">✕</td>
 </tr>
@@ -27004,11 +27008,14 @@ effect.</li>
 Markdown-native and render natively in HTML; in Word/RTF they appear as
 their literal Markdown markers (<code>&gt;</code>, <code>```</code>,
 <code>---</code>) rather than a Word blockquote or code style.</li>
-<li><strong>Tables:</strong> a Word table you <em>open</em> in QUILL
-becomes a clean Markdown/GFM table (fully editable and navigable), and
-Markdown/HTML tables stay native. Saving a table <em>to</em> Word writes
-its content as readable pipe-text rather than a native, resizable Word
-table object.</li>
+<li><strong>Tables:</strong> tables now travel as real tables between
+Markdown, HTML, and Word. A Word table you <em>open</em> in QUILL
+becomes a clean Markdown/GFM table (fully editable and navigable);
+Markdown/HTML tables stay native; and a table you <em>save to</em> Word
+becomes a genuine, editable Word table with a proper repeating header
+row (so a screen reader announces the column headers). The one exception
+is RTF: a table saved to <code>.rtf</code> is written as readable
+pipe-text rather than a native RTF table.</li>
 <li><strong>Images:</strong> an image <em>reference</em>
 (<code>![alt](path)</code>) round-trips through Markdown and renders as
 <code>&lt;img&gt;</code> in HTML. QUILL does not embed image files into

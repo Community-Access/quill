@@ -335,11 +335,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.toggle_numbered_list": "Ctrl+Alt+8",  # §edsharp-ok — overrides NVDA review-cursor
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
     "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
-    # Format-aware structured inserts. No default chord: the QUILL-key leader
-    # space is full and §10.8 bans new Ctrl+Alt chords, so these are menu-driven
-    # (like format.insert_table) and assignable via the Keymap Editor.
-    "format.blockquote": "",
-    "format.horizontal_rule": "",
+    # Format-aware structured inserts: direct authoring chords mirroring Leasey
+    # Word (x.md), user-authorized; allow-listed in menu_lint, rebindable via editor.
+    "format.insert_table": "Ctrl+Alt+T",  # §edsharp-ok — authorized authoring chord (x.md)
+    "format.blockquote": "Ctrl+Alt+Q",  # §edsharp-ok — authorized authoring chord (x.md)
+    "format.horizontal_rule": "Ctrl+Alt+H",  # §edsharp-ok — authorized authoring chord (x.md)
     "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",
     "power.non_ascii_jump_to_source": "",  # assign via Keymap Editor; use from Non-ASCII report
     "power.non_ascii_jump_to_report": "",  # assign via Keymap Editor; jump back to report
