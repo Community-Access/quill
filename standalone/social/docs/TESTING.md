@@ -27,8 +27,8 @@ account"). The dialog has:
 
 - **Network** — mastodon, bluesky, or mock.
 - **Server / instance** — an editable dropdown seeded (alphabetically) with
-  `caneandable.social`, `leaseysocial.com`, `mastodon.online`, `mastodon.social`,
-  and `tweesecake.social`. Pick one or type any server. (For Bluesky it defaults
+  `caneandable.social`, `mastodon.online`, `mastodon.social`, and
+  `tweesecake.social`. Pick one or type any server. (For Bluesky it defaults
   to `bsky.social`.)
 - **Handle** — your handle (display on Mastodon; sign-in identifier on Bluesky).
 - **Sign in with browser** — starts the OAuth flow (Mastodon) or opens the app
@@ -44,7 +44,7 @@ Your secret is stored in the Windows Credential Manager, never in the database.
 
 No app setup needed:
 
-1. Pick your server (e.g. `leaseysocial.com`) and choose **Sign in with
+1. Pick your server (e.g. `mastodon.social`) and choose **Sign in with
    browser**. QUILL Social registers itself with the server (once) and opens
    the server's authorization page.
 2. Log in there if needed and approve access. The server shows an

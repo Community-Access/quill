@@ -62,38 +62,62 @@ from quill_social.whereami import WhereAmI
 
 # Navigation destinations (PRD 9.2). Each is (label, scope_id).
 NAV_TREE = [
-    ("Home", "home", [
-        ("Unified Home", "home:all"),
-        ("Unread", "home:unread"),
-    ]),
-    ("Attention", "attention", [
-        ("Mentions", "attention:mentions"),
-        ("Notifications", "attention:notifications"),
-        ("Flagged", "attention:flagged"),
-    ]),
-    ("Library", "library", [
-        ("Bookmarks", "library:bookmarks"),
-        ("Favourites", "library:favourites"),
-        ("Saved Searches", "library:searches"),
-    ]),
-    ("Publishing", "publishing", [
-        ("Drafts", "pub:drafts"),
-        ("Queue", "pub:queued"),
-        ("Scheduled", "pub:scheduled"),
-        ("Failed", "pub:failed"),
-        ("Sent", "pub:published"),
-    ]),
-    ("Discover", "discover", [
-        ("Search Results", "discover:search"),
-        ("Catch Up", "discover:catchup"),
-    ]),
-    ("GitHub", "github", [
-        ("Notifications", "gh:notifications"),
-        ("Issues", "gh:issues"),
-        ("Pull Requests", "gh:prs"),
-        ("Discussions", "gh:discussions"),
-        ("Releases", "gh:releases"),
-    ]),
+    (
+        "Home",
+        "home",
+        [
+            ("Unified Home", "home:all"),
+            ("Unread", "home:unread"),
+        ],
+    ),
+    (
+        "Attention",
+        "attention",
+        [
+            ("Mentions", "attention:mentions"),
+            ("Notifications", "attention:notifications"),
+            ("Flagged", "attention:flagged"),
+        ],
+    ),
+    (
+        "Library",
+        "library",
+        [
+            ("Bookmarks", "library:bookmarks"),
+            ("Favourites", "library:favourites"),
+            ("Saved Searches", "library:searches"),
+        ],
+    ),
+    (
+        "Publishing",
+        "publishing",
+        [
+            ("Drafts", "pub:drafts"),
+            ("Queue", "pub:queued"),
+            ("Scheduled", "pub:scheduled"),
+            ("Failed", "pub:failed"),
+            ("Sent", "pub:published"),
+        ],
+    ),
+    (
+        "Discover",
+        "discover",
+        [
+            ("Search Results", "discover:search"),
+            ("Catch Up", "discover:catchup"),
+        ],
+    ),
+    (
+        "GitHub",
+        "github",
+        [
+            ("Notifications", "gh:notifications"),
+            ("Issues", "gh:issues"),
+            ("Pull Requests", "gh:prs"),
+            ("Discussions", "gh:discussions"),
+            ("Releases", "gh:releases"),
+        ],
+    ),
 ]
 
 
@@ -159,8 +183,7 @@ class SocialFrame(wx.Frame):
         if published:
             self._refresh_from_network(announce=False)
             self._load_scope(self.current_scope, self.current_scope_label)
-            self.announcer.say(
-                f"Scheduler published {len(published)} post(s).", "normal")
+            self.announcer.say(f"Scheduler published {len(published)} post(s).", "normal")
 
     # -- first run ------------------------------------------------------------
 
@@ -173,15 +196,17 @@ class SocialFrame(wx.Frame):
         if self.store.list_accounts():
             return
         ws = self.store.put_workspace(Workspace(name="Personal", position=0))
-        self.store.put_account(Account(
-            account_id="acct_mock",
-            network="mock",
-            handle="@you@mock.social",
-            display_name="You (demo)",
-            local_alias="Demo timeline",
-            workspace_id=ws.workspace_id,
-            is_default=True,
-        ))
+        self.store.put_account(
+            Account(
+                account_id="acct_mock",
+                network="mock",
+                handle="@you@mock.social",
+                display_name="You (demo)",
+                local_alias="Demo timeline",
+                workspace_id=ws.workspace_id,
+                is_default=True,
+            )
+        )
 
     def _load_caps(self) -> None:
         for acct in self.store.list_accounts():
@@ -206,48 +231,45 @@ class SocialFrame(wx.Frame):
         bar.Append(m_compose, "&Compose")
 
         m_item = wx.Menu()
-        self._menu_item(m_item, "&Boost / Repost\tCtrl+Shift+R",
-                        lambda _e: self.cmd_repost())
+        self._menu_item(m_item, "&Boost / Repost\tCtrl+Shift+R", lambda _e: self.cmd_repost())
         self._menu_item(m_item, "&Favourite\tCtrl+F", lambda _e: self.cmd_favourite())
         self._menu_item(m_item, "&Bookmark\tAlt+B", lambda _e: self.cmd_bookmark())
         self._menu_item(m_item, "Flag for follow-&up", lambda _e: self.cmd_flag())
-        self._menu_item(m_item, "Open co&nversation\tCtrl+G",
-                        lambda _e: self.cmd_open_conversation())
+        self._menu_item(
+            m_item, "Open co&nversation\tCtrl+G", lambda _e: self.cmd_open_conversation()
+        )
         self._menu_item(m_item, "&Open links\tCtrl+O", lambda _e: self.cmd_open_links())
         self._menu_item(m_item, "Mark &read\tCtrl+K", lambda _e: self.cmd_mark_read())
         m_item.AppendSeparator()
-        self._menu_item(m_item, "&Accessibility check",
-                        lambda _e: self.cmd_accessibility_check())
+        self._menu_item(m_item, "&Accessibility check", lambda _e: self.cmd_accessibility_check())
         self._menu_item(m_item, "Send to &QUILL", lambda _e: self.cmd_send_to_quill())
-        self._menu_item(m_item, "&Play media\tCtrl+Enter",
-                        lambda _e: self.cmd_play_media())
+        self._menu_item(m_item, "&Play media\tCtrl+Enter", lambda _e: self.cmd_play_media())
         bar.Append(m_item, "&Item")
 
         m_studio = wx.Menu()
         self._menu_item(m_studio, "&Drafts...", lambda _e: self.cmd_drafts())
         self._menu_item(m_studio, "&Agenda / Calendar...", lambda _e: self.cmd_agenda())
-        self._menu_item(m_studio, "&Queue schedule...",
-                        lambda _e: self.cmd_queue_schedule())
+        self._menu_item(m_studio, "&Queue schedule...", lambda _e: self.cmd_queue_schedule())
         self._menu_item(m_studio, "A&pprovals...", lambda _e: self.cmd_approvals())
         bar.Append(m_studio, "&Studio")
 
         m_tools = wx.Menu()
-        self._menu_item(m_tools, "&Command Center\tCtrl+Shift+C",
-                        lambda _e: self.cmd_command_center())
-        self._menu_item(m_tools, "&Where Am I\tCtrl+Shift+I",
-                        lambda _e: self.cmd_where_am_i())
+        self._menu_item(
+            m_tools, "&Command Center\tCtrl+Shift+C", lambda _e: self.cmd_command_center()
+        )
+        self._menu_item(m_tools, "&Where Am I\tCtrl+Shift+I", lambda _e: self.cmd_where_am_i())
         self._menu_item(m_tools, "&Search\tCtrl+L", lambda _e: self.cmd_focus_search())
         self._menu_item(m_tools, "&Refresh\tF5", lambda _e: self.cmd_refresh())
         self._menu_item(m_tools, "Catch &Up", lambda _e: self.cmd_catchup())
         m_tools.AppendSeparator()
         self._menu_item(m_tools, "&Insights / Analytics", lambda _e: self.cmd_analytics())
         self._menu_item(m_tools, "Safety Cen&ter", lambda _e: self.cmd_safety_center())
-        self._menu_item(m_tools, "&Notification policies",
-                        lambda _e: self.cmd_notification_policies())
+        self._menu_item(
+            m_tools, "&Notification policies", lambda _e: self.cmd_notification_policies()
+        )
         self._menu_item(m_tools, "&Plugins", lambda _e: self.cmd_plugins())
         self._menu_item(m_tools, "&Outbox", lambda _e: self.cmd_outbox())
-        self._menu_item(m_tools, "Summari&ze this feed (AI)",
-                        lambda _e: self.cmd_summarize_feed())
+        self._menu_item(m_tools, "Summari&ze this feed (AI)", lambda _e: self.cmd_summarize_feed())
         bar.Append(m_tools, "&Tools")
 
         m_help = wx.Menu()
@@ -272,8 +294,13 @@ class SocialFrame(wx.Frame):
         lsz = wx.BoxSizer(wx.VERTICAL)
         lsz.Add(wx.StaticText(left, label="Navigation"), 0, wx.ALL, 4)
         self.nav = wx.TreeCtrl(
-            left, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE
-            | wx.TR_LINES_AT_ROOT | wx.TR_FULL_ROW_HIGHLIGHT)
+            left,
+            style=wx.TR_HAS_BUTTONS
+            | wx.TR_HIDE_ROOT
+            | wx.TR_SINGLE
+            | wx.TR_LINES_AT_ROOT
+            | wx.TR_FULL_ROW_HIGHLIGHT,
+        )
         self.nav.SetName("Navigation")
         lsz.Add(self.nav, 1, wx.EXPAND | wx.ALL, 4)
         left.SetSizer(lsz)
@@ -285,15 +312,13 @@ class SocialFrame(wx.Frame):
         top = wx.Panel(right)
         tsz = wx.BoxSizer(wx.VERTICAL)
         srow = wx.BoxSizer(wx.HORIZONTAL)
-        srow.Add(wx.StaticText(top, label="Search:"),
-                 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        srow.Add(wx.StaticText(top, label="Search:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self.search = wx.TextCtrl(top, style=wx.TE_PROCESS_ENTER)
         self.search.SetName("Search posts")
         srow.Add(self.search, 1)
         tsz.Add(srow, 0, wx.EXPAND | wx.ALL, 4)
 
-        self.list = wx.ListCtrl(
-            top, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.list = wx.ListCtrl(top, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         self.list.SetName("Timeline")
         self.list.InsertColumn(0, "Post", width=760)
         tsz.Add(self.list, 1, wx.EXPAND | wx.ALL, 4)
@@ -302,8 +327,7 @@ class SocialFrame(wx.Frame):
         bottom = wx.Panel(right)
         bsz = wx.BoxSizer(wx.VERTICAL)
         bsz.Add(wx.StaticText(bottom, label="Details"), 0, wx.ALL, 4)
-        self.details = wx.TextCtrl(
-            bottom, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
+        self.details = wx.TextCtrl(bottom, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
         self.details.SetName("Post details")
         bsz.Add(self.details, 1, wx.EXPAND | wx.ALL, 4)
         bottom.SetSizer(bsz)
@@ -359,8 +383,7 @@ class SocialFrame(wx.Frame):
                     self.announcer.say(f"{acct.label}: {exc}", "normal")
             except Exception as exc:  # pragma: no cover - defensive
                 if announce:
-                    self.announcer.say(f"{acct.label}: refresh failed ({exc})",
-                                       "normal")
+                    self.announcer.say(f"{acct.label}: refresh failed ({exc})", "normal")
         if announce:
             self.announcer.say(f"Refreshed. {pulled} posts.", "normal")
 
@@ -372,8 +395,9 @@ class SocialFrame(wx.Frame):
         if scope == "attention:mentions":
             return [it for it in self.store.list_items(limit=500) if "@you" in it.text]
         if scope == "attention:notifications":
-            return [it for it in self.store.list_items(limit=500)
-                    if "@you" in it.text or it.is_reply]
+            return [
+                it for it in self.store.list_items(limit=500) if "@you" in it.text or it.is_reply
+            ]
         if scope == "attention:flagged":
             return self.store.list_items(flagged=True, limit=500)
         if scope == "library:bookmarks":
@@ -389,8 +413,7 @@ class SocialFrame(wx.Frame):
             folders = {f.folder_id: f for f in self.store.list_folders(kind="smart")}
             folder = folders.get(folder_id)
             if folder:
-                return smartfolder_svc.evaluate(self.store.list_items(limit=500),
-                                                folder.rule)
+                return smartfolder_svc.evaluate(self.store.list_items(limit=500), folder.rule)
         return []
 
     def _catchup_items(self) -> list:
@@ -411,8 +434,7 @@ class SocialFrame(wx.Frame):
         self._items = self._scope_items(scope)
         self._render_list()
         unread = sum(1 for it in self._items if not it.read)
-        self.announcer.say(f"{label}. {len(self._items)} items, {unread} unread.",
-                           "normal")
+        self.announcer.say(f"{label}. {len(self._items)} items, {unread} unread.", "normal")
 
     def _load_publishing(self, scope: str, label: str) -> None:
         self.list.DeleteAllItems()
@@ -429,8 +451,7 @@ class SocialFrame(wx.Frame):
         plans = self.store.list_plans(state=state)
         for i, p in enumerate(plans):
             when = _fmt_ms(p.scheduled_for) if p.scheduled_for else "now"
-            self.list.InsertItem(
-                i, f"{p.network} -> {p.state}, {when}, retries {p.retry_count}")
+            self.list.InsertItem(i, f"{p.network} -> {p.state}, {when}, retries {p.retry_count}")
         self.announcer.say(f"{label}. {len(plans)} items.", "normal")
 
     def _load_github(self, scope: str, label: str) -> None:
@@ -476,8 +497,9 @@ class SocialFrame(wx.Frame):
         accounts = {a.account_id: a for a in self.store.list_accounts()}
         now = now_ms()
         for i, it in enumerate(self._items):
-            row = render_row(it, self.profile, account=accounts.get(it.account_id),
-                             settings=self.a11y, now=now)
+            row = render_row(
+                it, self.profile, account=accounts.get(it.account_id), settings=self.a11y, now=now
+            )
             idx = self.list.InsertItem(i, row or "(no text)")
             if not it.read:
                 # Read state is spoken, never color-only (PRD 6.5); we still bold
@@ -516,8 +538,7 @@ class SocialFrame(wx.Frame):
         acct = accounts.get(item.account_id)
         lines = [
             f"Author: {item.author_display} {item.author_handle}",
-            f"Network: {item.network}"
-            + (f" ({acct.label})" if acct else ""),
+            f"Network: {item.network}" + (f" ({acct.label})" if acct else ""),
             f"When: {_fmt_ms(item.created_at)}",
             f"Visibility: {item.visibility}",
         ]
@@ -536,17 +557,18 @@ class SocialFrame(wx.Frame):
                 lines.append(f"Media ({m.kind}): {alt}")
         if item.poll:
             lines.append("")
-            lines.append(f"Poll, {item.poll.total_votes} votes"
-                         + (", you voted" if item.poll.voted else ""))
+            lines.append(
+                f"Poll, {item.poll.total_votes} votes" + (", you voted" if item.poll.voted else "")
+            )
             for opt in item.poll.options:
                 lines.append(f"  {opt.title}: {opt.votes}")
         lines.append("")
         lines.append(
             f"Replies {item.reply_count}, boosts {item.reblog_count}, "
-            f"favourites {item.favourite_count}")
+            f"favourites {item.favourite_count}"
+        )
         if item.missing_alt_count:
-            lines.append(f"Accessibility: {item.missing_alt_count} media "
-                         "without alt text.")
+            lines.append(f"Accessibility: {item.missing_alt_count} media without alt text.")
         self.details.SetValue("\n".join(lines))
 
     def _announce_field(self, delta: int) -> None:
@@ -554,8 +576,9 @@ class SocialFrame(wx.Frame):
         if item is None:
             return
         accounts = {a.account_id: a for a in self.store.list_accounts()}
-        pairs = read_fields(item, self.profile, account=accounts.get(item.account_id),
-                            settings=self.a11y)
+        pairs = read_fields(
+            item, self.profile, account=accounts.get(item.account_id), settings=self.a11y
+        )
         if not pairs:
             return
         self._field_index = (self._field_index + delta) % len(pairs)
@@ -651,13 +674,16 @@ class SocialFrame(wx.Frame):
             self.announcer.error("Add an account first.")
             return
         caps = {a.account_id: self.caps.get(a.account_id, a.network) for a in accounts}
-        dlg = ComposerDialog(self, accounts, caps, store=self.store,
-                             reply_to=reply_to, quote_of=quote_of)
+        dlg = ComposerDialog(
+            self, accounts, caps, store=self.store, reply_to=reply_to, quote_of=quote_of
+        )
         self.announcer.say("Composer open. Editor has focus.", "normal")
         if dlg.ShowModal() == wx.ID_OK and dlg.result_draft:
             self._handle_compose_result(
-                dlg.result_action, dlg.result_draft,
-                schedule_at=getattr(dlg, "result_schedule_at", None))
+                dlg.result_action,
+                dlg.result_draft,
+                schedule_at=getattr(dlg, "result_schedule_at", None),
+            )
         dlg.Destroy()
 
     def _handle_compose_result(self, action: str, draft, *, schedule_at=None) -> None:
@@ -670,14 +696,22 @@ class SocialFrame(wx.Frame):
             when = schedule_at or (now_ms() + 60_000)
             for account_id in draft.targets:
                 acct = self.store.get_account(account_id)
-                self.store.put_plan(PublicationPlan(
-                    draft_id=draft.draft_id, account_id=account_id,
-                    network=acct.network if acct else "mock",
-                    tier="local", scheduled_for=when, state="scheduled"))
+                self.store.put_plan(
+                    PublicationPlan(
+                        draft_id=draft.draft_id,
+                        account_id=account_id,
+                        network=acct.network if acct else "mock",
+                        tier="local",
+                        scheduled_for=when,
+                        state="scheduled",
+                    )
+                )
             self.announcer.say(
                 f"Scheduled for {len(draft.targets)} account(s) at "
                 f"{_fmt_ms(when)}. The local scheduler runs while the app is "
-                "open.", "normal")
+                "open.",
+                "normal",
+            )
             return
         # publish now
         self._publish_now(draft)
@@ -695,15 +729,23 @@ class SocialFrame(wx.Frame):
                 if draft.thread_mode:
                     split = split_thread(draft.text, caps.char_limit, counter=counter)
                     res = publish_thread(
-                        adapter, split.texts(), run_id=draft.draft_id,
+                        adapter,
+                        split.texts(),
+                        run_id=draft.draft_id,
                         visibility=draft.visibility,
-                        content_warning=draft.content_warning)
+                        content_warning=draft.content_warning,
+                    )
                     results.append((acct.label, res.summary()))
                 else:
                     from quill_social.adapters.base import PublishRequest
-                    adapter.publish(PublishRequest(
-                        text=draft.text, visibility=draft.visibility,
-                        content_warning=draft.content_warning))
+
+                    adapter.publish(
+                        PublishRequest(
+                            text=draft.text,
+                            visibility=draft.visibility,
+                            content_warning=draft.content_warning,
+                        )
+                    )
                     results.append((acct.label, "Published."))
             except AdapterError as exc:
                 results.append((acct.label, f"Failed: {exc}"))
@@ -724,9 +766,11 @@ class SocialFrame(wx.Frame):
         if acct and column in ("favourited", "bookmarked", "reblogged"):
             try:
                 adapter = self._resolve_adapter(acct.account_id)
-                {"favourited": adapter.set_favourite,
-                 "bookmarked": adapter.set_bookmark,
-                 "reblogged": adapter.set_reblog}[column](item.remote_id, new_value)
+                {
+                    "favourited": adapter.set_favourite,
+                    "bookmarked": adapter.set_bookmark,
+                    "reblogged": adapter.set_reblog,
+                }[column](item.remote_id, new_value)
             except AdapterError:
                 pass
         state = "on" if new_value else "off"
@@ -757,8 +801,7 @@ class SocialFrame(wx.Frame):
         if item is None:
             self.announcer.error("Select a post first.")
             return
-        thread = self.store.list_items(
-            thread_root=item.thread_root or item.remote_id, limit=100)
+        thread = self.store.list_items(thread_root=item.thread_root or item.remote_id, limit=100)
         if not thread:
             thread = [item]
         self._items = sorted(thread, key=lambda x: x.created_at)
@@ -770,6 +813,7 @@ class SocialFrame(wx.Frame):
         if item is None:
             return
         import re
+
         urls = re.findall(r"https?://\S+", item.text)
         if not urls:
             self.announcer.say("No links in this post.", "normal")
@@ -798,13 +842,14 @@ class SocialFrame(wx.Frame):
         """Show measured metrics as accessible data tables (PRD 33.2)."""
         all_items = self.store.list_items(limit=1000)
         own = [it for it in all_items if "you" in it.author_handle.lower()]
-        report = analytics_svc.compute_metrics(
-            own, all_items, plans=self.store.list_plans())
+        report = analytics_svc.compute_metrics(own, all_items, plans=self.store.list_plans())
         blocks = [analytics_svc.to_markdown(t) for t in report.tables()]
         self._show_text("Insights", "\n\n".join(blocks))
         self.announcer.say(
             f"Insights. {report.posts_sent} posts sent, "
-            f"{report.replies_received} replies received.", "normal")
+            f"{report.replies_received} replies received.",
+            "normal",
+        )
 
     def cmd_safety_center(self) -> None:
         """Open the unified Safety Center (PRD 27.1)."""
@@ -869,8 +914,10 @@ class SocialFrame(wx.Frame):
         if dlg.ShowModal() == wx.ID_OK and dlg.result_draft:
             self.store.delete_draft(draft_id)
             self._handle_compose_result(
-                dlg.result_action, dlg.result_draft,
-                schedule_at=getattr(dlg, "result_schedule_at", None))
+                dlg.result_action,
+                dlg.result_draft,
+                schedule_at=getattr(dlg, "result_schedule_at", None),
+            )
         dlg.Destroy()
 
     def _modal(self, dlg) -> None:
@@ -886,8 +933,10 @@ class SocialFrame(wx.Frame):
             self.announcer.error("Nothing to summarize here.")
             return
         summary = ai_understand.summarize(self._items[:25])
-        text = (f"{summary.text}\n\nSources: {len(summary.sources)} posts. "
-                "AI output is a draft; every source is listed and inspectable.")
+        text = (
+            f"{summary.text}\n\nSources: {len(summary.sources)} posts. "
+            "AI output is a draft; every source is listed and inspectable."
+        )
         self._show_text("Summary", text)
         self.announcer.say(summary.text[:200], "normal", interrupt=True)
 
@@ -902,12 +951,15 @@ class SocialFrame(wx.Frame):
             self.announcer.say("No accessibility issues found on this post.", "normal")
             self._show_text("Accessibility check", "No issues found.")
             return
-        lines = [f"{i.severity.upper()}: {i.message}"
-                 + (f"\n  Suggestion: {i.suggestion}" if i.suggestion else "")
-                 for i in issues]
+        lines = [
+            f"{i.severity.upper()}: {i.message}"
+            + (f"\n  Suggestion: {i.suggestion}" if i.suggestion else "")
+            for i in issues
+        ]
         self._show_text("Accessibility check", "\n".join(lines))
-        self.announcer.say(f"{len(issues)} accessibility issue(s). "
-                           + issues[0].message, "normal", interrupt=True)
+        self.announcer.say(
+            f"{len(issues)} accessibility issue(s). " + issues[0].message, "normal", interrupt=True
+        )
 
     def cmd_send_to_quill(self) -> None:
         """Export the focused post or its conversation to QUILL markdown (PRD 20.1)."""
@@ -916,7 +968,8 @@ class SocialFrame(wx.Frame):
             self.announcer.error("Select a post first.")
             return
         thread = self.store.list_items(
-            thread_root=item.thread_root or item.remote_id, limit=100) or [item]
+            thread_root=item.thread_root or item.remote_id, limit=100
+        ) or [item]
         thread = sorted(thread, key=lambda x: x.created_at)
         intent = ecosystem_svc.send_to_quill(thread, title=f"Thread by {item.author_display}")
         export_dir = self.data_dir / "exports"
@@ -924,8 +977,9 @@ class SocialFrame(wx.Frame):
         path = export_dir / f"{item.item_id}.md"
         path.write_text(intent.markdown, encoding="utf-8")
         self.announcer.say(f"{intent.describe()} Saved to {path}.", "normal")
-        self._show_text("Send to QUILL", f"{intent.describe()}\n\nSaved to:\n{path}\n\n"
-                        + intent.markdown)
+        self._show_text(
+            "Send to QUILL", f"{intent.describe()}\n\nSaved to:\n{path}\n\n" + intent.markdown
+        )
 
     def _show_text(self, title: str, text: str) -> None:
         TextReportDialog(self, title, text).ShowModal()
@@ -954,12 +1008,20 @@ class SocialFrame(wx.Frame):
             total=len(self._items),
             unread=sum(1 for it in self._items if not it.read),
             sort_state="newest first",
-            post_type=("reply" if item and item.is_reply else
-                       "boost" if item and item.is_repost else "post") if item else "",
+            post_type=(
+                "reply"
+                if item and item.is_reply
+                else "boost"
+                if item and item.is_repost
+                else "post"
+            )
+            if item
+            else "",
             visibility=item.visibility if item else "",
             media_state=(f"{len(item.media)} media" if item and item.media else ""),
-            moderation_state=(", ".join(item.moderation_labels)
-                              if item and item.moderation_labels else ""),
+            moderation_state=(
+                ", ".join(item.moderation_labels) if item and item.moderation_labels else ""
+            ),
         )
         text = w.announce()
         self.announcer.say(text, "normal", interrupt=True)
@@ -972,61 +1034,132 @@ class SocialFrame(wx.Frame):
         has_item = self._current_item() is not None
         km = self.keymap
         return [
-            Command("compose", "New post", self.cmd_compose,
-                    synonyms=["write", "toot", "skeet"], shortcut=km.chord_for("compose")),
-            Command("reply", "Reply", self.cmd_reply, is_available=lambda: has_item,
-                    unavailable_reason="Select a post to reply to.",
-                    shortcut=km.chord_for("reply")),
-            Command("quote", "Quote post", self.cmd_quote, is_available=lambda: has_item,
-                    unavailable_reason="Select a post to quote.",
-                    shortcut=km.chord_for("quote")),
-            Command("repost", "Boost / repost", self.cmd_repost,
-                    is_available=lambda: has_item, shortcut=km.chord_for("repost")),
-            Command("favourite", "Favourite", self.cmd_favourite,
-                    is_available=lambda: has_item, shortcut=km.chord_for("favourite")),
-            Command("bookmark", "Bookmark", self.cmd_bookmark,
-                    is_available=lambda: has_item, shortcut=km.chord_for("bookmark")),
-            Command("open_conversation", "Open conversation",
-                    self.cmd_open_conversation, is_available=lambda: has_item,
-                    shortcut=km.chord_for("open_conversation")),
+            Command(
+                "compose",
+                "New post",
+                self.cmd_compose,
+                synonyms=["write", "toot", "skeet"],
+                shortcut=km.chord_for("compose"),
+            ),
+            Command(
+                "reply",
+                "Reply",
+                self.cmd_reply,
+                is_available=lambda: has_item,
+                unavailable_reason="Select a post to reply to.",
+                shortcut=km.chord_for("reply"),
+            ),
+            Command(
+                "quote",
+                "Quote post",
+                self.cmd_quote,
+                is_available=lambda: has_item,
+                unavailable_reason="Select a post to quote.",
+                shortcut=km.chord_for("quote"),
+            ),
+            Command(
+                "repost",
+                "Boost / repost",
+                self.cmd_repost,
+                is_available=lambda: has_item,
+                shortcut=km.chord_for("repost"),
+            ),
+            Command(
+                "favourite",
+                "Favourite",
+                self.cmd_favourite,
+                is_available=lambda: has_item,
+                shortcut=km.chord_for("favourite"),
+            ),
+            Command(
+                "bookmark",
+                "Bookmark",
+                self.cmd_bookmark,
+                is_available=lambda: has_item,
+                shortcut=km.chord_for("bookmark"),
+            ),
+            Command(
+                "open_conversation",
+                "Open conversation",
+                self.cmd_open_conversation,
+                is_available=lambda: has_item,
+                shortcut=km.chord_for("open_conversation"),
+            ),
             Command("catchup", "Catch up", self.cmd_catchup, synonyms=["digest"]),
-            Command("accessibility_check", "Accessibility check",
-                    self.cmd_accessibility_check, is_available=lambda: has_item,
-                    synonyms=["a11y", "alt text", "audit"]),
-            Command("send_to_quill", "Send to QUILL", self.cmd_send_to_quill,
-                    is_available=lambda: has_item, synonyms=["export", "document"]),
-            Command("summarize_feed", "Summarize this feed", self.cmd_summarize_feed,
-                    synonyms=["ai", "summary", "digest"]),
-            Command("analytics", "Insights and analytics", self.cmd_analytics,
-                    synonyms=["metrics", "stats"]),
-            Command("safety_center", "Safety center", self.cmd_safety_center,
-                    synonyms=["moderation", "filters", "mute", "block"]),
-            Command("notification_policies", "Notification policies",
-                    self.cmd_notification_policies, synonyms=["quiet hours", "digest"]),
-            Command("plugins", "Plugins", self.cmd_plugins,
-                    synonyms=["extensions", "add-ons"]),
+            Command(
+                "accessibility_check",
+                "Accessibility check",
+                self.cmd_accessibility_check,
+                is_available=lambda: has_item,
+                synonyms=["a11y", "alt text", "audit"],
+            ),
+            Command(
+                "send_to_quill",
+                "Send to QUILL",
+                self.cmd_send_to_quill,
+                is_available=lambda: has_item,
+                synonyms=["export", "document"],
+            ),
+            Command(
+                "summarize_feed",
+                "Summarize this feed",
+                self.cmd_summarize_feed,
+                synonyms=["ai", "summary", "digest"],
+            ),
+            Command(
+                "analytics",
+                "Insights and analytics",
+                self.cmd_analytics,
+                synonyms=["metrics", "stats"],
+            ),
+            Command(
+                "safety_center",
+                "Safety center",
+                self.cmd_safety_center,
+                synonyms=["moderation", "filters", "mute", "block"],
+            ),
+            Command(
+                "notification_policies",
+                "Notification policies",
+                self.cmd_notification_policies,
+                synonyms=["quiet hours", "digest"],
+            ),
+            Command("plugins", "Plugins", self.cmd_plugins, synonyms=["extensions", "add-ons"]),
             Command("outbox", "Outbox", self.cmd_outbox, synonyms=["offline", "pending"]),
             Command("drafts", "Drafts", self.cmd_drafts, synonyms=["saved posts"]),
-            Command("agenda", "Agenda / calendar", self.cmd_agenda,
-                    synonyms=["schedule", "calendar", "queue"]),
-            Command("queue_schedule", "Queue schedule", self.cmd_queue_schedule,
-                    synonyms=["posting times", "slots"]),
-            Command("approvals", "Approvals", self.cmd_approvals,
-                    synonyms=["review", "workflow"]),
-            Command("play_media", "Play media", self.cmd_play_media,
-                    is_available=lambda: bool(has_item and self._current_item()
-                                              and self._current_item().media),
-                    synonyms=["audio", "video", "player"]),
-            Command("refresh", "Refresh", self.cmd_refresh,
-                    shortcut=km.chord_for("refresh")),
-            Command("search", "Search", self.cmd_focus_search,
-                    shortcut=km.chord_for("search")),
-            Command("where_am_i", "Where am I", self.cmd_where_am_i,
-                    synonyms=["context"], shortcut=km.chord_for("where_am_i")),
-            Command("add_account", "Add account",
-                    lambda: self._on_add_account(None)),
-            Command("preferences", "Preferences",
-                    lambda: self._on_preferences(None)),
+            Command(
+                "agenda",
+                "Agenda / calendar",
+                self.cmd_agenda,
+                synonyms=["schedule", "calendar", "queue"],
+            ),
+            Command(
+                "queue_schedule",
+                "Queue schedule",
+                self.cmd_queue_schedule,
+                synonyms=["posting times", "slots"],
+            ),
+            Command("approvals", "Approvals", self.cmd_approvals, synonyms=["review", "workflow"]),
+            Command(
+                "play_media",
+                "Play media",
+                self.cmd_play_media,
+                is_available=lambda: bool(
+                    has_item and self._current_item() and self._current_item().media
+                ),
+                synonyms=["audio", "video", "player"],
+            ),
+            Command("refresh", "Refresh", self.cmd_refresh, shortcut=km.chord_for("refresh")),
+            Command("search", "Search", self.cmd_focus_search, shortcut=km.chord_for("search")),
+            Command(
+                "where_am_i",
+                "Where am I",
+                self.cmd_where_am_i,
+                synonyms=["context"],
+                shortcut=km.chord_for("where_am_i"),
+            ),
+            Command("add_account", "Add account", lambda: self._on_add_account(None)),
+            Command("preferences", "Preferences", lambda: self._on_preferences(None)),
             Command("help", "Help", self.cmd_help, shortcut=km.chord_for("help")),
         ]
 
@@ -1043,7 +1176,10 @@ class SocialFrame(wx.Frame):
             f"{__title__} {__version__}\n\n"
             "Accessibility-first social workspace for Mastodon and Bluesky.\n"
             "Every conversation within reach.",
-            "About QUILL Social", wx.OK | wx.ICON_INFORMATION, self)
+            "About QUILL Social",
+            wx.OK | wx.ICON_INFORMATION,
+            self,
+        )
 
     def _on_close(self, _e) -> None:
         self._closing = True
@@ -1073,8 +1209,7 @@ class TextReportDialog(wx.Dialog):
     """
 
     def __init__(self, parent, title: str, text: str):
-        super().__init__(parent, title=title,
-                         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         sizer = wx.BoxSizer(wx.VERTICAL)
         ctrl = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
         ctrl.SetName(title)
@@ -1091,8 +1226,9 @@ class HelpDialog(wx.Dialog):
     """Context help listing every command and its current shortcut (PRD 10.4)."""
 
     def __init__(self, parent, keymap):
-        super().__init__(parent, title="QUILL Social Help",
-                         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(
+            parent, title="QUILL Social Help", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
         sizer = wx.BoxSizer(wx.VERTICAL)
         text = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         text.SetName("Help")
@@ -1125,7 +1261,6 @@ class HelpDialog(wx.Dialog):
 # any server. Grows over time.
 INSTANCE_PRESETS = [
     "caneandable.social",
-    "leaseysocial.com",
     "mastodon.online",
     "mastodon.social",
     "tweesecake.social",
@@ -1163,8 +1298,9 @@ class AddAccountDialog(wx.Dialog):
     """
 
     def __init__(self, parent):
-        super().__init__(parent, title="Add Account",
-                         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(
+            parent, title="Add Account", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
         self._frame = parent
         self._oauth: tuple[str, str, str] | None = None  # instance, client_id, secret
         self._token = ""  # access token obtained via OAuth
@@ -1177,11 +1313,10 @@ class AddAccountDialog(wx.Dialog):
         self.network.SetSelection(0)
         sizer.Add(self.network, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
-        sizer.Add(wx.StaticText(self, label="&Server / instance:"),
-                  0, wx.LEFT | wx.TOP, 6)
+        sizer.Add(wx.StaticText(self, label="&Server / instance:"), 0, wx.LEFT | wx.TOP, 6)
         self.instance = wx.ComboBox(
-            self, value=INSTANCE_PRESETS[0], choices=INSTANCE_PRESETS,
-            style=wx.CB_DROPDOWN)
+            self, value=INSTANCE_PRESETS[0], choices=INSTANCE_PRESETS, style=wx.CB_DROPDOWN
+        )
         self.instance.SetName("Server or instance")
         sizer.Add(self.instance, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
@@ -1194,8 +1329,12 @@ class AddAccountDialog(wx.Dialog):
         self.signin_btn = wx.Button(self, label="&Sign in with browser")
         sizer.Add(self.signin_btn, 0, wx.LEFT | wx.RIGHT | wx.TOP, 6)
 
-        sizer.Add(wx.StaticText(self, label="Authorization &code (from the browser):"),
-                  0, wx.LEFT | wx.TOP, 6)
+        sizer.Add(
+            wx.StaticText(self, label="Authorization &code (from the browser):"),
+            0,
+            wx.LEFT | wx.TOP,
+            6,
+        )
         crow = wx.BoxSizer(wx.HORIZONTAL)
         self.code = wx.TextCtrl(self)
         self.code.SetName("Authorization code")
@@ -1206,9 +1345,12 @@ class AddAccountDialog(wx.Dialog):
         crow.Add(self.finish_btn, 0)
         sizer.Add(crow, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
-        sizer.Add(wx.StaticText(
-            self, label="Or paste an access &token / app password:"),
-            0, wx.LEFT | wx.TOP, 6)
+        sizer.Add(
+            wx.StaticText(self, label="Or paste an access &token / app password:"),
+            0,
+            wx.LEFT | wx.TOP,
+            6,
+        )
         self.secret = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self.secret.SetName("Access token or app password")
         sizer.Add(self.secret, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
@@ -1226,8 +1368,7 @@ class AddAccountDialog(wx.Dialog):
         vrow.Add(self.status, 1, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(vrow, 0, wx.EXPAND | wx.ALL, 6)
 
-        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL),
-                  0, wx.ALIGN_RIGHT | wx.ALL, 8)
+        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
         self.SetSize((480, 560))
 
@@ -1285,8 +1426,8 @@ class AddAccountDialog(wx.Dialog):
         if net == "bluesky":
             webbrowser.open(_BLUESKY_APP_PASSWORDS_URL)
             self._set_status(
-                "Opened Bluesky app passwords. Create one and paste it below "
-                "with your handle.")
+                "Opened Bluesky app passwords. Create one and paste it below with your handle."
+            )
             return
         if net != "mastodon":
             self._set_status("This network needs no browser sign-in.")
@@ -1298,8 +1439,7 @@ class AddAccountDialog(wx.Dialog):
         self._set_status(f"Registering with {instance}...")
         wx.SafeYield(self)
         try:
-            client_id, client_secret = oauth.register_app(
-                instance, self._frame.data_dir)
+            client_id, client_secret = oauth.register_app(instance, self._frame.data_dir)
             url = oauth.auth_url(instance, client_id, client_secret)
         except Exception as exc:  # noqa: BLE001 - report any server/client failure
             self._set_status(f"Sign-in could not start: {exc}")
@@ -1311,7 +1451,8 @@ class AddAccountDialog(wx.Dialog):
         self.code.SetFocus()
         self._set_status(
             "Browser opened. Approve access, copy the code it shows, paste it in "
-            "the Authorization code field, and choose Finish sign-in.")
+            "the Authorization code field, and choose Finish sign-in."
+        )
 
     def _on_finish(self, _e) -> None:
         if not self._oauth:
@@ -1325,14 +1466,13 @@ class AddAccountDialog(wx.Dialog):
         self._set_status("Exchanging the code for an access token...")
         wx.SafeYield(self)
         try:
-            self._token = oauth.exchange_code(
-                instance, client_id, client_secret, code)
+            self._token = oauth.exchange_code(instance, client_id, client_secret, code)
         except Exception as exc:  # noqa: BLE001 - surface auth failures to the user
             self._set_status(f"Could not get a token: {exc}")
             return
         self._set_status(
-            "Signed in. Choose Verify connection to test it, or OK to add the "
-            "account.")
+            "Signed in. Choose Verify connection to test it, or OK to add the account."
+        )
 
     def _on_verify(self, _e) -> None:
         """Test the credential against the live network without persisting it."""
@@ -1356,8 +1496,8 @@ class AddAccountDialog(wx.Dialog):
             adapter = adapter_for(acct, tmp)
             items = adapter.home_timeline(limit=1)
             self._set_status(
-                f"Connected to {net}. Fetched {len(items)} post(s). "
-                "Choose OK to add the account.")
+                f"Connected to {net}. Fetched {len(items)} post(s). Choose OK to add the account."
+            )
         except AdapterError as exc:
             self._set_status(f"Could not connect: {exc}")
         except Exception as exc:  # noqa: BLE001 - surface any client error to the user
@@ -1366,7 +1506,8 @@ class AddAccountDialog(wx.Dialog):
     def run_and_apply(self, frame) -> None:
         net = self.network.GetStringSelection()
         if self.ShowModal() == wx.ID_OK and (
-            self.handle.GetValue().strip() or self.instance.GetValue().strip()):
+            self.handle.GetValue().strip() or self.instance.GetValue().strip()
+        ):
             acct = self._temp_account()
             frame.store.put_account(acct)
             frame.caps.seed_from_network(acct.account_id, acct.network)
@@ -1375,12 +1516,13 @@ class AddAccountDialog(wx.Dialog):
                 try:
                     frame.credentials.store(acct.network, acct.account_id, secret)
                     frame.announcer.say(
-                        f"Added {acct.label}; credential stored securely. "
-                        "Press F5 to refresh.", "normal")
+                        f"Added {acct.label}; credential stored securely. Press F5 to refresh.",
+                        "normal",
+                    )
                 except Exception:
                     frame.announcer.say(
-                        f"Added {acct.label}; could not store the credential.",
-                        "normal")
+                        f"Added {acct.label}; could not store the credential.", "normal"
+                    )
             else:
                 frame.announcer.say(f"Added {acct.label}.", "normal")
         self.Destroy()
@@ -1393,8 +1535,7 @@ class PreferencesDialog(wx.Dialog):
         super().__init__(parent, title="Preferences")
         self._settings = settings
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(wx.StaticText(self, label="Announcement verbosity:"),
-                  0, wx.ALL, 6)
+        sizer.Add(wx.StaticText(self, label="Announcement verbosity:"), 0, wx.ALL, 6)
         self.verbosity = wx.Choice(self, choices=["minimal", "normal", "verbose"])
         self.verbosity.SetName("Verbosity")
         self.verbosity.SetStringSelection(settings.verbosity)
@@ -1405,12 +1546,10 @@ class PreferencesDialog(wx.Dialog):
         self.speak_network = wx.CheckBox(self, label="Speak network on each row")
         self.speak_network.SetValue(settings.speak_network_prefix)
         sizer.Add(self.speak_network, 0, wx.ALL, 6)
-        self.speak_engagement = wx.CheckBox(
-            self, label="Speak engagement counts on each row")
+        self.speak_engagement = wx.CheckBox(self, label="Speak engagement counts on each row")
         self.speak_engagement.SetValue(settings.speak_engagement)
         sizer.Add(self.speak_engagement, 0, wx.ALL, 6)
-        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL),
-                  0, wx.ALIGN_RIGHT | wx.ALL, 8)
+        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
 
     def run_and_apply(self, frame) -> None:
@@ -1444,8 +1583,8 @@ def _fmt_ms(ms: int | None) -> str:
     if not ms:
         return "unknown"
     from datetime import datetime
-    return datetime.fromtimestamp(ms / 1000, tz=UTC).strftime(
-        "%Y-%m-%d %H:%M UTC")
+
+    return datetime.fromtimestamp(ms / 1000, tz=UTC).strftime("%Y-%m-%d %H:%M UTC")
 
 
 def run() -> int:

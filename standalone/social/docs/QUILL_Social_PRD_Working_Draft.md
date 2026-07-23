@@ -104,9 +104,9 @@ Content should move cleanly among QUILL products without repetitive copying, ina
 
 QUILL Social should learn from several strong products and interaction traditions without becoming a clone.
 
-## 4.1 Leasey Social
+## 4.1 Screen-reader-first client patterns
 
-Useful patterns include:
+Useful patterns from established accessible clients include:
 
 - Predictable list navigation.
 - Field-by-field reading.

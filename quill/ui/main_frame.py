@@ -605,7 +605,7 @@ class _DocumentTab:
     # files; in-memory only for untitled documents). The active tab's dict is
     # aliased to MainFrame._bookmarks while it is the current tab.
     bookmarks: dict[str, int] = field(default_factory=dict)
-    # Single unnamed, one-shot jump point (Leasey-style temp bookmark). Session-only:
+    # Single unnamed, one-shot jump point (temporary bookmark). Session-only:
     # never persisted to DocumentMemory, deliberately forgotten on restart.
     temp_bookmark: int | None = None
     # Per-document inline notes (content-anchored). Loaded from / saved to the
@@ -1174,7 +1174,7 @@ class MainFrame(
         # Edit-surviving anchors keyed by bookmark name (supplements the int
         # offsets above; used to relocate a bookmark after edits). #Points.
         self._bookmark_anchors: dict[str, BookmarkAnchor] = {}
-        # Single unnamed, one-shot jump point (Leasey-style temp bookmark).
+        # Single unnamed, one-shot jump point (temporary bookmark).
         # Deliberately session-only (aliased per-tab, never persisted to
         # DocumentMemory) -- it is disposable scratch state by design.
         self._temp_bookmark: int | None = None
@@ -11342,7 +11342,7 @@ class MainFrame(
         self._set_status(f'Jumped to bookmark "{selected}"')
 
     def set_temp_bookmark(self) -> None:
-        """Set the single unnamed, one-shot jump point (Leasey-style temp bookmark).
+        """Set the single unnamed, one-shot jump point (temporary bookmark).
 
         Deliberately no dialog and no persistence -- this is disposable scratch
         state, overwritten silently on every re-set, and forgotten on restart.

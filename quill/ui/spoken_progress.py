@@ -1,4 +1,4 @@
-"""Spoken milestones for long downloads (Leasey-style progress speech).
+"""Spoken milestones for long downloads (periodic progress speech).
 
 A screen-reader user starting a multi-minute download otherwise hears only its
 start ("Downloading FFmpeg") and its end ("FFmpeg installed") while the gauge

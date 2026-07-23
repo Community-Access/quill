@@ -469,7 +469,7 @@ parallel system.
   `%APPDATA%\Quill\components.state.json`; the Inno uninstaller calls a tiny
   Python "unregister" step. The dedup/GC logic lives in one testable place; the
   installer stays thin.
-- **Spoken progress (Leasey-style), in the app.** The core takes a progress
+- **Spoken progress, in the app.** The core takes a progress
   callback; the app speaks periodic updates ("Downloading the offline speech
   engine, 45 percent") through its own speech engine -- the long installs happen
   in-app, post-install, where we fully control speech. The Inno wizard stays

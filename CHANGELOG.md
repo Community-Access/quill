@@ -1036,7 +1036,7 @@ First pre-release of the 0.7.0 line. Tagged off `release/0.7.0-verbosity` once t
   compile, fixing `SyntaxError` on compound statements (`for`, `with`, `if`).
 - Nuitka build dependency removed entirely (was unreliable; took 44+ min and
   stalled). Purged from `pyproject.toml`, CI, and scripts.
-- Stray `leasey.html` at repo root removed.
+- Stray vendor HTML file at repo root removed.
 - Safe Mode now gates the Developer Console in addition to AI and Quillins.
 - `write_json_atomic` now fsyncs before `os.replace` to survive power cuts.
 - CLI missing-file paths now print a warning instead of silently skipping.

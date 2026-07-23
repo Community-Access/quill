@@ -1,4 +1,4 @@
-"""Tests for the Leasey-style spoken download milestones (quill.ui.spoken_progress)."""
+"""Tests for the spoken download milestones (quill.ui.spoken_progress)."""
 
 from __future__ import annotations
 
