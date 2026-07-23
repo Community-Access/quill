@@ -123,3 +123,18 @@ def test_zoned_once_skips_the_naive_future_guard() -> None:
     )
     assert error is None
     assert entry is not None and entry.timezone == "America/New_York"
+
+
+def test_duration_of_zero_minutes_is_rejected() -> None:
+    # #1213: the form now offers hours + minutes; both zero means no recording.
+    entry, error = _daily(duration_minutes=0)
+    assert entry is None
+    assert "at least one minute" in (error or "")
+
+
+def test_hours_and_minutes_combine_into_total_minutes() -> None:
+    # The dialog computes hours*60 + minutes; the builder stores the total.
+    entry, error = _daily(duration_minutes=2 * 60 + 30)
+    assert error is None
+    assert entry is not None
+    assert entry.duration_minutes == 150

@@ -218,7 +218,25 @@ class RadioAppFrame(
         set_accessible_name(browse_btn, "Browse Stations...")
         browse_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_browse_stations())
         buttons.Add(browse_btn, 0, wx.RIGHT, 6)
-        root.Add(buttons, 0, wx.ALL, 8)
+        # A volume control right in the Tab order, so the volume can be adjusted
+        # by arrowing a focused slider while listening -- not only via Ctrl+Up/
+        # Down or the status bar (#1214). Kept in step with the real volume by
+        # _refresh_statusbar (which also reflects Ctrl+Up/Down and per-station
+        # memory), so the two paths never disagree.
+        buttons.Add(
+            wx.StaticText(panel, label="Vol&ume:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+        )
+        start_volume = 100
+        controller = getattr(self, "_radio_controller", None)
+        if controller is not None:
+            start_volume = controller.state.volume_percent
+        self._volume_slider = wx.Slider(
+            panel, value=start_volume, minValue=0, maxValue=100, style=wx.SL_HORIZONTAL
+        )
+        set_accessible_name(self._volume_slider, "Volume, percent")
+        self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
+        buttons.Add(self._volume_slider, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
 
         # The arrow-navigable status bar lives along the bottom (F6 to reach it,
         # View > Show Status Bar to hide it). Its cells and behaviour live in
@@ -1629,9 +1647,37 @@ class RadioAppFrame(
 
     # -- status ---------------------------------------------------------------
 
+    def _on_volume_slider(self, _event: object) -> None:
+        """Arrowing the focused Volume slider sets the radio volume (#1214)."""
+        controller = getattr(self, "_radio_controller", None)
+        if controller is None:
+            return
+        percent = self._volume_slider.GetValue()
+        controller.set_volume(percent)
+        self._announce(f"Radio volume {percent}")
+        status_bar = getattr(self, "_status_bar", None)
+        if status_bar is not None:
+            status_bar.refresh()
+
+    def _sync_volume_slider(self) -> None:
+        """Reflect the true volume on the slider without firing its event.
+
+        SetValue does not emit EVT_SLIDER, so this stays a one-way sync (no loop)
+        and keeps the slider honest after Ctrl+Up/Down or per-station volume
+        memory changes the level elsewhere.
+        """
+        slider = getattr(self, "_volume_slider", None)
+        controller = getattr(self, "_radio_controller", None)
+        if slider is None or controller is None:
+            return
+        current = controller.state.volume_percent
+        if slider.GetValue() != current:
+            slider.SetValue(current)
+
     def _refresh_statusbar(self) -> None:
         text = self._radio_status_text() or "Radio: stopped"
         self._set_status(text)
+        self._sync_volume_slider()
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.SetLabel(int(self._now_playing_item_id), text)

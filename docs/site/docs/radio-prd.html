@@ -730,7 +730,16 @@ confirmation + rolling-backup recovery
 bypassed when the bundled snapshot is newer so an in-place update
 surfaces new listings (<code>wxindex._directory_stations</code>, #1207);
 and the mpv engine is hard-terminated on exit so audio never outlives
-the app (<code>MpvRadioEngine.terminate</code>, #1195).</li>
+the app (<code>MpvRadioEngine.terminate</code>, #1195). Two more feature
+requests: Schedule Recording takes duration as hours (0-24) + minutes
+(0-59) instead of a single minutes box, computed to the unchanged
+<code>duration_minutes</code> total with a <code>&lt; 1</code> guard in
+<code>build_schedule_entry</code> (#1213); and a <code>wx.Slider</code>
+<strong>Volume</strong> control sits in the main-window Tab order
+(arrow-adjustable), wired to
+<code>RadioPlayerController.set_volume</code> and kept in step with
+Ctrl+Up/Down and per-station memory via <code>_sync_volume_slider</code>
+in <code>_refresh_statusbar</code> (#1214).</li>
 </ul></li>
 <li><strong>2.1.1 (upstream <code>quill/core/radio/wxindex*.py</code>,
 <code>core/radio/reading_services.py</code>,

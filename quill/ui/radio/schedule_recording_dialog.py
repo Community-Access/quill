@@ -66,6 +66,8 @@ def build_schedule_entry(
     url = url.strip()
     if not name or not url:
         return None, "A station name and a stream URL are both required."
+    if duration_minutes < 1:
+        return None, "Set a recording length of at least one minute."
     recurrence = ("once", "daily", "weekly")[recurrence_index if recurrence_index >= 0 else 0]
     normalized_time = parse_time_of_day(time_text)
     if not normalized_time:
@@ -138,7 +140,8 @@ class ScheduleRecordingDialog:
             self._win.Bind(wx.EVT_CLOSE, self._on_close)
         else:
             self._win = wx.Dialog(
-                parent, title="Schedule Recording",
+                parent,
+                title="Schedule Recording",
                 style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             )
             self._surface = self._win
@@ -258,12 +261,18 @@ class ScheduleRecordingDialog:
         grid.Add(self._timezone_choice, 0)
 
         grid.Add(
-            wx.StaticText(self._surface, label="&Duration (minutes):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="Duration -- &hours:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
-        self._duration_ctrl = wx.SpinCtrl(self._surface, min=1, max=1440)
-        self._duration_ctrl.SetValue(60)
-        self._duration_ctrl.SetName("How many minutes to record")
-        grid.Add(self._duration_ctrl, 0)
+        self._hours_ctrl = wx.SpinCtrl(self._surface, min=0, max=24)
+        self._hours_ctrl.SetValue(1)
+        self._hours_ctrl.SetName("Recording length, hours (0 to 24)")
+        grid.Add(self._hours_ctrl, 0)
+
+        grid.Add(wx.StaticText(self._surface, label="and &minutes:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._minutes_ctrl = wx.SpinCtrl(self._surface, min=0, max=59)
+        self._minutes_ctrl.SetValue(0)
+        self._minutes_ctrl.SetName("Recording length, minutes (0 to 59), added to the hours")
+        grid.Add(self._minutes_ctrl, 0)
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -447,7 +456,8 @@ class ScheduleRecordingDialog:
         self._recurrence_choice.SetSelection(0)
         self._weekday_choice.SetSelection(0)
         self._timezone_choice.SetSelection(0)
-        self._duration_ctrl.SetValue(60)
+        self._hours_ctrl.SetValue(1)
+        self._minutes_ctrl.SetValue(0)
         self._status.SetLabel("")
         self._enter_add_mode()
 
@@ -465,7 +475,8 @@ class ScheduleRecordingDialog:
                 self._date_ctrl.SetValue(moment.strftime("%Y-%m-%d"))
         except ValueError:
             pass
-        self._duration_ctrl.SetValue(entry.duration_minutes)
+        self._hours_ctrl.SetValue(entry.duration_minutes // 60)
+        self._minutes_ctrl.SetValue(entry.duration_minutes % 60)
         if entry.timezone and entry.timezone in _TIMEZONE_CHOICES:
             self._timezone_choice.SetSelection(_TIMEZONE_CHOICES.index(entry.timezone))
         else:
@@ -516,7 +527,7 @@ class ScheduleRecordingDialog:
             date_text=self._date_ctrl.GetValue(),
             weekday_index=self._weekday_choice.GetSelection(),
             timezone_name="" if tz_index <= 0 else _TIMEZONE_CHOICES[tz_index],
-            duration_minutes=self._duration_ctrl.GetValue(),
+            duration_minutes=self._hours_ctrl.GetValue() * 60 + self._minutes_ctrl.GetValue(),
             editing_id=self._editing_id,
         )
         if error:
