@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>2026-07-05-startup-perf-optimization</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -183,18 +179,18 @@ Performance Optimization Implementation Plan</h1>
 superpowers:executing-plans discipline. Steps use checkbox
 (<code>- [ ]</code>) syntax for tracking.</p>
 </blockquote>
-<p><strong>Goal:</strong> Reduce QUILL's cold-start time and make the
+<p><strong>Goal:</strong> Reduce QUILL’s cold-start time and make the
 remaining startup window visible to screen-reader users, without
 changing any user-facing feature behavior.</p>
 <p><strong>Architecture:</strong> Cold start splits into two phases: (1)
 <code>python -m quill</code> process start through
 <code>MainFrame.__init__</code>/<code>frame.Show()</code> — currently
 ~1.5s, driven almost entirely by eager module imports in
-<code>quill/ui/main_frame.py</code>'s ~500-line import block, and (2)
+<code>quill/ui/main_frame.py</code>’s ~500-line import block, and (2)
 the already-well-built deferred phase
 (<code>_run_deferred_startup_tasks</code>, timed to
 <code>logs/startup_tasks.txt</code>). This plan (a) instruments phase 1
-so it's measurable, (b) removes synchronous Quillin-manifest disk/JSON
+so it’s measurable, (b) removes synchronous Quillin-manifest disk/JSON
 work from <code>MainFrame.__init__</code>, and (c) converts a vetted
 subset of phase-1 module-level imports (confirmed single-feature,
 non-hot-path usage via grep) to local imports inside the methods that
@@ -212,8 +208,8 @@ existing methods out of their mixins.</li>
 <code>quill/io</code> only — never run unscoped.</li>
 <li>Module size budget
 (<code>quill/tools/module_size_budgets.json</code>, GATE-11) is a
-ratchet — if any touched file's line count decreases, that's fine
-(budget stays as a ceiling); do not increase any tracked module's lines
+ratchet — if any touched file’s line count decreases, that’s fine
+(budget stays as a ceiling); do not increase any tracked module’s lines
 without a budget bump + <code>_rebaseline_&lt;date&gt;</code>
 comment.</li>
 <li>Never call <code>ShowModal()</code> directly outside
@@ -225,24 +221,19 @@ bucket, not batched at the end.</li>
 <hr />
 <h3 id="task-1-instrument-the-pre-show-startup-phase">Task 1: Instrument
 the pre-Show startup phase</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/__main__.py</code> (<code>main()</code>, around
-line 410-470)</li>
-<li>Modify: <code>quill/ui/main_frame.py</code> (<code>run_app</code>,
-and <code>_write_startup_timing</code> at line 1582)</li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Produces: <code>logs/startup_tasks.txt</code> gets a new leading
-section "Cold start (pre-window)" with entries for:
-interpreter-to-main() dispatch, <code>import quill.ui.main_frame</code>,
+<p><strong>Files:</strong> - Modify: <code>quill/__main__.py</code>
+(<code>main()</code>, around line 410-470) - Modify:
+<code>quill/ui/main_frame.py</code> (<code>run_app</code>, and
+<code>_write_startup_timing</code> at line 1582)</p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>logs/startup_tasks.txt</code> gets a new leading section “Cold
+start (pre-window)” with entries for: interpreter-to-main() dispatch,
+<code>import quill.ui.main_frame</code>,
 <code>MainFrame.__init__</code>, <code>frame.Show()</code>. Reuses the
 existing
 <code>_write_startup_timing(times: list[tuple[str, float]])</code>
 signature — pass the cold-start timings through the same function so
-there is one file, one format.</li>
-</ul>
+there is one file, one format.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Read <code>quill/__main__.py</code>
 <code>main()</code> and <code>run_app()</code> in
@@ -263,7 +254,7 @@ deferred-task entries (cold start happened first).</label></li>
 <li><label><input type="checkbox" />Manually run
 <code>python -m quill</code> once, confirm
 <code>logs/startup_tasks.txt</code> (under the dev data dir) now shows a
-"Cold start" section with plausible millisecond values, then close the
+“Cold start” section with plausible millisecond values, then close the
 app.</label></li>
 <li><label><input type="checkbox" />Run <code>pytest -m smoke -q</code>
 — must stay green (27 passed, 2 skipped baseline).</label></li>
@@ -271,30 +262,26 @@ app.</label></li>
 <code>git add quill/__main__.py quill/ui/main_frame.py &amp;&amp; git commit -m "perf: instrument pre-window cold-start timing"</code>.</label></li>
 </ul>
 <h3
-id="task-2-defer-bundled-quillin-manifest-discovery-off-mainframe__init__">Task
+id="task-2-defer-bundled-quillin-manifest-discovery-off-mainframe.__init__">Task
 2: Defer bundled-Quillin manifest discovery off
 <code>MainFrame.__init__</code></h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame_quillins.py</code>
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/main_frame_quillins.py</code>
 (<code>_register_quillin_contributions</code> /
-<code>discover_bundled_extensions</code> call site)</li>
-<li>Modify: <code>quill/ui/main_frame.py</code> (wherever
+<code>discover_bundled_extensions</code> call site) - Modify:
+<code>quill/ui/main_frame.py</code> (wherever
 <code>_register_quillin_contributions</code> is invoked from
-<code>__init__</code>)</li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes: existing <code>discover_bundled_extensions()</code> /
+<code>__init__</code>)</p>
+<p><strong>Interfaces:</strong> - Consumes: existing
+<code>discover_bundled_extensions()</code> /
 <code>load_enabled_bundled_manifests()</code> from the Quillins model —
-signatures unchanged.</li>
-<li>Produces: manifest discovery still populates the same registry/menu
-structures the Quillins menu and command dispatch already read; only the
-<em>timing</em> changes (moved from synchronous <code>__init__</code> to
-the existing <code>_run_deferred_startup_tasks</code> list, or a
+signatures unchanged. - Produces: manifest discovery still populates the
+same registry/menu structures the Quillins menu and command dispatch
+already read; only the <em>timing</em> changes (moved from synchronous
+<code>__init__</code> to the existing
+<code>_run_deferred_startup_tasks</code> list, or a
 <code>wx.CallAfter</code> scheduled at the end of
-<code>__init__</code>).</li>
-</ul>
+<code>__init__</code>).</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Find the exact call site of
 <code>_register_quillin_contributions()</code> in
@@ -309,8 +296,8 @@ actual code before deciding which split point is correct.</label></li>
 <li><label><input type="checkbox" />Move the discovery call into
 <code>_run_deferred_startup_tasks</code> (add it to the existing
 <code>for label, task in (...)</code> tuple list, each isolated in its
-own try/except per the file's existing pattern) if the check above shows
-it's safe; otherwise wrap just the manifest-parsing loop in a background
+own try/except per the file’s existing pattern) if the check above shows
+it’s safe; otherwise wrap just the manifest-parsing loop in a background
 <code>TaskManager.submit</code> call with <code>wx.CallAfter</code> to
 apply results, following the same pattern as
 <code>help topics warm-up</code> in that same list.</label></li>
@@ -318,7 +305,7 @@ apply results, following the same pattern as
 populates correctly by writing a small unit test (or checking for an
 existing one) that calls the discovery/registration path and asserts
 registered commands appear — check <code>tests/</code> for existing
-Quillins menu tests first (e.g. <code>tests/unit/ui/</code> or
+Quillins menu tests first (e.g. <code>tests/unit/ui/</code> or
 <code>tests/unit/core/test_*quillin*</code>) and extend rather than
 duplicate.</label></li>
 <li><label><input type="checkbox" />Run the Quillins-related test
@@ -328,15 +315,14 @@ must stay green.</label></li>
 <li><label><input type="checkbox" />Commit:
 <code>git add quill/ui/main_frame.py quill/ui/main_frame_quillins.py &amp;&amp; git commit -m "perf: defer bundled Quillin manifest discovery off the startup critical path"</code>.</label></li>
 </ul>
-<h3 id="task-3-lazy-import-quillcoreupdates-update-check-feature">Task
+<h3 id="task-3-lazy-import-quill.core.updates-update-check-feature">Task
 3: Lazy-import <code>quill.core.updates</code> (update-check
 feature)</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame.py</code> — remove the
-module-level <code>from quill.core.updates import (...)</code> block
-(currently lines 398-409); add local imports inside the methods that use
-these names, all located in the contiguous block ~lines 19900-20600
+<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
+— remove the module-level
+<code>from quill.core.updates import (...)</code> block (currently lines
+398-409); add local imports inside the methods that use these names, all
+located in the contiguous block ~lines 19900-20600
 (<code>_update_check_due</code>/<code>check_for_updates</code> and
 helpers: <code>_route_prerelease_to_beta</code>,
 <code>_show_update_available_dialog</code>,
@@ -344,8 +330,7 @@ helpers: <code>_route_prerelease_to_beta</code>,
 <code>_download_update_release</code>,
 <code>_offer_post_download_actions</code>,
 <code>_open_update_download_flow</code>, and the method containing line
-19901-19926).</li>
-</ul>
+19901-19926).</p>
 <p><strong>Interfaces:</strong> No public signatures change.
 <code>GitHubRelease</code>/<code>UpdateManifest</code> are used only in
 type annotations (safe under
@@ -378,19 +363,17 @@ pass.</label></li>
 <code>git add quill/ui/main_frame.py &amp;&amp; git commit -m "perf: lazy-import quill.core.updates in the update-check feature block"</code>.</label></li>
 </ul>
 <h3
-id="task-4-lazy-import-quillcoreglow_updates-glow-update-check-feature">Task
+id="task-4-lazy-import-quill.core.glow_updates-glow-update-check-feature">Task
 4: Lazy-import <code>quill.core.glow_updates</code> (GLOW update-check
 feature)</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame.py</code> — remove module-level
+<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
+— remove module-level
 <code>from quill.core.glow_updates import (GlowUpdateCheck, apply_glow_update, check_for_glow_update)</code>
 (currently lines 174-178); add as a local import inside
 <code>check_for_glow_updates</code> (line ~20119-20191), the only method
 using these names (confirmed via grep — also referenced once as a bound
 method <code>self.check_for_glow_updates</code> at line 2693, which is
-just a menu command binding and doesn't need the import).</li>
-</ul>
+just a menu command binding and doesn’t need the import).</p>
 <p><strong>Interfaces:</strong> No public signatures change.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Re-grep to confirm line
@@ -410,21 +393,19 @@ and any <code>test_glow_update*</code> tests found in
 id="task-5-lazy-import-single-use-site-ui-dialogs-session_browser-train_style_dialog">Task
 5: Lazy-import single-use-site UI dialogs (<code>session_browser</code>,
 <code>train_style_dialog</code>)</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame.py</code> — remove module-level
+<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
+— remove module-level
 <code>from quill.ui.session_browser import SessionBrowserDialog</code>
 (line ~535) and
 <code>from quill.ui.train_style_dialog import TrainStyleDialog</code>
 (line ~545); add each as a local import immediately before its single
 instantiation site (<code>SessionBrowserDialog(</code> at line ~23495,
-<code>TrainStyleDialog(</code> at line ~22263).</li>
-</ul>
+<code>TrainStyleDialog(</code> at line ~22263).</p>
 <p><strong>Interfaces:</strong> No public signatures change — these are
 dialog classes instantiated exactly once each in the whole file.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Re-grep to confirm each class still
-has exactly one instantiation site after prior tasks'
+has exactly one instantiation site after prior tasks’
 edits.</label></li>
 <li><label><input type="checkbox" />Move each import to be local,
 immediately above its instantiation call.</label></li>
@@ -436,14 +417,12 @@ immediately above its instantiation call.</label></li>
 <code>git add quill/ui/main_frame.py &amp;&amp; git commit -m "perf: lazy-import single-use dialogs (SessionBrowserDialog, TrainStyleDialog)"</code>.</label></li>
 </ul>
 <h3
-id="task-6-lazy-import-the-publishing--share-package--export-import-feature-block">Task
+id="task-6-lazy-import-the-publishing-share-package-export-import-feature-block">Task
 6: Lazy-import the Publishing / Share-Package / Export-Import feature
 block</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame.py</code> — remove module-level
-imports for <code>quill.core.publishing</code> (lines ~269-276, note:
-some names already re-imported locally at lines
+<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
+— remove module-level imports for <code>quill.core.publishing</code>
+(lines ~269-276, note: some names already re-imported locally at lines
 ~13070/13133/13188/13308/13412 — check whether the module-level import
 becomes fully redundant or still supplies names used elsewhere before
 deleting), <code>quill.core.publishing_linkage</code> (lines ~277-282,
@@ -454,18 +433,17 @@ grep usage sites first — not yet verified in this investigation),
 usages of
 <code>share_package</code>/<code>publishing_tools</code>/<code>share_dialogs</code>
 names fall within lines ~13060-13970 (one contiguous
-publishing/export/import feature region).</li>
-</ul>
+publishing/export/import feature region).</p>
 <p><strong>Interfaces:</strong> No public signatures change.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Grep
-<code>quill.core.publishing_linkage</code>'s imported names (not yet
-checked) to confirm they're confined to the same 13060-13970 region
+<code>quill.core.publishing_linkage</code>’s imported names (not yet
+checked) to confirm they’re confined to the same 13060-13970 region
 before touching that import — if usage is broader, leave that one
 module-level and only touch the other four.</label></li>
-<li><label><input type="checkbox" />Re-grep all five modules' names to
-confirm line numbers/usage after prior tasks' edits, and confirm the
-module-level <code>quill.core.publishing</code> import isn't also
+<li><label><input type="checkbox" />Re-grep all five modules’ names to
+confirm line numbers/usage after prior tasks’ edits, and confirm the
+module-level <code>quill.core.publishing</code> import isn’t also
 supplying names used outside the 13060-13970 region (e.g., in a
 status-bar or menu-enablement check elsewhere in the file).</label></li>
 <li><label><input type="checkbox" />For each of the (up to 5) modules
@@ -500,7 +478,7 @@ unscoped).</label></li>
 <li><label><input type="checkbox" />Run
 <code>python -m quill.tools.module_size_budget</code> (or the equivalent
 check command — confirm exact invocation in <code>quill/tools/</code>)
-to confirm <code>main_frame.py</code>'s line count is within its
+to confirm <code>main_frame.py</code>’s line count is within its
 existing budget (it should have <em>shrunk</em>, since imports moved to
 smaller local blocks — net file size should be roughly flat or slightly
 smaller).</label></li>
@@ -517,21 +495,17 @@ before/after numbers.</label></li>
 <code>python -m quill</code>, confirm the app opens, the Quillins menu
 is populated, Check for Updates / Check for GLOW Updates menu items
 still work (invoke each once), and <code>logs/startup_tasks.txt</code>
-shows the new "Cold start" section with a lower total than the pre-work
+shows the new “Cold start” section with a lower total than the pre-work
 baseline.</label></li>
 </ul>
 <h3 id="task-8-documentation-updates-per-bucket-not-batched">Task 8:
 Documentation updates (per-bucket, not batched)</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>docs/release/release-notes.md</code> (or equivalent
-current file — check <code>docs/release/</code> for the exact canonical
-filename)</li>
-<li>Modify: <code>CHANGELOG.md</code></li>
-<li>Modify: <code>docs/QUILL-PRD.md</code> if it tracks
-startup-performance as a named requirement (check first; skip if not
-applicable)</li>
-</ul>
+<p><strong>Files:</strong> - Modify:
+<code>docs/release/release-notes.md</code> (or equivalent current file —
+check <code>docs/release/</code> for the exact canonical filename) -
+Modify: <code>CHANGELOG.md</code> - Modify:
+<code>docs/QUILL-PRD.md</code> if it tracks startup-performance as a
+named requirement (check first; skip if not applicable)</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Check <code>docs/release/</code> and
 repo root for the exact current release-notes/CHANGELOG filenames and
@@ -556,7 +530,7 @@ user, next session)</h2>
 before/after cold-start time, list of files changed per task, full test
 suite result, and explicit note that the branch
 (<code>worktree-startup-perf-optimization</code>) has NOT been pushed or
-opened as a PR — awaiting the user's go-ahead, consistent with "never
-push without being asked."</p>
+opened as a PR — awaiting the user’s go-ahead, consistent with “never
+push without being asked.”</p>
 </body>
 </html>

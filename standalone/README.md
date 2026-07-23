@@ -13,6 +13,7 @@ Each product folder is a self-contained build shell:
 ```
 standalone/
   radio/            Quill Radio          -> quill.apps.radio
+  weather/          Quill Weather        -> quill.apps.weather   (2.2.0, paired with radio)
   cast/             QUILL Cast           -> quill.apps.podcasts
   audio-studio/     Quill Audio Studio   -> quill.apps.studio   (see note)
 ```

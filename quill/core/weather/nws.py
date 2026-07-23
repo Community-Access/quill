@@ -24,6 +24,7 @@ from quill.core.weather._http import HTTP_ERRORS, http_json
 from quill.core.weather.models import (
     CurrentConditions,
     ForecastPeriod,
+    HourlyPeriod,
     WeatherAlert,
     WeatherLocation,
     WeatherReport,
@@ -162,6 +163,48 @@ def periods_from_json(data: object, *, limit: int = 14) -> list[ForecastPeriod]:
     return periods
 
 
+def _friendly_hour(iso: object) -> str:
+    """'2026-07-19T15:00:00-07:00' -> '3 PM' (or '3:30 PM' off the hour). Pure:
+    it reads the wall-clock time already localized in the NWS timestamp, never
+    the system clock. '' on anything unparseable."""
+    if not isinstance(iso, str) or "T" not in iso:
+        return ""
+    clock = iso.split("T", 1)[1][:5]
+    try:
+        hour, minute = (int(part) for part in clock.split(":"))
+    except (ValueError, IndexError):
+        return ""
+    suffix = "AM" if hour < 12 else "PM"
+    hour12 = hour % 12 or 12
+    return f"{hour12} {suffix}" if minute == 0 else f"{hour12}:{minute:02d} {suffix}"
+
+
+def hourly_from_json(data: object, *, limit: int = 24) -> list[HourlyPeriod]:
+    """Parse an NWS forecastHourly product into HourlyPeriod rows (pure)."""
+    props = data.get("properties") if isinstance(data, dict) else None
+    raw = props.get("periods") if isinstance(props, dict) else None
+    hours: list[HourlyPeriod] = []
+    for item in raw or []:
+        if not isinstance(item, dict):
+            continue
+        precip = (item.get("probabilityOfPrecipitation") or {}).get("value")
+        hours.append(
+            HourlyPeriod(
+                time=_friendly_hour(item.get("startTime")),
+                temperature=int(item.get("temperature", 0)),
+                temperature_unit=str(item.get("temperatureUnit", "F")),
+                short_forecast=str(item.get("shortForecast", "")),
+                precipitation_percent=int(precip) if isinstance(precip, (int, float)) else None,
+                wind_speed=str(item.get("windSpeed", "")),
+                wind_direction=str(item.get("windDirection", "")),
+                is_daytime=bool(item.get("isDaytime", True)),
+            )
+        )
+        if len(hours) >= limit:
+            break
+    return hours
+
+
 def observation_from_json(data: object) -> CurrentConditions:
     props = data.get("properties") if isinstance(data, dict) else None
     if not isinstance(props, dict):
@@ -289,6 +332,7 @@ def fetch_report_worldwide(
     *,
     safe_mode: bool = False,
     daily_days: int = 10,
+    hourly_hours: int = 24,
     temperature_unit: str = "F",
 ) -> WeatherReport:
     """US locations get the authoritative NWS report; everywhere else falls back
@@ -297,6 +341,7 @@ def fetch_report_worldwide(
     The NWS covers only the United States, so a point-resolution failure means
     the location is outside its coverage, not a real error -- in that case the
     Open-Meteo forecast (current conditions + daily outlook) is returned instead.
+    The hourly forecast is NWS-only; a fallback report has none.
     """
     from quill.core.weather import open_meteo
 
@@ -305,6 +350,7 @@ def fetch_report_worldwide(
             location,
             safe_mode=safe_mode,
             daily_days=daily_days,
+            hourly_hours=hourly_hours,
             temperature_unit=temperature_unit,
         )
     except WeatherError:
@@ -321,12 +367,13 @@ def fetch_report(
     *,
     safe_mode: bool = False,
     daily_days: int = 10,
+    hourly_hours: int = 24,
     temperature_unit: str = "F",
 ) -> WeatherReport:
     """Gather a full Weather Now report for a location. Point resolution is
-    required (raises on failure); the NWS forecast, observation, and alerts, and
-    the Open-Meteo extended daily outlook, each degrade to a note so one dead
-    sub-request never blanks the whole screen."""
+    required (raises on failure); the NWS forecast, hourly forecast, observation,
+    and alerts, and the Open-Meteo extended daily outlook, each degrade to a note
+    so one dead sub-request never blanks the whole screen."""
     refuse_in_safe_mode(safe_mode)
     point = resolve_point(location.latitude, location.longitude)
     report = WeatherReport(
@@ -343,6 +390,14 @@ def fetch_report(
         report.periods = periods_from_json(http_json(point.forecast_url))
     except HTTP_ERRORS:
         report.notes.append("The forecast is temporarily unavailable.")
+
+    if hourly_hours > 0 and point.hourly_forecast_url:
+        try:
+            report.hourly = hourly_from_json(
+                http_json(point.hourly_forecast_url), limit=hourly_hours
+            )
+        except HTTP_ERRORS:
+            report.notes.append("The hourly forecast is temporarily unavailable.")
 
     try:
         report.current = _fetch_latest_observation(point.observation_stations_url)

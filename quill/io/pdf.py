@@ -9,6 +9,10 @@ from quill.io.markitdown_bridge import convert_with_markitdown
 # materialize every page at once. Pages beyond this cap are counted but skipped.
 _PDF_MAX_PAGES = 200
 
+# Bound how many embedded outline (bookmark) entries we import so a pathological
+# PDF with thousands of outline nodes cannot flood the bookmark store.
+_PDF_MAX_OUTLINE_ENTRIES = 500
+
 
 @dataclass(slots=True)
 class PdfExtractionResult:
@@ -20,18 +24,24 @@ class PdfExtractionResult:
     page_scores: list[int]
 
 
-def extract_pdf_text(path: Path) -> PdfExtractionResult:
+def extract_pdf_text(path: Path, *, password: str | None = None) -> PdfExtractionResult:
     # Distinguish four outcomes (#909, #58): (1) no extractor installed, (2) an
     # encrypted/password-protected PDF, (3) a damaged/corrupt PDF that parse-fails
     # in the extractor, and (4) a scanned/image-only PDF with no text layer. They
     # are different problems with different remedies, and the previous broad
     # ``except Exception`` collapsed 2/3 into 4 -- telling users with a corrupt or
     # password-locked file to run OCR (the wrong fix).
+    #
+    # ``password`` (when the UI has collected one) is threaded to both extractors:
+    # a correct password unlocks the file and it extracts like any other PDF; a
+    # wrong/absent password leaves the file locked and falls through to the
+    # ``encrypted`` branch below. The password is used only for this read and is
+    # never persisted.
     any_extractor_available = False
     parse_error = False
     for extractor in (_extract_with_pdfplumber, _extract_with_pypdf):
         try:
-            result = extractor(path)
+            result = extractor(path, password=password)
         except ModuleNotFoundError:
             continue  # this extractor's package is absent; try the next
         except Exception:
@@ -52,12 +62,21 @@ def extract_pdf_text(path: Path) -> PdfExtractionResult:
         )
         engine = "unavailable"
     elif _is_encrypted_pdf(path):
-        message = (
-            f"({path.name} is encrypted. QUILL cannot read password-protected "
-            f"PDFs. Remove the password (for example `qpdf --decrypt in.pdf out.pdf`) "
-            f"and open the decrypted copy, or export it unlocked from the original "
-            f"application.)\n"
-        )
+        # The file is locked with a real user password. ``password`` distinguishes
+        # "no password tried yet" (prompt for one) from "the password just tried
+        # was wrong" (re-prompt) -- both keep ``engine="encrypted"`` so the open
+        # flow knows to ask. The password is never stored.
+        if password:
+            message = (
+                f"(The password for {path.name} was not correct, so the encrypted "
+                f"PDF could not be opened. Check the password and try again.)\n"
+            )
+        else:
+            message = (
+                f"({path.name} is encrypted (password-protected). Enter its password "
+                f"to open it; QUILL uses the password only to unlock this file and "
+                f"never stores it.)\n"
+            )
         engine = "encrypted"
     elif parse_error:
         message = (
@@ -109,6 +128,60 @@ def _is_encrypted_pdf(path: Path) -> bool:
     return not bool(matched)
 
 
+def extract_pdf_outline(path: Path, *, password: str | None = None) -> list[tuple[str, int]]:
+    """Return a PDF's embedded outline (Adobe bookmarks) as ``(title, page)`` pairs.
+
+    ``page`` is the 1-based page number the entry points to. The nested outline
+    tree is flattened in document order (hierarchy is not preserved — QUILL's
+    bookmark store is flat). Best-effort: returns ``[]`` when pypdf is absent, the
+    PDF has no outline, it is locked and ``password`` does not unlock it, or any
+    entry fails to resolve — importing an outline must never block opening a PDF.
+    Capped at :data:`_PDF_MAX_OUTLINE_ENTRIES` entries.
+    """
+    try:
+        from pypdf import PdfReader  # type: ignore[import-not-found]
+    except ModuleNotFoundError:
+        return []
+    try:
+        reader = PdfReader(str(path))
+        if getattr(reader, "is_encrypted", False):
+            try:
+                reader.decrypt(password or "")
+            except Exception:  # noqa: BLE001 - decrypt API varies; treat as locked
+                return []
+        raw_outline = reader.outline  # property; can raise on a malformed tree
+    except Exception:  # noqa: BLE001 - corrupt/unreadable -> no outline
+        return []
+
+    entries: list[tuple[str, int]] = []
+
+    def _walk(items: object) -> None:
+        if not isinstance(items, list):
+            return
+        for item in items:
+            if len(entries) >= _PDF_MAX_OUTLINE_ENTRIES:
+                return
+            if isinstance(item, list):
+                _walk(item)  # a nested sub-tree of child bookmarks
+                continue
+            title = getattr(item, "title", None)
+            if not title or not str(title).strip():
+                continue
+            try:
+                page_index = reader.get_destination_page_number(item)
+            except Exception:  # noqa: BLE001 - unresolvable destination -> skip
+                continue
+            if not isinstance(page_index, int) or page_index < 0:
+                continue
+            entries.append((str(title).strip(), page_index + 1))
+
+    try:
+        _walk(raw_outline)
+    except Exception:  # noqa: BLE001 - any traversal failure -> what we have so far
+        pass
+    return entries
+
+
 def format_pdf_document(path: Path | PdfExtractionResult) -> str:
     result = path if isinstance(path, PdfExtractionResult) else extract_pdf_text(path)
     header = [
@@ -141,11 +214,14 @@ def format_pdf_document(path: Path | PdfExtractionResult) -> str:
     return "\n".join(header) + body
 
 
-def _extract_with_pdfplumber(path: Path) -> PdfExtractionResult:
+def _extract_with_pdfplumber(path: Path, *, password: str | None = None) -> PdfExtractionResult:
     import pdfplumber
 
     page_texts: list[str] = []
-    with pdfplumber.open(str(path)) as pdf:
+    # pdfplumber accepts ``password=None`` (treated as no password); a supplied
+    # user password unlocks an encrypted PDF, and a wrong one raises, which the
+    # caller records as a parse failure.
+    with pdfplumber.open(str(path), password=password or "") as pdf:
         page_count = len(pdf.pages)
         for index, page in enumerate(pdf.pages):
             if index >= _PDF_MAX_PAGES:
@@ -172,10 +248,18 @@ def _extract_with_pdfplumber(path: Path) -> PdfExtractionResult:
     )
 
 
-def _extract_with_pypdf(path: Path) -> PdfExtractionResult:
+def _extract_with_pypdf(path: Path, *, password: str | None = None) -> PdfExtractionResult:
     from pypdf import PdfReader  # type: ignore[import-not-found]
 
     reader = PdfReader(str(path))
+    if getattr(reader, "is_encrypted", False):
+        # An empty string unlocks a permissions-only ("empty user password") PDF;
+        # a supplied password unlocks a locked one. A failed decrypt leaves the
+        # reader locked so page access raises, recorded upstream as a parse error.
+        try:
+            reader.decrypt(password or "")
+        except Exception:  # noqa: BLE001 - decrypt API differs across pypdf versions
+            pass
     page_count = len(reader.pages)
     page_texts: list[str] = []
     for index, page in enumerate(reader.pages):

@@ -2311,6 +2311,120 @@ Opening a <code>.docx</code> for rich editing used to silently drop its
 tables; they now appear inline as accessible tables you can read and
 jump to with <code>T</code>.</li>
 </ul>
+<h3 id="open-password-protected-pdfs">Open password-protected PDFs</h3>
+<ul>
+<li><strong>Locked PDFs just open now.</strong> Previously QUILL
+correctly recognized an encrypted (password-protected) PDF but refused
+it, telling you to strip the password yourself in another tool first.
+Now QUILL simply <strong>asks for the password and reads the
+file</strong> — the way Leasey Word does. Type the password and the PDF
+opens; enter the wrong one and QUILL says so and lets you try again;
+press <strong>Cancel</strong> to stop opening it.</li>
+<li><strong>Your password is never kept.</strong> It is used only to
+unlock that one file for reading — QUILL never stores it, logs it, or
+writes it anywhere — so if you close and reopen the file, it asks again.
+PDFs that are technically "encrypted" but open with an empty password
+(permissions-only locks) still open with no prompt, exactly as before.
+The whole read runs in the background, so the screen reader stays
+responsive while a big PDF loads.</li>
+</ul>
+<h3 id="sort-lines-by-date">Sort lines by date</h3>
+<ul>
+<li><strong>A fourth way to sort.</strong> Alongside the existing
+alphabetical, numeric, and by-length sorts, <strong>Format &gt; Sort
+Lines by Date</strong> sorts the selected lines (or the whole document)
+by the first date it finds on each line — perfect for logs, transcripts,
+and hand-kept lists.</li>
+<li><strong>It understands how people actually write dates.</strong> It
+recognizes ISO (<code>2020-03-05</code>), slash and dot forms
+(<code>03/04/2020</code>, <code>5.1.2020</code>), and English month
+names (<code>Jan 5, 2020</code>, <code>5 January 2020</code>,
+<code>March 3rd, 1999</code>). For an ambiguous numeric date it reads
+the day/month order the way your region does — US English reads
+<code>03/04</code> as March 4th, elsewhere as 4 March — and an
+unambiguous value like <code>25/12</code> is always read correctly
+either way. Lines with no recognizable date stay together at the bottom
+in their original order, so nothing is lost. Like the other structured
+sorts, it has no default shortcut and can be given one in the Keymap
+Editor.</li>
+</ul>
+<h3 id="read-the-sentence-around-a-misspelling-aloud">Read the sentence
+around a misspelling aloud</h3>
+<ul>
+<li><strong>Ctrl+R in the Spelling Review.</strong> In the F7 Spelling
+Review, a new <strong>Read Sentence</strong> button — and the
+<strong>Ctrl+R</strong> shortcut — reads the whole sentence around the
+current misspelled word aloud, so you can judge a correction in context
+without leaving the dialog or scrolling the document to find the word.
+It reads the same context the dialog already shows. This matches Leasey
+Word's in-dialog "read the sentence" affordance.</li>
+</ul>
+<h3 id="your-pdfs-own-bookmarks-come-with-it">Your PDF's own bookmarks
+come with it</h3>
+<ul>
+<li><strong>Jump straight to a chapter.</strong> When you open a PDF
+that has an embedded outline — the chapters and sections you'd see in
+Adobe Reader's bookmarks pane — QUILL now imports those into its own
+<strong>Bookmarks Manager</strong> (Ctrl+Shift+G), just as it already
+surfaces Word and EPUB structure. Each bookmark jumps to exactly where
+<strong>Go To Page</strong> for that page would land.</li>
+<li><strong>It respects your edits.</strong> The import happens once,
+the first time you open the PDF; if you later rename or delete some of
+those bookmarks, reopening the file won't bring them back or make
+duplicates. A PDF with no outline (or a damaged one) simply opens as
+before.</li>
+</ul>
+<h3 id="more-one-click-writing-presets">More one-click writing
+presets</h3>
+<ul>
+<li><strong>Six named tools added to the Prompt Library.</strong>
+<strong>AI &gt; Prompt Library</strong> gains <strong>Generate
+FAQs</strong>, <strong>Draft a Speech</strong>, <strong>Summary
+Email</strong>, <strong>Social Media Post</strong> (280 characters or
+fewer), <strong>Step-by-Step Instructions</strong>, and
+<strong>Paraphrase</strong> — the named one-shot tools QUILL didn't
+already ship next to its Summarize, rewrite, tone, and expand presets.
+Each runs over your selection or the whole document in one click, and
+like every built-in you can tweak its wording or switch it off. This
+rounds out parity with Leasey Word's set of named ChatGPT tools.</li>
+</ul>
+<h3 id="improve-reading-order-with-ai">Improve Reading Order with
+AI</h3>
+<ul>
+<li><strong>Fix a jumbled document in one step.</strong> Some documents
+arrive with their text in the wrong order — a two-column PDF that
+extracts as one scrambled stream, a page with sidebars or text boxes, or
+lines out of sequence. <strong>AI &gt; More &gt; Improve Reading
+Order...</strong> (also on the command palette) sends the current
+document's text to your configured AI provider and gets it back in
+natural reading order: columns merged into one flow, mid-sentence line
+breaks joined, and headings, lists, and tables inferred — with your
+exact wording preserved (it never summarizes or invents).</li>
+<li><strong>Always asks first, never touches your original.</strong> A
+confirmation names the provider and its host and the approximate page
+size before anything is sent; the improved text opens as a <strong>new,
+unsaved document</strong> (Save As to keep it), leaving your original
+exactly as it was. It refuses documents over a page limit (Settings,
+default 40) so a huge or costly send can't happen by accident, and it's
+off in Safe Mode. (For a <em>scanned</em> image-only PDF, use File &gt;
+Import's OCR path instead — this command is for text that's simply in
+the wrong order.) This closes the last Leasey Word editor-parity
+gap.</li>
+<li><strong>Your provider, your choice — or fully on-device.</strong>
+Improve Reading Order isn't wired to any single service. It uses
+whichever AI backend you've set up in <strong>AI &gt; Set Up AI</strong>
+— <strong>OpenAI</strong>, <strong>Claude</strong>, <strong>Google
+Gemini</strong>, <strong>OpenRouter</strong>, <strong>Ollama</strong>
+(local), <strong>Ollama Cloud</strong>, or a <strong>custom
+OpenAI-compatible endpoint</strong> — with your own account and key
+(QUILL bundles no keys and adds nothing to your bill). Haven't set up a
+cloud provider? QUILL falls back to its <strong>bundled on-device
+model</strong> (Apple's on-device model on a supported Mac, otherwise a
+local CPU model), so the repair can run <strong>entirely on your
+computer with nothing uploaded</strong>. Either way the confirmation
+names the exact provider and host first, so you always know where your
+text is going.</li>
+</ul>
 <h3 id="bookmarks-that-survive-edits">Bookmarks that survive edits</h3>
 <ul>
 <li>Bookmarks and quick-bookmarks now remember the text around them, so

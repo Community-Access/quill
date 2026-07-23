@@ -4,6 +4,8 @@ report-rendering path are exercised, but never shows a modal."""
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 import wx
 
@@ -244,6 +246,146 @@ def test_weather_menu_appends_with_expected_items(app) -> None:
     assert any("Active Alerts" in text for text in labels)
     assert any("Add Location" in text for text in labels)
     assert any("Settings" in text for text in labels)
+    assert any("Monitoring" in text for text in labels)
+    frame.Destroy()
+
+
+def test_weather_monitoring_toggle_starts_and_stops(app, tmp_path) -> None:
+    from quill.core.weather import locations as loc_store
+    from quill.core.weather import monitor
+    from quill.core.weather.models import WeatherLocation
+    from quill.ui.main_frame_weather import WeatherMixin
+
+    # A saved primary location for the monitor to watch.
+    store = loc_store.WeatherLocationStore()
+    store.add(WeatherLocation(display_name="Tucson, AZ", latitude=32.22, longitude=-110.97))
+    loc_store.save_locations(tmp_path, store)
+
+    class _Host(WeatherMixin, _MenuHost):
+        def _weather_data_dir(self):  # keep the test off the real data dir
+            return tmp_path
+
+    frame = wx.Frame(None)
+    bar = wx.MenuBar()
+    host = _Host(frame, wx)
+    host._append_weather_menu(bar)
+
+    assert host._weather_monitoring_active() is False
+    assert "Start" in host._weather_monitor_menu_text()
+
+    host.toggle_weather_monitoring()  # start (task manager is a no-op stub)
+    assert host._weather_monitoring_active() is True
+    assert "Stop" in host._weather_monitor_menu_text()
+    assert monitor.load_config(tmp_path).enabled is True  # persisted on
+
+    host.toggle_weather_monitoring()  # stop
+    assert host._weather_monitoring_active() is False
+    assert monitor.load_config(tmp_path).enabled is False
+    frame.Destroy()
+
+
+def test_weather_menu_area_gating_hides_disabled_items(app) -> None:
+    from quill.ui.main_frame_weather import WeatherMixin
+
+    class _Host(WeatherMixin, _MenuHost):
+        # Simulate the Quill Weather app turning off NOAA radio and monitoring.
+        def _app_area_enabled(self, area_id):
+            return area_id not in {"noaa_radio", "monitoring"}
+
+    frame = wx.Frame(None)
+    bar = wx.MenuBar()
+    _Host(frame, wx)._append_weather_menu(bar)
+    menu = bar.GetMenu(
+        [bar.GetMenuLabelText(i) for i in range(bar.GetMenuCount())].index("Weather")
+    )
+    labels = [
+        menu.FindItemByPosition(i).GetItemLabelText()
+        for i in range(menu.GetMenuItemCount())
+        if menu.FindItemByPosition(i).GetKind() != wx.ITEM_SEPARATOR
+    ]
+    assert not any("NOAA" in t for t in labels)  # NOAA radio area hidden
+    assert not any("Monitoring" in t for t in labels)  # monitoring area hidden
+    assert any("Weather Now" in t for t in labels)  # core items remain
+    frame.Destroy()
+
+
+def test_weather_menu_has_test_alert_and_pause(app) -> None:
+    from quill.ui.main_frame_weather import WeatherMixin
+
+    class _Host(WeatherMixin, _MenuHost):
+        pass
+
+    frame = wx.Frame(None)
+    bar = wx.MenuBar()
+    _Host(frame, wx)._append_weather_menu(bar)
+    menu = bar.GetMenu(
+        [bar.GetMenuLabelText(i) for i in range(bar.GetMenuCount())].index("Weather")
+    )
+    labels = [
+        menu.FindItemByPosition(i).GetItemLabelText()
+        for i in range(menu.GetMenuItemCount())
+        if menu.FindItemByPosition(i).GetKind() != wx.ITEM_SEPARATOR
+    ]
+    assert any("Test Alert" in t for t in labels)
+    assert any("Pause Alert" in t for t in labels)
+    frame.Destroy()
+
+
+def test_test_alert_fires_every_channel(app) -> None:
+    from quill.ui.main_frame_weather import WeatherMixin
+
+    class _Host(WeatherMixin, _MenuHost):
+        pass
+
+    frame = wx.Frame(None)
+    host = _Host(frame, wx)
+    calls: list[str] = []
+    host._play_weather_alert_sound = lambda: calls.append("sound")  # type: ignore[method-assign]
+    host._show_weather_toast = lambda t, b: calls.append(f"toast:{t}")  # type: ignore[method-assign]
+    host._announce = lambda m, **k: calls.append(f"speak:{m}")  # type: ignore[method-assign]
+    host._show_message_box = lambda m, c, s: calls.append(f"dialog:{c}") or 0  # type: ignore[method-assign]
+    host.weather_test_alert()
+    assert "sound" in calls
+    assert any(c.startswith("toast:[TEST]") for c in calls)
+    assert any(c.startswith("speak:Test weather alert") for c in calls)
+    assert any(c.startswith("dialog:Test Weather Alert") for c in calls)
+    frame.Destroy()
+
+
+def test_pause_and_resume_gate_polling(app, tmp_path) -> None:
+    from quill.core.weather import locations as loc_store
+    from quill.core.weather.models import WeatherLocation
+    from quill.ui.main_frame_weather import WeatherMixin
+
+    store = loc_store.WeatherLocationStore()
+    store.add(WeatherLocation(display_name="Tucson, AZ", latitude=32.22, longitude=-110.97))
+    loc_store.save_locations(tmp_path, store)
+
+    class _Host(WeatherMixin, _MenuHost):
+        def _weather_data_dir(self):
+            return tmp_path
+
+    frame = wx.Frame(None)
+    bar = wx.MenuBar()
+    host = _Host(frame, wx)
+    host._append_weather_menu(bar)
+    host.toggle_weather_monitoring()  # start (no-op task manager)
+    assert host._weather_monitoring_active() is True
+    assert host._weather_monitor_paused is False
+
+    host.toggle_weather_monitoring_pause()  # pause
+    assert host._weather_monitor_paused is True
+    # A poll while paused submits nothing.
+    submitted: list[str] = []
+    host._task_manager = SimpleNamespace(  # type: ignore[assignment]
+        submit=lambda *a, **k: submitted.append("x")
+    )
+    host._weather_monitor_poll()
+    assert submitted == []  # paused -> no fetch
+
+    host.toggle_weather_monitoring_pause()  # resume
+    assert host._weather_monitor_paused is False
+    host.stop_weather_monitoring(announce=False)
     frame.Destroy()
 
 

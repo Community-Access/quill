@@ -910,6 +910,19 @@ class PodcastsAppFrame(
     # -- lifecycle --------------------------------------------------------------
 
     def _on_cast_app_close(self, event: wx.CloseEvent) -> None:
+        # Cast has no "ask"/minimize confirm -- closing always exits -- but it
+        # routes through the shared close flow (AppShellFrame.handle_app_close)
+        # so all three companion apps share one path. protected=False means the
+        # confirm is never reached; close_action="exit" closes straight away.
+        self.handle_app_close(
+            event,
+            close_action="exit",
+            protected=False,
+            confirm=lambda: "exit",
+            shutdown=self._cast_shutdown,
+        )
+
+    def _cast_shutdown(self) -> None:
         try:
             self._save_podcast_library()
         except Exception:  # noqa: BLE001 - a failed save must never block exit
@@ -927,7 +940,6 @@ class PodcastsAppFrame(
         self._task_manager.shutdown(wait=False)
         self._unregister_media_keys()
         self._remove_tray_icon()
-        event.Skip()
 
 
 def main() -> int:

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>2026-07-08-voice-preview-feedback-design</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -177,12 +173,12 @@
 </head>
 <body>
 <h1
-id="voice-preview-feedback-generating-cue-stop-the-prior-preview-playstop-button--design">Voice
+id="voice-preview-feedback-generating-cue-stop-the-prior-preview-playstop-button-design">Voice
 preview feedback: generating cue, stop-the-prior-preview, Play/Stop
 button — design</h1>
 <h2 id="problem">Problem</h2>
-<p>Previewing a voice (Voice Browser's <strong>&amp;Preview Selected
-Voice</strong> button, and the Download Optional Components hub's
+<p>Previewing a voice (Voice Browser’s <strong>&amp;Preview Selected
+Voice</strong> button, and the Download Optional Components hub’s
 <strong>&amp;Test</strong> button for voice rows) has three related
 gaps, all traced to the same code path
 (<code>MainFrame._preview_voice</code> /
@@ -196,13 +192,13 @@ anything plays. There is no sound or announcement telling the user
 something is happening.</li>
 <li><strong>Overlapping previews.</strong> <code>_preview_voice</code>
 is dispatched as a fire-and-forget background thread via
-<code>_run_background_task</code> with no shared "currently previewing"
+<code>_run_background_task</code> with no shared “currently previewing”
 state anywhere. Triggering a second preview while the first is still
 generating or playing does not stop the first — both its audio and its
-"Preview started"/"Preview finished" status announcements can overlap
+“Preview started”/“Preview finished” status announcements can overlap
 with the new one.</li>
 <li><strong>The button never reflects state.</strong> Both the Voice
-Browser's Preview button and the hub's Test button are static labels —
+Browser’s Preview button and the hub’s Test button are static labels —
 they never become a Stop affordance while a preview is generating or
 playing, so there is no way to cancel one short of waiting it out.</li>
 </ol>
@@ -216,21 +212,21 @@ outright; the next click starts fresh from the beginning. Building real
 pause/resume would mean replacing the blocking playback backend entirely
 — out of scope here.</li>
 <li><strong>No forced cancellation of in-flight external
-synthesis.</strong> If a Piper/ eSpeak/DECtalk subprocess or Kokoro's
+synthesis.</strong> If a Piper/ eSpeak/DECtalk subprocess or Kokoro’s
 Python call is still actively computing when the user starts a new
 preview (or hits Stop), QUILL does not kill it. It keeps running in the
 background to completion and its result is discarded silently (never
 played, no callback fires). Only <strong>playback</strong> and
-<strong>QUILL's own announcements</strong> are guaranteed to stop
+<strong>QUILL’s own announcements</strong> are guaranteed to stop
 immediately. This is a deliberate scope boundary, not an oversight —
 tracking and terminating arbitrary external processes/Python calls is a
 materially bigger change.</li>
-<li><strong>Not a new "mode" setting.</strong> No combined enum setting
+<li><strong>Not a new “mode” setting.</strong> No combined enum setting
 like <code>voice_preview_cue = sound|announcement|both|none</code>. The
 sound half already has a general, reusable per-event toggle system
 (Sound Events dialog); the announcement half gets one new boolean.
-Configuring "both" means both are independently on by default.</li>
-<li><strong>Not touching the SAPI5 Read Aloud preview's underlying
+Configuring “both” means both are independently on by default.</li>
+<li><strong>Not touching the SAPI5 Read Aloud preview’s underlying
 controller.</strong>
 <code>ReadAloudController.start</code>/<code>.stop()</code> already
 exists and already works for the <code>sapi5</code> preview branch; this
@@ -238,13 +234,13 @@ design only adds the generation-token staleness check and Stop-button
 wiring around it, not new controller behavior.</li>
 </ul>
 <h2 id="design">Design</h2>
-<h3 id="1-single-active-preview-tracking-fixes-overlap">1. Single
+<h3 id="single-active-preview-tracking-fixes-overlap">1. Single
 active-preview tracking (fixes overlap)</h3>
 <p><code>MainFrame</code> gains a small piece of state — a monotonically
-increasing generation counter (e.g.
-<code>self._preview_generation: int</code>) plus a reference to whatever
-is needed to stop the current preview. <code>_preview_voice</code>
-becomes the single choke point:</p>
+increasing generation counter
+(e.g. <code>self._preview_generation: int</code>) plus a reference to
+whatever is needed to stop the current preview.
+<code>_preview_voice</code> becomes the single choke point:</p>
 <ul>
 <li>On entry, increment the counter and capture
 <code>my_generation = self._preview_generation</code>.</li>
@@ -257,21 +253,21 @@ the current <code>winsound</code>/MCI playback
 (<code>winsound.PlaySound(None, winsound.SND_PURGE)</code> and an MCI
 <code>stop</code>+<code>close</code> on the <code>quill_preview</code>
 alias, best-effort, never raising).</li>
-<li>Cancel any pending "generating" cue timer (§2).</li>
+<li>Cancel any pending “generating” cue timer (§2).</li>
 </ul></li>
 <li>Every callback that eventually fires for this generation (the
-"generating" cue timer, the background-task completion handler, the
+“generating” cue timer, the background-task completion handler, the
 <code>on_state_change</code> callback in §3) first checks
 <code>my_generation == self._preview_generation</code> and is a no-op if
 stale. This is what prevents a late-finishing old preview from
-announcing "Preview finished" or playing over a newer one, and is also
-the mechanism the non-goal above relies on (a stale generation's result
+announcing “Preview finished” or playing over a newer one, and is also
+the mechanism the non-goal above relies on (a stale generation’s result
 is simply dropped when it does arrive).</li>
 </ul>
-<h3 id="2-the-generating-please-wait-cue">2. The "generating, please
-wait" cue</h3>
+<h3 id="the-generating-please-wait-cue">2. The “generating, please wait”
+cue</h3>
 <ul>
-<li>When <code>_preview_voice</code> starts synthesis (i.e. every branch
+<li>When <code>_preview_voice</code> starts synthesis (i.e. every branch
 except sample playback, where there is nothing to wait for), it starts a
 one-shot <code>~400ms</code> <code>wx.CallLater</code> timer tagged with
 <code>my_generation</code>.</li>
@@ -286,8 +282,8 @@ the cue <strong>once</strong>:
 member in <code>quill/core/sound_events.py</code>). The bundled Ink pack
 (<code>quill/assets/sound_packs/ink/manifest.json</code>) maps this new
 event key to the <strong>existing</strong> <code>ai_start.wav</code>
-file (no new audio asset needed — same tone already used for "AI
-thinking started", semantically the same "the system is working on it"
+file (no new audio asset needed — same tone already used for “AI
+thinking started”, semantically the same “the system is working on it”
 cue). Because it is a real <code>SoundEvent</code> loaded from the pack,
 it automatically appears in the existing Sound Events dialog as its own
 togglable entry, and already respects the master
@@ -297,11 +293,11 @@ no new sound infrastructure required.</li>
 <code>voice_preview_announce_generating</code> (<code>bool</code>,
 default <code>True</code>, category <code>accessibility</code> in
 <code>quill/core/settings_specs.py</code> next to the other sound
-settings). When on, speaks "Generating preview, please wait" once via
+settings). When on, speaks “Generating preview, please wait” once via
 the existing <code>_announce</code> path.</li>
 <li>Both halves are independently toggleable through existing mechanisms
 (Sound Events dialog for the sound; the new setting for the
-announcement) — satisfying "configuration available" without a new
+announcement) — satisfying “configuration available” without a new
 combined setting.</li>
 </ul></li>
 <li>No repetition: this is genuinely one-shot per generation, matching
@@ -309,8 +305,7 @@ the approved answer. If a generation somehow takes much longer, nothing
 further fires until the real preview plays, an error surfaces, or the
 user hits Stop.</li>
 </ul>
-<h3
-id="3-play--stop-button-voice-browser--hub-test-button-for-voices">3.
+<h3 id="play-stop-button-voice-browser-hub-test-button-for-voices">3.
 Play ↔︎ Stop button (Voice Browser + hub Test button for voices)</h3>
 <ul>
 <li><code>_preview_voice</code> gains an optional keyword-only
@@ -367,14 +362,14 @@ rows.</li>
 <ul>
 <li>Core: settings round-trip + default for
 <code>voice_preview_announce_generating</code>; a wx-free unit test for
-the generation-token staleness logic (start generation N, "finish"
+the generation-token staleness logic (start generation N, “finish”
 generation N-1, assert no callback fires); the new
 <code>SoundEvent</code> member resolves through
 <code>sound_manager</code>/the Ink manifest.</li>
 <li>UI: Voice Browser button relabels generating → playing → idle across
-a faked slow preview; the hub's Test button does the same only for voice
+a faked slow preview; the hub’s Test button does the same only for voice
 rows and is unaffected for tool/engine rows; starting a second preview
-while the first is active stops the first's (faked) playback and does
+while the first is active stops the first’s (faked) playback and does
 not fire its completion callback.</li>
 </ul>
 </body>

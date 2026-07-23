@@ -106,8 +106,20 @@ def format_time(iso: object) -> str:
     return f"{hour12}:{minute:02d} {suffix}"
 
 
-def daily_from_json(data: object, *, unit: str) -> list[DailyOutlook]:
-    """Parse an Open-Meteo daily block into DailyOutlook rows (pure)."""
+def daily_from_json(
+    data: object,
+    *,
+    unit: str,
+    latitude: float | None = None,
+    longitude: float | None = None,
+    utc_offset_hours: float = 0.0,
+) -> list[DailyOutlook]:
+    """Parse an Open-Meteo daily block into DailyOutlook rows (pure).
+
+    When ``latitude`` and ``longitude`` are given, each row is also filled with
+    its locally-computed moon almanac (phase, illumination, moonrise, moonset)
+    -- Open-Meteo does not provide moon data, so QUILL derives it.
+    """
     daily = data.get("daily") if isinstance(data, dict) else None
     if not isinstance(daily, dict):
         return []
@@ -123,21 +135,37 @@ def daily_from_json(data: object, *, unit: str) -> list[DailyOutlook]:
     for i, date in enumerate(times):
         if not isinstance(date, str):
             continue
-        rows.append(
-            DailyOutlook(
-                date=date,
-                weekday=weekday_name(date),
-                high_temp=_int_at(highs, i),
-                low_temp=_int_at(lows, i),
-                temperature_unit=unit,
-                condition=weather_code_text(codes[i]) if i < len(codes) else "Unknown",
-                precipitation_percent=_int_at(precip, i),
-                sunrise=format_time(sunrises[i]) if i < len(sunrises) else "",
-                sunset=format_time(sunsets[i]) if i < len(sunsets) else "",
-                uv_index=_int_at(uv, i),
-            )
+        row = DailyOutlook(
+            date=date,
+            weekday=weekday_name(date),
+            high_temp=_int_at(highs, i),
+            low_temp=_int_at(lows, i),
+            temperature_unit=unit,
+            condition=weather_code_text(codes[i]) if i < len(codes) else "Unknown",
+            precipitation_percent=_int_at(precip, i),
+            sunrise=format_time(sunrises[i]) if i < len(sunrises) else "",
+            sunset=format_time(sunsets[i]) if i < len(sunsets) else "",
+            uv_index=_int_at(uv, i),
         )
+        if latitude is not None and longitude is not None:
+            from quill.core.weather import astronomy
+
+            moon = astronomy.almanac(date, latitude, longitude, utc_offset_hours)
+            row.moon_phase = moon.phase_name
+            row.moon_illumination_percent = moon.illumination_percent
+            row.moonrise = moon.moonrise
+            row.moonset = moon.moonset
+        rows.append(row)
     return rows
+
+
+def _utc_offset_hours(data: object) -> float:
+    """Open-Meteo's utc_offset_seconds (present with timezone=auto) as hours."""
+    if isinstance(data, dict):
+        seconds = data.get("utc_offset_seconds")
+        if isinstance(seconds, (int, float)):
+            return float(seconds) / 3600.0
+    return 0.0
 
 
 def _int_at(values: object, index: int) -> int | None:
@@ -188,7 +216,13 @@ def fetch(
     current = data.get("current") if isinstance(data, dict) else None
     cloud = current.get("cloud_cover") if isinstance(current, dict) else None
     return OpenMeteoData(
-        daily=daily_from_json(data, unit=unit),
+        daily=daily_from_json(
+            data,
+            unit=unit,
+            latitude=latitude,
+            longitude=longitude,
+            utc_offset_hours=_utc_offset_hours(data),
+        ),
         cloud_cover_percent=round(cloud) if isinstance(cloud, (int, float)) else None,
     )
 
@@ -261,7 +295,14 @@ def fetch_report(
     report = WeatherReport(
         location=location,
         current=current,
-        daily=daily_from_json(data, unit=unit),
+        daily=daily_from_json(
+            data,
+            unit=unit,
+            latitude=location.latitude,
+            longitude=location.longitude,
+            utc_offset_hours=_utc_offset_hours(data),
+        ),
+        time_zone=str(data.get("timezone", "")) if isinstance(data, dict) else "",
         notes=[
             "Worldwide forecast from Open-Meteo. Local watches and warnings are "
             "shown only for US locations."

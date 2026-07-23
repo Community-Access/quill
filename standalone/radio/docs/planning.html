@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>planning</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -187,6 +183,12 @@ metadata without permitting QUILL to resolve, embed, cache, or
 redistribute its streams.</p>
 <h2 id="best-additions-to-pursue">Best additions to pursue</h2>
 <table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 39%" />
+<col style="width: 33%" />
+<col style="width: 12%" />
+</colgroup>
 <thead>
 <tr>
 <th>Source</th>
@@ -273,8 +275,8 @@ disabilities</td>
 </tr>
 </tbody>
 </table>
-<h2 id="1-fmstream-should-probably-be-next">1. FMSTREAM should probably
-be next</h2>
+<h2 id="fmstream-should-probably-be-next">1. FMSTREAM should probably be
+next</h2>
 <p>FMSTREAM is one of the strongest fits for QUILL. It maintains a large
 international catalog, connects listeners directly to broadcaster
 streams rather than proxying the audio, and offers a database API for
@@ -295,14 +297,13 @@ TuneIn.</li>
 underneath it. QUILL could merge both catalogs into one canonical
 station result while showing provenance such as “Radio Browser,”
 “FMSTREAM,” or both.</p>
-<h2 id="2-add-shoutcast-and-icecast-webcasters">2. Add SHOUTcast and
+<h2 id="add-shoutcast-and-icecast-webcasters">2. Add SHOUTcast and
 Icecast webcasters</h2>
 <p>The <strong>SHOUTcast Directory API</strong> is explicitly intended
 for websites, applications and media players, although developers must
 apply as API partners and comply with its branding and reporting
-agreement. (<a href="https://directory.shoutcast.com/Developer" title="
-SHOUTcast - API
-">SHOUTcast</a>)</p>
+agreement. (<a
+href="https://directory.shoutcast.com/Developer%20%22">SHOUTcast</a>)</p>
 <p>That would add a great deal of independent programming:</p>
 <ul>
 <li>Community radio.</li>
@@ -314,13 +315,12 @@ SHOUTcast - API
 <p>The <strong>Icecast directory</strong>, operated through the Xiph
 ecosystem, is another valuable source of independently hosted streams.
 It is publicly browsable, although I would confirm automated reuse
-expectations before depending on its directory feed in production. (<a
-href="https://www.icecast.org/docs/icecast-latest/yp/"
-title="Listing in a YellowPage Directory - Icecast Docs">Icecast</a>)</p>
+expectations before depending on its directory feed in production.
+([Icecast][3])</p>
 <p>These sources are especially useful because iHeart and TuneIn tend to
 emphasize established broadcasters and commercial aggregators. SHOUTcast
 and Icecast expose the independent “long tail.”</p>
-<h2 id="3-use-radiodns-to-make-the-catalog-smarter">3. Use RadioDNS to
+<h2 id="use-radiodns-to-make-the-catalog-smarter">3. Use RadioDNS to
 make the catalog smarter</h2>
 <p>RadioDNS is not primarily another giant listening directory. It is an
 open standards framework connecting broadcast radio with
@@ -334,9 +334,7 @@ internet-delivered information such as:</p>
 <li>Service following between broadcast and internet reception.</li>
 </ul>
 <p>That makes it an excellent <strong>metadata-enrichment and
-station-identity provider</strong>. (<a
-href="https://radiodns.org/introduction/features/metadata/"
-title="Service and Programme Metadata – RadioDNS">RadioDNS</a>)</p>
+station-identity provider</strong>. ([RadioDNS][4])</p>
 <p>For example, QUILL could recognize that:</p>
 <ul>
 <li>An FM station record from the FCC,</li>
@@ -359,9 +357,8 @@ from trunked public-safety systems rather than only continuous mixed
 scanner streams. Its software is open source, but its published service
 terms restrict its API to its own website and applications unless
 permission is obtained. The open-source code therefore does not
-automatically make the hosted audio service open for QUILL. (<a
-href="https://openmhz.com/?utm_source=chatgpt.com"
-title="OpenMHz">OpenMHz</a>)</p>
+automatically make the hosted audio service open for QUILL.
+([OpenMHz][5])</p>
 <p>A partnership could provide a much better accessible experience than
 traditional scanner audio:</p>
 <ul>
@@ -379,10 +376,7 @@ program is designed largely for scanner programming and approved
 radio-related applications. Free developer access generally requires
 every end user to authenticate with an active RadioReference Premium
 subscription; directory-style applications can require separate
-licensing. (<a
-href="https://support.radioreference.com/hc/en-us/articles/18844460198932-Database-Web-Service-API"
-title="Database Web Service API – RadioReference Support">RadioReference
-Support</a>)</p>
+licensing. ([RadioReference Support][6])</p>
 <p>It could still enrich QUILL with:</p>
 <ul>
 <li>Agency and department names.</li>
@@ -423,9 +417,8 @@ repeater information. Its ecosystem supports application partnerships
 and machine-readable data used by radio-programming applications. Public
 data may be used for personal, educational and certain noncommercial
 purposes, while broader commercial usage requires licensing. Written
-approval would still be wise for QUILL’s specific integration. (<a
-href="https://www.repeaterbook.com/index.php/about/partners"
-title="RepeaterBook.com - Who We Partner With and Why It Matters">RepeaterBook</a>)</p>
+approval would still be wise for QUILL’s specific integration.
+([RepeaterBook][7])</p>
 <p>QUILL could let users search by:</p>
 <ul>
 <li>City, county, state or distance.</li>
@@ -442,8 +435,7 @@ listening stream</strong>.</p>
 <p>EchoLink connects validated amateur-radio operators and stations over
 the internet. It has station and node lookup capabilities, but it is an
 authenticated amateur service rather than an anonymous public streaming
-directory. (<a href="https://www.echolink.org/?utm_source=chatgpt.com"
-title="Introducing EchoLink">EchoLink</a>)</p>
+directory. ([EchoLink][8])</p>
 <p>A QUILL integration might therefore provide:</p>
 <ul>
 <li>Search and discovery.</li>
@@ -457,17 +449,15 @@ listen.</p>
 <p>AllStarLink publishes node information and status data and is a major
 network for linking amateur-radio repeaters. Its node-status software is
 open source, but I did not find a clearly documented, general-purpose
-passive-listening API intended for third-party radio players. (<a
-href="https://stats.allstarlink.org/?utm_source=chatgpt.com"
-title="AllStarLink Active Nodes List">AllStarLink</a>)</p>
+passive-listening API intended for third-party radio players.
+([AllStarLink][9])</p>
 <p>Start with node lookup and external launching. Direct connection or
 audio integration should be discussed with AllStarLink.</p>
 <h3 id="brandmeister">BrandMeister</h3>
 <p>BrandMeister exposes API capabilities for authenticated users and
 applications involving account, repeater and talkgroup configuration. It
-is not primarily a public streaming-audio service. (<a
-href="https://news.brandmeister.network/author/f4bwg/page/2/?utm_source=chatgpt.com"
-title="Oliver F4BWG – Page 2">BrandMeister News</a>)</p>
+is not primarily a public streaming-audio service. ([BrandMeister
+News][10])</p>
 <p>It is useful for identifying:</p>
 <ul>
 <li>DMR repeaters.</li>
@@ -483,25 +473,19 @@ radio receivers</h2>
 <h3 id="openwebrx-and-receiverbook">OpenWebRX and Receiverbook</h3>
 <p>OpenWebRX provides a browser-based, multi-user radio receiver. Its
 related Receiverbook directory helps people locate publicly available
-receivers around the world. (<a href="https://www.openwebrx.de/"
-title="OpenWebRX web-based software defined radio | Homepage">OpenWebRX</a>)</p>
+receivers around the world. ([OpenWebRX][11])</p>
 <h3 id="kiwisdr">KiwiSDR</h3>
 <p>KiwiSDR operators can list public receivers in a worldwide directory.
 These receivers can cover amateur radio, international shortwave,
 utility stations, aviation, maritime communications and other spectrum
-depending on location and antenna. (<a
-href="https://kiwisdr.com/info/?utm_source=chatgpt.com"
-title="KiwiSDR Operating Information">KiwiSDR</a>)</p>
+depending on location and antenna. ([KiwiSDR][12])</p>
 <h3 id="websdr">WebSDR</h3>
 <p>WebSDR allows multiple users to tune independently through the same
-remote receiver. (<a
-href="https://websdr.org/background.html?utm_source=chatgpt.com"
-title="WebSDR.org - background information">WebSDR</a>)</p>
+remote receiver. ([WebSDR][13])</p>
 <h3 id="ubersdr">UberSDR</h3>
 <p>UberSDR is another open-source receiver platform with public
-instances and client capabilities, including audio-oriented access. (<a
-href="https://ubersdr.org/"
-title="UberSDR - Software Defined Radio Platform">UberSDR</a>)</p>
+instances and client capabilities, including audio-oriented access.
+([UberSDR][14])</p>
 <p>These are not ordinary station streams. The user chooses:</p>
 <ul>
 <li>Receiver location.</li>
@@ -528,16 +512,13 @@ automate it.</p>
 <p>LiveATC is the major aviation-audio directory, but its terms
 specifically prohibit automated retrieval, direct stream linking and
 dedicated third-party desktop or mobile applications without permission
-or a contractual arrangement. (<a href="https://www.liveatc.net/legal/"
-title="Terms of Use | LiveATC.net">LiveATC</a>)</p>
+or a contractual arrangement. ([LiveATC][15])</p>
 <p>It is worth proposing an accessibility partnership, but should not be
 reverse-engineered.</p>
-<h3 id="railroadradionet">RailroadRadio.net</h3>
+<h3 id="railroadradio.net">RailroadRadio.net</h3>
 <p>RailroadRadio.net maintains a public rail-feed directory, but I found
 no formal public API. It should be approached for permission or a
-partnership rather than scraped. (<a
-href="https://www.railroadradio.net/?utm_source=chatgpt.com"
-title="RailroadRadio.net">Railroad Radio</a>)</p>
+partnership rather than scraped. ([Railroad Radio][16])</p>
 <h3 id="maritime-and-airband-through-sdr">Maritime and airband through
 SDR</h3>
 <p>Public SDR receivers may be the more practical open path for
@@ -558,9 +539,8 @@ information</h2>
 internet station.</p>
 <p>The National Weather Service offers official APIs for alerts,
 forecasts and observations, while NOAA provides Weather Radio
-transmitter and coverage information. (<a
-href="https://www.weather.gov/documentation/services-web-api?utm_source=chatgpt.com"
-title="API Web Service">National Weather Service</a>)</p>
+transmitter and coverage information. ([National Weather
+Service][17])</p>
 <p>Instead of relying on unreliable rebroadcast streams, QUILL can
 create its own accessible <strong>Weather Radio mode</strong>:</p>
 <ul>
@@ -577,18 +557,14 @@ create its own accessible <strong>Weather Radio mode</strong>:</p>
 </ul>
 <p>There is not a single nationwide NOAA live-audio API equivalent to a
 station directory, although some local NWS offices publish live
-broadcast links. (<a
-href="https://www.weather.gov/hnx/wxradio?utm_source=chatgpt.com"
-title="NOAA Weather Radio">National Weather Service</a>)</p>
+broadcast links. ([National Weather Service][18])</p>
 <h2 id="radio-reading-services">Radio-reading services</h2>
 <p>This category deserves special emphasis because it aligns directly
 with QUILL’s mission.</p>
 <p>The International Association of Audio Information Services
 represents services that transform newspapers, magazines and other print
 information into audio for people who cannot effectively read
-conventional print. (<a
-href="https://www.iaais.org/?utm_source=chatgpt.com"
-title="IAAIS: Home">IAAIS</a>)</p>
+conventional print. ([IAAIS][19])</p>
 <p>There does not appear to be a unified listening API, so QUILL could
 create the missing directory through:</p>
 <ul>
@@ -612,25 +588,17 @@ established:</p>
 <p>Radioplayer’s partner API supports station discovery, geographic
 search, live metadata, schedules, on-demand programming and
 recommendations. It requires an approved account and API credentials.
-(<a href="https://developers.radioplayer.org/api-reference"
-title="Radioplayer Partner API (WRAPI)">Radioplayer Developer
-Hub</a>)</p>
+([Radioplayer Developer Hub][20])</p>
 <h3 id="airable">airable</h3>
 <p>airable offers curated radio and podcast data through APIs for device
-manufacturers and other commercial partners. (<a
-href="https://www.airablenow.com/"
-title="airable | internet media catalogues">Airable Now</a>)</p>
+manufacturers and other commercial partners. ([Airable Now][21])</p>
 <h3 id="radioline-business">Radioline Business</h3>
 <p>Radioline offers its worldwide radio and podcast database to approved
-partners through custom API arrangements. (<a
-href="https://business.radioline.co/?utm_source=chatgpt.com"
-title="Radioline">Radioline</a>)</p>
+partners through custom API arrangements. ([Radioline][22])</p>
 <h3 id="vtuner-and-mytuner">vTuner and myTuner</h3>
 <p>Both are potential catalog partners, although their access models are
 oriented toward approved devices, applications and licensed partners
-rather than unrestricted public APIs. (<a
-href="https://www.vtuner.com/services.asp?utm_source=chatgpt.com"
-title="Featured Products">vTuner</a>)</p>
+rather than unrestricted public APIs. ([vTuner][23])</p>
 <h2 id="recommended-implementation-order">Recommended implementation
 order</h2>
 <h3 id="build-or-begin-now">Build or begin now</h3>
@@ -710,5 +678,39 @@ prototype</strong>. Together, those would expand QUILL well beyond
 another conventional radio aggregator and begin turning it into a
 unified accessible listening, discovery and radio-exploration
 platform.</p>
+<pre><code>SHOUTcast - API</code></pre>
+<p>” [3]: https://www.icecast.org/docs/icecast-latest/yp/ “Listing in a
+YellowPage Directory - Icecast Docs” [4]:
+https://radiodns.org/introduction/features/metadata/ “Service and
+Programme Metadata – RadioDNS” [5]:
+https://openmhz.com/?utm_source=chatgpt.com “OpenMHz” [6]:
+https://support.radioreference.com/hc/en-us/articles/18844460198932-Database-Web-Service-API
+“Database Web Service API – RadioReference Support” [7]:
+https://www.repeaterbook.com/index.php/about/partners “RepeaterBook.com
+- Who We Partner With and Why It Matters” [8]:
+https://www.echolink.org/?utm_source=chatgpt.com “Introducing EchoLink”
+[9]: https://stats.allstarlink.org/?utm_source=chatgpt.com “AllStarLink
+Active Nodes List” [10]:
+https://news.brandmeister.network/author/f4bwg/page/2/?utm_source=chatgpt.com
+“Oliver F4BWG – Page 2” [11]: https://www.openwebrx.de/ “OpenWebRX
+web-based software defined radio | Homepage” [12]:
+https://kiwisdr.com/info/?utm_source=chatgpt.com “KiwiSDR Operating
+Information” [13]:
+https://websdr.org/background.html?utm_source=chatgpt.com “WebSDR.org -
+background information” [14]: https://ubersdr.org/ “UberSDR - Software
+Defined Radio Platform” [15]: https://www.liveatc.net/legal/ “Terms of
+Use | LiveATC.net” [16]:
+https://www.railroadradio.net/?utm_source=chatgpt.com
+“RailroadRadio.net” [17]:
+https://www.weather.gov/documentation/services-web-api?utm_source=chatgpt.com
+“API Web Service” [18]:
+https://www.weather.gov/hnx/wxradio?utm_source=chatgpt.com “NOAA Weather
+Radio” [19]: https://www.iaais.org/?utm_source=chatgpt.com “IAAIS: Home”
+[20]: https://developers.radioplayer.org/api-reference “Radioplayer
+Partner API (WRAPI)” [21]: https://www.airablenow.com/ “airable |
+internet media catalogues” [22]:
+https://business.radioline.co/?utm_source=chatgpt.com “Radioline” [23]:
+https://www.vtuner.com/services.asp?utm_source=chatgpt.com “Featured
+Products”</p>
 </body>
 </html>

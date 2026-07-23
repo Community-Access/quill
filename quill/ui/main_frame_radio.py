@@ -1102,12 +1102,33 @@ class RadioMixin:
         Replaying a station never adds a second row -- the store moves the
         existing entry to the front (de-duplicated by uuid/stream URL). When
         a recent station is also a favorite, it speaks the favorite's own
-        display name so the two menus never read like different stations."""
+        display name so the two menus never read like different stations.
+
+        The submenu is always added (empty -> a disabled placeholder) and kept
+        current by :meth:`_rebuild_recent_submenu` -- the standalone app rebuilds
+        it each time the Station menu opens, so a station played after launch
+        shows up without rebuilding the whole menu bar."""
         wx = self._wx
+        sub = wx.Menu()
+        self._recent_submenu = sub
+        menu.AppendSubMenu(sub, "Recently &Played")
+        self._rebuild_recent_submenu()
+
+    def _rebuild_recent_submenu(self) -> None:
+        """Repopulate the Recently Played submenu from current history (newest
+        first). Safe to call repeatedly -- it clears the old items first, so it
+        doubles as the live refresh (see ``_on_station_menu_open``)."""
+        sub = getattr(self, "_recent_submenu", None)
+        if sub is None:
+            return
+        wx = self._wx
+        for item in list(sub.GetMenuItems()):
+            sub.Delete(item)
         stations = list(self._radio_history.stations)
         if not stations:
+            placeholder = sub.Append(wx.ID_ANY, "(none yet)")
+            placeholder.Enable(False)
             return
-        sub = wx.Menu()
         for station in stations:
             item_id = wx.NewIdRef()
             favorite = self._radio_favorites.find(station.station_uuid or station.stream_url)
@@ -1119,7 +1140,6 @@ class RadioMixin:
                 id=item_id,
             )
             self._retain_radio_menu_ids(item_id)
-        menu.AppendSubMenu(sub, "Recently &Played")
 
     def _refresh_radio_tray_tooltip(self) -> None:
         tray_icon = getattr(self, "_tray_icon", None)
@@ -1234,59 +1254,10 @@ class RadioMixin:
             self._radio_menu_id_refs = refs_list
         refs_list.extend(refs)
 
-    def _append_acb_media_submenu(self, menu: object) -> None:
-        """An ACB Media submenu: every stream in the built-in directory,
-        playable inline -- no dialog hunt. Local data, no network."""
-        from quill.core.radio import acb_media
-
-        wx = self._wx
-        stations = acb_media.acb_media_stations()
-        if not stations:
-            return
-        sub = wx.Menu()
-        for station in stations:
-            item_id = wx.NewIdRef()
-            sub.Append(item_id, station.display_name)
-            sub.Bind(
-                wx.EVT_MENU,
-                lambda _e, s=station: self._radio_controller.play_station(s),
-                id=item_id,
-            )
-            self._retain_radio_menu_ids(item_id)
-        menu.AppendSubMenu(sub, "ACB &Media")
-
-    def _append_nfb_media_submenu(self, menu: object) -> None:
-        """NFB Radio on the Station menu, alongside ACB Media: the National
-        Federation of the Blind Radio Network, playable inline. Bundled, no
-        network to list it. A single station appears as one item; were it ever
-        several, they nest in a submenu like ACB Media."""
-        from quill.core.radio import nfb_media
-
-        wx = self._wx
-        stations = nfb_media.nfb_media_stations()
-        if not stations:
-            return
-        if len(stations) == 1:
-            item_id = wx.NewIdRef()
-            menu.Append(item_id, "NFB &Radio")
-            menu.Bind(
-                wx.EVT_MENU,
-                lambda _e, s=stations[0]: self._radio_controller.play_station(s),
-                id=item_id,
-            )
-            self._retain_radio_menu_ids(item_id)
-            return
-        sub = wx.Menu()
-        for station in stations:
-            item_id = wx.NewIdRef()
-            sub.Append(item_id, station.display_name)
-            sub.Bind(
-                wx.EVT_MENU,
-                lambda _e, s=station: self._radio_controller.play_station(s),
-                id=item_id,
-            )
-            self._retain_radio_menu_ids(item_id)
-        menu.AppendSubMenu(sub, "NFB &Radio")
+    # ACB Media and NFB Radio no longer have flat Station-menu builders: both are
+    # first-class categories in Browse Stations (see browse_tree_dialog), which
+    # reads the same bundled acb_media / nfb_media directories directly. The menu
+    # copies only duplicated that and drifted stale, so they were removed.
 
     def _append_radio_favorites_submenu(self, menu: object) -> None:
         wx = self._wx
@@ -1335,7 +1306,17 @@ class RadioMixin:
         )
         menu.Enable(now_playing_id, False)
         self._retain_radio_menu_ids(now_playing_id)
+        # Quick transport straight from the tray.
+        play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
+        menu.Append(play_id, "Play / Pause")
+        menu.Append(stop_id, "Stop")
+        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=play_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=stop_id)
+        self._retain_radio_menu_ids(play_id, stop_id)
         self._build_radio_status_bar_menu(menu)
+        # Reach the sibling apps without leaving the tray.
+        menu.AppendSeparator()
+        self._append_sibling_app_tray_items(menu, exclude="radio")
 
     # -- commands ---------------------------------------------------------
 

@@ -86,6 +86,18 @@ class AccessibilityAnnouncer:
     def announce_no_suggestions(self) -> None:
         self._announce("No suggestions.")
 
+    def announce_context_sentence(self, context_text: str) -> None:
+        """Read the sentence(s) around the misspelling aloud on demand (Ctrl+R).
+
+        Speaks the full surrounding context verbatim regardless of verbosity so a
+        user can hear the misspelling in situ (Leasey Word's in-dialog Ctrl+R).
+        Any pending spell-aloud is cancelled first so the two do not overlap.
+        """
+        self._cancel_pending_spell()
+        text = " ".join(context_text.split())
+        if text:
+            self._announce(text)
+
     def announce_complete(self, counters: ReviewCounters) -> None:
         """Announce the review completion summary."""
         self._cancel_pending_spell()

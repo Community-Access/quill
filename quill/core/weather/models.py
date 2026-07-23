@@ -116,6 +116,12 @@ class DailyOutlook:
     sunrise: str = ""  # friendly local time, e.g. "5:42 AM"
     sunset: str = ""
     uv_index: int | None = None
+    # -- moon (computed locally in quill.core.weather.astronomy; empty until
+    #    the caller fills it in) --
+    moon_phase: str = ""  # "Waxing Gibbous", ...
+    moon_illumination_percent: int | None = None
+    moonrise: str = ""  # friendly local time
+    moonset: str = ""
 
     @property
     def line(self) -> str:
@@ -128,6 +134,36 @@ class DailyOutlook:
             parts.append(f"{self.precipitation_percent} percent chance of precipitation.")
         if self.sunrise and self.sunset:
             parts.append(f"Sunrise {self.sunrise}, sunset {self.sunset}.")
+        if self.moon_phase:
+            moon = f"Moon {self.moon_phase.lower()}"
+            if self.moon_illumination_percent is not None:
+                moon += f", {self.moon_illumination_percent} percent lit"
+            parts.append(moon + ".")
+            if self.moonrise and self.moonset:
+                parts.append(f"Moonrise {self.moonrise}, moonset {self.moonset}.")
+        return " ".join(parts)
+
+
+@dataclass(slots=True)
+class HourlyPeriod:
+    """One hour of the NWS hourly forecast (its forecastHourly product)."""
+
+    time: str  # friendly local time, e.g. "3 PM"
+    temperature: int
+    temperature_unit: str  # "F" or "C"
+    short_forecast: str
+    precipitation_percent: int | None = None
+    wind_speed: str = ""
+    wind_direction: str = ""
+    is_daytime: bool = True
+
+    @property
+    def line(self) -> str:
+        """A self-contained, fully spoken one-line summary for the hour."""
+        scale = "Fahrenheit" if self.temperature_unit == "F" else "Celsius"
+        parts = [f"{self.time}: {self.temperature} degrees {scale}, {self.short_forecast}."]
+        if self.precipitation_percent not in (None, 0):
+            parts.append(f"{self.precipitation_percent} percent chance of precipitation.")
         return " ".join(parts)
 
 
@@ -190,6 +226,8 @@ class WeatherReport:
     location: WeatherLocation
     current: CurrentConditions | None = None
     periods: list[ForecastPeriod] = field(default_factory=list)
+    #: Hour-by-hour forecast (NWS forecastHourly), nearest hours first.
+    hourly: list[HourlyPeriod] = field(default_factory=list)
     #: Extended daily outlook (Open-Meteo), beyond the ~7-day NWS periods.
     daily: list[DailyOutlook] = field(default_factory=list)
     air_quality: AirQuality | None = None

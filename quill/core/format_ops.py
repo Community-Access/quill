@@ -6,6 +6,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+# parse_first_date is imported (not just used) so callers may keep importing it
+# from format_ops alongside the sort helpers; the parser itself lives in date_parse.
+from quill.core.date_parse import parse_first_date
 from quill.core.links import infer_markup_kind
 
 
@@ -415,6 +418,29 @@ def sort_lines_numeric(text: str, descending: bool = False) -> str:
         non_numeric.append(line)
     numeric.sort(key=lambda pair: pair[0], reverse=descending)
     sorted_lines = [line for _, line in numeric] + non_numeric
+    return _join_body_lines(sorted_lines, terminal_newline)
+
+
+def sort_lines_by_date(text: str, descending: bool = False, *, day_first: bool = False) -> str:
+    """Sort lines by the first date found in each line (Leasey Word parity).
+
+    Recognizes the common date styles (see :func:`parse_first_date`) and infers
+    d/m/y vs m/d/y for ambiguous numeric dates from ``day_first``. Lines with no
+    recognizable date sort after all dated lines, preserving their original order
+    (mirroring :func:`sort_lines_numeric`'s "unparseable sinks to the bottom").
+    """
+    lines, terminal_newline = _split_body_lines(text)
+    dated: list[tuple[tuple[int, int, int], str]] = []
+    undated: list[str] = []
+    for line in lines:
+        body, _ = _split_line_ending(line)
+        parsed = parse_first_date(body, day_first=day_first)
+        if parsed is not None:
+            dated.append((parsed, line))
+        else:
+            undated.append(line)
+    dated.sort(key=lambda pair: pair[0], reverse=descending)
+    sorted_lines = [line for _, line in dated] + undated
     return _join_body_lines(sorted_lines, terminal_newline)
 
 

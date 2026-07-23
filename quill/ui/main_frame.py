@@ -384,6 +384,7 @@ from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_abbreviations import AbbreviationsMixin
 from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_ai_actions import AiActionsMixin
+from quill.ui.main_frame_ai_reading_order import ReadingOrderMixin
 from quill.ui.main_frame_braille import BrailleCommandsMixin
 from quill.ui.main_frame_braille_phase2 import BraillePhase2CommandsMixin
 from quill.ui.main_frame_braille_phase3 import BrailleProofingCommandsMixin
@@ -799,6 +800,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 class MainFrame(
     AbbreviationsMixin,
     AiActionsMixin,
+    ReadingOrderMixin,
     EmojiPickerMixin,
     RadioMixin,
     PodcastsMixin,
@@ -6723,15 +6725,37 @@ class MainFrame(
         record_recent: bool,
         line: int | None,
         column: int | None,
+        encrypted_retry: bool = False,
     ) -> None:
         """Install a freshly read document into the UI (PERF-12 continuation).
 
         Always runs on the UI thread: directly for cheap reads, or marshalled
         through ``wx.CallAfter`` by :meth:`_run_background_task` for the office
         and PDF formats that were parsed on a worker thread.
+
+        ``encrypted_retry`` is set when this call is the result of re-reading an
+        encrypted PDF with a user-supplied password: if the file is *still*
+        reported encrypted the password was wrong, so the prompt re-opens saying
+        so instead of installing the "enter the password" placeholder text.
         """
         assert isinstance(result, tuple)
         loaded, epub_book = result
+        # #58: a password-protected PDF is read (on the worker thread) without a
+        # password first; the read comes back tagged ``engine="encrypted"``. Prompt
+        # for the password here on the UI thread and re-read, looping until it
+        # opens or the user cancels. The password is used only for the re-read and
+        # is never stored.
+        if self._pdf_open_needs_password(loaded, suffix):
+            self._prompt_and_reopen_encrypted_pdf(
+                selected_path=selected_path,
+                suffix=suffix,
+                existing_index=existing_index,
+                record_recent=record_recent,
+                line=line,
+                column=column,
+                incorrect=encrypted_retry,
+            )
+            return
         illuminated = self._maybe_apply_illumination(loaded, selected_path, suffix)
         self._epub_book = epub_book if suffix == ".epub" else None
         linkage_entry = get_publishing_linkage(selected_path)
@@ -6778,6 +6802,7 @@ class MainFrame(
             self._location_ring = LocationRing()
             self._location_ring.record(0)
         self._announce_encoding_fallback(loaded)
+        self._import_pdf_outline_bookmarks(loaded, suffix)
         self._position_editor_at(line=line, column=column)
         if record_recent:
             self._record_recent(selected_path)
@@ -6813,6 +6838,71 @@ class MainFrame(
                 fire_file_type(selected_path)
             except Exception:  # noqa: BLE001 - a Quillin must never break open
                 pass
+
+    def _pdf_open_needs_password(self, loaded: object, suffix: str) -> bool:
+        """True when ``loaded`` is an encrypted PDF the open flow must unlock (#58)."""
+        if suffix != ".pdf":
+            return False
+        metadata = getattr(loaded, "source_metadata", None)
+        if not isinstance(metadata, dict):
+            return False
+        return metadata.get("engine") == "encrypted"
+
+    def _ask_pdf_password(self, file_name: str, *, incorrect: bool) -> str | None:
+        """Prompt for an encrypted PDF's password. Returns the entry, or ``None``
+        if the user cancelled or left it blank. The password is never stored."""
+        wx = self._wx
+        prompt = (
+            f"That password did not open {file_name}. Try again, or Cancel:"
+            if incorrect
+            else f"{file_name} is password-protected. Enter its password to open it:"
+        )
+        with wx.PasswordEntryDialog(self.frame, prompt, "Open Password-Protected PDF") as dialog:
+            if self._show_modal_dialog(dialog, "Open Password-Protected PDF") != wx.ID_OK:
+                return None
+            password = dialog.GetValue()
+        return password or None
+
+    def _prompt_and_reopen_encrypted_pdf(
+        self,
+        *,
+        selected_path: Path,
+        suffix: str,
+        existing_index: int,
+        record_recent: bool,
+        line: int | None,
+        column: int | None,
+        incorrect: bool,
+    ) -> None:
+        """Ask for the PDF password and re-read the file with it (#58).
+
+        Loops via ``_finish_open_document(..., encrypted_retry=True)``: a wrong
+        password comes back still encrypted and re-enters here with
+        ``incorrect=True``; a correct one reads cleanly and installs normally.
+        Cancel aborts the open.
+        """
+        password = self._ask_pdf_password(selected_path.name, incorrect=incorrect)
+        if password is None:
+            self._set_status(f"Open cancelled — {selected_path.name} is password-protected")
+            return
+
+        def finish(result: object) -> None:
+            self._finish_open_document(
+                result,
+                selected_path=selected_path,
+                suffix=suffix,
+                existing_index=existing_index,
+                record_recent=record_recent,
+                line=line,
+                column=column,
+                encrypted_retry=True,
+            )
+
+        self._run_background_task(
+            f"Opening {selected_path.name}",
+            lambda _progress: read_open_document(selected_path, suffix, pdf_password=password),
+            finish,
+        )
 
     def _position_editor_at(self, line: int | None = None, column: int | None = None) -> None:
         if line is None and column is None:
@@ -11237,6 +11327,70 @@ class MainFrame(
             anchors = {}
             self._bookmark_anchors = anchors
         anchors[name] = capture_anchor(text, position)
+
+    def _unique_outline_bookmark_name(self, title: str, used: set[str]) -> str:
+        """A whitespace-collapsed, de-duplicated bookmark name for a PDF outline
+        entry (two entries can share a title; a bookmark name must be unique)."""
+        base = " ".join(title.split()) or "Bookmark"
+        if base not in used:
+            return base
+        suffix = 2
+        while f"{base} ({suffix})" in used:
+            suffix += 1
+        return f"{base} ({suffix})"
+
+    def _import_pdf_outline_bookmarks(self, loaded: object, suffix: str) -> None:
+        """Import a PDF's embedded outline (Adobe bookmarks) into the document's
+        bookmark store on first open, so they show up in the Bookmarks Manager
+        (Ctrl+Shift+G) — QUILL already imports Word/EPUB structure; this closes the
+        PDF gap.
+
+        Each outline entry (title + destination page) is resolved to a character
+        offset via the form-feed page markers the PDF extractor writes. Idempotent:
+        it skips when the document already has bookmarks (a re-open, or a user who
+        curated them), so it never duplicates entries or resurrects deleted ones,
+        and it never blocks the open — an unresolvable entry is simply skipped."""
+        if suffix != ".pdf":
+            return
+        metadata = getattr(loaded, "source_metadata", None)
+        if not isinstance(metadata, dict):
+            return
+        outline = metadata.get("pdf_outline")
+        if not outline:
+            return
+        tab = self._active_tab()
+        if tab is None or getattr(tab, "document", None) is not loaded:
+            return
+        if getattr(tab, "bookmarks", None):
+            return  # already has bookmarks — don't duplicate or fight curation
+        from quill.core.navigation import page_start_for_number
+
+        text = getattr(loaded, "text", "") or ""
+        bookmarks: dict[str, int] = {}
+        anchors: dict[str, object] = {}
+        used: set[str] = set()
+        for entry in outline:
+            try:
+                title, page = entry
+            except (TypeError, ValueError):
+                continue
+            offset = page_start_for_number(text, int(page))
+            if offset is None:
+                continue
+            name = self._unique_outline_bookmark_name(str(title), used)
+            used.add(name)
+            bookmarks[name] = offset
+            anchors[name] = capture_anchor(text, offset)
+        if not bookmarks:
+            return
+        self._bookmarks = bookmarks
+        self._bookmark_anchors = anchors
+        self._save_active_bookmarks()
+        count = len(bookmarks)
+        self._set_status(
+            f"Imported {count} bookmark{'s' if count != 1 else ''} from the PDF outline "
+            f"(open the Bookmarks Manager with Ctrl+Shift+G)"
+        )
 
     def _resolve_bookmark_target(self, name: str) -> int | None:
         """Best current offset for a bookmark: re-anchored if we have context,

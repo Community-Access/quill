@@ -166,7 +166,7 @@ def test_read_structured_pdf_attaches_metadata(monkeypatch, tmp_path: Path) -> N
     target.write_bytes(b"%PDF-1.4")
     monkeypatch.setattr(
         "quill.io.structured.extract_pdf_text",
-        lambda _path: PdfExtractionResult(
+        lambda _path, *, password=None: PdfExtractionResult(
             text="Extracted PDF text\n",
             quality_score=81,
             engine="pdfplumber",
@@ -179,6 +179,52 @@ def test_read_structured_pdf_attaches_metadata(monkeypatch, tmp_path: Path) -> N
     assert document.source_metadata["source_kind"] == "pdf"
     assert document.source_metadata["quality_score"] == 81
     assert document.source_metadata["page_count"] == 2
+
+
+def test_read_structured_pdf_attaches_embedded_outline(monkeypatch, tmp_path: Path) -> None:
+    # A PDF's embedded outline (title, page) pairs are carried in source_metadata
+    # so the open flow can import them as bookmarks.
+    target = tmp_path / "outline.pdf"
+    target.write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(
+        "quill.io.structured.extract_pdf_text",
+        lambda _path, *, password=None: PdfExtractionResult(
+            text="Extracted PDF text\n",
+            quality_score=81,
+            engine="pdfplumber",
+            page_count=3,
+            extracted_pages=3,
+            page_scores=[81, 79, 80],
+        ),
+    )
+    monkeypatch.setattr(
+        "quill.io.structured.extract_pdf_outline",
+        lambda _path, *, password=None: [("Chapter 1", 1), ("Chapter 2", 2)],
+    )
+    document = read_structured_document(target)
+    assert document.source_metadata["pdf_outline"] == [("Chapter 1", 1), ("Chapter 2", 2)]
+
+
+def test_read_structured_pdf_omits_outline_key_when_empty(monkeypatch, tmp_path: Path) -> None:
+    target = tmp_path / "no-outline.pdf"
+    target.write_bytes(b"%PDF-1.4")
+    monkeypatch.setattr(
+        "quill.io.structured.extract_pdf_text",
+        lambda _path, *, password=None: PdfExtractionResult(
+            text="Extracted PDF text\n",
+            quality_score=81,
+            engine="pdfplumber",
+            page_count=1,
+            extracted_pages=1,
+            page_scores=[81],
+        ),
+    )
+    monkeypatch.setattr(
+        "quill.io.structured.extract_pdf_outline",
+        lambda _path, *, password=None: [],
+    )
+    document = read_structured_document(target)
+    assert "pdf_outline" not in document.source_metadata
 
 
 def test_read_structured_xlsx_uses_markitdown_when_available(monkeypatch, tmp_path: Path) -> None:
@@ -203,7 +249,7 @@ def test_read_structured_pdf_prefers_markitdown_when_quality_is_low(
     target.write_bytes(b"%PDF-1.4")
     monkeypatch.setattr(
         "quill.io.structured.extract_pdf_text",
-        lambda _path: PdfExtractionResult(
+        lambda _path, *, password=None: PdfExtractionResult(
             text="",
             quality_score=12,
             engine="pdfplumber",

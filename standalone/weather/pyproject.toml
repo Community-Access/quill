@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-weather"
+version = "2.2.0"
+description = "Quill Weather -- accessible, screen-reader-first weather with background alert monitoring, as a standalone app"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+]
+# The whole app lives in the quill package (quill.apps.weather); this
+# project is the thin product wrapper: entry point, docs, installer.
+dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git"]
+
+[project.gui-scripts]
+quill-weather = "quill_weather:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill-weather"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_weather"]

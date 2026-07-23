@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-19-one-click-update-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="one-click-update-apply-and-restart-design">One-Click Update
+(Apply and Restart) — Design</h1>
+<p>Date: 2026-07-19 Status: Approved (design), pending implementation
+Target release: Quill Radio 2.0.3 (shared <code>quill</code> package;
+Radio, Cast, and QUILL)</p>
+<h2 id="problem">Problem</h2>
+<p>When Quill Radio (or Cast, or QUILL) finds an update, the in-app flow
+downloads the release asset and then, for a <strong>portable</strong>
+build, only tells the user to “close this app, extract the zip over your
+current folder, and start it again” (<code>app_shell.py</code>
+<code>_offer_app_update_install</code>). There is no action that
+actually applies the update. A sighted power user can do the manual
+swap; a screen-reader user is left doing archive surgery. The user asked
+for the zip to “auto extract and program restart with updates
+loaded.”</p>
+<p>For an <strong>installed</strong> build the flow launches the setup
+<code>.exe</code> and the user clicks through it — better, but still not
+one-click.</p>
+<h2 id="goal">Goal</h2>
+<p>A single <strong>“Install and restart now”</strong> button on the
+post-download dialog that applies the update and relaunches the app, on
+both portable and installed Windows builds, with no manual steps.
+Consented (nothing happens without that click), accessible, and safe (a
+failed apply leaves the working install intact).</p>
+<h2 id="non-goals-this-release">Non-goals (this release)</h2>
+<ul>
+<li>macOS apply (a <code>.app</code>/<code>.dmg</code> swap). QUILL on
+macOS keeps today’s download-and-reveal. A clean seam is left for a
+follow-up.</li>
+<li>Silent / forced auto-apply. The download stays consented and the
+apply is one explicit click (chosen over silent-on-quit: a screen-reader
+user must not have the app mutate and restart without a deliberate
+action).</li>
+<li>Delta/patch updates. The full release asset is downloaded as
+today.</li>
+</ul>
+<h2 id="build-flavor-split">Build-flavor split</h2>
+<p>Detected by the existing <code>running_portable()</code> /
+<code>_running_portable_build()</code> check (<code>unins000.exe</code>
+beside the exe ⇒ installed; absent ⇒ portable). Dev runs report
+installed and are unaffected (they never reach a real apply).</p>
+<h3 id="installed-build-silent-installer-relaunch">Installed build →
+silent installer + relaunch</h3>
+<p>Run the downloaded Inno setup <code>.exe</code> with silent flags and
+a relaunch, then close the app:</p>
+<pre><code>Setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART</code></pre>
+<p>The installer already handles file replacement and elevation (one UAC
+prompt, since the install dir is under Program Files). Relaunch is via
+the installer’s own postinstall run entry, or by the same apply-helper
+waiting on PID then starting the exe — whichever the installer supports.
+This path largely reuses the current <code>_launch_installer</code>.</p>
+<h3 id="portable-build-apply-update-helper">Portable build →
+apply-update helper</h3>
+<p>A running <code>.exe</code> cannot overwrite itself on Windows, so an
+external helper does the swap after the app exits:</p>
+<ol type="1">
+<li><strong>Stage.</strong> Extract the downloaded zip to
+<code>&lt;app_data&gt;/updates/staging/</code> (reusing
+<code>extract_portable_update</code>, which already guards zip-slip and
+decompression bombs). Locate the real app root inside the extraction
+(the zip may wrap files in a top-level folder) and validate it contains
+the expected exe. Abort before touching anything if it does not.</li>
+<li><strong>Write helper.</strong> Generate a Windows <code>.bat</code>
+(pure function, unit-tested) into the system temp dir — outside the
+install folder, so copying over the install dir never clobbers the
+running helper. The batch receives: the app PID, the staging source dir,
+the install dir, and the exe to relaunch.</li>
+<li><strong>Launch + exit.</strong> Launch the helper detached
+(<code>DETACHED_PROCESS</code> / no console window), then shut the app
+down cleanly through its normal close path, releasing the
+single-instance lock (<code>ipc.release_primary_instance</code>) and all
+file handles, and exit.</li>
+<li><strong>Swap.</strong> The helper waits for the app PID to disappear
+(<code>robocopy</code>-friendly poll), then mirror-copies the staged
+files over the install dir <strong>excluding <code>data</code></strong>
+(favorites, recordings, history, settings live there and must survive),
+relaunches the new exe, and deletes the staging dir and itself. All
+output is appended to
+<code>&lt;app_data&gt;/updates/apply-update.log</code>.</li>
+</ol>
+<p>Portable folders are user-writable, so the copy never needs
+elevation. For a portable build, <code>&lt;app_data&gt;</code> is under
+the portable <code>data/</code> folder, so the staging source sits
+inside the excluded <code>data</code> dir and survives the swap that
+overwrites everything else.</p>
+<h2 id="components">Components</h2>
+<h3
+id="quillcoreupdates.py-wx-free-unit-tested"><code>quill/core/updates.py</code>
+(wx-free, unit-tested)</h3>
+<ul>
+<li><code>install_root_and_exe() -&gt; tuple[Path, Path] | None</code> —
+the frozen exe path and its containing install dir; <code>None</code> in
+a dev run. Small, so both UI seams share one truth.</li>
+<li><code>stage_portable_update(zip_path, staging_dir, *, exe_name) -&gt; Path</code>
+— extract via <code>extract_portable_update</code>, descend a single
+wrapping folder if present, verify <code>exe_name</code> exists, and
+return the app root to copy from. Raises a clear error if the archive
+does not look like a Quill app.</li>
+<li><code>build_apply_update_script(*, pid, source_dir, install_dir, exe_path, log_path, data_dirname="data") -&gt; str</code>
+— pure. Returns the batch text:
+<ul>
+<li>wait-for-PID-exit loop (with a timeout ceiling so it can never hang
+forever),</li>
+<li><code>robocopy "&lt;source&gt;" "&lt;install&gt;" /MIR /XD "&lt;install&gt;\data" /R:2 /W:1 /NP</code>
+(mirror, excluding <code>data</code>; retries),</li>
+<li><code>start "" "&lt;exe_path&gt;"</code> to relaunch,</li>
+<li>cleanup of the staging dir and the batch itself,</li>
+<li>every step tee’d to <code>&lt;log_path&gt;</code>. Paths are quoted;
+the function is the single place batch quoting/edge-cases live so tests
+pin them.</li>
+</ul></li>
+<li><code>build_silent_installer_command(setup_exe) -&gt; list[str]</code>
+— pure. The <code>/VERYSILENT /SUPPRESSMSGBOXES /NORESTART</code>
+argv.</li>
+</ul>
+<h3
+id="quilluiapp_shell.py-radio-cast"><code>quill/ui/app_shell.py</code>
+(Radio + Cast)</h3>
+<p>Replace <code>_offer_app_update_install</code>’s portable
+“instructions only” branch and installer branch with a single
+<strong>“Install and restart now”</strong> default button (plus the
+existing Open folder / Close). On click: - installed ⇒
+<code>build_silent_installer_command</code>, launch detached, then
+<code>self.frame.Close()</code>; - portable ⇒
+<code>stage_portable_update</code>, write + launch the helper, then
+<code>self.frame.Close()</code>. Both announce “Installing update and
+restarting…” first. A staging/launch failure is announced and leaves the
+app running (fall back to Open folder).</p>
+<p>The app’s own close handler already releases the lock and shuts
+controllers down (<code>quill/apps/radio.py</code>
+<code>_on_radio_app_close</code>), so closing after launching the helper
+is the clean-exit signal the helper’s PID-wait keys on.</p>
+<h3
+id="quilluimain_frame_updates.py-quill-windows"><code>quill/ui/main_frame_updates.py</code>
+(QUILL, Windows)</h3>
+<p>Give <code>_offer_post_download_actions</code> the same apply
+behavior for Windows portable and installed builds. macOS falls through
+to today’s reveal/extract. QUILL’s close path already calls
+<code>release_primary_instance</code>.</p>
+<h2 id="data-flow">Data flow</h2>
+<pre><code>Check for Updates ─▶ download asset (existing) ─▶ post-download dialog
+   └─ &quot;Install and restart now&quot;
+        ├─ installed:  launch Setup.exe /VERYSILENT ─▶ app closes ─▶ installer swaps + relaunches
+        └─ portable:   stage zip ─▶ write helper.bat ─▶ launch detached ─▶ app closes (lock released)
+                          └─ helper: wait PID ▸ robocopy staged→install (xd data) ▸ start exe ▸ clean up</code></pre>
+<h2 id="error-handling">Error handling</h2>
+<ul>
+<li>Download/extract already fail-soft (announced, install
+untouched).</li>
+<li>Staging validation failure (no exe in the zip): abort, announce,
+keep running.</li>
+<li>Helper copy: <code>robocopy</code> retries (<code>/R:2 /W:1</code>);
+copy-over/mirror-excluding-data never deletes user data; on partial
+failure the exit code is logged and the old files that were already
+replaced remain (a re-run of the update repairs it). Because
+<code>data</code> is untouched, the user never loses
+favorites/recordings/settings.</li>
+<li>Helper never blocks forever: the PID-wait has a timeout ceiling,
+after which it proceeds anyway (the app is expected to have exited; the
+copy simply retries locked files).</li>
+<li>All helper steps are logged to <code>apply-update.log</code> for
+support.</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<ul>
+<li><code>build_apply_update_script</code>: pure-text assertions — PID
+wait present, <code>robocopy</code> excludes the data dir, relaunch
+targets the exe, paths quoted, log path threaded through.</li>
+<li><code>build_silent_installer_command</code>: argv assertions.</li>
+<li><code>stage_portable_update</code>: real temp zips — flat layout,
+single-wrapping-folder layout, and a bad zip (no exe ⇒ raises); zip-slip
+already covered in <code>extract_portable_update</code> tests.</li>
+<li>Helper end-to-end (Windows, non-frozen, no real exe): generate the
+batch against a temp “install” of dummy files with a
+<code>data/keep.txt</code>, run it against a temp “staging” tree with a
+fake exe and a PID that has already exited, assert the dummy exe/files
+were copied, <code>data/keep.txt</code> survived, and staging was
+cleaned. Guarded to Windows.</li>
+<li>UI seams: existing app-close tests already cover clean shutdown; add
+a unit test that the portable branch calls stage+launch+Close and the
+installed branch calls the silent command+Close (fakes, no real
+subprocess), mirroring <code>test_radio_app_close_and_keys.py</code>
+style.</li>
+</ul>
+<h2 id="rollout">Rollout</h2>
+<p>Ships in 2.0.3 (already the target). Adds a release-notes bullet
+(“Update Quill Radio in one click — it downloads, applies, and restarts
+itself”). Version already bumped to 2.0.3.</p>
+</body>
+</html>

@@ -24103,6 +24103,22 @@ Indentation to Tabs</strong>. <strong>Number Lines
 (Advanced)...</strong> adds a starting number, increment, digit or
 Roman-numeral style, zero-padding width, a custom suffix, and left or
 right alignment, for cases the simple version doesn't cover.</p>
+<p>The <strong>Format</strong> menu adds three more sorts for structured
+lists, each working on the selected lines or the whole document:
+<strong>Sort Lines Numerically</strong> (by the first number on each
+line), <strong>Sort Lines by Length</strong>, and <strong>Sort Lines by
+Date</strong>. <strong>Sort Lines by Date</strong> recognizes the common
+date styles — ISO (<code>2020-03-05</code>), slash and dot forms
+(<code>03/04/2020</code>, <code>5.1.2020</code>), and English month
+names (<code>Jan 5, 2020</code>, <code>5 January 2020</code>,
+<code>March 3rd, 1999</code>) — and works out day/month order for an
+ambiguous numeric date the way your region does: US English reads it
+month-first (<code>03/04</code> = March 4th), everywhere else day-first
+(<code>03/04</code> = 4 March), and an unambiguous value like
+<code>25/12</code> is always read correctly whichever region you use.
+Lines with no recognizable date stay together at the bottom in their
+original order, so nothing is lost. All three are unbound by default and
+can be given a shortcut from the Keymap Editor.</p>
 <h3 id="navigate">Navigate</h3>
 <p>The <strong>Navigate</strong> menu is one of Quill's strongest
 differentiators. It assumes you may need to move through large, dense,
@@ -24851,6 +24867,51 @@ through the Copilot/GitHub CLI sign-in.)</em></p>
 <p>QUILL's AI language tools extend the standard AI Assistant with
 document-aware language actions you invoke directly from the AI
 menu.</p>
+<h4 id="improve-reading-order-ai">Improve Reading Order (AI)</h4>
+<p>Some documents come to you with their text in the wrong order — a PDF
+laid out in two columns that extracts as one jumbled stream, a page with
+sidebars or text boxes, or lines that arrive out of sequence. <strong>AI
+&gt; More &gt; Improve Reading Order...</strong> (also on the command
+palette) sends the current document's text to your configured AI
+provider and asks it to put the text back into natural reading order: it
+merges columns into a single flow, joins lines broken mid-sentence, and
+infers headings, lists, and tables — while keeping your exact wording
+(it never summarizes, adds, or removes content).</p>
+<ul>
+<li><strong>It always asks first.</strong> Before anything is sent,
+QUILL shows a confirmation that names the provider and its host and the
+document's approximate page size. Choose <strong>No</strong> and nothing
+is sent.</li>
+<li><strong>Your document is never changed.</strong> The improved
+version opens as a <strong>new, unsaved document</strong>; pressing
+Ctrl+S there offers <strong>Save As</strong> so you decide whether and
+where to keep it. Your original stays exactly as it was.</li>
+<li><strong>Guards.</strong> The command refuses a document larger than
+the page limit (<strong>Settings ›
+<code>reading_order_max_pages</code></strong>, default 40) so a huge,
+slow, or costly request can't happen by accident, and it is unavailable
+in Safe Mode.</li>
+<li><strong>What it needs — your own AI provider.</strong> Improve
+Reading Order is not tied to any one service. It uses whichever AI
+backend you have set up in <strong>AI &gt; Set Up AI</strong>:
+<strong>OpenAI</strong>, <strong>Claude</strong>, <strong>Google
+Gemini</strong>, <strong>OpenRouter</strong>, <strong>Ollama</strong>
+(local), <strong>Ollama Cloud</strong>, or any <strong>custom
+OpenAI-compatible endpoint</strong> — you bring the account and key;
+QUILL bundles none and adds nothing to your bill. If you have not
+configured a cloud provider, QUILL falls back to its <strong>bundled,
+on-device model</strong> (Apple's on-device model on a supported Mac,
+otherwise a local model that runs on your CPU), so the whole repair can
+happen <strong>entirely on your computer with nothing uploaded</strong>.
+The confirmation always names the exact provider and host it is about to
+use, so you know before anything is sent — and if AI isn't set up at
+all, QUILL offers the setup wizard instead of failing silently.</li>
+</ul>
+<p>For a <em>scanned</em> PDF (an image with no text layer at all), use
+<strong>File &gt; Import &gt; Import / Convert Document (OCR)</strong>
+instead — that path recognizes the page images and can structure the
+result. Improve Reading Order is for a document that already has text,
+just in the wrong order.</p>
 <h4 id="spelling-review-f7">Spelling Review (F7)</h4>
 <p><strong>F7</strong> starts QUILL's guided local spelling review — no
 AI provider, no network connection, nothing uploaded.</p>
@@ -24864,8 +24925,8 @@ misspelled word is selected within the surrounding sentence so you can
 hear it in context, navigate it character by character with arrow keys,
 or copy the text — just like a read-only document.</li>
 <li><strong>Tab order.</strong> Context → Change to → Suggestions →
-Change → Change All → Ignore Once → Ignore All → Add to Dictionary →
-Undo Last → Close.</li>
+Change → Change All → Ignore Once → Ignore All → Read Sentence → Add to
+Dictionary → Undo Last → Close.</li>
 <li><strong>Suggestions</strong> — arrow through spelling
 recommendations; selecting one fills <strong>Change to</strong>
 automatically.</li>
@@ -24885,6 +24946,10 @@ yet.</li>
 <li><strong>Alt+W</strong> returns focus to Context and reselects the
 current word at any point — useful after arrowing around the context
 text.</li>
+<li><strong>Read Sentence (Ctrl+R)</strong> reads the whole sentence
+surrounding the misspelling aloud, so you can hear the word in context
+without leaving the dialog. The <strong>Read Sentence</strong> button
+does the same thing.</li>
 <li>When all issues have been handled, QUILL shows a summary (changed,
 ignored, added to dictionary) and returns focus to the editor.</li>
 </ul>
@@ -30340,20 +30405,41 @@ image-based" — and <em>asks</em> whether to run free on-device OCR. Yes
 runs it; No opens the empty result anyway; Cancel imports nothing. QUILL
 never silently opens a blank result and never runs OCR without asking.
 Other read failures get their own honest message instead of the
-scanned-PDF prompt: a password-protected PDF says it's
-<em>encrypted</em> (and suggests <code>qpdf --decrypt</code>), a
-genuinely corrupt file says it's <em>damaged</em> (and notes OCR won't
-help a corrupt file — repair or re-export it), and a PDF with no text
-extractor installed points you at <strong>Help &gt; Download Optional
-Components &gt; "PDF and Office text extraction"</strong> rather than
-claiming it's scanned.</li>
-<li><strong>On-device OCR rescues the scan.</strong> The local Tesseract
-engine recognizes each page on your computer (CPU-only, works offline),
-keeps page boundaries as searchable <code>&lt;!-- Page N --&gt;</code>
-markers, and announces progress ("Recognizing page 3 of 12..."). When
-recognition confidence is low, QUILL tells you plainly so you know to
-review the result — honesty over false confidence.</li>
+scanned-PDF prompt: a genuinely corrupt file says it's <em>damaged</em>
+(and notes OCR won't help a corrupt file — repair or re-export it), and
+a PDF with no text extractor installed points you at <strong>Help &gt;
+Download Optional Components &gt; "PDF and Office text
+extraction"</strong> rather than claiming it's scanned. (A
+<em>password-protected</em> PDF is handled separately — QUILL asks you
+for the password and opens it directly; see <strong>Opening a
+password-protected PDF</strong> below.)</li>
 </ol>
+<p><strong>Opening a password-protected PDF.</strong> When you open an
+encrypted (password-protected) PDF, QUILL asks for its password and
+reads the document — you no longer need to decrypt it in another tool
+first. Type the password and the PDF opens; enter the wrong one and
+QUILL tells you and lets you try again; press <strong>Cancel</strong> to
+stop opening it. <strong>The password is used only to unlock that one
+file for reading — QUILL never stores, logs, or remembers it</strong>,
+so if you close and reopen the file, it asks again. PDFs that are
+technically "encrypted" but open with an empty password
+(permissions-only locks) continue to open with no prompt.</p>
+<p><strong>A PDF's bookmarks come across.</strong> If a PDF carries an
+embedded outline — the chapters and sections you would see in Adobe
+Reader's bookmarks pane — QUILL imports those entries into its own
+<strong>Bookmarks Manager</strong> (Ctrl+Shift+G) when you open the
+file, the same way it already surfaces Word and EPUB structure. Each
+imported bookmark jumps to exactly where <strong>Go To Page</strong> for
+that page would land. The import happens once, the first time you open
+the PDF: if you later rename or delete some of those bookmarks,
+reopening the file will not bring them back or create duplicates, and a
+PDF with no outline simply opens as before. 3. <strong>On-device OCR
+rescues the scan.</strong> The local Tesseract engine recognizes each
+page on your computer (CPU-only, works offline), keeps page boundaries
+as searchable <code>&lt;!-- Page N --&gt;</code> markers, and announces
+progress ("Recognizing page 3 of 12..."). When recognition confidence is
+low, QUILL tells you plainly so you know to review the result — honesty
+over false confidence.</p>
 <p><strong>Installing the OCR engine.</strong> The engine is a free,
 one-time ~48 MB download: <strong>Tools &gt; Reading &amp; Dictation
 &gt; Install Local OCR Engine (Tesseract)...</strong>. QUILL fetches the
@@ -32788,6 +32874,19 @@ current editor selection or full document.</li>
 <li>Press <strong>Run with AI</strong>. The result opens in the AI
 Response dialog.</li>
 </ol>
+<p><strong>Built-in prompts.</strong> QUILL ships a set of ready-to-run
+prompts you can use immediately or use as starting points. They include
+editing and tone tools (Check Grammar, Fix Grammar, Improve Clarity,
+Make Concise, Active Voice, Formal Tone, Conversational Tone,
+<strong>Paraphrase</strong>), structure tools (Summarize, Convert to
+Bullet Points, <strong>Generate FAQs</strong>, <strong>Step-by-Step
+Instructions</strong>), writing tools (Continue from Here, <strong>Draft
+a Speech</strong>, <strong>Summary Email</strong>, <strong>Social Media
+Post</strong> — 280 characters or fewer), and research tools (Define
+This Term, Find Counterarguments). The named one-shot tools in
+<strong>bold</strong> were added for parity with Leasey Word's set of
+named ChatGPT tools. Every built-in can have its wording overridden or
+be disabled, but built-ins cannot be deleted.</p>
 <p><strong>Managing prompts.</strong></p>
 <ul>
 <li><strong>New Prompt</strong> — opens a small dialog: enter a name,

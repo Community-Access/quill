@@ -47,7 +47,9 @@ def test_read_open_document_applies_word_open_mode(tmp_path: Path, monkeypatch) 
     target = tmp_path / "sample.docx"
     target.write_bytes(b"PK\x03\x04")
 
-    def _fake_read(path: Path, *, docx_engine: str = "auto") -> Document:
+    def _fake_read(
+        path: Path, *, docx_engine: str = "auto", pdf_password: str | None = None
+    ) -> Document:
         return Document(text="word body\n", path=path, source_metadata={})
 
     monkeypatch.setattr("quill.io.structured.read_structured_document", _fake_read)

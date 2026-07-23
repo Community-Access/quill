@@ -18,6 +18,17 @@ from quill.ui.translated_speech_runner import run_translated_speech_export
 
 
 class MenuBindingsMixin:
+    def open_companion_app(self, key: str) -> None:
+        """Tools > Companion Apps: launch Quill Radio or Quill Weather in its own
+        window and process. If it is already running, it just comes forward
+        (each is single-instance). Best-effort; never disrupts QUILL."""
+        from quill.core.app_launcher import app_name, launch_app
+
+        if launch_app(key):
+            self._announce(f"Opening {app_name(key)}.")
+        else:
+            self._announce(f"{app_name(key)} could not be opened; it may not be installed.")
+
     def _bind_menu_events(self) -> None:
         wx = self._wx
 
@@ -388,6 +399,7 @@ class MenuBindingsMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_work_personas(), id=self._id_work_personas
         )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_calculator(), id=self._id_calculator)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_general_preferences(), id=self._id_preferences
         )
@@ -791,6 +803,11 @@ class MenuBindingsMixin:
             id=self._id_ai_generate_toc,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_ai_thesaurus(), id=self._id_ai_thesaurus)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_ai_improve_reading_order(),
+            id=self._id_ai_reading_order,
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.open_ai_continue_writing(),

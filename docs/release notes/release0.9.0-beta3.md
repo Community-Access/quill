@@ -1070,6 +1070,35 @@ These improvements have landed on the development branch since Beta 3 and will s
 - **ePub headings you can actually navigate.** Chapter headings now appear inline so single-key heading navigation (`H` / `Shift+H`) walks them — and when an ePub has no real heading markup at all, QUILL infers headings from the book's structure so navigation still works.
 - **Word tables are no longer lost in rich editing.** Opening a `.docx` for rich editing used to silently drop its tables; they now appear inline as accessible tables you can read and jump to with `T`.
 
+### Open password-protected PDFs
+
+- **Locked PDFs just open now.** Previously QUILL correctly recognized an encrypted (password-protected) PDF but refused it, telling you to strip the password yourself in another tool first. Now QUILL simply **asks for the password and reads the file** — the way Leasey Word does. Type the password and the PDF opens; enter the wrong one and QUILL says so and lets you try again; press **Cancel** to stop opening it.
+- **Your password is never kept.** It is used only to unlock that one file for reading — QUILL never stores it, logs it, or writes it anywhere — so if you close and reopen the file, it asks again. PDFs that are technically "encrypted" but open with an empty password (permissions-only locks) still open with no prompt, exactly as before. The whole read runs in the background, so the screen reader stays responsive while a big PDF loads.
+
+### Sort lines by date
+
+- **A fourth way to sort.** Alongside the existing alphabetical, numeric, and by-length sorts, **Format > Sort Lines by Date** sorts the selected lines (or the whole document) by the first date it finds on each line — perfect for logs, transcripts, and hand-kept lists.
+- **It understands how people actually write dates.** It recognizes ISO (`2020-03-05`), slash and dot forms (`03/04/2020`, `5.1.2020`), and English month names (`Jan 5, 2020`, `5 January 2020`, `March 3rd, 1999`). For an ambiguous numeric date it reads the day/month order the way your region does — US English reads `03/04` as March 4th, elsewhere as 4 March — and an unambiguous value like `25/12` is always read correctly either way. Lines with no recognizable date stay together at the bottom in their original order, so nothing is lost. Like the other structured sorts, it has no default shortcut and can be given one in the Keymap Editor.
+
+### Read the sentence around a misspelling aloud
+
+- **Ctrl+R in the Spelling Review.** In the F7 Spelling Review, a new **Read Sentence** button — and the **Ctrl+R** shortcut — reads the whole sentence around the current misspelled word aloud, so you can judge a correction in context without leaving the dialog or scrolling the document to find the word. It reads the same context the dialog already shows. This matches Leasey Word's in-dialog "read the sentence" affordance.
+
+### Your PDF's own bookmarks come with it
+
+- **Jump straight to a chapter.** When you open a PDF that has an embedded outline — the chapters and sections you'd see in Adobe Reader's bookmarks pane — QUILL now imports those into its own **Bookmarks Manager** (Ctrl+Shift+G), just as it already surfaces Word and EPUB structure. Each bookmark jumps to exactly where **Go To Page** for that page would land.
+- **It respects your edits.** The import happens once, the first time you open the PDF; if you later rename or delete some of those bookmarks, reopening the file won't bring them back or make duplicates. A PDF with no outline (or a damaged one) simply opens as before.
+
+### More one-click writing presets
+
+- **Six named tools added to the Prompt Library.** **AI > Prompt Library** gains **Generate FAQs**, **Draft a Speech**, **Summary Email**, **Social Media Post** (280 characters or fewer), **Step-by-Step Instructions**, and **Paraphrase** — the named one-shot tools QUILL didn't already ship next to its Summarize, rewrite, tone, and expand presets. Each runs over your selection or the whole document in one click, and like every built-in you can tweak its wording or switch it off. This rounds out parity with Leasey Word's set of named ChatGPT tools.
+
+### Improve Reading Order with AI
+
+- **Fix a jumbled document in one step.** Some documents arrive with their text in the wrong order — a two-column PDF that extracts as one scrambled stream, a page with sidebars or text boxes, or lines out of sequence. **AI > More > Improve Reading Order...** (also on the command palette) sends the current document's text to your configured AI provider and gets it back in natural reading order: columns merged into one flow, mid-sentence line breaks joined, and headings, lists, and tables inferred — with your exact wording preserved (it never summarizes or invents).
+- **Always asks first, never touches your original.** A confirmation names the provider and its host and the approximate page size before anything is sent; the improved text opens as a **new, unsaved document** (Save As to keep it), leaving your original exactly as it was. It refuses documents over a page limit (Settings, default 40) so a huge or costly send can't happen by accident, and it's off in Safe Mode. (For a *scanned* image-only PDF, use File > Import's OCR path instead — this command is for text that's simply in the wrong order.) This closes the last Leasey Word editor-parity gap.
+- **Your provider, your choice — or fully on-device.** Improve Reading Order isn't wired to any single service. It uses whichever AI backend you've set up in **AI > Set Up AI** — **OpenAI**, **Claude**, **Google Gemini**, **OpenRouter**, **Ollama** (local), **Ollama Cloud**, or a **custom OpenAI-compatible endpoint** — with your own account and key (QUILL bundles no keys and adds nothing to your bill). Haven't set up a cloud provider? QUILL falls back to its **bundled on-device model** (Apple's on-device model on a supported Mac, otherwise a local CPU model), so the repair can run **entirely on your computer with nothing uploaded**. Either way the confirmation names the exact provider and host first, so you always know where your text is going.
+
 ### Bookmarks that survive edits
 
 - Bookmarks and quick-bookmarks now remember the text around them, so jumping to one lands where that text actually is — even after you've inserted or deleted text above it. Your "Points" stop drifting.

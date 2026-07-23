@@ -107,6 +107,7 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.select_citation_style",
     "power.shuffle_lines",
     "power.sort_lines_numeric",
+    "power.sort_lines_by_date",
     "power.sort_lines_by_length",
     "power.keep_unique_lines",
     "power.delete_lines_containing",
@@ -339,6 +340,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         "sort_filter": [
             "power.shuffle_lines",
             "power.sort_lines_numeric",
+            "power.sort_lines_by_date",
             "power.sort_lines_by_length",
             "power.keep_unique_lines",
             "power.delete_lines_containing",

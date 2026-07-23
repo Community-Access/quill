@@ -1485,6 +1485,22 @@ class PowerToolsActionsMixin:
             _fmt.sort_lines_by_length, "Sorted lines by length"
         )
 
+    def _date_sort_day_first(self) -> bool:
+        """Infer d/m/y vs m/d/y for ambiguous numeric dates from the user's region.
+
+        Reuse the spell-check language as the region signal (Leasey infers the same
+        way from the Windows region): US English is the main month-first (m/d/y)
+        locale, so treat every other locale as day-first (d/m/y)."""
+        language = str(getattr(self.settings, "spellcheck_language", "en_US"))
+        return not language.lower().replace("-", "_").startswith("en_us")
+
+    def sort_lines_by_date(self) -> None:
+        day_first = self._date_sort_day_first()
+        self._power_tools_transform_selection_or_document(
+            lambda text: _fmt.sort_lines_by_date(text, day_first=day_first),
+            "Sorted lines by date",
+        )
+
     def keep_unique_lines(self) -> None:
         """Remove duplicate lines (case-sensitive); alias with a discoverable name."""
         self._power_tools_transform_selection_or_document(

@@ -284,6 +284,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         separator_before=False,
     )
     add(
+        id="power.sort_lines_by_date",
+        title="Sort Lines by Date",
+        top_level="Format",
+        group="sort_filter",
+        label="Sort Lines by &Date",
+        separator_before=False,
+    )
+    add(
         id="power.sort_lines_by_length",
         title="Sort Lines by Length",
         top_level="Format",

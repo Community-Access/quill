@@ -376,7 +376,14 @@ class RadioStatusBar:
             self._focus_cell(len(self._cells) - 1)
             return
         if code == wx.WXK_TAB:
-            self._focus_cell(index + (-1 if event.ShiftDown() else 1))
+            # The whole status bar is one stop in the window's Tab order, not one
+            # stop per cell -- Tab / Shift+Tab hand off to the next / previous
+            # control (the arrow keys above are what move cell to cell). Navigate
+            # on the panel moves past the bar to its sibling, rather than to the
+            # next cell button inside it.
+            forward = not event.ShiftDown()
+            flag = wx.NavigationKeyEvent.IsForward if forward else wx.NavigationKeyEvent.IsBackward
+            self._panel.Navigate(flag)
             return
         if code == wx.WXK_ESCAPE:
             self._leave_bar()

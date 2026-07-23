@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-19-noaa-weather-radio-wxindex</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="noaa-weather-radio-wxindex-implementation-plan">NOAA Weather
+Radio (wxindex) Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use
+superpowers:subagent-driven-development (recommended) or
+superpowers:executing-plans to implement this plan task-by-task. Steps
+use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Replace QUILL Radio’s fuzzy “NOAA Weather
+Radio” search with the authoritative WeatherIndex (wxindex) directory,
+powering Browse, Search, and a Weather-menu “Your Local NOAA Weather
+Radio” tie-in, resilient via a bundled full-directory snapshot.</p>
+<p><strong>Architecture:</strong> A <code>wx</code>-free client
+(<code>quill/core/radio/wxindex.py</code>) parses wxindex JSON into
+<code>WxStation</code> objects and adapts them to the existing
+<code>RadioStation</code> model. A three-tier resolver serves data from
+the live API, then an app-data cache, then a bundled
+<code>quill/data/noaa_directory.json</code> snapshot. UI layers (Browse
+tree, unified search, Weather menu) consume only the resolver’s domain
+functions.</p>
+<p><strong>Tech Stack:</strong> Python 3.12+,
+<code>urllib</code>+<code>ssl</code> (same egress pattern as
+<code>radio_browser.py</code>), the existing
+<code>RadioStation</code>/Browse/recorder/favorites,
+<code>pytest</code>.</p>
+<h2 id="global-constraints">Global Constraints</h2>
+<ul>
+<li>Target release: <strong>QUILL Radio 2.1.1</strong> (bump
+<code>s:\quill-radio\pyproject.toml</code> <code>version</code> from
+<code>2.1.0</code>).</li>
+<li>Code lives in the <code>quill</code> package
+(<code>s:\quill</code>); <code>quill_radio</code> inherits it as a thin
+wrapper — no vendoring step.</li>
+<li><code>wx</code>-free, strict-typed core (match
+<code>radio_browser.py</code>). No <code>wx</code> import under
+<code>quill/core/</code>.</li>
+<li>Network: HTTPS-only, one reviewed egress site funneling through
+<code>quill/tools/network_egress_audit.py</code>, short timeout, blocked
+in Safe Mode via <code>refuse_in_safe_mode(safe_mode)</code> (raise
+before any request).</li>
+<li>Base URL: <code>https://api.wxindex.org</code>. No auth. Cache
+results; never poll in a loop.</li>
+<li>Adapt to <code>quill.core.radio.models.RadioStation</code> so
+player/recorder/favorites work unchanged; set
+<code>source="NOAA Weather Radio"</code>.</li>
+<li>TDD: every module has unit tests with a <strong>fake
+fetcher</strong> — no real network in tests. DRY, YAGNI, frequent
+commits.</li>
+</ul>
+<hr />
+<h3 id="task-1-wxstation-model-pure-json-parsers">Task 1:
+<code>WxStation</code> model + pure JSON parsers</h3>
+<p><strong>Files:</strong> - Create:
+<code>quill/core/radio/wxindex_models.py</code> - Test:
+<code>tests/unit/core/radio/test_wxindex_models.py</code></p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>WxState(slug: str, name: str, station_count: int)</code>;
+<code>WxStation(callsign, frequency_mhz: float, name, state, counties: tuple[str,...], same_codes: tuple[str,...], wfo: str, latitude: float, longitude: float, feeds: tuple[str,...])</code>;
+<code>parse_states(data: object) -&gt; list[WxState]</code>;
+<code>parse_stations(data: object) -&gt; list[WxStation]</code>;
+<code>parse_station(data: object) -&gt; WxStation | None</code>;
+<code>to_radio_station(s: WxStation) -&gt; RadioStation</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/radio/test_wxindex_models.py</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> (</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    WxStation, parse_states, parse_stations, to_radio_station,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>_STATION_JSON <span class="op">=</span> {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KHB36&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.550&quot;</span>, <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Manassas&quot;</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;state&quot;</span>: <span class="st">&quot;VA&quot;</span>, <span class="st">&quot;wfo&quot;</span>: <span class="st">&quot;LWX&quot;</span>, <span class="st">&quot;latitude&quot;</span>: <span class="fl">38.75</span>, <span class="st">&quot;longitude&quot;</span>: <span class="op">-</span><span class="fl">77.48</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;counties&quot;</span>: [<span class="st">&quot;Prince William, VA&quot;</span>], <span class="st">&quot;same&quot;</span>: [<span class="st">&quot;051153&quot;</span>],</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;feeds&quot;</span>: [{<span class="st">&quot;url&quot;</span>: <span class="st">&quot;https://stream.example/khb36&quot;</span>}],</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_parse_stations_builds_wxstation():</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    [s] <span class="op">=</span> parse_stations([_STATION_JSON])</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.callsign <span class="op">==</span> <span class="st">&quot;KHB36&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.frequency_mhz <span class="op">==</span> <span class="fl">162.55</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.same_codes <span class="op">==</span> (<span class="st">&quot;051153&quot;</span>,)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.feeds <span class="op">==</span> (<span class="st">&quot;https://stream.example/khb36&quot;</span>,)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_parse_states_reads_counts():</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    [st] <span class="op">=</span> parse_states([{<span class="st">&quot;slug&quot;</span>: <span class="st">&quot;virginia&quot;</span>, <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Virginia&quot;</span>, <span class="st">&quot;station_count&quot;</span>: <span class="dv">42</span>}])</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (st.slug, st.name, st.station_count) <span class="op">==</span> (<span class="st">&quot;virginia&quot;</span>, <span class="st">&quot;Virginia&quot;</span>, <span class="dv">42</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_to_radio_station_maps_playable_fields():</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    rs <span class="op">=</span> to_radio_station(parse_stations([_STATION_JSON])[<span class="dv">0</span>])</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> rs.stream_url <span class="op">==</span> <span class="st">&quot;https://stream.example/khb36&quot;</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> rs.source <span class="op">==</span> <span class="st">&quot;NOAA Weather Radio&quot;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;KHB36&quot;</span> <span class="kw">in</span> rs.name <span class="kw">and</span> <span class="st">&quot;162.55&quot;</span> <span class="kw">in</span> rs.name</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_models.py -v</code>
+Expected: FAIL —
+<code>ModuleNotFoundError: quill.core.radio.wxindex_models</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/radio/wxindex_models.py</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;wx-free WeatherIndex (NOAA Weather Radio) domain model + JSON parsers.&quot;&quot;&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass, field</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.models <span class="im">import</span> RadioStation</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>_SOURCE <span class="op">=</span> <span class="st">&quot;NOAA Weather Radio&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(slots<span class="op">=</span><span class="va">True</span>, frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> WxState:</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    slug: <span class="bu">str</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    station_count: <span class="bu">int</span> <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(slots<span class="op">=</span><span class="va">True</span>, frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> WxStation:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    callsign: <span class="bu">str</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    frequency_mhz: <span class="bu">float</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    state: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    counties: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> ()</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    same_codes: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> ()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    wfo: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    latitude: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    longitude: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    feeds: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> ()</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _f(value: <span class="bu">object</span>, default: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">float</span>(<span class="bu">str</span>(value))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (<span class="pp">TypeError</span>, <span class="pp">ValueError</span>):</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> default</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_states(data: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[WxState]:</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    out: <span class="bu">list</span>[WxState] <span class="op">=</span> []</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> data <span class="cf">if</span> <span class="bu">isinstance</span>(data, <span class="bu">list</span>) <span class="cf">else</span> []:</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(row, <span class="bu">dict</span>):</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        slug <span class="op">=</span> <span class="bu">str</span>(row.get(<span class="st">&quot;slug&quot;</span>, <span class="st">&quot;&quot;</span>)).strip()</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> slug:</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>            out.append(WxState(slug, <span class="bu">str</span>(row.get(<span class="st">&quot;name&quot;</span>, slug)),</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>                               <span class="bu">int</span>(_f(row.get(<span class="st">&quot;station_count&quot;</span>), <span class="dv">0</span>))))</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _feeds(row: <span class="bu">dict</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">str</span>, ...]:</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    urls: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> feed <span class="kw">in</span> row.get(<span class="st">&quot;feeds&quot;</span>, []) <span class="kw">or</span> []:</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        url <span class="op">=</span> <span class="bu">str</span>((feed <span class="kw">or</span> {}).get(<span class="st">&quot;url&quot;</span>, <span class="st">&quot;&quot;</span>)).strip() <span class="cf">if</span> <span class="bu">isinstance</span>(feed, <span class="bu">dict</span>) <span class="cf">else</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> url:</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>            urls.append(url)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">tuple</span>(urls)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_station(data: <span class="bu">object</span>) <span class="op">-&gt;</span> WxStation <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(data, <span class="bu">dict</span>):</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    callsign <span class="op">=</span> <span class="bu">str</span>(data.get(<span class="st">&quot;callsign&quot;</span>, <span class="st">&quot;&quot;</span>)).strip()</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> callsign:</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> WxStation(</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        callsign<span class="op">=</span>callsign,</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>        frequency_mhz<span class="op">=</span>_f(data.get(<span class="st">&quot;frequency&quot;</span>)),</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span><span class="bu">str</span>(data.get(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;&quot;</span>)).strip(),</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        state<span class="op">=</span><span class="bu">str</span>(data.get(<span class="st">&quot;state&quot;</span>, <span class="st">&quot;&quot;</span>)).strip(),</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        counties<span class="op">=</span><span class="bu">tuple</span>(<span class="bu">str</span>(c).strip() <span class="cf">for</span> c <span class="kw">in</span> data.get(<span class="st">&quot;counties&quot;</span>, []) <span class="kw">or</span> [] <span class="cf">if</span> <span class="bu">str</span>(c).strip()),</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        same_codes<span class="op">=</span><span class="bu">tuple</span>(<span class="bu">str</span>(c).strip() <span class="cf">for</span> c <span class="kw">in</span> data.get(<span class="st">&quot;same&quot;</span>, []) <span class="kw">or</span> [] <span class="cf">if</span> <span class="bu">str</span>(c).strip()),</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        wfo<span class="op">=</span><span class="bu">str</span>(data.get(<span class="st">&quot;wfo&quot;</span>, <span class="st">&quot;&quot;</span>)).strip(),</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        latitude<span class="op">=</span>_f(data.get(<span class="st">&quot;latitude&quot;</span>)),</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>        longitude<span class="op">=</span>_f(data.get(<span class="st">&quot;longitude&quot;</span>)),</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>        feeds<span class="op">=</span>_feeds(data),</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_stations(data: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[WxStation]:</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> data <span class="cf">if</span> <span class="bu">isinstance</span>(data, <span class="bu">list</span>) <span class="cf">else</span> []</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [s <span class="cf">for</span> s <span class="kw">in</span> (parse_station(r) <span class="cf">for</span> r <span class="kw">in</span> rows) <span class="cf">if</span> s <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>]</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_radio_station(s: WxStation) <span class="op">-&gt;</span> RadioStation:</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    place <span class="op">=</span> <span class="ss">f&quot; - </span><span class="sc">{</span>s<span class="sc">.</span>name<span class="sc">}</span><span class="ss">&quot;</span> <span class="cf">if</span> s.name <span class="cf">else</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="ss">f&quot;NOAA Weather Radio - </span><span class="sc">{</span>s<span class="sc">.</span>callsign<span class="sc">}</span><span class="ss"> - </span><span class="sc">{</span>s<span class="sc">.</span>frequency_mhz<span class="sc">:.2f}</span><span class="ss"> MHz</span><span class="sc">{</span>place<span class="sc">}</span><span class="ss">&quot;</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> RadioStation(</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>label,</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>        stream_url<span class="op">=</span>s.feeds[<span class="dv">0</span>] <span class="cf">if</span> s.feeds <span class="cf">else</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>        station_uuid<span class="op">=</span><span class="ss">f&quot;wxindex:</span><span class="sc">{</span>s<span class="sc">.</span>callsign<span class="sc">}</span><span class="ss">&quot;</span>,</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>        country<span class="op">=</span><span class="st">&quot;United States&quot;</span>,</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        tags<span class="op">=</span>(<span class="st">&quot;weather&quot;</span>, <span class="st">&quot;noaa&quot;</span>),</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        source<span class="op">=</span>_SOURCE,</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_models.py -v</code>
+Expected: PASS (3 passed).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex_models.py tests/unit/core/radio/test_wxindex_models.py</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): wxindex WxStation model + JSON parsers&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-2-wxindex-http-fetcher-reviewed-egress-safe-mode">Task 2:
+wxindex HTTP fetcher (reviewed egress) + Safe Mode</h3>
+<p><strong>Files:</strong> - Create:
+<code>quill/core/radio/wxindex_http.py</code> - Test:
+<code>tests/unit/core/radio/test_wxindex_http.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: nothing from Task 1 (pure
+transport). - Produces:
+<code>WxIndexError(RadioError-style Exception)</code>;
+<code>refuse_in_safe_mode(safe_mode: bool) -&gt; None</code>;
+<code>http_json(path: str, *, fetcher: Fetcher | None = None) -&gt; object</code>
+where <code>Fetcher = Callable[[str], str]</code> (returns the response
+body for a full URL). Real fetches go through
+<code>quill/tools/network_egress_audit.py</code>; tests pass a
+<code>fetcher</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/radio/test_wxindex_http.py</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_http <span class="im">import</span> http_json, refuse_in_safe_mode, WxIndexError</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_http_json_parses_via_injected_fetcher():</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    calls <span class="op">=</span> []</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fake(url: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        calls.append(url)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&#39;{&quot;ok&quot;: true}&#39;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> http_json(<span class="st">&quot;/v1/states&quot;</span>, fetcher<span class="op">=</span>fake) <span class="op">==</span> {<span class="st">&quot;ok&quot;</span>: <span class="va">True</span>}</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> calls <span class="op">==</span> [<span class="st">&quot;https://api.wxindex.org/v1/states&quot;</span>]</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_refuse_in_safe_mode_raises():</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(WxIndexError):</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        refuse_in_safe_mode(<span class="va">True</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    refuse_in_safe_mode(<span class="va">False</span>)  <span class="co"># no raise</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_http_json_wraps_bad_json():</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(WxIndexError):</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        http_json(<span class="st">&quot;/v1/states&quot;</span>, fetcher<span class="op">=</span><span class="kw">lambda</span> url: <span class="st">&quot;not json&quot;</span>)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_http.py -v</code>
+Expected: FAIL — module missing.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/radio/wxindex_http.py</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;The single reviewed egress site for WeatherIndex. wx-free, strict-typed.&quot;&quot;&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ssl</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.error</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections.abc <span class="im">import</span> Callable</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>_BASE <span class="op">=</span> <span class="st">&quot;https://api.wxindex.org&quot;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>_TIMEOUT_SECONDS <span class="op">=</span> <span class="fl">15.0</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>_USER_AGENT <span class="op">=</span> <span class="st">&quot;QUILL-Radio/2.1.1 (+https://github.com/Community-Access/quill)&quot;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>Fetcher <span class="op">=</span> Callable[[<span class="bu">str</span>], <span class="bu">str</span>]</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> WxIndexError(<span class="pp">Exception</span>):</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;A WeatherIndex request failed, was refused, or returned bad data.&quot;&quot;&quot;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> refuse_in_safe_mode(safe_mode: <span class="bu">bool</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> safe_mode:</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> WxIndexError(</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;NOAA Weather Radio is disabled in Safe Mode. &quot;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Restart QUILL normally to browse or update it.&quot;</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _default_fetch(url: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># NETWORK-EGRESS: reviewed site (see quill/tools/network_egress_audit.py).</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    request <span class="op">=</span> urllib.request.Request(</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        url, headers<span class="op">=</span>{<span class="st">&quot;User-Agent&quot;</span>: _USER_AGENT, <span class="st">&quot;Accept&quot;</span>: <span class="st">&quot;application/json&quot;</span>}</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    context <span class="op">=</span> ssl.create_default_context()</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> urllib.request.urlopen(request, timeout<span class="op">=</span>_TIMEOUT_SECONDS, context<span class="op">=</span>context) <span class="im">as</span> resp:</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> resp.read().decode(<span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (urllib.error.URLError, <span class="pp">TimeoutError</span>, ssl.SSLError, <span class="pp">OSError</span>) <span class="im">as</span> error:</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> WxIndexError(<span class="ss">f&quot;Could not reach the NOAA Weather Radio directory: </span><span class="sc">{</span>error<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> error</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> http_json(path: <span class="bu">str</span>, <span class="op">*</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    fetch <span class="op">=</span> fetcher <span class="kw">or</span> _default_fetch</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    body <span class="op">=</span> fetch(<span class="ss">f&quot;</span><span class="sc">{</span>_BASE<span class="sc">}{</span>path<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> json.loads(body) <span class="cf">if</span> body <span class="cf">else</span> []</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">ValueError</span> <span class="im">as</span> error:</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> WxIndexError(<span class="st">&quot;The NOAA Weather Radio directory returned an unreadable reply.&quot;</span>) <span class="im">from</span> error</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_http.py -v</code>
+Expected: PASS (3 passed).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Add the egress site
+to the audit allowlist and commit</strong></label></li>
+</ul>
+<p>Add <code>wxindex_http._default_fetch</code> to the reviewed-egress
+registry the same way <code>radio_browser._http_json</code> is listed
+(see <code>quill/tools/network_egress_audit.py</code>; run its test to
+confirm no violation).</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex_http.py tests/unit/core/radio/test_wxindex_http.py quill/tools/network_egress_audit.py</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): wxindex reviewed egress fetcher + Safe Mode&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-3-bundled-snapshot-loader-scriptssnapshot_wxindex.py">Task
+3: Bundled snapshot loader +
+<code>scripts/snapshot_wxindex.py</code></h3>
+<p><strong>Files:</strong> - Create:
+<code>quill/core/radio/wxindex_snapshot.py</code> - Create:
+<code>quill/data/noaa_directory.json</code> (real snapshot, generated by
+the script) - Create: <code>scripts/snapshot_wxindex.py</code> - Test:
+<code>tests/unit/core/radio/test_wxindex_snapshot.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: <code>parse_states</code>,
+<code>parse_stations</code> (Task 1). - Produces:
+<code>load_snapshot() -&gt; Snapshot</code> where
+<code>Snapshot(generated_at: str, states: list[WxState], stations: list[WxStation])</code>;
+<code>snapshot_path() -&gt; Path</code>. Missing/corrupt snapshot -&gt;
+empty <code>Snapshot</code>, logged, never raises.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/radio/test_wxindex_snapshot.py</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex_snapshot <span class="im">as</span> snap</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_load_snapshot_reads_states_and_stations(tmp_path, monkeypatch):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    doc <span class="op">=</span> {<span class="st">&quot;generated_at&quot;</span>: <span class="st">&quot;2026-07-19T00:00:00Z&quot;</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;states&quot;</span>: [{<span class="st">&quot;slug&quot;</span>: <span class="st">&quot;virginia&quot;</span>, <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Virginia&quot;</span>, <span class="st">&quot;station_count&quot;</span>: <span class="dv">1</span>}],</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;stations&quot;</span>: [{<span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KHB36&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.550&quot;</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;feeds&quot;</span>: [{<span class="st">&quot;url&quot;</span>: <span class="st">&quot;https://s/khb36&quot;</span>}]}]}</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;noaa_directory.json&quot;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    path.write_text(json.dumps(doc), encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(snap, <span class="st">&quot;snapshot_path&quot;</span>, <span class="kw">lambda</span>: path)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> snap.load_snapshot()</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.states[<span class="dv">0</span>].slug <span class="op">==</span> <span class="st">&quot;virginia&quot;</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.stations[<span class="dv">0</span>].callsign <span class="op">==</span> <span class="st">&quot;KHB36&quot;</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_load_snapshot_missing_is_empty(tmp_path, monkeypatch):</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(snap, <span class="st">&quot;snapshot_path&quot;</span>, <span class="kw">lambda</span>: tmp_path <span class="op">/</span> <span class="st">&quot;nope.json&quot;</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> snap.load_snapshot()</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> s.states <span class="op">==</span> [] <span class="kw">and</span> s.stations <span class="op">==</span> []</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_snapshot.py -v</code>
+Expected: FAIL — module missing.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/radio/wxindex_snapshot.py</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass, field</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> WxState, WxStation, parse_states, parse_stations</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>_LOG <span class="op">=</span> logging.getLogger(<span class="va">__name__</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(slots<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Snapshot:</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    generated_at: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    states: <span class="bu">list</span>[WxState] <span class="op">=</span> field(default_factory<span class="op">=</span><span class="bu">list</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    stations: <span class="bu">list</span>[WxStation] <span class="op">=</span> field(default_factory<span class="op">=</span><span class="bu">list</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> snapshot_path() <span class="op">-&gt;</span> Path:</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Path(<span class="va">__file__</span>).resolve().parents[<span class="dv">2</span>] <span class="op">/</span> <span class="st">&quot;data&quot;</span> <span class="op">/</span> <span class="st">&quot;noaa_directory.json&quot;</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_snapshot() <span class="op">-&gt;</span> Snapshot:</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> snapshot_path()</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        doc <span class="op">=</span> json.loads(path.read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>))</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (<span class="pp">OSError</span>, <span class="pp">ValueError</span>) <span class="im">as</span> error:</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        _LOG.warning(<span class="st">&quot;NOAA directory snapshot unavailable (</span><span class="sc">%s</span><span class="st">): </span><span class="sc">%s</span><span class="st">&quot;</span>, path, error)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Snapshot()</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> <span class="bu">isinstance</span>(doc, <span class="bu">dict</span>):</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Snapshot()</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Snapshot(</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        generated_at<span class="op">=</span><span class="bu">str</span>(doc.get(<span class="st">&quot;generated_at&quot;</span>, <span class="st">&quot;&quot;</span>)),</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        states<span class="op">=</span>parse_states(doc.get(<span class="st">&quot;states&quot;</span>, [])),</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>        stations<span class="op">=</span>parse_stations(doc.get(<span class="st">&quot;stations&quot;</span>, [])),</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_snapshot.py -v</code>
+Expected: PASS (2 passed).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Write the snapshot
+generator and produce the real snapshot</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># scripts/snapshot_wxindex.py</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Fetch the full WeatherIndex directory into quill/data/noaa_directory.json.&quot;&quot;&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> UTC, datetime</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_http <span class="im">import</span> http_json</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_snapshot <span class="im">import</span> snapshot_path</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main() <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    states <span class="op">=</span> http_json(<span class="st">&quot;/v1/states&quot;</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    stations <span class="op">=</span> http_json(<span class="st">&quot;/v1/stations/all-known&quot;</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    doc <span class="op">=</span> {</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;generated_at&quot;</span>: datetime.now(UTC).replace(microsecond<span class="op">=</span><span class="dv">0</span>).isoformat(),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;states&quot;</span>: states <span class="cf">if</span> <span class="bu">isinstance</span>(states, <span class="bu">list</span>) <span class="cf">else</span> [],</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;stations&quot;</span>: stations <span class="cf">if</span> <span class="bu">isinstance</span>(stations, <span class="bu">list</span>) <span class="cf">else</span> [],</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> snapshot_path()</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    out.parent.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    out.write_text(json.dumps(doc, separators<span class="op">=</span>(<span class="st">&quot;,&quot;</span>, <span class="st">&quot;:&quot;</span>)), encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;Wrote </span><span class="sc">{</span>out<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span><span class="bu">len</span>(doc[<span class="st">&#39;stations&#39;</span>])<span class="sc">}</span><span class="ss"> stations, </span><span class="sc">{</span><span class="bu">len</span>(doc[<span class="st">&#39;states&#39;</span>])<span class="sc">}</span><span class="ss"> states)&quot;</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">SystemExit</span>(main())</span></code></pre></div>
+<p>Run: <code>python scripts/snapshot_wxindex.py</code> (real network;
+commits the data file).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex_snapshot.py scripts/snapshot_wxindex.py quill/data/noaa_directory.json tests/unit/core/radio/test_wxindex_snapshot.py</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): bundled NOAA directory snapshot + generator&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-4-three-tier-resolver-live---cache---snapshot-manual-refresh">Task
+4: Three-tier resolver (live -&gt; cache -&gt; snapshot) + manual
+refresh</h3>
+<p><strong>Files:</strong> - Create:
+<code>quill/core/radio/wxindex.py</code> (the public facade) - Test:
+<code>tests/unit/core/radio/test_wxindex_resolver.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: <code>http_json</code>,
+<code>refuse_in_safe_mode</code> (Task 2); <code>load_snapshot</code>
+(Task 3); parsers (Task 1). - Produces:
+<code>list_states(*, safe_mode=False, fetcher=None) -&gt; list[WxState]</code>;
+<code>stations_for_state(slug, *, safe_mode=False, fetcher=None) -&gt; list[WxStation]</code>;
+<code>refresh_directory(*, safe_mode=False, fetcher=None) -&gt; RefreshResult</code>
+(writes cache atomically);
+<code>RefreshResult(station_count: int, state_count: int, generated_at: str)</code>;
+internal <code>_cache_dir() -&gt; Path</code> under
+<code>app_data_dir()/radio/wxindex-cache</code>. Resolution order for
+reads: fresh cache (&lt; max_age) -&gt; live (then write cache) -&gt;
+stale cache -&gt; snapshot.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/radio/test_wxindex_resolver.py</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _fetcher(mapping):</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">lambda</span> url: mapping[url]</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_stations_for_state_uses_live_then_caches(tmp_path, monkeypatch):</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;_cache_dir&quot;</span>, <span class="kw">lambda</span>: tmp_path)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    body <span class="op">=</span> json.dumps([{<span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KHB36&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.550&quot;</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;feeds&quot;</span>: [{<span class="st">&quot;url&quot;</span>: <span class="st">&quot;https://s/khb36&quot;</span>}]}])</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    f <span class="op">=</span> _fetcher({<span class="st">&quot;https://api.wxindex.org/v1/states/virginia/stations&quot;</span>: body})</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    got <span class="op">=</span> wxindex.stations_for_state(<span class="st">&quot;virginia&quot;</span>, fetcher<span class="op">=</span>f)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> got[<span class="dv">0</span>].callsign <span class="op">==</span> <span class="st">&quot;KHB36&quot;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (tmp_path <span class="op">/</span> <span class="st">&quot;state-virginia.json&quot;</span>).is_file()  <span class="co"># cached</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_stations_for_state_falls_back_to_cache_on_failure(tmp_path, monkeypatch):</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;_cache_dir&quot;</span>, <span class="kw">lambda</span>: tmp_path)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    (tmp_path <span class="op">/</span> <span class="st">&quot;state-virginia.json&quot;</span>).write_text(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        json.dumps([{<span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KZZ99&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.400&quot;</span>, <span class="st">&quot;feeds&quot;</span>: []}]),</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>        encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> boom(url): <span class="cf">raise</span> wxindex.WxIndexError(<span class="st">&quot;down&quot;</span>)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    got <span class="op">=</span> wxindex.stations_for_state(<span class="st">&quot;virginia&quot;</span>, fetcher<span class="op">=</span>boom, max_age_seconds<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> got[<span class="dv">0</span>].callsign <span class="op">==</span> <span class="st">&quot;KZZ99&quot;</span>  <span class="co"># served stale cache, no raise</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_refresh_directory_writes_cache_and_reports(tmp_path, monkeypatch):</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;_cache_dir&quot;</span>, <span class="kw">lambda</span>: tmp_path)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    f <span class="op">=</span> _fetcher({</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;https://api.wxindex.org/v1/states&quot;</span>: json.dumps([{<span class="st">&quot;slug&quot;</span>: <span class="st">&quot;virginia&quot;</span>, <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Virginia&quot;</span>}]),</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;https://api.wxindex.org/v1/stations/all-known&quot;</span>:</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>            json.dumps([{<span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KHB36&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.550&quot;</span>, <span class="st">&quot;feeds&quot;</span>: []}]),</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> wxindex.refresh_directory(fetcher<span class="op">=</span>f)</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> res.station_count <span class="op">==</span> <span class="dv">1</span> <span class="kw">and</span> res.state_count <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (tmp_path <span class="op">/</span> <span class="st">&quot;directory.json&quot;</span>).is_file()</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_safe_mode_refuses_live(tmp_path, monkeypatch):</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;_cache_dir&quot;</span>, <span class="kw">lambda</span>: tmp_path)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(wxindex.WxIndexError):</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>        wxindex.refresh_directory(safe_mode<span class="op">=</span><span class="va">True</span>, fetcher<span class="op">=</span><span class="kw">lambda</span> url: <span class="st">&quot;[]&quot;</span>)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_resolver.py -v</code>
+Expected: FAIL — <code>wxindex</code> facade missing / attributes
+undefined.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/radio/wxindex.py</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Public NOAA Weather Radio facade: three-tier resolver over WeatherIndex.&quot;&quot;&quot;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.paths <span class="im">import</span> app_data_dir</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_http <span class="im">import</span> Fetcher, WxIndexError, http_json, refuse_in_safe_mode</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> (</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    WxState, WxStation, parse_states, parse_stations,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_snapshot <span class="im">import</span> load_snapshot</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>_DEFAULT_MAX_AGE <span class="op">=</span> <span class="dv">7</span> <span class="op">*</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">3600</span>  <span class="co"># 7 days</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(slots<span class="op">=</span><span class="va">True</span>, frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RefreshResult:</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    station_count: <span class="bu">int</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    state_count: <span class="bu">int</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    generated_at: <span class="bu">str</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _cache_dir() <span class="op">-&gt;</span> Path:</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> app_data_dir() <span class="op">/</span> <span class="st">&quot;radio&quot;</span> <span class="op">/</span> <span class="st">&quot;wxindex-cache&quot;</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    path.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> path</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _read_cache(name: <span class="bu">str</span>, max_age_seconds: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">object</span> <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> _cache_dir() <span class="op">/</span> name</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> max_age_seconds <span class="op">&gt;=</span> <span class="dv">0</span> <span class="kw">and</span> (time.time() <span class="op">-</span> path.stat().st_mtime) <span class="op">&gt;</span> max_age_seconds:</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>            <span class="co"># too old to be &quot;fresh&quot;, but callers may still fall back to it</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> {<span class="st">&quot;_stale&quot;</span>: json.loads(path.read_text(<span class="st">&quot;utf-8&quot;</span>))}</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> {<span class="st">&quot;_fresh&quot;</span>: json.loads(path.read_text(<span class="st">&quot;utf-8&quot;</span>))}</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (<span class="pp">OSError</span>, <span class="pp">ValueError</span>):</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _write_cache(name: <span class="bu">str</span>, data: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> _cache_dir() <span class="op">/</span> name</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    tmp <span class="op">=</span> path.with_suffix(path.suffix <span class="op">+</span> <span class="st">&quot;.tmp&quot;</span>)</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    tmp.write_text(json.dumps(data, separators<span class="op">=</span>(<span class="st">&quot;,&quot;</span>, <span class="st">&quot;:&quot;</span>)), encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    tmp.replace(path)</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _live_or_cache(path: <span class="bu">str</span>, cache_name: <span class="bu">str</span>, <span class="op">*</span>, safe_mode: <span class="bu">bool</span>,</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>                   fetcher: Fetcher <span class="op">|</span> <span class="va">None</span>, max_age_seconds: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    cached <span class="op">=</span> _read_cache(cache_name, max_age_seconds)</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cached <span class="kw">and</span> <span class="st">&quot;_fresh&quot;</span> <span class="kw">in</span> cached:</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cached[<span class="st">&quot;_fresh&quot;</span>]</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>        refuse_in_safe_mode(safe_mode)</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> http_json(path, fetcher<span class="op">=</span>fetcher)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>        _write_cache(cache_name, data)</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> data</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> WxIndexError:</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cached <span class="kw">and</span> <span class="st">&quot;_stale&quot;</span> <span class="kw">in</span> cached:</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> cached[<span class="st">&quot;_stale&quot;</span>]</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> list_states(<span class="op">*</span>, safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>                max_age_seconds: <span class="bu">float</span> <span class="op">=</span> _DEFAULT_MAX_AGE) <span class="op">-&gt;</span> <span class="bu">list</span>[WxState]:</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> parse_states(_live_or_cache(<span class="st">&quot;/v1/states&quot;</span>, <span class="st">&quot;states.json&quot;</span>,</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>                            safe_mode<span class="op">=</span>safe_mode, fetcher<span class="op">=</span>fetcher, max_age_seconds<span class="op">=</span>max_age_seconds))</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> WxIndexError:</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> load_snapshot().states</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> stations_for_state(slug: <span class="bu">str</span>, <span class="op">*</span>, safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>                       max_age_seconds: <span class="bu">float</span> <span class="op">=</span> _DEFAULT_MAX_AGE) <span class="op">-&gt;</span> <span class="bu">list</span>[WxStation]:</span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> parse_stations(_live_or_cache(</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;/v1/states/</span><span class="sc">{</span>slug<span class="sc">}</span><span class="ss">/stations&quot;</span>, <span class="ss">f&quot;state-</span><span class="sc">{</span>slug<span class="sc">}</span><span class="ss">.json&quot;</span>,</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>            safe_mode<span class="op">=</span>safe_mode, fetcher<span class="op">=</span>fetcher, max_age_seconds<span class="op">=</span>max_age_seconds))</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> WxIndexError:</span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [s <span class="cf">for</span> s <span class="kw">in</span> load_snapshot().stations <span class="cf">if</span> s.state.lower() <span class="op">==</span> slug[:<span class="dv">2</span>].lower()]</span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> refresh_directory(<span class="op">*</span>, safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> RefreshResult:</span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>    refuse_in_safe_mode(safe_mode)</span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>    states <span class="op">=</span> http_json(<span class="st">&quot;/v1/states&quot;</span>, fetcher<span class="op">=</span>fetcher)</span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>    stations <span class="op">=</span> http_json(<span class="st">&quot;/v1/stations/all-known&quot;</span>, fetcher<span class="op">=</span>fetcher)</span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>    _write_cache(<span class="st">&quot;states.json&quot;</span>, states)</span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>    doc <span class="op">=</span> {<span class="st">&quot;generated_at&quot;</span>: time.strftime(<span class="st">&quot;%Y-%m-</span><span class="sc">%d</span><span class="st">T%H:%M:%SZ&quot;</span>, time.gmtime()),</span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;states&quot;</span>: states, <span class="st">&quot;stations&quot;</span>: stations}</span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>    _write_cache(<span class="st">&quot;directory.json&quot;</span>, doc)</span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> RefreshResult(</span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a>        station_count<span class="op">=</span><span class="bu">len</span>(stations) <span class="cf">if</span> <span class="bu">isinstance</span>(stations, <span class="bu">list</span>) <span class="cf">else</span> <span class="dv">0</span>,</span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>        state_count<span class="op">=</span><span class="bu">len</span>(states) <span class="cf">if</span> <span class="bu">isinstance</span>(states, <span class="bu">list</span>) <span class="cf">else</span> <span class="dv">0</span>,</span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>        generated_at<span class="op">=</span>doc[<span class="st">&quot;generated_at&quot;</span>],</span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_resolver.py -v</code>
+Expected: PASS (4 passed).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex.py tests/unit/core/radio/test_wxindex_resolver.py</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): three-tier wxindex resolver + manual refresh&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-5-search-routing-same-callsign-county-local_stations">Task
+5: Search routing (SAME / callsign / county) +
+<code>local_stations</code></h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/radio/wxindex.py</code> (add
+<code>search_stations</code>, <code>station_detail</code>,
+<code>local_stations</code>) - Test:
+<code>tests/unit/core/radio/test_wxindex_search.py</code></p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>search_stations(query: str, *, safe_mode=False, fetcher=None) -&gt; list[WxStation]</code>
+— routes a 6-digit SAME code to <code>?same=</code>, a callsign
+(<code>^[A-Z]{3}\d{2,3}$</code>) to
+<code>/v1/stations/{callsign}</code>, <code>"County, ST"</code>/state
+text to <code>?c=</code>/<code>?s=</code>; empty for non-matching free
+text. <code>station_detail(callsign, ...) -&gt; WxStation | None</code>.
+<code>local_stations(lat, lon, *, county="", safe_mode=False, fetcher=None) -&gt; list[WxStation]</code>
+— county/SAME match first, else nearest-by-coordinate over the
+snapshot.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/radio/test_wxindex_search.py</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_search_routes_same_code():</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    seen <span class="op">=</span> {}</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> f(url):</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        seen[<span class="st">&quot;url&quot;</span>] <span class="op">=</span> url</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> json.dumps([{<span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KHB36&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.550&quot;</span>, <span class="st">&quot;feeds&quot;</span>: []}])</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> wxindex.search_stations(<span class="st">&quot;051153&quot;</span>, fetcher<span class="op">=</span>f)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;same=051153&quot;</span> <span class="kw">in</span> seen[<span class="st">&quot;url&quot;</span>] <span class="kw">and</span> out[<span class="dv">0</span>].callsign <span class="op">==</span> <span class="st">&quot;KHB36&quot;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_search_routes_callsign():</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    seen <span class="op">=</span> {}</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> f(url):</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        seen[<span class="st">&quot;url&quot;</span>] <span class="op">=</span> url</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> json.dumps({<span class="st">&quot;callsign&quot;</span>: <span class="st">&quot;KHB36&quot;</span>, <span class="st">&quot;frequency&quot;</span>: <span class="st">&quot;162.550&quot;</span>, <span class="st">&quot;feeds&quot;</span>: []})</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> wxindex.search_stations(<span class="st">&quot;KHB36&quot;</span>, fetcher<span class="op">=</span>f)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;/v1/stations/KHB36&quot;</span> <span class="kw">in</span> seen[<span class="st">&quot;url&quot;</span>] <span class="kw">and</span> out[<span class="dv">0</span>].callsign <span class="op">==</span> <span class="st">&quot;KHB36&quot;</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_local_stations_nearest_by_coordinate(monkeypatch):</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex_snapshot <span class="im">as</span> snap</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> WxStation</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;load_snapshot&quot;</span>, <span class="kw">lambda</span>: snap.Snapshot(</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        stations<span class="op">=</span>[WxStation(<span class="st">&quot;A&quot;</span>, <span class="fl">162.4</span>, latitude<span class="op">=</span><span class="fl">38.0</span>, longitude<span class="op">=-</span><span class="fl">77.0</span>),</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>                  WxStation(<span class="st">&quot;B&quot;</span>, <span class="fl">162.5</span>, latitude<span class="op">=</span><span class="fl">48.0</span>, longitude<span class="op">=-</span><span class="fl">100.0</span>)]))</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    got <span class="op">=</span> wxindex.local_stations(<span class="fl">38.1</span>, <span class="op">-</span><span class="fl">77.1</span>)  <span class="co"># no network; snapshot fallback</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> got[<span class="dv">0</span>].callsign <span class="op">==</span> <span class="st">&quot;A&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_search.py -v</code>
+Expected: FAIL —
+<code>search_stations</code>/<code>local_stations</code> undefined.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong> (append to
+<code>quill/core/radio/wxindex.py</code>)</label></li>
+</ul>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib.parse <span class="im">import</span> quote</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>_SAME <span class="op">=</span> re.<span class="bu">compile</span>(<span class="vs">r&quot;</span><span class="dv">^\d</span><span class="op">{6}</span><span class="dv">$</span><span class="vs">&quot;</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>_CALLSIGN <span class="op">=</span> re.<span class="bu">compile</span>(<span class="vs">r&quot;</span><span class="dv">^</span><span class="pp">[A-Z]</span><span class="op">{2,3}</span><span class="dv">\d</span><span class="op">{2,3}</span><span class="dv">$</span><span class="vs">&quot;</span>, re.IGNORECASE)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> station_detail(callsign: <span class="bu">str</span>, <span class="op">*</span>, safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> WxStation <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> parse_station</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        refuse_in_safe_mode(safe_mode)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> parse_station(http_json(<span class="ss">f&quot;/v1/stations/</span><span class="sc">{</span>quote(callsign)<span class="sc">}</span><span class="ss">&quot;</span>, fetcher<span class="op">=</span>fetcher))</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> WxIndexError:</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> s <span class="kw">in</span> load_snapshot().stations:</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> s.callsign.lower() <span class="op">==</span> callsign.lower():</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> s</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> search_stations(query: <span class="bu">str</span>, <span class="op">*</span>, safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[WxStation]:</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> query.strip()</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> q:</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> []</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>        refuse_in_safe_mode(safe_mode)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> _SAME.match(q):</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> parse_stations(http_json(<span class="ss">f&quot;/v1/station_search?same=</span><span class="sc">{</span>quote(q)<span class="sc">}</span><span class="ss">&quot;</span>, fetcher<span class="op">=</span>fetcher))</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> _CALLSIGN.match(q):</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>            s <span class="op">=</span> station_detail(q, safe_mode<span class="op">=</span>safe_mode, fetcher<span class="op">=</span>fetcher)</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> [s] <span class="cf">if</span> s <span class="cf">else</span> []</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="st">&quot;,&quot;</span> <span class="kw">in</span> q:  <span class="co"># &quot;County, ST&quot;</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>            county, _, st <span class="op">=</span> q.partition(<span class="st">&quot;,&quot;</span>)</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> parse_stations(http_json(</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;/v1/station_search?c=</span><span class="sc">{</span>quote(county.strip())<span class="sc">}</span><span class="ss">&amp;s=</span><span class="sc">{</span>quote(st.strip())<span class="sc">}</span><span class="ss">&quot;</span>, fetcher<span class="op">=</span>fetcher))</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> parse_stations(http_json(<span class="ss">f&quot;/v1/station_search?s=</span><span class="sc">{</span>quote(q)<span class="sc">}</span><span class="ss">&quot;</span>, fetcher<span class="op">=</span>fetcher))</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> WxIndexError:</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>        ql <span class="op">=</span> q.lower()</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [s <span class="cf">for</span> s <span class="kw">in</span> load_snapshot().stations</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> ql <span class="kw">in</span> s.callsign.lower() <span class="kw">or</span> ql <span class="kw">in</span> s.state.lower()</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>                <span class="kw">or</span> <span class="bu">any</span>(ql <span class="kw">in</span> c.lower() <span class="cf">for</span> c <span class="kw">in</span> s.counties) <span class="kw">or</span> q <span class="kw">in</span> s.same_codes]</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> local_stations(latitude: <span class="bu">float</span>, longitude: <span class="bu">float</span>, <span class="op">*</span>, county: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>                   safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, fetcher: Fetcher <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[WxStation]:</span>
+<span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> county:</span>
+<span id="cb15-44"><a href="#cb15-44" aria-hidden="true" tabindex="-1"></a>        hits <span class="op">=</span> search_stations(county, safe_mode<span class="op">=</span>safe_mode, fetcher<span class="op">=</span>fetcher)</span>
+<span id="cb15-45"><a href="#cb15-45" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> hits:</span>
+<span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> hits</span>
+<span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>    stations <span class="op">=</span> load_snapshot().stations</span>
+<span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> dist(s: WxStation) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> math.hypot(s.latitude <span class="op">-</span> latitude, s.longitude <span class="op">-</span> longitude)</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sorted</span>((s <span class="cf">for</span> s <span class="kw">in</span> stations <span class="cf">if</span> s.latitude <span class="kw">or</span> s.longitude), key<span class="op">=</span>dist)[:<span class="dv">5</span>]</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_wxindex_search.py -v</code>
+Expected: PASS (3 passed).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex.py tests/unit/core/radio/test_wxindex_search.py</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): wxindex search routing + local-station resolution&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-6-browse-tree-replace-the-weather-noaa-source">Task 6:
+Browse tree — replace the “Weather / NOAA” source</h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/radio/browse_tree_dialog.py</code> (the
+<code>"weather"</code> loader + expansion to State -&gt; Station) -
+Modify: <code>quill/core/radio/radio_browser.py</code> (remove the
+now-unused <code>noaa_weather_stations</code>) - Test:
+<code>tests/unit/ui/test_browse_tree_weather_noaa.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>wxindex.list_states</code>,
+<code>wxindex.stations_for_state</code>,
+<code>wxindex_models.to_radio_station</code>. - Produces: the Browse
+“Weather / NOAA” branch expands to states (genre-like folders); each
+state expands to <code>RadioStation</code> leaves. Reuses the dialog’s
+existing lazy <code>genres</code>/<code>genre</code> machinery — add a
+source kind <code>("Weather / NOAA", "wx_states", None)</code> and a
+<code>wx_state</code> child kind.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+characterization test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/ui/test_browse_tree_weather_noaa.py</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> WxState, WxStation</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_weather_noaa_states_then_stations(monkeypatch):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;list_states&quot;</span>, <span class="kw">lambda</span> <span class="op">**</span>k: [WxState(<span class="st">&quot;virginia&quot;</span>, <span class="st">&quot;Virginia&quot;</span>, <span class="dv">1</span>)])</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;stations_for_state&quot;</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">lambda</span> slug, <span class="op">**</span>k: [WxStation(<span class="st">&quot;KHB36&quot;</span>, <span class="fl">162.55</span>, feeds<span class="op">=</span>(<span class="st">&quot;https://s/k&quot;</span>,))])</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.ui.radio.browse_tree_dialog <span class="im">import</span> wx_state_folders, wx_state_stations</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    states <span class="op">=</span> wx_state_folders(safe_mode<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> states[<span class="dv">0</span>].name <span class="op">==</span> <span class="st">&quot;Virginia&quot;</span> <span class="kw">and</span> states[<span class="dv">0</span>].payload <span class="op">==</span> <span class="st">&quot;virginia&quot;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    stations <span class="op">=</span> wx_state_stations(<span class="st">&quot;virginia&quot;</span>, safe_mode<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> stations[<span class="dv">0</span>].source <span class="op">==</span> <span class="st">&quot;NOAA Weather Radio&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_browse_tree_weather_noaa.py -v</code>
+Expected: FAIL — helpers
+<code>wx_state_folders</code>/<code>wx_state_stations</code>
+missing.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Implement the
+helpers and wire the source</strong></label></li>
+</ul>
+<p>In <code>quill/ui/radio/browse_tree_dialog.py</code>: add
+module-level helpers used by the loaders, replace the
+<code>_SOURCES</code>
+<code>("Weather / NOAA", "stations", "weather")</code> entry with
+<code>("Weather / NOAA", "wx_states", None)</code>, add
+<code>"wx_states"</code>/<code>"wx_state"</code> to
+<code>_EXPANDABLE</code>, and handle them in
+<code>_fetch_children</code>.</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># module-level, near _STATION_LOADERS:</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> to_radio_station</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> _Folder:  <span class="co"># if the dialog has an existing genre-folder type, reuse it instead</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="va">__slots__</span> <span class="op">=</span> (<span class="st">&quot;name&quot;</span>, <span class="st">&quot;kind&quot;</span>, <span class="st">&quot;payload&quot;</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name, kind, payload):</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.name, <span class="va">self</span>.kind, <span class="va">self</span>.payload <span class="op">=</span> name, kind, payload</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> wx_state_folders(<span class="op">*</span>, safe_mode: <span class="bu">bool</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[_Folder]:</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [_Folder(<span class="ss">f&quot;</span><span class="sc">{</span>s<span class="sc">.</span>name<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>s<span class="sc">.</span>station_count<span class="sc">}</span><span class="ss">)&quot;</span>, <span class="st">&quot;wx_state&quot;</span>, s.slug)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> s <span class="kw">in</span> wxindex.list_states(safe_mode<span class="op">=</span>safe_mode)]</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> wx_state_stations(slug: <span class="bu">str</span>, <span class="op">*</span>, safe_mode: <span class="bu">bool</span>):</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [to_radio_station(s) <span class="cf">for</span> s <span class="kw">in</span> wxindex.stations_for_state(slug, safe_mode<span class="op">=</span>safe_mode)]</span></code></pre></div>
+<p>In <code>_fetch_children</code>, add:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> kind <span class="op">==</span> <span class="st">&quot;wx_states&quot;</span>:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> wx_state_folders(safe_mode<span class="op">=</span><span class="va">self</span>._safe_mode)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> kind <span class="op">==</span> <span class="st">&quot;wx_state&quot;</span>:</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> wx_state_stations(payload, safe_mode<span class="op">=</span><span class="va">self</span>._safe_mode)</span></code></pre></div>
+<p>Then delete <code>noaa_weather_stations</code> from
+<code>radio_browser.py</code> and its
+<code>_STATION_LOADERS["weather"]</code> entry.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run
+tests</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_browse_tree_weather_noaa.py tests/unit/core/radio/ -v</code>
+Expected: PASS. Also run
+<code>pytest -q -k "browse or radio_browser"</code> to catch
+removed-symbol fallout.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/radio/browse_tree_dialog.py quill/core/radio/radio_browser.py tests/unit/ui/test_browse_tree_weather_noaa.py</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): Browse Weather/NOAA -&gt; authoritative wxindex state tree&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-7-unified-search-blend-noaa-results">Task 7: Unified Search
+— blend NOAA results</h3>
+<p><strong>Files:</strong> - Modify: the unified search entry point
+(<code>quill/core/radio/directory_search.py</code> — confirm the
+aggregator function that fans out to sources) - Test:
+<code>tests/unit/core/radio/test_directory_search_noaa.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>wxindex.search_stations</code>, <code>to_radio_station</code>. -
+Produces: NOAA stations appear in unified search results (as
+<code>RadioStation</code> with <code>source="NOAA Weather Radio"</code>)
+when the query is a SAME code, callsign, or “County, ST”/state;
+free-text queries still hit the other sources unchanged.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/radio/test_directory_search_noaa.py</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex, directory_search</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> WxStation</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_same_code_query_includes_noaa(monkeypatch):</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(wxindex, <span class="st">&quot;search_stations&quot;</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> q, <span class="op">**</span>k: [WxStation(<span class="st">&quot;KHB36&quot;</span>, <span class="fl">162.55</span>, feeds<span class="op">=</span>(<span class="st">&quot;https://s/k&quot;</span>,))])</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> directory_search.search(<span class="st">&quot;051153&quot;</span>, safe_mode<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">any</span>(r.source <span class="op">==</span> <span class="st">&quot;NOAA Weather Radio&quot;</span> <span class="cf">for</span> r <span class="kw">in</span> results)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/radio/test_directory_search_noaa.py -v</code>
+Expected: FAIL — NOAA not in results.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the NOAA branch
+to the aggregator</strong></label></li>
+</ul>
+<p>In <code>directory_search.search(...)</code>, after the existing
+sources, append:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> to_radio_station</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>results.extend(to_radio_station(s)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>               <span class="cf">for</span> s <span class="kw">in</span> wxindex.search_stations(query, safe_mode<span class="op">=</span>safe_mode))</span></code></pre></div>
+<p>(Match the module’s actual result-accumulation style; keep NOAA
+additive and de-duped by <code>station_uuid</code> if the aggregator
+already de-dupes.)</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Step 4: Run test</strong>
+— Expected: PASS. Also
+<code>pytest -q -k directory_search</code>.</label></p></li>
+<li><p><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></p></li>
+</ul>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/directory_search.py tests/unit/core/radio/test_directory_search_noaa.py</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): blend authoritative NOAA results into unified search&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-8-weather-menu-your-local-noaa-weather-radio-update-directory">Task
+8: Weather menu — “Your Local NOAA Weather Radio” + “Update
+directory”</h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/main_frame_weather.py</code> (two menu items + handlers)
+- Modify: the play path to accept a <code>RadioStation</code> (reuse the
+existing “play this station” call the Browse dialog uses) - Test:
+<code>tests/unit/ui/test_weather_noaa_menu.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>wxindex.local_stations</code>,
+<code>wxindex.refresh_directory</code>, <code>to_radio_station</code>;
+the Weather feature’s saved location (lat/lon + county from
+<code>quill/core/weather/locations.py</code> /
+<code>geocoding.py</code>); the existing
+play-a-<code>RadioStation</code> entry point. - Produces: menu command
+“Listen to your local NOAA Weather Radio” (resolves via
+<code>local_stations</code>, plays the first, offers pin-to-Favorites);
+menu command “Update NOAA Weather Radio directory” (off-thread
+<code>refresh_directory</code>, announces <code>RefreshResult</code>
+counts + <code>generated_at</code>, Safe-Mode aware). No-location case
+prompts to set one / pick a state.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test (core resolution used by the handler)</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/ui/test_weather_noaa_menu.py</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui <span class="im">import</span> main_frame_weather <span class="im">as</span> mfw</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> WxStation</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_local_noaa_station_for_location(monkeypatch):</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(mfw.wxindex, <span class="st">&quot;local_stations&quot;</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> lat, lon, county<span class="op">=</span><span class="st">&quot;&quot;</span>, <span class="op">**</span>k: [WxStation(<span class="st">&quot;KHB36&quot;</span>, <span class="fl">162.55</span>, feeds<span class="op">=</span>(<span class="st">&quot;https://s/k&quot;</span>,))])</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    rs <span class="op">=</span> mfw.local_noaa_radio_station(latitude<span class="op">=</span><span class="fl">38.75</span>, longitude<span class="op">=-</span><span class="fl">77.48</span>, county<span class="op">=</span><span class="st">&quot;Prince William, VA&quot;</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> rs <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> rs.source <span class="op">==</span> <span class="st">&quot;NOAA Weather Radio&quot;</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_local_noaa_none_when_no_stations(monkeypatch):</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(mfw.wxindex, <span class="st">&quot;local_stations&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: [])</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> mfw.local_noaa_radio_station(latitude<span class="op">=</span><span class="fl">0.0</span>, longitude<span class="op">=</span><span class="fl">0.0</span>) <span class="kw">is</span> <span class="va">None</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/ui/test_weather_noaa_menu.py -v</code>
+Expected: FAIL — <code>local_noaa_radio_station</code> missing.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Implement the pure
+resolver + wire the menu</strong></label></li>
+</ul>
+<p>Add to <code>quill/ui/main_frame_weather.py</code>:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio <span class="im">import</span> wxindex</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.wxindex_models <span class="im">import</span> to_radio_station</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.radio.models <span class="im">import</span> RadioStation</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> local_noaa_radio_station(<span class="op">*</span>, latitude: <span class="bu">float</span>, longitude: <span class="bu">float</span>, county: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                             safe_mode: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>) <span class="op">-&gt;</span> RadioStation <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    stations <span class="op">=</span> wxindex.local_stations(latitude, longitude, county<span class="op">=</span>county, safe_mode<span class="op">=</span>safe_mode)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> to_radio_station(stations[<span class="dv">0</span>]) <span class="cf">if</span> stations <span class="cf">else</span> <span class="va">None</span></span></code></pre></div>
+<p>Add two <code>wx</code> menu items to the Weather menu with handlers
+that (a) read the saved Weather location, call
+<code>local_noaa_radio_station</code>, and route the result into the
+existing “play this station” path (offering pin-to-Favorites); and (b)
+run <code>wxindex.refresh_directory</code> on the existing
+background-task helper, then announce <code>RefreshResult</code>. Both
+use <code>self._safe_mode</code>. If no location is set, prompt to set
+one or open Browse’s Weather/NOAA branch. Match the file’s existing
+menu-append + <code>wx.CallAfter</code> announce patterns.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Step 4: Run
+tests</strong> — Expected: PASS. Also
+<code>pytest -q -k "weather and (menu or noaa)"</code>.</label></p></li>
+<li><p><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></p></li>
+</ul>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame_weather.py tests/unit/ui/test_weather_noaa_menu.py</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): Weather menu local NOAA Weather Radio + directory update&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-9-release-2.1.1-version-changelog-docs">Task 9: Release
+2.1.1 — version, changelog, docs</h3>
+<p><strong>Files:</strong> - Modify:
+<code>s:\quill-radio\pyproject.toml</code>
+(<code>version = "2.1.1"</code>) - Modify:
+<code>s:\quill-radio\CHANGELOG.md</code> (and QUILL’s changelog if radio
+changes are listed there) - Modify: the Radio user guide section on
+Browse/Weather (docs source used by <code>render_docs.ps1</code>)</p>
+<p><strong>Interfaces:</strong> none (release metadata + docs).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Bump the
+version</strong></label></li>
+</ul>
+<p>Set <code>version = "2.1.1"</code> in
+<code>s:\quill-radio\pyproject.toml</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Changelog + user
+guide</strong></label></li>
+</ul>
+<p>Add a 2.1.1 entry: “NOAA Weather Radio is now the authoritative
+WeatherIndex directory — browse by state, search by SAME
+code/callsign/county, listen to your local transmitter from the Weather
+menu, and update the directory on demand. Works offline from a bundled
+snapshot.” Update the Browse/Weather user-guide section accordingly.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Full test
+sweep</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest -q -p no:cacheprovider tests/unit/core/radio tests/unit/ui -k "wxindex or noaa or browse or weather"</code>
+Expected: PASS. Then the standard gates:
+<code>ruff format --check .</code>, <code>ruff check .</code>,
+<code>mypy quill/core quill/io</code>,
+<code>python -m quill.tools.check_banned_patterns</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;chore(radio): release 2.1.1 -- NOAA Weather Radio via wxindex&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="self-review">Self-Review</h2>
+<ul>
+<li><strong>Spec coverage:</strong> data+resilience layer (Tasks 1-4);
+snapshot script (Task 3); Browse replacement (Task 6); authoritative
+search (Tasks 5, 7); Weather-menu local + refresh (Tasks 4, 8); full
+experience — favorites/record reuse <code>RadioStation</code> (Task 1
+adapter); user-facing refresh (Tasks 4, 8). All spec sections map to a
+task.</li>
+<li><strong>Placeholder scan:</strong> UI Tasks 6-8 intentionally
+reference “match the file’s existing patterns” for the surrounding
+menu/tree wiring the implementer will read; every new function has
+complete code and a failing test. No TBD/TODO left.</li>
+<li><strong>Type consistency:</strong>
+<code>WxStation</code>/<code>WxState</code>/<code>RefreshResult</code>/<code>Fetcher</code>
+names and signatures are consistent across tasks;
+<code>to_radio_station</code> returns <code>RadioStation</code>;
+resolver functions accept <code>fetcher=</code>/<code>safe_mode=</code>
+uniformly.</li>
+</ul>
+<h2 id="notes-for-the-implementer">Notes for the implementer</h2>
+<ul>
+<li>Confirm the exact reviewed-egress registration mechanism in
+<code>quill/tools/network_egress_audit.py</code> (Task 2 Step 5) — it is
+an AST/source scan gate; the new <code>_default_fetch</code> must be
+listed like <code>radio_browser._http_json</code>.</li>
+<li>Confirm <code>directory_search</code>’s real aggregator function
+name/shape before Task 7 (the plan assumes a
+<code>search(query, *, safe_mode)</code> that accumulates
+<code>RadioStation</code>s).</li>
+<li>The Browse dialog may already have a genre-folder type; reuse it
+instead of the illustrative <code>_Folder</code> in Task 6.</li>
+</ul>
+<hr />
+<h1 id="part-2-radio-reading-services-also-2.1.1">Part 2 — Radio Reading
+Services (also 2.1.1)</h1>
+<p><strong>Goal:</strong> Add a “Radio Reading Services” category (audio
+information services for the print-disabled) to Browse and unified
+Search, powered by the real reading-service stations already in Radio
+Browser, with a bundled snapshot floor and an in-Radio refresh. Reuses
+the existing <code>radio_browser</code> client and
+<code>RadioStation</code>.</p>
+<p><strong>Global constraints (Part 2):</strong> same as Part 1, plus:
+these are public Radio Browser streams;
+<code>source="Radio Reading Service"</code>; only list stations with a
+non-empty <code>stream_url</code>. The curated seed list (21 vetted,
+health-OK services) is at
+<code>&lt;scratch&gt;/rrs/reading_services_curated.json</code> (WKAR
+RRS, KPBS RRS, CRIS/Chicago Lighthouse, WUFT RRS, Sun Sounds of Arizona,
+WRBH Reading Radio, ACB Media 1–5, NFBRN, Voice Corps, Owl Radio,
+Recording Library of West Texas, Audible Local Ledger, Down East RRS,
+Connecticut Radio Information System, 95alive). Clean it: replace
+mangled <code>�</code> in ACB names with <code>-</code>, and dedupe
+<code>95alive</code> to one entry.</p>
+<h3 id="task-10-bundled-reading-services-snapshot-loader">Task 10:
+Bundled reading-services snapshot + loader</h3>
+<p><strong>Files:</strong> Create
+<code>quill/data/reading_services.json</code>; Create
+<code>quill/core/radio/reading_services.py</code>; Test
+<code>tests/unit/core/radio/test_reading_services.py</code>.</p>
+<p><strong>Interfaces:</strong> Produces
+<code>load_reading_services() -&gt; list[RadioStation]</code> (each
+<code>source="Radio Reading Service"</code>);
+<code>reading_services_path() -&gt; Path</code>. Missing/corrupt -&gt;
+<code>[]</code>, logged, never raises.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Step 1 — failing test: monkeypatch
+<code>reading_services_path</code> to a tmp json with one service
+<code>{"name":"WRBH","stream_url":"https://s/wrbh","state":"Louisiana"}</code>;
+assert
+<code>load_reading_services()[0].source == "Radio Reading Service"</code>
+and <code>stream_url</code> set; and missing-file -&gt;
+<code>[]</code>.</label></li>
+<li><label><input type="checkbox" />Step 2 — run, confirm fail (module
+missing).</label></li>
+<li><label><input type="checkbox" />Step 3 — implement: read
+<code>&lt;scratch&gt;/rrs/reading_services_curated.json</code>, clean
+per Global Constraints, write it to
+<code>quill/data/reading_services.json</code> as
+<code>{"generated_at": "...", "services": [ {name, stream_url, state, station_uuid, homepage, codec}, ... ]}</code>.
+Loader parses each into
+<code>RadioStation(name=..., stream_url=..., station_uuid=svc.get("station_uuid",""), country="United States", tags=("reading service","blind"), source="Radio Reading Service")</code>,
+skipping entries with empty <code>stream_url</code>/<code>name</code>.
+Corrupt/missing -&gt; <code>[]</code> with
+<code>_LOG.warning</code>.</label></li>
+<li><label><input type="checkbox" />Step 4 — run, pass.</label></li>
+<li><label><input type="checkbox" />Step 5 — gates (<code>pytest</code>,
+<code>mypy quill/core</code>, ruff) then commit
+<code>feat(radio): bundled Radio Reading Services snapshot + loader</code>.</label></li>
+</ul>
+<h3 id="task-11-rrs-resolver-live-radio-browser-refresh">Task 11: RRS
+resolver + live Radio Browser refresh</h3>
+<p><strong>Files:</strong> Modify
+<code>quill/core/radio/reading_services.py</code>; Test
+<code>tests/unit/core/radio/test_reading_services_resolver.py</code>.</p>
+<p><strong>Interfaces:</strong> Produces
+<code>list_reading_services(*, safe_mode=False, searcher=None) -&gt; list[RadioStation]</code>
+(cache -&gt; live -&gt; bundled snapshot);
+<code>refresh_reading_services(*, safe_mode=False, searcher=None) -&gt; RrsRefreshResult(count, generated_at)</code>.
+<code>searcher</code> seam defaults to
+<code>radio_browser.search_stations</code>; live path queries the
+reading-service keywords (“radio reading”, “reading service”, “audio
+information”, “reading radio”, “blind radio”), keeps stations whose
+name/tags match a reading-service term AND have a
+<code>stream_url</code>, de-dupes by <code>stream_url</code>, writes the
+app-data cache
+(<code>app_data_dir()/radio/reading-services-cache/</code>); Safe-Mode
+refuses live and falls to cache/snapshot. Mirror the wxindex three-tier
+resolver (<code>quill/core/radio/wxindex.py</code>).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Step 1 — failing test: inject a fake
+<code>searcher</code> returning two RadioBrowser
+<code>RadioStation</code>s (one matching “reading service”, one
+unrelated); assert <code>list_reading_services</code> includes the
+reading-service one with <code>source</code> re-stamped and excludes the
+unrelated one; assert <code>refresh_reading_services</code> writes the
+cache and returns a <code>RrsRefreshResult</code> with the right count;
+assert Safe Mode refuses the live path and returns the bundled
+snapshot.</label></li>
+<li><label><input type="checkbox" />Step 2 — run, confirm
+fail.</label></li>
+<li><label><input type="checkbox" />Step 3 — implement mirroring
+<code>wxindex.py</code>’s cache tier +
+<code>radio_browser.refuse_in_safe_mode</code>. Reuse
+<code>radio_browser.search_stations(keyword, safe_mode=...)</code> per
+keyword via the <code>searcher</code> seam; re-stamp
+<code>source="Radio Reading Service"</code>.</label></li>
+<li><label><input type="checkbox" />Step 4 — run, pass.</label></li>
+<li><label><input type="checkbox" />Step 5 — gates + commit
+<code>feat(radio): Radio Reading Services resolver + Radio Browser refresh</code>.</label></li>
+</ul>
+<h3 id="task-12-browse-category-unified-search-blend">Task 12: Browse
+category + unified-search blend</h3>
+<p><strong>Files:</strong> Modify
+<code>quill/ui/radio/browse_tree_dialog.py</code> (add source); Modify
+<code>quill/core/radio/directory_search.py</code> +
+<code>quill/ui/radio/station_browser_dialog.py</code> (search blend);
+Test
+<code>tests/unit/ui/test_reading_services_browse_search.py</code>.</p>
+<p><strong>Interfaces:</strong> Browse “Radio Reading Services” source
+loads <code>list_reading_services</code> as a flat station list (reuse
+the existing <code>"stations"</code> kind + a
+<code>_STATION_LOADERS["reading_services"]</code> entry — 21 services,
+no tree needed). Search: add
+<code>reading_services_search_stations(query, *, safe_mode=False) -&gt; list[RadioStation]</code>
+to <code>directory_search.py</code> (case-insensitive name/tag/state
+match over <code>list_reading_services</code>, playable-only) and wire
+it into <code>station_browser_dialog._do_search</code>’s
+<code>extras</code> exactly like Task 7’s
+<code>wxindex_search_stations</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Step 1 — failing test:
+<code>_STATION_LOADERS["reading_services"]</code> returns
+<code>list_reading_services</code> output (monkeypatched);
+<code>reading_services_search_stations("wrbh")</code> returns the WRBH
+station with <code>source=="Radio Reading Service"</code>; empty query
+-&gt; <code>[]</code>.</label></li>
+<li><label><input type="checkbox" />Step 2 — run, confirm
+fail.</label></li>
+<li><label><input type="checkbox" />Step 3 — implement: add
+<code>("Radio Reading Services", "stations", "reading_services")</code>
+to <code>_SOURCES</code>;
+<code>_STATION_LOADERS["reading_services"] = lambda safe: reading_services.list_reading_services(safe_mode=safe)</code>.
+Add the search helper and wire into <code>_do_search</code>
+<code>extras</code> (mirror Task 7’s committed
+<code>wxindex_search_stations</code> wiring).</label></li>
+<li><label><input type="checkbox" />Step 4 — run, pass;
+<code>pytest -q -k "browse or directory_search or station_browser"</code>.</label></li>
+<li><label><input type="checkbox" />Step 5 — gates
+(incl. <code>check_banned_patterns</code>) + commit
+<code>feat(radio): Radio Reading Services in Browse and Search</code>.</label></li>
+</ul>
+<h3 id="task-13-update-radio-reading-services-refresh-command">Task 13:
+“Update Radio Reading Services” refresh command</h3>
+<p><strong>Files:</strong> Modify the Radio menu builder (find it: grep
+for where the Radio/Stations menu items are appended — likely
+<code>quill/ui/main_frame_radio.py</code> or
+<code>quill/apps/radio.py</code>); Test
+<code>tests/unit/ui/test_reading_services_update.py</code>.</p>
+<p><strong>Interfaces:</strong> A menu command “Update Radio Reading
+Services” that runs
+<code>reading_services.refresh_reading_services(safe_mode=self._safe_mode)</code>
+on the host background-task helper (<code>self._task_manager</code>),
+announces the <code>RrsRefreshResult</code> count via
+<code>self._announce</code>, Safe-Mode guarded,
+<code>self._show_message_box</code> on any user-facing message (no raw
+<code>wx.MessageBox</code>). Mirror the wxindex Weather-menu “Update
+NOAA Weather Radio directory” handler committed in Task 8
+(<code>quill/ui/main_frame_weather.py::update_noaa_radio_directory</code>).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Step 1 — failing test: a pure helper
+<code>refresh_reading_services_summary() -&gt; str</code> (or the
+resolver call) returns a message containing the count when
+<code>refresh_reading_services</code> is monkeypatched. (Menu wiring
+itself is wx-bound; test the pure part.)</label></li>
+<li><label><input type="checkbox" />Step 2 — run, confirm
+fail.</label></li>
+<li><label><input type="checkbox" />Step 3 — implement the menu item +
+handler mirroring <code>update_noaa_radio_directory</code>.</label></li>
+<li><label><input type="checkbox" />Step 4 — run, pass;
+<code>pytest -q -k radio</code>.</label></li>
+<li><label><input type="checkbox" />Step 5 — gates + commit
+<code>feat(radio): 'Update Radio Reading Services' refresh command</code>.</label></li>
+</ul>
+<h3 id="task-14-combined-2.1.1-release-wxindex-rrs">Task 14: Combined
+2.1.1 release (wxindex + RRS)</h3>
+<p><strong>Files:</strong> Modify
+<code>s:\quill-radio\pyproject.toml</code>
+(<code>version = "2.1.1"</code>); Modify
+<code>s:\quill-radio\CHANGELOG.md</code>; Modify the Radio user
+guide.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Step 1 — bump
+<code>version = "2.1.1"</code>.</label></li>
+<li><label><input type="checkbox" />Step 2 — changelog 2.1.1 entry
+covering BOTH: “NOAA Weather Radio is now the authoritative WeatherIndex
+directory (browse by state, search by SAME code/callsign/county, your
+local transmitter from the Weather menu, on-demand update, works
+offline). New Radio Reading Services category — audio information
+services for print-disabled listeners — in Browse and Search, with an
+on-demand update. Both ship a bundled snapshot so they work offline.”
+Update the user guide Browse/Weather sections.</label></li>
+<li><label><input type="checkbox" />Step 3 — full sweep:
+<code>pytest -q tests/unit/core/radio tests/unit/ui -k "wxindex or noaa or reading or browse or weather or directory_search"</code>;
+then <code>ruff format --check .</code>, <code>ruff check .</code>,
+<code>mypy quill/core quill/io</code>,
+<code>python -m quill.tools.check_banned_patterns</code>, and the
+error-code audit.</label></li>
+<li><label><input type="checkbox" />Step 4 — commit
+<code>chore(radio): release 2.1.1 — NOAA Weather Radio + Radio Reading Services</code>.</label></li>
+</ul>
+</body>
+</html>

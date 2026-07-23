@@ -17,12 +17,14 @@ from quill.core.format_ops import (
     multi_replace,
     normalize_whitespace,
     outdent_lines,
+    parse_first_date,
     quote_lines,
     remove_duplicate_lines,
     remove_email_quote_markers,
     reverse_lines,
     shuffle_lines,
     sort_lines,
+    sort_lines_by_date,
     sort_lines_by_length,
     sort_lines_numeric,
     strip_high_ascii,
@@ -250,6 +252,68 @@ def test_sort_lines_by_length_descending() -> None:
     result = sort_lines_by_length("longline\nhi\nmediumlen", descending=True)
     assert result.splitlines()[0] == "mediumlen"
     assert result.splitlines()[-1] == "hi"
+
+
+def test_parse_first_date_iso() -> None:
+    assert parse_first_date("Report 2020-03-05 final") == (2020, 3, 5)
+
+
+def test_parse_first_date_us_month_first_by_default() -> None:
+    # Ambiguous 03/04/2020 -> month-first (US) unless told otherwise.
+    assert parse_first_date("due 03/04/2020") == (2020, 3, 4)
+    assert parse_first_date("due 03/04/2020", day_first=True) == (2020, 4, 3)
+
+
+def test_parse_first_date_unambiguous_day_wins_over_flag() -> None:
+    # 25 can only be a day, so month-first parsing must still read it as d/m.
+    assert parse_first_date("25/12/2021") == (2021, 12, 25)
+
+
+def test_parse_first_date_month_names() -> None:
+    assert parse_first_date("Posted Jan 5, 2020") == (2020, 1, 5)
+    assert parse_first_date("Posted 5 January 2020") == (2020, 1, 5)
+    assert parse_first_date("March 3rd, 1999") == (1999, 3, 3)
+
+
+def test_parse_first_date_two_digit_year_pivot() -> None:
+    assert parse_first_date("01/02/99") == (1999, 1, 2)
+    assert parse_first_date("01/02/05") == (2005, 1, 2)
+
+
+def test_parse_first_date_returns_none_when_absent() -> None:
+    assert parse_first_date("no date here") is None
+
+
+def test_sort_lines_by_date_ascending() -> None:
+    text = "2021-05-01 late\n2019-01-15 early\n2020-12-31 middle"
+    lines = sort_lines_by_date(text).splitlines()
+    assert lines[0].endswith("early")
+    assert lines[1].endswith("middle")
+    assert lines[2].endswith("late")
+
+
+def test_sort_lines_by_date_descending() -> None:
+    text = "Jan 1, 2019\nDec 31, 2020"
+    lines = sort_lines_by_date(text, descending=True).splitlines()
+    assert lines[0] == "Dec 31, 2020"
+    assert lines[-1] == "Jan 1, 2019"
+
+
+def test_sort_lines_by_date_undated_lines_sink_to_bottom() -> None:
+    text = "no date\n2020-01-01 has date\nalso no date"
+    lines = sort_lines_by_date(text).splitlines()
+    assert lines[0] == "2020-01-01 has date"
+    # Undated lines keep their original relative order at the bottom.
+    assert lines[1] == "no date"
+    assert lines[2] == "also no date"
+
+
+def test_sort_lines_by_date_mixed_styles() -> None:
+    text = "05/01/2020 slash\n2019-11-02 iso\nMarch 4, 2021 named"
+    lines = sort_lines_by_date(text).splitlines()
+    assert lines[0].endswith("iso")  # 2019
+    assert lines[1].endswith("slash")  # 2020
+    assert lines[2].endswith("named")  # 2021
 
 
 def test_delete_lines_containing_removes_matching() -> None:

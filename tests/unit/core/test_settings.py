@@ -159,6 +159,31 @@ def test_settings_vault_config_round_trip(monkeypatch: pytest.MonkeyPatch, tmp_p
     assert loaded.vault_daily_pattern == "Diary/{{date:YYYY-MM-DD}}.md"
 
 
+def test_reading_order_max_pages_round_trip(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    save_settings(Settings(reading_order_max_pages=80))
+    assert load_settings().reading_order_max_pages == 80
+
+
+def test_reading_order_max_pages_defaults_to_forty(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert load_settings().reading_order_max_pages == 40
+
+
+def test_reading_order_max_pages_is_clamped(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text('{"reading_order_max_pages": 99999}', encoding="utf-8")
+    assert load_settings().reading_order_max_pages == 500  # clamped to the ceiling
+    (tmp_path / "settings.json").write_text('{"reading_order_max_pages": "oops"}', encoding="utf-8")
+    assert load_settings().reading_order_max_pages == 40  # malformed -> default
+
+
 def test_settings_vault_config_defaults_empty(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

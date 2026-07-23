@@ -145,6 +145,56 @@ def friendly_datetime(iso: str, tz_name: str = "") -> str:
     return f"{_MONTHS[moment.month - 1]} {moment.day} at {hour12}:{moment.minute:02d} {suffix}"
 
 
+def moon_phrase(today: object) -> str:
+    """A spoken sentence for today's moon (duck-typed against a DailyOutlook to
+    avoid an import cycle); '' when no moon phase is available."""
+    phase = getattr(today, "moon_phase", "")
+    if not phase:
+        return ""
+    illum = getattr(today, "moon_illumination_percent", None)
+    sentence = f"The moon is a {phase.lower()}"
+    if illum is not None:
+        sentence += f", {illum} percent lit"
+    sentence += "."
+    rise = getattr(today, "moonrise", "")
+    setting = getattr(today, "moonset", "")
+    if rise and setting:
+        sentence += f" It rises at {rise} and sets at {setting}."
+    elif rise:
+        sentence += f" It rises at {rise}."
+    elif setting:
+        sentence += f" It sets at {setting}."
+    return sentence
+
+
+_WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+
+def local_time_phrase(now: object, tz_name: str) -> str:
+    """The current local time at the location as a spoken sentence, e.g. "The
+    local time there is Thursday, April 27, 9:51 AM." ``now`` is a timezone-aware
+    datetime (the caller reads the clock -- this module stays clock-free); it is
+    converted into ``tz_name`` (an IANA zone like 'America/New_York'). Returns ''
+    when the zone is unknown or ``now`` is not a usable aware datetime."""
+    from datetime import datetime
+
+    if not tz_name or not isinstance(now, datetime) or now.tzinfo is None:
+        return ""
+    try:
+        from zoneinfo import ZoneInfo
+
+        local = now.astimezone(ZoneInfo(tz_name))
+    except Exception:  # noqa: BLE001 - unknown zone: no local-time line rather than a crash
+        return ""
+    weekday = _WEEKDAYS[local.weekday()]
+    suffix = "AM" if local.hour < 12 else "PM"
+    hour12 = local.hour % 12 or 12
+    return (
+        f"The local time there is {weekday}, {_MONTHS[local.month - 1]} {local.day}, "
+        f"{hour12}:{local.minute:02d} {suffix}."
+    )
+
+
 def air_quality_phrase(air: object) -> str:
     """A spoken sentence for an AirQuality value (duck-typed to avoid a model
     import cycle in the signature); '' when nothing usable."""
@@ -211,6 +261,10 @@ def current_conditions_block(
         )
     if settings.show_sunrise_sunset and today is not None and today.sunrise and today.sunset:
         parts.append(f"The sun rises at {today.sunrise} and sets at {today.sunset}.")
+    if settings.show_moon and today is not None:
+        moon = moon_phrase(today)
+        if moon:
+            parts.append(moon)
     if settings.show_uv_index and today is not None:
         uv = uv_phrase(today.uv_index)
         if uv:

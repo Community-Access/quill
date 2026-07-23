@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-17-audio-studio-optimization-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="audio-studio-optimization---design">Audio Studio optimization -
+design</h1>
+<p>Date: 2026-07-17. Status: design (pending implementation). Related:
+<code>docs/design/2026-07-17-quill-as-extraction-design.md</code>
+(QUILL-AS extraction, implemented).</p>
+<h2 id="goal">Goal</h2>
+<p>Two sub-projects on the QUILL Audio Studio surface:</p>
+<ol type="1">
+<li><strong>Trim-out</strong> - slim the standalone QUILL-AS vendored
+closure so it no longer ships modules a standalone audio tool does not
+need (Quillins, braille, document-editing deps, GLOW, BITS Whisperer
+speech, spellcheck, math). The embedded Audio Studio inside QUILL’s
+<code>MainFrame</code> keeps all of it.</li>
+<li><strong>Port-in</strong> - bring four proven patterns from QUILL
+Radio / QUILL Cast into Audio Studio: a real library tree with pinned
+views, resume-on-launch + Recently Played, media keys + a playback sleep
+timer, and per-book volume / Mute / a promoted Play Queue.</li>
+</ol>
+<p>Both keep QUILL as source of truth. Features and guarded-import
+refactors land in <code>quill/</code> first, are verified in embedded
+QUILL, then <code>scripts/vendor_from_quill.py</code> re-syncs the
+standalone. The standalone inherits everything via re-vendor; nothing is
+written only in the standalone.</p>
+<h2 id="non-goals">Non-goals</h2>
+<ul>
+<li>Touching Radio or Cast wrappers.</li>
+<li>Removing modules from embedded QUILL. The DROP set stays fully
+present and functional in <code>quill/</code>.</li>
+<li>Renaming the <code>quillas</code> package or changing the shared
+<code>%APPDATA%\Quill</code> store.</li>
+<li>A packaging/Inno/PyInstaller rebuild (separate step, after code is
+green).</li>
+</ul>
+<h2 id="architecture-sync-model">Architecture &amp; sync model</h2>
+<ul>
+<li><strong>Source of truth:</strong> <code>quill/</code>. Embedded
+Audio Studio (inside <code>MainFrame</code> and its mixins) and
+standalone Audio Studio (<code>quillas/apps/studio.py</code>) run the
+same feature code. The standalone just drops modules the embedded app
+keeps.</li>
+<li><strong>Trim mechanism:</strong> guarded imports. Hard references to
+droppable modules become <code>try/except ImportError</code> with a
+<code>None</code> (or feature-flag) fallback in <code>quill/</code>.
+Embedded QUILL has the modules, so guards fall through to normal
+behavior and the full test suite stays green. QUILL-AS adds the same
+modules to a deny-list in <code>vendor_from_quill.py</code> so they are
+absent; guards take the no-op path. Both paths get tests.</li>
+<li><strong>Port-in mechanism:</strong> each feature lands in
+<code>quill/</code> first - a <code>core/</code> backing module
+mirroring the Radio/Cast pattern (<code>core/radio/history.py</code>,
+<code>core/radio/wake_timer.py</code>,
+<code>ui/radio/favorite_actions.py</code>,
+<code>ui/podcasts/show_actions.py</code>) plus its UI surface in
+<code>quill/ui/audio_studio/</code> or the shell - then
+<code>vendor_from_quill.py</code> re-syncs into <code>quillas/</code>.
+Shell-only wiring (media-key hotkeys, per-app preferences JSON) is
+written in both the embedded shell
+(<code>MainFrame</code>/<code>app_shell.py</code>) and the standalone
+shell (<code>quillas/apps/studio.py</code>), and recorded in the “local
+deltas” list.</li>
+<li><strong>Sequencing:</strong> Phase 1 trim (closure stable + slim +
+QUILL-AS green), Phase 2 port-in (four features, additive, each
+re-vendored). Trim first so new feature code lands on a base where
+absent-module imports are already the norm and re-vendor cannot silently
+re-pull trimmed modules.</li>
+</ul>
+<h2 id="phase-1---trim-design">Phase 1 - Trim design</h2>
+<h3 id="classification">Classification</h3>
+<p>Every module the ast-driven closure currently drags in is
+classified:</p>
+<ul>
+<li><strong>KEEP (audio-core, never deny-listed):</strong>
+<code>core/speech</code>, <code>core/publish</code>, the
+<code>core/ai</code> narration stack (providers, cloud_tts,
+elevenlabs_tts, gemini_tts, transcription, translation, onboarding,
+free_models, tts, tts_chunk, model_manager, provider_backend, assistant,
+library, agent_catalog), <code>ui/audio_studio</code>,
+<code>stability</code>, <code>platform</code>,
+<code>core/schemas</code>, <code>core/keymap</code>, and the existing
+named SEED modules. <code>assistant_ai</code>, <code>ai_chat</code>,
+<code>skill_pack</code>, <code>skill_store</code>, and
+<code>accessibility_agent</code> stay because Audio Studio’s
+AI-narration and agent harness use them; only their references to DROP
+modules get guarded.</li>
+<li><strong>DROP (deny-list + guard):</strong> <code>quillins</code> /
+<code>quillins_bundled</code>, <code>braille_pack</code>,
+<code>math</code>, <code>pandoc_install</code>,
+<code>pdf_ocr_install</code>, <code>node_install</code>,
+<code>git_binaries</code>, <code>python_sandbox</code>,
+<code>glow</code>, <code>bw_speech</code>, <code>spellcheck</code>.</li>
+<li><strong>VERIFY (read the call site, then KEEP or DROP):</strong> any
+module not in the two lists above that the closure pulls in during the
+trim pass. Decided per-module; default to KEEP when in doubt.</li>
+</ul>
+<h3 id="guard-pattern">Guard pattern</h3>
+<p>Applied at each DROP import site in <code>quill/</code> (located by
+grep, listed in the audit table below):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core <span class="im">import</span> quillins <span class="im">as</span> _quillins</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ImportError</span>:  <span class="co"># absent in standalone Audio Studio</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    _quillins <span class="op">=</span> <span class="va">None</span></span></code></pre></div>
+<p>Call sites check <code>if _quillins is not None:</code>. Embedded:
+present, normal behavior. Standalone: no-op. Feature-registry entries in
+<code>features.py</code> / <code>feature_catalog.py</code> /
+<code>settings_specs.py</code> register a DROP feature only when its
+module resolved, so the standalone’s feature/settings list shrinks
+automatically without separate config.</p>
+<h3 id="import-sites-to-guard-audit-table">Import sites to guard (audit
+table)</h3>
+<table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 77%" />
+</colgroup>
+<thead>
+<tr>
+<th>DROP module</th>
+<th>Importing sites in closure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>quillins</td>
+<td><code>core/speech/quillin_providers.py</code></td>
+</tr>
+<tr>
+<td>braille_pack</td>
+<td><code>core/release_assets.py</code>,
+<code>core/optional_components.py</code>,
+<code>ui/main_frame_speech_downloads.py</code></td>
+</tr>
+<tr>
+<td>pandoc_install</td>
+<td><code>core/external_tools.py</code>,
+<code>core/optional_components.py</code>,
+<code>ui/main_frame_speech_downloads.py</code></td>
+</tr>
+<tr>
+<td>pdf_ocr_install</td>
+<td><code>core/optional_components.py</code>,
+<code>ui/main_frame_speech_downloads.py</code></td>
+</tr>
+<tr>
+<td>node_install</td>
+<td><code>core/optional_components.py</code>,
+<code>ui/main_frame_speech_downloads.py</code></td>
+</tr>
+<tr>
+<td>git_binaries</td>
+<td><code>core/release_assets.py</code>,
+<code>core/optional_components.py</code></td>
+</tr>
+<tr>
+<td>python_sandbox</td>
+<td><code>core/watch_actions.py</code></td>
+</tr>
+<tr>
+<td>spellcheck</td>
+<td><code>core/features.py</code>, <code>core/settings.py</code>,
+<code>core/feature_catalog.py</code>,
+<code>core/feature_command_map.py</code>,
+<code>core/settings_specs.py</code></td>
+</tr>
+<tr>
+<td>glow</td>
+<td><code>core/diagnostics.py</code>, <code>core/features.py</code>,
+<code>core/watch_actions.py</code>,
+<code>core/feature_catalog.py</code>,
+<code>core/feature_command_map.py</code></td>
+</tr>
+<tr>
+<td>bw_speech</td>
+<td><code>core/speech/service.py</code></td>
+</tr>
+<tr>
+<td>math</td>
+<td><code>core/speech/earcon.py</code>,
+<code>core/release_assets.py</code>,
+<code>core/optional_components.py</code>,
+<code>ui/main_frame_speech_downloads.py</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>optional_components.py</code> already has the Studio’s
+<code>_optional_component_allowlist</code> hook (existing delta); the
+controllers for pandoc/pdf-ocr/node/git/braille/math are already dormant
+in the standalone. Guarding the <em>imports</em> lets the modules
+themselves be absent, not just the controllers disabled.</p>
+<h3 id="vendor-script-change">Vendor script change</h3>
+<p>Add <code>DENYLIST = { ... }</code> (the DROP set above) to
+<code>scripts/vendor_from_quill.py</code>. In <code>copy_module</code>,
+skip any module whose leaf name is in <code>DENYLIST</code> (return a
+sentinel so the closure walker treats it as “deliberately absent,” like
+the existing <code>_feedback_token</code> blocklist). In
+<code>wanted_modules</code>, a DENYLIST hit is recorded as
+unresolved-but-expected rather than chased.</p>
+<h3 id="verification-loop">Verification loop</h3>
+<ol type="1">
+<li>Add guards in <code>quill/</code>; run <code>pytest -q</code> in
+<code>S:\QUILL</code> - must stay green (modules present, guards fall
+through).</li>
+<li>Add a QUILL-side unit test that monkeypatches <code>importlib</code>
+to raise <code>ImportError</code> for each DROP module and asserts the
+guard path is taken and no <code>NameError</code> escapes. Covers the
+absent path on the QUILL side.</li>
+<li>Add the DENYLIST; re-run <code>vendor_from_quill.py</code> +
+<code>vendor_tests.py</code>.</li>
+<li>Run <code>pytest -q</code> in <code>S:\QUILL-AS</code> (basetemp
+<code>.quill-as-pytest-tmp</code>). Any new <code>ImportError</code> = a
+missed guard; fix in <code>quill/</code>, re-vendor, iterate.</li>
+<li>Record before/after file and line counts for the
+<code>quillas</code> package.</li>
+</ol>
+<h3 id="embedded-quill-safety">Embedded-QUILL safety</h3>
+<p>Guarded imports are no-ops when modules are present. The full
+<code>pytest -q</code> in <code>S:\QUILL</code> must stay green
+throughout Phase 1. No DROP module is removed from <code>quill/</code>;
+only import sites become tolerant of absence.</p>
+<h2 id="phase-2---port-in-design">Phase 2 - Port-in design</h2>
+<p>Each feature: QUILL-first, then re-vendor. Backing modules mirror the
+Radio/Cast structure. New <code>core/audio_studio/</code> package holds
+the data-layer pieces (parallel to <code>core/radio/</code>,
+<code>core/podcasts/</code>).</p>
+<h3 id="feature-1---library-tree-pinned-views">Feature 1 - Library tree
++ pinned views</h3>
+<ul>
+<li><strong>Source pattern:</strong> Cast’s flat list -&gt; real tree
+(<code>ui/podcasts/show_actions.py</code>, pinned views Favorites/New
+Episodes/Continue Listening/Inbox + nested folders).</li>
+<li><strong>Backing:</strong> new
+<code>core/audio_studio/library.py</code> - folder/book model on the
+book library entries, pinned-view queries (Favorites, In Progress,
+Recently Played, Inbox/new imports), persisted via the existing
+<code>versioned_store</code> / atomic JSON. Nested folders like Cast
+(path-based).</li>
+<li><strong>UI:</strong> new
+<code>ui/audio_studio/library_tree.py</code> mirroring the Cast tree +
+context menu (Open, Reveal in Workbench, Toggle Favorite, Delete, New
+Folder, Move). Replaces the flat “Your books” list in the StudioAppFrame
+home and in embedded Audio Studio’s library mode.</li>
+<li><strong>Delta note:</strong> the standalone home is
+<code>StudioAppFrame</code>; embedded is <code>MainFrame</code> library
+mode. Both consume the same <code>library.py</code> and tree
+widget.</li>
+</ul>
+<h3 id="feature-2---resume-on-launch-recently-played">Feature 2 -
+Resume-on-launch + Recently Played</h3>
+<ul>
+<li><strong>Source pattern:</strong> Cast’s
+<code>core/podcasts/history.py</code> (recently-played, distinct from
+Continue Listening) + Resume Last Episode on Launch.</li>
+<li><strong>Backing:</strong> new
+<code>core/audio_studio/history.py</code> - recently-played books
+(timestamps, last chapter, listening position). Distinct from the
+existing listening-position resume store (per Jeff’s Cast call that
+recently-played != continue-listening).</li>
+<li><strong>Shell wiring:</strong> resume-last-book-on-launch in
+<code>StudioAppFrame</code> and <code>MainFrame</code> startup; Recently
+Played submenu in the File/Library menu.</li>
+<li><strong>Delta note:</strong> startup hook lives in both shells.</li>
+</ul>
+<h3 id="feature-3---media-keys-sleep-timer">Feature 3 - Media keys +
+sleep timer</h3>
+<ul>
+<li><strong>Source pattern:</strong> Radio’s <code>RegisterHotKey</code>
+media keys in <code>ui/app_shell.py</code>;
+<code>core/radio/wake_timer.py</code> timer pattern.</li>
+<li><strong>Backing:</strong> new
+<code>core/audio_studio/sleep_timer.py</code> - playback sleep timer
+(fade-then-stop, configurable delay, optional end-of-chapter stop),
+mirroring <code>wake_timer.py</code> structure and threading rules
+(background work on <code>QuillTaskManager</code>, UI via
+<code>wx.CallAfter</code>).</li>
+<li><strong>Shell wiring:</strong> media-key hotkeys (play/pause,
+next/prev chapter, stop) registered in <code>app_shell.py</code>
+(standalone) and <code>MainFrame</code> (embedded); Sleep Timer menu
+item + dialog.</li>
+<li><strong>Hotkey isolation:</strong> per Jeff’s rule, standalone
+keystrokes are separate from QUILL’s keymap - the standalone registers
+its own media-key hotkeys, does not extend
+<code>core/keymap</code>.</li>
+</ul>
+<h3 id="feature-4---per-book-volume-mute-play-queue">Feature 4 -
+Per-book volume + Mute + Play Queue</h3>
+<ul>
+<li><strong>Source pattern:</strong> Radio per-favorite
+<code>volume_percent</code> + Mute
+(<code>PodcastPlayerController</code>); Cast Play Queue promoted to
+top-level menu + command.</li>
+<li><strong>Backing:</strong> extend the book profile
+(<code>core/audio_studio/library.py</code> or existing project profile
+schema v2) with <code>volume_percent</code> and <code>muted</code>; new
+<code>core/audio_studio/play_queue.py</code> - ordered chapter queue
+with add/next/remove/clear, persisted per book.</li>
+<li><strong>UI:</strong> <code>PlayerPanel</code> gains volume slider +
+Mute toggle bound to the current book’s profile; Play Queue promoted to
+a top-level menu item + command (was Workbench-only), with a queue
+drawer/dialog. Mirrors Cast’s queue surface.</li>
+<li><strong>Delta note:</strong> menu/command registration differs
+between shells but the command id and backing module are shared.</li>
+</ul>
+<h3 id="port-in-verification-per-feature">Port-in verification per
+feature</h3>
+<ul>
+<li><code>pytest -q</code> in <code>S:\QUILL</code> after each feature
+(embedded path).</li>
+<li>Re-run <code>vendor_from_quill.py</code>; the new
+<code>core/audio_studio/</code> and
+<code>ui/audio_studio/library_tree.py</code> are added to SEED so they
+vendor.</li>
+<li><code>pytest -q</code> in <code>S:\QUILL-AS</code> (standalone path,
+incl. the new deny-list).</li>
+<li>UIA regression coverage for new dialogs (Sleep Timer, Play Queue
+drawer) extended in <code>tests/uia/</code>.</li>
+</ul>
+<h2 id="error-handling-risks">Error handling &amp; risks</h2>
+<ul>
+<li><strong>Missed guard -&gt; standalone ImportError.</strong>
+Mitigated by the iterate-until- green verification loop and the
+QUILL-side absent-path monkeypatch test. Each iteration is small (one
+module).</li>
+<li><strong>Feature-registry drift.</strong> <code>features.py</code> /
+<code>feature_catalog.py</code> / <code>settings_specs.py</code>
+reference DROP modules; guarding the import and gating registration on
+resolution keeps both registries valid. The
+<code>feature_command_map</code> and settings specs must not hard-fail
+when a feature is absent.</li>
+<li><strong>Re-vendor churn.</strong> Guarded imports are in
+<code>quill/</code>, so a re-vendor keeps them; the DENYLIST is the only
+standalone-side addition. No growing delta list.</li>
+<li><strong>CRLF/LF flips.</strong> The Edit tool can flip line endings
+on QUILL files. Check <code>git diff --stat</code> for whole-file churn;
+normalize with a bytes replace before committing.</li>
+<li><strong>Test isolation.</strong> QUILL-AS uses its own basetemp; do
+not remove the <code>_DEV_BUILD</code> conftest fixture.</li>
+<li><strong>Embedded regression.</strong> Every phase ends with
+<code>pytest -q</code> green in <code>S:\QUILL</code>. No DROP module is
+deleted from <code>quill/</code>.</li>
+</ul>
+<h2 id="definition-of-done">Definition of done</h2>
+<ul>
+<li>Phase 1: <code>quillas</code> package measurably smaller;
+<code>pytest -q</code> green in both <code>S:\QUILL</code> and
+<code>S:\QUILL-AS</code>; DENYLIST landed; guarded imports landed in
+<code>quill/</code>; absent-path unit test green.</li>
+<li>Phase 2: four features shipped in <code>quill/</code>, re-vendored
+into <code>quillas/</code>, green in both test suites; UIA coverage
+added; local-deltas list updated.</li>
+</ul>
+<h2 id="out-of-scope-carried-from-extraction-design">Out of scope
+(carried from extraction design)</h2>
+<p>Document editing, the assistant chat UI, radio/podcasts, braille, and
+the QUILL CI gate scripts (module size budgets, dialog inventory, egress
+audit) remain QUILL-side; the vendored copies of shared code are
+validated there.</p>
+</body>
+</html>

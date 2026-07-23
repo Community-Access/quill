@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-16-podcast-feed-auth-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="podcast-feed-authentication-usernamepassword-design">Podcast
+Feed Authentication (Username/Password) – Design</h1>
+<p>Date: 2026-07-16 Status: approved for planning Ships in: quill
+package (<code>quill.core.podcasts</code> /
+<code>quill.ui.podcasts</code>), so QUILL, QUILL Cast, and any future
+wrapper get it identically.</p>
+<h2 id="problem">1. Problem</h2>
+<p>Private and premium podcast feeds (Patreon, Supporting Cast,
+self-hosted members-only shows) protect the RSS document – and usually
+the audio enclosures – with HTTP Basic auth.
+<code>feed_reader._fetch_feed_bytes</code> already accepts
+<code>username</code>/<code>password</code> and sends a preemptive
+<code>Authorization: Basic</code> header, but nothing in the product
+calls it: there is no credential storage, no UI to enter credentials,
+and downloads, streaming, transcripts, and chapters ignore auth
+entirely. Subscribing to a private feed today fails with a generic
+“Could not reach that feed” error.</p>
+<h2 id="goals">2. Goals</h2>
+<ul>
+<li>Subscribe to, refresh, download from, and stream
+Basic-auth-protected feeds.</li>
+<li>Store passwords in the platform secret store, never in plaintext
+files.</li>
+<li>Keyboard-first, screen-reader-first credential entry, consistent
+with the existing dialog contract.</li>
+<li>Distinguish “wrong credentials” from “network down” in every error
+message.</li>
+</ul>
+<h2 id="non-goals">3. Non-goals</h2>
+<ul>
+<li>OAuth, token, or cookie-based feed auth.</li>
+<li>Per-episode credentials (one username/password per show).</li>
+<li>Credential sync between machines (portable DPAPI store is
+machine-locked; documented, not solved).</li>
+<li>Exporting credentials via OPML (deliberately never).</li>
+</ul>
+<h2 id="decisions-settled-with-the-user-2026-07-16">4. Decisions
+(settled with the user, 2026-07-16)</h2>
+<ul>
+<li>D-1 <strong>Full coverage, same-host only.</strong> Stored
+credentials are sent on feed refresh, episode downloads, streaming
+playback, transcript fetch, and chapter fetch – but only when the
+request URL’s host matches the feed URL’s host. Requests to any other
+host (third-party CDNs, tokenized enclosure URLs) get no Authorization
+header, preventing credential leakage.</li>
+<li>D-2 <strong>Prompt on 401 plus settings.</strong> Add by Feed URL
+detects an auth failure and opens a credentials prompt, then retries.
+Existing shows manage credentials in the per-podcast settings dialog.
+Background refresh never opens modal prompts; it announces an actionable
+error instead.</li>
+<li>D-3 <strong>Documented in both repos.</strong> QUILL Cast’s PRD,
+user guide, changelog, and README, plus QUILL’s podcasts tutorial and
+release notes.</li>
+</ul>
+<h2 id="storage-design">5. Storage design</h2>
+<ul>
+<li><strong>Username</strong> is not treated as a secret. New field on
+<code>PodcastShow</code> (<code>quill/core/podcasts/models.py</code>):
+<code>feed_username: str = ""</code>, persisted in
+<code>podcasts.json</code> via
+<code>to_dict</code>/<code>from_dict</code> like every other field. A
+non-empty <code>feed_username</code> is the flag that a show is
+credentialed.</li>
+<li><strong>Password</strong> goes through the existing unified secret
+store
+(<code>quill/platform/windows/credential_store.py: load_secret / save_secret / delete_secret</code>)
+under the credential name
+<code>quill-podcast-feed:&lt;show_id&gt;</code>. That store already
+routes to Windows Credential Manager (installed), the DPAPI-encrypted
+<code>keys.enc</code> (portable, <code>QUILL_PORTABLE=1</code>), and the
+macOS login Keychain – no new storage code.</li>
+<li>Passwords never appear in <code>podcasts.json</code>, OPML export,
+logs, or crash reports. Deleting a show deletes its credential; clearing
+the username clears the stored password too (no orphaned secrets).</li>
+</ul>
+<h3 id="portable-caveat-documented-not-fixed">Portable caveat
+(documented, not fixed)</h3>
+<p>DPAPI is bound to the Windows user account and machine. A portable
+stick moved to another PC keeps subscriptions but cannot decrypt stored
+feed passwords; the user re-enters them once. The refresh error path
+(section 8) already gives the recovery instruction.</p>
+<h2 id="new-core-module-quillcorepodcastsfeed_auth.py">6. New core
+module: <code>quill/core/podcasts/feed_auth.py</code></h2>
+<p>Small, wx-free, strict-typed. Public API:</p>
+<ul>
+<li><code>save_feed_password(show_id: str, password: str) -&gt; None</code></li>
+<li><code>load_feed_password(show_id: str) -&gt; str</code></li>
+<li><code>delete_feed_password(show_id: str) -&gt; None</code></li>
+<li><code>auth_for_url(show: PodcastShow, url: str) -&gt; tuple[str, str]</code>
+– returns <code>(feed_username, password)</code> only when
+<code>show.feed_username</code> is non-empty AND
+<code>urlsplit(url).hostname</code> equals the feed URL’s hostname
+(case-insensitive, exact match, no subdomain fudging); otherwise
+<code>("", "")</code>. This is the one same-host gate every call site
+uses.</li>
+<li><code>basic_auth_header(username: str, password: str) -&gt; str</code>
+– moved/shared from <code>feed_reader._basic_auth_header</code> so
+download/transcript/chapter fetchers build the identical header.</li>
+</ul>
+<h2
+id="wiring-all-inside-existing-reviewed-egress-sites-no-new-egress">7.
+Wiring (all inside existing reviewed egress sites; no new egress)</h2>
+<ul>
+<li><code>feed_reader.py</code>: already takes
+<code>username</code>/<code>password</code>. Add explicit
+<code>urllib.error.HTTPError</code> handling: 401/403 raises a new
+<code>FeedAuthError(FeedReaderError)</code> with a message naming the
+fix; other statuses keep the current generic message.
+<code>fetch_and_parse_feed</code> callers
+(<code>ui/podcasts/add_podcast_dialog.py</code>,
+<code>ui/main_frame_podcasts.py</code>
+<code>refresh_podcast_feed</code>) load credentials via
+<code>auth_for_url</code> and pass them.</li>
+<li><code>download_queue.py</code>: <code>enqueue(...)</code> and
+<code>DownloadItem</code> gain an optional
+<code>auth_header: str = ""</code>; <code>_fetch_chunked</code> adds it
+as the <code>Authorization</code> header when non-empty. The enqueue
+call sites (manager dialog, Always Sync backfill, download-all) compute
+it with <code>auth_for_url(show, episode.audio_url)</code>.</li>
+<li><code>transcripts.py</code> / <code>chapters.py</code>: fetch
+functions gain the same optional <code>auth_header</code> parameter;
+call sites pass the gated header.</li>
+<li><strong>Streaming playback</strong>
+(<code>ui/podcasts/player_controller.py</code> and the Sound
+Enhancements ffmpeg relay): when <code>auth_for_url</code> yields
+credentials for the enclosure URL, the URL handed to the engine is
+rewritten to <code>https://user:pass@host/...</code> (percent-encoded
+userinfo; both mpv and ffmpeg support it). Any log line or announcement
+that carries a playback URL is redacted of userinfo (helper
+<code>redact_url_userinfo</code>, used at the logging call sites;
+<code>stability/redaction.py</code> gains the same pattern for crash
+reports).</li>
+<li><code>opml.py</code>: unchanged; a test pins that export contains no
+username.</li>
+<li><code>tools/network_egress_audit.py</code>: entry for
+<code>_fetch_chunked</code> etc. updated only if the audit keys on
+signatures; no new egress sites are introduced.</li>
+</ul>
+<h2 id="ui-and-error-handling">8. UI and error handling</h2>
+<ul>
+<li><strong>Add Podcast dialog</strong>
+(<code>add_podcast_dialog.py</code>): on <code>FeedAuthError</code> from
+Add by Feed URL (or Subscribe to Selected), open a small modal “Feed
+Credentials” dialog – username field, masked password field
+(<code>wx.TE_PASSWORD</code>), OK/Cancel, routed through the shared
+dialog contract (modal ids, focus on username, announced title). OK
+retries the fetch with the credentials; success saves username to the
+show and password to the secret store, then continues the normal
+subscribe path. Cancel restores the status line with the auth error. A
+second 401 re-opens the prompt with the username prefilled and a “wrong
+username or password” status.</li>
+<li><strong>Show context menu</strong> (Manager tree in
+<code>manager_dialog.py</code>; QUILL Cast’s main library tree mirrors
+it): new “Feed Credentials…” item opening the same Feed Credentials
+dialog – username prefilled, masked password field (blank means
+unchanged), and a “Clear Credentials” button that empties both and
+deletes the stored secret. Saving with a new password overwrites the
+secret. The item is absent for local shows (no feed). Note:
+<code>podcast_settings_dialog.py</code> is global defaults only, so it
+is NOT the home for per-show credentials; the context menu is where
+every other per-show action already lives.</li>
+<li><strong>Background refresh</strong>
+(<code>refresh_podcast_feed</code>, refresh-all): a
+<code>FeedAuthError</code> never prompts. It announces and status-lines:
+“<Show>: feed sign-in failed. Update credentials in Podcast Settings.”
+Downloads hitting 401 surface the same wording through the existing
+download-error path.</li>
+<li>All new controls have accessible names; every outcome (saved,
+cleared, retry failed) is announced. No color-only or unlabeled state
+anywhere.</li>
+</ul>
+<h2 id="tests">9. Tests</h2>
+<p>Core (wx-free, fast):</p>
+<ul>
+<li><code>auth_for_url</code>: same host -&gt; credentials; different
+host, subdomain, no-username, local show -&gt;
+<code>("", "")</code>.</li>
+<li><code>feed_reader</code>: 401 -&gt; <code>FeedAuthError</code>;
+200-with-creds sends the expected <code>Authorization</code> header
+(mocked opener); other HTTP errors keep
+<code>FeedReaderError</code>.</li>
+<li><code>download_queue._fetch_chunked</code>: <code>auth_header</code>
+present/absent on the request (mocked opener).</li>
+<li><code>models</code>: <code>feed_username</code> round-trips
+<code>to_dict</code>/<code>from_dict</code>; absent key defaults to
+<code>""</code>.</li>
+<li><code>opml</code>: export of a credentialed show contains no
+username/password.</li>
+<li><code>feed_auth</code> store round-trip against the portable file
+store (<code>QUILL_PORTABLE=1</code> in a temp dir).</li>
+<li>URL userinfo redaction helper.</li>
+</ul>
+<p>Existing egress-audit and persistence-audit gates must stay
+green.</p>
+<h2 id="documentation-deliverables">10. Documentation deliverables</h2>
+<p>quill-cast repo:</p>
+<ul>
+<li><code>docs/prd.md</code>: “Since 1.0” entry for Private Feeds; a
+security requirement line (password storage rule, same-host rule) in the
+appropriate section.</li>
+<li><code>docs/userguide.md</code>: new “Private feeds (username and
+password)” section under Subscriptions – subscribing, the 401 prompt,
+changing/clearing credentials in Podcast Settings, the portable-stick
+caveat; plus a Troubleshooting entry for “feed sign-in failed”.</li>
+<li><code>CHANGELOG.md</code> entry; <code>README.md</code> feature
+bullet.</li>
+<li>Regenerate html/epub via <code>scripts/render_docs.ps1</code>.</li>
+</ul>
+<p>quill repo:</p>
+<ul>
+<li><code>docs/tutorials/10-podcasts.md</code>: private-feeds section
+(same content, QUILL menu paths).</li>
+<li>Upstream changelog/release-notes entry per that repo’s
+convention.</li>
+</ul>
+<h2 id="out-of-scope-restated">11. Out of scope, restated</h2>
+<p>OAuth/token auth, per-episode credentials, cross-machine credential
+sync, credentials in OPML, auto-detecting auth for iTunes search results
+(search returns public feeds; a 401 there flows through the same prompt
+anyway).</p>
+</body>
+</html>

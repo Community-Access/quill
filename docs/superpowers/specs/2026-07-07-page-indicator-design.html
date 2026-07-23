@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>2026-07-07-page-indicator-design</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -241,7 +237,7 @@
   </style>
 </head>
 <body>
-<h1 id="page-indicator-for-every-document--design">Page indicator for
+<h1 id="page-indicator-for-every-document-design">Page indicator for
 every document — design</h1>
 <p>Closes GitHub issue #872.</p>
 <h2 id="problem">Problem</h2>
@@ -250,15 +246,15 @@ BRF/braille documents (<code>main_frame_braille.py</code> /
 <code>main_frame_braille_phase2.py</code>, detection in
 <code>brf_page_detection.py</code>). For every other format
 (<code>.txt</code>, <code>.md</code>, <code>.docx</code>, PDF-imported
-text), there is only a form-feed-based "Go To Page"
+text), there is only a form-feed-based “Go To Page”
 (<code>navigation.py:page_starts</code> /
 <code>page_start_for_number</code>) that does nothing useful in
-practice, because nothing in QUILL's import pipeline ever inserts a
+practice, because nothing in QUILL’s import pipeline ever inserts a
 literal <code>\f</code> character. There is no page count, no page
 indicator, and no page-based navigation for the documents most people
 actually write in.</p>
-<p>A beta tester asked directly: "Are we going to be able to see proper
-page numbers with QUILL?" Direction from Jeff: add a page item to the
+<p>A beta tester asked directly: “Are we going to be able to see proper
+page numbers with QUILL?” Direction from Jeff: add a page item to the
 status bar <strong>by default</strong>, even for plain text files — not
 gated behind Braille mode — and make sure it ships for Beta 2 rather
 than waiting for a later release.</p>
@@ -270,15 +266,15 @@ text/Markdown/DOCX — that requires a full page-layout engine (fonts,
 margins, paper size) this project does not have and is not
 building.</li>
 <li>Not touching the existing BRF/braille page system at all. Braille
-documents keep their own richer "braille" status cell and command set;
-this feature's status cell is suppressed whenever that one is active, so
+documents keep their own richer “braille” status cell and command set;
+this feature’s status cell is suppressed whenever that one is active, so
 the two never compete for the same space.</li>
 <li>Not adding page-based navigation for EPUB. EPUB already has its own
 chapter/heading navigator; page numbers are not a meaningful concept for
 reflowable EPUB content and are out of scope here.</li>
 <li>Not building a <code>Document.page_count</code> field or any new
 persisted page metadata. Both tracks below are computed on demand from
-the document's text (real pages from <code>\f</code> markers already in
+the document’s text (real pages from <code>\f</code> markers already in
 the text; estimates from a live word count), the same way
 <code>document_progress</code> and other status cells already work.</li>
 </ul>
@@ -293,7 +289,7 @@ for every document, per the explicit ask. It is suppressed whenever the
 existing <code>"braille"</code> cell is active (BRF documents), via the
 same feature-style filtering <code>_statusbar_items()</code> already
 does in <code>main_frame_statusbar.py</code>.</p>
-<p>The cell's text is computed by a new
+<p>The cell’s text is computed by a new
 <code>_statusbar_page_text()</code> method in
 <code>main_frame_statusbar.py</code>, mirroring the existing
 <code>_statusbar_braille_text()</code> pattern (a resolver cached on the
@@ -302,21 +298,21 @@ text length changes):</p>
 <ul>
 <li><strong>Exact track:</strong> if
 <code>navigation.page_starts(text)</code> finds more than one page
-boundary (i.e. the document contains at least one <code>\f</code>), the
-cell reads <strong>"Page 3 of 12"</strong> — no qualifier, because it's
+boundary (i.e. the document contains at least one <code>\f</code>), the
+cell reads <strong>“Page 3 of 12”</strong> — no qualifier, because it’s
 a real count.</li>
 <li><strong>Estimated track:</strong> otherwise, the cell reads
-<strong>"Page ~3 of ~12 (estimated)"</strong> — the tilde and the word
-"estimated" are both always present together; this is deliberate and
+<strong>“Page ~3 of ~12 (estimated)”</strong> — the tilde and the word
+“estimated” are both always present together; this is deliberate and
 non-negotiable UI copy, so nobody mistakes an estimate for a fact. The
-accessible name/tooltip additionally spells out: <em>"Estimated from
+accessible name/tooltip additionally spells out: <em>“Estimated from
 word count only (~{N} words per page) — does not reflect fonts, margins,
-or actual print/export pagination."</em></li>
+or actual print/export pagination.”</em></li>
 </ul>
-<p>Detection between the two tracks is nothing more than "does this
-document's text contain a <code>\f</code>" — no per-format
+<p>Detection between the two tracks is nothing more than “does this
+document’s text contain a <code>\f</code>” — no per-format
 special-casing is needed once the import side (below) is in place.</p>
-<h3 id="track-a--the-estimate-quillcorenavigationpy">Track A — the
+<h3 id="track-a-the-estimate-quillcorenavigation.py">Track A — the
 estimate (<code>quill/core/navigation.py</code>)</h3>
 <p>Two new pure functions:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -324,7 +320,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_page_for_position(text: <span class="bu">str</span>, position: <span class="bu">int</span>, words_per_page: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>: ...</span></code></pre></div>
 <p>Word count reuses the same splitting logic
 <code>core/metrics.py</code> already uses for the existing word-count
-status cell, so the estimate's "words" always matches what the user
+status cell, so the estimate’s “words” always matches what the user
 already sees elsewhere. Both functions clamp to at least 1 page for any
 non-empty document.</p>
 <p>New setting <code>page_estimate_words_per_page: int = 300</code>,
@@ -333,9 +329,9 @@ clamped to <code>[150, 600]</code>, following the exact pattern of
 <code>settings_specs.py</code>) — declared, parsed in
 <code>from_dict</code>, clamped, and wired into the constructor. Exposed
 in Preferences under the same group as the other status-bar settings,
-with help text making the estimate's approximate nature explicit at the
+with help text making the estimate’s approximate nature explicit at the
 settings level too, not just in the status bar.</p>
-<h3 id="track-b--real-pages-quilliopdfpy-docx-import">Track B — real
+<h3 id="track-b-real-pages-quilliopdf.py-docx-import">Track B — real
 pages (<code>quill/io/pdf.py</code>, DOCX import)</h3>
 <p>This reuses machinery that already exists rather than building new
 exact-page tracking:</p>
@@ -346,7 +342,7 @@ extract real per-page text and a real <code>page_count</code>, then
 discard both by joining every page with <code>"\n\n"</code>. Change the
 join to <code>"\f"</code> between pages (keeping paragraph breaks within
 a page as they are today) so the real boundaries survive into the
-<code>Document</code>'s text. No new field is needed —
+<code>Document</code>’s text. No new field is needed —
 <code>page_starts()</code> on the resulting text <em>is</em> the page
 count and boundary list.</li>
 <li><strong>DOCX:</strong> the reader gains detection of explicit hard
@@ -355,7 +351,7 @@ page breaks (<code>&lt;w:br w:type="page"/&gt;</code>) and inserts a
 common case) produce no <code>\f</code> and fall straight through to the
 estimate — this is expected and correct; DOCX has no <em>computed</em>
 page count without a layout engine, only author-inserted breaks are ever
-"real." <code>quill/io/docx_writer.py</code> already turns
+“real.” <code>quill/io/docx_writer.py</code> already turns
 <code>\f</code> back into a real page break on export, so this
 round-trips symmetrically.</li>
 </ul>
@@ -367,18 +363,18 @@ hard page breaks would require a separate python-docx scan with no
 reliable way to map those positions into the converted text. Track B
 therefore ships for <strong>PDF only</strong> in the first
 implementation; DOCX stays on the Track A estimate. Real DOCX pagination
-is left as a follow-up, matching this issue's own original
+is left as a follow-up, matching this issue’s own original
 recommendation to treat exact-format pagination as separable,
 incremental work.</p>
 <h3 id="go-to-page-command">Go to Page command</h3>
 <p>The existing (currently dead)
-<code>navigation.page_start_for_number</code> powers an exact "Go to
-Page" for any document whose text contains <code>\f</code> — this is the
-same command surface the issue's linked plan expected, just newly
+<code>navigation.page_start_for_number</code> powers an exact “Go to
+Page” for any document whose text contains <code>\f</code> — this is the
+same command surface the issue’s linked plan expected, just newly
 reachable because real documents now carry page markers. For
-estimate-track documents, a parallel "Go to Page (estimated)" command
+estimate-track documents, a parallel “Go to Page (estimated)” command
 computes a target character offset from the word-count heuristic. Its
-confirmation/prompt text repeats the same "this is an estimate" framing
+confirmation/prompt text repeats the same “this is an estimate” framing
 as the status cell — the disclaimer travels with the feature everywhere
 it surfaces, not just once.</p>
 <h3 id="testing">Testing</h3>
@@ -397,7 +393,7 @@ at the right offset.</li>
 <li><code>main_frame_statusbar.py</code>: light-stub tests for
 <code>_statusbar_page_text()</code> covering both tracks, the
 BRF-suppression rule, and the resolver cache invalidating correctly when
-the document's text length changes.</li>
+the document’s text length changes.</li>
 <li>Settings: round-trip test for
 <code>page_estimate_words_per_page</code> (default, clamp bounds,
 persistence).</li>
@@ -409,13 +405,13 @@ navigation area, describing both tracks and the exactness contract (cell
 wording rules above).</li>
 <li><strong>User guide:</strong> new subsection under Status Bar
 explaining the Page cell in plain language, including a short, explicit
-"this is an estimate, not a printed page count" paragraph, and
+“this is an estimate, not a printed page count” paragraph, and
 documenting the two Go to Page commands and the
 <code>page_estimate_words_per_page</code> setting.</li>
 <li><strong>CHANGELOG / Beta 2 release notes:</strong> new entry under
-"0.9.0 Beta 2." Per Jeff's direction, this ships in Beta 2 despite being
-a feature rather than a fix; the release notes' "no new headline
-features here" sentence is softened to carve out this one exception
+“0.9.0 Beta 2.” Per Jeff’s direction, this ships in Beta 2 despite being
+a feature rather than a fix; the release notes’ “no new headline
+features here” sentence is softened to carve out this one exception
 rather than removed outright.</li>
 <li>Issue #872 is closed once all of the above lands and tests
 pass.</li>

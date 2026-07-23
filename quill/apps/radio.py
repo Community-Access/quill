@@ -13,6 +13,7 @@ import sys
 import wx
 
 from quill.core import http_client
+from quill.core.app_features import AppArea, load_app_features
 from quill.core.radio import reading_services
 from quill.core.radio.radio_browser import RadioBrowserError
 from quill.ui.app_shell import AppShellFrame
@@ -104,11 +105,37 @@ def reading_services_refresh_summary(*, safe_mode: bool = False) -> str:
     return f"Radio Reading Services updated: {total} services."
 
 
+#: The switchable areas of Quill Radio (View > Customize Features...). Turning
+#: one off omits its whole menu on the next launch. Core areas -- Station,
+#: Playback, View, Help -- are always present and not listed here.
+RADIO_AREAS: tuple[AppArea, ...] = (
+    AppArea(
+        "recording",
+        "Recording",
+        "The Record menu: record now, record a station, scheduled recordings, "
+        "and the recordings library.",
+    ),
+    AppArea(
+        "weather",
+        "Weather",
+        "The Weather menu: forecasts, alerts, background alert monitoring, and "
+        "NOAA Weather Radio. (Weather is also available as its own Quill Weather app.)",
+    ),
+)
+
+
 class RadioAppFrame(
     AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin, WeatherMixin
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        from quill.core.paths import app_data_dir
+
+        self._app_features = load_app_features(app_data_dir(), "radio")
+        # Radio hands weather off to its own app: the Weather menu offers "Open
+        # the Quill Weather App", and the two run side by side, each in its own
+        # window and tray, reachable from the other.
+        self._weather_offers_app_launch = True
         self._init_radio()
         from quill.ui.dialog_contract import set_transition_announcement_policy
 
@@ -147,6 +174,9 @@ class RadioAppFrame(
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
+        # Resume Weather Guardian's alert watch if the user left it on (also
+        # deferred: it polls the NWS off-thread).
+        wx.CallAfter(self.start_weather_monitoring_if_enabled)
         # Missed-recording reporting + startup reconcile/resume live in
         # RadioMixin._init_radio now (R2/11.6 + R3), so both hosts get them once.
 
@@ -172,10 +202,14 @@ class RadioAppFrame(
         self._favorites_tree = wx.TreeCtrl(
             panel, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
         )
-        set_accessible_name(
-            self._favorites_tree,
-            "Favorite stations, organized in your folders; Enter plays, Delete "
-            "removes, F2 renames, Shift+F10 opens all actions",
+        # Keep the spoken name short -- a screen reader reads it on every focus,
+        # and the old tutorial-style name ("...; Enter plays, Delete removes, F2
+        # renames, Shift+F10 opens all actions") was read aloud constantly. The
+        # role ("tree view") already conveys what it is; the key hints move to
+        # help text, discoverable but not spoken on entry.
+        set_accessible_name(self._favorites_tree, "Favorite stations")
+        self._favorites_tree.SetHelpText(
+            "Enter plays, Delete removes, F2 renames, Shift+F10 opens all actions."
         )
         # Low-vision legibility (#3): pin the tree to the theme-resolved system
         # colours so it is never near-invisible on a mismatched default.
@@ -877,15 +911,29 @@ class RadioAppFrame(
         play_last_id = wx.NewIdRef()
         station_menu.Append(play_last_id, "Play &Last Station\tCtrl+L")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=play_last_id)
+        # ACB Media and NFB Radio no longer nest here: both are bundled source
+        # categories in Browse Stations already, so the flat menu copies only
+        # duplicated them -- and drifted out of date. They live in Browse now.
+        # Recently Played and Favorites stay; Recently Played refreshes each
+        # time the Station menu opens (see _on_station_menu_open) so a station
+        # you just played shows without relaunching.
+        self._station_menu = station_menu
         self._append_radio_recent_submenu(station_menu)
         self._append_radio_favorites_submenu(station_menu)
-        self._append_acb_media_submenu(station_menu)
-        self._append_nfb_media_submenu(station_menu)
+        self.frame.Bind(wx.EVT_MENU_OPEN, self._on_station_menu_open)
         self._resume_menu_item_id = wx.NewIdRef()
         station_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Station on Lau&nch")
         station_menu.Check(self._resume_menu_item_id, self._radio_history.resume_on_launch)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
+        )
+        from quill.platform.windows import radio_startup
+
+        self._startup_menu_item_id = wx.NewIdRef()
+        station_menu.AppendCheckItem(self._startup_menu_item_id, "Start Quill Radio with &Windows")
+        station_menu.Check(self._startup_menu_item_id, radio_startup.is_launch_at_startup_enabled())
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_launch_at_startup(), id=self._startup_menu_item_id
         )
         prefs_id = wx.NewIdRef()
         station_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
@@ -987,9 +1035,13 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=settings_id
         )
-        menu_bar.Append(record_menu, "&Record")
+        # Recording and Weather are user-switchable areas (View > Customize
+        # Features...): when turned off, the whole menu is not built at all.
+        if self._app_area_enabled("recording"):
+            menu_bar.Append(record_menu, "&Record")
 
-        self._append_weather_menu(menu_bar)
+        if self._app_area_enabled("weather"):
+            self._append_weather_menu(menu_bar)
 
         # Unlock-gated: a top-level Audio Description Project menu, absent
         # entirely until future.adp_assistant is unlocked (Help > Redeem
@@ -1080,6 +1132,11 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(True), id=expand_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(False), id=collapse_id)
         view_menu.AppendSeparator()
+        features_id = wx.NewIdRef()
+        view_menu.Append(features_id, "&Customize Features...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_app_features(), id=features_id)
+        self._keep_menu_ids(features_id)
+        view_menu.AppendSeparator()
         # Text Size: scale the main window's fonts for low-vision listeners.
         text_menu = wx.Menu()
         self._text_size_item_ids = [wx.NewIdRef() for _ in _TEXT_SIZE_SCALES]
@@ -1091,6 +1148,18 @@ class RadioAppFrame(
             self.frame.Bind(wx.EVT_MENU, lambda _e, s=scale: self._set_text_size(s), id=item_id)
         view_menu.AppendSubMenu(text_menu, "&Text Size")
         menu_bar.Append(view_menu, "&View")
+        from quill.ui.quillville_menu import build_quillville_menu
+
+        menu_bar.Append(
+            build_quillville_menu(
+                wx,
+                self.frame,
+                self._launch_sibling,
+                exclude="radio",
+                retain=self._keep_menu_ids,
+            ),
+            "&QuillVille",
+        )
         menu_bar.Append(help_menu, "&Help")
 
         # Persistent &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 on the
@@ -1110,6 +1179,7 @@ class RadioAppFrame(
             new_folder_id,
             play_last_id,
             self._resume_menu_item_id,
+            self._startup_menu_item_id,
             prefs_id,
             tray_id,
             exit_id,
@@ -1167,6 +1237,19 @@ class RadioAppFrame(
             "It looks like it's missing -- choose Help > Get FFmpeg... to "
             "download the official build, then try again."
         )
+
+    def _on_station_menu_open(self, event: object) -> None:
+        """Rebuild Recently Played just before the Station menu opens, so it
+        reflects everything played since launch (the menu bar itself is built
+        once at startup). Mirrors the Window menu's just-in-time refresh. Always
+        skips so other EVT_MENU_OPEN handlers (the Window menu's) still run."""
+        get_menu = getattr(event, "GetMenu", None)
+        menu = get_menu() if callable(get_menu) else None
+        if menu is getattr(self, "_station_menu", None):
+            self._rebuild_recent_submenu()
+        skip = getattr(event, "Skip", None)
+        if callable(skip):
+            skip()
 
     def _send_to_tray(self) -> None:
         self.frame.Hide()
@@ -1329,6 +1412,53 @@ class RadioAppFrame(
             if history.resume_on_launch
             else "Resume on launch turned off."
         )
+
+    def _toggle_launch_at_startup(self) -> None:
+        """Station > Start Quill Radio with Windows: add or remove the per-user
+        autostart entry, then reflect what actually took (a locked-down registry
+        may refuse silently)."""
+        from quill.platform.windows import radio_startup
+
+        if not radio_startup.is_windows():
+            self._announce("Starting with Windows is only available on Windows.")
+            return
+        radio_startup.set_launch_at_startup(not radio_startup.is_launch_at_startup_enabled())
+        actual = radio_startup.is_launch_at_startup_enabled()
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._startup_menu_item_id), actual)
+        self._announce(
+            "Quill Radio will start with Windows."
+            if actual
+            else "Quill Radio will not start with Windows."
+        )
+
+    # -- switchable feature areas ----------------------------------------------
+
+    def _app_area_enabled(self, area_id: str) -> bool:
+        features = getattr(self, "_app_features", None)
+        return True if features is None else features.is_enabled(area_id)
+
+    def _open_app_features(self) -> None:
+        """View > Customize Features...: turn whole areas of Quill Radio on or
+        off. Menu changes take effect at the next launch."""
+        from quill.core.app_features import save_app_features
+        from quill.core.paths import app_data_dir
+        from quill.ui.app_features_dialog import AppFeaturesDialog
+
+        dlg = AppFeaturesDialog(
+            self.frame,
+            app_title=_TITLE,
+            areas=RADIO_AREAS,
+            settings=self._app_features,
+            announce_cb=self._announce,
+        )
+        if dlg.show():
+            save_app_features(app_data_dir(), self._app_features)
+            self._announce(
+                "Feature settings saved. Menu changes take effect the next time "
+                "you open Quill Radio."
+            )
 
     def _on_radio_char_hook(self, event: wx.KeyEvent) -> None:
         """Alt+F4 -> system tray when the preference is on (still playing);
@@ -1648,13 +1778,19 @@ class RadioAppFrame(
     # -- status ---------------------------------------------------------------
 
     def _on_volume_slider(self, _event: object) -> None:
-        """Arrowing the focused Volume slider sets the radio volume (#1214)."""
+        """Arrowing the focused Volume slider sets the radio volume (#1214).
+
+        No explicit announcement here: the slider has keyboard focus while it is
+        being arrowed, so the screen reader already speaks the new value on each
+        press. Adding our own _announce on top made every keystroke double-speak
+        (the native "55" plus "Radio volume 55") -- verbose. Let the focused
+        slider carry the percentage; we only keep the live state in sync.
+        """
         controller = getattr(self, "_radio_controller", None)
         if controller is None:
             return
         percent = self._volume_slider.GetValue()
         controller.set_volume(percent)
-        self._announce(f"Radio volume {percent}")
         status_bar = getattr(self, "_status_bar", None)
         if status_bar is not None:
             status_bar.refresh()
@@ -1702,73 +1838,58 @@ class RadioAppFrame(
     # -- lifecycle --------------------------------------------------------------
 
     def _on_radio_app_close(self, event: wx.CloseEvent) -> None:
+        # Thin wrapper over the shared close flow (AppShellFrame.handle_app_close),
+        # which never ShowModals from inside EVT_CLOSE -- it vetoes and defers the
+        # confirm dialog so Alt+F4 works while a station plays. "Ask" only prompts
+        # when there's something to protect (live playback or a recording).
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
+        playback_active = self._radio_controller.state.state in (
+            RadioPlayerState.PLAYING,
+            RadioPlayerState.CONNECTING,
+        )
+        self.handle_app_close(
+            event,
+            close_action=self._radio_history.close_action,
+            protected=recording_active or playback_active,
+            confirm=self._radio_close_confirm,
+            shutdown=self._radio_shutdown,
+        )
+
+    def _radio_close_confirm(self) -> str | None:
+        """Show Quill Radio's Exit / Minimize to Tray / Cancel dialog and return
+        the choice ("exit"/"minimize"/None), persisting "Don't ask me again" to
+        close_action. Run deferred by the shared close flow, never from inside
+        EVT_CLOSE (see AppShellFrame.handle_app_close)."""
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
+        from quill.ui.radio.close_confirm_dialog import RadioCloseConfirmDialog
 
-        # Alt+F4 / titlebar X / Exit all raise EVT_CLOSE, and a keyboard or
-        # screen-reader user who hears nothing right away tends to press
-        # Alt+F4 again. wx's modal loop still pumps events while the first
-        # RadioCloseConfirmDialog.ShowModal() is running, so that second
-        # close event used to re-enter this method and open a *second*
-        # confirm dialog on top of the first -- which corrupted the Windows
-        # modal stack so badly that both dialogs stayed invisible and the
-        # whole app stopped responding to Alt+F4, Exit, everything. Ignore a
-        # close event that arrives while one is already being confirmed.
-        if getattr(self, "_closing_in_progress", False):
-            event.Veto()
-            return
-        history = self._radio_history
-        if getattr(self, "_exit_requested", False):
-            self._exit_requested = False
-            # An explicit menu/tray Exit quits for real: never bounce back to the
-            # tray via minimize-on-close, and skip the accidental-Alt+F4 confirm
-            # (the user deliberately chose Exit) -- #1193.
-            action = "exit"
-        else:
-            action = history.close_action
-        if action == "ask":
-            from quill.ui.radio.player_controller import RadioPlayerState
+        recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
+        result = RadioCloseConfirmDialog(
+            self.frame, recording_active=recording_active, announce_cb=self._announce
+        ).show()
+        if result is None:
+            return None  # Cancel: stay open, nothing to remember.
+        action, dont_ask_again = result
+        if dont_ask_again:
+            self._radio_history.close_action = action
+            radio_history.save_history(app_data_dir(), self._radio_history)
+        return action
 
-            recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
-            playback_active = self._radio_controller.state.state in (
-                RadioPlayerState.PLAYING,
-                RadioPlayerState.CONNECTING,
-            )
-            # "Ask every time" exists to protect an in-progress recording (and,
-            # secondarily, to offer Minimize to Tray) from a silent Alt+F4 --
-            # not to interrupt an idle app with a prompt. Nothing playing or
-            # recording means there's nothing the dialog is protecting, so
-            # close the same as if action were "exit"; this doesn't persist
-            # (no dialog was shown, so no choice was made to remember).
-            if not recording_active and not playback_active:
-                action = "exit"
-            else:
-                from quill.ui.radio.close_confirm_dialog import RadioCloseConfirmDialog
-
-                self._closing_in_progress = True
-                try:
-                    result = RadioCloseConfirmDialog(
-                        self.frame, recording_active=recording_active, announce_cb=self._announce
-                    ).show()
-                finally:
-                    self._closing_in_progress = False
-                if result is None:
-                    event.Veto()
-                    return
-                action, dont_ask_again = result
-                if dont_ask_again:
-                    history.close_action = action
-                    radio_history.save_history(app_data_dir(), history)
-        if action == "minimize":
-            event.Veto()
-            self._send_to_tray()
-            return
-        # Stamp when the app was last running, so the next launch can report
-        # scheduled recordings missed while it was closed (#4). Shared with
-        # embedded QUILL via RadioMixin (R2/11.6). R3: also stop the periodic
-        # last_seen timer and clear the active-recording marker so a clean close
-        # is not mistaken for a crash on the next launch.
+    def _radio_shutdown(self) -> None:
+        """Teardown just before the Radio window closes. Stamp when the app was
+        last running so the next launch can report scheduled recordings missed
+        while it was closed (#4; shared with embedded QUILL via RadioMixin,
+        R2/11.6), stop the periodic timers and clear the active-recording marker
+        (R3, so a clean close is not mistaken for a crash), then shut the
+        controller, recorder, scheduler, task manager, media keys, and tray down
+        (all non-blocking)."""
         self._stamp_radio_last_seen()
+        # Stop Weather Guardian's timer without flipping its persisted on state,
+        # so a clean exit resumes monitoring on the next launch.
+        self.stop_weather_monitoring(announce=False, persist=False)
         for timer_attr in ("_radio_last_seen_timer", "_ipc_timer"):
             timer = getattr(self, timer_attr, None)
             if timer is not None:
@@ -1791,7 +1912,6 @@ class RadioAppFrame(
         self._task_manager.shutdown(wait=False)
         self._unregister_media_keys()
         self._remove_tray_icon()
-        event.Skip()
 
 
 #: Single-instance slot for Quill Radio's IPC lock/queue -- distinct from

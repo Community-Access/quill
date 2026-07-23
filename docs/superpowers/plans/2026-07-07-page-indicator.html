@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>2026-07-07-page-indicator</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -249,7 +245,7 @@ superpowers:subagent-driven-development (recommended) or
 superpowers:executing-plans to implement this plan task-by-task. Steps
 use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
 </blockquote>
-<p><strong>Goal:</strong> Add an always-on "page" status bar cell for
+<p><strong>Goal:</strong> Add an always-on “page” status bar cell for
 every document — an exact count for PDFs (via preserved page boundaries)
 and an estimated word-count-based count for everything else — plus a
 track-aware Go To Page command, fully documented.</p>
@@ -257,7 +253,7 @@ track-aware Go To Page command, fully documented.</p>
 single dispatcher branch; two pure, wx-free functions in
 <code>quill/core/navigation.py</code> for the estimate; PDF import
 changed to preserve real page boundaries as form-feed (<code>\f</code>)
-characters, reusing <code>navigation.py</code>'s existing
+characters, reusing <code>navigation.py</code>’s existing
 <code>page_starts()</code>/<code>page_start_for_number()</code> rather
 than building new exact-page machinery.</p>
 <p><strong>Tech Stack:</strong> Python 3.13, wxPython (UI layer only),
@@ -268,7 +264,7 @@ pytest.</p>
 default <strong>300</strong>, clamped <strong>[150, 600]</strong>
 (setting <code>page_estimate_words_per_page</code>).</li>
 <li>Estimated display text always includes both a tilde (<code>~</code>)
-and the word "estimated" — never one without the other, never omitted.
+and the word “estimated” — never one without the other, never omitted.
 Exact display text never includes either.</li>
 <li>The new <code>"page"</code> status bar cell is <strong>visible by
 default</strong> (not in <code>_default_status_bar_hidden()</code>),
@@ -285,27 +281,22 @@ Pandoc/MarkItDown text conversion, which does not preserve page-break
 positions; DOCX stays on the estimate track. This is a scope narrowing
 from the original spec, made during planning; the spec doc is updated in
 Task 7 to match.</li>
-<li>Closes GitHub issue #872. Ships in 0.9.0 Beta 2 (release notes' "no
-new headline features" line gets a carve-out, per Jeff).</li>
+<li>Closes GitHub issue #872. Ships in 0.9.0 Beta 2 (release notes’ “no
+new headline features” line gets a carve-out, per Jeff).</li>
 </ul>
 <hr />
-<h3 id="task-1-estimate--exact-page-count-core-functions">Task 1:
+<h3 id="task-1-estimate-exact-page-count-core-functions">Task 1:
 Estimate + exact page-count core functions</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/core/navigation.py</code></li>
-<li>Test: <code>tests/unit/core/test_navigation.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Produces:
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/navigation.py</code> - Test:
+<code>tests/unit/core/test_navigation.py</code></p>
+<p><strong>Interfaces:</strong> - Produces:
 <code>estimate_page_count(text: str, words_per_page: int) -&gt; int</code>,
 <code>estimate_page_for_position(text: str, position: int, words_per_page: int) -&gt; int</code>,
 <code>estimate_page_start_for_number(text: str, page_number: int, words_per_page: int) -&gt; int | None</code>
 — all pure, no wx, no I/O. <code>words_per_page</code> is always the
 caller-supplied setting value (no default baked in here — the default of
-300 lives in Task 2's setting).</li>
-</ul>
+300 lives in Task 2’s setting).</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -455,24 +446,18 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <hr />
 <h3 id="task-2-page_estimate_words_per_page-setting">Task 2:
 <code>page_estimate_words_per_page</code> setting</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/core/settings.py:469</code> (field),
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/settings.py:469</code> (field),
 <code>quill/core/settings.py:1070</code> (parsing),
-<code>quill/core/settings.py:1438</code> (constructor)</li>
-<li>Modify: <code>quill/core/settings_specs.py:1827</code>
-(SettingSpec)</li>
-<li>Test: <code>tests/unit/core/test_settings.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes: nothing new.</li>
-<li>Produces: <code>Settings.page_estimate_words_per_page: int</code>
-(default <code>300</code>, clamped <code>[150, 600]</code> on load), a
-searchable <code>SettingSpec</code> named
+<code>quill/core/settings.py:1438</code> (constructor) - Modify:
+<code>quill/core/settings_specs.py:1827</code> (SettingSpec) - Test:
+<code>tests/unit/core/test_settings.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: nothing new. - Produces:
+<code>Settings.page_estimate_words_per_page: int</code> (default
+<code>300</code>, clamped <code>[150, 600]</code> on load), a searchable
+<code>SettingSpec</code> named
 <code>"page_estimate_words_per_page"</code> in the
-<code>"navigation"</code> group.</li>
-</ul>
+<code>"navigation"</code> group.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -575,7 +560,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a hr
 discoverable</strong></label></li>
 </ul>
 <p>Run: <code>pytest tests/unit/core/test_settings_specs.py -v</code>
-(if this file doesn't exist, skip this step -- there is no existing
+(if this file doesn’t exist, skip this step – there is no existing
 per-spec test convention to match)</p>
 <p>Run: <code>pytest tests/unit/core -k settings -v</code> Expected:
 PASS</p>
@@ -590,28 +575,22 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(settings): add page_estimate_words_per_page (#872)&quot;</span></span></code></pre></div>
 <hr />
 <h3 id="task-3-register-the-page-status-bar-item">Task 3: Register the
-"page" status bar item</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/core/settings_normalizers.py:10-61</code>
-(<code>STATUS_BAR_ITEMS</code> tuple)</li>
-<li>Modify: <code>quill/ui/main_frame.py:792-891</code>
+“page” status bar item</h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/settings_normalizers.py:10-61</code>
+(<code>STATUS_BAR_ITEMS</code> tuple) - Modify:
+<code>quill/ui/main_frame.py:792-891</code>
 (<code>_STATUS_BAR_LABELS</code>, <code>_STATUS_BAR_WIDTHS</code>,
-<code>_STATUS_BAR_FEATURES</code>)</li>
-<li>Test: <code>tests/unit/core/test_settings.py</code>,
-<code>tests/unit/ui/test_main_frame_statusbar_context.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes: nothing new.</li>
-<li>Produces: <code>"page"</code> is a member of
-<code>STATUS_BAR_ITEMS</code>, positioned right after
-<code>"line_column"</code>; <code>"page"</code> is <strong>not</strong>
-in <code>_default_status_bar_hidden()</code>;
+<code>_STATUS_BAR_FEATURES</code>) - Test:
+<code>tests/unit/core/test_settings.py</code>,
+<code>tests/unit/ui/test_main_frame_statusbar_context.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: nothing new. - Produces:
+<code>"page"</code> is a member of <code>STATUS_BAR_ITEMS</code>,
+positioned right after <code>"line_column"</code>; <code>"page"</code>
+is <strong>not</strong> in <code>_default_status_bar_hidden()</code>;
 <code>MainFrame._STATUS_BAR_LABELS["page"] == "Page"</code>,
 <code>_STATUS_BAR_WIDTHS["page"] == 220</code>,
-<code>_STATUS_BAR_FEATURES["page"] == "core.analysis"</code>.</li>
-</ul>
+<code>_STATUS_BAR_FEATURES["page"] == "core.analysis"</code>.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -646,7 +625,7 @@ they fail</strong></label></li>
 Expected: FAIL (<code>"page" not in STATUS_BAR_ITEMS</code> /
 <code>KeyError: 'page'</code>)</p>
 <ul class="task-list">
-<li><label><input type="checkbox" /><strong>Step 3: Add "page" to
+<li><label><input type="checkbox" /><strong>Step 3: Add “page” to
 STATUS_BAR_ITEMS</strong></label></li>
 </ul>
 <p>In <code>quill/core/settings_normalizers.py</code>, change:</p>
@@ -664,7 +643,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a h
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;page&quot;</span>,</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;message&quot;</span>,</span></code></pre></div>
 <p>Do <strong>not</strong> add <code>"page"</code> to
-<code>_default_status_bar_hidden()</code> (lines 68-93) -- its absence
+<code>_default_status_bar_hidden()</code> (lines 68-93) – its absence
 from that list is what makes it visible by default.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 4: Add the three
@@ -700,7 +679,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href=
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/settings_normalizers.py quill/ui/main_frame.py tests/unit/core/test_settings.py tests/unit/ui/test_main_frame_statusbar_context.py</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(statusbar): register the page item, visible by default (#872)&quot;</span></span></code></pre></div>
 <p><em>(Note: <code>quill/ui/main_frame.py</code> may exceed its GATE-11
-module size budget after this change -- check with
+module size budget after this change – check with
 <code>python -m pytest tests/unit/tools/test_module_size_budget.py -q</code>
 and, if it fails, add a dated <code>_rebaseline_</code> entry to
 <code>quill/tools/module_size_budgets.json</code> following the pattern
@@ -710,28 +689,22 @@ of existing entries in that file, as part of this commit.)</em></p>
 id="task-4-status-bar-cell-rendering-help-text-activation-and-brf-suppression">Task
 4: Status bar cell rendering, help text, activation, and BRF
 suppression</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame_statusbar.py</code></li>
-<li>Test:
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/main_frame_statusbar.py</code> - Test:
 <code>tests/unit/ui/test_main_frame_statusbar_context.py</code>,
-<code>tests/unit/ui/test_main_frame_navigation.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes: <code>estimate_page_count</code>,
+<code>tests/unit/ui/test_main_frame_navigation.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>estimate_page_count</code>,
 <code>estimate_page_for_position</code> from
 <code>quill.core.navigation</code> (Task 1); <code>page_starts</code>
 from <code>quill.core.navigation</code> (pre-existing);
-<code>settings.page_estimate_words_per_page</code> (Task 2).</li>
-<li>Produces:
+<code>settings.page_estimate_words_per_page</code> (Task 2). - Produces:
 <code>StatusBarMixin._statusbar_page_text() -&gt; str</code>; the
 <code>"page"</code> branch in <code>_statusbar_text_for_item</code>;
 <code>"page"</code> entry in the help-text dict;
 <code>"page": self.go_to_page</code> in the activation actions dict;
-<code>"page"</code> removed from <code>_statusbar_items()</code>'s
-visible list whenever the <code>"braille"</code> cell is active.</li>
-</ul>
+<code>"page"</code> removed from <code>_statusbar_items()</code>’s
+visible list whenever the <code>"braille"</code> cell is active.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -824,7 +797,7 @@ they fail</strong></label></li>
 <p>Run:
 <code>pytest tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_navigation.py -k page -v</code>
 Expected: FAIL (empty string / KeyError from the activation dict /
-"page" present alongside "braille")</p>
+“page” present alongside “braille”)</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 3: Add the
 imports</strong></label></li>
@@ -890,7 +863,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a h
 text</strong></label></li>
 </ul>
 <p>In <code>quill/ui/main_frame_statusbar.py</code>, in
-<code>_statusbar_help_text</code>'s <code>labels</code> dict, add after
+<code>_statusbar_help_text</code>’s <code>labels</code> dict, add after
 <code>"line_column": "Go to line",</code>:</p>
 <div class="sourceCode" id="cb25"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>            <span class="co">&quot;page&quot;</span>: <span class="st">&quot;Page position. Press Enter for Go To Page.&quot;</span>,</span></code></pre></div>
@@ -899,7 +872,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a h
 wiring</strong></label></li>
 </ul>
 <p>In <code>quill/ui/main_frame_statusbar.py</code>, in
-<code>_activate_statusbar_cell</code>'s <code>actions</code> dict, add
+<code>_activate_statusbar_cell</code>’s <code>actions</code> dict, add
 after <code>"line_column": self.go_to_line,</code>:</p>
 <div class="sourceCode" id="cb26"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>            <span class="co">&quot;page&quot;</span>: <span class="va">self</span>.go_to_page,</span></code></pre></div>
@@ -935,23 +908,19 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href=
 <hr />
 <h3 id="task-5-track-aware-go-to-page-command">Task 5: Track-aware Go To
 Page command</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/ui/main_frame.py:15176-15209</code>
-(<code>go_to_page</code>)</li>
-<li>Test: <code>tests/unit/ui/test_main_frame_navigation.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes: <code>estimate_page_count</code>,
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/main_frame.py:15176-15209</code>
+(<code>go_to_page</code>) - Test:
+<code>tests/unit/ui/test_main_frame_navigation.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>estimate_page_count</code>,
 <code>estimate_page_start_for_number</code> from
 <code>quill.core.navigation</code>; <code>page_starts</code>,
 <code>page_start_for_number</code> (already imported in
-<code>main_frame.py</code>, lines 197-198).</li>
-<li>Produces: <code>MainFrame.go_to_page()</code> now prompts and jumps
-using the estimate when the document has no real page breaks, and says
-so in the prompt.</li>
-</ul>
+<code>main_frame.py</code>, lines 197-198). - Produces:
+<code>MainFrame.go_to_page()</code> now prompts and jumps using the
+estimate when the document has no real page breaks, and says so in the
+prompt.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -1030,10 +999,10 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a h
 <code>frame.settings</code> with the fields the earlier tests need;
 <code>page_estimate_words_per_page</code> comes from the real
 <code>Settings</code> dataclass default (300) since
-<code>_build_frame</code>'s settings object is a lightweight stand-in --
+<code>_build_frame</code>’s settings object is a lightweight stand-in –
 confirm it exposes <code>page_estimate_words_per_page</code> (add
 <code>"page_estimate_words_per_page": 300,</code> to its dict literal if
-it doesn't; <code>go_to_page</code> reads it via
+it doesn’t; <code>go_to_page</code> reads it via
 <code>getattr(self.settings, ..., 300)</code> so a missing attribute
 still falls back to 300 safely either way).</p>
 <ul class="task-list">
@@ -1135,25 +1104,19 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href=
 <span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(navigation): Go To Page falls back to a stated estimate (#872)&quot;</span></span></code></pre></div>
 <p><em>(If the budget test fails, add a dated <code>_rebaseline_</code>
 entry to <code>quill/tools/module_size_budgets.json</code> before
-committing, as in Task 3's note.)</em></p>
+committing, as in Task 3’s note.)</em></p>
 <hr />
 <h3 id="task-6-pdf-import-preserves-real-page-boundaries">Task 6: PDF
 import preserves real page boundaries</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify: <code>quill/io/pdf.py:75-98</code>
+<p><strong>Files:</strong> - Modify: <code>quill/io/pdf.py:75-98</code>
 (<code>_extract_with_pdfplumber</code>,
-<code>_extract_with_pypdf</code>)</li>
-<li>Test: <code>tests/unit/io/test_pdf.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes: nothing new.</li>
-<li>Produces: <code>extract_pdf_text(path).text</code> now joins pages
-with <code>"\f"</code> instead of <code>"\n\n"</code>, so
+<code>_extract_with_pypdf</code>) - Test:
+<code>tests/unit/io/test_pdf.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: nothing new. - Produces:
+<code>extract_pdf_text(path).text</code> now joins pages with
+<code>"\f"</code> instead of <code>"\n\n"</code>, so
 <code>quill.core.navigation.page_starts()</code> on the resulting
-<code>Document.text</code> reports one boundary per real PDF page.</li>
-</ul>
+<code>Document.text</code> reports one boundary per real PDF page.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1255,7 +1218,7 @@ replacement).</p>
 they pass</strong></label></li>
 </ul>
 <p>Run: <code>pytest tests/unit/io/test_pdf.py -v</code> Expected: PASS
-(all tests in the file, including the pre-existing ones -- confirm none
+(all tests in the file, including the pre-existing ones – confirm none
 of them assert on <code>"\n\n"</code> appearing in extracted text; if
 one does, it was pinning the old join and should be updated to assert
 <code>"\f"</code> instead)</p>
@@ -1270,27 +1233,24 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href=
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(pdf): preserve real page boundaries as form feeds (#872)&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-7-documentation--spec-amendment-prd-user-guide-changelog-release-notes">Task
+id="task-7-documentation-spec-amendment-prd-user-guide-changelog-release-notes">Task
 7: Documentation — spec amendment, PRD, user guide, CHANGELOG, release
 notes</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify:
-<code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code></li>
-<li>Modify:
-<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></li>
-<li>Modify: <code>docs/user guide/userguide.md</code></li>
-<li>Modify: <code>CHANGELOG.md</code></li>
-<li>Modify: <code>docs/release notes/release0.9.0-beta2.md</code></li>
-</ul>
+<p><strong>Files:</strong> - Modify:
+<code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code>
+- Modify:
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>
+- Modify: <code>docs/user guide/userguide.md</code> - Modify:
+<code>CHANGELOG.md</code> - Modify:
+<code>docs/release notes/release0.9.0-beta2.md</code></p>
 <ul class="task-list">
-<li><label><input type="checkbox" /><strong>Step 1: Amend the spec's
+<li><label><input type="checkbox" /><strong>Step 1: Amend the spec’s
 Track B section</strong></label></li>
 </ul>
 <p>In
 <code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code>,
-in the "Track B — real pages" section, add this paragraph immediately
-after the existing DOCX bullet (before "### Go to Page command"):</p>
+in the “Track B — real pages” section, add this paragraph immediately
+after the existing DOCX bullet (before “### Go to Page command”):</p>
 <div class="sourceCode" id="cb39"><pre
 class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>**Scope note (added during implementation planning):** DOCX import goes</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>through Pandoc or MarkItDown conversion to Markdown text</span>
@@ -1372,7 +1332,7 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb41-1">
 <li><label><input type="checkbox" /><strong>Step 4: Add the CHANGELOG
 entry</strong></label></li>
 </ul>
-<p>In <code>CHANGELOG.md</code>, in the "0.9.0 Beta 2" section, add this
+<p>In <code>CHANGELOG.md</code>, in the “0.9.0 Beta 2” section, add this
 bullet immediately after the intro paragraph (before the existing
 <code>#886</code> bullet):</p>
 <div class="sourceCode" id="cb42"><pre
@@ -1382,7 +1342,7 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb42-1">
 notes entry</strong></label></li>
 </ul>
 <p>In <code>docs/release notes/release0.9.0-beta2.md</code>:</p>
-<p>First, soften the "no new headline features" sentence in the intro.
+<p>First, soften the “no new headline features” sentence in the intro.
 Change:</p>
 <div class="sourceCode" id="cb43"><pre
 class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>Keeping the promise made at Beta 1, there are **no new headline features here** —</span>
@@ -1390,9 +1350,9 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb43-1">
 <p>to:</p>
 <div class="sourceCode" id="cb44"><pre
 class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Keeping the promise made at Beta 1, this is overwhelmingly your reports, turned into fixes and polish, especially around getting the optional pieces you want — with **one exception**: a page indicator, because enough of you asked for it that it couldn&#39;t wait.</span></code></pre></div>
-<p>Then add a new section right after the "Getting the extras you want,
-reimagined" section (before "## A simpler installer, and a lighter
-one"):</p>
+<p>Then add a new section right after the “Getting the extras you want,
+reimagined” section (before “## A simpler installer, and a lighter
+one”):</p>
 <div class="sourceCode" id="cb45"><pre
 class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## A page number, honestly presented</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>

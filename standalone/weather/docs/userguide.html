@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>userguide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-weather-user-guide">Quill Weather User Guide</h1>
+<p>Quill Weather is a small, standalone, screen-reader-first weather
+app. This guide covers what is specific to the standalone app; the
+weather features themselves are the same ones documented in the Quill
+Radio User Guide’s Weather section (they share the code).</p>
+<h2 id="starting-the-app">Starting the app</h2>
+<p>Launch <strong>Quill Weather</strong> from the Start Menu, or run
+<code>QuillWeather.exe</code> from the portable folder. On first run
+there is no saved location yet, so choose <strong>Weather menu &gt; Add
+Location…</strong> (or the <strong>Add Location…</strong> button) and
+search by ZIP code, city, county, or address.</p>
+<p>The main window is small on purpose – a status line telling you
+whether monitoring is on, and buttons for <strong>Open Weather
+Center</strong>, <strong>Toggle Monitoring</strong>, and <strong>Add
+Location</strong>. Everything else is on the menu bar.</p>
+<h2 id="the-window-the-tray-and-starting-at-login">The window, the tray,
+and starting at login</h2>
+<p>Quill Weather is built to keep running.</p>
+<ul>
+<li><strong>Minimize to Tray</strong> (File menu, or Ctrl+W) tucks the
+window into the system tray; monitoring keeps going.</li>
+<li>By default, <strong>closing the window</strong> also goes to the
+tray rather than quitting (so a stray Alt+F4 does not end your watch).
+Only <strong>Exit</strong> (File menu or the tray) truly quits. You can
+change this in <strong>Options &gt; Close button keeps monitoring in the
+tray</strong>.</li>
+<li><strong>Options &gt; Start Quill Weather with Windows</strong>
+launches the app at sign-in. Pair it with <strong>Options &gt; Start
+minimized to the tray</strong> and it comes up already watching, with no
+window.</li>
+<li><strong>Options &gt; Check for alerts in the background (even when
+Quill Weather is closed)</strong> registers a Windows scheduled task
+that checks for new alerts on your monitor interval and shows a toast if
+it finds one – so you are covered even with no Quill Weather process
+running at all.</li>
+</ul>
+<h2 id="the-system-tray-menu">The system tray menu</h2>
+<p>Right-click the tray icon (or use the Applications key) for: the
+current monitoring status, <strong>Open Weather Center</strong>,
+<strong>Quick Weather</strong>, <strong>Start/Stop Monitoring</strong>,
+<strong>Open Quill Radio</strong>, <strong>Open QUILL</strong>,
+<strong>Show</strong>, and <strong>Exit</strong>. Left-double-click the
+icon to bring the window back.</p>
+<h2 id="weather-monitoring-weather-guardian">Weather Monitoring (Weather
+Guardian)</h2>
+<p><strong>Weather menu &gt; Start Weather Monitoring</strong>
+(Ctrl+Shift+M) watches your saved location’s official alerts and speaks
+each new one as it is issued, with a system -tray notification and the
+alert sounder. <strong>Pause Alert Checks</strong> snoozes it without
+turning it off. See <strong>Settings</strong> for the alert sounder
+controls (on/off, your own sound file with a Play button, and how many
+times it repeats), and <strong>Weather menu &gt; Test Alert</strong> to
+preview the whole experience.</p>
+<h2 id="customizing-features">Customizing features</h2>
+<p><strong>Options &gt; Customize Features…</strong> lists the app’s
+switchable areas – <strong>Alert Monitoring</strong> and <strong>NOAA
+Weather Radio</strong> – each with a short description. Unchecking one
+removes its menu items the next time you open Quill Weather, so you can
+trim the app to just what you use. (This is the same customization Quill
+Radio offers.)</p>
+<h2 id="reaching-the-other-apps">Reaching the other apps</h2>
+<p>Quill Weather, Quill Radio, and QUILL are separate apps that can open
+each other. <strong>File &gt; Open Quill Radio</strong> and <strong>File
+&gt; Open QUILL</strong> (also in the tray menu) launch a sibling in its
+own window; if it is already running, it simply comes to the front. On
+the same machine all three share one data store, so a location you saved
+in one is there in the others.</p>
+<h2 id="updating">Updating</h2>
+<p><strong>Help &gt; Check for Updates</strong> knows whether you run
+the installer or the portable build and downloads the matching one.
+Quill Weather updates on its own schedule, separate from Quill
+Radio.</p>
+<h2 id="weather-features-full-reference">Weather features – full
+reference</h2>
+<p>This is the full reference for the weather features, shared by the
+standalone <strong>Quill Weather</strong> app and Quill Radio’s
+<strong>Weather</strong> menu (they run the same code). It brings
+official U.S. weather to you as clear, screen-reader-first text: current
+conditions, the forecast, an extended daily outlook, and – most
+importantly – active watches, warnings, and advisories for the places
+you care about.</p>
+<p>Everything comes from free, no-account, no-key sources: the
+<strong>National Weather Service</strong> (api.weather.gov) for
+observations, the forecast, and alerts; <strong>Open-Meteo</strong> for
+the extended daily outlook and the air-quality index; and
+<strong>OpenStreetMap</strong> for searching locations. Nothing is sent
+anywhere except your request for weather at a place you choose.</p>
+<h3 id="a-safety-note-first">A safety note first</h3>
+<p>Quill Weather is an <strong>additional</strong> accessible weather
+tool. Delivery can be delayed or interrupted by network, device, or
+provider problems. Do not rely on it as your only source of emergency
+information. Keep a NOAA Weather Radio, Wireless Emergency Alerts, and
+local emergency instructions as your primary safety channels.</p>
+<h3 id="adding-a-location">Adding a location</h3>
+<ol type="1">
+<li>Open the <strong>Weather</strong> menu and choose <strong>Add
+Location…</strong> (or open <strong>Weather Now…</strong> and press the
+<strong>Add Location</strong> button).</li>
+<li>Type a <strong>ZIP code</strong>, a <strong>city and state</strong>
+(<code>Tucson, AZ</code>), a <strong>county name</strong>, or an
+<strong>address</strong>, then press <strong>Search</strong>. (You can
+also type exact <strong>coordinates</strong> like
+<code>32.2, -110.9</code>.)</li>
+<li>A <strong>Results</strong> list appears. Because a search can match
+more than one place – there are Springfields in Illinois, Missouri, and
+more – you <strong>arrow to the right one and press Add
+Selected</strong>. Optionally give it a friendly <strong>name</strong>
+like <code>Home</code> or <code>Mom's</code> first.</li>
+<li>The first location you add becomes your primary location. Add as
+many as you like and switch between them with the
+<strong>Location</strong> chooser in Weather Now.</li>
+</ol>
+<p><strong>Removing a location:</strong> in Weather Now, select it in
+the Location chooser and press <strong>Remove Location</strong> (or the
+<strong>Delete</strong> key).</p>
+<h3 id="weather-now">Weather Now</h3>
+<p><strong>Weather menu &gt; Weather Now…</strong> (or
+<strong>Ctrl+Shift+W</strong>) opens the Weather Center. It reads top to
+bottom in priority order:</p>
+<ol type="1">
+<li><strong>Active Alerts</strong> – a list of any watches, warnings,
+and advisories, most severe first. Arrow through them; the full official
+text, including the <strong>instructions</strong>, appears in the
+read-only box just below (so you can read and copy it). When there are
+no alerts, that box is hidden, so you don’t stop on an empty field.</li>
+<li><strong>Current conditions</strong> – a complete, warm paragraph
+from the nearest station: temperature, feels-like, sky, humidity, dew
+point, wind and gusts, cloud cover, barometric pressure, visibility,
+chance of precipitation, sunrise, sunset, the ultraviolet index, and air
+quality. Every value is written out for speech, and the observation time
+is shown in the location’s own time zone. You choose which of these
+details appear in Settings.</li>
+<li><strong>Forecast</strong> – the National Weather Service period
+forecast (“This Afternoon”, “Tonight”, …). Arrow the list; each period’s
+full detailed text appears below, led by its day and temperature so it
+stands alone.</li>
+<li><strong>Daily outlook (extended)</strong> – an at-a-glance list
+reaching about 10 days out (up to 16), each day a friendly line:
+“Monday, July 20: Clear. High 98, low 75 degrees. Sunrise 5:42 AM,
+sunset 7:38 PM.” Arrow the list to read each day in the detail box
+below.</li>
+<li>A <strong>status line</strong> naming the National Weather Service
+office and the observation station, so you always know where the data
+came from.</li>
+</ol>
+<p>Press <strong>Refresh</strong> at any time to pull the latest.
+<strong>Close</strong> leaves any radio you are playing untouched.</p>
+<h3 id="quick-weather">Quick Weather</h3>
+<p><strong>Weather menu &gt; Quick Weather</strong> (or
+<strong>Ctrl+Shift+Q</strong>) speaks a one-line summary of your primary
+location without opening a window – for example:</p>
+<blockquote>
+<p>Here is the weather for Tucson, Arizona. It is 96 degrees Fahrenheit
+and mostly clear. It feels like 101 degrees. The wind is blowing from
+the west-northwest at 5 miles per hour. There is one active alert. The
+most urgent is an Excessive Heat Warning.</p>
+</blockquote>
+<p>You choose what that line includes in Settings.</p>
+<h3 id="active-alerts">Active Alerts</h3>
+<p><strong>Weather menu &gt; Active Alerts…</strong> opens Weather Now
+with focus already on the alerts list, so you can review warnings with
+the fewest keystrokes.</p>
+<h3 id="settings">Settings</h3>
+<p><strong>Weather menu &gt; Settings…</strong> controls:</p>
+<ul>
+<li><strong>Units</strong> – temperature in Fahrenheit or Celsius; wind
+in miles per hour, kilometers per hour, knots, or meters per
+second.</li>
+<li><strong>Forecast periods to show</strong> and <strong>Extended daily
+outlook (days)</strong> – how much of the forecast and outlook Weather
+Now lists (0 days turns the outlook off).</li>
+<li><strong>Hourly forecast (hours)</strong> – how many hours of the
+hour-by-hour forecast the Weather Center lists (0 turns it off).</li>
+<li><strong>Current-conditions details to include</strong> – a checkbox
+for each of feels-like, humidity, dew point, wind and gusts, cloud
+cover, pressure, visibility, chance of precipitation, sunrise and
+sunset, <strong>moon phase, moonrise and moonset</strong>, the
+ultraviolet index, air quality, and the <strong>current local time at
+the location</strong>. Temperature and the sky condition always
+show.</li>
+<li><strong>Alert severity to show</strong> – everything, or only
+Moderate and above, Severe and above, and so on – plus a list of
+specific <strong>event names to hide</strong> (one per line).</li>
+<li><strong>Alert sound</strong> – turn the sound on or off,
+<strong>Choose</strong> your own <code>.wav</code> (with a
+<strong>Play</strong> button to hear it and <strong>Use Default</strong>
+to go back), and set how many times it plays for each alert (1 to
+10).</li>
+<li><strong>Refresh interval</strong> – how often Weather Now refreshes
+(never faster than the NWS-recommended minimum).</li>
+<li><strong>Quick Weather line</strong> – turn feels-like temperature,
+wind, humidity, the active-alert count, and data age on or off.</li>
+</ul>
+<h3 id="the-hourly-forecast-the-moon-and-local-time">The hourly
+forecast, the moon, and local time</h3>
+<p>Weather Now (and the Weather Center) show three more things:</p>
+<ul>
+<li><strong>Hourly forecast</strong> – an <strong>Hourly
+forecast</strong> list you arrow through, giving the temperature, sky,
+and chance of precipitation for each coming hour (from the NWS hourly
+product). Set its length, or turn it off, in Settings.</li>
+<li><strong>The moon</strong> – current conditions and every day of the
+outlook include the moon’s phase, how full it is (percent illuminated),
+and that day’s moonrise and moonset – all computed on your own machine,
+no extra internet lookup.</li>
+<li><strong>Local time at the location</strong> – the report leads with
+the local day and time in the place you searched, so checking the
+weather elsewhere also tells you what time it is there.</li>
+</ul>
+<h3 id="weather-monitoring-weather-guardian-1">Weather monitoring
+(Weather Guardian)</h3>
+<p><strong>Weather menu &gt; Start Weather Monitoring</strong> (or
+<strong>Ctrl+Shift+M</strong>) watches your saved location’s official
+watches, warnings, and advisories and <strong>speaks each new one the
+moment it is issued</strong> – with interrupting speech for the most
+serious events (tornado, flash flood) – and tells you when they all
+clear. It also drops a notification in the system tray for each new
+alert, so you can see it there.</p>
+<ul>
+<li>It keeps working while Quill Radio is <strong>minimized to the
+tray</strong>, and it starts again automatically the next time you
+launch (choose <strong>Stop Weather Monitoring</strong> to turn it off
+for good).</li>
+<li>While a warning is active it checks much more often (as fast as once
+a minute) so you hear about changes quickly, then eases back when the
+weather clears.</li>
+<li><strong>Weather menu &gt; Pause Alert Checks</strong> snoozes it
+temporarily without turning it off; the same item then reads
+<strong>Resume Alert Checks</strong>.</li>
+</ul>
+<h3 id="test-alert">Test Alert</h3>
+<p><strong>Weather menu &gt; Test Alert</strong> shows you exactly what
+a real alert is like – the spoken words, the sound (using your sound
+settings), a system-tray notification, and the alert window – all
+clearly marked as a <strong>test</strong> and dismissable with OK. It
+sends nothing over the internet and does not touch your real
+monitoring.</p>
+<h3
+id="the-quill-weather-app-alerts-even-when-everything-else-is-closed">The
+Quill Weather app – alerts even when everything else is closed</h3>
+<p>Quill Weather is a small companion app whose only job is to keep the
+alert watch running on its own:</p>
+<ul>
+<li>It lives in the <strong>system tray</strong>; closing its window
+tucks it back to the tray and it keeps watching. Only
+<strong>Exit</strong> quits it.</li>
+<li><strong>Options &gt; Start Quill Weather with Windows</strong> (with
+<strong>Start minimized to the tray</strong>) makes it watch from the
+moment you sign in, without opening a window.</li>
+<li><strong>Options &gt; Check for alerts in the background (even when
+Quill Weather is closed)</strong> goes further: Windows itself wakes a
+quick check on your interval, looks for new warnings, and shows a toast
+if it finds one – so you are covered even with no program running at
+all.</li>
+</ul>
+<p>And on the radio side, <strong>Station &gt; Start Quill Radio with
+Windows</strong> launches Quill Radio automatically when you sign
+in.</p>
+<h3 id="your-local-noaa-weather-radio">Your local NOAA Weather
+Radio</h3>
+<p>NOAA Weather Radio is the National Weather Service’s own broadcast
+voice – continuous forecasts, conditions, and warnings from real VHF
+transmitters. Quill Radio carries the authoritative directory of those
+transmitters and their internet re-streams:</p>
+<ul>
+<li><strong>Weather menu &gt; Listen to your Local NOAA Weather
+Radio</strong> – one keypress plays the transmitter covering your saved
+Weather location: your county’s transmitter first, or the nearest one
+whose coverage includes you. If you have not set a Weather location yet,
+it tells you how instead of failing silently. Once playing, it is a
+normal station – favorite it, record it, schedule it.</li>
+<li><strong>Weather menu &gt; Update NOAA Weather Radio
+Directory</strong> – pull the newest directory on demand. It fetches off
+the UI thread, announces the result, and on failure leaves your existing
+data untouched. The complete directory ships inside the app (1,035
+transmitters across every state and territory), so browsing and the
+local lookup work even fully offline; an update simply layers fresher
+data on top, and the bundled copy always remains as the floor. Off in
+Safe Mode.</li>
+<li><strong>Browse Stations &gt; Weather / NOAA</strong> – the same
+directory as a browsable state-by-state tree; see the Station menu
+chapter.</li>
+</ul>
+<p>The audio stream is a companion to the text weather above, not a
+replacement for a dedicated NOAA Weather Radio receiver with alert
+tones.</p>
+<h3 id="whats-coming-later">What’s coming later</h3>
+<p>This release shows weather as <strong>text</strong> and streams NOAA
+Weather Radio audio. Later phases of Quill Weather add spoken weather
+with its own voices and interruption rules, and background alert
+monitoring that keeps watch while the window is closed. See the Product
+Requirements document (Help &gt; Product Requirements) for the full
+roadmap.</p>
+</body>
+</html>

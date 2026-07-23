@@ -547,9 +547,13 @@ now live in <strong>Settings</strong>).</li>
 helpers plus <strong>special character, date and time, calculated date,
 and file content</strong>.</li>
 <li><strong>Format</strong>: case/comment/indent controls, rich text and
-heading controls, and a single <strong>Transform Lines</strong> submenu
+heading controls, a single <strong>Transform Lines</strong> submenu
 (number/hard-wrap lines plus sort/reverse/dedup/whitespace/indentation
-conversions).</li>
+conversions), and a Sort &amp; Filter group with three structured-list
+sorts — <strong>Sort Lines Numerically</strong>, <strong>Sort Lines by
+Length</strong>, and <strong>Sort Lines by Date</strong> (date-aware:
+recognizes ISO, slash/dot, and month-name styles and infers d/m/y vs
+m/d/y from the user's region; undated lines sink to the bottom).</li>
 <li><strong>Navigate</strong>: line/page/bookmark movement,
 heading/block/structure movement, outline, bracket match, region
 movement, <strong>go to percent / first / last non-blank</strong>, and
@@ -3338,15 +3342,38 @@ page markers so page navigation is exact.</li>
 <code>Ctrl+G</code> opens Go To Page when page markers exist. The status
 bar's Page cell shows <code>Page n of m</code>. Reaching the first or
 last page is announced.</li>
-<li><strong>Embedded bookmarks.</strong> Bookmarks (Adobe's outline)
-become Quill bookmarks for that document and appear in the Outline
-Navigator (5.16) under their original hierarchy. They are read-only with
-respect to the original PDF; renaming, adding, and deleting affect
-Quill's own bookmark store.</li>
-<li><strong>Password-protected PDFs.</strong> On open, Quill prompts for
-the password through a standard modal dialog. The password is used
-in-memory only and is never written to disk, never logged, never sent
-over the network.</li>
+<li><strong>Embedded bookmarks (shipped).</strong> On open, a PDF's
+embedded outline (Adobe's bookmark tree) is imported into Quill's own
+bookmark store so its entries appear in the Bookmarks Manager
+(Ctrl+Shift+G). <code>io/pdf.py::extract_pdf_outline</code> flattens
+pypdf's outline tree to <code>(title, page)</code> pairs;
+<code>_format_pdf</code> carries them in
+<code>source_metadata["pdf_outline"]</code>; and
+<code>main_frame.py::_import_pdf_outline_bookmarks</code> resolves each
+destination page to a character offset (via the form-feed page markers,
+the same mapping "Go To Page" uses) and adds a bookmark. Import runs
+once, on first open — it is skipped when the document already has
+bookmarks, so it never duplicates entries or resurrects deleted ones.
+They are read-only with respect to the original PDF; renaming, adding,
+and deleting affect Quill's own bookmark store.</li>
+<li><strong>Password-protected PDFs (shipped).</strong> On open, Quill
+detects an encrypted (real user-password) PDF and prompts for the
+password through a standard modal dialog
+(<code>wx.PasswordEntryDialog</code> via
+<code>_show_modal_dialog</code>). The entered password is threaded
+through the read path (<code>read_open_document</code> →
+<code>read_structured_document</code> →
+<code>extract_pdf_text(path, password=…)</code>) to both extractors —
+<code>pdfplumber.open(..., password=…)</code> and <code>pypdf</code>'s
+<code>reader.decrypt(…)</code> — and the read runs off the UI thread
+like every other office/PDF open. A wrong password re-prompts ("that
+password did not open …"); <strong>Cancel</strong> aborts the open. The
+password is used in-memory only and is never written to disk, never
+logged, never sent over the network — reopening the file prompts again.
+Permissions-only "encrypted" PDFs (empty user password) open with no
+prompt. (<code>io/pdf.py</code>, <code>io/structured.py</code>,
+<code>io/open_read.py</code>,
+<code>ui/main_frame.py::_ask_pdf_password</code>.)</li>
 <li><strong>Editable rendering, protected original.</strong> The
 extracted text is presented in the standard editor. <code>Ctrl+S</code>
 opens <strong>Save As</strong> so the original <code>.pdf</code> cannot
@@ -3364,15 +3391,21 @@ Accessibility Audit (5.20) reports whether the PDF has tagged structure,
 whether it has embedded bookmarks, the image-only page count, language
 metadata, and password protection state. It does not modify the
 PDF.</li>
-<li><strong>Tier 3, AI-assisted reading order (opt-in, manual).</strong>
-<code>Tools &gt; Improve Reading Order…</code> sends the PDF to the
+<li><strong>Tier 3, AI-assisted reading order (opt-in, manual) —
+shipped.</strong> <code>AI &gt; More &gt; Improve Reading Order…</code>
+(also on the command palette) sends the current document's text to the
 user-configured LLM provider (the user supplies the API key; nothing is
-bundled). The action <strong>always</strong> asks for confirmation
-before sending, shows the host name and approximate size in the
-confirmation dialog, announces progress every ~20 seconds during the
-request, and reports the outcome. Refuses, with a clear spoken message,
-if the PDF exceeds the configured page-count limit (default 40). Results
-open as a new unsaved document whose Save defaults to Save As.</li>
+bundled) to repair a jumbled reading order — multi-column PDFs,
+sidebars/text boxes, out-of-sequence lines. The action
+<strong>always</strong> asks for confirmation before sending, naming the
+provider and its host plus the approximate page size, and reports the
+outcome on the status line. It refuses, with a clear spoken message, if
+the document exceeds the configured page-count limit
+(<code>settings.reading_order_max_pages</code>, default 40), and is
+disabled in Safe Mode. Results open as a new unsaved document whose Save
+defaults to Save As; the original is never changed.
+(<code>core/ai/assistant.py</code> <code>reading_order</code> operation,
+<code>ui/main_frame_ai_reading_order.py</code>.)</li>
 <li><strong>OCR for scanned PDFs.</strong> When tier 1 yields no
 readable text on a page, Quill offers a one-click escalation to local
 OCR via the bundled Tesseract (English shipped, additional languages
@@ -3407,19 +3440,40 @@ inside the PDF). Not in v1.0.</li>
 <li><strong>Tagged-structure tree editor.</strong> Reading the structure
 summary is in; editing it is backlog.</li>
 </ul>
-<h3 id="56-improve-reading-order">5.6 Improve reading order</h3>
-<p>A general action under Tools and the command palette:</p>
+<h3 id="56-improve-reading-order-shipped">5.6 Improve reading order
+(shipped)</h3>
+<p>A general action under the AI menu (<strong>AI &gt; More &gt; Improve
+Reading Order…</strong>) and the command palette:</p>
 <ul>
-<li>For text-based documents, sends the current document text to the
-configured LLM for layout repair.</li>
-<li>For PDF and legacy DOC, sends the original file so text boxes and
-visual columns can be analysed.</li>
-<li>For PPTX, can send the file when local extraction is
-insufficient.</li>
-<li>Always asks first. Never used to answer questions about the
-document.</li>
-<li>Result opens as a new unsaved document; Save defaults to Save
-As.</li>
+<li><strong>Text-layer repair (shipped).</strong> Sends the current
+document's text to the configured LLM for reading-order repair —
+reordering columns and out-of-sequence text, merging columns into one
+flow, joining lines broken mid-sentence, and inferring
+headings/lists/tables — via the assistant's <code>reading_order</code>
+operation. Works for any text document (extracted PDF, Markdown, plain
+text, HTML source).</li>
+<li><strong>Service is the user's own AI backend — nothing bundled or
+vendor-locked.</strong> The command routes through the standard
+assistant seam (<code>Assistant.transform</code> →
+<code>make_default_backend</code>), so it uses whatever the user
+configured in AI Setup: OpenAI, Claude, Google Gemini, OpenRouter,
+Ollama (local), Ollama Cloud, or a custom OpenAI-compatible endpoint
+(bring-your-own-key). With no cloud provider configured it falls back to
+the bundled on-device model (Apple Foundation Models on macOS; llama.cpp
+CPU elsewhere), so the repair can run fully offline with no upload. It
+inherits every provider QUILL supports for free and requires no
+reading-order-specific provider code.</li>
+<li>Always asks first, naming the provider + host + approximate size;
+disabled in Safe Mode; refuses over the page limit (default 40). Never
+used to answer questions about the document.</li>
+<li>Result opens as a new unsaved document; Save defaults to Save As.
+The original document is untouched.</li>
+<li><strong>Follow-up (not yet shipped):</strong> sending the
+<em>original binary file</em> (PDF/legacy DOC/PPTX) so the model can
+analyse visual text boxes and columns from the raw layout. This depends
+on file-upload/vision support that is not uniform across the configured
+providers, so the shipped command operates on the extracted text layer,
+which closes the common "text layer in the wrong order" case.</li>
 </ul>
 <h3 id="57-html-and-markdown">5.7 HTML and Markdown</h3>
 <ul>

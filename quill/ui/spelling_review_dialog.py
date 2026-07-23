@@ -103,7 +103,10 @@ class SpellingReviewDialog:
         root.Add(self._issue_label, 0, wx.ALL, 10)
 
         # Context field
-        ctx_label = wx.StaticText(self.dialog, label="Conte&xt around word (Alt+W to reselect):")
+        ctx_label = wx.StaticText(
+            self.dialog,
+            label="Conte&xt around word (Alt+W to reselect, Ctrl+R to read the sentence aloud):",
+        )
         root.Add(ctx_label, 0, wx.LEFT | wx.RIGHT, 10)
 
         self._context = wx.TextCtrl(
@@ -149,10 +152,11 @@ class SpellingReviewDialog:
 
         # Action buttons — row 2
         btn2 = wx.BoxSizer(wx.HORIZONTAL)
+        self._btn_read_sentence = wx.Button(self.dialog, label="&Read Sentence")
         self._btn_add_dict = wx.Button(self.dialog, label="Add to &Dictionary")
         self._btn_undo = wx.Button(self.dialog, label="&Undo Last")
         self._btn_close = wx.Button(self.dialog, label="&Close")
-        for btn in (self._btn_add_dict, self._btn_undo, self._btn_close):
+        for btn in (self._btn_read_sentence, self._btn_add_dict, self._btn_undo, self._btn_close):
             btn2.Add(btn, 0, wx.RIGHT, 6)
         root.Add(btn2, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -179,6 +183,7 @@ class SpellingReviewDialog:
         self._btn_change_all.Bind(wx.EVT_BUTTON, lambda _e: self._on_change_all())
         self._btn_ignore_once.Bind(wx.EVT_BUTTON, lambda _e: self._on_ignore_once())
         self._btn_ignore_all.Bind(wx.EVT_BUTTON, lambda _e: self._on_ignore_all())
+        self._btn_read_sentence.Bind(wx.EVT_BUTTON, lambda _e: self._read_sentence_in_context())
         self._btn_add_dict.Bind(wx.EVT_BUTTON, lambda _e: self._on_add_dict())
         self._btn_undo.Bind(wx.EVT_BUTTON, lambda _e: self._on_undo())
         self._btn_close.Bind(wx.EVT_BUTTON, lambda _e: self._on_close())
@@ -199,6 +204,9 @@ class SpellingReviewDialog:
         mods = event.GetModifiers()  # type: ignore[attr-defined]
         if key == ord("W") and mods == wx.MOD_ALT:
             self._reselect_word()
+            return
+        if key == ord("R") and mods == wx.MOD_CONTROL:
+            self._read_sentence_in_context()
             return
         event.Skip()  # type: ignore[attr-defined]
 
@@ -330,6 +338,16 @@ class SpellingReviewDialog:
     def _reselect_word(self) -> None:
         self._context.SetFocus()
         self._context.SetSelection(self._context_word_start, self._context_word_end)
+
+    def _read_sentence_in_context(self) -> None:
+        """Read the sentence(s) surrounding the misspelling aloud (Ctrl+R / button).
+
+        Speaks the same context text shown in the Context field so the user hears
+        the misspelling in situ. No-op when no issue is current."""
+        issue = self._current_issue
+        if issue is None:
+            return
+        self._announcer.announce_context_sentence(issue.context_text)
 
     def _show_completion(self) -> None:
         counters = self._session.get_counters()

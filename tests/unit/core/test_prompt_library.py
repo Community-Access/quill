@@ -34,6 +34,42 @@ class TestBuiltins:
         with pytest.raises(ValueError, match="Built-in"):
             lib.remove("builtin-check-grammar")
 
+    def test_named_one_shot_writing_presets_ship_out_of_box(self, tmp_path: Path) -> None:
+        # Leasey Word parity: the named one-shot tools that were missing now ship
+        # as built-in prompts.
+        lib = _make_lib(tmp_path)
+        names = {p.name for p in lib.all()}
+        for expected in (
+            "Generate FAQs",
+            "Draft a Speech",
+            "Summary Email",
+            "Social Media Post",
+            "Step-by-Step Instructions",
+            "Paraphrase",
+        ):
+            assert expected in names, f"missing built-in preset: {expected}"
+
+    def test_new_presets_are_builtin_and_use_selection(self, tmp_path: Path) -> None:
+        lib = _make_lib(tmp_path)
+        for prompt_id in (
+            "builtin-generate-faqs",
+            "builtin-speech-draft",
+            "builtin-summary-email",
+            "builtin-social-post",
+            "builtin-step-by-step",
+            "builtin-paraphrase",
+        ):
+            p = lib.find_by_id(prompt_id)
+            assert p is not None, f"missing preset id: {prompt_id}"
+            assert p.is_builtin
+            assert "{selection}" in p.text
+
+    def test_social_post_preset_mentions_the_character_limit(self, tmp_path: Path) -> None:
+        lib = _make_lib(tmp_path)
+        p = lib.find_by_id("builtin-social-post")
+        assert p is not None
+        assert "280" in p.text
+
 
 class TestUserPrompts:
     def test_add_prompt(self, tmp_path: Path) -> None:

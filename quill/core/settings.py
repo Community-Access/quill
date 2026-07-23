@@ -325,6 +325,10 @@ class Settings:
     datalab_mode: str = "balanced"  # fast | balanced | accurate
     datalab_output: str = "markdown"  # markdown | html | json
     datalab_paginate: bool = True
+    # AI-assisted "Improve Reading Order" (PRD 5.6): the largest document, in pages,
+    # the command will send to the configured AI provider. Guards accidental huge,
+    # slow, or costly sends. Clamped to a sane range on load.
+    reading_order_max_pages: int = 40
     # #620: Simple File Open dialog. When true, File > Open... shows a
     # keyboard-friendly picker with a small filter, recent locations, and
     # a hidden-files toggle. The standard Windows file dialog is still
@@ -881,6 +885,11 @@ class Settings:
         datalab_endpoint = str(data.get("datalab_endpoint", "https://www.datalab.to")).strip()
         if not datalab_endpoint.lower().startswith("https://"):
             datalab_endpoint = "https://www.datalab.to"
+        try:
+            reading_order_max_pages = int(data.get("reading_order_max_pages", 40))
+        except (TypeError, ValueError):
+            reading_order_max_pages = 40
+        reading_order_max_pages = max(1, min(500, reading_order_max_pages))
         datalab_mode = str(data.get("datalab_mode", "balanced")).strip().lower()
         if datalab_mode not in {"fast", "balanced", "accurate"}:
             datalab_mode = "balanced"
@@ -1395,6 +1404,7 @@ class Settings:
             tesseract_path=tesseract_path,
             datalab_enabled=datalab_enabled,
             datalab_endpoint=datalab_endpoint,
+            reading_order_max_pages=reading_order_max_pages,
             datalab_mode=datalab_mode,
             datalab_output=datalab_output,
             datalab_paginate=datalab_paginate,

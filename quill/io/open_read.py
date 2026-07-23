@@ -60,6 +60,7 @@ def read_open_document(
     word_mode: str | None = None,
     csv_mode: str | None = None,
     docx_engine: str = "auto",
+    pdf_password: str | None = None,
 ) -> tuple[Document, object]:
     """Read ``selected_path`` into a document for the open flow.
 
@@ -67,6 +68,8 @@ def read_open_document(
     non-EPUB inputs). ``word_mode`` and ``csv_mode`` carry UI choices that must be
     resolved before calling this function so it never needs the UI toolkit;
     ``docx_engine`` carries the ``docx_read_engine`` setting the same way.
+    ``pdf_password`` carries a password the UI collected for an encrypted PDF; it
+    is used only for this read and never stored.
     """
     if suffix in _CSV_SUFFIXES:
         loaded = read_text_document(selected_path)
@@ -83,7 +86,9 @@ def read_open_document(
     if suffix in OFFICE_STREAM_SUFFIXES:
         from quill.io.structured import read_structured_document
 
-        loaded = read_structured_document(selected_path, docx_engine=docx_engine)
+        loaded = read_structured_document(
+            selected_path, docx_engine=docx_engine, pdf_password=pdf_password
+        )
         if word_mode is not None:
             loaded.source_metadata["word_open_mode"] = word_mode
         epub_book: object = None

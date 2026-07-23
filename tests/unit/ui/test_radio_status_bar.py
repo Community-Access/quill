@@ -72,9 +72,7 @@ def test_recording_cell_counts_active_jobs() -> None:
 
 def test_sleep_timer_cell_off_and_remaining() -> None:
     assert _spec_text(RadioStatusBar(_host()), "sleep_timer") == "Off"
-    active = _host(
-        _sleep_timer_controller=SimpleNamespace(is_active=True, remaining_seconds=90)
-    )
+    active = _host(_sleep_timer_controller=SimpleNamespace(is_active=True, remaining_seconds=90))
     # 90 s rounds up to 2 minutes left.
     assert _spec_text(RadioStatusBar(active), "sleep_timer") == "2 min left"
 
@@ -85,3 +83,93 @@ def test_favorites_cell_pluralizes() -> None:
     assert _spec_text(RadioStatusBar(one), "favorites") == "1 station"
     three = _host(_radio_favorites=SimpleNamespace(favorites=[object(), object(), object()]))
     assert _spec_text(RadioStatusBar(three), "favorites") == "3 stations"
+
+
+# ---------------------------------------------------------------------------
+# Tab navigation: the whole bar is one Tab stop, not one-per-cell.
+# Arrow keys move cell to cell; Tab / Shift+Tab leave the bar.
+# ---------------------------------------------------------------------------
+
+
+class _NavPanel:
+    """Fake status panel that records Navigate() calls."""
+
+    def __init__(self) -> None:
+        self.navigations: list[int] = []
+
+    def Navigate(self, flag: int) -> bool:  # noqa: N802 - wx shape
+        self.navigations.append(flag)
+        return True
+
+
+class _KeyDownEvent:
+    def __init__(self, code: int, *, shift: bool = False) -> None:
+        self._code = code
+        self._shift = shift
+        self.skipped = False
+
+    def GetKeyCode(self) -> int:  # noqa: N802 - wx shape
+        return self._code
+
+    def ShiftDown(self) -> bool:  # noqa: N802 - wx shape
+        return self._shift
+
+    def Skip(self) -> None:  # noqa: N802 - wx shape
+        self.skipped = True
+
+
+def _wx_key_stub() -> SimpleNamespace:
+    # The key codes _on_key_down compares against, plus the Navigate flags.
+    return SimpleNamespace(
+        WXK_LEFT=314,
+        WXK_RIGHT=316,
+        WXK_HOME=313,
+        WXK_END=312,
+        WXK_TAB=9,
+        WXK_ESCAPE=27,
+        WXK_RETURN=13,
+        WXK_NUMPAD_ENTER=370,
+        WXK_SPACE=32,
+        NavigationKeyEvent=SimpleNamespace(IsForward=1, IsBackward=0),
+    )
+
+
+def _bar_with_panel() -> tuple[RadioStatusBar, _NavPanel, list[str]]:
+    focused: list[str] = []
+    bar = RadioStatusBar(_host())
+    bar._wx = _wx_key_stub()
+    panel = _NavPanel()
+    bar._panel = panel
+    # Populate _cells so _cell_index() can resolve a spec to its real position
+    # (build() -- which needs live wx -- is not called in these headless tests).
+    bar._cells = [SimpleNamespace(spec=spec, button=object()) for spec in bar._specs]
+    # _focus_cell is what "move cell to cell" would call -- spy on it so we can
+    # prove Tab no longer does that.
+    bar._focus_cell = lambda index: focused.append(f"cell:{index}")  # type: ignore[method-assign]
+    return bar, panel, focused
+
+
+def test_tab_navigates_out_of_the_bar_forward() -> None:
+    bar, panel, focused = _bar_with_panel()
+    spec = bar._specs[0]
+    bar._on_key_down(_KeyDownEvent(9), spec)  # Tab
+    assert panel.navigations == [1], "Tab hands off forward to the next control"
+    assert focused == [], "Tab must not move cell to cell any more"
+
+
+def test_shift_tab_navigates_out_of_the_bar_backward() -> None:
+    bar, panel, focused = _bar_with_panel()
+    spec = bar._specs[0]
+    bar._on_key_down(_KeyDownEvent(9, shift=True), spec)  # Shift+Tab
+    assert panel.navigations == [0], "Shift+Tab hands off backward to the previous control"
+    assert focused == []
+
+
+def test_arrow_keys_still_move_cell_to_cell() -> None:
+    # Regression guard: the Tab change must not disturb Left/Right cell movement.
+    bar, panel, focused = _bar_with_panel()
+    spec = bar._specs[2]  # the "recording" cell (index 2)
+    bar._on_key_down(_KeyDownEvent(316), spec)  # Right
+    bar._on_key_down(_KeyDownEvent(314), spec)  # Left
+    assert focused == ["cell:3", "cell:1"], "arrows still move between cells"
+    assert panel.navigations == [], "arrows never leave the bar"

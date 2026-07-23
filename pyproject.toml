@@ -260,6 +260,7 @@ dev = [
 
 [project.scripts]
 quill = "quill.__main__:main"
+quill-weather = "quill.apps.weather:main"
 
 [tool.hatch.version]
 # quill/__init__.py is the authoritative version source.

@@ -174,6 +174,78 @@ BUILTIN_PROMPTS: list[Prompt] = [
         is_builtin=True,
         source="builtin",
     ),
+    Prompt(
+        id="builtin-paraphrase",
+        name="Paraphrase",
+        text=(
+            "Paraphrase the following text: restate it in different words while keeping the "
+            "same meaning, tone, and roughly the same length. Return only the paraphrased "
+            "text:\n\n{selection}"
+        ),
+        category="Editing",
+        is_builtin=True,
+        source="builtin",
+    ),
+    Prompt(
+        id="builtin-generate-faqs",
+        name="Generate FAQs",
+        text=(
+            "Read the following text and write a list of frequently asked questions with "
+            "clear, accurate answers based only on the content. Format each as a bold "
+            "question followed by its answer:\n\n{selection}"
+        ),
+        category="Structure",
+        is_builtin=True,
+        source="builtin",
+    ),
+    Prompt(
+        id="builtin-step-by-step",
+        name="Step-by-Step Instructions",
+        text=(
+            "Turn the following text into clear, numbered step-by-step instructions. Use one "
+            "action per step, in the order they should be done, and keep each step short:"
+            "\n\n{selection}"
+        ),
+        category="Structure",
+        is_builtin=True,
+        source="builtin",
+    ),
+    Prompt(
+        id="builtin-speech-draft",
+        name="Draft a Speech",
+        text=(
+            "Write a short spoken speech based on the following notes or text. Use a natural, "
+            "spoken rhythm with a clear opening, a few main points, and a closing line. "
+            "Return only the speech:\n\n{selection}"
+        ),
+        category="Writing",
+        is_builtin=True,
+        source="builtin",
+    ),
+    Prompt(
+        id="builtin-summary-email",
+        name="Summary Email",
+        text=(
+            "Write a brief, professional email that summarizes the following text for a "
+            "colleague. Include a short subject line, a one-line greeting, a concise summary "
+            "of the key points, and a sign-off:\n\n{selection}"
+        ),
+        category="Writing",
+        is_builtin=True,
+        source="builtin",
+    ),
+    Prompt(
+        id="builtin-social-post",
+        name="Social Media Post",
+        text=(
+            "Write a single engaging social media post based on the following text. Keep it "
+            "to 280 characters or fewer, in a natural voice, with no hashtags unless they "
+            "add real value. Return only the post:\n\n{selection}"
+        ),
+        category="Writing",
+        is_builtin=True,
+        source="builtin",
+    ),
 ]
 
 

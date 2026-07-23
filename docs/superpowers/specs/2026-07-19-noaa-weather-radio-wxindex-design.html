@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-19-noaa-weather-radio-wxindex-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="noaa-weather-radio-via-weatherindex-wxindex-quill-radio-2.1.1">NOAA
+Weather Radio via WeatherIndex (wxindex) — QUILL Radio 2.1.1</h1>
+<p>Status: approved design (brainstorming). Target release:
+<strong>QUILL Radio 2.1.1</strong>.</p>
+<h2 id="goal">Goal</h2>
+<p>Replace QUILL Radio’s weak “Weather / NOAA” experience — today a
+fuzzy RadioBrowser name-search for the string “NOAA Weather Radio”
+(<code>quill/core/radio/radio_browser.py::noaa_weather_stations</code>)
+— with an authoritative, geography-aware NOAA Weather Radio (NWR)
+integration powered by the <strong>WeatherIndex API</strong>
+(<code>https://api.wxindex.org</code>). NWR is broadcast over VHF;
+wxindex is a curated directory of NWR transmitters plus internet
+re-stream URLs, organized by state, county/SAME, and NWS Weather
+Forecast Office (WFO).</p>
+<p>The integration is “rich”: it powers the <strong>Browse</strong> NOAA
+section, the <strong>Search</strong> feature, and a location-aware
+<strong>Weather-menu</strong> entry, and it is resilient to the
+third-party API disappearing by shipping a full local snapshot.</p>
+<h2 id="where-the-code-lives">Where the code lives</h2>
+<p><code>quill_radio</code> (repo <code>s:\quill-radio</code>) is a
+<strong>thin wrapper</strong> over the <code>quill</code> package — it
+provides only the entry point and depends on <code>quill</code>. So all
+feature code is developed in the monorepo <code>s:\quill</code> and
+flows to the standalone automatically at compile time
+(<code>s:\quill-radio\scripts\build_release.ps1</code>). No vendoring
+step. New/changed modules all live under <code>quill/</code>.</p>
+<h2 id="the-weatherindex-api-no-auth-json">The WeatherIndex API (no
+auth, JSON)</h2>
+<p>Endpoints used:</p>
+<ul>
+<li><code>GET /v1/states</code> — states with station counts.</li>
+<li><code>GET /v1/states/{state_slug}/stations</code> — canonical
+stations for a state.</li>
+<li><code>GET /v1/station_search?c=&amp;s=&amp;same=</code> — lookup by
+county name, state, or SAME code.</li>
+<li><code>GET /v1/wfo</code> and
+<code>GET /v1/wfo/{wfo_code}/stations</code> — group by NWS office.</li>
+<li><code>GET /v1/stations/all</code> (active, with feeds) and
+<code>/all-known</code> (incl. no-feed).</li>
+<li><code>GET /v1/stations/{callsign}</code> — full detail: frequency,
+coordinates, power, feed URLs (+ source), county coverage.</li>
+<li><code>GET /health</code> — data counts / freshness (used by the
+snapshot script and a diagnostics line only).</li>
+</ul>
+<p>Terms: “cache results where practical instead of polling.” Feed
+uptime depends on the original stream providers and can change.</p>
+<h2 id="data-resilience-layer-quillcoreradiowxindex.py">1. Data +
+resilience layer — <code>quill/core/radio/wxindex.py</code></h2>
+<p>A small, <code>wx</code>-free client plus a <strong>three-tier
+resolver</strong> so capability never depends on a live API call:</p>
+<ol type="1">
+<li><strong>Live API</strong> — fetched over HTTPS with a short timeout,
+blocked in Safe Mode, tracked by the network-egress audit (GATE-9), same
+posture as the other radio directory sources.</li>
+<li><strong>App-data cache</strong> — successful live responses are
+cached under <code>&lt;app_data&gt;/radio/wxindex-cache/</code> with a
+timestamp; a background refresh updates it at most once per configurable
+interval (default 7 days). Cache is consulted when the live call fails
+or is skipped.</li>
+<li><strong>Bundled snapshot</strong> —
+<code>quill/data/noaa_directory.json</code>, a complete dump of the
+directory shipped with the app; the final fallback so
+Browse/Search/local lookup keep working even if wxindex goes away
+permanently.</li>
+</ol>
+<p>Public functions (all return domain objects, never raw JSON):</p>
+<ul>
+<li><code>list_states() -&gt; list[WxState]</code></li>
+<li><code>stations_for_state(slug) -&gt; list[WxStation]</code></li>
+<li><code>search_stations(*, county=None, state=None, same=None, callsign=None) -&gt; list[WxStation]</code></li>
+<li><code>station_detail(callsign) -&gt; WxStation | None</code></li>
+<li><code>local_stations(lat, lon, *, county=None) -&gt; list[WxStation]</code>
+— resolves the caller’s location to covering transmitter(s) (see
+§4).</li>
+<li><code>to_radio_station(WxStation) -&gt; RadioStation</code> — adapt
+to Radio’s existing playable model so Favorites, recording, and the
+player all work unchanged.</li>
+</ul>
+<p><code>WxStation</code> carries callsign, frequency (MHz), state,
+counties/SAME covered, WFO code, coordinates, and the ordered list of
+re-stream feed URLs (best first).</p>
+<h3 id="refreshing-the-directory-user-facing">Refreshing the directory
+(user-facing)</h3>
+<p>Anyone can pull the latest directory on demand, not just wait for the
+7-day background refresh:</p>
+<ul>
+<li>A <strong>“Update NOAA Weather Radio directory”</strong> command (in
+the Weather menu next to “Your Local NOAA Weather Radio”, and reachable
+from the Browse dialog’s existing per-source “Reload from internet”). It
+re-fetches the full directory from the live API (states +
+<code>/stations/all-known</code> + WFO) <strong>atomically</strong> into
+the app-data cache tier, off the UI thread, with progress and cancel,
+blocked in Safe Mode.</li>
+<li>On success it announces the outcome — station/state counts and the
+upstream freshness from <code>/health</code> — and stamps a
+<strong>“directory last updated”</strong> time that the station-detail
+read-out and the command surface. On failure (offline / API down) it
+reports clearly and leaves the existing cache/snapshot intact.</li>
+<li>Precedence is unchanged: a manual refresh writes the
+<strong>cache</strong> tier, which already takes priority over the
+bundled snapshot, so the fresh data is used immediately without a
+restart. The bundled snapshot is never overwritten (it is the permanent
+floor); “reset to bundled” is available by clearing the cache.</li>
+<li>The Browse dialog’s per-source “Reload from internet” refreshes just
+the highlighted branch (e.g. one state) for a lighter, targeted
+pull.</li>
+</ul>
+<h3 id="snapshot-build-script-scriptssnapshot_wxindex.py">Snapshot build
+script — <code>scripts/snapshot_wxindex.py</code></h3>
+<p>Walks <code>/v1/states</code>, every state’s stations,
+<code>/v1/stations/all-known</code>, and <code>/v1/wfo</code>,
+assembling one normalized document written to
+<code>quill/data/noaa_directory.json</code> with a
+<code>generated_at</code> stamp and the upstream <code>/health</code>
+counts. Run manually / in CI when refreshing the bundled data; the
+result is committed. Idempotent and safe to re-run.</p>
+<h2 id="browse-replace-the-weather-noaa-source">2. Browse — replace the
+“Weather / NOAA” source</h2>
+<p><code>quill/ui/radio/browse_tree_dialog.py</code>’s
+<code>_SOURCES</code> “Weather / NOAA” branch stops calling
+<code>noaa_weather_stations</code> (fuzzy) and becomes a real geography
+tree:</p>
+<pre><code>Weather / NOAA
+  &lt;State&gt;
+    &lt;County or WFO&gt;        (grouping chosen per §&quot;open questions&quot; default: State -&gt; County -&gt; Station)
+      &lt;Station: callsign - freq - place&gt;   Enter plays the best feed</code></pre>
+<p>Lazy-loaded like the other sources. Each leaf is a
+<code>RadioStation</code> via <code>to_radio_station</code>, so
+Favorites (save to a folder), Record, and Schedule all work with no new
+UI. The legacy <code>noaa_weather_stations</code> fuzzy path is removed
+(no consumer left) rather than left dead.</p>
+<h2 id="search-authoritative-noaa-results">3. Search — authoritative
+NOAA results</h2>
+<p>The unified station search gains a NOAA path backed by wxindex
+<code>search_stations</code>: a query that looks like a <strong>SAME
+code</strong> (6 digits), a <strong>callsign</strong>
+(e.g. <code>KHB36</code>), or a <strong>“County, ST”</strong> / state
+name routes to wxindex and returns exact stations, blended into the
+existing results list. Free text still falls through to the current
+sources. No separate dialog — it enriches the search already there.</p>
+<h2 id="weather-menu-your-local-noaa-weather-radio">4. Weather menu +
+“Your Local NOAA Weather Radio”</h2>
+<p>The Weather feature already geocodes a saved location to
+latitude/longitude <strong>and</strong> a county
+(<code>quill/core/weather/geocoding.py</code>). We reuse that:</p>
+<ul>
+<li><code>local_stations(lat, lon, county=...)</code> maps the location
+to covering transmitter(s): prefer a county/SAME match from the
+directory; fall back to nearest-by-coordinates among stations whose
+coverage includes the point.</li>
+<li>A <strong>“Listen to your local NOAA Weather Radio”</strong> item is
+added to the Weather menu and surfaced at the top of Browse. One
+keypress plays it; it can be pinned to Favorites. If no Weather location
+is set, the item prompts to pick a state/county (or set a Weather
+location) rather than failing silently.</li>
+</ul>
+<p>This is the tie that makes it feel “local” without any new location
+system.</p>
+<h2 id="full-experience">5. Full experience</h2>
+<ul>
+<li><strong>Station detail</strong>: an accessible read-out (callsign,
+frequency, WFO office, covered counties, feed source) reachable from
+Browse/Search context.</li>
+<li><strong>Record / Schedule</strong>: reuse the existing recording +
+scheduler on the adapted <code>RadioStation</code> — no new recording
+code.</li>
+<li><strong>Favorites</strong>: existing folders; a one-action “pin my
+local NWR”.</li>
+</ul>
+<h2 id="data-flow">Data flow</h2>
+<p><code>UI (Browse/Search/Weather menu)</code> -&gt;
+<code>wxindex.py resolver</code> -&gt;
+<code>live | cache | snapshot</code> -&gt; <code>WxStation</code> -&gt;
+<code>to_radio_station</code> -&gt; existing player / recorder /
+favorites. The UI never sees raw HTTP or JSON.</p>
+<h2 id="error-handling-safe-mode-egress">Error handling, Safe Mode,
+egress</h2>
+<ul>
+<li>All network calls: HTTPS-only, short timeout, retry/backoff, blocked
+in Safe Mode, and registered with the network-egress audit — identical
+to iheart / tunein / radio_browser.</li>
+<li>Any live failure degrades to cache, then snapshot; a fully offline
+app still browses/searches the bundled directory. A dead
+<strong>feed</strong> URL (stream provider down) surfaces the same
+“couldn’t play that stream” path the other sources use; the directory
+entry remains.</li>
+<li>Snapshot is validated on load; a corrupt/missing snapshot logs and
+yields an empty directory rather than raising.</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<ul>
+<li>Pure client: parse fixtures for states/stations/search/detail into
+<code>WxStation</code>; <code>to_radio_station</code> mapping;
+SAME/callsign/county query routing in §3.</li>
+<li>Resolver: live-ok, live-fail-&gt;cache, cache-miss-&gt;snapshot,
+Safe-Mode-blocked — with a fake fetcher (no real network in unit
+tests).</li>
+<li>Manual refresh: writes the full directory atomically to the cache
+tier, stamps “last updated”, takes precedence over the snapshot on the
+next read, and leaves cache/snapshot intact on a failed/cancelled
+pull.</li>
+<li><code>local_stations</code>: county/SAME match and
+nearest-by-coordinate fallback on fixture data.</li>
+<li>Snapshot script: runs against a small fixture server / recorded
+fixtures and produces a valid <code>noaa_directory.json</code>.</li>
+<li>A characterization test that the Browse “Weather / NOAA” branch
+yields stations from the resolver (snapshot-backed, offline).</li>
+</ul>
+<h2 id="out-of-scope-yagni-for-2.1.1">Out of scope (YAGNI for
+2.1.1)</h2>
+<ul>
+<li>Live weather <em>data</em> (forecasts/alerts/radar) — wxindex is a
+station directory, not a weather-data API; the Weather feature stays the
+data source.</li>
+<li>Decoding SAME/EAS alert tones from the audio.</li>
+<li>Editing/curating the directory in-app.</li>
+</ul>
+<h2 id="open-questions-defaults-chosen-change-if-desired">Open questions
+(defaults chosen, change if desired)</h2>
+<ul>
+<li><strong>Browse grouping</strong>: default <strong>State -&gt; County
+-&gt; Station</strong>; WFO grouping offered as a secondary view later
+if wanted.</li>
+<li><strong>Snapshot refresh cadence</strong>: default background
+refresh interval 7 days; user-triggerable via the existing per-source
+“Reload from internet”.</li>
+</ul>
+</body>
+</html>

@@ -69,6 +69,9 @@ class AppShellFrame:
         # real instead of honoring minimize-on-close -- otherwise Exit is swallowed
         # straight back into the tray and the app can never be closed (#1193).
         self._exit_requested = False
+        # Guards against a second close (e.g. a rapid second Alt+F4) stacking a
+        # second confirm dialog on top of the first -- see handle_app_close.
+        self._closing_in_progress = False
 
     # -- MainFrame-mixin host protocol ---------------------------------------
 
@@ -188,6 +191,76 @@ class AppShellFrame:
             self._restore_from_tray()
         self.frame.Close()
 
+    def handle_app_close(
+        self,
+        event: object,
+        *,
+        close_action: str,
+        protected: bool,
+        confirm: Callable[[], str | None],
+        shutdown: Callable[[], None],
+    ) -> None:
+        """Shared EVT_CLOSE flow for the standalone companion apps (Radio, Cast,
+        Studio), so all three share one close path instead of three copies.
+
+        ``close_action`` is the persisted "ask" / "exit" / "minimize" preference;
+        ``protected`` says whether there is work worth confirming before losing
+        (live playback, a recording, a running background job); ``confirm`` shows
+        the app's own confirm dialog and returns "exit", "minimize", or ``None``
+        (cancel / keep open); ``shutdown`` runs the app's teardown just before
+        the window closes.
+
+        Crucially, ``confirm`` is NEVER called from inside this handler. Showing a
+        modal from within an EVT_CLOSE handler is unreliable on wxMSW: notably
+        with a screen reader's low-level keyboard hook active, ShowModal can
+        return without ever displaying, so the close is silently vetoed and the
+        keystroke appears to do nothing (the Quill Radio "Alt+F4 does nothing
+        while a station plays" bug). When a confirm is needed we veto and run it
+        deferred via CallAfter, then act on the result in ``_run_close_confirm``.
+        """
+        if getattr(self, "_closing_in_progress", False):
+            event.Veto()
+            return
+        if getattr(self, "_exit_requested", False):
+            self._exit_requested = False  # a deliberate Exit bypasses minimize + confirm
+            action = "exit"
+        else:
+            action = close_action
+        if action == "ask":
+            if not protected:
+                action = "exit"  # nothing to protect -> close like a normal window
+            else:
+                self._closing_in_progress = True
+                event.Veto()
+                self._wx.CallAfter(self._run_close_confirm, confirm)
+                return
+        if action == "minimize":
+            event.Veto()
+            self._send_to_tray()
+            return
+        shutdown()
+        event.Skip()
+
+    def _run_close_confirm(self, confirm: Callable[[], str | None]) -> None:
+        """Deferred half of :meth:`handle_app_close`: show the confirm dialog
+        OUTSIDE the close handler and act on the choice. Cancel keeps the window
+        open; Minimize tucks it to the tray; Exit re-enters the close path
+        deliberately (``_exit_requested`` + ``frame.Close()``) so the shared
+        shutdown + Skip run there. The guard set when this was scheduled clears
+        once the dialog is done -- even if it raises -- so a crash can't wedge the
+        app permanently closed."""
+        try:
+            decision = confirm()
+        finally:
+            self._closing_in_progress = False
+        if decision is None:
+            return
+        if decision == "minimize":
+            self._send_to_tray()
+            return
+        self._exit_requested = True
+        self.frame.Close()
+
     def _remove_tray_icon(self) -> None:
         if self._tray_icon is None:
             return
@@ -199,6 +272,28 @@ class AppShellFrame:
         self.frame.Show()
         self.frame.Iconize(False)
         self.frame.Raise()
+
+    def _append_sibling_app_tray_items(self, menu: wx.Menu, *, exclude: str) -> None:
+        """Add 'Open QUILL / Quill Radio / Quill Weather' items so the sibling
+        apps are always one click apart -- each opens in its own window and tray.
+        ``exclude`` is this app's own key, which is left off the list."""
+        from quill.core.app_launcher import APP_NAMES
+
+        for key in ("quill", "radio", "weather"):
+            if key == exclude:
+                continue
+            item_id = wx.NewIdRef()
+            menu.Append(item_id, f"Open {APP_NAMES[key]}")
+            menu.Bind(wx.EVT_MENU, lambda _e, k=key: self._launch_sibling(k), id=item_id)
+            self._keep_menu_ids(item_id)
+
+    def _launch_sibling(self, key: str) -> None:
+        from quill.core.app_launcher import app_name, launch_app
+
+        if launch_app(key):
+            self._announce(f"Opening {app_name(key)}.")
+        else:
+            self._announce(f"{app_name(key)} could not be opened; it may not be installed.")
 
     def _on_tray_right_click(self, build_menu: Callable[[wx.Menu], None]) -> None:
         if self._tray_icon is None:

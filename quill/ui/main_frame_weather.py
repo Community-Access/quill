@@ -12,6 +12,7 @@ and ``self._show_message_box``.
 
 from __future__ import annotations
 
+from datetime import UTC
 from typing import Any
 
 from quill.core.radio import wxindex
@@ -45,27 +46,59 @@ class WeatherMixin:
     _safe_mode: bool
     _task_manager: Any
 
-    def _announce(self, message: str) -> None: ...  # provided by host
+    def _announce(self, message: str, *, force: bool = False) -> None: ...  # provided by host
     def _show_message_box(self, message: str, caption: str, style: int) -> int:
         return 0
 
     # -- menu -------------------------------------------------------------------
 
+    def _weather_area_enabled(self, area_id: str) -> bool:
+        """Whether a switchable Weather sub-area is on for this host. Hosts that
+        do not track app areas (e.g. Quill Radio) return True, so their Weather
+        menu is complete; the standalone Quill Weather app can turn areas off."""
+        checker = getattr(self, "_app_area_enabled", None)
+        return True if checker is None else bool(checker(area_id))
+
+    def open_weather_app(self) -> None:
+        """Launch the standalone Quill Weather app in its own window/tray."""
+        from quill.core.app_launcher import launch_app
+
+        if launch_app("weather"):
+            self._announce("Opening the Quill Weather app.")
+        else:
+            self._announce("The Quill Weather app could not be opened; it may not be installed.")
+
     def _append_weather_menu(self, menu_bar: Any) -> None:
         """Build and append the top-level &Weather menu (PRD 20 command IDs)."""
         wx = self._wx
         menu = wx.Menu()
+        # Hosts that prefer to hand weather off to its own app (Quill Radio, and
+        # QUILL) offer this at the very top; the Quill Weather app itself does not.
+        if getattr(self, "_weather_offers_app_launch", False):
+            open_app_id = wx.NewIdRef()
+            menu.Append(open_app_id, "&Open the Quill Weather App")
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_app(), id=open_app_id)
+            menu.AppendSeparator()
         now_id, quick_id, alerts_id, add_id, settings_id = (wx.NewIdRef() for _ in range(5))
         noaa_listen_id, noaa_update_id = (wx.NewIdRef() for _ in range(2))
         menu.Append(now_id, "&Weather Now...\tCtrl+Shift+W")
         menu.Append(quick_id, "&Quick Weather\tCtrl+Shift+Q")
         menu.Append(alerts_id, "Active &Alerts...")
         menu.AppendSeparator()
+        test_id = wx.NewIdRef()
         menu.Append(add_id, "&Add Location...")
         menu.Append(settings_id, "&Settings...")
-        menu.AppendSeparator()
-        menu.Append(noaa_listen_id, "&Listen to your Local NOAA Weather Radio")
-        menu.Append(noaa_update_id, "&Update NOAA Weather Radio Directory")
+        menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)")
+        if self._weather_area_enabled("noaa_radio"):
+            menu.AppendSeparator()
+            menu.Append(noaa_listen_id, "&Listen to your Local NOAA Weather Radio")
+            menu.Append(noaa_update_id, "&Update NOAA Weather Radio Directory")
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.listen_local_noaa_radio(), id=noaa_listen_id
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.update_noaa_radio_directory(), id=noaa_update_id
+            )
 
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_center(), id=now_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.weather_quick(), id=quick_id)
@@ -74,10 +107,36 @@ class WeatherMixin:
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_add_location(), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_settings(), id=settings_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.listen_local_noaa_radio(), id=noaa_listen_id)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.update_noaa_radio_directory(), id=noaa_update_id
-        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.weather_test_alert(), id=test_id)
+
+        # Monitor state is initialized unconditionally so the app's startup path
+        # (start_weather_monitoring_if_enabled) is always safe, even when the
+        # Monitoring area's menu items are hidden.
+        self._weather_monitor_timer: Any = None
+        self._weather_monitor_state: Any = None
+        self._weather_monitor_location: Any = None
+        self._weather_monitor_config: Any = None
+        self._weather_monitor_paused = False
+        self._weather_monitor_menu_item = None
+        self._weather_monitor_pause_item = None
+        if self._weather_area_enabled("monitoring"):
+            menu.AppendSeparator()
+            monitor_id = wx.NewIdRef()
+            self._weather_monitor_menu_id = monitor_id
+            self._weather_monitor_menu_item = menu.Append(
+                monitor_id, self._weather_monitor_menu_text()
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.toggle_weather_monitoring(), id=monitor_id)
+            pause_id = wx.NewIdRef()
+            self._weather_monitor_pause_id = pause_id
+            self._weather_monitor_pause_item = menu.Append(
+                pause_id, self._weather_monitor_pause_text()
+            )
+            self._weather_monitor_pause_item.Enable(False)
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.toggle_weather_monitoring_pause(), id=pause_id
+            )
+
         menu_bar.Append(menu, "&Weather")
 
     # -- guards / helpers -------------------------------------------------------
@@ -166,6 +225,7 @@ class WeatherMixin:
                 return nws.fetch_report_worldwide(
                     location,
                     safe_mode=self._safe_mode,
+                    hourly_hours=0,  # Quick Weather is a one-liner; skip the hourly pull
                     temperature_unit=settings.temperature_unit,
                 )
             except nws.WeatherError as exc:
@@ -184,7 +244,14 @@ class WeatherMixin:
             self._announce(f"Could not get weather. {result}")
             return
         if isinstance(result, WeatherReport):
-            self._announce(render.quick_weather_line(result, settings))
+            line = render.quick_weather_line(result, settings)
+            if settings.show_local_time and result.time_zone:
+                from datetime import datetime
+
+                local_time = render.local_time_phrase(datetime.now(UTC), result.time_zone)
+                if local_time:
+                    line = f"{line} {local_time}"
+            self._announce(line)
 
     # -- NOAA Weather Radio -------------------------------------------------
 
@@ -228,6 +295,16 @@ class WeatherMixin:
             return
         controller = getattr(self, "_radio_controller", None)
         if controller is None:
+            # A host without the radio engine (e.g. the standalone Quill Weather
+            # app) can find the station but cannot play it -- say so rather than
+            # letting the menu item do nothing.
+            self._show_message_box(
+                f"Your nearest NOAA Weather Radio station is {result.name}. "
+                "Playing it needs the radio engine, which this app does not include -- "
+                "open it in Quill Radio to listen.",
+                "NOAA Weather Radio",
+                self._wx.OK | self._wx.ICON_INFORMATION,
+            )
             return
         controller.play_station(result)
         self._announce(f"Playing {result.name}")
@@ -277,3 +354,276 @@ class WeatherMixin:
             )
             return
         self._announce(f"Could not update the NOAA Weather Radio directory. {result}")
+
+    # -- Weather monitoring (Weather Guardian, US alerts) -------------------
+
+    def _weather_monitoring_active(self) -> bool:
+        return getattr(self, "_weather_monitor_timer", None) is not None
+
+    def _weather_monitor_menu_text(self) -> str:
+        """The toggle item's label, reflecting the current state. The chord
+        stays on the label so the accelerator survives a relabel."""
+        verb = "Stop" if self._weather_monitoring_active() else "Start"
+        return f"{verb} Weather &Monitoring\tCtrl+Shift+M"
+
+    def _weather_monitor_pause_text(self) -> str:
+        paused = getattr(self, "_weather_monitor_paused", False)
+        return "Resume Alert Chec&ks" if paused else "Pause Alert Chec&ks"
+
+    def _refresh_weather_monitor_menu_item(self) -> None:
+        item = getattr(self, "_weather_monitor_menu_item", None)
+        if item is not None:
+            item.SetItemLabel(self._weather_monitor_menu_text())
+        pause_item = getattr(self, "_weather_monitor_pause_item", None)
+        if pause_item is not None:
+            pause_item.SetItemLabel(self._weather_monitor_pause_text())
+            # Pause/Resume only makes sense while the watch is running.
+            pause_item.Enable(self._weather_monitoring_active())
+
+    def toggle_weather_monitoring_pause(self) -> None:
+        """Weather > Pause/Resume Alert Checks: a temporary snooze that halts the
+        poll without turning monitoring off (Stop Weather Monitoring is the full
+        off). A paused watch stays enabled and resumes cleanly."""
+        if not self._weather_monitoring_active():
+            self._announce("Weather monitoring is not on. Choose Start Weather Monitoring first.")
+            return
+        if getattr(self, "_weather_monitor_paused", False):
+            self._weather_monitor_paused = False
+            self._refresh_weather_monitor_menu_item()
+            self._announce("Resuming weather alert checks.")
+            self._weather_monitor_poll()  # an immediate poll re-arms the timer
+        else:
+            timer = getattr(self, "_weather_monitor_timer", None)
+            if timer is not None:
+                try:
+                    timer.Stop()
+                except Exception:  # noqa: BLE001 - stopping a dead timer must not raise
+                    pass
+            self._weather_monitor_paused = True
+            self._refresh_weather_monitor_menu_item()
+            self._announce("Weather alert checks paused. Choose Resume Alert Checks to continue.")
+
+    def toggle_weather_monitoring(self) -> None:
+        """Weather > Start/Stop Weather Monitoring (also Ctrl+Shift+M)."""
+        if self._weather_monitoring_active():
+            self.stop_weather_monitoring()
+        else:
+            self.start_weather_monitoring()
+
+    def start_weather_monitoring(self, *, announce: bool = True) -> None:
+        """Begin watching one US location's active alerts on a timer, speaking
+        newly issued watches/warnings/advisories as they appear. Persists the
+        on state so the next launch resumes it."""
+        if self._weather_blocked_in_safe_mode():
+            return
+        from quill.core.weather import locations as loc_store
+        from quill.core.weather import monitor
+
+        if self._weather_monitoring_active():
+            return
+        data_dir = self._weather_data_dir()
+        config = monitor.load_config(data_dir)
+        store = loc_store.load_locations(data_dir)
+        location = store.find(config.location_id) or store.primary()
+        if location is None:
+            self._announce("No weather location to monitor yet. Opening Add Location.")
+            self.open_weather_add_location()
+            return
+
+        self._weather_monitor_location = location
+        self._weather_monitor_state = monitor.MonitorState()
+        self._weather_monitor_config = config
+        self._weather_monitor_paused = False
+        config.enabled = True
+        config.location_id = location.id
+        monitor.save_config(data_dir, config)
+
+        wx = self._wx
+        timer = wx.Timer(self.frame)
+        self.frame.Bind(wx.EVT_TIMER, self._on_weather_monitor_timer, timer)
+        self._weather_monitor_timer = timer
+        # A self-rescheduling one-shot (StartOnce) rather than a fixed repeat, so
+        # each poll can pick the next cadence -- normal, or the tighter
+        # severe-weather interval while an alert is active. The immediate poll
+        # below sets the real cadence when it returns; this is the fallback tick
+        # in case that first poll's callback never fires.
+        timer.StartOnce(config.poll_seconds(False) * 1000)
+        self._refresh_weather_monitor_menu_item()
+        if announce:
+            # Instant feedback; the baseline poll speaks the full situation
+            # (how many alerts are active) a moment later when it returns.
+            self._announce(f"Turning on weather monitoring for {location.label}.")
+        self._weather_monitor_poll()  # an immediate baseline poll
+
+    def stop_weather_monitoring(self, *, announce: bool = True, persist: bool = True) -> None:
+        """Stop the alert watch. ``persist`` writes the off state (a user turning
+        it off); the app's shutdown passes ``persist=False`` so a clean exit
+        leaves it on to resume next launch."""
+        from quill.core.weather import monitor
+
+        timer = getattr(self, "_weather_monitor_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001 - stopping a dead timer must not raise
+                pass
+        was_active = timer is not None
+        self._weather_monitor_timer = None
+        self._weather_monitor_state = None
+        self._weather_monitor_config = None
+        self._weather_monitor_paused = False
+        location = getattr(self, "_weather_monitor_location", None)
+        self._weather_monitor_location = None
+        if persist:
+            try:
+                data_dir = self._weather_data_dir()
+                config = monitor.load_config(data_dir)
+                config.enabled = False
+                monitor.save_config(data_dir, config)
+            except Exception:  # noqa: BLE001 - persistence is best-effort on stop
+                pass
+        self._refresh_weather_monitor_menu_item()
+        if announce and was_active:
+            where = f" for {location.label}" if location is not None else ""
+            self._announce(f"Weather monitoring off{where}.")
+
+    def start_weather_monitoring_if_enabled(self) -> None:
+        """Resume monitoring on launch when it was left on (host calls this
+        once the frame and task manager are ready)."""
+        from quill.core.weather import monitor
+
+        try:
+            config = monitor.load_config(self._weather_data_dir())
+        except Exception:  # noqa: BLE001
+            return
+        if config.enabled and not self._safe_mode:
+            self.start_weather_monitoring(announce=False)
+
+    def _on_weather_monitor_timer(self, _event: object) -> None:
+        self._weather_monitor_poll()
+
+    def _schedule_next_monitor_poll(self, has_active_alerts: bool) -> None:
+        """Arm the one-shot timer for the next poll, tightening the cadence when
+        an alert is active (severe-weather mode)."""
+        timer = getattr(self, "_weather_monitor_timer", None)
+        config = getattr(self, "_weather_monitor_config", None)
+        if timer is None or config is None:
+            return  # monitoring was stopped
+        timer.StartOnce(max(1, config.poll_seconds(has_active_alerts)) * 1000)
+
+    def _weather_monitor_poll(self) -> None:
+        location = getattr(self, "_weather_monitor_location", None)
+        if location is None or getattr(self, "_weather_monitor_paused", False):
+            return
+        from quill.core.weather import nws
+
+        def _work(**_kwargs: Any) -> object:
+            try:
+                return nws.active_alerts(
+                    location.latitude, location.longitude, safe_mode=self._safe_mode
+                )
+            except nws.WeatherError as exc:
+                return exc
+
+        def _ok(_op: str, result: object) -> None:
+            self._wx.CallAfter(self._weather_monitor_poll_done, result)
+
+        self._task_manager.submit("weather-monitor", _work, on_success=_ok, on_failure=None)
+
+    def _weather_monitor_poll_done(self, result: object) -> None:
+        from quill.core.weather import monitor
+
+        state = getattr(self, "_weather_monitor_state", None)
+        location = getattr(self, "_weather_monitor_location", None)
+        if state is None or location is None:
+            return  # monitoring was stopped while the poll was in flight
+        if getattr(self, "_weather_monitor_paused", False):
+            return  # paused while the poll was in flight: stay quiet, do not re-arm
+        try:
+            if not isinstance(result, list):
+                return  # a transient fetch error (e.g. offline); try again next tick
+            update = monitor.apply_poll(state, result)
+            # Persist what the live watch has now seen, so the OS-scheduled
+            # background check never re-toasts an alert this window already spoke.
+            monitor.save_notified_ids(self._weather_data_dir(), state.known_alert_ids)
+            if update.is_baseline:
+                # The first poll returned: speak the current situation once (how
+                # many alerts are active), then stay quiet until something changes.
+                config = getattr(self, "_weather_monitor_config", None)
+                if config is not None:
+                    self._announce(monitor.start_summary(location.label, result, config))
+                return
+            if update.new_alerts:
+                self._play_weather_alert_sound()
+                top = update.new_alerts[0]
+                self._show_weather_toast(
+                    f"Weather alert: {top.event}",
+                    top.headline or f"A {top.event} is in effect for {location.label}.",
+                )
+            message = monitor.update_announcement(update, location.label)
+            if message:
+                self._announce(message, force=monitor.should_force_speech(update))
+        finally:
+            # Always arm the next poll -- even after a transient error -- so the
+            # watch never silently stalls. Cadence follows whether alerts are up.
+            self._schedule_next_monitor_poll(bool(state.known_alert_ids))
+
+    # -- test alert (preview the whole experience) --------------------------
+
+    def weather_test_alert(self) -> None:
+        """Weather > Test Alert: let the user preview exactly what a real alert
+        does -- the spoken/shown text, the sound, a system-tray toast, and the
+        alert dialog -- all clearly marked as a TEST and dismissable. Does not
+        touch the network or the monitor's real state."""
+        headline = "This is a TEST of Quill Weather alerts. No action is needed."
+        # 1) The sound cue (honoring the user's enable + custom-file choice, so
+        #    the test reflects what they have actually configured).
+        self._play_weather_alert_sound()
+        # 2) Spoken, forced so it interrupts like a real urgent alert would.
+        self._announce(f"Test weather alert. {headline}", force=True)
+        # 3) A system-tray toast, marked as a test.
+        self._show_weather_toast(
+            "[TEST] Weather alert", "This is a test of Quill Weather alerts. No action is needed."
+        )
+        # 4) The alert dialog, dismissable.
+        body = (
+            "TEST WEATHER ALERT\n\n"
+            f"{headline}\n\n"
+            "Severity Severe, urgency Expected, certainty Observed. (Sample values.)\n"
+            "Area: your area (test).\n\n"
+            "Instructions: This is only a test. When a real alert is issued, its official "
+            "instructions appear here -- follow them.\n\n"
+            "This preview shows how a real National Weather Service alert would be announced, "
+            "sounded, shown in the system tray, and displayed. Select OK to dismiss it."
+        )
+        self._show_message_box(body, "Test Weather Alert", self._wx.OK | self._wx.ICON_INFORMATION)
+
+    def _show_weather_toast(self, title: str, body: str) -> None:
+        """Show a Windows notification-area toast (screen readers announce it).
+        Best-effort; a toast failure never disrupts the rest of the alert."""
+        try:
+            import wx.adv
+
+            note = wx.adv.NotificationMessage(title, body, self.frame)
+            try:
+                note.SetFlags(self._wx.ICON_WARNING)
+            except Exception:  # noqa: BLE001 - flags are cosmetic
+                pass
+            note.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
+        except Exception:  # noqa: BLE001 - a toast must never crash the caller
+            pass
+
+    def _play_weather_alert_sound(self) -> None:
+        """Play the alert cue for a newly-issued alert, honoring the user's
+        enable toggle and custom-sound choice. Best-effort; never raises."""
+        from quill.core.weather import settings as settings_mod
+
+        try:
+            settings = settings_mod.load_settings(self._weather_data_dir())
+            if not settings.alert_sound_enabled:
+                return
+            from quill.platform import alert_sound
+
+            alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
+        except Exception:  # noqa: BLE001 - a sound must never disrupt the alert
+            pass

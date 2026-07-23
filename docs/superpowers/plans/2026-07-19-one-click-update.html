@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-19-one-click-update</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="one-click-update-apply-and-restart-implementation-plan">One-Click
+Update (Apply and Restart) Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use
+superpowers:subagent-driven-development (recommended) or
+superpowers:executing-plans to implement this plan task-by-task. Steps
+use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Add a one-click “Install and restart now” that
+downloads (existing), applies, and relaunches the app, for both portable
+and installed Windows builds across <strong>every Quill app</strong>:
+Quill Radio, Quill Cast, QUILL, and Audio Studio.</p>
+<p><strong>Architecture:</strong> A new wx-free
+<code>quill/core/self_update.py</code> owns applying an
+already-downloaded update: stage a portable zip, build a Windows helper
+<code>.bat</code> (pure text), and launch it detached. The helper waits
+for the app’s PID to exit, then either robocopies staged files over the
+install dir (excluding <code>data</code>) or runs the setup
+elevated-and-silent, then relaunches the exe and cleans up. This core is
+app-agnostic. The UI seams call <code>begin_self_update()</code>:
+<code>app_shell.py</code> (covers Radio + Cast, both subclass
+<code>AppShellFrame</code>) and <code>main_frame_updates.py</code>
+(QUILL). Audio Studio lives in its own repo (<code>S:\QUILL-AS</code>)
+that vendors quill as <code>quillas</code> and whose
+<code>StudioAppFrame</code> also subclasses <code>AppShellFrame</code>,
+so it gets the identical one-click apply via its own copy of these files
+(<code>quillas/core/self_update.py</code>,
+<code>quillas/ui/update_apply.py</code>, and the same
+<code>quillas/ui/app_shell.py</code> edit).</p>
+<p><strong>Tech Stack:</strong> Python 3.13, wxPython (UI only), Windows
+<code>cmd.exe</code>/<code>robocopy</code>/<code>powershell</code>,
+existing <code>quill.core.updates</code> +
+<code>quill.core.safe_archive</code>.</p>
+<h2 id="global-constraints">Global Constraints</h2>
+<ul>
+<li><code>quill/core</code> is wx-free and strict-typed; always in
+<code>mypy</code> scope. No <code>wx</code> imports in
+<code>self_update.py</code>.</li>
+<li>GATE-EC: every new top-level exception in <code>quill/core</code>
+must inherit <code>CodedError</code>
+(<code>quill.core.error_codes</code>) with a unique
+<code>code = "QUILL-&lt;DOMAIN&gt;-&lt;SUBSYSTEM&gt;-&lt;REASON&gt;"</code>.
+Shape is <code>class X(CodedError):</code>, never
+<code>class X(Exception, CodedError):</code>.</li>
+<li>Platform: Windows primary (this feature is Windows-only); macOS/dev
+runs must fall through to today’s download-and-reveal, never crash. No
+Linux promises.</li>
+<li>All JSON/atomic-write and safe-archive conventions already in the
+repo apply. Reuse
+<code>quill.core.updates.extract_portable_update</code> (zip-slip + bomb
+guarded) — do not write a second extractor.</li>
+<li>Downloads are already HTTPS + trusted-host verified; do not relax
+that. This feature only acts on an already-downloaded, verified
+asset.</li>
+<li>Line endings: repo <code>S:\QUILL</code> is
+<code>core.autocrlf=false</code> — keep new files LF; if an edit flips a
+file to CRLF, convert back to LF (never with a truncating
+<code>open('wb')...read()</code> one-liner).</li>
+<li>Run <code>ruff check</code> and scoped <code>mypy quill\core</code>
+after core changes; <code>pytest -q</code> for touched tests.</li>
+<li>Do not commit unless the user asks (user global rule overrides the
+skill’s per-task commit step — perform the
+<code>git add</code>/<code>commit</code> steps only if the user has said
+to commit; otherwise stop at “tests pass”).</li>
+</ul>
+<hr />
+<h2 id="file-structure">File Structure</h2>
+<ul>
+<li>Create: <code>quill/core/self_update.py</code> — apply-an-update
+engine (wx-free): <code>SelfUpdateError</code>,
+<code>install_root_and_exe()</code>,
+<code>stage_portable_update()</code>,
+<code>build_apply_update_script()</code>,
+<code>write_and_launch_helper()</code>,
+<code>begin_self_update()</code>.</li>
+<li>Create: <code>tests/unit/core/test_self_update.py</code> — pure +
+temp-dir tests, plus a Windows-guarded end-to-end batch run.</li>
+<li>Modify: <code>quill/ui/app_shell.py</code> — rewire
+<code>_offer_app_update_install</code> to a one-click apply (Radio +
+Cast).</li>
+<li>Create: <code>tests/unit/ui/test_app_shell_self_update.py</code> —
+UI-seam unit tests with fakes.</li>
+<li>Modify: <code>quill/ui/main_frame_updates.py</code> — same apply
+behavior for QUILL Windows in
+<code>_offer_post_download_actions</code>.</li>
+<li>Create/Modify in <code>S:\QUILL-AS</code> (vendored
+<code>quillas</code>): <code>quillas/core/self_update.py</code> +
+<code>quillas/ui/update_apply.py</code> (copies of the quill files with
+<code>quill.*</code>→<code>quillas.*</code> imports) and the same
+one-click edit to <code>quillas/ui/app_shell.py</code>. Add
+<code>tests/unit/core/test_self_update.py</code> +
+<code>tests/unit/ui/test_app_shell_self_update.py</code> (ported with
+quillas imports).</li>
+<li>Modify: <code>S:\quill-radio\docs\release-notes-2.0.md</code> and
+<code>S:\quill-radio\CHANGELOG.md</code> — a 2.0.3 bullet for one-click
+update. Add matching notes to <code>S:\quill-cast\CHANGELOG.md</code>
+and <code>S:\QUILL-AS\CHANGELOG.md</code>.</li>
+</ul>
+<hr />
+<h2
+id="task-1-build_apply_update_script-the-pure-helper-script-generator">Task
+1: <code>build_apply_update_script()</code> — the pure helper-script
+generator</h2>
+<p><strong>Files:</strong> - Create:
+<code>quill/core/self_update.py</code> - Test:
+<code>tests/unit/core/test_self_update.py</code></p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>SelfUpdateError(CodedError)</code> with
+<code>code = "QUILL-UPDATE-SELF-APPLY"</code>;
+<code>build_apply_update_script(*, pid: int, mode: str, install_dir: Path, exe_path: Path, log_path: Path, source_dir: Path | None = None, setup_exe: Path | None = None, data_dirname: str = "data") -&gt; str</code>
+where <code>mode</code> is <code>"portable"</code> or
+<code>"installer"</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/test_self_update.py</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.self_update <span class="im">import</span> SelfUpdateError, build_apply_update_script</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _portable_script() <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> build_apply_update_script(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        pid<span class="op">=</span><span class="dv">4242</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">&quot;portable&quot;</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        install_dir<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="dv">\A</span><span class="vs">pps</span><span class="er">\</span><span class="vs">QuillRadio&quot;</span>),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        exe_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="dv">\A</span><span class="vs">pps</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="dv">.</span><span class="vs">exe&quot;</span>),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        log_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="er">\</span><span class="vs">Users</span><span class="dv">\m</span><span class="vs">e</span><span class="dv">\A</span><span class="vs">ppData</span><span class="er">\</span><span class="vs">Roaming</span><span class="er">\</span><span class="vs">Quill</span><span class="er">\</span><span class="vs">updates</span><span class="ch">\a</span><span class="vs">pply-update</span><span class="dv">.</span><span class="vs">log&quot;</span>),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        source_dir<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="er">\</span><span class="vs">Users</span><span class="dv">\m</span><span class="vs">e</span><span class="dv">\A</span><span class="vs">ppData</span><span class="er">\</span><span class="vs">Roaming</span><span class="er">\</span><span class="vs">Quill</span><span class="er">\</span><span class="vs">updates</span><span class="dv">\s</span><span class="vs">taging</span><span class="ch">\a</span><span class="vs">pp&quot;</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_portable_script_waits_for_pid_then_copies_excluding_data_then_relaunches() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    script <span class="op">=</span> _portable_script()</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Waits for our PID to exit before touching anything.</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;4242&quot;</span> <span class="kw">in</span> script</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;tasklist&quot;</span> <span class="kw">in</span> script.lower() <span class="kw">or</span> <span class="st">&quot;pid eq 4242&quot;</span> <span class="kw">in</span> script.lower()</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Robocopy mirrors staged files into the install dir, excluding the data dir.</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;robocopy&quot;</span> <span class="kw">in</span> script.lower()</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="vs">r&#39;&quot;C:</span><span class="dv">\A</span><span class="vs">pps</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="dv">\d</span><span class="vs">ata&quot;&#39;</span> <span class="kw">in</span> script  <span class="co"># excluded via /XD</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;/xd&quot;</span> <span class="kw">in</span> script.lower()</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Relaunch the (new) exe.</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="vs">r&#39;&quot;C:</span><span class="dv">\A</span><span class="vs">pps</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="dv">.</span><span class="vs">exe&quot;&#39;</span> <span class="kw">in</span> script</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Everything logged.</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;apply-update.log&quot;</span> <span class="kw">in</span> script</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_installer_script_runs_setup_elevated_and_silent_then_relaunches() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    script <span class="op">=</span> build_apply_update_script(</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        pid<span class="op">=</span><span class="dv">99</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">&quot;installer&quot;</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        install_dir<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="er">\</span><span class="vs">Program Files</span><span class="er">\</span><span class="vs">Quill Radio&quot;</span>),</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        exe_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="er">\</span><span class="vs">Program Files</span><span class="er">\</span><span class="vs">Quill Radio</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="dv">.</span><span class="vs">exe&quot;</span>),</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        log_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="er">\</span><span class="vs">Users</span><span class="dv">\m</span><span class="vs">e</span><span class="dv">\A</span><span class="vs">ppData</span><span class="er">\</span><span class="vs">Roaming</span><span class="er">\</span><span class="vs">Quill</span><span class="er">\</span><span class="vs">updates</span><span class="ch">\a</span><span class="vs">pply-update</span><span class="dv">.</span><span class="vs">log&quot;</span>),</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        setup_exe<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="er">\</span><span class="vs">Users</span><span class="dv">\m</span><span class="vs">e</span><span class="dv">\A</span><span class="vs">ppData</span><span class="er">\</span><span class="vs">Roaming</span><span class="er">\</span><span class="vs">Quill</span><span class="er">\</span><span class="vs">updates</span><span class="dv">\S</span><span class="vs">etup-2</span><span class="dv">.</span><span class="vs">0</span><span class="dv">.</span><span class="vs">3</span><span class="dv">.</span><span class="vs">exe&quot;</span>),</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Start-Process&quot;</span> <span class="kw">in</span> script  <span class="co"># powershell elevation</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;RunAs&quot;</span> <span class="kw">in</span> script</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;/VERYSILENT&quot;</span> <span class="kw">in</span> script</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Setup-2.0.3.exe&quot;</span> <span class="kw">in</span> script</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="vs">r&#39;&quot;C:</span><span class="er">\</span><span class="vs">Program Files</span><span class="er">\</span><span class="vs">Quill Radio</span><span class="er">\</span><span class="vs">QuillRadio</span><span class="dv">.</span><span class="vs">exe&quot;&#39;</span> <span class="kw">in</span> script</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_portable_mode_requires_source_dir() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(SelfUpdateError):</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>        build_apply_update_script(</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>            pid<span class="op">=</span><span class="dv">1</span>, mode<span class="op">=</span><span class="st">&quot;portable&quot;</span>,</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>            install_dir<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="ch">\a</span><span class="vs">&quot;</span>), exe_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="ch">\a</span><span class="er">\</span><span class="vs">x</span><span class="dv">.</span><span class="vs">exe&quot;</span>),</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>            log_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="ch">\a</span><span class="er">\</span><span class="vs">l</span><span class="dv">.</span><span class="vs">log&quot;</span>), source_dir<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_installer_mode_requires_setup_exe() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(SelfUpdateError):</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>        build_apply_update_script(</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>            pid<span class="op">=</span><span class="dv">1</span>, mode<span class="op">=</span><span class="st">&quot;installer&quot;</span>,</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>            install_dir<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="ch">\a</span><span class="vs">&quot;</span>), exe_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="ch">\a</span><span class="er">\</span><span class="vs">x</span><span class="dv">.</span><span class="vs">exe&quot;</span>),</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>            log_path<span class="op">=</span>Path(<span class="vs">r&quot;C:</span><span class="ch">\a</span><span class="er">\</span><span class="vs">l</span><span class="dv">.</span><span class="vs">log&quot;</span>), setup_exe<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q</code>
+Expected: FAIL with
+<code>ModuleNotFoundError: quill.core.self_update</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/self_update.py</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Apply an already-downloaded Quill update and relaunch, on Windows.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">A running .exe cannot overwrite itself, so applying a portable update means</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">handing the swap to a tiny external helper that runs after this process exits.</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">This module builds that helper (a pure, unit-tested batch script), stages the</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">downloaded zip, and launches the helper detached. The two UI update flows</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">(``quill.ui.app_shell`` for the standalone apps, ``quill.ui.main_frame_updates``</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">for QUILL) call :func:`begin_self_update` from their post-download dialog and</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">then close the window; the helper waits for this PID to exit before touching a</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">single file. wx-free, strict-typed.</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.error_codes <span class="im">import</span> CodedError</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#: How long the helper waits for the app to exit before proceeding anyway. The</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#: app is expected to exit within a second or two of launching the helper; the</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#: ceiling only prevents a wedged process from stranding the helper forever.</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>_PID_WAIT_SECONDS <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SelfUpdateError(CodedError):</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;A downloaded update could not be staged or applied.&quot;&quot;&quot;</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    code <span class="op">=</span> <span class="st">&quot;QUILL-UPDATE-SELF-APPLY&quot;</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_apply_update_script(</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    pid: <span class="bu">int</span>,</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    mode: <span class="bu">str</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    install_dir: Path,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    exe_path: Path,</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    log_path: Path,</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    source_dir: Path <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    setup_exe: Path <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    data_dirname: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;data&quot;</span>,</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;The Windows ``.bat`` that applies an update after this process exits (pure).</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="co">    ``mode=&quot;portable&quot;``: robocopy ``source_dir`` over ``install_dir`` excluding</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="co">    the ``data_dirname`` folder (favorites/recordings/settings survive), then</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="co">    relaunch ``exe_path``. ``mode=&quot;installer&quot;``: run ``setup_exe`` elevated and</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="co">    silent, then relaunch. Both wait for ``pid`` to exit first and tee every</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co">    step to ``log_path``.</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mode <span class="op">==</span> <span class="st">&quot;portable&quot;</span> <span class="kw">and</span> source_dir <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> SelfUpdateError(<span class="st">&quot;Portable apply needs a staged source directory.&quot;</span>)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mode <span class="op">==</span> <span class="st">&quot;installer&quot;</span> <span class="kw">and</span> setup_exe <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> SelfUpdateError(<span class="st">&quot;Installer apply needs the setup executable.&quot;</span>)</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    data_dir <span class="op">=</span> install_dir <span class="op">/</span> data_dirname</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    log <span class="op">=</span> <span class="bu">str</span>(log_path)</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> [</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;@echo off&quot;</span>,</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;setlocal&quot;</span>,</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;set &quot;LOG=</span><span class="sc">{</span>log<span class="sc">}</span><span class="ss">&quot;&#39;</span>,</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;echo [apply] start pid=</span><span class="sc">{</span>pid<span class="sc">}</span><span class="ss"> mode=</span><span class="sc">{</span>mode<span class="sc">}</span><span class="ss"> &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Wait for the app process to exit (up to the ceiling), then proceed.</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;set /a WAITED=0&quot;</span>,</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;:waitloop&quot;</span>,</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;tasklist /FI &quot;PID eq </span><span class="sc">{</span>pid<span class="sc">}</span><span class="ss">&quot; 2&gt;NUL | find &quot; </span><span class="sc">{</span>pid<span class="sc">}</span><span class="ss"> &quot; &gt;NUL&#39;</span>,</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;if errorlevel 1 goto :exited&quot;</span>,</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;ping -n 2 127.0.0.1 &gt;NUL&quot;</span>,</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;set /a WAITED+=1&quot;</span>,</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;if %WAITED% LSS </span><span class="sc">{</span>_PID_WAIT_SECONDS<span class="sc">}</span><span class="ss"> goto :waitloop&quot;</span>,</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;:exited&quot;</span>,</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;echo [apply] app exited (waited %WAITED%s) &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mode <span class="op">==</span> <span class="st">&quot;portable&quot;</span>:</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        lines <span class="op">+=</span> [</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;echo [apply] robocopy &quot;</span><span class="sc">{</span>source_dir<span class="sc">}</span><span class="ss">&quot; -&gt; &quot;</span><span class="sc">{</span>install_dir<span class="sc">}</span><span class="ss">&quot; (xd data) &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;robocopy &quot;</span><span class="sc">{</span>source_dir<span class="sc">}</span><span class="ss">&quot; &quot;</span><span class="sc">{</span>install_dir<span class="sc">}</span><span class="ss">&quot; /MIR /XD &quot;</span><span class="sc">{</span>data_dir<span class="sc">}</span><span class="ss">&quot; &#39;</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;/R:2 /W:1 /NP &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;echo [apply] robocopy exit %ERRORLEVEL% &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>        lines <span class="op">+=</span> [</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;echo [apply] running installer &quot;</span><span class="sc">{</span>setup_exe<span class="sc">}</span><span class="ss">&quot; &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;powershell -NoProfile -Command &quot;</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;&quot;Start-Process -FilePath </span><span class="ch">\&#39;</span><span class="sc">{</span>setup_exe<span class="sc">}</span><span class="ch">\&#39;</span><span class="ss"> &#39;</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;-ArgumentList &#39;/VERYSILENT&#39;,&#39;/SUPPRESSMSGBOXES&#39;,&#39;/NORESTART&#39; &quot;</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;-Verb RunAs -Wait&quot; &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&#39;echo [apply] installer done %ERRORLEVEL% &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">+=</span> [</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;echo [apply] relaunching &quot;</span><span class="sc">{</span>exe_path<span class="sc">}</span><span class="ss">&quot; &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;start &quot;&quot; &quot;</span><span class="sc">{</span>exe_path<span class="sc">}</span><span class="ss">&quot;&#39;</span>,</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Best-effort cleanup: remove the staged tree and this script.</span></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> mode <span class="op">==</span> <span class="st">&quot;portable&quot;</span> <span class="kw">and</span> source_dir <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Delete the staging *parent* (…/staging) so a re-run starts clean.</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>        lines.append(<span class="ss">f&#39;rmdir /S /Q &quot;</span><span class="sc">{</span>source_dir<span class="sc">.</span>parent<span class="sc">}</span><span class="ss">&quot; &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>)</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">+=</span> [</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&#39;echo [apply] done &gt;&gt;&quot;%LOG%&quot; 2&gt;&amp;1&#39;</span>,</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;(goto) 2&gt;nul &amp; del &quot;%~f0&quot;&#39;</span>,  <span class="co"># delete the running batch on exit</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">&quot;</span><span class="ch">\r\n</span><span class="st">&quot;</span>.join(lines) <span class="op">+</span> <span class="st">&quot;</span><span class="ch">\r\n</span><span class="st">&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q</code>
+Expected: PASS (4 tests).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Lint +
+typecheck</strong></label></li>
+</ul>
+<p>Run:
+<code>ruff check quill/core/self_update.py &amp;&amp; mypy quill\core\self_update.py</code>
+Expected: clean (mypy prints the usual unused-section note, then
+<code>Success</code>).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/self_update.py tests/unit/core/test_self_update.py</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(update): pure apply-update helper-script generator (portable + installer)&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="task-2-install_root_and_exe-and-stage_portable_update">Task 2:
+<code>install_root_and_exe()</code> and
+<code>stage_portable_update()</code></h2>
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/self_update.py</code> - Test:
+<code>tests/unit/core/test_self_update.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>quill.core.updates.extract_portable_update</code>. - Produces:
+<code>install_root_and_exe() -&gt; tuple[Path, Path] | None</code>
+(install dir, exe path; <code>None</code> when not a frozen build);
+<code>stage_portable_update(zip_path: Path, staging_root: Path, *, exe_name: str) -&gt; Path</code>
+returns the directory that actually contains <code>exe_name</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add to tests/unit/core/test_self_update.py</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zipfile</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.self_update <span class="im">import</span> install_root_and_exe, stage_portable_update</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _make_zip(path: Path, arcnames: <span class="bu">list</span>[<span class="bu">str</span>]) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> zipfile.ZipFile(path, <span class="st">&quot;w&quot;</span>) <span class="im">as</span> zf:</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> name <span class="kw">in</span> arcnames:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            zf.writestr(name, <span class="st">b&quot;x&quot;</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_stage_flat_layout_returns_root_with_exe(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    zip_path <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;portable.zip&quot;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    _make_zip(zip_path, [<span class="st">&quot;QuillRadio.exe&quot;</span>, <span class="st">&quot;tools/ffmpeg/ffmpeg.exe&quot;</span>])</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    staging <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;staging&quot;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    root <span class="op">=</span> stage_portable_update(zip_path, staging, exe_name<span class="op">=</span><span class="st">&quot;QuillRadio.exe&quot;</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (root <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).is_file()</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_stage_descends_single_wrapping_folder(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    zip_path <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;portable.zip&quot;</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    _make_zip(zip_path, [<span class="st">&quot;QuillRadio-2.0.3/QuillRadio.exe&quot;</span>, <span class="st">&quot;QuillRadio-2.0.3/docs/readme.txt&quot;</span>])</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    staging <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;staging&quot;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    root <span class="op">=</span> stage_portable_update(zip_path, staging, exe_name<span class="op">=</span><span class="st">&quot;QuillRadio.exe&quot;</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> root.name <span class="op">==</span> <span class="st">&quot;QuillRadio-2.0.3&quot;</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (root <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).is_file()</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_stage_rejects_zip_without_exe(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    zip_path <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;portable.zip&quot;</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    _make_zip(zip_path, [<span class="st">&quot;readme.txt&quot;</span>])</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(SelfUpdateError):</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        stage_portable_update(zip_path, tmp_path <span class="op">/</span> <span class="st">&quot;staging&quot;</span>, exe_name<span class="op">=</span><span class="st">&quot;QuillRadio.exe&quot;</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_install_root_and_exe_is_none_in_dev_run() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Not a frozen build under pytest, so there is nothing to apply into.</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> install_root_and_exe() <span class="kw">is</span> <span class="va">None</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q</code>
+Expected: FAIL with
+<code>ImportError: cannot import name 'stage_portable_update'</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add to quill/core/self_update.py</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> install_root_and_exe() <span class="op">-&gt;</span> <span class="bu">tuple</span>[Path, Path] <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;The frozen exe and its install directory, or ``None`` in a dev run.</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">    ``sys.frozen`` is set only in a PyInstaller build; ``sys.executable`` is</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">    then the app exe (QuillRadio.exe / QUILLCast.exe / quill.exe). A dev run</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    (``python -m quill``) returns ``None`` so callers fall back to reveal.</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> <span class="bu">getattr</span>(sys, <span class="st">&quot;frozen&quot;</span>, <span class="va">False</span>):</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    exe <span class="op">=</span> Path(sys.executable).resolve()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> exe.parent, exe</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> stage_portable_update(zip_path: Path, staging_root: Path, <span class="op">*</span>, exe_name: <span class="bu">str</span>) <span class="op">-&gt;</span> Path:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Extract a portable update zip and return the dir that holds ``exe_name``.</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">    Extracts into ``staging_root`` (cleared first) using the zip-slip- and</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">    bomb-guarded :func:`quill.core.updates.extract_portable_update`. If the zip</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">    wraps everything in a single top-level folder, descends into it. Raises</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">    :class:`SelfUpdateError` if no ``exe_name`` is found -- so a wrong/corrupt</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">    asset never drives a swap that would break the install.</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> shutil</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.updates <span class="im">import</span> extract_portable_update</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> staging_root.exists():</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        shutil.rmtree(staging_root, ignore_errors<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    staging_root.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        extract_portable_update(zip_path, staging_root)</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001 - surface as a coded error</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> SelfUpdateError(<span class="ss">f&quot;Could not extract the update: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>) <span class="im">from</span> exc</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (staging_root <span class="op">/</span> exe_name).is_file():</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> staging_root</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    entries <span class="op">=</span> [p <span class="cf">for</span> p <span class="kw">in</span> staging_root.iterdir()]</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(entries) <span class="op">==</span> <span class="dv">1</span> <span class="kw">and</span> entries[<span class="dv">0</span>].is_dir() <span class="kw">and</span> (entries[<span class="dv">0</span>] <span class="op">/</span> exe_name).is_file():</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> entries[<span class="dv">0</span>]</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> SelfUpdateError(</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;The downloaded update does not contain </span><span class="sc">{</span>exe_name<span class="sc">}</span><span class="ss">; not applying it.&quot;</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q</code>
+Expected: PASS (all Task 1 + Task 2 tests).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Lint +
+typecheck</strong></label></li>
+</ul>
+<p>Run:
+<code>ruff check quill/core/self_update.py &amp;&amp; mypy quill\core\self_update.py</code>
+Expected: clean.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/self_update.py tests/unit/core/test_self_update.py</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(update): stage portable update zip and locate install root/exe&quot;</span></span></code></pre></div>
+<hr />
+<h2
+id="task-3-write_and_launch_helper-and-begin_self_update-orchestration">Task
+3: <code>write_and_launch_helper()</code> and
+<code>begin_self_update()</code> orchestration</h2>
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/self_update.py</code> - Test:
+<code>tests/unit/core/test_self_update.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes: Task 1
+<code>build_apply_update_script</code>, Task 2
+<code>install_root_and_exe</code>/<code>stage_portable_update</code>. -
+Produces: -
+<code>write_and_launch_helper(script_text: str, helper_dir: Path) -&gt; Path</code>
+— writes <code>apply-update.bat</code> and launches it detached; returns
+its path. -
+<code>begin_self_update(*, download_path: Path, portable: bool, app_data_dir: Path, pid: int | None = None) -&gt; None</code>
+— the single entry point the UI calls. Determines mode, stages if
+portable, builds the script, launches the helper. Raises
+<code>SelfUpdateError</code> on any failure (UI announces and stays
+open). Caller closes the window on success.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add to tests/unit/core/test_self_update.py</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> quill.core.self_update <span class="im">as</span> su</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_begin_self_update_portable_stages_and_launches(tmp_path, monkeypatch):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fake a frozen install with an exe.</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    install <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;install&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    (install <span class="op">/</span> <span class="st">&quot;data&quot;</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    (install <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).write_bytes(<span class="st">b&quot;old&quot;</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(su, <span class="st">&quot;install_root_and_exe&quot;</span>, <span class="kw">lambda</span>: (install, install <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>))</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># A portable zip with the new exe.</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    zip_path <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;updates&quot;</span> <span class="op">/</span> <span class="st">&quot;QuillRadio-Portable-2.0.3.zip&quot;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    zip_path.parent.mkdir(parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    _make_zip(zip_path, [<span class="st">&quot;QuillRadio.exe&quot;</span>])</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    launched: <span class="bu">dict</span> <span class="op">=</span> {}</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        su, <span class="st">&quot;write_and_launch_helper&quot;</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> script, helper_dir: launched.setdefault(<span class="st">&quot;script&quot;</span>, script) <span class="kw">or</span> (helper_dir <span class="op">/</span> <span class="st">&quot;apply-update.bat&quot;</span>),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    su.begin_self_update(</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        download_path<span class="op">=</span>zip_path, portable<span class="op">=</span><span class="va">True</span>, app_data_dir<span class="op">=</span>tmp_path <span class="op">/</span> <span class="st">&quot;appdata&quot;</span>, pid<span class="op">=</span><span class="dv">1234</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;robocopy&quot;</span> <span class="kw">in</span> launched[<span class="st">&quot;script&quot;</span>].lower()</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;1234&quot;</span> <span class="kw">in</span> launched[<span class="st">&quot;script&quot;</span>]</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Staged the zip so the helper has a real source to copy from.</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (tmp_path <span class="op">/</span> <span class="st">&quot;appdata&quot;</span> <span class="op">/</span> <span class="st">&quot;updates&quot;</span> <span class="op">/</span> <span class="st">&quot;staging&quot;</span> <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).is_file()</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_begin_self_update_installer_builds_installer_script(tmp_path, monkeypatch):</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    install <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;install&quot;</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    (install).mkdir(parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    (install <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).write_bytes(<span class="st">b&quot;old&quot;</span>)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(su, <span class="st">&quot;install_root_and_exe&quot;</span>, <span class="kw">lambda</span>: (install, install <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>))</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    setup <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;updates&quot;</span> <span class="op">/</span> <span class="st">&quot;Setup-2.0.3.exe&quot;</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    setup.parent.mkdir(parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    setup.write_bytes(<span class="st">b&quot;setup&quot;</span>)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    captured: <span class="bu">dict</span> <span class="op">=</span> {}</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        su, <span class="st">&quot;write_and_launch_helper&quot;</span>,</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> script, helper_dir: captured.setdefault(<span class="st">&quot;script&quot;</span>, script) <span class="kw">or</span> (helper_dir <span class="op">/</span> <span class="st">&quot;apply-update.bat&quot;</span>),</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    su.begin_self_update(</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>        download_path<span class="op">=</span>setup, portable<span class="op">=</span><span class="va">False</span>, app_data_dir<span class="op">=</span>tmp_path <span class="op">/</span> <span class="st">&quot;appdata&quot;</span>, pid<span class="op">=</span><span class="dv">7</span>,</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;/VERYSILENT&quot;</span> <span class="kw">in</span> captured[<span class="st">&quot;script&quot;</span>]</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Setup-2.0.3.exe&quot;</span> <span class="kw">in</span> captured[<span class="st">&quot;script&quot;</span>]</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_begin_self_update_raises_in_dev_run(tmp_path, monkeypatch):</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(su, <span class="st">&quot;install_root_and_exe&quot;</span>, <span class="kw">lambda</span>: <span class="va">None</span>)</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pytest.raises(SelfUpdateError):</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>        su.begin_self_update(</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>            download_path<span class="op">=</span>tmp_path <span class="op">/</span> <span class="st">&quot;x.zip&quot;</span>, portable<span class="op">=</span><span class="va">True</span>, app_data_dir<span class="op">=</span>tmp_path, pid<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q</code>
+Expected: FAIL with
+<code>AttributeError: module ... has no attribute 'begin_self_update'</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add to quill/core/self_update.py</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> write_and_launch_helper(script_text: <span class="bu">str</span>, helper_dir: Path) <span class="op">-&gt;</span> Path:</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Write ``apply-update.bat`` into ``helper_dir`` and launch it detached.</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">    ``helper_dir`` MUST be outside the install directory (the system temp dir),</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    so overwriting the install never clobbers the running helper. Launched with</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    no console window and fully detached so it outlives this process.</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    helper_dir.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    helper <span class="op">=</span> helper_dir <span class="op">/</span> <span class="st">&quot;apply-update.bat&quot;</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    helper.write_text(script_text, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    creationflags <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.name <span class="op">==</span> <span class="st">&quot;nt&quot;</span>:</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        creationflags <span class="op">=</span> subprocess.CREATE_NO_WINDOW <span class="op">|</span> subprocess.DETACHED_PROCESS  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    subprocess.Popen(  <span class="co"># noqa: S603 - our own generated script, fixed path</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        [<span class="st">&quot;cmd.exe&quot;</span>, <span class="st">&quot;/c&quot;</span>, <span class="bu">str</span>(helper)],</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        creationflags<span class="op">=</span>creationflags,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        close_fds<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        cwd<span class="op">=</span><span class="bu">str</span>(helper_dir),</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> helper</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> begin_self_update(</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    download_path: Path,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    portable: <span class="bu">bool</span>,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    app_data_dir: Path,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    pid: <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Apply the already-downloaded update at ``download_path`` and relaunch.</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">    Stages a portable zip (or targets the setup exe), builds the helper script,</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">    and launches it detached. Raises :class:`SelfUpdateError` if this is not a</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">    packaged build or the asset can&#39;t be staged -- the caller then leaves the</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">    app running. On success the caller closes the window; the helper waits for</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">    this process to exit before applying anything.</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> tempfile</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>    target <span class="op">=</span> install_root_and_exe()</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> target <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> SelfUpdateError(<span class="st">&quot;This is not a packaged build; nothing to update in place.&quot;</span>)</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    install_dir, exe_path <span class="op">=</span> target</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    updates_dir <span class="op">=</span> app_data_dir <span class="op">/</span> <span class="st">&quot;updates&quot;</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>    log_path <span class="op">=</span> updates_dir <span class="op">/</span> <span class="st">&quot;apply-update.log&quot;</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>    resolved_pid <span class="op">=</span> os.getpid() <span class="cf">if</span> pid <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> pid</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> portable:</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>        staging <span class="op">=</span> updates_dir <span class="op">/</span> <span class="st">&quot;staging&quot;</span></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>        source <span class="op">=</span> stage_portable_update(download_path, staging, exe_name<span class="op">=</span>exe_path.name)</span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>        script <span class="op">=</span> build_apply_update_script(</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>            pid<span class="op">=</span>resolved_pid,</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>            mode<span class="op">=</span><span class="st">&quot;portable&quot;</span>,</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>            install_dir<span class="op">=</span>install_dir,</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>            exe_path<span class="op">=</span>exe_path,</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>            log_path<span class="op">=</span>log_path,</span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>            source_dir<span class="op">=</span>source,</span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>        script <span class="op">=</span> build_apply_update_script(</span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>            pid<span class="op">=</span>resolved_pid,</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>            mode<span class="op">=</span><span class="st">&quot;installer&quot;</span>,</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>            install_dir<span class="op">=</span>install_dir,</span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>            exe_path<span class="op">=</span>exe_path,</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>            log_path<span class="op">=</span>log_path,</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>            setup_exe<span class="op">=</span>download_path,</span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>    helper_dir <span class="op">=</span> Path(tempfile.gettempdir()) <span class="op">/</span> <span class="st">&quot;quill-apply-update&quot;</span></span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>    write_and_launch_helper(script, helper_dir)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q</code>
+Expected: PASS.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Lint +
+typecheck</strong></label></li>
+</ul>
+<p>Run:
+<code>ruff check quill/core/self_update.py &amp;&amp; mypy quill\core\self_update.py</code>
+Expected: clean.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/self_update.py tests/unit/core/test_self_update.py</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(update): begin_self_update orchestration + detached helper launch&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="task-4-end-to-end-helper-batch-test-windows-guarded">Task 4:
+End-to-end helper batch test (Windows-guarded)</h2>
+<p><strong>Files:</strong> - Test:
+<code>tests/unit/core/test_self_update.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>build_apply_update_script</code> (portable mode).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add to tests/unit/core/test_self_update.py</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess <span class="im">as</span> _subprocess</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys <span class="im">as</span> _sys</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">@pytest.mark.skipif</span>(<span class="kw">not</span> _sys.platform.startswith(<span class="st">&quot;win&quot;</span>), reason<span class="op">=</span><span class="st">&quot;Windows helper batch&quot;</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_portable_helper_batch_copies_and_preserves_data(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    install <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;install&quot;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    (install <span class="op">/</span> <span class="st">&quot;data&quot;</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    (install <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).write_text(<span class="st">&quot;OLD&quot;</span>, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    (install <span class="op">/</span> <span class="st">&quot;data&quot;</span> <span class="op">/</span> <span class="st">&quot;favorites.json&quot;</span>).write_text(<span class="st">&quot;keep me&quot;</span>, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    source <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;staging&quot;</span> <span class="op">/</span> <span class="st">&quot;app&quot;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    source.mkdir(parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    (source <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).write_text(<span class="st">&quot;NEW&quot;</span>, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    (source <span class="op">/</span> <span class="st">&quot;docs&quot;</span>).mkdir()</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    (source <span class="op">/</span> <span class="st">&quot;docs&quot;</span> <span class="op">/</span> <span class="st">&quot;readme.txt&quot;</span>).write_text(<span class="st">&quot;hello&quot;</span>, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    log <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;apply.log&quot;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># A PID that is already gone so the wait loop falls straight through, and a</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># relaunch target that is a harmless no-op (cmd /c exit).</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    script <span class="op">=</span> build_apply_update_script(</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        pid<span class="op">=</span><span class="dv">999999</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">&quot;portable&quot;</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        install_dir<span class="op">=</span>install,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        exe_path<span class="op">=</span>Path(<span class="st">&quot;cmd.exe&quot;</span>),  <span class="co"># relaunch is a no-op we don&#39;t assert on</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        log_path<span class="op">=</span>log,</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        source_dir<span class="op">=</span>source,</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    bat <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;apply-update.bat&quot;</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    bat.write_text(script, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    _subprocess.run([<span class="st">&quot;cmd.exe&quot;</span>, <span class="st">&quot;/c&quot;</span>, <span class="bu">str</span>(bat)], check<span class="op">=</span><span class="va">False</span>, timeout<span class="op">=</span><span class="dv">60</span>)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (install <span class="op">/</span> <span class="st">&quot;QuillRadio.exe&quot;</span>).read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>) <span class="op">==</span> <span class="st">&quot;NEW&quot;</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (install <span class="op">/</span> <span class="st">&quot;docs&quot;</span> <span class="op">/</span> <span class="st">&quot;readme.txt&quot;</span>).read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>) <span class="op">==</span> <span class="st">&quot;hello&quot;</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># User data survived the swap.</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (install <span class="op">/</span> <span class="st">&quot;data&quot;</span> <span class="op">/</span> <span class="st">&quot;favorites.json&quot;</span>).read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>) <span class="op">==</span> <span class="st">&quot;keep me&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails or passes</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py -q -k helper_batch</code>
+Expected: on Windows, PASS (the helper already exists from Task 1). On
+non-Windows, SKIPPED. If it FAILS, the batch text is wrong — fix
+<code>build_apply_update_script</code> until this passes (this is the
+real behavioral guard for the pure generator).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add tests/unit/core/test_self_update.py</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;test(update): end-to-end portable helper batch preserves data&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="task-5-wire-the-standalone-apps-radio-cast-app_shell.py">Task 5:
+Wire the standalone apps (Radio + Cast) — <code>app_shell.py</code></h2>
+<p><strong>Files:</strong> - Modify: <code>quill/ui/app_shell.py</code>
+(<code>_offer_app_update_install</code>, ~lines 617-678) - Test:
+<code>tests/unit/ui/test_app_shell_self_update.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>quill.core.self_update.begin_self_update</code>; existing
+<code>self._running_portable_build()</code>,
+<code>self._announce</code>, <code>self._show_modal_dialog</code>,
+<code>self.frame</code>, <code>quill.core.paths.app_data_dir</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/ui/test_app_shell_self_update.py</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> types <span class="im">import</span> SimpleNamespace</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> quill.core.self_update <span class="im">as</span> self_update</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.app_shell <span class="im">import</span> AppShellFrame</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _frame(monkeypatch, <span class="op">*</span>, portable: <span class="bu">bool</span>):</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    calls: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> AppShellFrame.<span class="fu">__new__</span>(AppShellFrame)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    frame._announce <span class="op">=</span> <span class="kw">lambda</span> msg, <span class="op">**</span>k: calls.append(<span class="ss">f&quot;announce:</span><span class="sc">{</span>msg<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    frame.frame <span class="op">=</span> SimpleNamespace(Close<span class="op">=</span><span class="kw">lambda</span>: calls.append(<span class="st">&quot;close&quot;</span>))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    frame._running_portable_build <span class="op">=</span> <span class="kw">lambda</span>: portable  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> frame, calls</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_apply_now_portable_calls_begin_self_update_then_closes(monkeypatch, tmp_path):</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    frame, calls <span class="op">=</span> _frame(monkeypatch, portable<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    got: <span class="bu">dict</span> <span class="op">=</span> {}</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>        self_update, <span class="st">&quot;begin_self_update&quot;</span>,</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> <span class="op">**</span>kw: got.update(kw),</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    target <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;QuillRadio-Portable-2.0.3.zip&quot;</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    release <span class="op">=</span> SimpleNamespace(version<span class="op">=</span><span class="st">&quot;2.0.3&quot;</span>)</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>    frame._apply_update_and_restart(release, target)  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> got[<span class="st">&quot;portable&quot;</span>] <span class="kw">is</span> <span class="va">True</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> got[<span class="st">&quot;download_path&quot;</span>] <span class="op">==</span> target</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;close&quot;</span> <span class="kw">in</span> calls</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_apply_now_failure_keeps_app_open(monkeypatch, tmp_path):</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>    frame, calls <span class="op">=</span> _frame(monkeypatch, portable<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> boom(<span class="op">**</span>kw):</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> self_update.SelfUpdateError(<span class="st">&quot;nope&quot;</span>)</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(self_update, <span class="st">&quot;begin_self_update&quot;</span>, boom)</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    frame._apply_update_and_restart(SimpleNamespace(version<span class="op">=</span><span class="st">&quot;2.0.3&quot;</span>), tmp_path <span class="op">/</span> <span class="st">&quot;x.zip&quot;</span>)  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;close&quot;</span> <span class="kw">not</span> <span class="kw">in</span> calls</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">any</span>(<span class="st">&quot;could not&quot;</span> <span class="kw">in</span> c.lower() <span class="kw">or</span> <span class="st">&quot;nope&quot;</span> <span class="kw">in</span> c.lower() <span class="cf">for</span> c <span class="kw">in</span> calls)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/ui/test_app_shell_self_update.py -q</code>
+Expected: FAIL with
+<code>AttributeError: 'AppShellFrame' object has no attribute '_apply_update_and_restart'</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<p>Add the helper method to <code>AppShellFrame</code> and call it from
+the post-download dialog. New method:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/ui/app_shell.py — add method to AppShellFrame</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _apply_update_and_restart(<span class="va">self</span>, release: <span class="bu">object</span>, target: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Apply the downloaded update and relaunch (one-click). On any failure</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">        the app stays open and the user can still Open folder.&quot;&quot;&quot;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core <span class="im">import</span> self_update</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core.paths <span class="im">import</span> app_data_dir</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._announce(<span class="ss">f&quot;Installing update </span><span class="sc">{</span><span class="bu">getattr</span>(release, <span class="st">&#39;version&#39;</span>, <span class="st">&#39;&#39;</span>)<span class="sc">}</span><span class="ss"> and restarting&quot;</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>            self_update.begin_self_update(</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                download_path<span class="op">=</span>Path(<span class="bu">str</span>(target)),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                portable<span class="op">=</span><span class="va">self</span>._running_portable_build(),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                app_data_dir<span class="op">=</span>app_data_dir(),</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> self_update.SelfUpdateError <span class="im">as</span> exc:</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._show_message_box(</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;Could not install the update automatically: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">&quot;</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;You can still choose Open folder to update manually.&quot;</span>,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Update&quot;</span>,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>                wx.ICON_ERROR <span class="op">|</span> wx.OK,</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.frame.Close()</span></code></pre></div>
+<p>Then in <code>_offer_app_update_install</code>, replace the button
+set so BOTH portable (.zip) and installer (.exe/.msi) get an
+<strong>“Install and restart now”</strong> default button, and route it
+to the new method:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/ui/app_shell.py — inside _offer_app_update_install, replace the</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># runnable/zip branching for the action button with:</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        applyable <span class="op">=</span> <span class="bu">str</span>(target).lower().endswith((<span class="st">&quot;.exe&quot;</span>, <span class="st">&quot;.msi&quot;</span>, <span class="st">&quot;.zip&quot;</span>)) <span class="kw">and</span> sys.platform.startswith(<span class="st">&quot;win&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> applyable:</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>            action_line <span class="op">=</span> <span class="st">&quot;Select &#39;Install and restart now&#39; to update and relaunch automatically, or &quot;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>            action_line <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... build dialog body with action_line as today ...</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> applyable:</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>            apply_btn <span class="op">=</span> wx.Button(dialog, wx.ID_OK, label<span class="op">=</span><span class="st">&quot;Install and restart now&quot;</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>            apply_btn.Bind(wx.EVT_BUTTON, <span class="kw">lambda</span> _e: dialog.EndModal(wx.ID_OK))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>            apply_btn.SetDefault()</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>            buttons.Add(apply_btn, <span class="dv">0</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>            close_btn.SetDefault()</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... after ShowModal ...</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> result <span class="op">==</span> wx.ID_OPEN:</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>            subprocess.Popen([<span class="st">&quot;explorer&quot;</span>, <span class="st">&quot;/select,&quot;</span>, <span class="bu">str</span>(target)])  <span class="co"># noqa: S603,S607</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> result <span class="op">==</span> wx.ID_OK <span class="kw">and</span> applyable:</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._apply_update_and_restart(release, Path(<span class="bu">str</span>(target)))</span></code></pre></div>
+<p>Keep the existing <code>import</code> of <code>Path</code> (add
+<code>from pathlib import Path</code> at method top if not already in
+scope — <code>app_shell.py</code> already imports
+<code>Path</code>).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/ui/test_app_shell_self_update.py -q</code>
+Expected: PASS (2 tests).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Regression +
+lint</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/ui/test_radio_app_close_and_keys.py -q &amp;&amp; ruff check quill/ui/app_shell.py</code>
+Expected: PASS + clean.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/app_shell.py tests/unit/ui/test_app_shell_self_update.py</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(update): one-click Install and restart for Radio/Cast (app_shell)&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="task-6-wire-quill-main_frame_updates.py">Task 6: Wire QUILL —
+<code>main_frame_updates.py</code></h2>
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/main_frame_updates.py</code>
+(<code>_offer_post_download_actions</code>, ~lines 738-808;
+<code>_extract_and_reveal_portable_update</code> stays as a fallback) -
+Test: <code>tests/unit/ui/test_app_shell_self_update.py</code> (add a
+QUILL-seam case) or a new
+<code>tests/unit/ui/test_main_frame_updates_self_update.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>quill.core.self_update.begin_self_update</code>,
+<code>quill.core.updates.running_portable</code>,
+<code>app_data_dir</code>, <code>self.frame</code>,
+<code>self._announce</code>, <code>self._show_message_box</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/ui/test_main_frame_updates_self_update.py</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> types <span class="im">import</span> SimpleNamespace</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> quill.core.self_update <span class="im">as</span> self_update</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.main_frame_updates <span class="im">import</span> UpdatesMixin  <span class="co"># adjust to the actual mixin/class name</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_quill_apply_now_calls_begin_self_update_then_closes(monkeypatch, tmp_path):</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    calls: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> UpdatesMixin.<span class="fu">__new__</span>(UpdatesMixin)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    frame._announce <span class="op">=</span> <span class="kw">lambda</span> m, <span class="op">**</span>k: calls.append(<span class="st">&quot;announce&quot;</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    frame.frame <span class="op">=</span> SimpleNamespace(Close<span class="op">=</span><span class="kw">lambda</span>: calls.append(<span class="st">&quot;close&quot;</span>))</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(self_update, <span class="st">&quot;install_root_and_exe&quot;</span>, <span class="kw">lambda</span>: (tmp_path, tmp_path <span class="op">/</span> <span class="st">&quot;quill.exe&quot;</span>))</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    got: <span class="bu">dict</span> <span class="op">=</span> {}</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(self_update, <span class="st">&quot;begin_self_update&quot;</span>, <span class="kw">lambda</span> <span class="op">**</span>kw: got.update(kw))</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(<span class="st">&quot;quill.core.updates.running_portable&quot;</span>, <span class="kw">lambda</span>: <span class="va">True</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    frame._apply_update_and_restart(SimpleNamespace(version<span class="op">=</span><span class="st">&quot;2.0.3&quot;</span>), tmp_path <span class="op">/</span> <span class="st">&quot;q.zip&quot;</span>)  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> got[<span class="st">&quot;portable&quot;</span>] <span class="kw">is</span> <span class="va">True</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;close&quot;</span> <span class="kw">in</span> calls</span></code></pre></div>
+<blockquote>
+<p>NOTE for the implementer: open
+<code>quill/ui/main_frame_updates.py</code> and use the actual
+class/mixin name that defines <code>_offer_post_download_actions</code>
+(it is the class <code>MainFrame</code> inherits for updates). Import
+that name in the test.</p>
+</blockquote>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/ui/test_main_frame_updates_self_update.py -q</code>
+Expected: FAIL (<code>_apply_update_and_restart</code> not defined).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<p>Add the same-shaped method to the updates mixin, using
+<code>running_portable()</code> (QUILL’s own detection):</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/ui/main_frame_updates.py — add to the updates mixin class</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _apply_update_and_restart(<span class="va">self</span>, release: <span class="bu">object</span>, target: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;One-click apply + relaunch on Windows; leaves the app open on failure.&quot;&quot;&quot;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core <span class="im">import</span> self_update</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core.paths <span class="im">import</span> app_data_dir</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core.updates <span class="im">import</span> running_portable</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._announce(<span class="ss">f&quot;Installing update </span><span class="sc">{</span><span class="bu">getattr</span>(release, <span class="st">&#39;version&#39;</span>, <span class="st">&#39;&#39;</span>)<span class="sc">}</span><span class="ss"> and restarting&quot;</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>            self_update.begin_self_update(</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                download_path<span class="op">=</span>Path(<span class="bu">str</span>(target)),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                portable<span class="op">=</span>running_portable(),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                app_data_dir<span class="op">=</span>app_data_dir(),</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> self_update.SelfUpdateError <span class="im">as</span> exc:</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._show_message_box(</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;Could not install the update automatically: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">&quot;</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;You can still choose Open folder to update manually.&quot;</span>,</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Update&quot;</span>,</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._wx.ICON_ERROR <span class="op">|</span> <span class="va">self</span>._wx.OK,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.frame.Close()</span></code></pre></div>
+<p>In <code>_offer_post_download_actions</code>, add an <strong>“Install
+and restart now”</strong> default button when
+<code>sys.platform.startswith("win")</code> and the asset is
+<code>.exe/.msi/.zip</code>, routing <code>wx.ID_OK</code> to
+<code>_apply_update_and_restart</code>. Keep the existing
+<code>.zip</code> “Extract now” behavior as the <strong>non-Windows /
+fallback</strong> path (rename its button to “Extract only” when the
+apply button is present, so both are available). Preserve the installer
+<code>_launch_installer</code> path as a secondary option if desired,
+but the primary default becomes apply-and-restart.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/ui/test_main_frame_updates_self_update.py -q</code>
+Expected: PASS.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Regression + lint +
+typecheck</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/ui -q -k update &amp;&amp; ruff check quill/ui/main_frame_updates.py</code>
+Expected: PASS + clean. (<code>main_frame_updates.py</code> is gradually
+typed / mypy-excluded — do not run mypy on it.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame_updates.py tests/unit/ui/test_main_frame_updates_self_update.py</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(update): one-click Install and restart for QUILL (Windows)&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="task-7-wire-audio-studio-squill-as-vendored-quillas">Task 7:
+Wire Audio Studio (<code>S:\QUILL-AS</code>, vendored
+<code>quillas</code>)</h2>
+<p><strong>Repo:</strong> <code>S:\QUILL-AS</code> vendors quill as a
+self-contained <code>quillas</code> package (it does NOT import the live
+<code>quill</code>). Its <code>StudioAppFrame</code> subclasses
+<code>quillas.ui.app_shell.AppShellFrame</code> and already calls
+<code>check_for_app_updates</code>, so it needs the identical seam
+Radio/Cast got — but placed in <code>quillas</code>, not picked up
+automatically.</p>
+<p><strong>Files:</strong> - Create:
+<code>quillas/core/self_update.py</code> and
+<code>quillas/ui/update_apply.py</code> — copies of the quill files with
+<code>from quill.core</code>→<code>from quillas.core</code> (and
+<code>from quill.core import</code>→<code>from quillas.core import</code>).
+quillas already has <code>core/updates.py</code>
+(<code>extract_portable_update</code>, <code>running_portable</code>),
+<code>core/paths.py</code> (<code>app_data_dir</code>), and
+<code>core/error_codes.py</code> (<code>CodedError</code>); it keeps the
+<code>QUILL-</code> error-code prefix, so
+<code>SelfUpdateError.code = "QUILL-UPDATE-SELF-APPLY"</code> is
+consistent. quillas has no error-code/module-budget gate, so no extra
+gate to satisfy. - Modify: <code>quillas/ui/app_shell.py</code>
+<code>_offer_app_update_install</code> — apply the same “Install and
+restart now” edit + add <code>_apply_update_and_restart</code>
+(importing <code>quillas.core.paths.app_data_dir</code> and
+<code>quillas.ui.update_apply</code>). - Create:
+<code>tests/unit/core/test_self_update.py</code> and
+<code>tests/unit/ui/test_app_shell_self_update.py</code> in
+<code>S:\QUILL-AS</code> — ported from the quill tests with
+<code>quill.*</code>→<code>quillas.*</code> imports.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Port the two core
+files with import swaps</strong></label></li>
+</ul>
+<p>Copy
+<code>quill/core/self_update.py</code>→<code>quillas/core/self_update.py</code>
+and
+<code>quill/ui/update_apply.py</code>→<code>quillas/ui/update_apply.py</code>,
+replacing <code>from quill.core</code>→<code>from quillas.core</code>.
+Verify:
+<code>python -c "import quillas.core.self_update, quillas.ui.update_apply"</code>
+from <code>S:\QUILL-AS</code>.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Step 2: Apply the
+app_shell edit</strong> (same two edits as Task 5, but
+<code>quillas.core.paths</code> / <code>quillas.ui.update_apply</code>
+imports).</label></p></li>
+<li><p><label><input type="checkbox" /><strong>Step 3: Port the tests
+and run</strong></label></p></li>
+</ul>
+<p>Run (from <code>S:\QUILL-AS</code>):
+<code>python -m pytest tests/unit/core/test_self_update.py tests/unit/ui/test_app_shell_self_update.py -q</code>
+Expected: PASS (15, incl. the Windows e2e batch). Then
+<code>ruff check quillas/core/self_update.py quillas/ui/update_apply.py quillas/ui/app_shell.py</code>
+clean, and <code>python -m pytest tests/unit/ui -q</code> shows no
+regression.</p>
+<blockquote>
+<p>Historical note: an earlier draft of this plan wired Quill Social
+(<code>S:\q-social</code>) here instead. That was reverted per
+direction; Audio Studio replaces it.</p>
+</blockquote>
+<h2 id="task-8-module-budget-full-test-sweep-and-docs">Task 8: Module
+budget, full test sweep, and docs</h2>
+<p><strong>Files:</strong> - Modify (if needed):
+<code>quill/tools/module_size_budgets.json</code> - Modify:
+<code>S:\quill-radio\docs\release-notes-2.0.md</code>,
+<code>S:\quill-radio\CHANGELOG.md</code> - Regenerate:
+<code>S:\quill-radio\docs\release-notes-2.0.html</code></p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Full targeted test
+sweep</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit/core/test_self_update.py tests/unit/ui/test_app_shell_self_update.py tests/unit/ui/test_main_frame_updates_self_update.py tests/unit/ui/test_radio_app_close_and_keys.py -q</code>
+Expected: all PASS (Windows-only batch test PASSES on this Windows
+box).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Module size budget
+gate</strong></label></li>
+</ul>
+<p>Run: <code>python -m quill.tools.module_size_budget</code> Expected:
+no NEW violations for <code>quill/ui/app_shell.py</code> or
+<code>quill/core/self_update.py</code>. If <code>app_shell.py</code> is
+newly over budget because of the added method, note it to the user (do
+not raise the ratchet without asking — pre-existing
+radio.py/main_frame_radio.py violations are unrelated and already
+known).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Error-code
+audit</strong></label></li>
+</ul>
+<p>Run: <code>python -m quill.tools.error_code_audit</code> (or
+<code>pytest tests/unit/tools -q -k error_code</code>) Expected: PASS —
+<code>SelfUpdateError</code> is coded
+<code>QUILL-UPDATE-SELF-APPLY</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Release-notes
+bullet</strong></label></li>
+</ul>
+<p>Add to <code>S:\quill-radio\docs\release-notes-2.0.md</code> under
+<code>## Update 2.0.3</code> and to
+<code>S:\quill-radio\CHANGELOG.md</code> under
+<code>## 2.0.3</code>:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Update in one click -- Quill Radio installs it and restarts itself.** When an update is available, choose Download, then **Install and restart now**: Quill Radio applies the update (extracting the new portable files over your folder, or running the installer silently) and relaunches automatically, keeping all your favorites, recordings, and settings. No more closing the app, unzipping, and swapping folders by hand.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Re-render
+HTML</strong></label></li>
+</ul>
+<p>Run:
+<code>cd /s/quill-radio &amp;&amp; pandoc docs/release-notes-2.0.md -f gfm -t html5 -s -o docs/release-notes-2.0.html</code>
+Expected: HTML regenerated. (quill-radio is <code>autocrlf=true</code>;
+the QUILL repo is not — keep new QUILL files LF.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Commit</strong>
+(only if the user asked to commit)</label></li>
+</ul>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/tools/module_size_budgets.json</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">-C</span> /s/quill-radio add docs/release-notes-2.0.md docs/release-notes-2.0.html CHANGELOG.md</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;docs(update): document one-click update in 2.0.3&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="self-review">Self-Review</h2>
+<p><strong>Spec coverage:</strong> - Installed silent+relaunch → Task 1
+(installer mode script) + Task 3 (begin_self_update installer branch) +
+Tasks 5/6 (UI). ✓ - Portable stage → helper → swap-excluding-data →
+relaunch → Tasks 1-4. ✓ - Build-flavor detection → reuse
+<code>_running_portable_build()</code> / <code>running_portable()</code>
+in Tasks 5/6. ✓ - Consent (one-click) → Tasks 5/6 button. ✓ - Safety
+(validate exe, exclude data, fail-soft, log) → Tasks 1/2 +
+<code>_apply_update_and_restart</code> error handling. ✓ -
+Single-instance coordination → helper PID-wait (Task 1); app close
+releases the lock (existing close paths). ✓ - macOS/dev fallthrough →
+<code>install_root_and_exe()</code> None + <code>applyable</code>
+guarded to <code>sys.platform.startswith("win")</code> (Tasks 2/5/6). ✓
+- Tests, docs, budget/error-code gates → Tasks 4/7. ✓</p>
+<p><strong>Placeholder scan:</strong> Task 6 intentionally instructs the
+implementer to look up the exact updates mixin class name (it varies) —
+this is a lookup, not a placeholder; the method body is complete. No
+other TBDs.</p>
+<p><strong>Type consistency:</strong>
+<code>begin_self_update(*, download_path, portable, app_data_dir, pid=None)</code>,
+<code>stage_portable_update(zip_path, staging_root, *, exe_name) -&gt; Path</code>,
+<code>install_root_and_exe() -&gt; tuple[Path, Path] | None</code>,
+<code>build_apply_update_script(*, pid, mode, install_dir, exe_path, log_path, source_dir=None, setup_exe=None, data_dirname="data") -&gt; str</code>,
+<code>write_and_launch_helper(script_text, helper_dir) -&gt; Path</code>,
+<code>_apply_update_and_restart(release, target)</code> — consistent
+across all tasks.</p>
+</body>
+</html>

@@ -98,6 +98,15 @@ _OPERATION_PROMPTS: dict[str, str] = {
     "tables from the layout where they are obvious. Preserve all of the original "
     "wording and meaning exactly — do not summarize, add, or invent content. "
     "Return only the Markdown, with no preamble:\n\n{text}",
+    "reading_order": "The following is text extracted from a document whose reading "
+    "order is jumbled — for example a multi-column PDF, a page with sidebars or text "
+    "boxes, or lines pulled out of sequence. Reconstruct the correct reading order: "
+    "put the text back into the order a person would naturally read it, merge columns "
+    "into a single flow, join lines broken mid-sentence, and group paragraphs. Infer "
+    "headings, lists, and tables from the layout where they are obvious, and return "
+    "clean Markdown. Preserve all of the original wording and meaning exactly — do not "
+    "summarize, add, remove, or invent content. Return only the Markdown, with no "
+    "preamble:\n\n{text}",
 }
 
 

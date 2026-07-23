@@ -1,0 +1,95 @@
+; Quill Weather installer -- ships the staged onedir build.
+; Compile via scripts\build_release.ps1 (which stages docs into
+; ..\dist\QuillWeather first), or directly:  ISCC quill-weather.iss
+;
+; Everything the app needs is bundled -- no downloads at install or runtime.
+; Quill Weather is small: no ffmpeg or mpv engine to ship. The staged folder
+; deliberately contains NO data\ subfolder here: that folder is the
+; portable-mode switch (see the portable zip), and an installed copy must keep
+; using the shared %APPDATA%\Quill store it shares with QUILL and Quill Radio.
+
+#define AppName "Quill Weather"
+; Version is single-sourced from build_release.ps1, which passes
+; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
+; manual ISCC run and must be kept in step with build_release.ps1's $version.
+#ifndef AppVersion
+  #define AppVersion "2.2.0"
+#endif
+#define AppPublisher "Community Access"
+#define AppURL "https://github.com/Community-Access/quill-weather"
+#define AppExeName "QuillWeather.exe"
+
+[Setup]
+AppId={{7B0C2E14-9A3D-4F6B-B1E2-8C5D3A9F0E21}}
+AppName={#AppName}
+AppVersion={#AppVersion}
+AppPublisher={#AppPublisher}
+AppPublisherURL={#AppURL}
+AppSupportURL={#AppURL}
+AppUpdatesURL={#AppURL}
+VersionInfoVersion=2.2.0.0
+VersionInfoCompany={#AppPublisher}
+VersionInfoDescription={#AppName} accessible weather with alert monitoring
+DefaultDirName={autopf}\{#AppName}
+DefaultGroupName={#AppName}
+DisableDirPage=no
+DisableProgramGroupPage=auto
+AllowNoIcons=yes
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+MinVersion=10.0
+OutputBaseFilename=Quill-Weather-Setup-{#AppVersion}
+Compression=lzma2/ultra
+SolidCompression=yes
+WizardStyle=modern
+CloseApplications=force
+RestartApplications=no
+UninstallDisplayName={#AppName} {#AppVersion}
+UninstallDisplayIcon={app}\{#AppExeName}
+SetupIconFile=..\assets\quill-weather.ico
+LicenseFile=..\LICENSE
+SetupLogging=yes
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[Types]
+Name: "full"; Description: "Full installation (recommended)"
+Name: "compact"; Description: "Compact installation (program only, no bundled documentation)"
+Name: "custom"; Description: "Custom installation"; Flags: iscustom
+
+[Components]
+Name: "main"; Description: "{#AppName} (required)"; Types: full compact custom; Flags: fixed
+Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Requirements)"; Types: full custom
+
+[InstallDelete]
+; Upgrade hygiene: the onedir layout's _internal tree is wholly ours; wipe it
+; before [Files] re-lays it so renamed/removed modules never linger and cause
+; version-skew import errors on upgrade.
+Type: filesandordirs; Name: "{app}\_internal"
+
+[Files]
+Source: "..\dist\QuillWeather\*"; DestDir: "{app}"; Components: main; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "data\*,docs\*"
+Source: "..\dist\QuillWeather\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Icons]
+Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
+Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
+
+[Tasks]
+Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
+
+[Run]
+Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\_internal"
+
+; Deliberately NO data-wipe prompt on uninstall: Quill Weather shares its
+; saved locations and settings store (%APPDATA%\Quill) with QUILL and Quill
+; Radio. Removing this app must never destroy data a sibling app still uses;
+; the full QUILL uninstaller owns that decision.

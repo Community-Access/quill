@@ -15,6 +15,7 @@ Speech is a later phase -- but every string shown here comes from
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import UTC
 from pathlib import Path
 from typing import Any
 
@@ -121,7 +122,8 @@ class WeatherCenterDialog:
             self._win.Bind(wx.EVT_CLOSE, self._on_close)
         else:
             self._win = wx.Dialog(
-                parent, title="Weather Center",
+                parent,
+                title="Weather Center",
                 style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             )
             self._surface = self._win
@@ -194,6 +196,22 @@ class WeatherCenterDialog:
         self._period_detail.SetMinSize((-1, 72))
         root.Add(self._period_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # -- hourly forecast (NWS forecastHourly) --
+        root.Add(wx.StaticText(self._surface, label="Ho&urly forecast:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._hourly_list = wx.ListBox(self._surface)
+        set_accessible_name(self._hourly_list, "Hourly forecast, one line per hour")
+        root.Add(self._hourly_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        self._hourly_detail_label = wx.StaticText(
+            self._surface, label="Selected &hour (read-only):"
+        )
+        root.Add(self._hourly_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
+        self._hourly_detail = wx.TextCtrl(
+            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+        )
+        set_accessible_name(self._hourly_detail, "Selected hour, full details")
+        self._hourly_detail.SetMinSize((-1, 48))
+        root.Add(self._hourly_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         # -- extended daily outlook (Open-Meteo, past the NWS 7 days) --
         root.Add(
             wx.StaticText(self._surface, label="&Daily outlook (extended):"),
@@ -233,6 +251,7 @@ class WeatherCenterDialog:
         self._remove_btn.Bind(wx.EVT_BUTTON, lambda _e: self._remove_location())
         self._alerts_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_alert_selected())
         self._forecast_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_period_selected())
+        self._hourly_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_hourly_selected())
         self._daily_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_daily_selected())
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh())
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _e: self._add_location())
@@ -245,6 +264,8 @@ class WeatherCenterDialog:
             self._alert_detail,
             self._period_detail_label,
             self._period_detail,
+            self._hourly_detail_label,
+            self._hourly_detail,
             self._daily_detail_label,
             self._daily_detail,
         ):
@@ -342,6 +363,7 @@ class WeatherCenterDialog:
                     location,
                     safe_mode=self._safe_mode,
                     daily_days=self._settings.daily_outlook_days,
+                    hourly_hours=self._settings.hourly_hours,
                     temperature_unit=self._settings.temperature_unit,
                 )
             except nws.WeatherError as exc:
@@ -374,6 +396,12 @@ class WeatherCenterDialog:
 
         place = location.resolved_name or location.label
         today = result.daily[0] if result.daily else None
+        local_time = ""
+        if self._settings.show_local_time and result.time_zone:
+            from datetime import datetime
+
+            local_time = render.local_time_phrase(datetime.now(UTC), result.time_zone)
+        lead = f"{local_time} " if local_time else ""
         if result.current is not None:
             block = render.current_conditions_block(
                 result.current, today, self._settings, result.air_quality
@@ -382,9 +410,11 @@ class WeatherCenterDialog:
             if result.current.observed_at:
                 observed = render.friendly_datetime(result.current.observed_at, result.time_zone)
                 when = f" Observed {observed}."
-            self._current.SetValue(f"Weather for {place}. {block}{when}")
+            self._current.SetValue(f"Weather for {place}. {lead}{block}{when}")
         else:
-            self._current.SetValue(f"Current conditions for {place} are unavailable right now.")
+            self._current.SetValue(
+                f"Weather for {place}. {lead}Current conditions are unavailable right now."
+            )
 
         periods = result.periods[: self._settings.forecast_period_count]
         self._forecast_list.Set(
@@ -393,6 +423,11 @@ class WeatherCenterDialog:
         )
         self._period_detail.SetValue(_period_detail_text(periods[0]) if periods else "")
         self._show_field(self._period_detail_label, self._period_detail, bool(periods))
+
+        hourly = result.hourly
+        self._hourly_list.Set([h.line for h in hourly] or ["Hourly forecast unavailable."])
+        self._hourly_detail.SetValue(hourly[0].line if hourly else "")
+        self._show_field(self._hourly_detail_label, self._hourly_detail, bool(hourly))
 
         self._daily_list.Set(
             [day.line for day in result.daily] or ["Extended daily outlook unavailable."]
@@ -449,6 +484,13 @@ class WeatherCenterDialog:
         if 0 <= index < len(periods):
             self._period_detail.SetValue(_period_detail_text(periods[index]))
 
+    def _on_hourly_selected(self) -> None:
+        if self._report is None:
+            return
+        index = self._hourly_list.GetSelection()
+        if 0 <= index < len(self._report.hourly):
+            self._hourly_detail.SetValue(self._report.hourly[index].line)
+
     def _on_daily_selected(self) -> None:
         if self._report is None:
             return
@@ -479,12 +521,18 @@ class WeatherCenterDialog:
             self._refresh()
             return
         self._report = None
-        for listbox in (self._alerts_list, self._forecast_list, self._daily_list):
+        for listbox in (
+            self._alerts_list,
+            self._forecast_list,
+            self._hourly_list,
+            self._daily_list,
+        ):
             listbox.Set([])
         for box in (
             self._current,
             self._alert_detail,
             self._period_detail,
+            self._hourly_detail,
             self._daily_detail,
             self._status,
         ):
@@ -492,6 +540,7 @@ class WeatherCenterDialog:
         for label_ctrl, field in (
             (self._alert_detail_label, self._alert_detail),
             (self._period_detail_label, self._period_detail),
+            (self._hourly_detail_label, self._hourly_detail),
             (self._daily_detail_label, self._daily_detail),
         ):
             self._show_field(label_ctrl, field, False)

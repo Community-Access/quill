@@ -83,6 +83,11 @@ class WeatherSettingsDialog:
         )
         grid.Add(self._daily_days, 0)
 
+        label("Ho&urly forecast (hours, 0 = off):")
+        self._hourly_hours = wx.SpinCtrl(self.dialog, min=0, max=48, initial=settings.hourly_hours)
+        set_accessible_name(self._hourly_hours, "Hourly forecast length in hours, 0 turns it off")
+        grid.Add(self._hourly_hours, 0)
+
         label("Alert &severity to show:")
         self._severity = wx.Choice(
             self.dialog, choices=[_SEVERITY_LABELS[s] for s in SEVERITY_FLOOR]
@@ -131,8 +136,10 @@ class WeatherSettingsDialog:
             ("show_visibility", "&Visibility"),
             ("show_precip_chance", "Chance of pre&cipitation today"),
             ("show_sunrise_sunset", "Sunrise and sun&set"),
+            ("show_moon", "&Moon phase, moonrise and moonset"),
             ("show_uv_index", "Ultra&violet index"),
             ("show_air_quality", "&Air quality"),
+            ("show_local_time", "Current local &time at the location"),
         ):
             self._detail_checks[attr] = self._check(root, text, getattr(settings, attr))
 
@@ -151,6 +158,46 @@ class WeatherSettingsDialog:
             root, "Active alert &count", settings.quick_include_alert_count
         )
         self._q_age = self._check(root, "Data a&ge", settings.quick_include_data_age)
+
+        # -- alert sound --
+        self._alert_sound = self._check(
+            root, "Play a &sound when a new alert is announced", settings.alert_sound_enabled
+        )
+        sound_row = wx.BoxSizer(wx.HORIZONTAL)
+        sound_row.Add(
+            wx.StaticText(self.dialog, label="Alert soun&d:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._alert_sound_path = wx.TextCtrl(self.dialog, style=wx.TE_READONLY)
+        set_accessible_name(self._alert_sound_path, "Chosen alert sound file")
+        self._alert_sound_path.SetValue(settings.alert_sound_path or "(default chime)")
+        self._alert_sound_value = settings.alert_sound_path
+        sound_row.Add(self._alert_sound_path, 1, wx.EXPAND | wx.RIGHT, 6)
+        choose_btn = wx.Button(self.dialog, label="C&hoose...")
+        play_btn = wx.Button(self.dialog, label="&Play")
+        default_btn = wx.Button(self.dialog, label="Use De&fault")
+        for b in (choose_btn, play_btn, default_btn):
+            sound_row.Add(b, 0, wx.RIGHT, 4)
+        root.Add(sound_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        choose_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose_alert_sound())
+        play_btn.Bind(wx.EVT_BUTTON, lambda _e: self._preview_alert_sound())
+        default_btn.Bind(wx.EVT_BUTTON, lambda _e: self._reset_alert_sound())
+
+        repeat_row = wx.BoxSizer(wx.HORIZONTAL)
+        repeat_row.Add(
+            wx.StaticText(self.dialog, label="P&lay the alert sound this many times:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._alert_sound_repeat = wx.SpinCtrl(
+            self.dialog, min=1, max=10, initial=settings.alert_sound_repeat
+        )
+        set_accessible_name(self._alert_sound_repeat, "Number of times to play the alert sound")
+        repeat_row.Add(self._alert_sound_repeat, 0)
+        root.Add(repeat_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
 
         root.Add(
             wx.StaticText(
@@ -184,6 +231,37 @@ class WeatherSettingsDialog:
         sizer.Add(box, 0, self._wx.LEFT | self._wx.TOP, 12)
         return box
 
+    # -- alert sound --
+
+    def _choose_alert_sound(self) -> None:
+        wx = self._wx
+        dlg = wx.FileDialog(
+            self.dialog,
+            "Choose an alert sound",
+            wildcard="Sound files (*.wav)|*.wav|All files (*.*)|*.*",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        )
+        try:
+            if dlg.ShowModal() == wx.ID_OK:
+                self._alert_sound_value = dlg.GetPath()
+                self._alert_sound_path.SetValue(self._alert_sound_value)
+                self._announce("Alert sound chosen.")
+        finally:
+            dlg.Destroy()
+
+    def _reset_alert_sound(self) -> None:
+        self._alert_sound_value = ""
+        self._alert_sound_path.SetValue("(default chime)")
+        self._announce("Using the default alert sound.")
+
+    def _preview_alert_sound(self) -> None:
+        """Play the currently-selected sound (or the default) so the user can
+        hear it before saving."""
+        from quill.platform import alert_sound
+
+        alert_sound.play_alert_sound(self._alert_sound_value, self._alert_sound_repeat.GetValue())
+        self._announce("Playing the alert sound.")
+
     def show(self) -> bool:
         """Modal; returns True if settings were saved."""
         self.dialog.CentreOnParent()
@@ -210,6 +288,7 @@ class WeatherSettingsDialog:
         s.wind_unit = WIND_UNITS[self._wind.GetSelection()]
         s.forecast_period_count = self._periods.GetValue()
         s.daily_outlook_days = self._daily_days.GetValue()
+        s.hourly_hours = self._hourly_hours.GetValue()
         for attr, check in self._detail_checks.items():
             setattr(s, attr, check.GetValue())
         s.alert_severity_floor = SEVERITY_FLOOR[self._severity.GetSelection()]
@@ -225,6 +304,9 @@ class WeatherSettingsDialog:
         s.muted_events = [
             line.strip() for line in self._muted.GetValue().splitlines() if line.strip()
         ]
+        s.alert_sound_enabled = self._alert_sound.GetValue()
+        s.alert_sound_path = self._alert_sound_value
+        s.alert_sound_repeat = self._alert_sound_repeat.GetValue()
         settings_mod.save_settings(self._data_dir, s)
         self._saved = True
         self._announce("Weather settings saved.")

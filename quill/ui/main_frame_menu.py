@@ -1612,6 +1612,7 @@ class MenuBuilderMixin:
         self._id_ai_expand_selection = wx.NewIdRef()
         self._id_ai_generate_toc = wx.NewIdRef()
         self._id_ai_thesaurus = wx.NewIdRef()
+        self._id_ai_reading_order = wx.NewIdRef()
         self._id_ai_document_qa = wx.NewIdRef()
         self._id_train_style = wx.NewIdRef()
         self._id_writing_instructions = wx.NewIdRef()
@@ -1657,6 +1658,7 @@ class MenuBuilderMixin:
         self._id_dev_restart_ts_worker = wx.NewIdRef()
         self._id_open_story_studio = wx.NewIdRef()
         self._id_work_personas = wx.NewIdRef()
+        self._id_calculator = wx.NewIdRef()
         self._id_vault_open = wx.NewIdRef()
         self._id_vault_follow_link = wx.NewIdRef()
         self._id_vault_backlinks = wx.NewIdRef()
@@ -1719,6 +1721,12 @@ class MenuBuilderMixin:
             self._id_work_personas,
             self._menu_label(_("Work &Personas..."), "tools.work_personas"),
         )
+        tools_menu.Append(
+            self._id_calculator,
+            self._menu_label(_("Ca&lculator..."), "tools.calculator"),
+        )
+        # (The cross-app launchers live in the top-level QuillVille menu, built
+        # near the end of the menu bar -- see the QuillVille append below.)
         vault_menu = wx.Menu()
         vault_menu.Append(self._id_vault_open, self._menu_label(_("&Open Vault..."), "vault.open"))
         vault_menu.Append(
@@ -2770,6 +2778,10 @@ class MenuBuilderMixin:
             self._menu_label(_("Document &Q&&A..."), "tools.ai_document_qa"),
         )
         more_menu.Append(
+            self._id_ai_reading_order,
+            self._menu_label(_("Improve &Reading Order..."), "tools.ai_reading_order"),
+        )
+        more_menu.Append(
             self._id_ai_thesaurus,
             self._menu_label(_("AI T&hesaurus..."), "tools.ai_thesaurus"),
         )
@@ -3212,6 +3224,19 @@ class MenuBuilderMixin:
         menu_bar.Append(tools_menu, _("&Tools"))
         menu_bar.Append(ai_menu, _("&AI"))
         menu_bar.Append(window_menu, _("&Window"))
+        # The standard QuillVille cross-app switcher, just before Help -- the
+        # same menu every QuillVille app carries.
+        from quill.ui.quillville_menu import build_quillville_menu
+
+        self._quillville_menu_ids: list[object] = []
+        quillville_menu = build_quillville_menu(
+            wx,
+            self.frame,
+            self.open_companion_app,
+            exclude="quill",
+            retain=self._quillville_menu_ids.append,
+        )
+        menu_bar.Append(quillville_menu, _("&QuillVille"))
         menu_bar.Append(help_menu, _("&Help"))
 
         # #76: on macOS, tell wx this is the system Window menu. AppKit then

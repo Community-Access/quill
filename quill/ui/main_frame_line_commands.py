@@ -35,6 +35,32 @@ from quill.core.line_ops import (
 
 
 class LineCommandsMixin:
+    def open_calculator(self) -> None:
+        """Tools > Calculator: an accessible scientific calculator that also does
+        statistics over the selected numbers, a pasted column, CSV, or a table.
+        Pre-fills with the current selection and can insert a result at the cursor."""
+        from quill.ui.calculator_dialog import CalculatorDialog
+
+        editor = getattr(self, "editor", None)
+        selection = ""
+        if editor is not None:
+            try:
+                selection = editor.GetStringSelection()
+            except Exception:  # noqa: BLE001 - a odd selection must not block the tool
+                selection = ""
+
+        def _insert(text: str) -> None:
+            ed = getattr(self, "editor", None)
+            if ed is not None:
+                ed.WriteText(text)
+
+        CalculatorDialog(
+            self.frame,
+            initial_text=selection,
+            insert_cb=_insert,
+            announce_cb=self._announce,
+        ).show()
+
     def move_line_up(self) -> None:
         # Selection-aware (issue #133): a multi-line selection moves as one block,
         # the status names the line count so the result is unambiguous to a screen

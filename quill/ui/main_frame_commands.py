@@ -587,6 +587,12 @@ class CommandRegistryMixin:
             self.open_ai_thesaurus,
             self._binding_for("tools.ai_thesaurus"),
         )
+        self.commands.register(
+            "tools.ai_reading_order",
+            "Improve Reading Order",
+            self.open_ai_improve_reading_order,
+            self._binding_for("tools.ai_reading_order"),
+        )
         from quill.ui.agent_editor_host import register_agent_commands
 
         register_agent_commands(self)  # Run Agent palette entries (one per catalog agent)
@@ -2061,6 +2067,24 @@ class CommandRegistryMixin:
             self._binding_for("tools.work_personas"),
         )
         self.commands.register(
+            "tools.calculator",
+            "Calculator...",
+            self.open_calculator,
+            self._binding_for("tools.calculator"),
+        )
+        self.commands.register(
+            "app.open_radio",
+            "Open Quill Radio",
+            lambda: self.open_companion_app("radio"),
+            self._binding_for("app.open_radio"),
+        )
+        self.commands.register(
+            "app.open_weather",
+            "Open Quill Weather",
+            lambda: self.open_companion_app("weather"),
+            self._binding_for("app.open_weather"),
+        )
+        self.commands.register(
             "tools.csv_studio",
             "Open CSV in Table Studio (Experimental)",
             self.open_csv_studio,
@@ -2290,6 +2314,7 @@ class CommandRegistryMixin:
             "tools.ai_grammar_style": self._id_ai_grammar_style,
             "tools.ai_translate_selection": self._id_ai_translate_selection,
             "tools.ai_thesaurus": self._id_ai_thesaurus,
+            "tools.ai_reading_order": self._id_ai_reading_order,
             "tools.copilot_onboarding": self._id_ai_copilot_setup,
             "tools.validate_agents": self._id_ai_validate_agents,
             "tools.ai_session_browser": self._id_ai_session_browser,

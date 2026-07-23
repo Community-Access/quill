@@ -280,36 +280,119 @@ def test_f2_still_renames_alongside_the_new_volume_handling() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_nfb_radio_appears_on_station_menu_and_plays_nfbrn() -> None:
-    from quill.ui.main_frame_radio import RadioMixin
+# ---------------------------------------------------------------------------
+# Recently Played stays current: rebuilt just-in-time on Station-menu open,
+# newest first, cleared-then-refilled (never duplicated). ACB Media / NFB Radio
+# were removed from the Station menu -- they live in Browse Stations now.
+# ---------------------------------------------------------------------------
 
+
+class _FakeMenuItem:
+    def __init__(self, item_id: object, label: str) -> None:
+        self.id = item_id
+        self.label = label
+        self.enabled = True
+
+    def Enable(self, on: bool) -> None:  # noqa: N802 - wx shape
+        self.enabled = on
+
+
+class _FakeSubMenu:
+    def __init__(self) -> None:
+        self.items: list[_FakeMenuItem] = []
+        self.binds: list[tuple[object, Any]] = []
+
+    def GetMenuItems(self):  # noqa: N802 - wx shape
+        return list(self.items)
+
+    def Delete(self, item: _FakeMenuItem) -> None:  # noqa: N802 - wx shape
+        self.items.remove(item)
+
+    def Append(self, item_id: object, label: str) -> _FakeMenuItem:  # noqa: N802 - wx shape
+        mi = _FakeMenuItem(item_id, label)
+        self.items.append(mi)
+        return mi
+
+    def Bind(self, _evt: object, handler: Any, id: object = None) -> None:  # noqa: N802, A002
+        self.binds.append((id, handler))
+
+
+def _recent_frame(sub: _FakeSubMenu) -> tuple[Any, list[str]]:
     played: list[str] = []
-    binds: list = []
+    counter = [0]
 
-    class _FakeMenu:
-        def __init__(self) -> None:
-            self.items: list = []
-
-        def Append(self, item_id, label):  # noqa: N802 - wx shape
-            self.items.append((item_id, label))
-
-        def Bind(self, _evt, handler, id=None):  # noqa: N802, A002
-            binds.append((id, handler))
-
-        def AppendSubMenu(self, submenu, label):  # noqa: N802
-            self.items.append((None, label))
+    def new_id() -> int:
+        counter[0] += 1
+        return counter[0]
 
     frame = SimpleNamespace(
-        _wx=SimpleNamespace(NewIdRef=lambda: object(), EVT_MENU="evt", Menu=_FakeMenu),
-        _radio_controller=SimpleNamespace(play_station=lambda s: played.append(s.name)),
+        _wx=SimpleNamespace(NewIdRef=new_id, ID_ANY=-1, EVT_MENU="evt"),
+        _recent_submenu=sub,
+        _radio_history=SimpleNamespace(stations=[]),
+        _radio_favorites=SimpleNamespace(find=lambda _key: None),
+        _radio_controller=SimpleNamespace(play_station=lambda s: played.append(s.display_name)),
         _retain_radio_menu_ids=lambda *a: None,
     )
-    menu = _FakeMenu()
-    RadioMixin._append_nfb_media_submenu(frame, menu)  # type: ignore[arg-type]
+    return frame, played
 
-    assert any("NFB" in label for _id, label in menu.items), "NFB item added to Station menu"
-    binds[-1][1](None)  # invoke the menu handler
-    assert any("NFBRN" in name for name in played), "playing it starts the NFBRN stream"
+
+def test_recently_played_empty_shows_disabled_placeholder() -> None:
+    from quill.ui.main_frame_radio import RadioMixin
+
+    sub = _FakeSubMenu()
+    frame, _played = _recent_frame(sub)
+
+    RadioMixin._rebuild_recent_submenu(frame)  # type: ignore[arg-type]
+
+    assert [i.label for i in sub.items] == ["(none yet)"]
+    assert sub.items[0].enabled is False, "the placeholder is not selectable"
+
+
+def test_recently_played_rebuild_reflects_history_newest_first_without_duplicating() -> None:
+    from quill.ui.main_frame_radio import RadioMixin
+
+    sub = _FakeSubMenu()
+    frame, played = _recent_frame(sub)
+    jazz = SimpleNamespace(display_name="Jazz FM", station_uuid="u1", stream_url="j")
+    news = SimpleNamespace(display_name="News 24", station_uuid="u2", stream_url="n")
+    # History is newest-first already (the store moves replays to the front).
+    frame._radio_history.stations = [news, jazz]
+
+    RadioMixin._rebuild_recent_submenu(frame)  # type: ignore[arg-type]
+    assert [i.label for i in sub.items] == ["News 24", "Jazz FM"]
+
+    # A second rebuild replaces the items -- it never appends a stale second copy.
+    RadioMixin._rebuild_recent_submenu(frame)  # type: ignore[arg-type]
+    assert [i.label for i in sub.items] == ["News 24", "Jazz FM"]
+
+    # The bound handler plays that station.
+    sub.binds[-1][1](None)
+    assert played == ["Jazz FM"]
+
+
+def test_station_menu_open_rebuilds_recent_and_always_skips() -> None:
+    rebuilt: list[bool] = []
+    skipped: list[bool] = []
+    station_menu = object()
+    frame = SimpleNamespace(
+        _station_menu=station_menu,
+        _rebuild_recent_submenu=lambda: rebuilt.append(True),
+    )
+
+    # Opening the Station menu rebuilds Recently Played, then skips so the Window
+    # menu's own EVT_MENU_OPEN handler still runs.
+    event = SimpleNamespace(GetMenu=lambda: station_menu, Skip=lambda: skipped.append(True))
+    RadioAppFrame._on_station_menu_open(frame, event)  # type: ignore[arg-type]
+    assert rebuilt == [True]
+    assert skipped == [True]
+
+    # Opening any other menu does not rebuild, but still skips.
+    rebuilt.clear()
+    skipped.clear()
+    other = SimpleNamespace(GetMenu=lambda: object(), Skip=lambda: skipped.append(True))
+    RadioAppFrame._on_station_menu_open(frame, other)  # type: ignore[arg-type]
+    assert rebuilt == []
+    assert skipped == [True]
 
 
 # ---------------------------------------------------------------------------
@@ -350,6 +433,33 @@ def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) ->
 
 
 # ---------------------------------------------------------------------------
+# Volume slider: arrowing the focused slider must not double-speak (#1214)
+# ---------------------------------------------------------------------------
+
+
+def test_volume_slider_arrow_sets_volume_without_a_redundant_announce() -> None:
+    # The slider has keyboard focus while it is arrowed, so the screen reader
+    # already speaks the new value; an extra _announce made every keystroke
+    # double-speak ("55" then "Radio volume 55"). The handler now only sets the
+    # volume and refreshes state -- it must not announce.
+    calls: list[str] = []
+    frame = SimpleNamespace(
+        _radio_controller=SimpleNamespace(set_volume=lambda p: calls.append(f"set:{p}")),
+        _volume_slider=SimpleNamespace(GetValue=lambda: 55),
+        _status_bar=SimpleNamespace(refresh=lambda: calls.append("refresh")),
+        _announce=lambda m: calls.append(f"say:{m}"),
+    )
+
+    RadioAppFrame._on_volume_slider(frame, None)  # type: ignore[arg-type]
+
+    assert "set:55" in calls, "the slider still drives the real volume"
+    assert "refresh" in calls, "live status stays in sync"
+    assert not any(c.startswith("say:") for c in calls), (
+        "the focused slider already speaks its value -- no extra announcement"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Alt+F4 / Exit close path (_on_radio_app_close)
 # ---------------------------------------------------------------------------
 
@@ -386,8 +496,16 @@ def _close_frame(
     monkeypatch.setattr(radio_history_module, "save_history", lambda d, h: saved.append((d, h)))
 
     calls: list[str] = []
+    deferred: list[tuple[Any, tuple[Any, ...]]] = []
+    closed: list[bool] = []
     frame = RadioAppFrame.__new__(RadioAppFrame)
-    frame.frame = object()
+    frame.frame = SimpleNamespace(Close=lambda: closed.append(True))
+    # _on_radio_app_close no longer ShowModals from inside EVT_CLOSE; it defers
+    # the confirm dialog via self._wx.CallAfter. Capture the scheduled call so a
+    # test can drive _ask_close_action itself (see _run_deferred).
+    frame._wx = SimpleNamespace(CallAfter=lambda fn, *a: deferred.append((fn, a)))
+    frame._deferred = deferred  # type: ignore[attr-defined]
+    frame._closed = closed  # type: ignore[attr-defined]
     frame._announce = lambda _msg: None
     frame._radio_history = SimpleNamespace(close_action=close_action)
     frame._radio_recorder = SimpleNamespace(
@@ -413,6 +531,14 @@ def _close_event() -> tuple[SimpleNamespace, list[bool], list[bool]]:
     vetoed: list[bool] = []
     event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
     return event, skipped, vetoed
+
+
+def _run_deferred(frame: Any) -> None:
+    """Invoke the _ask_close_action that _on_radio_app_close scheduled via
+    CallAfter -- i.e. simulate the deferred confirm dialog actually running."""
+    assert frame._deferred, "expected a deferred _ask_close_action to have been scheduled"
+    fn, args = frame._deferred.pop(0)
+    fn(*args)
 
 
 def test_second_close_while_dialog_open_is_ignored(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -457,41 +583,57 @@ def test_close_skips_dialog_and_exits_when_nothing_playing_or_recording(
         (False, RadioPlayerState.CONNECTING),
     ],
 )
-def test_close_prompts_when_recording_or_playback_active(
+def test_close_defers_prompt_when_recording_or_playback_active(
     monkeypatch: pytest.MonkeyPatch, recording_active: bool, player_state: RadioPlayerState
 ) -> None:
+    # Closing while something is playing/recording must NOT ShowModal from inside
+    # the EVT_CLOSE handler (unreliable on wxMSW -- Alt+F4 did nothing while a
+    # station played). It vetoes the close and schedules the confirm dialog via
+    # CallAfter; nothing is shown or shut down synchronously.
     frame, calls = _close_frame(
         monkeypatch, recording_active=recording_active, player_state=player_state
     )
     event, skipped, vetoed = _close_event()
 
-    # Cancel: the dialog's show() returns None.
-    orig_init = _FakeCloseConfirmDialog.__init__
-
-    def _init_with_cancel(self: _FakeCloseConfirmDialog, *a: object, **k: object) -> None:
-        orig_init(self, *a, **k)
-        self.result = None
-
-    monkeypatch.setattr(_FakeCloseConfirmDialog, "__init__", _init_with_cancel)
-
     frame._on_radio_app_close(event)
 
-    assert len(_FakeCloseConfirmDialog.instances) == 1
-    dialog = _FakeCloseConfirmDialog.instances[0]
-    assert dialog.recording_active is recording_active
-    assert vetoed == [True], "cancelling the prompt must veto the close"
+    assert vetoed == [True], "the close is vetoed; the deferred prompt decides what happens"
     assert skipped == []
-    assert calls == [], "a vetoed close must not run shutdown"
-    assert frame._closing_in_progress is False, "guard must reset after the dialog closes"
+    assert frame._closing_in_progress is True, "guard is held until the deferred dialog finishes"
+    assert _FakeCloseConfirmDialog.instances == [], "no modal is shown from inside EVT_CLOSE"
+    assert calls == [], "no shutdown until the user actually chooses Exit"
+    assert len(frame._deferred) == 1, "exactly one confirm dialog is scheduled"
+    fn, args = frame._deferred[0]
+    # The shared close flow schedules _run_close_confirm carrying the app's own
+    # confirm dialog callable (_radio_close_confirm).
+    assert fn == frame._run_close_confirm
+    assert args == (frame._radio_close_confirm,)
 
 
-def test_exit_after_recording_completes_the_close(monkeypatch: pytest.MonkeyPatch) -> None:
-    # #1153: after making a recording, choosing Exit must actually exit -- run
-    # every shutdown step and skip the close event -- not hang the app. The
-    # shutdowns are all non-blocking (recorder stops on daemon threads, the mpv
-    # engine soft-stops, the enhancement relay is a threading server), so the
-    # close path returns and the frame is destroyed.
-    frame, calls = _close_frame(
+def test_deferred_cancel_keeps_window_open_and_resets_guard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The confirm dialog's default result is None (Cancel): the window stays open,
+    # nothing shuts down, and the guard resets so a later close still works.
+    frame, calls = _close_frame(monkeypatch, player_state=RadioPlayerState.PLAYING)
+    event, _skipped, _vetoed = _close_event()
+    frame._on_radio_app_close(event)
+
+    _run_deferred(frame)
+
+    assert len(_FakeCloseConfirmDialog.instances) == 1
+    assert _FakeCloseConfirmDialog.instances[0].recording_active is False
+    assert calls == [], "cancel leaves everything as-is"
+    assert frame._closed == [], "cancel does not close the frame"
+    assert frame._closing_in_progress is False, "guard resets so a later close works"
+
+
+def test_deferred_exit_triggers_a_real_close(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #1153: after making a recording, choosing Exit must actually exit. The
+    # deferred handler re-enters the close path deliberately (sets _exit_requested
+    # and calls frame.Close()), where the real shutdown + Skip run (covered by the
+    # explicit-exit tests below).
+    frame, _calls = _close_frame(
         monkeypatch, recording_active=True, player_state=RadioPlayerState.PLAYING
     )
 
@@ -502,20 +644,17 @@ def test_exit_after_recording_completes_the_close(monkeypatch: pytest.MonkeyPatc
         self.result = ("exit", False)
 
     monkeypatch.setattr(_FakeCloseConfirmDialog, "__init__", _init_with_exit)
-    event, skipped, vetoed = _close_event()
-
+    event, _skipped, _vetoed = _close_event()
     frame._on_radio_app_close(event)
 
-    assert skipped == [True], "Exit after recording must proceed to a real exit"
-    assert vetoed == []
-    assert "controller.shutdown" in calls
-    assert "recorder.shutdown" in calls
-    assert "scheduler.shutdown" in calls
-    assert "task_manager.shutdown(wait=False)" in calls
-    assert frame._closing_in_progress is False
+    _run_deferred(frame)
+
+    assert frame._exit_requested is True, "Exit re-enters the close path deliberately"
+    assert frame._closed == [True], "frame.Close() runs the real shutdown"
+    assert frame._closing_in_progress is False, "guard resets before re-entering close"
 
 
-def test_dont_ask_again_persists_close_action_and_minimizes(
+def test_deferred_minimize_with_dont_ask_persists_and_goes_to_tray(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     frame, calls = _close_frame(monkeypatch, player_state=RadioPlayerState.PLAYING)
@@ -527,31 +666,32 @@ def test_dont_ask_again_persists_close_action_and_minimizes(
         self.result = ("minimize", True)
 
     monkeypatch.setattr(_FakeCloseConfirmDialog, "__init__", _init_with_minimize)
-    event, skipped, vetoed = _close_event()
-
+    event, _skipped, _vetoed = _close_event()
     frame._on_radio_app_close(event)
+
+    _run_deferred(frame)
 
     assert frame._radio_history.close_action == "minimize"
     assert frame._saved_history == [("FAKE_APP_DATA_DIR", frame._radio_history)]
-    assert vetoed == [True], "minimize vetoes the close instead of exiting"
-    assert calls == ["send_to_tray"]
-    assert skipped == []
+    assert calls == ["send_to_tray"], "minimize tucks to the tray"
+    assert frame._closed == [], "minimize does not close the frame"
+    assert frame._closing_in_progress is False
 
 
-def test_closing_in_progress_resets_even_if_dialog_raises(
+def test_run_close_confirm_resets_guard_even_if_dialog_raises(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     frame, _calls = _close_frame(monkeypatch, player_state=RadioPlayerState.PLAYING)
+    frame._closing_in_progress = True  # as handle_app_close set it before deferring
 
     class _RaisingDialog(_FakeCloseConfirmDialog):
         def show(self) -> tuple[str, bool] | None:
             raise RuntimeError("boom")
 
     monkeypatch.setattr(close_confirm_dialog_module, "RadioCloseConfirmDialog", _RaisingDialog)
-    event, _skipped, _vetoed = _close_event()
 
     with pytest.raises(RuntimeError):
-        frame._on_radio_app_close(event)
+        frame._run_close_confirm(frame._radio_close_confirm)
 
     assert frame._closing_in_progress is False, (
         "the guard must reset even when the dialog itself raises, or every "

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>2026-07-05-math-feature-completion</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -249,20 +245,20 @@ superpowers:subagent-driven-development (recommended) or
 superpowers:executing-plans to implement this plan task-by-task. Steps
 use checkbox (<code>- [x]</code>) syntax for tracking.</p>
 </blockquote>
-<p><strong>Goal:</strong> Make QUILL's math-equations feature actually
+<p><strong>Goal:</strong> Make QUILL’s math-equations feature actually
 render and round-trip correctly in the browser preview, HTML export, and
 Word (.docx) — both directions — building on the already-shipped
 <code>quill/core/math/</code> MathML/LaTeX bridge and the
 abbreviation/agent work from earlier in
 <code>docs/planning/math.md</code>.</p>
 <p><strong>Architecture:</strong> Switch the bundled
-<code>math-equations</code> Quillin's delimiters to ones MathJax already
+<code>math-equations</code> Quillin’s delimiters to ones MathJax already
 recognizes by default (<code>\(...\)</code> inline, <code>$$...$$</code>
 display, both on their own paragraph) so browser preview/export need
 zero code changes. For Word, teach the native python-docx writer
 (<code>quill/io/docx_writer.py</code>) to splice a real
 <code>&lt;m:oMath&gt;</code> fragment — obtained via a one-equation
-round trip through QUILL's existing Pandoc bridge — into the run stream
+round trip through QUILL’s existing Pandoc bridge — into the run stream
 wherever it finds one of those delimiters, falling back to plain literal
 text if Pandoc is unavailable. Lock in the (already-correct) docx
 read-side behavior with regression tests.</p>
@@ -285,7 +281,7 @@ and the relevant scoped <code>pytest</code> after every task.</li>
 MathJax <code>&lt;script&gt;</code> tags in
 <code>quill/core/browser_preview.py:217</code> and
 <code>quill/io/export.py:226-227</code> are left untouched (verified:
-both <code>\(...\)</code> and <code>$$...$$</code> are MathJax's
+both <code>\(...\)</code> and <code>$$...$$</code> are MathJax’s
 built-in defaults, and both <code>render_preview_body</code> and
 <code>markdown_to_rich</code> already pass backslashes and
 <code>$$</code> through unmodified — verified empirically this
@@ -299,25 +295,17 @@ already export as readable literal text and that is left as-is).</li>
 <h3
 id="task-1-switch-math-equations-quillin-to-mathjax-default-delimiters">Task
 1: Switch math-equations Quillin to MathJax-default delimiters</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Modify:
-<code>quill/quillins_bundled/math-equations/extension.py</code></li>
-<li>Modify:
-<code>quill/quillins_bundled/math-equations/manifest.json</code></li>
-<li>Modify:
-<code>quill/quillins_bundled/math-equations/README.md</code></li>
-<li>Modify:
-<code>tests/unit/core/test_quillins_bundled_math_equations.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Produces: inline equations wrapped as <code>\(...\)</code>;
-display/block equations wrapped as a single-line <code>$${eq}$$</code>
-on its own paragraph (blank line before/after, but no separate fence
-lines) — this is what Task 2 depends on (single-span, single-paragraph
-equations are what the docx splicer can find).</li>
-</ul>
+<p><strong>Files:</strong> - Modify:
+<code>quill/quillins_bundled/math-equations/extension.py</code> -
+Modify: <code>quill/quillins_bundled/math-equations/manifest.json</code>
+- Modify: <code>quill/quillins_bundled/math-equations/README.md</code> -
+Modify:
+<code>tests/unit/core/test_quillins_bundled_math_equations.py</code></p>
+<p><strong>Interfaces:</strong> - Produces: inline equations wrapped as
+<code>\(...\)</code>; display/block equations wrapped as a single-line
+<code>$${eq}$$</code> on its own paragraph (blank line before/after, but
+no separate fence lines) — this is what Task 2 depends on (single-span,
+single-paragraph equations are what the docx splicer can find).</p>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 1: Update
 the failing tests first</strong></label></li>
@@ -348,9 +336,9 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 name.)</p>
 <p>Also replace every other <code>"Inline  ($...$)"</code> choice
 literal in the file with <code>"Inline  (\\(...\\))"</code> (the
-constant's new display text) — this affects
+constant’s new display text) — this affects
 <code>test_inline_selection_stripped_and_replaced</code>,
-<code>test_cancel_mode_choice_does_nothing</code>'s sibling, and the
+<code>test_cancel_mode_choice_does_nothing</code>’s sibling, and the
 sample-corpus loop tests. Update these specific bodies:</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_inline_selection_stripped_and_replaced() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
@@ -525,28 +513,21 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="
 <h3
 id="task-2-splice-real-word-equations-into-the-native-docx-writer">Task
 2: Splice real Word equations into the native docx writer</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Create: <code>quill/io/docx_math.py</code></li>
-<li>Modify: <code>quill/io/docx_writer.py</code></li>
-<li>Test: <code>tests/unit/io/test_docx_math.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes:
+<p><strong>Files:</strong> - Create: <code>quill/io/docx_math.py</code>
+- Modify: <code>quill/io/docx_writer.py</code> - Test:
+<code>tests/unit/io/test_docx_math.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
 <code>quill.io.pandoc.convert_file_with_pandoc(source_path, target_path, *, from_format, to_format, ...) -&gt; Path</code>
 (raises <code>PandocUnavailableError</code> /
 <code>PandocConversionError</code> on failure);
 <code>docx.oxml.parse_xml(xml_string)</code> (returns an lxml element
-appendable via <code>paragraph._p.append(...)</code>).</li>
-<li>Produces:
+appendable via <code>paragraph._p.append(...)</code>). - Produces:
 <code>split_math_segments(text: str) -&gt; list[MathSegment]</code> and
 <code>omml_fragment_for_latex(latex: str, *, display: bool) -&gt; str | None</code>
 (returns <code>None</code>, not raises, when Pandoc is unavailable or
-the equation fails to convert) — Task 2's <code>rich_to_docx</code>
+the equation fails to convert) — Task 2’s <code>rich_to_docx</code>
 change is the only consumer, but both are public functions other docx
-code can reuse later.</li>
-</ul>
+code can reuse later.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 1: Write the
 failing tests for <code>docx_math.py</code></strong></label></li>
@@ -749,7 +730,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a h
 </ul>
 <p>Run: <code>pytest tests/unit/io/test_docx_math.py -q</code> Expected:
 all PASS. (<code>test_docx_writer_math.py</code> still fails —
-<code>rich_to_docx</code> doesn't call this module yet.)</p>
+<code>rich_to_docx</code> doesn’t call this module yet.)</p>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 5: Wire
 <code>docx_math</code> into
@@ -762,7 +743,7 @@ line):</p>
 class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.docx_math <span class="im">import</span> split_math_segments, omml_fragment_for_latex</span></code></pre></div>
 <p>Replace the per-span loop body (currently
 <code>for span in paragraph.spans: run = para.add_run(span.text)</code>
-through the end of that <code>for</code> block, i.e. lines 144-167)
+through the end of that <code>for</code> block, i.e. lines 144-167)
 with:</p>
 <div class="sourceCode" id="cb13"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> span <span class="kw">in</span> paragraph.spans:</span>
@@ -806,9 +787,9 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a h
 <span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>                    run.font.highlight_color <span class="op">=</span> <span class="bu">getattr</span>(WD_COLOR_INDEX, name)</span></code></pre></div>
 <p>Note the spliced <code>&lt;m:oMath&gt;</code> branch does
 <code>continue</code>s past the run-formatting block (there is no
-<code>run</code> object for it to format — Word equations aren't
+<code>run</code> object for it to format — Word equations aren’t
 formatted via <code>w:rPr</code> the way text runs are), while both the
-"fallback literal text" and "plain text" branches fall through to the
+“fallback literal text” and “plain text” branches fall through to the
 existing formatting block unchanged.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 6: Run all
@@ -844,18 +825,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href=
 <h3
 id="task-3-lock-in-docx-math-read-fidelity-with-regression-tests">Task
 3: Lock in docx math read-fidelity with regression tests</h3>
-<p><strong>Files:</strong></p>
-<ul>
-<li>Test: <code>tests/unit/io/test_structured_math.py</code></li>
-</ul>
-<p><strong>Interfaces:</strong></p>
-<ul>
-<li>Consumes:
+<p><strong>Files:</strong> - Test:
+<code>tests/unit/io/test_structured_math.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
 <code>quill.io.structured.read_structured_document(path: Path, encoding: str = "utf-8", *, docx_engine: str = "auto") -&gt; Document</code>
 (returns a <code>Document</code> with <code>.text</code>);
 <code>quill.io.docx_writer.rich_to_docx_bytes</code>;
-<code>quill.io.rtf_model.markdown_to_rich</code>.</li>
-</ul>
+<code>quill.io.rtf_model.markdown_to_rich</code>.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 1: Write the
 regression test</strong></label></li>
@@ -914,7 +890,7 @@ test</strong></label></li>
 </ul>
 <p>Run: <code>pytest tests/unit/io/test_structured_math.py -q</code>
 Expected: PASS (this is locking in existing behavior, not adding new
-code — if it fails, <code>_write_math_docx</code>'s equation didn't
+code — if it fails, <code>_write_math_docx</code>’s equation didn’t
 actually splice; re-check Task 2).</p>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 3:
@@ -927,14 +903,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href=
 <h2 id="self-review-notes">Self-Review Notes</h2>
 <ul>
 <li><strong>Spec coverage:</strong> Task 1 covers the delimiter switch
-this plan's own architecture depends on; Task 2 covers docx write (the
-concrete "Word" deliverable for the tutorial); Task 3 covers docx read
+this plan’s own architecture depends on; Task 2 covers docx write (the
+concrete “Word” deliverable for the tutorial); Task 3 covers docx read
 (already correct, now regression-locked). Step 4 (MathJax rendering)
 needed no task — verified via
 <code>render_preview_body</code>/<code>markdown_to_rich</code>
-passthrough tests already run this session, so it's called out in Global
+passthrough tests already run this session, so it’s called out in Global
 Constraints instead of a task. DAISY (step 6) is explicitly out of scope
-per the user's decision.</li>
+per the user’s decision.</li>
 <li><strong>Placeholder scan:</strong> all code blocks are complete,
 verified-in-spirit against the actual prototype run this session (the
 OMML splice in Task 2 Step 3/5 mirrors the working prototype at
@@ -942,7 +918,7 @@ OMML splice in Task 2 Step 3/5 mirrors the working prototype at
 adapted into the real module).</li>
 <li><strong>Type consistency:</strong> <code>MathSegment</code>,
 <code>split_math_segments</code>, <code>omml_fragment_for_latex</code>
-names and signatures match between Task 2's test file and implementation
+names and signatures match between Task 2’s test file and implementation
 file.</li>
 </ul>
 </body>

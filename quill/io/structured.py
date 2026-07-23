@@ -22,7 +22,7 @@ from quill.core.safe_archive import open_zip
 from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.markitdown_bridge import convert_with_markitdown
 from quill.io.pages import read_pages_document
-from quill.io.pdf import extract_pdf_text, format_pdf_document
+from quill.io.pdf import extract_pdf_outline, extract_pdf_text, format_pdf_document
 from quill.io.rtf import read_rtf_document
 
 # PERF-11: spreadsheet reads are bounded so a huge sheet cannot exhaust memory.
@@ -33,7 +33,11 @@ _SPREADSHEET_MAX_COLS = 20
 
 
 def read_structured_document(
-    path: Path, encoding: str = "utf-8", *, docx_engine: str = "auto"
+    path: Path,
+    encoding: str = "utf-8",
+    *,
+    docx_engine: str = "auto",
+    pdf_password: str | None = None,
 ) -> Document:
     suffix = path.suffix.lower()
     if suffix in {".sqlite", ".db"}:
@@ -56,7 +60,7 @@ def read_structured_document(
         text = render_epub_book(load_epub_book(path))
         metadata = {"source_kind": "epub", "engine": "epub", "quality_score": 100}
     elif suffix == ".pdf":
-        text, metadata = _format_pdf(path)
+        text, metadata = _format_pdf(path, password=pdf_password)
     elif suffix == ".pages":
         doc = read_pages_document(path)
         text = doc.text
@@ -394,8 +398,8 @@ def _missing_legacy_office_text(path: Path, source_kind: str) -> tuple[str, dict
     )
 
 
-def _format_pdf(path: Path) -> tuple[str, dict[str, object]]:
-    result = extract_pdf_text(path)
+def _format_pdf(path: Path, *, password: str | None = None) -> tuple[str, dict[str, object]]:
+    result = extract_pdf_text(path, password=password)
     text = format_pdf_document(result)
     metadata: dict[str, object] = {
         "source_kind": "pdf",
@@ -405,7 +409,20 @@ def _format_pdf(path: Path) -> tuple[str, dict[str, object]]:
         "extracted_pages": result.extracted_pages,
         "page_scores": result.page_scores,
     }
+    # Import the PDF's embedded outline (Adobe bookmarks) as (title, page) pairs so
+    # the open flow can turn them into QUILL bookmarks. Only when a reader actually
+    # saw pages (page_count > 0) -- a locked/absent PDF has none. Best-effort.
+    if result.page_count > 0:
+        outline = extract_pdf_outline(path, password=password)
+        if outline:
+            metadata["pdf_outline"] = outline
     if result.quality_score >= 50 and result.text.strip():
+        return text, metadata
+
+    # A locked PDF has no text for MarkItDown to read either (it cannot supply the
+    # password), and running it would only bury the "encrypted" signal the open
+    # flow needs to prompt for a password. Return the encrypted result unchanged.
+    if result.engine == "encrypted":
         return text, metadata
 
     markitdown_document = _read_via_markitdown(

@@ -49,6 +49,11 @@ msg.txt
 # Data folder contents (folder tracked, contents ignored)
 /data/*
 
+# Local competitive-analysis working files (never commit)
+/x.md
+/x-parity-plan.md
+/Leasey 11.5 Complete Documentation.html
+
 # Working / scratch files (not part of the project)
 zfix*
 zkey*

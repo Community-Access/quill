@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>release-notes-2.2</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-weather-2.2-release-notes">Quill Weather 2.2 – Release
+Notes</h1>
+<p>Quill Weather is a small app with a big job: to watch the sky for you
+and speak up the moment it matters. It began life inside Quill Radio’s
+Weather menu, and 2.2.0 is the moment it stands on its own – a program
+you can install, update, and leave running by itself, quietly on
+guard.</p>
+<p>It shares Quill Radio’s version number on purpose. The two grew from
+one weather effort and run the very same code, so 2.2.0 means the same
+weather in both. But they are separate apps now, each with its own
+installer, its own tray icon, and its own update feed – install one,
+both, or neither.</p>
+<h2 id="the-idea-a-guardian-not-a-screen">The idea: a guardian, not a
+screen</h2>
+<p>Most weather apps are something you open, glance at, and close. Quill
+Weather can be that – a clean, fully spoken <strong>Weather
+Center</strong> you arrow through – but its heart is the part that keeps
+working after you look away.</p>
+<p>Turn on <strong>Weather Monitoring</strong> and it keeps a steady eye
+on your location’s official National Weather Service watches, warnings,
+and advisories, and <strong>speaks each new one the instant it is
+issued</strong> – interrupting whatever is being read for the serious
+ones, a tornado or a flash flood, and telling you when the all-clear
+comes. It watches while the window is tucked in the system tray, resumes
+on its own the next time you launch, and shows a tray notification for
+every new alert. When a warning is live it quickens its pulse, checking
+as often as once a minute; when the sky clears, it eases off.</p>
+<h2 id="alerts-even-when-nothing-is-running">Alerts even when nothing is
+running</h2>
+<p>This is the reason Quill Weather exists as its own app. You should
+not have to keep a program open to be warned about the weather.</p>
+<ul>
+<li><strong>Close it, and it keeps watching.</strong> The window
+minimizes to the tray; the watch goes on.</li>
+<li><strong>Start with Windows.</strong> One checkbox and Quill Weather
+is on guard from the moment you sign in, with no window ever
+opening.</li>
+<li><strong>Watch with nothing running at all.</strong> Turn on the
+background check and Windows itself wakes a brief look at your chosen
+interval, finds any new warning, and raises a toast – no Quill Weather
+process needed in between.</li>
+</ul>
+<h2 id="a-warning-you-cannot-miss-your-way">A warning you cannot miss –
+your way</h2>
+<p>Every new alert plays an attention <strong>sounder</strong>. In
+<strong>Settings</strong> you can silence it entirely (the alert is
+still spoken and shown), swap in <strong>your own sound file</strong>
+with a <strong>Play</strong> button to hear it first, and choose
+<strong>how many times it repeats</strong>, from once to ten. And so a
+real warning never catches a setting wrong, <strong>Test Alert</strong>
+rehearses the whole thing on demand – the words, the sound, the tray
+toast, and the alert window – clearly marked as a test.</p>
+<h2 id="the-forecast-spoken-in-full">The forecast, spoken in full</h2>
+<p>The Weather Center reads, as plain arrow-navigable, copyable
+text:</p>
+<ul>
+<li>any active <strong>watches, warnings, and advisories</strong>, with
+full official instructions;</li>
+<li>a warm paragraph of <strong>current conditions</strong> –
+temperature, feels-like, sky, humidity, dew point, wind and gusts,
+pressure, visibility, cloud cover, the ultraviolet index, sunrise and
+sunset, the <strong>moon</strong> (phase, how full it is, moonrise and
+moonset – worked out on your own machine), and air quality;</li>
+<li>an <strong>hour-by-hour forecast</strong>;</li>
+<li>the <strong>National Weather Service forecast</strong>, period by
+period; and</li>
+<li>an <strong>extended daily outlook</strong> of up to 16 days.</li>
+</ul>
+<p>Every value is written for speech – “the wind is blowing from the
+west-northwest at 5 miles per hour”, not “WNW 5 mph” – and checking the
+weather in a far-off city also tells you the local time there.</p>
+<h2 id="made-to-fit-you">Made to fit you</h2>
+<p><strong>Options &gt; Customize Features…</strong> turns whole areas
+of the app on or off – Alert Monitoring, NOAA Weather Radio – and the
+ones you switch off simply disappear from the menus, exactly the way
+QUILL and Quill Radio let you tailor themselves. And the apps stay
+within reach of one another: <strong>Open Quill Radio</strong> and
+<strong>Open QUILL</strong> sit in the File menu and the tray, each
+opening in its own window.</p>
+<h2 id="not-a-fork-a-guarantee">Not a fork – a guarantee</h2>
+<p>Quill Weather runs the exact same weather feature code as QUILL and
+Quill Radio, from the same upstream <code>quill</code> package.
+Improvements land once, upstream, and reach all three together. This app
+is only the wrapper, the installer, the icon, and these docs – so
+choosing Quill Weather never means choosing an older or lesser version
+of the weather.</p>
+<h2 id="known-notes">Known notes</h2>
+<ul>
+<li>Releases are not yet code-signed: Windows SmartScreen may warn on
+first run. Choose More info, then Run anyway. Signing is planned.</li>
+<li>No audio engine ships here, so NOAA Weather Radio <em>playback</em>
+needs Quill Radio installed; Quill Weather still finds your local
+transmitter.</li>
+</ul>
+</body>
+</html>

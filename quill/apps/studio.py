@@ -254,7 +254,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._background_task_count = 0
         self._preview_generation = 0
         self._preview_cue_timer = None
-        self._closing_in_progress = False
         self._library_state = load_library(app_data_dir())
         self._history = load_history(app_data_dir())
         self._book_prefs_store = load_prefs(app_data_dir())
@@ -2468,44 +2467,43 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         event.Skip()
 
     def _on_app_close(self, event: wx.CloseEvent) -> None:
-        # Re-entrancy guard: a second Alt+F4 while the confirm box is up must
-        # not stack a second dialog (see quill-radio's close-handler history).
-        if self._closing_in_progress:
-            event.Veto()
-            return
-        action = str(self._app_prefs.get("close_action", "ask"))
+        # Thin wrapper over the shared close flow (AppShellFrame.handle_app_close),
+        # which never ShowModals from inside EVT_CLOSE -- it vetoes and defers the
+        # confirm box so a rapid second Alt+F4 can't stack a second dialog and the
+        # box reliably appears. "Ask" only prompts when background work is running.
+        self.handle_app_close(
+            event,
+            close_action=str(self._app_prefs.get("close_action", "ask")),
+            protected=bool(self._protected_background_jobs),
+            confirm=self._studio_close_confirm,
+            shutdown=self._studio_shutdown,
+        )
+
+    def _studio_close_confirm(self) -> str | None:
+        """Warn that background work is still running and ask whether to exit:
+        Yes -> "exit", No -> None (keep the Studio open; the user can minimize it
+        instead). Run deferred by the shared close flow, never from inside
+        EVT_CLOSE (see AppShellFrame.handle_app_close)."""
         running = dict(self._protected_background_jobs)
-        if action == "ask":
-            if not running:
-                action = "exit"  # nothing to protect; close like a normal window
-            else:
-                labels = "\n".join(f"- {label}" for label in running.values())
-                self._closing_in_progress = True
-                try:
-                    answer = self._show_message_box(
-                        f"Work is still running:\n{labels}\n\n"
-                        "Exit anyway and lose it? Choose No to keep the Studio "
-                        "open (you can minimize it to the tray instead).",
-                        "Work in Progress",
-                        wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
-                    )
-                finally:
-                    self._closing_in_progress = False
-                if answer not in (wx.YES, wx.ID_YES):
-                    event.Veto()
-                    return
-                action = "exit"
-        if action == "minimize":
-            event.Veto()
-            self._send_to_tray()
-            return
+        if not running:
+            return "exit"  # protected gate already checked; nothing to lose
+        labels = "\n".join(f"- {label}" for label in running.values())
+        answer = self._show_message_box(
+            f"Work is still running:\n{labels}\n\n"
+            "Exit anyway and lose it? Choose No to keep the Studio "
+            "open (you can minimize it to the tray instead).",
+            "Work in Progress",
+            wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
+        )
+        return "exit" if answer in (wx.YES, wx.ID_YES) else None
+
+    def _studio_shutdown(self) -> None:
         self._stop_active_voice_preview()
         self._task_manager.shutdown(wait=False)
         self._sleep_watcher.shutdown()
         self._disarm_end_of_chapter_watch()
         self._deactivate_media_keys()
         self._remove_tray_icon()
-        event.Skip()
 
 
 def main() -> int:
