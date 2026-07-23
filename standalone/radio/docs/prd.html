@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>prd</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -615,11 +611,33 @@ compressor, not a general effects rack.</p>
 <code>ui/main_frame_radio.py</code>,
 <code>core/radio/radio_browser.py</code>,
 <code>core/radio/wxindex.py</code>,
-<code>core/radio/favorites.py</code>,
-<code>ui/dialog_contract.py</code>, <code>ui/app_shell.py</code>).
-Everything since 2.1.2; 2.2.0 was never shipped as a separate
-build.</strong>
+<code>core/radio/favorites.py</code>, <code>ui/window_manager.py</code>,
+<code>ui/window_menu.py</code>, <code>ui/dialog_contract.py</code>,
+<code>ui/app_shell.py</code>). Everything since 2.1.2; 2.2.0 was never
+shipped as a separate build.</strong>
 <ul>
+<li><em>Modeless multi-window model (menu-bar-loss root fix).</em> The
+heavy surfaces -- Browse Stations (<code>BrowseTreeDialog</code>),
+Search Stations (<code>StationBrowserDialog</code>), Manage Favorites
+(<code>FavoritesManagerDialog</code>), Schedule Recording
+(<code>ScheduleRecordingDialog</code>), and the Weather Center
+(<code>WeatherCenterDialog</code>) -- convert from
+<code>wx.Dialog</code> to modeless <code>wx.Frame</code>s, each carrying
+the shared menu bar, fixing the reported "menu bar disappears" defect (a
+<code>wx.Dialog</code> cannot host a menu bar) and removing the modal
+lock-out of the main window. A pure <code>WindowRegistry</code>
+(<code>ui/window_manager.py</code>) holds open order + numbering +
+cyclic next/previous (unit-tested, wx-free); the wx
+<code>WindowManager</code> (<code>ui/window_menu.py</code>) installs a
+dynamic <strong>&amp;Window</strong> menu (numbered 1-9 in open order),
+the Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 accelerators, and
+register-on-show / unregister-and-activate-previous on close, with
+"Entered ..."/"Exited ..." cues and primary-control focus via
+<code>dialog_contract.show_modeless_surface</code>. Each surface takes
+an optional <code>windows=</code> param: present (standalone Quill
+Radio) -&gt; modeless frame; absent (embedded QUILL) -&gt; the classic
+modal dialog, so one class serves both hosts. Design record:
+<code>docs/design/2026-07-20-radio-window-model.md</code>.</li>
 <li><em>Backup / restore (import &amp; export).</em>
 <code>core/radio/backup.py</code> bundles the state files (favorites,
 history/settings, wake timer, recording schedule) and, on request, the
@@ -673,12 +691,13 @@ status bar via <code>_apply_text_size</code> /
 <code>RadioStatusBar.set_font</code> (A-8).</li>
 <li><em>Favorites Manager Move buttons work from a sorted view.</em>
 Move Up/Down/Above/Below in <code>FavoritesManagerDialog</code> were
-disabled unless the folder was already manual; they now bake the visible
-order to manual on the first move
-(<code>_switch_to_manual_if_needed</code> -&gt;
-<code>favorites_in_display_order</code>) and move within it, mirroring
-the main list's Alt+Shift+Up/Down. The host persists the switch via
-<code>_radio_switch_favorites_to_manual</code> (new
+disabled unless the folder was already manual; they now switch to manual
+on the first move (<code>_switch_to_manual_if_needed</code>, which flips
+the sort only) and move within the preserved stored order, mirroring the
+main list's Alt+Shift+Up/Down. The stored list is NOT baked to the
+sorted view -- doing so silently destroyed a hand-arranged order
+(#1186); the reload reveals the preserved order. The host persists the
+switch via <code>_radio_switch_favorites_to_manual</code> (new
 <code>on_switch_to_manual</code> callback).</li>
 <li><em>Keep-awake while playing/recording (A-9).</em>
 <code>platform/keep_awake.set_keep_awake</code> (Windows
@@ -689,15 +708,29 @@ when neither is active. <code>_update_sleep_inhibitor</code> reads live
 playback + recorder state and <code>RadioHistory.prevent_sleep</code>
 (default on; Preferences checkbox) on every state change. Display sleep
 is deliberately not inhibited.</li>
-<li><em>Fixes.</em> Alt+Shift+Up/Down reorder from a sorted view commits
-the visible order as manual again (restores the pre-#1186 bake that
-#1186 dropped, which had regressed the default A-Z case); explicit Exit
-(menu/tray) quits for real instead of bouncing to the tray under
-minimize-on-close (#1193); keyboard focus lands inside the window after
-show so Alt reaches the menu bar on launch (#1193); NOAA state folders
-count from the same directory tier the leaves come from, so "(N items)"
-always matches what expanding shows
-(<code>wxindex.states_with_playable_feeds</code>).</li>
+<li><em>Fixes.</em> Alt+Shift+Up/Down reorder from a sorted view
+switches to manual and preserves the stored order (it does NOT bake the
+visible order over it -- baking silently destroyed a hand-arranged list,
+#1186; the reload reveals the preserved order and the move happens
+within it); explicit Exit (menu/tray) quits for real instead of bouncing
+to the tray under minimize-on-close (#1193); keyboard focus lands inside
+the window after show so Alt reaches the menu bar on launch (#1193);
+NOAA state folders count from the same directory tier the leaves come
+from, so "(N items)" always matches what expanding shows
+(<code>wxindex.states_with_playable_feeds</code>). A later feedback
+round also fixed: the transport button dropped its colliding Alt+S/Alt+P
+mnemonic so Ctrl+P is the reliable Stop/Play key (#1208); New Folder
+Ctrl+Shift+E handled in the app char hook so it fires from the favorites
+tree (#1211); Add to Favorites for TuneIn resolves the stream on demand
+(#1210); adding a custom station refreshes the favorites tree
+immediately (#1205); a <strong>Remove All</strong> favorites action with
+confirmation + rolling-backup recovery
+(<code>RadioFavoritesStore.clear</code>,
+<code>remove_all_favorites</code>, #1201); the Browse directory cache is
+bypassed when the bundled snapshot is newer so an in-place update
+surfaces new listings (<code>wxindex._directory_stations</code>, #1207);
+and the mpv engine is hard-terminated on exit so audio never outlives
+the app (<code>MpvRadioEngine.terminate</code>, #1195).</li>
 </ul></li>
 <li><strong>2.1.1 (upstream <code>quill/core/radio/wxindex*.py</code>,
 <code>core/radio/reading_services.py</code>,

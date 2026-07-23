@@ -374,6 +374,8 @@ Artifact tracking model:
 - Code blocks: indexed from Markdown fenced code boundaries and HTML `<pre>`/`<code>` tags.
 - Bookmarks: indexed from active bookmark positions.
 - Paragraph anchors: blank-line paragraph boundaries for text/Markdown; block-level HTML tags (`p`, `li`, `blockquote`, `pre`, `h1` to `h6`, `td`, `th`) for HTML.
+
+**Edit-surviving bookmark anchors ("Points").** A bookmark stores more than a bare character offset: `core/bookmark_anchor.py` captures a small text window around the caret (before/after snippet + line) at set time. On jump, `resolve_anchor` relocates the bookmark to where that snippet actually lives now — fast-path when the stored offset still matches, else the nearest occurrence of the snippet to the old offset, else a clamped fallback when the text was deleted. Named bookmarks and numbered quick-bookmarks both capture anchors; anchors persist per-document in `document_memory.json` alongside the legacy int map and are fully backward-compatible (older files without anchors simply use the offset). This realizes the "Bookmarks survive edits" principle so a mark no longer drifts when text is inserted or removed above it.
 - Sentence anchors: sentence-ending punctuation boundaries.
 
 Performance and invalidation:
@@ -2754,7 +2756,8 @@ A dedicated menu surfacing transforms that are otherwise reachable via Tools or 
 - Capitalisation: Upper Case, Lower Case, Title Case, Sentence Case, Toggle Case.
 - Lines: Move Line Up/Down, Duplicate Line, Delete Line, Join Lines, Toggle Line Comment, Toggle Block Comment.
 - Indent: Indent, Outdent, Convert to Tabs, Convert to Spaces, Set Indent Width….
-- Markdown helpers: Insert Heading (levels 1–6), Insert Bullet List, Insert Numbered List, Insert Task List, Insert Table…, Insert Link…, Insert Code Block, Insert Footnote.
+- Markdown helpers: Insert Heading (levels 1–6), Insert Bullet List, Insert Numbered List, Insert Task List, Insert Table…, Insert Block Quote, Insert Horizontal Rule, Insert Link…, Insert Code Block, Insert Footnote.
+- Format-aware structured inserts: block quote, horizontal rule, table, and image resolve the document's markup (Markdown vs HTML) through a single `_resolve_structured_markup` chokepoint. When the surface is known (by pin, extension, or content sniff), it is used; when it is not (a fresh/unsaved/plain buffer), the user is asked "Markdown or HTML?" once, the choice is remembered on the tab (`structured_markup_choice`) and pins the markup kind so later inserts and menu state agree without re-asking. Insert Block Quote and Insert Horizontal Rule are menu-driven with no default keybinding (§10.8 bars new Ctrl+Alt chords and the QUILL-key leader space is saturated); users assign their own via the Keymap Editor, consistent with Insert Table.
 - Markdown list editing behavior: `Enter` continues bullet/numbered/task items, `Enter` on an empty marker exits the list, and `Tab`/`Shift+Tab` nest or promote list items when the caret is on a list line.
 - List Manager: `Format -> List -> List Manager...` (`Ctrl+Alt+L`) opens a keyboard-first tree editor for moving, promoting/demoting, adding, editing, and deleting list items.
 - Magical tag helpers: Insert HTML Tag… (with attribute picker) and Insert Markdown Tag… (semantic snippet picker).
@@ -12322,7 +12325,22 @@ the vocabulary `docx_writer.py` emits (symmetric by construction through
 drives a three-way open choice (read-extract default / rich with named losses
 / edit a copy); the first rich save over a flagged original writes a
 timestamped backup alongside. python-docx stays a soft dependency — absent,
-docx opens read-extract exactly as before.
+docx opens read-extract exactly as before. **Tables are preserved on the rich
+read path**: `read_docx_rich` walks the body blocks in document order (via
+`_iter_body_blocks`, which reunites python-docx's separate paragraph/table lists)
+and renders each table inline as GFM Markdown-table paragraphs — so table content
+that was previously dropped entirely now survives, reads correctly, and is
+reachable by single-key table navigation (`T`). `scan_docx_features` still lists
+tables so the format change is disclosed before a rich edit.
+
+**EPUB reading.** `core/epub.py` renders each chapter's headings inline (as
+Markdown `#` lines two levels beneath the chapter) so single-key heading
+navigation traverses them, not just chapter boundaries. When a chapter has no
+real `<h1>`–`<h6>` markup, `_infer_heading_spans` guesses headings from structure
+— a `<p>`/`<div>` whose class names it a title/chapter/section/heading, or a short
+standalone bold line — while leaving body text and long bold emphasis alone. The
+EPUB Navigator tree and inline navigation both benefit; `EpubChapter.headings_inferred`
+records when headings were guessed rather than read.
 
 **macOS:** `quill/ui/nstextview_rtf_surface.py` (`QuillMacRichText`) mirrors
 the Windows wrapper method-for-method over Cocoa's text model (the editor is
@@ -12441,6 +12459,20 @@ checked. `ImageAltMixin` (`quill/ui/main_frame_image_alt.py`) wires this plus
 **Tools > Describe Image at Cursor**, which answers the "what does this image
 say" question for any image already in the document, however it got there
 (typed by hand, pasted, imported).
+
+The dialog is format-aware and AI-assisted. `insert_image` resolves the target
+markup (`_resolve_structured_markup`) before opening the dialog, and builds
+Markdown (`build_image_markdown`) or rich HTML (`build_image_html`) accordingly.
+In HTML mode the dialog collects width/height (intrinsic size to prevent layout
+shift), a responsive cap (`max-width:100%;height:auto`), and an optional caption
+(emitted as `<figure>`/`<figcaption>`); decorative images emit empty `alt` plus
+`role="presentation"`. When an AI vision model is connected and Safe Mode is off,
+a **Suggest alt text with AI** button calls the existing cloud vision pipeline
+(`quill.core.ai.vision.describe_image` with the `accessibility` prompt) on a
+worker thread behind a progress indicator and drops the draft into the alt field
+for human review. The gate is AI-enabled AND provider≠"off" AND an unlocked API
+key AND **not** Safe Mode — the vision path does not itself block Safe Mode, so
+`ImageAltMixin` adds that check (`_ai_alt_text_available` / `_ai_alt_text_for_path`).
 
 Deliberately out of scope for this pass: non-image embeds (page breaks,
 equations, removed objects) as accessible placeholders. add.md's own spike

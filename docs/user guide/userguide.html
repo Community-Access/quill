@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>userguide</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -1034,8 +1030,18 @@ current level or all levels.</li>
 Manager...</strong>, and <strong>Structured List Studio...</strong>
 (F2).</li>
 <li><strong>Insert Code Block</strong>, <strong>Insert
-Footnote</strong>, <strong>Insert Table...</strong>, <strong>Insert HTML
-Tag...</strong>, and <strong>Insert Markdown Tag...</strong>.</li>
+Footnote</strong>, <strong>Insert Table...</strong>, <strong>Insert
+Block Quote</strong>, <strong>Insert Horizontal Rule</strong>,
+<strong>Insert HTML Tag...</strong>, and <strong>Insert Markdown
+Tag...</strong>.</li>
+<li><strong>Format-aware inserts.</strong> Block quote, horizontal rule,
+table, and image insert Markdown in a Markdown document and HTML in an
+HTML document. If the document's format isn't set yet (a brand-new or
+plain buffer), QUILL asks <strong>"Markdown or HTML?"</strong> the first
+time, then remembers your answer for that document and stops asking.
+Insert Block Quote and Insert Horizontal Rule have no default shortcut —
+assign one in the Keymap Editor if you use them often (like Insert
+Table).</li>
 <li><strong>Insert Snippet...</strong> and <strong>Manage
 Snippets...</strong> for reusable text with placeholders.</li>
 <li><strong>Special Character...</strong> (<code>Shift+F2</code>) opens
@@ -24142,6 +24148,14 @@ position</strong> in each saved document and returns you to it when you
 reopen the file. (Untitled, never- saved documents keep their bookmarks
 for the current session only, since there is no file to attach them to
 yet — saving the document makes them persistent.)</p>
+<p>Bookmarks <strong>survive edits</strong>. As well as a position, each
+bookmark quietly remembers the text around it, so jumping to a bookmark
+takes you to where that text actually is now — even after you've
+inserted or deleted paragraphs above it. A bookmark no longer drifts to
+the wrong spot the way a plain position marker would. If the bookmarked
+text was itself deleted, the jump falls back to the remembered position.
+This works for named bookmarks and the numbered quick bookmarks alike,
+and needs nothing from you.</p>
 <h5 id="temporary-bookmark-one-keystroke-no-dialog">Temporary bookmark
 (one keystroke, no dialog)</h5>
 <p>For the times you just want to mark "right here" and come straight
@@ -28999,6 +29013,14 @@ emphasis take effect instead of being read aloud.</p>
 <p>When you open an EPUB, the navigator gives you chapter-aware movement
 rather than forcing you to scroll blindly through one long
 extraction.</p>
+<p>Chapter headings are also placed <strong>inline in the text</strong>,
+so single-key heading navigation (<code>H</code> and
+<code>Shift+H</code>) walks every heading in the book, not just chapter
+boundaries. Many older or hand-made EPUBs never used real heading tags
+at all; for those, QUILL <strong>infers</strong> headings from the
+book's structure — a paragraph styled as a title or chapter, or a short
+standalone bold line — so heading navigation and the chapter outline
+still work where they would otherwise be empty.</p>
 <h3 id="ocr-image">OCR Image</h3>
 <p>OCR is explicit and local. You choose the image, confirm the action,
 and receive progress updates. This keeps OCR useful without making it
@@ -29090,6 +29112,26 @@ choice for an image with no informational content (a divider line, a
 background flourish); it is not the same as an image nobody ever got
 around to describing, which is the problem this dialog exists to
 prevent.</p>
+<p><strong>Let AI draft the alt text.</strong> If you have an AI vision
+model connected (Preferences &gt; AI) and you're not in Safe Mode, the
+dialog shows a <strong>Suggest alt text with AI</strong> button. Choose
+your image file, press the button, and QUILL describes the picture and
+drops the description into the alt-text field for you to read, correct,
+and approve before inserting. The machine drafts; you stay in control of
+what actually goes in. (AI is fully disabled in Safe Mode, so the button
+won't appear there.)</p>
+<p><strong>Images that lay out correctly on a web page.</strong> When
+you're inserting into an <strong>HTML</strong> document, the dialog adds
+a <strong>Size and layout</strong> section: set an optional
+<strong>Width</strong> and <strong>Height</strong> (so a browser
+reserves the space and the page doesn't jump around as the image loads),
+keep <strong>Responsive</strong> on so the image scales down to fit
+narrow columns instead of overflowing, and add an optional
+<strong>Caption</strong> (inserted as a proper
+<code>&lt;figure&gt;</code>/<code>&lt;figcaption&gt;</code> so the
+caption is tied to the image for screen readers). These options are
+hidden in Markdown documents, whose syntax can't carry them — there you
+get the clean <code>![alt](path)</code> you expect.</p>
 <p>For any image already in your document — typed by hand, pasted, or
 brought in from another format — <strong>Tools &gt; Describe Image at
 Cursor</strong> tells you exactly what a screen reader hears there:
@@ -29697,11 +29739,15 @@ asks once: treat this document as Markdown, convert it to Rich Text, or
 stay plain. Whatever you answer is remembered for that document.</li>
 <li><strong>Editing Word documents (.docx):</strong> a .docx can open
 for real rich editing and save back as a genuine Word file. A file
-carrying things QUILL's editor cannot hold (tables, images, comments,
-tracked changes, headers/footers) asks first — open for reading and
-plain editing (the safe default), edit as Rich Text with those losses
-named specifically, or edit a copy. The first rich save over such an
-original writes a timestamped backup next to it automatically.</li>
+carrying things QUILL's editor cannot hold (images, comments, tracked
+changes, headers/footers) asks first — open for reading and plain
+editing (the safe default), edit as Rich Text with those losses named
+specifically, or edit a copy. The first rich save over such an original
+writes a timestamped backup next to it automatically. <strong>Tables are
+preserved</strong> when you open a Word document for rich editing: they
+appear inline as accessible tables (previously their contents were
+dropped), so you can read them and jump to them with single-key table
+navigation (<code>T</code>).</li>
 </ul>
 <p><strong>The Document Format switcher.</strong> <strong>Format &gt;
 Document Format...</strong> (also Ctrl+Shift+Grave, K; the command

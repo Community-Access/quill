@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>prd</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -545,6 +541,22 @@ defects. Track-title announcements are opt-in so ambient chatter never
 surprises anyone.</li>
 <li>A-5. Full keyboard operation including manager reordering and the
 tray menu; Delete/F2/Enter conventions consistent across lists.</li>
+<li>A-6. The main window exposes a focusable, arrow-navigable status bar
+(F6 to enter, a second F6 or Escape to leave) whose cells announce live
+state and act on Enter, with a per-cell context menu -- a keyboard- and
+screen-reader-first alternative to a passive, sighted-only status line.
+It is user-hideable (View &gt; Show Status Bar).</li>
+<li>A-7. View-menu visibility toggles (Show Station Details, Show Status
+Bar) persist across sessions and are honored by every surface that owns
+the affected control; a hidden control is never a focus stop.</li>
+<li>A-8. A low-vision text-size control (View &gt; Text Size) scales the
+main window's fonts (favorites tree, transport buttons, now-playing
+line, status bar) and persists; reordering and every list action remain
+fully keyboard-operable at every size.</li>
+<li>A-9. Long-running background audio (playback, recording) keeps the
+machine awake so it does not stop unattended; the behavior is
+user-controllable and defaults on, and never inhibits display sleep
+(audio-only need).</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -594,6 +606,194 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>2.2.0 (upstream <code>quill/core/radio/backup.py</code>,
+<code>ui/radio/backup_ui.py</code>, <code>apps/radio.py</code>,
+<code>ui/main_frame_radio.py</code>,
+<code>core/radio/radio_browser.py</code>,
+<code>core/radio/wxindex.py</code>,
+<code>core/radio/favorites.py</code>, <code>ui/window_manager.py</code>,
+<code>ui/window_menu.py</code>, <code>ui/dialog_contract.py</code>,
+<code>ui/app_shell.py</code>). Everything since 2.1.2; 2.2.0 was never
+shipped as a separate build.</strong>
+<ul>
+<li><em>Modeless multi-window model (menu-bar-loss root fix).</em> The
+heavy surfaces -- Browse Stations (<code>BrowseTreeDialog</code>),
+Search Stations (<code>StationBrowserDialog</code>), Manage Favorites
+(<code>FavoritesManagerDialog</code>), Schedule Recording
+(<code>ScheduleRecordingDialog</code>), and the Weather Center
+(<code>WeatherCenterDialog</code>) -- convert from
+<code>wx.Dialog</code> to modeless <code>wx.Frame</code>s, each carrying
+the shared menu bar, fixing the reported "menu bar disappears" defect (a
+<code>wx.Dialog</code> cannot host a menu bar) and removing the modal
+lock-out of the main window. A pure <code>WindowRegistry</code>
+(<code>ui/window_manager.py</code>) holds open order + numbering +
+cyclic next/previous (unit-tested, wx-free); the wx
+<code>WindowManager</code> (<code>ui/window_menu.py</code>) installs a
+dynamic <strong>&amp;Window</strong> menu (numbered 1-9 in open order),
+the Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 accelerators, and
+register-on-show / unregister-and-activate-previous on close, with
+"Entered ..."/"Exited ..." cues and primary-control focus via
+<code>dialog_contract.show_modeless_surface</code>. Each surface takes
+an optional <code>windows=</code> param: present (standalone Quill
+Radio) -&gt; modeless frame; absent (embedded QUILL) -&gt; the classic
+modal dialog, so one class serves both hosts. Design record:
+<code>docs/design/2026-07-20-radio-window-model.md</code>.</li>
+<li><em>Backup / restore (import &amp; export).</em>
+<code>core/radio/backup.py</code> bundles the state files (favorites,
+history/settings, wake timer, recording schedule) and, on request, the
+recorded audio into a single SHA-manifested <code>.qrbackup</code> zip;
+<code>restore_backup</code> validates it, accepts only the known state
+filenames, is zip-slip-guarded, and reloads the running app.
+Station-menu UI in <code>ui/radio/backup_ui.py</code> (worker-threaded,
+native file dialogs). Directly serves R-3 device migration.</li>
+<li><em>Now Playing window on Ctrl+T (#1134 wiring).</em> Ctrl+T
+("What's Playing?") now opens the reviewable
+<code>NowPlayingDialog</code> (arrow/copy the title+artist) instead of
+only speaking it; the window existed but had no menu item or key.
+Fetch-and-speak fallback when no title is cached.</li>
+<li><em>Per-favorite Station Details.</em> Favorites context menu -&gt;
+Station Details... shows <code>RadioStation.details_text</code> in the
+same reviewable window the search results use.</li>
+<li><em>Radio Browser clarity + genre browse (#1194).</em> The Search
+source facet reads "Radio Browser" (two words) and the derived label is
+spelled the human way everywhere; a first-class "Radio Browser (by
+Genre)" node joins the Browse tree via
+<code>radio_browser.fetch_genres/genre_display/fetch_genre_stations</code>
+over the existing tag/search API.</li>
+<li><em>View menu.</em> A new top-level <strong>View</strong> menu
+(<code>apps/radio.py</code>) with two persisted visibility toggles.
+<em>Show Station Details</em>
+(<code>RadioHistory.show_station_details</code>, default on) shows/hides
+the read-only details pane in Browse and Search Stations, threaded to
+<code>BrowseTreeDialog</code>/<code>StationBrowserDialog</code> via a
+<code>show_details</code> param that <code>root.Hide</code>s the control
+(and its label) so a hidden pane is never a focus stop. <em>Show Status
+Bar</em> (<code>RadioHistory.show_status_bar</code>, default on)
+shows/hides the main-window status bar.</li>
+<li><em>Focusable status bar (A-6).</em> A self-contained
+<code>ui/radio/status_bar.py</code> (<code>RadioStatusBar</code>) builds
+an arrow-navigable status strip along the bottom of the main window --
+cells for Now Playing, Volume (Volume Boost indicator), Recording, Sleep
+timer, Favorites count, and time. F6 enters it (a second F6 / Escape
+returns focus to the favorites tree), Left/Right/Home/End navigate,
+Enter/Space activates (reusing the existing <code>radio_*</code> actions
+and <code>_build_radio_status_bar_menu</code>), and each cell has a
+context menu. The bar refreshes on every
+<code>_refresh_statusbar</code>; <code>apps/radio.py</code> only wires
+it (build, View toggle, F6 char-hook branch), so the same bar can serve
+embedded QUILL radio later.</li>
+<li><em>More View items.</em> A Sort Favorites submenu (radio items over
+<code>RadioHistory.favorites_sort</code>), Expand All / Collapse All
+Folders on the favorites tree, and a Text Size submenu
+(Normal/Large/Larger) driving <code>RadioHistory.ui_font_scale</code>
+(clamped [1.0, 2.0]) applied to the tree, buttons, now-playing line, and
+status bar via <code>_apply_text_size</code> /
+<code>RadioStatusBar.set_font</code> (A-8).</li>
+<li><em>Favorites Manager Move buttons work from a sorted view.</em>
+Move Up/Down/Above/Below in <code>FavoritesManagerDialog</code> were
+disabled unless the folder was already manual; they now switch to manual
+on the first move (<code>_switch_to_manual_if_needed</code>, which flips
+the sort only) and move within the preserved stored order, mirroring the
+main list's Alt+Shift+Up/Down. The stored list is NOT baked to the
+sorted view -- doing so silently destroyed a hand-arranged order
+(#1186); the reload reveals the preserved order. The host persists the
+switch via <code>_radio_switch_favorites_to_manual</code> (new
+<code>on_switch_to_manual</code> callback).</li>
+<li><em>Keep-awake while playing/recording (A-9).</em>
+<code>platform/keep_awake.set_keep_awake</code> (Windows
+<code>SetThreadExecutionState</code>,
+<code>ES_CONTINUOUS | ES_SYSTEM_REQUIRED</code>; no-op elsewhere) holds
+off system standby while a station plays or a recording runs, released
+when neither is active. <code>_update_sleep_inhibitor</code> reads live
+playback + recorder state and <code>RadioHistory.prevent_sleep</code>
+(default on; Preferences checkbox) on every state change. Display sleep
+is deliberately not inhibited.</li>
+<li><em>Fixes.</em> Alt+Shift+Up/Down reorder from a sorted view
+switches to manual and preserves the stored order (it does NOT bake the
+visible order over it -- baking silently destroyed a hand-arranged list,
+#1186; the reload reveals the preserved order and the move happens
+within it); explicit Exit (menu/tray) quits for real instead of bouncing
+to the tray under minimize-on-close (#1193); keyboard focus lands inside
+the window after show so Alt reaches the menu bar on launch (#1193);
+NOAA state folders count from the same directory tier the leaves come
+from, so "(N items)" always matches what expanding shows
+(<code>wxindex.states_with_playable_feeds</code>). A later feedback
+round also fixed: the transport button dropped its colliding Alt+S/Alt+P
+mnemonic so Ctrl+P is the reliable Stop/Play key (#1208); New Folder
+Ctrl+Shift+E handled in the app char hook so it fires from the favorites
+tree (#1211); Add to Favorites for TuneIn resolves the stream on demand
+(#1210); adding a custom station refreshes the favorites tree
+immediately (#1205); a <strong>Remove All</strong> favorites action with
+confirmation + rolling-backup recovery
+(<code>RadioFavoritesStore.clear</code>,
+<code>remove_all_favorites</code>, #1201); the Browse directory cache is
+bypassed when the bundled snapshot is newer so an in-place update
+surfaces new listings (<code>wxindex._directory_stations</code>, #1207);
+and the mpv engine is hard-terminated on exit so audio never outlives
+the app (<code>MpvRadioEngine.terminate</code>, #1195).</li>
+</ul></li>
+<li><strong>2.1.1 (upstream <code>quill/core/radio/wxindex*.py</code>,
+<code>core/radio/reading_services.py</code>,
+<code>core/radio/directory_search.py</code>,
+<code>ui/radio/browse_tree_dialog.py</code>,
+<code>ui/main_frame_weather.py</code>,
+<code>apps/radio.py</code>).</strong>
+<ul>
+<li><em>NOAA Weather Radio via WeatherIndex.</em> The Browse "Weather /
+NOAA" source drops the fuzzy RadioBrowser name search
+(<code>radio_browser.noaa_weather_stations</code>, removed) for the
+authoritative <strong>WeatherIndex</strong> directory (api.wxindex.org):
+a lazy State -&gt; Station tree (call sign, frequency, place), SAME-code
+/ callsign / "County, ST" routing in unified search
+(<code>directory_search.wxindex_search_stations</code>), and Weather
+menu &gt; <strong>Listen to your Local NOAA Weather Radio</strong>,
+resolved from the saved Weather location's county and coordinates
+(<code>wxindex.local_stations</code>: county/SAME match first, nearest
+covering transmitter fallback). A three-tier resolver -- live API
+(Safe-Mode-blocked, in the network-egress audit) -&gt; app-data cache
+(<code>&lt;app_data&gt;/radio/wxindex-cache/</code>) -&gt; bundled
+snapshot <code>quill/data/noaa_directory.json</code> (1,035 transmitters
+across every state and territory; regenerated by
+<code>scripts/snapshot_wxindex.py</code>) -- keeps every capability
+working offline and outliving the API. Weather menu &gt; <strong>Update
+NOAA Weather Radio Directory</strong> force-pulls the directory into the
+cache tier on demand; the bundled snapshot is the permanent floor and is
+never overwritten. Stations adapt to <code>RadioStation</code>
+(<code>wxindex.to_radio_station</code>), so Favorites, recording, and
+scheduling work unchanged. Partially delivers the §18 NWR stream
+capability (directory + streams; alert interruption and generated audio
+remain future work). Detailed in §18.5.</li>
+<li><em>Radio Reading Services.</em> A new "Radio Reading Services"
+Browse category and unified-search blend
+(<code>directory_search.reading_services_search_stations</code>) for the
+audio information services that read print aloud for blind and
+print-disabled listeners. 20 vetted services ship as a bundled snapshot
+(<code>quill/data/reading_services.json</code>); Station &gt;
+<strong>Update Radio Reading Services</strong> refreshes live from
+RadioBrowser through a cache -&gt; live -&gt; snapshot resolver
+mirroring wxindex (Safe-Mode-guarded). Detailed in §18.6-18.7.</li>
+<li><em>iHeart in Browse.</em> iHeart, previously search-only (upstream
+§8, 2.0.0), gains a Browse Stations branch: genre folders, each an A-Z
+sub-directory, all lazy (<code>ui/radio/browse_tree_dialog.py</code>).
+The XML sitemap the search path uses carries no genre, so browse reads
+iHeart's free, keyless JSON content API (<code>us.api.iheart.com</code>:
+<code>/content/genre</code>,
+<code>/content/liveStations?genreId=</code>), where each row embeds its
+own stream -- one GET per genre, no per-station page fetch. New core:
+<code>iheart.parse_genres</code>/<code>parse_genre_stations</code>/<code>fetch_genres</code>/<code>fetch_genre_stations</code>,
+routed through the existing reviewed <code>iheart._fetch</code> egress
+site (rationale expanded to cover the content API).
+Safe-Mode-guarded.</li>
+<li><em>Unified-search Source filter de-dup fix.</em> A station carried
+by more than one directory (e.g. a SomaFM channel RadioBrowser also
+lists) was de-duplicated to a single result, so the Source facet could
+hide it under the wrong directory.
+<code>directory_search.merge_and_rank</code> now records every absorbed
+duplicate's source on a transient, identity-neutral
+<code>RadioStation.alt_sources</code>, and the facet matches the full
+set via <code>directory_search.station_source_labels</code>; the result
+row still badges the winning source.</li>
+</ul></li>
 <li><strong>2.0.2 (upstream <code>quill/core/radio/*</code>,
 <code>quill/apps/radio.py</code>,
 <code>quill/ui/radio/*</code>).</strong>
@@ -2508,6 +2708,113 @@ unavailable.</li>
 <li>Volunteer attribution</li>
 <li>Geographic gap analysis</li>
 <li>Automated failover among receivers</li>
+</ul>
+<h3
+id="185-delivered-implementation-weatherindex-integration-quill-radio-211">18.5
+Delivered implementation: WeatherIndex integration (Quill Radio
+2.1.1)</h3>
+<p>The NWR directory-and-streams portion of this section shipped in
+Quill Radio 2.1.1, powered by the <strong>WeatherIndex API</strong>
+(<code>https://api.wxindex.org</code>) -- a curated, no-auth JSON
+directory of NWR transmitters plus internet re-stream URLs, organized by
+state, county/SAME, and NWS Weather Forecast Office.</p>
+<ul>
+<li><strong>Data layer</strong>
+(<code>quill/core/radio/wxindex.py</code>, wx-free):
+<code>list_states</code>, <code>stations_for_state</code>,
+<code>search_stations(county/state/same/callsign)</code>,
+<code>station_detail</code>,
+<code>local_stations(lat, lon, county)</code>, and
+<code>to_radio_station</code> adapting each transmitter to the existing
+playable model, so Favorites, recording, and scheduling required no new
+code. <code>WxStation</code> carries call sign, frequency, state,
+county/SAME coverage, WFO, coordinates, and the ordered re-stream feed
+URLs (best first) -- the metadata set of §18.1 as far as the upstream
+directory provides it.</li>
+<li><strong>Resilience</strong>: a three-tier resolver -- live API
+(short timeout, HTTPS-only, Safe-Mode-blocked, registered in the
+network-egress audit), app-data cache of the last successful pull,
+bundled snapshot (<code>quill/data/noaa_directory.json</code>, 1,035
+transmitters, regenerated by <code>scripts/snapshot_wxindex.py</code>)
+-- so browse, search, and local-station resolution work fully offline
+and survive the API disappearing. A corrupt or missing snapshot logs and
+yields an empty directory rather than raising.</li>
+<li><strong>Surfaces</strong>: Browse's Weather / NOAA branch is a lazy
+State -&gt; Station tree; unified search routes SAME codes (6 digits),
+call signs, and "County, ST" / state names to the directory; Weather
+menu &gt; Listen to your Local NOAA Weather Radio resolves the saved
+Weather location (county/SAME match first, nearest covering transmitter
+by coordinates as fallback); Weather menu &gt; Update NOAA Weather Radio
+Directory refreshes the cache tier on demand, never overwriting the
+bundled floor.</li>
+<li><strong>Still future</strong> (per §18.3-18.4 and §26 phases): alert
+interruption of the live stream, generated weather audio as a stream
+fallback, stream-health verification, and the community receiver
+network.</li>
+</ul>
+<h3 id="186-radio-reading-services-delivered-in-quill-radio-211">18.6
+Radio Reading Services (delivered in Quill Radio 2.1.1)</h3>
+<p>Radio reading services -- the audio information services affiliated
+with IAAIS (the International Association of Audio Information Services)
+that read newspapers, magazines, and local print aloud for people who
+are blind or print-disabled -- are a natural companion to community NWR
+audio and shipped alongside it:</p>
+<ul>
+<li>A <strong>Radio Reading Services</strong> Browse category and a
+unified-search blend (name, tag, or state match), implemented in
+<code>quill/core/radio/reading_services.py</code> and
+<code>directory_search.py</code>.</li>
+<li><strong>20 vetted services bundled</strong> in
+<code>quill/data/reading_services.json</code> (WRBH 88.3 Reading Radio,
+Sun Sounds of Arizona, CRIS Radio / The Chicago Lighthouse, Connecticut
+Radio Information System, KPBS and WKAR reading services, WUFT RRS, Down
+East RRS, Recording Library of West Texas, Audible Local Ledger, Owl
+Radio, Voice Corps, 95alive, ACB Media 1-5, NFB Radio Network, and the
+American Council of the Blind stream), so the category works
+offline.</li>
+<li><strong>Refresh</strong>: Station &gt; Update Radio Reading Services
+pulls live from the community Radio Browser directory through a cache
+-&gt; live -&gt; snapshot resolver that mirrors the wxindex one;
+reading-service keyword queries ("radio reading", "reading service",
+"audio information", ...) are filtered to stations whose name or tags
+match a reading-service term and that carry a playable stream URL,
+de-duplicated by stream. Safe Mode refuses the live pull and falls back
+to cache or snapshot.</li>
+</ul>
+<h3
+id="187-reading-service-discovery-methodology-and-rights-review">18.7
+Reading-service discovery methodology and rights review</h3>
+<p>The bundled list was built with a discovery pass, kept here as the
+method for future refreshes of the curated set:</p>
+<ul>
+<li><strong>Sources.</strong> The IAAIS national service locator
+(iaais.org/find-a-service) enumerates United States state pages and
+candidate services but exposes no public JSON API; the <strong>Radio
+Browser API</strong> (docs.radio-browser.info) supplies station UUIDs,
+resolved stream URLs, homepage, state, codec, bitrate, health status,
+tags, language, and popularity, and asks clients to use a descriptive
+User-Agent and discover/fail over among API mirrors (which the in-app
+client honors).</li>
+<li><strong>Matching.</strong> Each IAAIS-derived service was queried
+against Radio Browser by full name, normalized name, a
+generic-terms-stripped name, and broader reading-service keyword
+searches. Candidates were scored on station-name similarity,
+distinctive-word overlap, website-domain and stream-domain agreement,
+state agreement, reading-service keywords, and Radio Browser health,
+then tiered: high confidence (82-100), medium (65-81.99), low
+(48-64.99), unlikely (below 48). Every tier -- including high confidence
+-- went through human review before a service entered the bundled
+list.</li>
+<li><strong>Rights.</strong> A Radio Browser match only establishes that
+a public directory knows the stream. It does not by itself prove the
+service permits redistribution, proxying, recording, revealing a
+restricted URL, or bypassing listener qualification (some reading
+services restrict listening to qualified print-disabled users). The
+curated set therefore carries only publicly listed streams, and
+per-service review covers redistribution permission,
+official-player-only status, and authentication requirements before
+inclusion. The stream rules of §18.3 apply to reading-service streams
+exactly as to NWR streams.</li>
 </ul>
 <hr />
 <h2 id="19-user-interface-information-architecture">19. User Interface

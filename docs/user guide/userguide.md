@@ -408,7 +408,8 @@ The **Insert** menu adds structured content at the cursor.
 - **Insert Link...** creates a format-aware link.
 - **Heading** submenu: insert Heading 1 through 6, **Decrease Level** / **Increase Level**, and **Style Headings...** (font, size, alignment) for the current level or all levels.
 - **List** submenu: **Bullet**, **Numbered**, **Task**, **List Manager...**, and **Structured List Studio...** (F2).
-- **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
+- **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
+- **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. Insert Block Quote and Insert Horizontal Rule have no default shortcut — assign one in the Keymap Editor if you use them often (like Insert Table).
 - **Insert Snippet...** and **Manage Snippets...** for reusable text with placeholders.
 - **Special Character...** (`Shift+F2`) opens a symbol picker. (This moved from F2,
   which now opens the Structured List Studio; both keys are remappable.)
@@ -4395,6 +4396,13 @@ each saved document and returns you to it when you reopen the file. (Untitled, n
 saved documents keep their bookmarks for the current session only, since there is no
 file to attach them to yet — saving the document makes them persistent.)
 
+Bookmarks **survive edits**. As well as a position, each bookmark quietly remembers
+the text around it, so jumping to a bookmark takes you to where that text actually is
+now — even after you've inserted or deleted paragraphs above it. A bookmark no longer
+drifts to the wrong spot the way a plain position marker would. If the bookmarked text
+was itself deleted, the jump falls back to the remembered position. This works for
+named bookmarks and the numbered quick bookmarks alike, and needs nothing from you.
+
 ##### Temporary bookmark (one keystroke, no dialog)
 
 For the times you just want to mark "right here" and come straight back — no name,
@@ -6919,6 +6927,8 @@ For fine control over how a passage is spoken, the **SSML Builder** dialog compo
 
 When you open an EPUB, the navigator gives you chapter-aware movement rather than forcing you to scroll blindly through one long extraction.
 
+Chapter headings are also placed **inline in the text**, so single-key heading navigation (`H` and `Shift+H`) walks every heading in the book, not just chapter boundaries. Many older or hand-made EPUBs never used real heading tags at all; for those, QUILL **infers** headings from the book's structure — a paragraph styled as a title or chapter, or a short standalone bold line — so heading navigation and the chapter outline still work where they would otherwise be empty.
+
 ### OCR Image
 
 OCR is explicit and local. You choose the image, confirm the action, and receive progress updates. This keeps OCR useful without making it invisible or surprising.
@@ -6964,6 +6974,10 @@ The in-editor checks are always available. Structured-file audit and fix use the
 ### Inserting images with alt text
 
 GLOW's audit above catches missing alt text after the fact. **Insert > Image...** is the proactive half: it requires you to either write alt text describing the image, or explicitly check **"This image is decorative"** — you can't insert without making one of those two deliberate choices. Decorative is the right choice for an image with no informational content (a divider line, a background flourish); it is not the same as an image nobody ever got around to describing, which is the problem this dialog exists to prevent.
+
+**Let AI draft the alt text.** If you have an AI vision model connected (Preferences > AI) and you're not in Safe Mode, the dialog shows a **Suggest alt text with AI** button. Choose your image file, press the button, and QUILL describes the picture and drops the description into the alt-text field for you to read, correct, and approve before inserting. The machine drafts; you stay in control of what actually goes in. (AI is fully disabled in Safe Mode, so the button won't appear there.)
+
+**Images that lay out correctly on a web page.** When you're inserting into an **HTML** document, the dialog adds a **Size and layout** section: set an optional **Width** and **Height** (so a browser reserves the space and the page doesn't jump around as the image loads), keep **Responsive** on so the image scales down to fit narrow columns instead of overflowing, and add an optional **Caption** (inserted as a proper `<figure>`/`<figcaption>` so the caption is tied to the image for screen readers). These options are hidden in Markdown documents, whose syntax can't carry them — there you get the clean `![alt](path)` you expect.
 
 For any image already in your document — typed by hand, pasted, or brought in from another format — **Tools > Describe Image at Cursor** tells you exactly what a screen reader hears there: "Image: sunset.png, alt text: a sunset over the lake," or, just as clearly, "Image: sunset.png, alt text MISSING" if none was ever given.
 
@@ -7305,7 +7319,7 @@ Every document opens in the one QUILL editor — the same native control QUILL h
 - **Writing HTML (.html):** Ctrl+B wraps in `<strong>`, headings become real HTML headings. Exactly as always.
 - **Writing Rich Text (.rtf):** the document opens *formatted*. Ctrl+B applies genuine bold; Insert Heading 2 applies a real sized heading; the Format menu's font, size, color, highlight, and alignment commands change the actual formatting; and **Describe Formatting at Cursor** answers from the live document ("Arial, 14 point, bold, centered"). Search, spell check, read aloud, bookmarks, notes, and braille all keep working exactly as in any other document.
 - **Writing plain text (.txt):** text stays plain — that is the promise of .txt. The first time you press a formatting key, QUILL asks once: treat this document as Markdown, convert it to Rich Text, or stay plain. Whatever you answer is remembered for that document.
-- **Editing Word documents (.docx):** a .docx can open for real rich editing and save back as a genuine Word file. A file carrying things QUILL's editor cannot hold (tables, images, comments, tracked changes, headers/footers) asks first — open for reading and plain editing (the safe default), edit as Rich Text with those losses named specifically, or edit a copy. The first rich save over such an original writes a timestamped backup next to it automatically.
+- **Editing Word documents (.docx):** a .docx can open for real rich editing and save back as a genuine Word file. A file carrying things QUILL's editor cannot hold (images, comments, tracked changes, headers/footers) asks first — open for reading and plain editing (the safe default), edit as Rich Text with those losses named specifically, or edit a copy. The first rich save over such an original writes a timestamped backup next to it automatically. **Tables are preserved** when you open a Word document for rich editing: they appear inline as accessible tables (previously their contents were dropped), so you can read them and jump to them with single-key table navigation (`T`).
 
 **The Document Format switcher.** **Format > Document Format...** (also Ctrl+Shift+Grave, K; the command palette; or press Enter on the **Format** cell in the status bar, which always shows your current format) moves the current document between Plain text, Markdown, HTML, Rich Text (RTF), and Word (.docx) mid-session. Switching to a rich format turns your Markdown headings into real ones; leaving a rich format warns first, with the specific list of anything that will not survive. A switched document never silently overwrites its old file — the next save proposes the matching new name.
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>release0.9.0-beta3</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -2268,5 +2264,78 @@ you for helping turn an editor into a community-built place where more
 people can create, contribute, and belong.</p>
 <p><strong>QUILL 0.9.0 Beta 3 is here. One editor. Every format. Built
 with you.</strong></p>
+<hr />
+<h2 id="after-beta-3--in-progress-unreleased">After Beta 3 — in progress
+(unreleased)</h2>
+<p>These improvements have landed on the development branch since Beta 3
+and will ship in the next build. They are staged in the
+<strong>Unreleased</strong> section of <code>CHANGELOG.md</code>.</p>
+<h3 id="writing-tools-that-match-your-documents-format">Writing Tools
+that match your document's format</h3>
+<ul>
+<li><strong>Insert Block Quote</strong> and <strong>Insert Horizontal
+Rule</strong> join the Insert menu. Together with tables and images,
+these are now <em>format-aware</em>: they write Markdown in a Markdown
+document and HTML in an HTML document.</li>
+<li><strong>Ask once, then just work.</strong> If a document's format
+isn't set yet — a brand-new, unsaved, or plain-text buffer — QUILL asks
+"Markdown or HTML?" the first time you insert structured content,
+remembers your answer for that document, and never asks again.</li>
+<li>The two new commands have no default shortcut (we don't add Ctrl+Alt
+chords, which fight screen readers); assign your own in the Keymap
+Editor, just like Insert Table.</li>
+</ul>
+<h3 id="insert-image-gets-ai-alt-text-and-page-ready-html">Insert Image
+gets AI alt text and page-ready HTML</h3>
+<ul>
+<li><strong>Suggest alt text with AI.</strong> When you have an AI
+vision model connected and aren't in Safe Mode, one button describes
+your chosen image and drafts the alt text for you to review and edit.
+You always approve what goes in. (The button is absent in Safe Mode,
+where AI stays off.)</li>
+<li><strong>Correct layout on a web page.</strong> Inserting into an
+HTML document, you can set width and height (so the page doesn't jump as
+the image loads), keep it responsive (never overflowing a narrow
+column), and add a caption that's properly tied to the image with
+<code>&lt;figure&gt;</code>/<code>&lt;figcaption&gt;</code>.</li>
+</ul>
+<h3 id="reading-richer-documents">Reading richer documents</h3>
+<ul>
+<li><strong>ePub headings you can actually navigate.</strong> Chapter
+headings now appear inline so single-key heading navigation
+(<code>H</code> / <code>Shift+H</code>) walks them — and when an ePub
+has no real heading markup at all, QUILL infers headings from the book's
+structure so navigation still works.</li>
+<li><strong>Word tables are no longer lost in rich editing.</strong>
+Opening a <code>.docx</code> for rich editing used to silently drop its
+tables; they now appear inline as accessible tables you can read and
+jump to with <code>T</code>.</li>
+</ul>
+<h3 id="bookmarks-that-survive-edits">Bookmarks that survive edits</h3>
+<ul>
+<li>Bookmarks and quick-bookmarks now remember the text around them, so
+jumping to one lands where that text actually is — even after you've
+inserted or deleted text above it. Your "Points" stop drifting.</li>
+</ul>
+<h3 id="fixes">Fixes</h3>
+<ul>
+<li>Podcast search now returns focus to the results list after you
+subscribe, so you can keep arrowing through shows.</li>
+<li>Fixed crashes: typing into the accessible Word view, opening a Vault
+containing a non-UTF-8 file, launching Quill Radio on an early
+keystroke, and radio audio that could keep playing after the app
+exits.</li>
+<li>Quill Radio: Alt+S no longer opens the Stations menu instead of Stop
+(use Ctrl+P for a reliable Play/Stop); custom stations and TuneIn
+stations can now be added to Favorites; a new <strong>Remove
+All</strong> clears favorites in one step; and Browse Stations picks up
+new listings after an in-place update.</li>
+<li>The live preview no longer renumbers ordered lists or splits
+blank-line-separated lists.</li>
+<li>A batch of Quill Radio feedback items filed via Report a Bug were
+resolved or answered; update/distribution reports that were fixed in a
+later build (or are release-configuration rather than code) were closed
+with an explanation.</li>
+</ul>
 </body>
 </html>

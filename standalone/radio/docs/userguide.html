@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>userguide</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -241,10 +237,11 @@ Folder, Mark for Move, and Manage Favorites. Your custom names are used
 everywhere.</li>
 <li>Buttons: <strong>Play</strong> (it becomes <strong>Stop</strong>
 while connecting or playing -- one transport control, never a dead
-button), <strong>Add to Favorites</strong> (it becomes <strong>Remove
-from Favorites</strong> when the playing station is already saved --
-perfect for keeping something you found in ACB Media or Recently
-Played), <strong>Record</strong>, <strong>Browse
+button; its reliable keyboard shortcut is <strong>Ctrl+P</strong>, which
+works from anywhere in the window), <strong>Add to Favorites</strong>
+(it becomes <strong>Remove from Favorites</strong> when the playing
+station is already saved -- perfect for keeping something you found in
+ACB Media or Recently Played), <strong>Record</strong>, <strong>Browse
 Stations...</strong></li>
 <li><strong>Status bar</strong> (along the bottom): a row of cells that
 always show what is going on -- Now playing, Volume (with a note when
@@ -264,6 +261,39 @@ recordings, and Hide Status Bar). Turn the whole bar off from
 <strong>View &gt; Show Status Bar</strong> if you would rather not have
 it.</li>
 </ul>
+<h2 id="windows-and-moving-between-them">Windows, and moving between
+them</h2>
+<p>Quill Radio's bigger surfaces -- <strong>Browse Stations</strong>,
+<strong>Search Stations</strong>, <strong>Manage Favorites</strong>,
+<strong>Schedule Recording</strong>, and the <strong>Weather
+Center</strong> -- open as their own <strong>windows</strong>, not
+dialogs. Two things follow from that, both on purpose:</p>
+<ul>
+<li><strong>The menu bar is always there.</strong> Every window carries
+the full menu bar, so Alt reaches your menus no matter which window you
+are in. (Older versions used dialogs, which cannot carry a menu bar, so
+opening one made the menus seem to disappear.)</li>
+<li><strong>The main window stays reachable.</strong> Opening one of
+these windows no longer locks you out of the favorites list; you can
+keep several windows open at once and work across them.</li>
+</ul>
+<p>A <strong>Window</strong> menu on every window lists what is open,
+numbered in the order you opened them. To move between windows:</p>
+<ul>
+<li><strong>Ctrl+Tab</strong> goes to the next window,
+<strong>Ctrl+Shift+Tab</strong> to the previous one (it wraps
+around).</li>
+<li><strong>Ctrl+1</strong> through <strong>Ctrl+9</strong> jump
+straight to the first through ninth open window.</li>
+<li>Or open the <strong>Window</strong> menu and pick one by name and
+number.</li>
+</ul>
+<p>Each window opens only when you ask for it, and closing a window puts
+focus back on the window you came from. Quill Radio announces "Entered
+..." as a window opens and "Exited ..." as it closes, and drops your
+focus on the window's main control so you can start straight away.
+(Inside QUILL itself these same surfaces open as ordinary dialogs; the
+multi-window model is the standalone Quill Radio experience.)</p>
 <h2 id="menus">Menus</h2>
 <h3 id="station-alts">Station (Alt+S)</h3>
 <ul>
@@ -279,7 +309,10 @@ search it), <strong>Weather / NOAA</strong>, <strong>ACB Media</strong>,
 Icecast Directory</strong>. Expand a branch and its stations load on the
 spot; <strong>Enter</strong> plays the highlighted station, and
 <strong>Shift+F10</strong> (or right-click) opens Play/Stop, Add/Remove
-Favorite, Copy stream link, Open website, and Refresh. Two branches
+Favorite, Copy stream link, Open website, and Refresh. (TuneIn stations
+work out their stream only when played, so <strong>Add to
+Favorites</strong> on a TuneIn station resolves it on demand before
+saving -- it works there now just like every other source.) Two branches
 deserve their own words:
 <ul>
 <li><strong>Weather / NOAA</strong> is the real NOAA Weather Radio
@@ -781,9 +814,15 @@ then <strong>Move Above</strong> or <strong>Move Below</strong> -- the
 moved station joins the destination's folder. Reordering is your
 hand-arranged "Unsorted" order, and the Move buttons work from any view:
 if the list is currently sorted Ascending or Descending, the first move
-commits the order you see as your manual order and moves the station
-within it -- exactly like Alt+Shift+Up/Down on the main page. A list you
-have already hand-arranged is left as it is.</li>
+switches to manual order (revealing your saved order, announced
+"Switched to manual order") and moves the station within it -- exactly
+like Alt+Shift+Up/Down on the main page. Your stored order is preserved,
+never overwritten by the alphabetical view, so a hand-arranged list
+can't be lost.</li>
+<li><strong>Remove All...</strong> clears every favorite at once (your
+folders stay) after a confirmation that defaults to No. Because
+favorites keep a rolling backup, an accidental Remove All can still be
+recovered.</li>
 <li><strong>Sort order.</strong> Preferences (Ctrl+,) sets the default
 order for every folder -- Ascending (A to Z), Descending (Z to A), or
 Unsorted. Any single folder can override that from its context menu
@@ -1153,6 +1192,14 @@ roadmap.</p>
 <tr>
 <td>Send to tray</td>
 <td>Ctrl+W</td>
+</tr>
+<tr>
+<td>Next / previous window</td>
+<td>Ctrl+Tab / Ctrl+Shift+Tab</td>
+</tr>
+<tr>
+<td>Jump to window 1-9</td>
+<td>Ctrl+1 ... Ctrl+9</td>
 </tr>
 <tr>
 <td>Preferences</td>

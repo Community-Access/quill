@@ -1047,3 +1047,37 @@ A successful report matters. A failure report matters. A strange edge case matte
 Thank you for testing. Thank you for challenging assumptions. Thank you for helping turn an editor into a community-built place where more people can create, contribute, and belong.
 
 **QUILL 0.9.0 Beta 3 is here. One editor. Every format. Built with you.**
+
+---
+
+## After Beta 3 — in progress (unreleased)
+
+These improvements have landed on the development branch since Beta 3 and will ship in the next build. They are staged in the **Unreleased** section of `CHANGELOG.md`.
+
+### Writing Tools that match your document's format
+
+- **Insert Block Quote** and **Insert Horizontal Rule** join the Insert menu. Together with tables and images, these are now *format-aware*: they write Markdown in a Markdown document and HTML in an HTML document.
+- **Ask once, then just work.** If a document's format isn't set yet — a brand-new, unsaved, or plain-text buffer — QUILL asks "Markdown or HTML?" the first time you insert structured content, remembers your answer for that document, and never asks again.
+- The two new commands have no default shortcut (we don't add Ctrl+Alt chords, which fight screen readers); assign your own in the Keymap Editor, just like Insert Table.
+
+### Insert Image gets AI alt text and page-ready HTML
+
+- **Suggest alt text with AI.** When you have an AI vision model connected and aren't in Safe Mode, one button describes your chosen image and drafts the alt text for you to review and edit. You always approve what goes in. (The button is absent in Safe Mode, where AI stays off.)
+- **Correct layout on a web page.** Inserting into an HTML document, you can set width and height (so the page doesn't jump as the image loads), keep it responsive (never overflowing a narrow column), and add a caption that's properly tied to the image with `<figure>`/`<figcaption>`.
+
+### Reading richer documents
+
+- **ePub headings you can actually navigate.** Chapter headings now appear inline so single-key heading navigation (`H` / `Shift+H`) walks them — and when an ePub has no real heading markup at all, QUILL infers headings from the book's structure so navigation still works.
+- **Word tables are no longer lost in rich editing.** Opening a `.docx` for rich editing used to silently drop its tables; they now appear inline as accessible tables you can read and jump to with `T`.
+
+### Bookmarks that survive edits
+
+- Bookmarks and quick-bookmarks now remember the text around them, so jumping to one lands where that text actually is — even after you've inserted or deleted text above it. Your "Points" stop drifting.
+
+### Fixes
+
+- Podcast search now returns focus to the results list after you subscribe, so you can keep arrowing through shows.
+- Fixed crashes: typing into the accessible Word view, opening a Vault containing a non-UTF-8 file, launching Quill Radio on an early keystroke, and radio audio that could keep playing after the app exits.
+- Quill Radio: Alt+S no longer opens the Stations menu instead of Stop (use Ctrl+P for a reliable Play/Stop); custom stations and TuneIn stations can now be added to Favorites; a new **Remove All** clears favorites in one step; and Browse Stations picks up new listings after an in-place update.
+- The live preview no longer renumbers ordered lists or splits blank-line-separated lists.
+- A batch of Quill Radio feedback items filed via Report a Bug were resolved or answered; update/distribution reports that were fixed in a later build (or are release-configuration rather than code) were closed with an explanation.

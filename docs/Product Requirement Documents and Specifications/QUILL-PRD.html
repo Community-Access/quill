@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL-PRD</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -1038,6 +1034,21 @@ document.</li>
 text/Markdown; block-level HTML tags (<code>p</code>, <code>li</code>,
 <code>blockquote</code>, <code>pre</code>, <code>h1</code> to
 <code>h6</code>, <code>td</code>, <code>th</code>) for HTML.</li>
+</ul>
+<p><strong>Edit-surviving bookmark anchors ("Points").</strong> A
+bookmark stores more than a bare character offset:
+<code>core/bookmark_anchor.py</code> captures a small text window around
+the caret (before/after snippet + line) at set time. On jump,
+<code>resolve_anchor</code> relocates the bookmark to where that snippet
+actually lives now — fast-path when the stored offset still matches,
+else the nearest occurrence of the snippet to the old offset, else a
+clamped fallback when the text was deleted. Named bookmarks and numbered
+quick-bookmarks both capture anchors; anchors persist per-document in
+<code>document_memory.json</code> alongside the legacy int map and are
+fully backward-compatible (older files without anchors simply use the
+offset). This realizes the "Bookmarks survive edits" principle so a mark
+no longer drifts when text is inserted or removed above it.</p>
+<ul>
 <li>Sentence anchors: sentence-ending punctuation boundaries.</li>
 </ul>
 <p>Performance and invalidation:</p>
@@ -5742,8 +5753,21 @@ Toggle Line Comment, Toggle Block Comment.</li>
 <li>Indent: Indent, Outdent, Convert to Tabs, Convert to Spaces, Set
 Indent Width….</li>
 <li>Markdown helpers: Insert Heading (levels 1–6), Insert Bullet List,
-Insert Numbered List, Insert Task List, Insert Table…, Insert Link…,
-Insert Code Block, Insert Footnote.</li>
+Insert Numbered List, Insert Task List, Insert Table…, Insert Block
+Quote, Insert Horizontal Rule, Insert Link…, Insert Code Block, Insert
+Footnote.</li>
+<li>Format-aware structured inserts: block quote, horizontal rule,
+table, and image resolve the document's markup (Markdown vs HTML)
+through a single <code>_resolve_structured_markup</code> chokepoint.
+When the surface is known (by pin, extension, or content sniff), it is
+used; when it is not (a fresh/unsaved/plain buffer), the user is asked
+"Markdown or HTML?" once, the choice is remembered on the tab
+(<code>structured_markup_choice</code>) and pins the markup kind so
+later inserts and menu state agree without re-asking. Insert Block Quote
+and Insert Horizontal Rule are menu-driven with no default keybinding
+(§10.8 bars new Ctrl+Alt chords and the QUILL-key leader space is
+saturated); users assign their own via the Keymap Editor, consistent
+with Insert Table.</li>
 <li>Markdown list editing behavior: <code>Enter</code> continues
 bullet/numbered/task items, <code>Enter</code> on an empty marker exits
 the list, and <code>Tab</code>/<code>Shift+Tab</code> nest or promote
@@ -21260,7 +21284,27 @@ headers/footers, footnotes) and drives a three-way open choice
 (read-extract default / rich with named losses / edit a copy); the first
 rich save over a flagged original writes a timestamped backup alongside.
 python-docx stays a soft dependency — absent, docx opens read-extract
-exactly as before.</p>
+exactly as before. <strong>Tables are preserved on the rich read
+path</strong>: <code>read_docx_rich</code> walks the body blocks in
+document order (via <code>_iter_body_blocks</code>, which reunites
+python-docx's separate paragraph/table lists) and renders each table
+inline as GFM Markdown-table paragraphs — so table content that was
+previously dropped entirely now survives, reads correctly, and is
+reachable by single-key table navigation (<code>T</code>).
+<code>scan_docx_features</code> still lists tables so the format change
+is disclosed before a rich edit.</p>
+<p><strong>EPUB reading.</strong> <code>core/epub.py</code> renders each
+chapter's headings inline (as Markdown <code>#</code> lines two levels
+beneath the chapter) so single-key heading navigation traverses them,
+not just chapter boundaries. When a chapter has no real
+<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> markup,
+<code>_infer_heading_spans</code> guesses headings from structure — a
+<code>&lt;p&gt;</code>/<code>&lt;div&gt;</code> whose class names it a
+title/chapter/section/heading, or a short standalone bold line — while
+leaving body text and long bold emphasis alone. The EPUB Navigator tree
+and inline navigation both benefit;
+<code>EpubChapter.headings_inferred</code> records when headings were
+guessed rather than read.</p>
 <p><strong>macOS:</strong>
 <code>quill/ui/nstextview_rtf_surface.py</code>
 (<code>QuillMacRichText</code>) mirrors the Windows wrapper
@@ -21415,6 +21459,27 @@ text is present or decorative is explicitly checked.
 <strong>Tools &gt; Describe Image at Cursor</strong>, which answers the
 "what does this image say" question for any image already in the
 document, however it got there (typed by hand, pasted, imported).</p>
+<p>The dialog is format-aware and AI-assisted. <code>insert_image</code>
+resolves the target markup (<code>_resolve_structured_markup</code>)
+before opening the dialog, and builds Markdown
+(<code>build_image_markdown</code>) or rich HTML
+(<code>build_image_html</code>) accordingly. In HTML mode the dialog
+collects width/height (intrinsic size to prevent layout shift), a
+responsive cap (<code>max-width:100%;height:auto</code>), and an
+optional caption (emitted as
+<code>&lt;figure&gt;</code>/<code>&lt;figcaption&gt;</code>); decorative
+images emit empty <code>alt</code> plus
+<code>role="presentation"</code>. When an AI vision model is connected
+and Safe Mode is off, a <strong>Suggest alt text with AI</strong> button
+calls the existing cloud vision pipeline
+(<code>quill.core.ai.vision.describe_image</code> with the
+<code>accessibility</code> prompt) on a worker thread behind a progress
+indicator and drops the draft into the alt field for human review. The
+gate is AI-enabled AND provider≠"off" AND an unlocked API key AND
+<strong>not</strong> Safe Mode — the vision path does not itself block
+Safe Mode, so <code>ImageAltMixin</code> adds that check
+(<code>_ai_alt_text_available</code> /
+<code>_ai_alt_text_for_path</code>).</p>
 <p>Deliberately out of scope for this pass: non-image embeds (page
 breaks, equations, removed objects) as accessible placeholders. add.md's
 own spike note said to investigate a shared placeholder model before

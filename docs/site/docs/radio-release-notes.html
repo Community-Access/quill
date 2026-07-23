@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>release-notes-2.0</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -194,6 +190,287 @@ Stations. More on that below.</p>
 and QUILL share one codebase and one data store, so these fixes arrive
 in both at once -- nothing here is vendored into the Quill Radio
 wrapper.</p>
+<h2 id="update-220">Update 2.2.0</h2>
+<p>Quill Radio 2.2.0 collects everything since 2.1.2 -- a round of fixes
+and small conveniences straight from your testing, and a piece many of
+you have asked for: a proper backup you can carry to a new device.</p>
+<ul>
+<li><strong>The menu bar stays put, and windows work the way you
+expect.</strong> Until now, opening Browse Stations, Search Stations,
+Manage Favorites, Schedule Recording, or the Weather Center could make
+the menu bar seem to vanish -- because those surfaces were dialogs, and
+a dialog cannot carry a menu bar -- and the modal ones shut you out of
+the main window entirely. They are now proper <strong>windows</strong>:
+each carries the full menu bar (so the menus are always one Alt away,
+wherever you are), and they no longer lock the main window. You can keep
+more than one open at a time. A new <strong>Window</strong> menu lists
+every open window, numbered in the order you opened them, and you move
+between them with <strong>Ctrl+Tab</strong> (next) and
+<strong>Ctrl+Shift+Tab</strong> (previous), or jump straight to one with
+<strong>Ctrl+1</strong> through <strong>Ctrl+9</strong> -- the same
+window keys you already know from other apps. Each window opens only
+when you ask for it, and closing one puts you back in the window you
+came from, announced as you arrive. This started from a report that the
+menu bar disappeared in certain screens; the fix was to change how the
+screens themselves work.</li>
+<li><strong>Back up and restore -- take your radio with you.</strong>
+Two new items on the Station menu, <strong>Back Up Stations and
+Settings...</strong> and <strong>Restore from Backup...</strong>, save
+your favorites, settings, wake timer, and recording schedule -- and, if
+you want, your recorded audio -- into a single <code>.qrbackup</code>
+file. Copy it to a new PC (or your new BrailleNote), restore, and
+everything is back. Made for exactly the moment you switch machines or
+reinstall Windows.</li>
+<li><strong>Favorites keep a rolling backup, automatically.</strong>
+Every change to your favorites now snapshots the previous version aside
+(the last 20 are kept), so a bad edit or an accidental delete can be
+recovered.</li>
+<li><strong>Ctrl+T shows the now-playing text, not just speaks
+it.</strong> "What's Playing?" now opens a small window with the current
+title and artist you can arrow through character by character and copy
+-- to note a song's spelling or paste it into a search. It still speaks
+the title, and falls back to speaking when a stream hasn't sent its
+track info yet. The window was mentioned in the notes but nothing
+actually opened it; now Ctrl+T does.</li>
+<li><strong>Details for any favorite.</strong> Bring up a favorite's
+context menu (Applications key or Shift+F10) and choose <strong>Station
+Details...</strong> for the same reviewable readout the search results
+give -- source, stream, format, country.</li>
+<li><strong>Moving favorites up and down never scrambles a list you
+arranged by hand.</strong> From a sorted A-Z/Z-A view, Alt+Shift+Up/Down
+switches to manual order -- showing you your saved order (Quill Radio
+says "Switched to manual order") -- and moves the station within it. It
+no longer replaces your stored order with the alphabetical view first,
+which could silently wipe out a carefully hand-arranged list you had no
+way to recover. Your order is kept; only the sort setting changes.</li>
+<li><strong>Move a favorite in one step with Mark and Move.</strong>
+Instead of nudging a station up or down thirty times, open a favorite's
+context menu (Applications key or Shift+F10) and choose <strong>Mark for
+Move</strong>; then go to wherever you want it, open the menu again, and
+pick <strong>Move Marked Above</strong> or <strong>Move Marked
+Below</strong>. The marked station jumps straight there (adopting that
+spot's folder). It works on the main favorites list and in the Favorites
+Manager.</li>
+<li><strong>Exit means exit.</strong> If you set Radio to minimize to
+the tray on close, choosing Exit -- even from the tray menu -- used to
+just hide it again, with no way to quit short of a reboot. Exit now
+genuinely closes the app.</li>
+<li><strong>The menus are there the moment you open the app.</strong>
+Pressing Alt right after launch used to bring up the window's own
+Minimize/Maximize menu instead of Radio's menu bar. Focus now lands
+inside the window immediately, so Alt opens the app menu from the first
+keystroke.</li>
+<li><strong>NOAA weather states that say "9 stations" now have nine
+stations.</strong> A state under Weather / NOAA could show a count and
+then expand to nothing; the count and the list were reading from two
+different places. They read from the same directory now, so what you see
+is what you get.</li>
+<li><strong>Weather goes worldwide.</strong> The Weather menu used to
+find and forecast only US places. Location search now resolves anywhere
+in the world, and a non-US location gets a real forecast -- current
+conditions and up to a 16-day outlook, with air quality -- from the free
+Open-Meteo service, while US places keep the authoritative National
+Weather Service report. (Local watches and warnings are still US-only;
+worldwide reports say so.)</li>
+<li><strong>Browse keeps your place.</strong> Expanding a country or
+genre in Browse Stations no longer jerks your cursor down into the
+station list; it stays on the folder you opened (you still hear its
+count), so you move into the list when you choose to.</li>
+<li><strong>"Install and restart" doesn't hang anymore.</strong>
+One-click updating could stall behind a stray, focus-stealing terminal
+window the updater spawned; it now runs fully hidden and completes.</li>
+<li><strong>"Radio Browser," spelled out -- and browsable by
+genre.</strong> The Search source picker now says <strong>Radio
+Browser</strong> in two words (a screen reader could make the old
+run-together spelling sound like the option was gone), and Browse
+Stations has a new <strong>Radio Browser (by Genre)</strong> branch so
+you can wander that huge directory by genre instead of only searching
+it.</li>
+<li><strong>A new View menu, with a status bar you can read.</strong> A
+<strong>View</strong> menu joins the menu bar. <strong>Show Station
+Details</strong> turns the read-only details box in Browse and Search
+Stations on or off -- hide it if you would rather not tab past it, and
+every station surface honors your choice. <strong>Show Status
+Bar</strong> adds a strip along the bottom of the main window that
+always shows what is going on: what is playing, the volume (and whether
+Volume Boost is on), whether a recording is running, the sleep timer,
+how many favorites you have, and the time. Press <strong>F6</strong> to
+land in it, arrow left and right across the cells (Home and End jump to
+the ends), and press <strong>Enter</strong> on a cell to act on it --
+Enter on Now Playing opens the What's Playing window, Enter on Volume
+mutes, Enter on Recording starts or stops recording, Enter on the Sleep
+timer opens the timer. Right-click (or Applications key) any cell for
+more: play/pause, mute, volume up and down, Volume Boost, stop all
+recordings. Escape (or a second F6) hands focus straight back to your
+favorites. Both toggles are remembered between sessions.</li>
+<li><strong>More on the View menu: sort, expand, and text size.</strong>
+<strong>Sort Favorites</strong> (Ascending, Descending, or Unsorted) is
+now one keystroke away instead of buried in Preferences, and shows which
+order you are in. <strong>Expand All Folders</strong> and
+<strong>Collapse All Folders</strong> open or close your whole favorites
+tree at once. And <strong>Text Size</strong> (Normal, Large, or Larger)
+makes everything on the main window -- the favorites list, the buttons,
+the now-playing line, and the status bar -- bigger for easier reading;
+your choice is remembered.</li>
+<li><strong>The Move buttons in Manage Favorites work from the
+alphabetical view.</strong> In the Manage Favorites window, Move Up,
+Move Down, Move Above, and Move Below did nothing unless your list was
+already in manual order -- so from the normal A-Z view they were dead.
+They now do what the main list does: the first move switches to manual
+order (revealing your saved order) and moves the station within it,
+without overwriting your stored order with the alphabetical view -- so a
+hand-arranged list is never lost.</li>
+<li><strong>Quill Radio keeps your computer awake while it
+plays.</strong> Windows going to sleep in the middle of a long listen --
+or worse, during a scheduled recording -- would cut the audio off. Quill
+Radio now asks Windows to stay awake while a station is playing or a
+recording is running, so it keeps going. Your screen can still turn off
+to save power; only the computer's sleep is held off, and only while
+something is actually playing or recording. It is on by default; a new
+checkbox in Station &gt; Preferences (Ctrl+,), <strong>Keep the computer
+awake while playing or recording</strong>, turns it off if you would
+rather Quill Radio never touch your power settings.</li>
+<li><strong>The Stop button responds to Alt+S again.</strong> The one
+Stop/Play button was advertising Alt+S (and Alt+P), but those are the
+shortcuts for the Station and Playback menus, so pressing them opened a
+menu instead of stopping the radio -- the button never fired. The button
+no longer claims those clashing shortcuts, and the reliable transport
+key, <strong>Ctrl+P</strong> (Play, and Stop while playing), works from
+anywhere in the window. Handy when a station is louder than your screen
+reader and you just want silence fast.</li>
+<li><strong>New Folder works with Ctrl+Shift+E from your
+favorites.</strong> The New Folder shortcut was listed but did nothing
+when your cursor was in the favorites tree; it now works everywhere in
+the window.</li>
+<li><strong>Add TuneIn stations to your Favorites straight from
+Browse.</strong> TuneIn stations only work out their stream when you
+play them, so Add to Favorites used to be missing for them in Browse
+Stations. Now Add to Favorites (from the context menu or the button)
+fetches the stream and saves the station, just like every other
+source.</li>
+<li><strong>Adding a custom station shows it in your favorites right
+away.</strong> Adding a custom station saved it but did not refresh the
+list, so it looked as if nothing had happened. The list now updates
+immediately.</li>
+<li><strong>Remove all your favorites in one step.</strong> The
+Favorites Manager gains a <strong>Remove All...</strong> button that
+clears every favorite at once (your folders stay) after a clear
+confirmation -- and because favorites keep a rolling backup, you can
+undo it if you change your mind.</li>
+<li><strong>New stations show up after an in-place update.</strong>
+After updating from an older version, Browse Stations could keep showing
+the old set of categories and stations because the previous version's
+directory cache had not expired yet. It now recognizes when the app has
+shipped a newer directory and uses that, so new categories (like iHeart
+or Radio Reading Services) appear right after you update -- while a
+directory you refreshed yourself by hand is still respected.</li>
+<li><strong>The radio really stops when you exit.</strong> On the
+playback engine that powers pausing and rewinding, audio could keep
+going for a moment after the app closed if it shut down in an unusual
+order; it is now stopped firmly on exit. (Closing to the tray with
+Ctrl+W or the X still keeps playing on purpose -- that is what the tray
+is for; use Exit to quit.)</li>
+</ul>
+<h2 id="update-212">Update 2.1.2</h2>
+<p>Quill Radio 2.1.2 is a quick fix-up for three things you reported --
+two of them from 2.1.1 itself. Thank you for the fast, specific
+feedback; it is exactly what makes these turnarounds possible.</p>
+<ul>
+<li><strong>One-click updating works again.</strong> If you chose
+<strong>Install and restart</strong> on 2.1.1, it could fail with a
+"decompression bomb" error and send you off to update by hand. The
+update installer carries a safety guard against absurdly large archives,
+sized for documents -- but a whole Quill Radio (Python, ffmpeg, and the
+mpv engine, all bundled) legitimately unpacks past that limit, so the
+guard was turning away the real update. It now allows a full app-sized
+download while still refusing a genuinely abnormal one, so Install and
+restart applies the update and relaunches, keeping your favorites,
+recordings, and settings.</li>
+<li><strong>Favorites keep the order you gave them.</strong> A few of
+you updated and found a lovingly hand-sorted list snapped into A-Z on
+the next launch -- understandably frustrating after sorting thirty-plus
+stations by hand. The sort-order setting introduced in 2.0.2 was reading
+an older, orderless favorites file as "Ascending." Quill Radio now reads
+a pre-2.0.2 file as <strong>Unsorted</strong>, so your order carries
+across the upgrade untouched. And if an earlier update already
+rearranged you, the original order is still there underneath: choose
+<strong>Unsorted</strong> in Preferences and it comes right back.</li>
+<li><strong>A shared Speech Hub crash is fixed and
+regression-locked.</strong> Opening Dictation (Offline) in the Speech
+Hub could crash on an older build; it was already fixed, and it now has
+a test standing guard so it cannot come back.</li>
+</ul>
+<h2 id="update-211">Update 2.1.1</h2>
+<p>Quill Radio 2.1.1 is about weather radio done properly, and about a
+kind of station that matters enormously to this community and has never
+been easy to find: the radio reading service.</p>
+<ul>
+<li><strong>NOAA Weather Radio, from an authoritative
+directory.</strong> The <strong>Weather / NOAA</strong> branch in Browse
+Stations no longer guesses at stations by searching for a name; it is
+powered by the <strong>WeatherIndex</strong> directory of actual NWR
+transmitters. Open it and you get the states; open a state and you get
+its real transmitters, each named with its call sign and frequency --
+"KHB36 162.550 MHz Manassas" -- and Enter plays the best available
+internet re-stream. Favorite them, record them, schedule them like any
+other station.</li>
+<li><strong>Search speaks weather-radio.</strong> Type a <strong>SAME
+code</strong> (the 6-digit county code your weather-alert radio uses), a
+<strong>call sign</strong>, or a <strong>"County, ST"</strong> into
+station search and the authoritative directory answers with exact
+transmitters, blended right into the normal results.</li>
+<li><strong>Your local transmitter, one keypress.</strong>
+<strong>Weather menu &gt; Listen to your Local NOAA Weather
+Radio</strong> uses the Weather location you already saved -- its county
+first, then the nearest covering transmitter by coordinates -- and just
+plays it. No location set? It tells you how to add one.</li>
+<li><strong>It works offline, and it outlives the API.</strong> Every
+NOAA feature stands on three tiers: the live directory, a cache of the
+last successful pull, and a <strong>complete bundled snapshot -- 1,035
+transmitters across every state and territory</strong> -- inside the app
+itself. A machine with no internet still browses, searches, and finds
+your local transmitter. <strong>Weather menu &gt; Update NOAA Weather
+Radio Directory</strong> pulls the newest data whenever you ask; the
+bundled snapshot is never overwritten, so there is always a floor.</li>
+<li><strong>Radio Reading Services -- the human newspaper.</strong> For
+decades, radio reading services have had volunteers read newspapers,
+magazines, and grocery ads aloud over closed-circuit radio for people
+who are blind or print-disabled -- and finding their internet streams
+has always been word-of-mouth. A new <strong>Radio Reading
+Services</strong> branch in Browse Stations gathers them: WRBH 88.3
+Reading Radio in New Orleans, Sun Sounds of Arizona, CRIS Radio and the
+Connecticut Radio Information System, the KPBS and WKAR reading
+services, ACB Media 1-5, the NFB Radio Network, Voice Corps, and more.
+<strong>20 vetted services are bundled</strong> so the branch is never
+empty, even offline; they show up in station <strong>Search</strong> by
+name, tag, or state; and <strong>Station &gt; Update Radio Reading
+Services</strong> refreshes the list on demand from the community
+RadioBrowser directory. Play them, favorite them, record your evening
+paper.</li>
+</ul>
+<p>Both directories follow the same rules as every other source: live
+pulls are off in Safe Mode, every network call is in the egress audit,
+and a bundled snapshot keeps the feature honest when the network is not
+there.</p>
+<p>Two more from live feedback:</p>
+<ul>
+<li><strong>iHeart, now something you can browse.</strong> iHeart was
+searchable but you could not wander it. The Browse Stations tree gains
+an <strong>iHeart</strong> branch that opens into
+<strong>genres</strong>, and each genre into an <strong>A-Z</strong>
+sub-directory, all loading lazily as you open them -- so you can flip to
+Country, then to the letter K, then play, without typing a thing. (The
+XML sitemap iHeart search uses carries no genre, so browse quietly uses
+iHeart's free, keyless content API instead; each station arrives with
+its stream already attached, so a genre opens in a single request.)</li>
+<li><strong>The Source filter stops hiding SomaFM stations.</strong> A
+SomaFM channel that RadioBrowser also lists was folded into one search
+result, and picking <strong>SomaFM</strong> in the Source dropdown could
+then hide it. Search now remembers every directory a merged station came
+from, so "Groove Salad" answers to the SomaFM, RadioBrowser, and TuneIn
+filters alike, while the result row still names the directory it played
+from.</li>
+</ul>
 <h2 id="update-210">Update 2.1.0</h2>
 <p>Quill Radio 2.1.0 adds a top-level <strong>Weather</strong> menu, a
 whole new way to <strong>browse stations</strong>, <strong>one-click
