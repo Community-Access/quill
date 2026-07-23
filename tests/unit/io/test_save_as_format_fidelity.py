@@ -112,31 +112,31 @@ def test_rich_to_docx_round_trips_formatting(tmp_path: Path) -> None:
     assert ("bold", True, False, False) in flags
     assert ("italic", False, True, False) in flags
     assert ("under", False, False, True) in flags  # underline survives in docx
-    # The link TEXT survives even though its href does not (see the xfail below).
-    assert "the site" in "".join(s.text for s in body.spans)
+    # Hyperlinks now round-trip through docx (real <w:hyperlink> + relationship).
+    assert any(s.href == "https://example.com" and "the site" in s.text for s in body.spans)
 
     bullets = [p for p in back.paragraphs if p.style == "bullet"]
     assert [s.text for p in bullets for s in p.spans] == ["First point", "Second point"]
 
 
-@pytest.mark.xfail(
-    reason="Known gap: the docx writer/reader do not round-trip hyperlink hrefs "
-    "(read_docx_rich._span_from_run reads no href); links survive as plain text. "
-    "Markdown and HTML export preserve links fully. Remove this xfail when docx "
-    "hyperlink round-trip is implemented.",
-    strict=True,
-)
-def test_rich_to_docx_should_preserve_hyperlink_href(tmp_path: Path) -> None:
+def test_rich_to_docx_preserves_hyperlink_with_its_run_formatting(tmp_path: Path) -> None:
     docx_writer = pytest.importorskip("quill.io.docx_writer")
     if not docx_writer.python_docx_available():
         pytest.skip("python-docx not installed")
     from quill.io.docx_reader import read_docx_rich
+    from quill.io.rtf_model import InlineSpan as _Span
+    from quill.io.rtf_model import RichDocument as _Doc
+    from quill.io.rtf_model import RichParagraph as _Para
 
-    data = docx_writer.rich_to_docx_bytes(_word_like_document())
+    doc = _Doc(
+        paragraphs=[_Para(spans=[_Span(text="a bold link", href="https://example.org", bold=True)])]
+    )
     path = tmp_path / "link.docx"
-    path.write_bytes(data)
-    back = read_docx_rich(path)
-    assert any(s.href == "https://example.com" for p in back.paragraphs for s in p.spans)
+    path.write_bytes(docx_writer.rich_to_docx_bytes(doc))
+    span = read_docx_rich(path).paragraphs[0].spans[0]
+    assert span.href == "https://example.org"
+    assert span.bold is True
+    assert span.text == "a bold link"
 
 
 # --------------------------------------------------------------------------- #
@@ -151,6 +151,75 @@ _MARKDOWN_SOURCE = "\n".join([
     "- alpha",
     "- beta",
 ])
+
+
+def test_numbered_lists_round_trip_and_keep_their_start() -> None:
+    # Markdown identity, including a non-1 start (the number is preserved).
+    md = "1. First\n2. Second\n3. Third"
+    assert rich_to_markdown(markdown_to_rich(md)) == md
+    assert rich_to_markdown(markdown_to_rich("3. Three\n4. Four")) == "3. Three\n4. Four"
+
+
+def test_numbered_list_to_html_is_native_ordered_list() -> None:
+    html = markdown_to_html("1. one\n2. two", "t")
+    assert "<ol" in html
+    assert "<li>one</li>" in html and "<li>two</li>" in html
+
+
+def test_numbered_list_round_trips_through_docx(tmp_path: Path) -> None:
+    docx_writer = pytest.importorskip("quill.io.docx_writer")
+    if not docx_writer.python_docx_available():
+        pytest.skip("python-docx not installed")
+    from quill.io.docx_reader import read_docx_rich
+
+    doc = RichDocument(
+        paragraphs=[
+            RichParagraph(spans=[InlineSpan(text="Alpha")], style="numbered", list_number=1),
+            RichParagraph(spans=[InlineSpan(text="Beta")], style="numbered", list_number=2),
+        ]
+    )
+    path = tmp_path / "num.docx"
+    path.write_bytes(docx_writer.rich_to_docx_bytes(doc))
+    back = read_docx_rich(path)
+    numbered = [(p.list_number, p.spans[0].text) for p in back.paragraphs if p.style == "numbered"]
+    assert numbered == [(1, "Alpha"), (2, "Beta")]
+
+
+def test_image_renders_as_img_in_html() -> None:
+    # Regression: ![alt](src) used to render as a literal "!" plus a hyperlink.
+    html = markdown_to_html("![a cat](cat.png)", "t")
+    assert '<img src="cat.png" alt="a cat">' in html
+    assert "!<a" not in html
+
+
+def test_image_and_link_coexist_in_html() -> None:
+    html = markdown_to_html("see ![pic](a.png) and [link](https://b.example)", "t")
+    assert '<img src="a.png" alt="pic">' in html
+    assert '<a href="https://b.example">link</a>' in html
+
+
+def test_blockquote_renders_as_blockquote_in_html() -> None:
+    # Regression: "> quote" used to stay literal (escaped &gt;) instead of a
+    # real <blockquote> element.
+    html = markdown_to_html("> quote one\n> quote two", "t")
+    assert "<blockquote>quote one<br>quote two</blockquote>" in html
+
+
+def test_gfm_table_to_docx_is_pipe_text_not_a_real_word_table(tmp_path: Path) -> None:
+    # Documented limitation: a Markdown/HTML table becomes literal pipe-text
+    # paragraphs in Word, not a real Word table object (the content is visible
+    # and navigable, but not an editable Word table). Word tables -> Markdown/
+    # HTML *do* preserve the table.
+    docx = pytest.importorskip("docx")
+    docx_writer = pytest.importorskip("quill.io.docx_writer")
+    if not docx_writer.python_docx_available():
+        pytest.skip("python-docx not installed")
+    md = "| A | B |\n| --- | --- |\n| 1 | 2 |"
+    path = tmp_path / "t.docx"
+    path.write_bytes(docx_writer.rich_to_docx_bytes(markdown_to_rich(md)))
+    doc = docx.Document(str(path))
+    assert len(doc.tables) == 0  # no real Word table
+    assert [p.text for p in doc.paragraphs] == ["| A | B |", "| --- | --- |", "| 1 | 2 |"]
 
 
 def test_markdown_source_to_html_is_native() -> None:

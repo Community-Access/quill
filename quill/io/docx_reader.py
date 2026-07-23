@@ -64,12 +64,14 @@ def _paragraph_shape(style_name: str) -> tuple[str, int, str | None]:
             return "heading", level, None
     if name.startswith("List Bullet"):
         return "bullet", 0, None
+    if name.startswith("List Number"):
+        return "numbered", 0, None
     if name in _NAMED_STYLES:
         return "paragraph", 0, _NAMED_STYLES[name]
     return "paragraph", 0, None
 
 
-def _span_from_run(run: Any) -> InlineSpan:
+def _span_from_run(run: Any, *, href: str | None = None) -> InlineSpan:
     font = run.font
     color = None
     rgb = getattr(getattr(font, "color", None), "rgb", None)
@@ -92,6 +94,7 @@ def _span_from_run(run: Any) -> InlineSpan:
         font_size_pt=int(size.pt) if size is not None else None,
         color=color,
         highlight=highlight,
+        href=href,
     )
 
 
@@ -146,11 +149,36 @@ def _table_to_rich_paragraphs(table: Any) -> list[RichParagraph]:
     return [RichParagraph(spans=[InlineSpan(text=line)]) for line in lines]
 
 
+def _paragraph_spans(paragraph: Any) -> list[InlineSpan]:
+    """Runs of a paragraph in reading order, carrying hyperlink hrefs.
+
+    Walks ``iter_inner_content`` (Runs and Hyperlinks in document order) so a
+    hyperlink's runs recover their target URL onto the span -- ``paragraph.runs``
+    alone omits runs nested inside ``<w:hyperlink>``, which is why link hrefs
+    were previously lost on a docx read.
+    """
+    from docx.text.hyperlink import Hyperlink
+    from docx.text.run import Run
+
+    spans: list[InlineSpan] = []
+    iter_inner = getattr(paragraph, "iter_inner_content", None)
+    if not callable(iter_inner):  # pragma: no cover - very old python-docx
+        return [_span_from_run(run) for run in paragraph.runs if run.text]
+    for item in iter_inner():
+        if isinstance(item, Hyperlink):
+            for run in item.runs:
+                if run.text:
+                    spans.append(_span_from_run(run, href=item.address or None))
+        elif isinstance(item, Run) and item.text:
+            spans.append(_span_from_run(item))
+    return spans
+
+
 def _paragraph_to_rich(paragraph: Any) -> RichParagraph:
     style, level, named_style = _paragraph_shape(getattr(paragraph.style, "name", ""))
     alignment = paragraph.alignment
     align = _ALIGNMENTS.get(getattr(alignment, "name", str(alignment))) if alignment else None
-    spans = [_span_from_run(run) for run in paragraph.runs if run.text]
+    spans = _paragraph_spans(paragraph)
     if not spans and paragraph.text:
         spans = [InlineSpan(text=str(paragraph.text))]
     return RichParagraph(
@@ -173,11 +201,22 @@ def read_docx_rich(path: Path) -> RichDocument:
 
     source = docx.Document(str(path))
     rich = RichDocument()
+    # Word's List Number style auto-numbers; the per-item number is not stored,
+    # so assign 1, 2, 3... to each run of consecutive numbered paragraphs (the
+    # count resets on any non-numbered paragraph) so the ordered list survives.
+    numbered_counter = 0
     for block in _iter_body_blocks(source):
         if isinstance(block, Table):
             rich.paragraphs.extend(_table_to_rich_paragraphs(block))
+            numbered_counter = 0
+            continue
+        para = _paragraph_to_rich(block)
+        if para.style == "numbered":
+            numbered_counter += 1
+            para.list_number = numbered_counter
         else:
-            rich.paragraphs.append(_paragraph_to_rich(block))
+            numbered_counter = 0
+        rich.paragraphs.append(para)
     return rich
 
 

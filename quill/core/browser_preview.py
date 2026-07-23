@@ -540,6 +540,18 @@ def _render_markdown(text: str) -> str:
             blocks.append("<hr>")
             index += 1
             continue
+        if re.match(r"^\s*>\s?", stripped):
+            flush_paragraph()
+            flush_list()
+            quote_lines: list[str] = []
+            while index < total:
+                match = re.match(r"^\s*>\s?(.*)$", lines[index].rstrip())
+                if not match:
+                    break
+                quote_lines.append(_render_inline(match.group(1)))
+                index += 1
+            blocks.append("<blockquote>" + "<br>".join(quote_lines) + "</blockquote>")
+            continue
         heading = re.match(r"^(#{1,6})\s+(.*)$", stripped)
         if heading:
             flush_paragraph()
@@ -620,6 +632,16 @@ def _render_inline(text: str) -> str:
     text = _VAULT_EMBED_BOUNDARY_RE.sub(_stash_embed_boundary, text)
     escaped = html.escape(text)
     escaped = re.sub(r"`([^`]+)`", lambda m: f"<code>{m.group(1)}</code>", escaped)
+    # Images before links, so ![alt](src) becomes an <img> instead of the link
+    # regex splitting it into a literal "!" plus a hyperlink.
+    escaped = re.sub(
+        r"!\[([^\]]*)\]\(([^)]+)\)",
+        lambda m: (
+            f'<img src="{html.escape(m.group(2), quote=True)}" '
+            f'alt="{html.escape(m.group(1), quote=True)}">'
+        ),
+        escaped,
+    )
     escaped = re.sub(
         r"\[([^\]]+)\]\(([^)]+)\)",
         lambda m: f'<a href="{html.escape(m.group(2), quote=True)}">{m.group(1)}</a>',

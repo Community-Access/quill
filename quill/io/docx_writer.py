@@ -95,6 +95,8 @@ def _paragraph_style(paragraph: RichParagraph) -> str | None:
         return f"Heading {level}"
     if paragraph.style == "bullet":
         return "List Bullet"
+    if paragraph.style == "numbered":
+        return "List Number"
     if paragraph.named_style in _NAMED_STYLES:
         return _NAMED_STYLES[paragraph.named_style]
     return None
@@ -143,6 +145,7 @@ def rich_to_docx(document: RichDocument) -> Any:
         if paragraph.first_line_indent:
             fmt.first_line_indent = Pt(paragraph.first_line_indent)
         for span in paragraph.spans:
+            span_runs = []
             for segment in split_math_segments(span.text):
                 if segment.is_math:
                     fragment = omml_fragment_for_latex(segment.content, display=segment.display)
@@ -159,6 +162,7 @@ def rich_to_docx(document: RichDocument) -> Any:
                     run = para.add_run(delimited)
                 else:
                     run = para.add_run(segment.content)
+                span_runs.append(run)
                 run.bold = span.bold or None
                 run.italic = span.italic or None
                 run.underline = span.underline or None
@@ -181,7 +185,29 @@ def rich_to_docx(document: RichDocument) -> Any:
                 if span.highlight:
                     name = _HIGHLIGHT_NAMES.get(span.highlight.lower(), "YELLOW")
                     run.font.highlight_color = getattr(WD_COLOR_INDEX, name)
+            if span.href and span_runs:
+                _wrap_runs_in_hyperlink(para, span.href, span_runs)
     return out
+
+
+def _wrap_runs_in_hyperlink(paragraph: Any, url: str, runs: list) -> None:
+    """Move ``runs`` into a real ``<w:hyperlink>`` with an external relationship.
+
+    python-docx has no high-level hyperlink writer, so this is the OPC recipe:
+    relate the URL, create the ``w:hyperlink`` element in the run's place, and
+    reparent the run(s) into it -- so the href round-trips (read back via
+    ``iter_inner_content``) instead of a link degrading to plain text.
+    """
+    from docx.opc.constants import RELATIONSHIP_TYPE as RT
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+
+    r_id = paragraph.part.relate_to(url, RT.HYPERLINK, is_external=True)
+    hyperlink = OxmlElement("w:hyperlink")
+    hyperlink.set(qn("r:id"), r_id)
+    runs[0]._r.addprevious(hyperlink)
+    for run in runs:
+        hyperlink.append(run._r)
 
 
 def rich_to_docx_bytes(document: RichDocument) -> bytes:

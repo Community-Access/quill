@@ -75,6 +75,7 @@ __all__ = [
 
 _HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 _LIST_RE = re.compile(r"^[-*]\s+(.*)$")
+_ORDERED_RE = re.compile(r"^(\d+)\.\s+(.*)$")
 _LINK_MD_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 _SPAN_MD_RE = re.compile(r"\[([^\]]+)\]\{([^}]*)\}")
 
@@ -157,17 +158,20 @@ class InlineSpan:
 class RichParagraph:
     """A paragraph: spans plus paragraph-level style and block formatting.
 
-    ``style`` is one of ``"paragraph"``, ``"heading"``, ``"bullet"`` or
-    ``"pagebreak"``. ``level`` carries the heading level (1-6) when
-    ``style == "heading"``; it is ``0`` otherwise. The block attributes
-    (``align``, ``named_style``, ``line_spacing``, ``space_before``,
-    ``space_after``, ``indent``, ``first_line_indent``) come from an enclosing
-    alignment/style fenced div and are ``None`` when unset.
+    ``style`` is one of ``"paragraph"``, ``"heading"``, ``"bullet"``,
+    ``"numbered"`` or ``"pagebreak"``. ``level`` carries the heading level (1-6)
+    when ``style == "heading"``; it is ``0`` otherwise. ``list_number`` carries
+    the ordered-list item number when ``style == "numbered"`` (so 3. 4. 5. keeps
+    its start), ``0`` otherwise. The block attributes (``align``, ``named_style``,
+    ``line_spacing``, ``space_before``, ``space_after``, ``indent``,
+    ``first_line_indent``) come from an enclosing alignment/style fenced div and
+    are ``None`` when unset.
     """
 
     spans: list[InlineSpan] = field(default_factory=list)
     style: str = "paragraph"
     level: int = 0
+    list_number: int = 0
     align: str | None = None
     named_style: str | None = None
     line_spacing: str | None = None
@@ -432,23 +436,30 @@ def markdown_to_rich(markdown: str) -> RichDocument:
             continue
         style = "paragraph"
         level = 0
+        list_number = 0
         content = line
         heading = _HEADING_RE.match(line)
         if heading:
             style = "heading"
             level = len(heading.group(1))
             content = heading.group(2)
+        elif _LIST_RE.match(line):
+            style = "bullet"
+            content = _LIST_RE.match(line).group(1)  # type: ignore[union-attr]
         else:
-            item = _LIST_RE.match(line)
-            if item:
-                style = "bullet"
-                content = item.group(1)
+            ordered = _ORDERED_RE.match(line)
+            if ordered:
+                style = "numbered"
+                list_number = int(ordered.group(1))
+                content = ordered.group(2)
         chars: list[str] = []
         md_index: list[int] = []
         attrs: list[_Attrs] = []
         _walk_inline(content, 0, _Attrs(), chars, md_index, attrs)
         spans = _spans_from_attr_runs(chars, attrs)
-        paragraphs.append(RichParagraph(spans=spans, style=style, level=level, **block))  # type: ignore[arg-type]
+        paragraphs.append(
+            RichParagraph(spans=spans, style=style, level=level, list_number=list_number, **block)  # type: ignore[arg-type]
+        )
     return RichDocument(paragraphs=paragraphs)
 
 
@@ -521,6 +532,8 @@ def _paragraph_to_markdown(paragraph: RichParagraph) -> str:
         return f"{'#' * level} {inline}"
     if paragraph.style == "bullet":
         return f"- {inline}"
+    if paragraph.style == "numbered":
+        return f"{paragraph.list_number or 1}. {inline}"
     return inline
 
 
@@ -687,11 +700,17 @@ def analyze_markdown(markdown: str) -> MarkdownAnalysis:
             content = heading.group(2)
         else:
             item = _LIST_RE.match(line)
+            ordered = _ORDERED_RE.match(line)
             if item:
                 style = "bullet"
                 bullet = True
                 content_offset = item.start(1)
                 content = item.group(1)
+            elif ordered:
+                style = "numbered"
+                bullet = True
+                content_offset = ordered.start(2)
+                content = ordered.group(2)
 
         chars: list[str] = []
         rel_md: list[int] = []
