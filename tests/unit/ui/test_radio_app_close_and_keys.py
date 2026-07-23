@@ -85,6 +85,33 @@ def test_alt_shift_up_down_reorder_via_char_hook_when_tree_focused(monkeypatch) 
     assert calls == ["move:-1", "move:1"]
 
 
+def test_ctrl_shift_e_opens_new_folder_app_wide(monkeypatch) -> None:
+    # #1211: Ctrl+Shift+E must add a folder even from the favorites tree, where
+    # the menu accelerator can be swallowed. Handled in the char hook, consumed
+    # (not skipped) so it fires regardless of focus.
+    calls: list[str] = []
+    frame = SimpleNamespace(
+        _radio_history=SimpleNamespace(alt_f4_to_tray=False),
+        _on_new_folder=lambda: calls.append("new_folder"),
+    )
+    event, skipped = _key_event(ord("E"), ctrl=True, shift=True)
+    RadioAppFrame._on_radio_char_hook(frame, event)  # type: ignore[arg-type]
+    assert calls == ["new_folder"]
+    assert skipped == []  # consumed, not passed through
+
+
+def test_ctrl_e_without_shift_does_not_open_new_folder() -> None:
+    calls: list[str] = []
+    frame = SimpleNamespace(
+        _radio_history=SimpleNamespace(alt_f4_to_tray=False),
+        _on_new_folder=lambda: calls.append("new_folder"),
+    )
+    event, skipped = _key_event(ord("E"), ctrl=True, shift=False)
+    RadioAppFrame._on_radio_char_hook(frame, event)  # type: ignore[arg-type]
+    assert calls == []
+    assert skipped == [True]  # passed through untouched
+
+
 def test_alt_shift_ignored_when_tree_not_focused(monkeypatch) -> None:
     calls: list[str] = []
     frame = SimpleNamespace(
@@ -144,12 +171,14 @@ def test_move_favorite_non_manual_forces_manual_then_moves(monkeypatch) -> None:
     assert any("Switched to manual order" in c for c in calls)
 
 
-def test_force_favorites_manual_order_bakes_the_display_order(monkeypatch) -> None:
-    # Restored after #1186: switching from a sorted view (A-Z/Z-A) to manual
-    # commits the CURRENT display order as the stored order, so Alt+Shift+Up/Down
-    # reorders exactly what the listener sees instead of the list jumping to a
-    # different stored order (which made move up/down look broken). A genuine
-    # hand-arranged order is already in manual mode, so this is never called for it.
+def test_force_favorites_manual_order_preserves_stored_order(monkeypatch) -> None:
+    # #1186: switching from a sorted view (A-Z/Z-A) to manual must NOT bake the
+    # visible order over the stored list -- doing so silently destroyed a
+    # listener's hand-arranged order (a real scenario: the #1178 upgrade bug left
+    # a manual order stored while the sort was flipped to A-Z), with no way to
+    # recover it. Only the sort setting flips; the stored order is left untouched
+    # (the caller reloads the tree to reveal it and announces "Switched to manual
+    # order"), so no data is lost.
     from quill.core.radio import history as rh
 
     monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
@@ -159,8 +188,7 @@ def test_force_favorites_manual_order_bakes_the_display_order(monkeypatch) -> No
     )
     calls: list[str] = []
     store = SimpleNamespace(
-        favorites_in_display_order=lambda sort, folder_sorts: ["a", "b", "c"],  # A-Z view
-        favorites=["c", "a", "b"],  # a different stored order the user is not seeing
+        favorites=["c", "a", "b"],  # the stored, hand-arranged order
     )
     hist = SimpleNamespace(favorites_sort="az", folder_sort_orders={"News": "az"})
     frame = SimpleNamespace(
@@ -169,7 +197,7 @@ def test_force_favorites_manual_order_bakes_the_display_order(monkeypatch) -> No
         _save_radio_favorites=lambda: calls.append("save"),
     )
     RadioAppFrame._force_favorites_manual_order(frame)  # type: ignore[arg-type]
-    assert store.favorites == ["a", "b", "c"], "the visible order is committed as manual"
+    assert store.favorites == ["c", "a", "b"], "the stored order is preserved, not baked"
     assert hist.favorites_sort == "manual"
     assert hist.folder_sort_orders == {}
     assert saved["h"] is hist
@@ -555,7 +583,9 @@ def test_explicit_exit_skips_confirm_even_while_recording(monkeypatch: pytest.Mo
     # A deliberate Exit does not re-prompt even mid-recording; the recorder's
     # shutdown finalizes the file, so nothing is silently lost.
     frame, calls = _close_frame(
-        monkeypatch, close_action="ask", recording_active=True,
+        monkeypatch,
+        close_action="ask",
+        recording_active=True,
         player_state=RadioPlayerState.PLAYING,
     )
     frame._exit_requested = True

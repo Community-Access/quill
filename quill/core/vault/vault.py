@@ -45,6 +45,15 @@ def scan_vault(root: Path) -> Vault:
             text = path.read_text(encoding="utf-8")
         except OSError:
             continue
+        except UnicodeDecodeError:
+            # A note that isn't valid UTF-8 (saved as Latin-1, or a stray
+            # non-text file that slipped into the vault folder) must not crash
+            # the whole scan (#1202). Re-read leniently so the note still gets
+            # indexed and searched instead of taking the vault down with it.
+            try:
+                text = path.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
         texts[rel] = text
         notes[rel] = parse_note(text, path.stem)
     return Vault(root=root, notes=notes, texts=texts)

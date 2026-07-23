@@ -441,6 +441,7 @@ def _render_markdown(text: str) -> str:
     paragraph: list[str] = []
     list_items: list[str] = []
     list_tag = ""
+    list_start = 1
     code_lines: list[str] = []
     in_code = False
 
@@ -451,11 +452,33 @@ def _render_markdown(text: str) -> str:
             paragraph = []
 
     def flush_list() -> None:
-        nonlocal list_items, list_tag
+        nonlocal list_items, list_tag, list_start
         if list_items:
-            blocks.append(f"<{list_tag}>" + "".join(list_items) + f"</{list_tag}>")
+            # Honor the author's starting number for ordered lists (#1200): a
+            # list written 3. 4. 5. must not silently renumber to 1. 2. 3. in
+            # the preview.
+            if list_tag == "ol" and list_start != 1:
+                open_tag = f'<ol start="{list_start}">'
+            else:
+                open_tag = f"<{list_tag}>"
+            blocks.append(open_tag + "".join(list_items) + f"</{list_tag}>")
             list_items = []
             list_tag = ""
+            list_start = 1
+
+    def _continues_list(from_index: int, tag: str) -> bool:
+        # A blank line inside a loose list must not split it into separate lists
+        # (each restarting at 1). Look past blank lines: if the next real line is
+        # another item of the same kind, the list continues (#1200).
+        probe = from_index
+        while probe < total and not lines[probe].strip():
+            probe += 1
+        if probe >= total:
+            return False
+        nxt = lines[probe]
+        if tag == "ul":
+            return re.match(r"^(\s*)([-*+])\s+(.*)$", nxt) is not None
+        return re.match(r"^(\s*)(\d+)\.\s+(.*)$", nxt) is not None
 
     index = 0
     total = len(lines)
@@ -533,6 +556,8 @@ def _render_markdown(text: str) -> str:
             flush_paragraph()
             if not list_tag:
                 list_tag = "ul" if bullet else "ol"
+                if numbered:
+                    list_start = int(numbered.group(2))
             item_match = bullet or numbered
             assert item_match is not None  # one of the two matched
             list_items.append(f"<li>{_render_inline(item_match.group(3))}</li>")
@@ -540,7 +565,10 @@ def _render_markdown(text: str) -> str:
             continue
         if not stripped:
             flush_paragraph()
-            flush_list()
+            # Keep a loose list open across a blank line when the next real line
+            # continues it, instead of splitting into lists that each restart.
+            if not (list_tag and _continues_list(index + 1, list_tag)):
+                flush_list()
             index += 1
             continue
         if list_tag:

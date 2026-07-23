@@ -655,9 +655,7 @@ class RadioMixin:
         )
         recorder = getattr(self, "_radio_recorder", None)
         recording = int(getattr(recorder, "active_count", 0) or 0) > 0
-        want = (playing or recording) and bool(
-            getattr(self._radio_history, "prevent_sleep", True)
-        )
+        want = (playing or recording) and bool(getattr(self._radio_history, "prevent_sleep", True))
         if want == getattr(self, "_sleep_inhibited", False):
             return
         set_keep_awake(want)
@@ -1704,6 +1702,16 @@ class RadioMixin:
             return
         self._radio_favorites.add(station, custom=True)
         self._save_radio_favorites()
+        # Refresh the favorites tree and the favorite toggle so the just-added
+        # custom station appears immediately, instead of only after a restart
+        # (#1205). These live on the standalone RadioAppFrame; embedded QUILL
+        # has no favorites tree, so guard for their absence.
+        reload_tree = getattr(self, "_reload_favorites_tree", None)
+        if callable(reload_tree):
+            reload_tree()
+        refresh_toggle = getattr(self, "_refresh_favorite_toggle", None)
+        if callable(refresh_toggle):
+            refresh_toggle()
         self._announce(f"Added {station.name} to Favorites")
 
     def _radio_open_link_finder(self) -> None:

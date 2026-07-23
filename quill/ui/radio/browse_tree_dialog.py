@@ -741,7 +741,11 @@ class BrowseTreeDialog:
             self._details.SetValue(f"{data['title']}\nTuneIn -- Enter or Play to tune in.")
             self._play_btn.Enable(True)
             self._play_btn.SetLabel("&Play")
-            self._favorite_btn.Enable(False)  # unresolved until it plays
+            # The stream resolves lazily, but Add to Favorites now resolves it on
+            # demand (#1210), so the button is live. Label it Add (we can't know
+            # saved-state before resolving).
+            self._favorite_btn.Enable(True)
+            self._favorite_btn.SetLabel("Add to &Favorites")
         else:
             self._details.SetValue("")
             self._play_btn.Enable(False)
@@ -812,10 +816,48 @@ class BrowseTreeDialog:
         saved = self._favorites.contains(station)
         self._favorite_btn.SetLabel("Remove from &Favorites" if saved else "Add to &Favorites")
 
+    def _favorite_tunein(self, guide_id: str, title: str) -> None:
+        """Resolve a TuneIn station's stream off-thread, then add it to Favorites.
+
+        TuneIn leaves carry only a guide id until play time, so unlike directory
+        stations they have no stream URL when the menu is built (#1210). Resolve
+        it the same way playback does, then add the resolved station.
+        """
+        self._details.SetValue(f"Resolving {title}...")
+
+        def _work(**_kwargs: Any) -> list[str]:
+            try:
+                return tunein.resolve_station_streams(guide_id, safe_mode=self._safe_mode)
+            except tunein.TuneInError:
+                return []
+
+        def _ok(_op: str, streams: object) -> None:
+            self._wx.CallAfter(
+                self._tunein_favorite_resolved, title, streams if isinstance(streams, list) else []
+            )
+
+        self._task_manager.submit("radio-tunein-favorite", _work, on_success=_ok, on_failure=None)
+
+    def _tunein_favorite_resolved(self, title: str, streams: list[str]) -> None:
+        if not streams:
+            self._announce(f"Could not add {title} to Favorites.")
+            return
+        station = RadioStation(name=title, stream_url=tunein.best_stream(streams), source="TuneIn")
+        if self._favorites.contains(station):
+            self._announce(f"{title} is already in your Favorites")
+            return
+        self._favorites.add(station)
+        self._announce(f"Added {title} to Favorites")
+        self._on_favorites_changed()
+        self._refresh_favorites_branch()
+
     def _toggle_favorite(self) -> None:
         data = self._selected_data()
+        if data is not None and data.get("kind") == "tunein-station":
+            self._favorite_tunein(data["guide_id"], data["title"])
+            return
         if data is None or data.get("kind") != "station":
-            self._announce("Play a TuneIn station first to add it to Favorites.")
+            self._announce("Select a station to add it to Favorites.")
             return
         station = data["station"]
         if self._favorites.contains(station):
@@ -905,7 +947,13 @@ class BrowseTreeDialog:
             if station.homepage:
                 entries.append(("Open &Website", lambda: self._open_url(station.homepage)))
         elif kind == "tunein-station":
-            entries = [("&Play", self._play_selected)]
+            entries = [
+                ("&Play", self._play_selected),
+                (
+                    "Add to &Favorites",
+                    lambda: self._favorite_tunein(data["guide_id"], data["title"]),
+                ),
+            ]
         elif kind in _EXPANDABLE or kind == "fav-folder":
             entries = [("&Open", lambda: self._tree.Expand(node))]
             if kind in _EXPANDABLE:

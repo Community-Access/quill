@@ -87,9 +87,10 @@ class FavoritesManagerDialog:
         # Persist "sort is now manual" in the host's history. Called when a
         # reorder from a sorted view switches the list to manual order.
         self._on_switch_to_manual = on_switch_to_manual or (lambda: None)
-        # Display order for the tree. When it is not "manual", a reorder first
-        # bakes this visible order as the manual order (matching the main list),
-        # so Move Up/Down works from the default A-Z view instead of being inert.
+        # Display order for the tree. When it is not "manual", a reorder switches
+        # the sort to manual WITHOUT rewriting the stored order (matching the main
+        # list) -- so Move Up/Down works from the default A-Z view, and a
+        # hand-arranged order is never overwritten by the visible view (#1186).
         self._sort = sort
         self._folder_sorts = folder_sorts or {}
         self._marked_key: str | None = None
@@ -101,8 +102,9 @@ class FavoritesManagerDialog:
         self._windows = windows
         self._modeless = windows is not None
         if self._modeless:
-            self._win = wx.Frame(parent, title="Manage Favorite Stations",
-                                 style=wx.DEFAULT_FRAME_STYLE)
+            self._win = wx.Frame(
+                parent, title="Manage Favorite Stations", style=wx.DEFAULT_FRAME_STYLE
+            )
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
             self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
@@ -208,6 +210,12 @@ class FavoritesManagerDialog:
             "Delete Fol&der...",
             self._on_delete_folder,
             "Delete the selected folder; its stations return to the top level",
+        )
+        self._remove_all_btn = self._button(
+            row2,
+            "Remove A&ll...",
+            self._on_remove_all,
+            "Remove every favorite (folders are kept); a backup is saved so it can be undone",
         )
         row2.AddStretchSpacer()
         close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
@@ -425,17 +433,24 @@ class FavoritesManagerDialog:
                 self._marked_key = None
             self._changed()
 
-    def _switch_to_manual_if_needed(self, folder: str) -> bool:
-        """If *folder* is in a sorted order, bake the current display order as the
-        stored (manual) order and switch the whole list to manual -- mirroring the
-        main window's Alt+Shift+Up/Down. Returns True when a switch happened.
+    def _on_remove_all(self) -> None:
+        from quill.ui.radio.favorite_actions import remove_all_favorites
 
-        A genuinely hand-arranged manual list is already manual, so this is a
-        no-op for it and never overwrites a hand order (the #1186 lesson)."""
+        if remove_all_favorites(self.dialog, self._store, announce=self._announce):
+            self._marked_key = None
+            self._changed()
+
+    def _switch_to_manual_if_needed(self, folder: str) -> bool:
+        """If *folder* is in a sorted order, switch the whole list to manual
+        WITHOUT rewriting the stored order -- mirroring the main window's
+        Alt+Shift+Up/Down. Returns True when a switch happened.
+
+        Crucially this does not bake the sorted display over the stored list:
+        doing so silently destroyed a hand-arranged order with no way to recover
+        it (#1186). The move's tree reload reveals the preserved order, and the
+        caller announces "Switched to manual order," so only the sort changes."""
         if self._folder_sorts.get(folder, self._sort) == "manual":
             return False
-        ordered = self._store.favorites_in_display_order(self._sort, self._folder_sorts)
-        self._store.favorites = list(ordered)
         self._sort = "manual"
         self._folder_sorts = {}
         self._on_switch_to_manual()

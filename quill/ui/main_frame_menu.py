@@ -1061,6 +1061,8 @@ class MenuBuilderMixin:
         self._id_insert_code_block = wx.NewIdRef()
         self._id_insert_footnote = wx.NewIdRef()
         self._id_insert_table = wx.NewIdRef()
+        self._id_insert_blockquote = wx.NewIdRef()
+        self._id_insert_horizontal_rule = wx.NewIdRef()
         self._id_insert_emoji = wx.NewIdRef()
         format_menu = wx.Menu()
 
@@ -1377,6 +1379,14 @@ class MenuBuilderMixin:
         insert_menu.Append(
             self._id_insert_table,
             self._menu_label(_("Insert &Table..."), "format.insert_table"),
+        )
+        insert_menu.Append(
+            self._id_insert_blockquote,
+            self._menu_label(_("Insert Block &Quote"), "format.blockquote"),
+        )
+        insert_menu.Append(
+            self._id_insert_horizontal_rule,
+            self._menu_label(_("Insert Horizontal &Rule"), "format.horizontal_rule"),
         )
         insert_menu.AppendSeparator()
         insert_menu.Append(

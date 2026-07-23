@@ -281,6 +281,10 @@ def build_markdown_insertion(
         lines = _line_list(selected_text or "Quote")
         text = "\n".join(f"> {line}" for line in lines)
         return InsertionResult(text, len(text))
+    if kind == "Horizontal Rule":
+        # A thematic break. Selection is irrelevant to a rule, so it is always
+        # the standalone marker; the caret lands after it ready to keep typing.
+        return InsertionResult("---", 3)
     if kind == "Link":
         target = link_target or "https://example.com"
         text = f"[{content}]({target})"

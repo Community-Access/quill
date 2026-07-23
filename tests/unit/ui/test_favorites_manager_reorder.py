@@ -3,9 +3,11 @@ the default A-Z view, not only when the folder is already in manual order.
 
 Regression: a listener reported the Move buttons in the Manage Favorites dialog
 did nothing. They were disabled unless the folder was already manual, so from
-the default Ascending sort they were inert. The dialog now bakes the visible
-order as the manual order on the first move -- exactly like the main window's
-Alt+Shift+Up/Down -- so the buttons act on what you see.
+the default Ascending sort they were inert. The dialog now switches to manual on
+the first move -- exactly like the main window's Alt+Shift+Up/Down -- WITHOUT
+rewriting the stored order (baking the A-Z view would silently destroy a
+hand-arranged list, #1186); the reload reveals the preserved order and the move
+happens within it.
 """
 
 from __future__ import annotations
@@ -38,8 +40,8 @@ def _folder_names_in_store(store: RadioFavoritesStore) -> list[str]:
     return [f.station.name for f in store.favorites]
 
 
-def test_move_down_from_az_view_bakes_manual_and_moves(_app: wx.App) -> None:
-    store = _store_az_out_of_order()
+def test_move_down_from_az_view_switches_to_manual_preserving_order(_app: wx.App) -> None:
+    store = _store_az_out_of_order()  # stored: Charlie, Alice, Bravo
     switched: list[bool] = []
     frame = wx.Frame(None)
     try:
@@ -60,11 +62,12 @@ def test_move_down_from_az_view_bakes_manual_and_moves(_app: wx.App) -> None:
         )
         dlg._on_move(1)
 
-        # The switch was recorded, the list is now manual, and its stored order
-        # became the A-Z order with Alice moved one place down.
+        # The switch was recorded and the list is now manual, but the STORED
+        # order was preserved (not baked to A-Z) -- Alice simply moved one place
+        # down within the stored order Charlie, Alice, Bravo.
         assert switched == [True]
         assert dlg._sort == "manual"
-        assert _folder_names_in_store(store) == ["Bravo", "Alice", "Charlie"]
+        assert _folder_names_in_store(store) == ["Charlie", "Bravo", "Alice"]
     finally:
         frame.Destroy()
 

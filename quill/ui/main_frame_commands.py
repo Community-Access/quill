@@ -2033,6 +2033,21 @@ class CommandRegistryMixin:
             self.format_insert_table,
             None,
         )
+        # Menu-driven structured inserts, no default chord (the QUILL-key chord
+        # space is saturated and §10.8 bans new Ctrl+Alt chords). Users can bind
+        # them in the Keymap Editor, exactly as with Insert Table above.
+        self.commands.register(
+            "format.blockquote",
+            "Insert Block Quote",
+            self.format_blockquote,
+            self._binding_for("format.blockquote"),
+        )
+        self.commands.register(
+            "format.horizontal_rule",
+            "Insert Horizontal Rule",
+            self.format_horizontal_rule,
+            self._binding_for("format.horizontal_rule"),
+        )
         self.commands.register(
             "tools.table_studio",
             "Table Studio (Experimental)",

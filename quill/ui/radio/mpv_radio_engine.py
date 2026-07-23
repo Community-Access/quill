@@ -241,6 +241,7 @@ class MpvRadioEngine:
         self._volume = 100
         self._current_url = ""
         self.set_audio_device(audio_device)
+        self._parent = parent
         self._timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, self._on_poll, self._timer)
         parent.Bind(wx.EVT_WINDOW_DESTROY, self._on_parent_destroyed)
@@ -353,6 +354,27 @@ class MpvRadioEngine:
         except Exception:  # noqa: BLE001 - never block a stop
             _log.exception("mpv stop failed")
 
+    def terminate(self) -> None:
+        """Hard teardown: stop and destroy libmpv (idempotent).
+
+        ``close`` is a deliberate soft stop that keeps the libmpv handle for the
+        next ``load``. On the real exit path that is not enough -- if the
+        window-destroy event is delayed, missed, or the frame is never destroyed
+        (a vetoed/minimize path), libmpv keeps the audio playing after the app is
+        gone (#1195). This releases the instance directly so shutdown is
+        deterministic; ``_MpvClient.close`` nulls its handle, so calling this
+        more than once is safe.
+        """
+        try:
+            self._timer.Stop()
+        except Exception:  # noqa: BLE001
+            pass
+        self._loaded = False
+        try:
+            self._mpv.close()
+        except Exception:  # noqa: BLE001 - never block app close
+            _log.exception("mpv terminate failed")
+
     def play(self) -> None:
         if self._loaded:
             self._mpv.set_str("pause", "no")
@@ -423,8 +445,10 @@ class MpvRadioEngine:
 
     def _on_parent_destroyed(self, evt: wx.WindowDestroyEvent) -> None:
         evt.Skip()
-        try:
-            self._timer.Stop()
-        except Exception:  # noqa: BLE001
-            pass
-        self._mpv.close()
+        # EVT_WINDOW_DESTROY fires for the frame *and every child* window, so a
+        # child's destruction must not tear down libmpv early (#1195). Only act
+        # when the frame we bound to is the one being destroyed. terminate() is
+        # idempotent, so this is safe even if shutdown() already ran.
+        if evt.GetWindow() is not self._parent:
+            return
+        self.terminate()

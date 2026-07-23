@@ -167,3 +167,32 @@ def test_document_memory_keys_are_path_normalized(tmp_path: _Path) -> None:
     k1 = DocumentMemory.key_for(tmp_path / "Doc.md")
     k2 = DocumentMemory.key_for(str(tmp_path / "Doc.md"))
     assert k1 == k2 and k1 is not None
+
+
+def test_document_memory_round_trips_bookmark_anchors(tmp_path):
+    from quill.core.bookmark_anchor import BookmarkAnchor
+    from quill.core.bookmarks import DocumentMemory
+
+    mem_path = tmp_path / "document_memory.json"
+    mem = DocumentMemory(path=mem_path)
+    key = DocumentMemory.key_for(tmp_path / "doc.md")
+    anchors = {"intro": BookmarkAnchor(offset=10, before="Chapter ", after="One text", line=0)}
+    mem.set_anchors(key, anchors)
+
+    reloaded = DocumentMemory.load(mem_path)
+    got = reloaded.anchors_for(key)
+    assert got == anchors
+
+
+def test_document_memory_without_anchors_is_backward_compatible(tmp_path):
+    # An older file with only int bookmarks loads fine and reports no anchors.
+    import json
+
+    from quill.core.bookmarks import DocumentMemory
+
+    mem_path = tmp_path / "document_memory.json"
+    key = DocumentMemory.key_for(tmp_path / "doc.md")
+    mem_path.write_text(json.dumps({key: {"bookmarks": {"intro": 5}}}), encoding="utf-8")
+    mem = DocumentMemory.load(mem_path)
+    assert mem.bookmarks_for(key) == {"intro": 5}
+    assert mem.anchors_for(key) == {}

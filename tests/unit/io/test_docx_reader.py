@@ -117,3 +117,45 @@ def test_scan_never_raises_on_junk(tmp_path: Path) -> None:
     junk = tmp_path / "junk.docx"
     junk.write_bytes(b"this is not a zip")
     assert scan_docx_features(junk) == []
+
+
+def test_tables_are_preserved_inline_as_markdown_not_dropped(tmp_path: Path) -> None:
+    # A Word table used to vanish entirely on rich read (its cells were lost).
+    # It now appears inline, in document order, as a GFM Markdown table so the
+    # content survives and is reachable by single-key table navigation.
+    import docx
+
+    source_doc = docx.Document()
+    source_doc.add_paragraph("Intro paragraph.")
+    table = source_doc.add_table(rows=2, cols=2)
+    table.cell(0, 0).text = "First Name"
+    table.cell(0, 1).text = "Last Name"
+    table.cell(1, 0).text = "Ada"
+    table.cell(1, 1).text = "Lovelace"
+    source_doc.add_paragraph("After the table.")
+    path = tmp_path / "with_table.docx"
+    source_doc.save(str(path))
+
+    rich = read_docx_rich(path)
+    lines = ["".join(span.text for span in par.spans) for par in rich.paragraphs]
+    assert lines == [
+        "Intro paragraph.",
+        "| First Name | Last Name |",
+        "| --- | --- |",
+        "| Ada | Lovelace |",
+        "After the table.",
+    ]
+
+
+def test_table_cell_pipes_are_escaped(tmp_path: Path) -> None:
+    import docx
+
+    source_doc = docx.Document()
+    table = source_doc.add_table(rows=1, cols=1)
+    table.cell(0, 0).text = "a | b"
+    path = tmp_path / "pipe.docx"
+    source_doc.save(str(path))
+
+    rich = read_docx_rich(path)
+    first = "".join(span.text for span in rich.paragraphs[0].spans)
+    assert first == r"| a \| b |"

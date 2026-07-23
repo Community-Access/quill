@@ -163,7 +163,7 @@ class AddPodcastDialog:
         if not (0 <= index < len(self._search_results)):
             return
         result = self._search_results[index]
-        self._subscribe_to_feed(result.feed_url, title_hint=result.title)
+        self._subscribe_to_feed(result.feed_url, title_hint=result.title, result_index=index)
 
     # ------------------------------------------------------------------
     # Add by URL
@@ -175,7 +175,9 @@ class AddPodcastDialog:
             return
         self._subscribe_to_feed(url)
 
-    def _subscribe_to_feed(self, feed_url: str, *, title_hint: str = "") -> None:
+    def _subscribe_to_feed(
+        self, feed_url: str, *, title_hint: str = "", result_index: int | None = None
+    ) -> None:
         if self._safe_mode:
             self._status.SetLabel("Adding podcasts is disabled in Safe Mode.")
             return
@@ -190,15 +192,20 @@ class AddPodcastDialog:
         self._task_manager.submit(
             "podcast-subscribe",
             _do_fetch,
-            on_success=lambda _op, info: self._on_fetch_done(feed_url, info, None),
-            on_failure=lambda _op, exc: self._on_fetch_done(feed_url, None, exc),
+            on_success=lambda _op, info: self._on_fetch_done(feed_url, info, None, result_index),
+            on_failure=lambda _op, exc: self._on_fetch_done(feed_url, None, exc, result_index),
         )
 
     def _on_fetch_done(
-        self, feed_url: str, info: feed_reader.FeedInfo | None, error: BaseException | None
+        self,
+        feed_url: str,
+        info: feed_reader.FeedInfo | None,
+        error: BaseException | None,
+        result_index: int | None = None,
     ) -> None:
         if error is not None or info is None:
             self._status.SetLabel(f"Could not subscribe: {error}")
+            self._return_focus_to_results(result_index)
             return
         show = PodcastShow(
             id=new_id(),
@@ -211,11 +218,31 @@ class AddPodcastDialog:
         added = self._library.add_show(show)
         if not added:
             self._status.SetLabel("You're already subscribed to that feed.")
+            self._return_focus_to_results(result_index)
             return
         self._on_library_changed()
         self._status.SetLabel(f"Subscribed to {show.title} ({len(show.episodes)} episodes).")
         self._announce(f"Subscribed to {show.title}")
         self._url_ctrl.SetValue("")
+        self._return_focus_to_results(result_index)
+
+    def _return_focus_to_results(self, result_index: int | None) -> None:
+        """After subscribing from a search result, put focus back on the list.
+
+        Only applies to the iTunes-search path (``result_index`` set); the
+        Add-by-Feed-URL path leaves focus alone so the URL box stays put. The
+        just-subscribed row is re-selected and focused so a screen-reader user
+        can keep arrowing through results without hunting for the list again.
+        """
+        if result_index is None:
+            return
+        count = self._results.GetItemCount()
+        if count == 0:
+            return
+        target = max(0, min(result_index, count - 1))
+        self._results.Select(target)
+        self._results.Focus(target)
+        self._results.SetFocus()
 
     # ------------------------------------------------------------------
     # OPML import

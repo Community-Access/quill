@@ -1325,6 +1325,16 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.format_blockquote(),
+            id=self._id_insert_blockquote,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.format_horizontal_rule(),
+            id=self._id_insert_horizontal_rule,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.insert_emoji(),
             id=self._id_insert_emoji,
         )

@@ -35,6 +35,7 @@ from quill.core.ai.agent import allowed_tools
 from quill.core.autoformat import EM_DASH, is_dash_merge, smart_quote_for
 from quill.core.autosave import autosave_document
 from quill.core.backups import backup_document, list_backups
+from quill.core.bookmark_anchor import BookmarkAnchor, capture_anchor, resolve_anchor
 from quill.core.bookmarks import (  # N-13: keep the module as the supported home for these helpers
     DocumentMemory,
     bookmark_names,
@@ -1170,6 +1171,9 @@ class MainFrame(
         self._epub_book: EpubBook | None = None
         self._browser_preview_session: _BrowserPreviewSession | None = None
         self._bookmarks: dict[str, int] = {}
+        # Edit-surviving anchors keyed by bookmark name (supplements the int
+        # offsets above; used to relocate a bookmark after edits). #Points.
+        self._bookmark_anchors: dict[str, BookmarkAnchor] = {}
         # Single unnamed, one-shot jump point (Leasey-style temp bookmark).
         # Deliberately session-only (aliased per-tab, never persisted to
         # DocumentMemory) -- it is disposable scratch state by design.
@@ -2293,6 +2297,7 @@ class MainFrame(
         self.document = tab.document
         # The active document's bookmark set is this tab's own dict (per-document).
         self._bookmarks = getattr(tab, "bookmarks", {})
+        self._bookmark_anchors = getattr(tab, "bookmark_anchors", {})
         # The active document's temp bookmark is this tab's own value (session-only).
         self._temp_bookmark = getattr(tab, "temp_bookmark", None)
         # The active document's folded regions are this tab's own set (session-only).
@@ -2413,7 +2418,10 @@ class MainFrame(
             return
         self._sync_editor_change("Modified")
 
-    def _sync_editor_change(self, status: str) -> None:
+    def _sync_editor_change(self, status: str = "Modified") -> None:
+        # `status` defaults so this doubles as the WordDocumentSurface on_change
+        # callback, which invokes it with no arguments (#1198). The plain-editor
+        # callers pass "Modified" explicitly; the default matches them.
         self._browse_navigation_cache = None
         self.document.set_text(self.editor.GetValue())
         self._schedule_browse_prewarm()
@@ -7868,6 +7876,7 @@ class MainFrame(
         if _bm_key:
             try:
                 self._doc_memory.set_bookmarks(_bm_key, self._bookmarks)
+                self._doc_memory.set_anchors(_bm_key, self._bookmark_anchors)
                 self._doc_memory.set_last_position(_bm_key, self.editor.GetInsertionPoint())
                 self._inline_vault().set_notes(_bm_key, self._inline_notes)
             except Exception:  # noqa: BLE001 - persistence is best-effort
@@ -11217,6 +11226,36 @@ class MainFrame(
     def _record_location_before_jump(self) -> None:
         self._location_ring.record(self.editor.GetInsertionPoint())
 
+    def _capture_bookmark_anchor(self, name: str, position: int) -> None:
+        """Record an edit-surviving anchor for a bookmark, alongside its offset."""
+        try:
+            text = self.editor.GetValue()
+        except Exception:  # noqa: BLE001 - anchoring is best-effort
+            return
+        anchors = getattr(self, "_bookmark_anchors", None)
+        if anchors is None:
+            anchors = {}
+            self._bookmark_anchors = anchors
+        anchors[name] = capture_anchor(text, position)
+
+    def _resolve_bookmark_target(self, name: str) -> int | None:
+        """Best current offset for a bookmark: re-anchored if we have context,
+        else the stored offset. Relocates the mark to where its text actually
+        lives now instead of drifting after edits (#Points)."""
+        stored = bookmark_position(self._bookmarks, name)
+        anchor = getattr(self, "_bookmark_anchors", {}).get(name)
+        if anchor is None:
+            return stored
+        try:
+            text = self.editor.GetValue()
+        except Exception:  # noqa: BLE001
+            return stored
+        resolved = resolve_anchor(text, anchor)
+        # Keep the int map in step so a later save/list reflects the new spot.
+        if stored != resolved:
+            self._bookmarks = set_bookmark(self._bookmarks, name, resolved)
+        return resolved
+
     def set_bookmark(self) -> None:
         wx = self._wx
         default_name = f"Bookmark {len(self._bookmarks) + 1}"
@@ -11234,6 +11273,7 @@ class MainFrame(
             return
         position = self.editor.GetInsertionPoint()
         self._bookmarks = set_bookmark(self._bookmarks, name, position)
+        self._capture_bookmark_anchor(name, position)
         self._save_active_bookmarks()
         self._set_status(f'Set bookmark "{name}"')
 
@@ -11258,7 +11298,7 @@ class MainFrame(
             if self._show_modal_dialog(dialog, "Go To Bookmark") != wx.ID_OK:
                 return
             name = dialog.GetStringSelection()
-        target = bookmark_position(self._bookmarks, name)
+        target = self._resolve_bookmark_target(name)
         if target is None:
             self._set_status("Bookmark was not found")
             return
@@ -11293,7 +11333,7 @@ class MainFrame(
         if not isinstance(selected, str):
             self._set_status("Bookmark list cancelled")
             return
-        target = bookmark_position(self._bookmarks, selected)
+        target = self._resolve_bookmark_target(selected)
         if target is None:
             self._set_status("Bookmark was not found")
             return
@@ -11326,13 +11366,14 @@ class MainFrame(
         name = quick_slot_name(slot)
         position = self.editor.GetInsertionPoint()
         self._bookmarks = set_bookmark(self._bookmarks, name, position)
+        self._capture_bookmark_anchor(name, position)
         self._save_active_bookmarks()
         self._set_status(f"Quick bookmark {slot} set")
 
     def go_to_quick_bookmark(self, slot: int) -> None:
         """Jump to numbered quick-bookmark slot 0-9 with no picker dialog."""
         name = quick_slot_name(slot)
-        target = bookmark_position(self._bookmarks, name)
+        target = self._resolve_bookmark_target(name)
         if target is None:
             self._set_status(f"Quick bookmark {slot} is not set")
             return
@@ -11573,10 +11614,12 @@ class MainFrame(
         tab = self._active_tab()
         if tab is not None:
             tab.bookmarks = dict(self._bookmarks)
+            tab.bookmark_anchors = dict(self._bookmark_anchors)
         key = DocumentMemory.key_for(getattr(getattr(self, "document", None), "path", None))
         if key:
             try:
                 self._doc_memory.set_bookmarks(key, self._bookmarks)
+                self._doc_memory.set_anchors(key, self._bookmark_anchors)
             except Exception:  # noqa: BLE001 - persistence is best-effort
                 pass
 
@@ -11599,6 +11642,7 @@ class MainFrame(
             return
         try:
             tab.bookmarks = self._doc_memory.bookmarks_for(key)
+            tab.bookmark_anchors = self._doc_memory.anchors_for(key)
             last = self._doc_memory.last_position(key)
         except Exception:  # noqa: BLE001
             return
@@ -16660,9 +16704,9 @@ class MainFrame(
         if not self._feature_enabled("core.format"):
             self._set_status("Table is unavailable in this profile")
             return
-        surface = self._active_markup_surface()
+        surface = self._resolve_structured_markup("a table")
         if surface is None:
-            self._set_status("Table is only available in Markdown or HTML documents")
+            self._set_status("Insert table cancelled")
             return
 
         table_shape = self._prompt_table_shape()
@@ -16676,6 +16720,39 @@ class MainFrame(
             result = build_html_table(rows, columns, include_header=include_header)
         self._apply_insertion_result(result)
         self._set_status(f"Inserted {rows}x{columns} table ({surface})")
+
+    def format_blockquote(self) -> None:
+        """Insert or wrap a block quote in the document's markup (Markdown/HTML)."""
+        if not self._feature_enabled("core.format"):
+            self._set_status("Block quote is unavailable in this profile")
+            return
+        surface = self._resolve_structured_markup("a block quote")
+        if surface is None:
+            self._set_status("Insert block quote cancelled")
+            return
+        selected_text = self.editor.GetStringSelection()
+        if surface == "markdown":
+            result = build_markdown_insertion("Blockquote", selected_text)
+        else:
+            result = build_html_insertion("blockquote", selected_text, {})
+        self._apply_insertion_result(result)
+        self._set_status(f"Inserted block quote ({surface})")
+
+    def format_horizontal_rule(self) -> None:
+        """Insert a horizontal rule (thematic break) in the document's markup."""
+        if not self._feature_enabled("core.format"):
+            self._set_status("Horizontal rule is unavailable in this profile")
+            return
+        surface = self._resolve_structured_markup("a horizontal rule")
+        if surface is None:
+            self._set_status("Insert horizontal rule cancelled")
+            return
+        if surface == "markdown":
+            result = build_markdown_insertion("Horizontal Rule", "")
+        else:
+            result = build_html_insertion("hr", "", {})
+        self._apply_insertion_result(result)
+        self._set_status(f"Inserted horizontal rule ({surface})")
 
     def open_table_studio(self) -> None:
         """Experimental: build a table in the accessible grid, then insert it."""
@@ -16896,6 +16973,43 @@ class MainFrame(
         if kind in {"markdown", "html"}:
             return kind
         return None
+
+    def _resolve_structured_markup(self, thing_label: str) -> str | None:
+        """Decide whether a structured insert should emit Markdown or HTML.
+
+        When the document already reads as Markdown or HTML, use that. When it
+        does not (a fresh, unsaved, or plain buffer), ask once -- "Markdown or
+        HTML?" -- then remember the answer on the tab and pin the markup kind so
+        every later insert, and the menu state, agree without asking again. This
+        is the "ask once, then just work" contract for a document whose format
+        we cannot infer yet. Returns ``"markdown"``/``"html"`` or ``None`` when
+        the user cancels the prompt.
+        """
+        surface = self._active_markup_surface()
+        if surface is not None:
+            return surface
+        tab = self._active_tab()
+        remembered = str(getattr(tab, "structured_markup_choice", "") or "")
+        if remembered in {"markdown", "html"}:
+            return remembered
+        wx = self._wx
+        dialog = wx.SingleChoiceDialog(
+            self.frame,
+            f"This document's format isn't set yet. Insert {thing_label} as Markdown or HTML?",
+            "Choose insert format",
+            ["Markdown", "HTML"],
+        )
+        try:
+            if self._show_modal_dialog(dialog, "Choose insert format") != wx.ID_OK:
+                return None
+            selection = dialog.GetSelection()
+        finally:
+            dialog.Destroy()
+        choice = ("markdown", "html")[max(0, min(1, int(selection)))]
+        tab.structured_markup_choice = choice
+        self._pin_markup_kind_for_tab(tab, choice)
+        self._set_status(f"Inserting as {choice.upper()} for this document from now on")
+        return choice
 
     def _transform_selection_or_document(
         self,

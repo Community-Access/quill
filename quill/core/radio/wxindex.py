@@ -29,6 +29,28 @@ from quill.core.radio.wxindex_snapshot import load_snapshot
 
 _DEFAULT_MAX_AGE_SECONDS = 7 * 24 * 3600  # 7 days
 
+
+def _iso_newer(candidate: str, baseline: str) -> bool:
+    """True if the ``candidate`` ISO timestamp is strictly newer than ``baseline``.
+
+    Tolerant of trailing ``Z`` vs ``+00:00`` and of unparseable values (falls
+    back to a lexicographic compare, which is correct for same-format ISO-8601).
+    """
+    from datetime import datetime
+
+    def _parse(value: str) -> datetime | None:
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+
+    parsed_candidate = _parse(candidate)
+    parsed_baseline = _parse(baseline)
+    if parsed_candidate is not None and parsed_baseline is not None:
+        return parsed_candidate > parsed_baseline
+    return candidate > baseline
+
+
 _SAME = re.compile(r"^\d{6}$")
 _CALLSIGN = re.compile(r"^[A-Z]{2,3}\d{2,3}$", re.IGNORECASE)
 
@@ -144,10 +166,23 @@ def _directory_stations(*, max_age_seconds: float = _DEFAULT_MAX_AGE_SECONDS) ->
     cache, else bundled snapshot) so callers get real, playable feeds. No live
     call and no per-state fetch -- it is a local read.
     """
+    snapshot = load_snapshot()
     cached = _read_cache("directory.json")
     if cached is not None and cached[1] <= max_age_seconds and isinstance(cached[0], dict):
-        return parse_stations(cached[0].get("stations", []))
-    return load_snapshot().stations
+        cache_generated = str(cached[0].get("generated_at", ""))
+        # An in-place update ships a newer bundled snapshot but leaves the old
+        # version's cache in place, still inside the 7-day age window -- so it
+        # would shadow the new listings (#1207). When both carry a timestamp and
+        # the bundled snapshot is newer, prefer the snapshot. A cache without a
+        # timestamp (legacy/hand-written) is still honored, as before.
+        snapshot_wins = bool(
+            snapshot.generated_at
+            and cache_generated
+            and _iso_newer(snapshot.generated_at, cache_generated)
+        )
+        if not snapshot_wins:
+            return parse_stations(cached[0].get("stations", []))
+    return snapshot.stations
 
 
 def playable_stations_for_state(

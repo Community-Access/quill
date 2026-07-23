@@ -69,6 +69,37 @@ def remove_favorite(
     return True
 
 
+def remove_all_favorites(
+    parent: object,
+    store: RadioFavoritesStore,
+    *,
+    announce: Callable[[str], None],
+) -> bool:
+    """Confirm, then remove every favorite from the store (#1201).
+
+    Folders are left intact. A backup is snapshotted on save, so this is
+    recoverable; the confirmation says so. Returns True if anything was removed.
+    """
+    import wx
+
+    count = len(store.favorites)
+    if count == 0:
+        announce("You have no favorites to remove")
+        return False
+    answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
+        f"Remove all {count} favorite(s)? Folders are kept, and a backup is saved "
+        "so this can be undone from your favorites backups.",
+        "Remove All Favorites",
+        wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
+        parent,
+    )
+    if answer != wx.YES:
+        return False
+    removed = store.clear()
+    announce(f"Removed all {removed} favorite(s)")
+    return True
+
+
 def move_favorite_to_folder(
     parent: object,
     store: RadioFavoritesStore,

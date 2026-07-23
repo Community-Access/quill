@@ -48,3 +48,70 @@ def test_load_epub_book_collects_multiple_headings(tmp_path: Path) -> None:
     book = load_epub_book(target)
     assert [heading.title for heading in book.chapters[0].headings] == ["Intro", "Deep Dive"]
     assert [heading.level for heading in book.chapters[0].headings] == [1, 2]
+
+
+def test_true_headings_render_inline_for_single_key_navigation(tmp_path: Path) -> None:
+    # Real headings must appear in the rendered body (as Markdown ``#`` lines)
+    # so single-key H navigation can walk them -- previously the body was
+    # flattened and the headings vanished from the text.
+    target = tmp_path / "inline.epub"
+    chapter = "<html><body><h1>Intro</h1><p>Hello</p><h2>Deep Dive</h2><p>More</p></body></html>"
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    report = render_epub_book(book)
+    assert "### Intro" in report  # h1 nested two levels under the ## chapter
+    assert "#### Deep Dive" in report
+    assert book.chapters[0].headings_inferred is False
+
+
+def test_headings_inferred_from_class_when_no_true_tags(tmp_path: Path) -> None:
+    # A hand-made chapter with no <h1>-<h6> tags: infer headings from class
+    # names so navigation and the chapter outline still work.
+    target = tmp_path / "inferred.epub"
+    chapter = (
+        "<html><body>"
+        '<p class="chapterTitle">The Beginning</p>'
+        "<p>Once upon a time.</p>"
+        '<p class="subhead">A Turn</p>'
+        "<p>Then things happened.</p>"
+        "</body></html>"
+    )
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    chapter_out = book.chapters[0]
+    assert chapter_out.headings_inferred is True
+    assert [h.title for h in chapter_out.headings] == ["The Beginning", "A Turn"]
+    assert "The Beginning" in chapter_out.body
+    report = render_epub_book(book)
+    assert "### The Beginning" in report
+
+
+def test_headings_inferred_from_standalone_bold_line(tmp_path: Path) -> None:
+    target = tmp_path / "bold.epub"
+    chapter = (
+        "<html><body>"
+        "<p><b>A Bold Title</b></p>"
+        "<p>An ordinary paragraph of body text that is not a heading.</p>"
+        "</body></html>"
+    )
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    assert [h.title for h in book.chapters[0].headings] == ["A Bold Title"]
+    assert book.chapters[0].headings_inferred is True
+
+
+def test_long_bold_run_is_not_treated_as_a_heading(tmp_path: Path) -> None:
+    target = tmp_path / "emphasis.epub"
+    long_bold = (
+        "<p><b>This is a very long bold sentence that is clearly emphasis "
+        "inside a paragraph and not a short standalone title line</b></p>"
+    )
+    chapter = f"<html><body>{long_bold}<p>Body.</p></body></html>"
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    assert book.chapters[0].headings == ()
+    assert book.chapters[0].headings_inferred is False

@@ -95,33 +95,89 @@ def _span_from_run(run: Any) -> InlineSpan:
     )
 
 
+def _iter_body_blocks(source: Any) -> Any:
+    """Yield the document body's paragraphs and tables in reading order.
+
+    python-docx exposes ``source.paragraphs`` and ``source.tables`` as separate
+    flat lists, losing their interleaving. Walking the body XML preserves order,
+    so a table lands where it actually sits between paragraphs.
+    """
+    from docx.oxml.table import CT_Tbl
+    from docx.oxml.text.paragraph import CT_P
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
+
+    body = source.element.body
+    for child in body.iterchildren():
+        if isinstance(child, CT_P):
+            yield Paragraph(child, source)
+        elif isinstance(child, CT_Tbl):
+            yield Table(child, source)
+
+
+def _cell_text(cell: Any) -> str:
+    """Flatten a table cell to a single line, escaped for a Markdown table."""
+    text = " ".join(p.text for p in cell.paragraphs).strip()
+    return text.replace("\\", "\\\\").replace("|", "\\|").replace("\n", " ")
+
+
+def _table_to_rich_paragraphs(table: Any) -> list[RichParagraph]:
+    """Render a Word table as GFM Markdown-table paragraphs.
+
+    Rich edit has no native table vocabulary, so tables were previously dropped
+    entirely -- their content vanished on open. Representing them as a Markdown
+    table preserves the content, keeps it readable, and makes it reachable by
+    single-key table navigation (the ``T`` quick-nav), while ``scan_docx_features``
+    still flags the format change honestly.
+    """
+    rows: list[list[str]] = []
+    for row in table.rows:
+        rows.append([_cell_text(cell) for cell in row.cells])
+    if not rows:
+        return []
+    columns = max(len(row) for row in rows)
+
+    def _md_row(cells: list[str]) -> str:
+        padded = cells + [""] * (columns - len(cells))
+        return "| " + " | ".join(padded) + " |"
+
+    lines = [_md_row(rows[0]), "| " + " | ".join(["---"] * columns) + " |"]
+    lines.extend(_md_row(row) for row in rows[1:])
+    return [RichParagraph(spans=[InlineSpan(text=line)]) for line in lines]
+
+
+def _paragraph_to_rich(paragraph: Any) -> RichParagraph:
+    style, level, named_style = _paragraph_shape(getattr(paragraph.style, "name", ""))
+    alignment = paragraph.alignment
+    align = _ALIGNMENTS.get(getattr(alignment, "name", str(alignment))) if alignment else None
+    spans = [_span_from_run(run) for run in paragraph.runs if run.text]
+    if not spans and paragraph.text:
+        spans = [InlineSpan(text=str(paragraph.text))]
+    return RichParagraph(
+        spans=spans, style=style, level=level, align=align, named_style=named_style
+    )
+
+
 def read_docx_rich(path: Path) -> RichDocument:
     """Read ``path`` into a :class:`RichDocument` (the writer's vocabulary only).
 
     Raises ``ModuleNotFoundError`` when python-docx is absent (gate on
     :func:`python_docx_available` first) and ``OSError``/``ValueError`` for an
     unreadable file, matching the io-layer contract.
+
+    Tables are rendered inline as Markdown-table paragraphs so their content is
+    preserved and navigable (they were previously dropped entirely).
     """
     import docx
+    from docx.table import Table
 
     source = docx.Document(str(path))
     rich = RichDocument()
-    for paragraph in source.paragraphs:
-        style, level, named_style = _paragraph_shape(getattr(paragraph.style, "name", ""))
-        alignment = paragraph.alignment
-        align = _ALIGNMENTS.get(getattr(alignment, "name", str(alignment))) if alignment else None
-        spans = [_span_from_run(run) for run in paragraph.runs if run.text]
-        if not spans and paragraph.text:
-            spans = [InlineSpan(text=str(paragraph.text))]
-        rich.paragraphs.append(
-            RichParagraph(
-                spans=spans,
-                style=style,
-                level=level,
-                align=align,
-                named_style=named_style,
-            )
-        )
+    for block in _iter_body_blocks(source):
+        if isinstance(block, Table):
+            rich.paragraphs.extend(_table_to_rich_paragraphs(block))
+        else:
+            rich.paragraphs.append(_paragraph_to_rich(block))
     return rich
 
 

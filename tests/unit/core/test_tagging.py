@@ -44,6 +44,19 @@ def test_build_markdown_table_template() -> None:
     assert "| Column 1 | Column 2 |" in result.inserted_text
 
 
+def test_build_markdown_blockquote_prefixes_each_line() -> None:
+    result = build_markdown_insertion("Blockquote", "line one\nline two")
+    assert result.inserted_text == "> line one\n> line two"
+
+
+def test_build_markdown_horizontal_rule_is_thematic_break() -> None:
+    result = build_markdown_insertion("Horizontal Rule", "")
+    assert result.inserted_text == "---"
+    assert result.caret_offset == 3
+    # A rule ignores any selection -- it is never wrapped around text.
+    assert build_markdown_insertion("Horizontal Rule", "selected").inserted_text == "---"
+
+
 def test_build_markdown_table_with_custom_dimensions() -> None:
     result = build_markdown_table(3, 4, include_header=True)
     assert result.inserted_text.count("| --- | --- | --- | --- |") == 1

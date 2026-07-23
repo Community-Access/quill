@@ -121,3 +121,68 @@ def test_states_with_playable_feeds_match_the_directory_not_the_live_count(monke
     assert folders["hi"].name == "Hawaii"
     # The count equals exactly what expanding the folder will show.
     assert len(wxindex.playable_stations_for_state("IL")) == folders["il"].stations_with_feeds
+
+
+def test_directory_cache_is_bypassed_when_bundled_snapshot_is_newer(monkeypatch, tmp_path):
+    # #1207: after an in-place update, a newer bundled snapshot must win over a
+    # still-"fresh" cache written by the previous version, which otherwise keeps
+    # shadowing the new listings.
+    from quill.core.radio import wxindex_snapshot
+    from quill.core.radio.wxindex_models import WxStation
+    from quill.core.radio.wxindex_snapshot import Snapshot
+
+    monkeypatch.setattr(wxindex, "_cache_dir", lambda: tmp_path)
+    (tmp_path / "directory.json").write_text(
+        json.dumps({
+            "generated_at": "2026-06-01T00:00:00Z",
+            "stations": [
+                {
+                    "callsign": "OLD11",
+                    "frequency": "162.400",
+                    "state_slug": "VA",
+                    "feeds": [{"stream_url": "https://old/11"}],
+                }
+            ],
+        }),
+        encoding="utf-8",
+    )
+    newer_snap = Snapshot(
+        generated_at="2026-07-20T00:00:00Z",
+        stations=[WxStation("NEW22", 162.55, state="VA", feeds=("https://new/22",))],
+    )
+    monkeypatch.setattr(wxindex_snapshot, "load_snapshot", lambda: newer_snap)
+    monkeypatch.setattr(wxindex, "load_snapshot", lambda: newer_snap)
+    got = wxindex.playable_stations_for_state("VA")
+    assert [s.callsign for s in got] == ["NEW22"]  # snapshot wins over stale cache
+
+
+def test_directory_cache_wins_when_it_is_newer_than_the_snapshot(monkeypatch, tmp_path):
+    # The inverse: a cache freshly refreshed by the user (newer than the bundled
+    # snapshot) is still preferred -- we only reject a cache the snapshot beats.
+    from quill.core.radio import wxindex_snapshot
+    from quill.core.radio.wxindex_models import WxStation
+    from quill.core.radio.wxindex_snapshot import Snapshot
+
+    monkeypatch.setattr(wxindex, "_cache_dir", lambda: tmp_path)
+    (tmp_path / "directory.json").write_text(
+        json.dumps({
+            "generated_at": "2026-07-25T00:00:00Z",
+            "stations": [
+                {
+                    "callsign": "FRESH9",
+                    "frequency": "162.400",
+                    "state_slug": "VA",
+                    "feeds": [{"stream_url": "https://fresh/9"}],
+                }
+            ],
+        }),
+        encoding="utf-8",
+    )
+    older_snap = Snapshot(
+        generated_at="2026-07-20T00:00:00Z",
+        stations=[WxStation("BUNDLED", 162.55, state="VA", feeds=("https://b/1",))],
+    )
+    monkeypatch.setattr(wxindex_snapshot, "load_snapshot", lambda: older_snap)
+    monkeypatch.setattr(wxindex, "load_snapshot", lambda: older_snap)
+    got = wxindex.playable_stations_for_state("VA")
+    assert [s.callsign for s in got] == ["FRESH9"]  # user's fresher cache wins

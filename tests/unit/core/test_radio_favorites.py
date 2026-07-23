@@ -390,3 +390,20 @@ def test_explicit_folders_exist_without_stations_and_round_trip(tmp_path: Path) 
     assert "World/Morning" in loaded.folder_names()
     loaded.delete_folder("World")
     assert loaded.folder_names() == []
+
+
+def test_clear_removes_all_favorites_and_returns_count() -> None:
+    # #1201: clear() empties the favorites list and reports how many went.
+    store = RadioFavoritesStore()
+    store.add(_STATION_A)
+    store.add(_STATION_B)
+    assert len(store.favorites) == 2
+    removed = store.clear()
+    assert removed == 2
+    assert store.favorites == []
+
+
+def test_clear_on_empty_store_is_zero() -> None:
+    store = RadioFavoritesStore()
+    assert store.clear() == 0
+    assert store.favorites == []

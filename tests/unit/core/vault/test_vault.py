@@ -36,3 +36,16 @@ def test_title_falls_back_to_stem(tmp_path: Path) -> None:
     (tmp_path / "no-heading.md").write_text("just text", encoding="utf-8")
     vault = scan_vault(tmp_path)
     assert vault.notes["no-heading.md"].title == "no-heading"
+
+
+def test_scan_tolerates_a_non_utf8_note(tmp_path: Path) -> None:
+    # #1202: a note saved as Latin-1 (or a stray non-UTF-8 file) must not crash
+    # the whole vault scan with UnicodeDecodeError -- it is read leniently and
+    # the rest of the vault still indexes.
+    (tmp_path / "good.md").write_text("# Good", encoding="utf-8")
+    (tmp_path / "latin1.md").write_bytes("café \xe6 notes".encode("latin-1"))
+    vault = scan_vault(tmp_path)
+    assert set(vault.notes) == {"good.md", "latin1.md"}
+    assert vault.notes["good.md"].title == "Good"
+    # The bad byte is replaced, not fatal; the note is still present.
+    assert "latin1.md" in vault.texts

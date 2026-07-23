@@ -665,6 +665,15 @@ class RadioPlayerController:
             self._engine.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("radio engine close failed during shutdown")
+        # Some engines (mpv) keep a live handle after close() for reuse; on the
+        # real exit path we must hard-terminate so audio never outlives the app,
+        # independent of window-destroy ordering (#1195).
+        terminate = getattr(self._engine, "terminate", None)
+        if callable(terminate):
+            try:
+                terminate()
+            except Exception:  # noqa: BLE001 - never block app close
+                _log.exception("radio engine terminate failed during shutdown")
         try:
             self._enhance_relay.shutdown()
         except Exception:  # noqa: BLE001 - never block app close

@@ -19,6 +19,7 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.bookmark_anchor import BookmarkAnchor
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 
@@ -156,6 +157,21 @@ class DocumentMemory:
                 clean: dict[str, object] = {"bookmarks": marks}
                 if isinstance(last, int):
                     clean["last_position"] = max(0, last)
+                # Optional edit-surviving anchors, keyed by the same bookmark
+                # names. Backward-compatible: absent in older files, and the int
+                # `bookmarks` map above remains the fallback position.
+                raw_anchors = entry.get("anchors")
+                if isinstance(raw_anchors, dict):
+                    anchors: dict[str, dict] = {}
+                    for name, adict in raw_anchors.items():
+                        if (
+                            isinstance(name, str)
+                            and name.strip()
+                            and BookmarkAnchor.from_dict(adict) is not None
+                        ):
+                            anchors[name.strip()] = adict
+                    if anchors:
+                        clean["anchors"] = anchors
                 documents[key] = clean
         return cls(path=target, documents=documents)
 
@@ -175,6 +191,25 @@ class DocumentMemory:
         if not key:
             return
         self._entry(key)["bookmarks"] = {n: max(0, int(p)) for n, p in bookmarks.items()}
+        self.save()
+
+    def anchors_for(self, key: str | None) -> dict[str, BookmarkAnchor]:
+        """Return this document's edit-surviving bookmark anchors by name."""
+        if not key:
+            return {}
+        raw = self.documents.get(key, {}).get("anchors", {})
+        out: dict[str, BookmarkAnchor] = {}
+        if isinstance(raw, dict):
+            for name, adict in raw.items():
+                anchor = BookmarkAnchor.from_dict(adict)
+                if isinstance(name, str) and anchor is not None:
+                    out[name] = anchor
+        return out
+
+    def set_anchors(self, key: str | None, anchors: dict[str, BookmarkAnchor]) -> None:
+        if not key:
+            return
+        self._entry(key)["anchors"] = {name: a.to_dict() for name, a in anchors.items()}
         self.save()
 
     def last_position(self, key: str | None) -> int | None:

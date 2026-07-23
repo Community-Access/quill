@@ -20,7 +20,13 @@ import os
 import re
 from dataclasses import dataclass
 
-__all__ = ["ImageAtCursor", "build_image_markdown", "describe_image", "image_at_position"]
+__all__ = [
+    "ImageAtCursor",
+    "build_image_html",
+    "build_image_markdown",
+    "describe_image",
+    "image_at_position",
+]
 
 _MD_IMAGE_PATTERN = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
 _HTML_IMG_PATTERN = re.compile(r"<img[^>]*>", re.IGNORECASE)
@@ -73,3 +79,62 @@ def build_image_markdown(path: str, alt_text: str, *, decorative: bool = False) 
     """
     alt = "" if decorative else alt_text.strip()
     return f"![{alt}]({path})"
+
+
+def _escape_attr(value: str) -> str:
+    """Escape a string for use inside a double-quoted HTML attribute."""
+    return value.replace("&", "&amp;").replace('"', "&quot;")
+
+
+def _escape_text(value: str) -> str:
+    """Escape a string for use as HTML text content (a figcaption)."""
+    return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def build_image_html(
+    path: str,
+    alt_text: str,
+    *,
+    decorative: bool = False,
+    width: int | None = None,
+    height: int | None = None,
+    responsive: bool = False,
+    lazy: bool = True,
+    caption: str = "",
+) -> str:
+    """Build accessible, page-ready ``<img>`` HTML for a newly inserted image.
+
+    Markdown can only carry alt text; HTML can carry what a browser needs to
+    lay the image out *correctly*, so in an HTML document we offer more:
+
+    * ``width``/``height`` set the intrinsic box so the browser reserves space
+      before the file loads -- the image no longer shoves the page around as it
+      arrives (no cumulative layout shift).
+    * ``responsive`` caps the image at its container width
+      (``max-width:100%;height:auto``) so it never overflows a narrow column.
+    * ``lazy`` defers off-screen images with ``loading="lazy"``.
+    * ``decorative`` emits empty alt *and* ``role="presentation"`` so assistive
+      technology skips it -- the correct pattern for a purely ornamental image,
+      distinct from an image nobody ever described.
+    * ``caption`` wraps the image in ``<figure>`` with a ``<figcaption>`` so the
+      caption is programmatically tied to the image, not just text beside it.
+    """
+    alt = "" if decorative else alt_text.strip()
+    attrs = [f'src="{_escape_attr(path)}"', f'alt="{_escape_attr(alt)}"']
+    if decorative:
+        attrs.append('role="presentation"')
+    if width is not None and width > 0:
+        attrs.append(f'width="{int(width)}"')
+    if height is not None and height > 0:
+        attrs.append(f'height="{int(height)}"')
+    if lazy:
+        attrs.append('loading="lazy"')
+    if responsive:
+        attrs.append('style="max-width:100%;height:auto;"')
+    img = f"<img {' '.join(attrs)} />"
+    caption_text = caption.strip()
+    if caption_text:
+        return (
+            f"<figure>\n  {img}\n  <figcaption>{_escape_text(caption_text)}</figcaption>\n</figure>"
+        )
+    return img

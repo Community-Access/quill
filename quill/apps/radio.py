@@ -190,8 +190,13 @@ class RadioAppFrame(
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         # One transport button, not two: it reads Play when idle and Stop
         # while connecting/playing, so the panel never shows a dead button.
-        self._play_stop_btn = wx.Button(panel, label="&Play")
-        set_accessible_name(self._play_stop_btn, "Play")
+        # No "&" mnemonic on the transport button: "&Stop"/"&Play" would claim
+        # Alt+S / Alt+P, which collide with the Station / Playback menu-bar
+        # mnemonics (the menu bar wins, so the button never fired) -- #1208. The
+        # reliable transport key is the menu accelerator Ctrl+P, which the
+        # accessible name now advertises so it is reported correctly.
+        self._play_stop_btn = wx.Button(panel, label="Play")
+        set_accessible_name(self._play_stop_btn, "Play (Ctrl+P)")
         self._play_stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_play_stop_button())
         buttons.Add(self._play_stop_btn, 0, wx.RIGHT, 6)
         # Favorite toggle for whatever is on right now: Add while listening
@@ -372,22 +377,20 @@ class RadioAppFrame(
         self._reload_favorites_tree(keep_key=favorite.key)
 
     def _force_favorites_manual_order(self) -> None:
-        """Commit the current *display* order as the stored (manual) order, then
-        set the sort to manual -- so Alt+Shift+Up/Down reorders exactly what the
-        listener sees instead of the list first jumping to a different (stored)
-        order. Only reached from a sorted view (A-Z/Z-A); a genuinely
-        hand-arranged manual order is already in manual mode, so this is never
-        called for it and nothing is overwritten. #1186 dropped this bake, which
-        regressed reordering from the default A-Z view (the list scrambled and
-        move up/down looked broken for two reporters); restored here.
+        """Switch favorites to manual sort WITHOUT rewriting the stored order.
+
+        Reordering from a sorted (A-Z/Z-A) view is a clear intent to hand-arrange,
+        so flip the sort to manual -- which reveals the preserved stored order (the
+        caller reloads the tree and announces "Switched to manual order") -- and
+        then the move happens within that now-visible order. Crucially this does
+        NOT bake the sorted display over the stored list: doing so silently
+        destroyed a listener's hand-arranged order the first time they reordered
+        from an A-Z view, with no way to recover it (#1186). The stored list is
+        left untouched; only the sort setting changes.
         """
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
 
-        ordered = self._radio_favorites.favorites_in_display_order(
-            self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
-        )
-        self._radio_favorites.favorites = list(ordered)
         self._radio_history.favorites_sort = "manual"
         self._radio_history.folder_sort_orders = {}
         radio_history.save_history(app_data_dir(), self._radio_history)
@@ -727,15 +730,19 @@ class RadioAppFrame(
 
         state = self._radio_controller.state.state
         stopping = state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
-        label = "&Stop" if stopping else "&Play"
+        # Button label carries no "&" (see #1208); the Playback menu item keeps
+        # its in-menu mnemonic (safe -- submenu mnemonics don't collide with the
+        # menu bar) plus the working Ctrl+P accelerator.
+        button_label = "Stop" if stopping else "Play"
+        menu_label = "&Stop" if stopping else "&Play"
         button = getattr(self, "_play_stop_btn", None)
-        if button is not None and button.GetLabel() != label:
-            button.SetLabel(label)
-            set_accessible_name(button, "Stop" if stopping else "Play")
+        if button is not None and button.GetLabel() != button_label:
+            button.SetLabel(button_label)
+            set_accessible_name(button, f"{button_label} (Ctrl+P)")
         menu_bar = self.frame.GetMenuBar()
         item_id = getattr(self, "_play_menu_item_id", None)
         if menu_bar is not None and item_id is not None:
-            menu_bar.SetLabel(int(item_id), f"{label}\tCtrl+P")
+            menu_bar.SetLabel(int(item_id), f"{menu_label}\tCtrl+P")
         self._refresh_favorite_toggle()
 
     def _refresh_record_button(self) -> None:
@@ -1037,7 +1044,10 @@ class RadioAppFrame(
         self._sort_item_ids = [wx.NewIdRef() for _ in _FAVORITES_SORT_VALUES]
         sort_accels = ("\tCtrl+Shift+A", "\tCtrl+Shift+Z", "")
         for item_id, label, value, accel in zip(
-            self._sort_item_ids, _FAVORITES_SORT_LABELS, _FAVORITES_SORT_VALUES, sort_accels,
+            self._sort_item_ids,
+            _FAVORITES_SORT_LABELS,
+            _FAVORITES_SORT_VALUES,
+            sort_accels,
             strict=True,
         ):
             sort_menu.AppendRadioItem(item_id, label + accel)
@@ -1182,7 +1192,8 @@ class RadioAppFrame(
         history.show_station_details = not history.show_station_details
         radio_history.save_history(app_data_dir(), history)
         self._announce(
-            "Station details will be shown." if history.show_station_details
+            "Station details will be shown."
+            if history.show_station_details
             else "Station details will be hidden."
         )
 
@@ -1255,8 +1266,13 @@ class RadioAppFrame(
             return
         base = self._wx.SystemSettings.GetFont(self._wx.SYS_DEFAULT_GUI_FONT)
         font = base.Scaled(scale) if scale != 1.0 else base
-        for name in ("_now_playing_text", "_favorites_tree", "_play_stop_btn",
-                     "_favorite_toggle_btn", "_record_btn"):
+        for name in (
+            "_now_playing_text",
+            "_favorites_tree",
+            "_play_stop_btn",
+            "_favorite_toggle_btn",
+            "_record_btn",
+        ):
             widget = getattr(self, name, None)
             if widget is not None:
                 widget.SetFont(font)
@@ -1326,6 +1342,13 @@ class RadioAppFrame(
             and wx.Window.FindFocus() is getattr(self, "_favorites_tree", None)
         ):
             self._move_selected_favorite(-1 if code == wx.WXK_UP else 1)
+            return
+        # Ctrl+Shift+E: New Folder, as an app-wide hotkey (#1211). The Station
+        # menu carries the same accelerator, but a focused favorites TreeCtrl can
+        # swallow the chord before the menu accelerator fires, so handle it here
+        # too -- the same reason the reorder chord above is caught in the hook.
+        if event.ControlDown() and event.ShiftDown() and not event.AltDown() and code == ord("E"):
+            self._on_new_folder()
             return
         event.Skip()
 

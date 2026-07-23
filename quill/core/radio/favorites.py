@@ -122,6 +122,19 @@ class RadioFavoritesStore:
         self.favorites = [f for f in self.favorites if f.key != key]
         return len(self.favorites) != before
 
+    def clear(self) -> int:
+        """Remove every favorite, returning how many were removed (#1201).
+
+        Folders are intentionally left intact -- like deleting a folder's
+        contents, the structure survives so the user can refill it. Saving is
+        the caller's responsibility (as with :meth:`add`/:meth:`remove`), and
+        ``save_favorites`` snapshots the prior file first, so this is
+        recoverable.
+        """
+        count = len(self.favorites)
+        self.favorites = []
+        return count
+
     def move(self, key: str, *, delta: int) -> bool:
         """Shift the favorite identified by *key* up (-1) or down (+1),
         staying inside its own folder group: the swap partner is the nearest
