@@ -505,6 +505,27 @@ Post-conversion prompt rule (issue #262): when the target format is editable in 
 
 **Filename suggestion from the first line.** `first_line_as_title` (default **on**) pre-fills Save/Export dialogs for an untitled document from its first meaningful line via `quill/core/titles.py` (markup leaders stripped, Windows-invalid characters removed, 60-char cap). It only ever suggests a name for an untitled document.
 
+**Rich-mode Save As converts the RichDocument, not the plain-text mirror.** When a `.docx` opens in rich mode, `document.text` is a flattened plain-text mirror, so routing a `.md`/`.html` Save As through the classic writer lost all formatting. `main_frame_rich_mode._save_rich_as_markup` now intercepts `.md`/`.markdown`/`.html`/`.htm`/`.xhtml` in rich mode, reconstructs the RichDocument from the control's RTF (`rtf_to_rich`), and renders it with `rich_to_markdown` (Markdown) / `markdown_to_html` (HTML). The Save As dialog and its extension routing were correct; the defect was a missing converter wiring on the rich path.
+
+**Cross-format fidelity matrix (measured; `tests/unit/io/test_save_as_format_fidelity.py`).** Everything routes through the shared `RichDocument` / canonical-Markdown hub, so preservation is per-feature, not per-pair. `✅` native, `◑` carried as portable markup/text, `✕` lost.
+
+| Feature | Markdown | HTML | Word (.docx) | RTF | Text |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| Headings, bold, italic, links, bullet + numbered lists | ✅ | ✅ | ✅ | ✅ | ✕ |
+| Underline / strike / super-sub / colour / highlight / font | ◑¹ | ✅ | ✅ | ✅ | ✕ |
+| Blockquote / code block / horizontal rule | ✅ | ✅ | ◑² | ◑² | ✕ |
+| Tables | ✅ | ✅ | ◑³ | ◑³ | ✕ |
+| Images | ◑⁴ | ✅ | ✕⁴ | ✕ | ✕ |
+| Alignment | ◑¹ | ✅ | ✅ | ✕ | ✕ |
+| Page breaks | ◑¹ | ✅ | ✕ | ✕ | ✕ |
+
+1. Hidden-codes markup (`[text]{…}` spans / `::: {…}` divs) in Markdown; materialised natively on HTML/Word/RTF export.
+2. Markdown-native and native in HTML; literal markers in Word/RTF (the RichDocument model has no blockquote/code/hr structure).
+3. Word tables *read* → GFM tables (`_table_to_rich_paragraphs`); Markdown/HTML tables *written to* Word are pipe-text paragraphs, not native `w:tbl` objects.
+4. Image references round-trip in Markdown and render as `<img>` in HTML; images are not embedded into Word, and embedded Word images are not read.
+
+**Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Remaining honest gaps: RTF drops alignment and page breaks; docx drops page breaks on read; Markdown→Word tables are pipe-text; Word-embedded images are not extracted.
+
 **Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first with the raw python-docx extract as last resort; the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
 
 ##### 5.3a.1.2 Batch Conversion wizard

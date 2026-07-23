@@ -1074,6 +1074,17 @@ These improvements have landed on the development branch since Beta 3 and will s
 
 - Bookmarks and quick-bookmarks now remember the text around them, so jumping to one lands where that text actually is — even after you've inserted or deleted text above it. Your "Points" stop drifting.
 
+### Moving between formats keeps more of your formatting
+
+QUILL now carries far more across when you **Save As** or convert between Markdown, HTML, Word, RTF, and plain text:
+
+- **Open a Word document and Save As Markdown or HTML — and keep the formatting.** Previously, a Word document opened for rich editing could Save As Markdown/HTML and quietly lose its headings, lists, bold, and links (they came out as flat text). Now the headings, lists, bold, italic, and links all come across as native Markdown/HTML.
+- **Links survive a Word round trip.** A hyperlink saved to Word is a real Word hyperlink now, and opening that Word file back into QUILL recovers the link — it no longer flattens to plain text.
+- **Numbered lists stay numbered lists** everywhere — Markdown, HTML, and Word — and keep their starting number (a list that starts at 3 stays 3).
+- **Images and quotes render properly in exported HTML.** An image (`![alt](file)`) becomes a real `<img>` on the page, and a `>` quote becomes a real blockquote, instead of showing up as stray characters.
+
+And we've written down, honestly, **exactly what carries over between every format** — see "What carries over between formats" in the User Guide. The short version: the common formatting (headings, emphasis, links, lists) travels everywhere except plain text; a few things are format-specific (a Markdown table saved to Word becomes readable text rather than a live Word table; Word-embedded images aren't pulled into the text; plain text never carries formatting, by design).
+
 ### Fixes
 
 - Podcast search now returns focus to the results list after you subscribe, so you can keep arrowing through shows.

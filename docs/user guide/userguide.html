@@ -26832,6 +26832,193 @@ different Word documents from the same text. The defaults are right for
 almost everyone; the choices are there for when they are not. (The
 engine comparison evidence lives in
 <code>docs/qa/converter-bakeoff.md</code>.)</p>
+<h3 id="what-carries-over-between-formats">What carries over between
+formats</h3>
+<p>QUILL converts through one clean internal form, so what survives a
+Save As (or a conversion) depends on the feature, not the exact pair of
+formats. This table is what QUILL's own tests verify.
+<strong>✅</strong> means it carries over as that format's native
+structure; <strong>◑</strong> means it carries over but as text or as
+QUILL's portable markup rather than a native object; <strong>✕</strong>
+means it is not preserved.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th style="text-align: center;">Markdown</th>
+<th style="text-align: center;">HTML</th>
+<th style="text-align: center;">Word (.docx)</th>
+<th style="text-align: center;">Rich Text (.rtf)</th>
+<th style="text-align: center;">Plain text (.txt)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Headings (1–6)</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td><strong>Bold</strong>, <em>italic</em></td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Underline</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Strikethrough</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Superscript / subscript</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Text colour / highlight</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Font family / size</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Links</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Bullet lists</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Numbered lists</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Blockquotes</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Code blocks</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Horizontal rule</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Tables</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">◑³</td>
+<td style="text-align: center;">◑³</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Images</td>
+<td style="text-align: center;">◑⁴</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕⁴</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Paragraph alignment</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Page breaks</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ol type="1">
+<li><strong>In Markdown</strong>, underline, strike, super/subscript,
+colour, highlight, font, alignment, and page breaks are carried in
+QUILL's <em>hidden-codes</em> markup — invisible while you edit, and
+materialised natively when you export to HTML, Word, or RTF. Markdown
+itself has no standard syntax for these, so another Markdown app will
+show them as QUILL's <code>[text]{…}</code> codes rather than the
+effect.</li>
+<li><strong>Blockquotes, code blocks, and horizontal rules</strong> are
+Markdown-native and render natively in HTML; in Word/RTF they appear as
+their literal Markdown markers (<code>&gt;</code>, <code>```</code>,
+<code>---</code>) rather than a Word blockquote or code style.</li>
+<li><strong>Tables:</strong> a Word table you <em>open</em> in QUILL
+becomes a clean Markdown/GFM table (fully editable and navigable), and
+Markdown/HTML tables stay native. Saving a table <em>to</em> Word writes
+its content as readable pipe-text rather than a native, resizable Word
+table object.</li>
+<li><strong>Images:</strong> an image <em>reference</em>
+(<code>![alt](path)</code>) round-trips through Markdown and renders as
+<code>&lt;img&gt;</code> in HTML. QUILL does not embed image files into
+Word, and images embedded in a Word document you open are not carried
+into the text.</li>
+</ol>
+<p><strong>Plain text (.txt)</strong> never carries formatting — that is
+the promise of plain text. Use <strong>Save As Plain Text</strong> if
+you want the markup deliberately flattened (with the option to keep your
+formatting in an Illumination sidecar).</p>
 <h3 id="import-and-export">Import and Export</h3>
 <p>QUILL can convert between the formats the people around you actually
 use, without you leaving the editor. <strong>File &gt; Import</strong>

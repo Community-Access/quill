@@ -1630,6 +1630,123 @@ Save/Export dialogs for an untitled document from its first meaningful
 line via <code>quill/core/titles.py</code> (markup leaders stripped,
 Windows-invalid characters removed, 60-char cap). It only ever suggests
 a name for an untitled document.</p>
+<p><strong>Rich-mode Save As converts the RichDocument, not the
+plain-text mirror.</strong> When a <code>.docx</code> opens in rich
+mode, <code>document.text</code> is a flattened plain-text mirror, so
+routing a <code>.md</code>/<code>.html</code> Save As through the
+classic writer lost all formatting.
+<code>main_frame_rich_mode._save_rich_as_markup</code> now intercepts
+<code>.md</code>/<code>.markdown</code>/<code>.html</code>/<code>.htm</code>/<code>.xhtml</code>
+in rich mode, reconstructs the RichDocument from the control's RTF
+(<code>rtf_to_rich</code>), and renders it with
+<code>rich_to_markdown</code> (Markdown) / <code>markdown_to_html</code>
+(HTML). The Save As dialog and its extension routing were correct; the
+defect was a missing converter wiring on the rich path.</p>
+<p><strong>Cross-format fidelity matrix (measured;
+<code>tests/unit/io/test_save_as_format_fidelity.py</code>).</strong>
+Everything routes through the shared <code>RichDocument</code> /
+canonical-Markdown hub, so preservation is per-feature, not per-pair.
+<code>✅</code> native, <code>◑</code> carried as portable markup/text,
+<code>✕</code> lost.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th style="text-align: center;">Markdown</th>
+<th style="text-align: center;">HTML</th>
+<th style="text-align: center;">Word (.docx)</th>
+<th style="text-align: center;">RTF</th>
+<th style="text-align: center;">Text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Headings, bold, italic, links, bullet + numbered lists</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Underline / strike / super-sub / colour / highlight / font</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Blockquote / code block / horizontal rule</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">◑²</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Tables</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">◑³</td>
+<td style="text-align: center;">◑³</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Images</td>
+<td style="text-align: center;">◑⁴</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕⁴</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+</tr>
+<tr>
+<td>Page breaks</td>
+<td style="text-align: center;">◑¹</td>
+<td style="text-align: center;">✅</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+<td style="text-align: center;">✕</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Hidden-codes markup (<code>[text]{…}</code> spans /
+<code>::: {…}</code> divs) in Markdown; materialised natively on
+HTML/Word/RTF export.</li>
+<li>Markdown-native and native in HTML; literal markers in Word/RTF (the
+RichDocument model has no blockquote/code/hr structure).</li>
+<li>Word tables <em>read</em> → GFM tables
+(<code>_table_to_rich_paragraphs</code>); Markdown/HTML tables
+<em>written to</em> Word are pipe-text paragraphs, not native
+<code>w:tbl</code> objects.</li>
+<li>Image references round-trip in Markdown and render as
+<code>&lt;img&gt;</code> in HTML; images are not embedded into Word, and
+embedded Word images are not read.</li>
+</ol>
+<p><strong>Round-trip improvements (0.9.0,
+<code>quill/io</code>).</strong> docx hyperlinks round-trip both ways —
+<code>rich_to_docx</code> writes a real <code>w:hyperlink</code> with an
+OPC relationship, <code>read_docx_rich</code> recovers the href via
+<code>iter_inner_content</code> (previously links degraded to plain
+text). Numbered lists are first-class: a <code>numbered</code>
+<code>RichParagraph</code> style plus <code>list_number</code> carried
+through <code>markdown_to_rich</code>/<code>rich_to_markdown</code>
+(identity, keeps a non-1 start), docx <code>List Number</code>
+read/write (sequential numbering assigned on read), and the offset map.
+<code>markdown_to_html</code> now emits <code>&lt;img&gt;</code> for
+images and <code>&lt;blockquote&gt;</code> for quote lines. Remaining
+honest gaps: RTF drops alignment and page breaks; docx drops page breaks
+on read; Markdown→Word tables are pipe-text; Word-embedded images are
+not extracted.</p>
 <p><strong>Conversion engine preferences.</strong> Two settings expose
 the engine choice with speakable outcome descriptions:
 <code>docx_read_engine</code> (auto | markitdown | pandoc — auto is

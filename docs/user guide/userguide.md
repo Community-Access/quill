@@ -6067,6 +6067,39 @@ More than one converter can handle a Word document, and they make different trad
 
 These preferences exist because "convert" is not one thing: a structure-first engine and a formatting-first engine produce honestly different Word documents from the same text. The defaults are right for almost everyone; the choices are there for when they are not. (The engine comparison evidence lives in `docs/qa/converter-bakeoff.md`.)
 
+### What carries over between formats
+
+QUILL converts through one clean internal form, so what survives a Save As (or a conversion) depends on the feature, not the exact pair of formats. This table is what QUILL's own tests verify. **✅** means it carries over as that format's native structure; **◑** means it carries over but as text or as QUILL's portable markup rather than a native object; **✕** means it is not preserved.
+
+| Feature | Markdown | HTML | Word (.docx) | Rich Text (.rtf) | Plain text (.txt) |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| Headings (1–6) | ✅ | ✅ | ✅ | ✅ | ✕ |
+| **Bold**, *italic* | ✅ | ✅ | ✅ | ✅ | ✕ |
+| Underline | ◑¹ | ✅ | ✅ | ✅ | ✕ |
+| Strikethrough | ◑¹ | ✅ | ✅ | ✅ | ✕ |
+| Superscript / subscript | ◑¹ | ✅ | ✅ | ✅ | ✕ |
+| Text colour / highlight | ◑¹ | ✅ | ✅ | ✅ | ✕ |
+| Font family / size | ◑¹ | ✅ | ✅ | ✅ | ✕ |
+| Links | ✅ | ✅ | ✅ | ✅ | ✕ |
+| Bullet lists | ✅ | ✅ | ✅ | ✅ | ✕ |
+| Numbered lists | ✅ | ✅ | ✅ | ✅ | ✕ |
+| Blockquotes | ✅ | ✅ | ◑² | ◑² | ✕ |
+| Code blocks | ✅ | ✅ | ◑² | ◑² | ✕ |
+| Horizontal rule | ✅ | ✅ | ◑² | ◑² | ✕ |
+| Tables | ✅ | ✅ | ◑³ | ◑³ | ✕ |
+| Images | ◑⁴ | ✅ | ✕⁴ | ✕ | ✕ |
+| Paragraph alignment | ◑¹ | ✅ | ✅ | ✕ | ✕ |
+| Page breaks | ◑¹ | ✅ | ✕ | ✕ | ✕ |
+
+Notes:
+
+1. **In Markdown**, underline, strike, super/subscript, colour, highlight, font, alignment, and page breaks are carried in QUILL's *hidden-codes* markup — invisible while you edit, and materialised natively when you export to HTML, Word, or RTF. Markdown itself has no standard syntax for these, so another Markdown app will show them as QUILL's `[text]{…}` codes rather than the effect.
+2. **Blockquotes, code blocks, and horizontal rules** are Markdown-native and render natively in HTML; in Word/RTF they appear as their literal Markdown markers (`>`, ` ``` `, `---`) rather than a Word blockquote or code style.
+3. **Tables:** a Word table you *open* in QUILL becomes a clean Markdown/GFM table (fully editable and navigable), and Markdown/HTML tables stay native. Saving a table *to* Word writes its content as readable pipe-text rather than a native, resizable Word table object.
+4. **Images:** an image *reference* (`![alt](path)`) round-trips through Markdown and renders as `<img>` in HTML. QUILL does not embed image files into Word, and images embedded in a Word document you open are not carried into the text.
+
+**Plain text (.txt)** never carries formatting — that is the promise of plain text. Use **Save As Plain Text** if you want the markup deliberately flattened (with the option to keep your formatting in an Illumination sidecar).
+
 ### Import and Export
 
 QUILL can convert between the formats the people around you actually use, without you leaving the editor. **File > Import** brings a non-QUILL document into QUILL as a new tab. **File > Export** saves the current buffer as a different file type. Both routes use Pandoc on a background thread, so the editor never freezes. Exports preserve your line breaks exactly: one editor line is one paragraph in the exported document, in every format.
