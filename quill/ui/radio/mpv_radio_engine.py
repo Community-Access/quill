@@ -50,6 +50,27 @@ from quill.ui.audio.mpv_engine import _MpvClient, find_libmpv
 
 _log = logging.getLogger(__name__)
 
+#: mpv properties to consult for the now-playing title, most authoritative
+#: first. ``media-title`` is mpv's headline title, but some streams -- HLS, and
+#: a few ICY hosts -- leave it as the URL while still exposing the current track
+#: in the parsed ``metadata`` map (``icy-title`` for ICY, ``title`` for HLS
+#: timed metadata / ID3), so those are checked too (#1215).
+_MPV_TITLE_PROPERTIES = ("media-title", "metadata/icy-title", "metadata/title")
+
+
+def _pick_mpv_title(get_str: Callable[[str], str | None], current_url: str) -> str:
+    """First non-empty mpv title property that isn't just the stream URL.
+
+    Pure and wx-free so the property-preference order is unit-testable without
+    a live libmpv handle.
+    """
+    for prop in _MPV_TITLE_PROPERTIES:
+        value = (get_str(prop) or "").strip()
+        if value and value != current_url:
+            return value
+    return ""
+
+
 _POLL_MS = 200
 #: mpv's own bound on a stalled network connect/read; a dead URL errors out
 #: in seconds instead of hanging "connecting..." forever.
@@ -309,16 +330,18 @@ class MpvRadioEngine:
     # -- now playing --------------------------------------------------------------
 
     def now_playing_title(self) -> str:
-        """The stream's own ICY/HLS title via mpv's ``media-title`` -- the
-        engine-native fallback when the out-of-band ICY side connection gets
-        nothing (some hosts reject it; HLS has no ICY at all). "" when mpv
-        only knows the URL (i.e. no real title)."""
+        """The stream's own ICY/HLS title from mpv -- the engine-native fallback
+        when the out-of-band ICY side connection gets nothing (some hosts reject
+        it; HLS has no ICY at all).
+
+        Tries ``media-title`` first, then mpv's parsed ``metadata`` map
+        (``icy-title`` / ``title``): some stations -- notably HLS, and a few ICY
+        hosts that another player still shows a song for -- populate the metadata
+        map while ``media-title`` stays the URL, so reading only ``media-title``
+        missed them (#1215). "" when mpv only knows the URL."""
         if not self._loaded:
             return ""
-        title = (self._mpv.get_str("media-title") or "").strip()
-        if not title or title == self._current_url:
-            return ""
-        return title
+        return _pick_mpv_title(self._mpv.get_str, self._current_url)
 
     # -- engine protocol ---------------------------------------------------------
 

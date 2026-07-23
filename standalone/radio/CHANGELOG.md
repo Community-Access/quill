@@ -34,6 +34,7 @@ Everything since 2.1.2, in one release. All in the shared `quill` package, so QU
 - **New Folder (Ctrl+Shift+E) works from the favorites tree (#1211).** The shortcut was advertised but a focused favorites tree swallowed it before it could fire; it is now handled app-wide, so Ctrl+Shift+E opens New Folder regardless of focus.
 - **Schedule a recording in hours and minutes (#1213).** The Schedule Recording length was a single "minutes" box (up to 1440). It is now two fields -- **Hours** (0-24) and **Minutes** (0-59) -- so a three-hour show is "3 and 0" instead of "180". The stored value is unchanged (total minutes), so existing schedules are untouched; a length of zero is rejected.
 - **Adjust the volume by arrowing a slider in the Tab order (#1214).** A **Volume** slider now sits among the main-window buttons, so you can Tab to it and use the arrow keys to change the volume while listening -- alongside the existing Ctrl+Up/Down and the status-bar Volume cell. It stays in step with those other paths (and with per-station volume memory).
+- **Song information shows for more stations (#1215).** Some stations -- notably HLS streams, and a few ICY hosts other players still show a song for -- put the current track in mpv's parsed metadata (`icy-title` / `title`) while leaving `media-title` as the bare URL, so the now-playing title (and What's Playing / Ctrl+T) came up empty. The engine-native title read now consults that metadata map as well as `media-title`, so the song is spoken and shown where it was previously missed.
 
 ## 2.1.2 -- 2026-07-20
 

@@ -36,6 +36,7 @@ Quill Radio 2.2.0 collects everything since 2.1.2 -- a round of fixes and small 
 - **The radio really stops when you exit.** On the playback engine that powers pausing and rewinding, audio could keep going for a moment after the app closed if it shut down in an unusual order; it is now stopped firmly on exit. (Closing to the tray with Ctrl+W or the X still keeps playing on purpose -- that is what the tray is for; use Exit to quit.)
 - **Schedule a recording in hours and minutes.** Setting how long to record used to be a single minutes box, so a long show meant doing the arithmetic ("180 minutes"). You now set **Hours** and **Minutes** separately -- three hours is just "3" and "0". Your existing schedules are unchanged.
 - **Change the volume with a slider you can Tab to.** As well as Ctrl+Up/Down and the status bar, the main window now has a **Volume** slider right in the Tab order: tab to it while a station is playing and use the arrow keys to turn it up or down. However you change the volume, all three stay in agreement.
+- **Song titles show up for more stations.** A few stations -- some HLS streams and a handful of others another app still shows a song for -- were leaving the now-playing line (and What's Playing / Ctrl+T) blank, because they tuck the current track into the player's metadata rather than its main title field. Quill Radio now reads that too, so the song and artist appear and are spoken where they used to be missing.
 
 ## Update 2.1.2
 
