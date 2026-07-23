@@ -146,10 +146,20 @@ def test_rich_save_intercepts_only_the_native_rich_rtf_case(tmp_path: Path) -> N
     frame2.document.path = target
     assert frame2._save_rich_document_natively(frame2.document, None) is False
 
-    # Save As to a non-RTF format leaves the conversion writer in charge.
+    # Save As to Markdown/HTML now converts the rich content (headings, bold,
+    # lists, links) natively instead of dumping the plain-text mirror.
     frame3 = _frame("rich", _FakeWrapper())
     frame3.document.path = target
-    assert frame3._save_rich_document_natively(frame3.document, tmp_path / "doc.md") is False
+    md_target = tmp_path / "doc.md"
+    assert frame3._save_rich_document_natively(frame3.document, md_target) is True
+    assert md_target.exists()
+    assert frame3.document.modified is False  # mark_saved ran
+
+    frame3b = _frame("rich", _FakeWrapper())
+    frame3b.document.path = target
+    html_target = tmp_path / "doc.html"
+    assert frame3b._save_rich_document_natively(frame3b.document, html_target) is True
+    assert html_target.exists()
 
     # rich_converted saves through the RTF writer (today's behavior).
     frame4 = _frame("rich_converted", _FakeWrapper())

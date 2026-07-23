@@ -108,12 +108,22 @@ class RichModeMixin:
     def _save_rich_document_natively(self, document: object, target: Path | None) -> bool:
         """Save the active rich tab natively. Returns True when handled.
 
-        Two genuine rich cases: an .rtf destination saves straight through the
-        TOM (no conversion, no fidelity loss), and a docx-rich tab saving to
-        .docx runs the RichDocument bridge (``rich_to_docx_bytes``) behind the
-        one-time backup of a fidelity-flagged original. Everything else
-        (markup tabs, rich_converted, Save As to a different format) returns
-        False so the classic conversion writer runs.
+        Rich cases, each converting the *formatted* content rather than the
+        plain-text mirror that ``document.text`` holds in rich mode:
+
+        * ``.rtf`` saves straight through the TOM (no conversion, no loss).
+        * ``.docx`` (docx-rich tab) runs the RichDocument bridge
+          (``rich_to_docx_bytes``) behind a one-time backup of a
+          fidelity-flagged original.
+        * ``.md`` / ``.html`` reconstruct the RichDocument from the control's
+          RTF and render it with ``rich_to_markdown`` (headings, lists, bold,
+          italic, links as native Markdown; underline/color/etc. as QUILL's
+          hidden-codes spans) -- previously these fell through to the classic
+          writer, which serialized the flattened plain-text mirror and lost all
+          formatting.
+
+        Everything else (markup tabs, plain text) returns False so the classic
+        conversion writer runs.
         """
         if self._current_editor_mode() != "rich":
             return False
@@ -143,7 +153,38 @@ class RichModeMixin:
         if suffix == ".docx" and getattr(tab, "docx_rich", False):
             self._save_docx_rich_tab(tab, document, Path(target_path))
             return True
+        if suffix in {".md", ".markdown", ".html", ".htm", ".xhtml"}:
+            return self._save_rich_as_markup(document, Path(target_path), suffix, wrapper)
         return False
+
+    def _save_rich_as_markup(
+        self, document: object, target: Path, suffix: str, wrapper: object
+    ) -> bool:
+        """Save a rich tab to Markdown or HTML with its formatting intact.
+
+        Reconstructs the RichDocument from the control's RTF (the same bridge
+        the docx-rich save uses) and renders it -- so a Word document opened in
+        rich mode and Saved As .md/.html keeps its headings, lists, bold,
+        italic, and links instead of collapsing to the plain-text mirror.
+        """
+        from quill.core.storage import write_text_atomic
+        from quill.io.rtf_model import rich_to_markdown, rtf_to_rich
+        from quill.ui.richedit_rtf_surface import RichEditRtfError
+
+        try:
+            rtf = bytes(wrapper.get_rtf()).decode("utf-8", errors="replace")
+        except RichEditRtfError as error:
+            raise OSError(str(error)) from error
+        markdown = rich_to_markdown(rtf_to_rich(rtf))
+        if suffix in {".html", ".htm", ".xhtml"}:
+            from quill.io.export import markdown_to_html
+
+            content = markdown_to_html(markdown, target.stem)
+        else:
+            content = markdown
+        write_text_atomic(target, content)
+        document.mark_saved(target)
+        return True
 
     def _save_docx_rich_tab(self, tab: object, document: object, target: Path) -> None:
         """Materialize a docx-rich tab back to .docx through the bridge.
