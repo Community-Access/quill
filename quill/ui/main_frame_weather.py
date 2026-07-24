@@ -111,10 +111,17 @@ class WeatherMixin:
         # (start_weather_monitoring_if_enabled) is always safe, even when the
         # Monitoring area's menu items are hidden.
         self._weather_monitor_timer: Any = None
-        self._weather_monitor_state: Any = None
-        self._weather_monitor_location: Any = None
+        #: Every location currently being watched, and one MonitorState each
+        #: (keyed by location id) so alerts are tracked and announced per place.
+        self._weather_monitor_locations: list[Any] = []
+        self._weather_monitor_states: dict[str, Any] = {}
         self._weather_monitor_config: Any = None
         self._weather_monitor_paused = False
+        #: Per poll round: locations still in flight, and their baseline counts
+        #: (so the combined "monitoring on for N places" line speaks once).
+        self._weather_monitor_round_pending = 0
+        self._weather_monitor_round_active = False
+        self._weather_monitor_baseline_counts: dict[str, int] = {}
         self._weather_monitor_menu_item = None
         self._weather_monitor_pause_item = None
         if self._weather_area_enabled("monitoring"):
@@ -421,18 +428,23 @@ class WeatherMixin:
         data_dir = self._weather_data_dir()
         config = monitor.load_config(data_dir)
         store = loc_store.load_locations(data_dir)
-        location = store.find(config.location_id) or store.primary()
-        if location is None:
+        primary = store.primary()
+        watched_ids = config.watched_ids(fallback=primary.id if primary is not None else "")
+        locations = [loc for cid in watched_ids if (loc := store.find(cid)) is not None]
+        if not locations:
+            # Force a choice before monitoring can start: there is nothing to watch.
             self._announce("No weather location to monitor yet. Opening Add Location.")
             self.open_weather_add_location()
             return
 
-        self._weather_monitor_location = location
-        self._weather_monitor_state = monitor.MonitorState()
+        self._weather_monitor_locations = locations
+        self._weather_monitor_states = {loc.id: monitor.MonitorState() for loc in locations}
         self._weather_monitor_config = config
         self._weather_monitor_paused = False
+        self._weather_monitor_baseline_counts = {}
         config.enabled = True
-        config.location_id = location.id
+        config.location_ids = [loc.id for loc in locations]
+        config.location_id = locations[0].id
         monitor.save_config(data_dir, config)
 
         wx = self._wx
@@ -447,9 +459,14 @@ class WeatherMixin:
         timer.StartOnce(config.poll_seconds(False) * 1000)
         self._refresh_weather_monitor_menu_item()
         if announce:
-            # Instant feedback; the baseline poll speaks the full situation
-            # (how many alerts are active) a moment later when it returns.
-            self._announce(f"Turning on weather monitoring for {location.label}.")
+            # Instant feedback; the baseline polls speak the full situation
+            # (how many alerts are active, per place) a moment later.
+            if len(locations) == 1:
+                where = locations[0].label
+            else:
+                labels = [loc.label for loc in locations]
+                where = f"{len(labels)} places: " + monitor._join_places(labels)
+            self._announce(f"Turning on weather monitoring for {where}.")
         self._weather_monitor_poll()  # an immediate baseline poll
 
     def stop_weather_monitoring(self, *, announce: bool = True, persist: bool = True) -> None:
@@ -466,11 +483,11 @@ class WeatherMixin:
                 pass
         was_active = timer is not None
         self._weather_monitor_timer = None
-        self._weather_monitor_state = None
+        self._weather_monitor_states = {}
         self._weather_monitor_config = None
         self._weather_monitor_paused = False
-        location = getattr(self, "_weather_monitor_location", None)
-        self._weather_monitor_location = None
+        locations = getattr(self, "_weather_monitor_locations", [])
+        self._weather_monitor_locations = []
         if persist:
             try:
                 data_dir = self._weather_data_dir()
@@ -481,7 +498,12 @@ class WeatherMixin:
                 pass
         self._refresh_weather_monitor_menu_item()
         if announce and was_active:
-            where = f" for {location.label}" if location is not None else ""
+            if len(locations) == 1:
+                where = f" for {locations[0].label}"
+            elif locations:
+                where = f" for {len(locations)} places"
+            else:
+                where = ""
             self._announce(f"Weather monitoring off{where}.")
 
     def start_weather_monitoring_if_enabled(self) -> None:
@@ -509,61 +531,91 @@ class WeatherMixin:
         timer.StartOnce(max(1, config.poll_seconds(has_active_alerts)) * 1000)
 
     def _weather_monitor_poll(self) -> None:
-        location = getattr(self, "_weather_monitor_location", None)
-        if location is None or getattr(self, "_weather_monitor_paused", False):
+        locations = getattr(self, "_weather_monitor_locations", [])
+        if not locations or getattr(self, "_weather_monitor_paused", False):
             return
         from quill.core.weather import nws
 
-        def _work(**_kwargs: Any) -> object:
-            try:
-                return nws.active_alerts(
-                    location.latitude, location.longitude, safe_mode=self._safe_mode
-                )
-            except nws.WeatherError as exc:
-                return exc
+        # One round = one fetch per watched location. The round-pending counter
+        # lets the last poll to return arm the next tick exactly once (so N
+        # locations never spawn N overlapping timers).
+        self._weather_monitor_round_pending = len(locations)
+        self._weather_monitor_round_active = False
 
-        def _ok(_op: str, result: object) -> None:
-            self._wx.CallAfter(self._weather_monitor_poll_done, result)
+        def _make_work(loc: Any) -> Any:
+            def _work(**_kwargs: Any) -> object:
+                try:
+                    return nws.active_alerts(loc.latitude, loc.longitude, safe_mode=self._safe_mode)
+                except nws.WeatherError as exc:
+                    return exc
 
-        self._task_manager.submit("weather-monitor", _work, on_success=_ok, on_failure=None)
+            return _work
 
-    def _weather_monitor_poll_done(self, result: object) -> None:
+        for location in locations:
+            loc = location
+
+            def _ok(_op: str, result: object, loc: Any = loc) -> None:
+                self._wx.CallAfter(self._weather_monitor_poll_done, loc, result)
+
+            self._task_manager.submit(
+                "weather-monitor", _make_work(loc), on_success=_ok, on_failure=None
+            )
+
+    def _weather_monitor_poll_done(self, location: Any, result: object) -> None:
         from quill.core.weather import monitor
 
-        state = getattr(self, "_weather_monitor_state", None)
-        location = getattr(self, "_weather_monitor_location", None)
-        if state is None or location is None:
-            return  # monitoring was stopped while the poll was in flight
+        states = getattr(self, "_weather_monitor_states", {})
+        state = states.get(getattr(location, "id", None))
+        if state is None:
+            return  # monitoring was stopped/reconfigured while the poll was in flight
         if getattr(self, "_weather_monitor_paused", False):
-            return  # paused while the poll was in flight: stay quiet, do not re-arm
+            return  # paused mid-flight: stay quiet, do not re-arm
         try:
             if not isinstance(result, list):
                 return  # a transient fetch error (e.g. offline); try again next tick
             update = monitor.apply_poll(state, result)
-            # Persist what the live watch has now seen, so the OS-scheduled
-            # background check never re-toasts an alert this window already spoke.
-            monitor.save_notified_ids(self._weather_data_dir(), state.known_alert_ids)
+            # Persist the union of every watched place's seen ids, so the
+            # OS-scheduled background check never re-toasts an alert this window
+            # already spoke (alert ids are globally unique across locations).
+            seen: set[str] = set()
+            for st in states.values():
+                seen |= st.known_alert_ids
+            monitor.save_notified_ids(self._weather_data_dir(), seen)
+            if result:
+                self._weather_monitor_round_active = True
             if update.is_baseline:
-                # The first poll returned: speak the current situation once (how
-                # many alerts are active), then stay quiet until something changes.
-                config = getattr(self, "_weather_monitor_config", None)
-                if config is not None:
-                    self._announce(monitor.start_summary(location.label, result, config))
-                return
-            if update.new_alerts:
-                self._play_weather_alert_sound()
-                top = update.new_alerts[0]
-                self._show_weather_toast(
-                    f"Weather alert: {top.event}",
-                    top.headline or f"A {top.event} is in effect for {location.label}.",
-                )
-            message = monitor.update_announcement(update, location.label)
-            if message:
-                self._announce(message, force=monitor.should_force_speech(update))
+                # Collect each place's baseline count; the combined "monitoring on
+                # for N places" line is spoken once, when the last baseline lands.
+                self._weather_monitor_baseline_counts[location.label] = len(result)
+            else:
+                if update.new_alerts:
+                    self._play_weather_alert_sound()
+                    top = update.new_alerts[0]
+                    self._show_weather_toast(
+                        f"Weather alert: {top.event}",
+                        top.headline or f"A {top.event} is in effect for {location.label}.",
+                    )
+                message = monitor.update_announcement(update, location.label)
+                if message:
+                    self._announce(message, force=monitor.should_force_speech(update))
         finally:
-            # Always arm the next poll -- even after a transient error -- so the
-            # watch never silently stalls. Cadence follows whether alerts are up.
-            self._schedule_next_monitor_poll(bool(state.known_alert_ids))
+            self._weather_monitor_round_pending -= 1
+            if self._weather_monitor_round_pending <= 0:
+                self._finish_weather_monitor_round()
+
+    def _finish_weather_monitor_round(self) -> None:
+        """Called once per poll round after every location has returned: speak the
+        one-time combined baseline summary (if this was the start round) and arm
+        the next tick with a single timer."""
+        from quill.core.weather import monitor
+
+        config = getattr(self, "_weather_monitor_config", None)
+        counts = self._weather_monitor_baseline_counts
+        if counts and config is not None:
+            # Every place baselined this round -> the start round. Speak it once.
+            self._announce(monitor.start_summary_multi(dict(counts), config))
+            self._weather_monitor_baseline_counts = {}
+        self._schedule_next_monitor_poll(self._weather_monitor_round_active)
 
     # -- test alert (preview the whole experience) --------------------------
 

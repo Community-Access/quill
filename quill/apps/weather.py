@@ -207,8 +207,13 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
 
     def _refresh_statusbar(self) -> None:
         active = self._weather_monitoring_active()
-        location = getattr(self, "_weather_monitor_location", None)
-        where = f" for {location.label}" if location is not None else ""
+        locations = getattr(self, "_weather_monitor_locations", [])
+        if len(locations) == 1:
+            where = f" for {locations[0].label}"
+        elif locations:
+            where = f" for {len(locations)} places"
+        else:
+            where = ""
         text = f"Monitoring {'on' if active else 'off'}{where}."
         self._set_status(text)
         status_ctrl = getattr(self, "_status_text", None)
