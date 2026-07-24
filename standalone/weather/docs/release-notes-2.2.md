@@ -62,8 +62,20 @@ The Weather Center reads, as plain arrow-navigable, copyable text:
 - an **extended daily outlook** of up to 16 days.
 
 Every value is written for speech -- "the wind is blowing from the
-west-northwest at 5 miles per hour", not "WNW 5 mph" -- and checking the weather
-in a far-off city also tells you the local time there.
+west-northwest at 5 miles per hour", not "WNW 5 mph".
+
+## Two clocks, so a far-off forecast makes sense
+
+Check the weather in another city and the report now grounds you in *time* as
+well as place. It reads the current local time **there**, the current local
+time **where you are**, and **when the reading was taken** -- "Right now it is
+Thursday, April 27, 9:51 AM in Tucson, Arizona, and 6:51 AM where you are. This
+reading was checked just now." When you and the place you are checking share a
+time zone, it says so once ("the same time zone") instead of repeating an
+identical clock, and an older reading names the exact minute it was fetched in
+*your* time rather than a vague "a while ago". No mental math, no wondering
+whether an early-morning forecast is stale -- the *when* is spoken as plainly
+as the *what*.
 
 ## Made to fit you
 

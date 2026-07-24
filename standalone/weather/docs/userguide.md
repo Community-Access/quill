@@ -194,9 +194,14 @@ Weather Now (and the Weather Center) show three more things:
 - **The moon** -- current conditions and every day of the outlook include the
   moon's phase, how full it is (percent illuminated), and that day's moonrise and
   moonset -- all computed on your own machine, no extra internet lookup.
-- **Local time at the location** -- the report leads with the local day and time
-  in the place you searched, so checking the weather elsewhere also tells you what
-  time it is there.
+- **Two clocks and a check time** -- the report leads with a plain-spoken time
+  summary: the current local day and time in the place you searched, the current
+  local time **where you are**, and **when the reading was taken** ("checked just
+  now", or the exact minute in your own time for an older reading). For example:
+  "Right now it is Thursday, April 27, 9:51 AM in Tucson, Arizona, and 6:51 AM
+  where you are. This reading was checked just now." When you and the place you
+  searched are in the same time zone, it says so once instead of repeating the
+  clock. Turn the local-time line off in Settings if you prefer.
 
 ### Weather monitoring (Weather Guardian)
 

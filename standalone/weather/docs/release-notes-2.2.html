@@ -172,28 +172,28 @@
   </style>
 </head>
 <body>
-<h1 id="quill-weather-2.2-release-notes">Quill Weather 2.2 – Release
+<h1 id="quill-weather-22----release-notes">Quill Weather 2.2 -- Release
 Notes</h1>
 <p>Quill Weather is a small app with a big job: to watch the sky for you
-and speak up the moment it matters. It began life inside Quill Radio’s
-Weather menu, and 2.2.0 is the moment it stands on its own – a program
+and speak up the moment it matters. It began life inside Quill Radio's
+Weather menu, and 2.2.0 is the moment it stands on its own -- a program
 you can install, update, and leave running by itself, quietly on
 guard.</p>
-<p>It shares Quill Radio’s version number on purpose. The two grew from
+<p>It shares Quill Radio's version number on purpose. The two grew from
 one weather effort and run the very same code, so 2.2.0 means the same
 weather in both. But they are separate apps now, each with its own
-installer, its own tray icon, and its own update feed – install one,
+installer, its own tray icon, and its own update feed -- install one,
 both, or neither.</p>
 <h2 id="the-idea-a-guardian-not-a-screen">The idea: a guardian, not a
 screen</h2>
 <p>Most weather apps are something you open, glance at, and close. Quill
-Weather can be that – a clean, fully spoken <strong>Weather
-Center</strong> you arrow through – but its heart is the part that keeps
-working after you look away.</p>
+Weather can be that -- a clean, fully spoken <strong>Weather
+Center</strong> you arrow through -- but its heart is the part that
+keeps working after you look away.</p>
 <p>Turn on <strong>Weather Monitoring</strong> and it keeps a steady eye
-on your location’s official National Weather Service watches, warnings,
+on your location's official National Weather Service watches, warnings,
 and advisories, and <strong>speaks each new one the instant it is
-issued</strong> – interrupting whatever is being read for the serious
+issued</strong> -- interrupting whatever is being read for the serious
 ones, a tornado or a flash flood, and telling you when the all-clear
 comes. It watches while the window is tucked in the system tray, resumes
 on its own the next time you launch, and shows a tray notification for
@@ -211,51 +211,64 @@ is on guard from the moment you sign in, with no window ever
 opening.</li>
 <li><strong>Watch with nothing running at all.</strong> Turn on the
 background check and Windows itself wakes a brief look at your chosen
-interval, finds any new warning, and raises a toast – no Quill Weather
+interval, finds any new warning, and raises a toast -- no Quill Weather
 process needed in between.</li>
 </ul>
-<h2 id="a-warning-you-cannot-miss-your-way">A warning you cannot miss –
-your way</h2>
+<h2 id="a-warning-you-cannot-miss----your-way">A warning you cannot miss
+-- your way</h2>
 <p>Every new alert plays an attention <strong>sounder</strong>. In
 <strong>Settings</strong> you can silence it entirely (the alert is
 still spoken and shown), swap in <strong>your own sound file</strong>
 with a <strong>Play</strong> button to hear it first, and choose
 <strong>how many times it repeats</strong>, from once to ten. And so a
 real warning never catches a setting wrong, <strong>Test Alert</strong>
-rehearses the whole thing on demand – the words, the sound, the tray
-toast, and the alert window – clearly marked as a test.</p>
+rehearses the whole thing on demand -- the words, the sound, the tray
+toast, and the alert window -- clearly marked as a test.</p>
 <h2 id="the-forecast-spoken-in-full">The forecast, spoken in full</h2>
 <p>The Weather Center reads, as plain arrow-navigable, copyable
 text:</p>
 <ul>
 <li>any active <strong>watches, warnings, and advisories</strong>, with
 full official instructions;</li>
-<li>a warm paragraph of <strong>current conditions</strong> –
+<li>a warm paragraph of <strong>current conditions</strong> --
 temperature, feels-like, sky, humidity, dew point, wind and gusts,
 pressure, visibility, cloud cover, the ultraviolet index, sunrise and
 sunset, the <strong>moon</strong> (phase, how full it is, moonrise and
-moonset – worked out on your own machine), and air quality;</li>
+moonset -- worked out on your own machine), and air quality;</li>
 <li>an <strong>hour-by-hour forecast</strong>;</li>
 <li>the <strong>National Weather Service forecast</strong>, period by
 period; and</li>
 <li>an <strong>extended daily outlook</strong> of up to 16 days.</li>
 </ul>
-<p>Every value is written for speech – “the wind is blowing from the
-west-northwest at 5 miles per hour”, not “WNW 5 mph” – and checking the
-weather in a far-off city also tells you the local time there.</p>
+<p>Every value is written for speech -- "the wind is blowing from the
+west-northwest at 5 miles per hour", not "WNW 5 mph".</p>
+<h2 id="two-clocks-so-a-far-off-forecast-makes-sense">Two clocks, so a
+far-off forecast makes sense</h2>
+<p>Check the weather in another city and the report now grounds you in
+<em>time</em> as well as place. It reads the current local time
+<strong>there</strong>, the current local time <strong>where you
+are</strong>, and <strong>when the reading was taken</strong> -- "Right
+now it is Thursday, April 27, 9:51 AM in Tucson, Arizona, and 6:51 AM
+where you are. This reading was checked just now." When you and the
+place you are checking share a time zone, it says so once ("the same
+time zone") instead of repeating an identical clock, and an older
+reading names the exact minute it was fetched in <em>your</em> time
+rather than a vague "a while ago". No mental math, no wondering whether
+an early-morning forecast is stale -- the <em>when</em> is spoken as
+plainly as the <em>what</em>.</p>
 <h2 id="made-to-fit-you">Made to fit you</h2>
-<p><strong>Options &gt; Customize Features…</strong> turns whole areas
-of the app on or off – Alert Monitoring, NOAA Weather Radio – and the
+<p><strong>Options &gt; Customize Features...</strong> turns whole areas
+of the app on or off -- Alert Monitoring, NOAA Weather Radio -- and the
 ones you switch off simply disappear from the menus, exactly the way
 QUILL and Quill Radio let you tailor themselves. And the apps stay
 within reach of one another: <strong>Open Quill Radio</strong> and
 <strong>Open QUILL</strong> sit in the File menu and the tray, each
 opening in its own window.</p>
-<h2 id="not-a-fork-a-guarantee">Not a fork – a guarantee</h2>
+<h2 id="not-a-fork----a-guarantee">Not a fork -- a guarantee</h2>
 <p>Quill Weather runs the exact same weather feature code as QUILL and
 Quill Radio, from the same upstream <code>quill</code> package.
 Improvements land once, upstream, and reach all three together. This app
-is only the wrapper, the installer, the icon, and these docs – so
+is only the wrapper, the installer, the icon, and these docs -- so
 choosing Quill Weather never means choosing an older or lesser version
 of the weather.</p>
 <h2 id="known-notes">Known notes</h2>

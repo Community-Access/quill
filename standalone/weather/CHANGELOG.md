@@ -26,7 +26,9 @@ installed, updated, and left running on its own.
 - **A full Weather Center.** Current conditions, the NWS forecast, an hourly
   forecast, an extended daily outlook (up to 16 days), air quality, sunrise and
   sunset, a locally-computed moon almanac (phase, illumination, moonrise,
-  moonset), and the current local time at the searched location -- all as
+  moonset), and a two-clock time summary -- the current local time at the
+  searched location, the current local time where you are, and when the reading
+  was taken (collapsing to one clock when both share a time zone) -- all as
   arrow-navigable, copyable, fully spoken text.
 - **Your local NOAA Weather Radio.** Find the transmitter covering your saved
   location (and play it, when Quill Radio is installed).
