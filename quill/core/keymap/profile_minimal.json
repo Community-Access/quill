@@ -29,7 +29,7 @@
     "edit.find_all_matches": "Ctrl+Shift+F3",
     "edit.replace": "Ctrl+H",
     "edit.replace_all": "Ctrl+Shift+H",
-    "edit.insert_link": "Ctrl+K",
+    "edit.insert_link": "Ctrl+Alt+K",
     "help.context_help": "Ctrl+Shift+Grave, Shift+H",
     "help.key_cheatsheet": "Alt+Shift+/",
     "help.why_unavailable": "Alt+F1",

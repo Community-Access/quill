@@ -175,7 +175,7 @@ def _seed_all_stores() -> None:
     # exercising the round-trip through disk, not the carry-over rule.
     # The chord must not collide with another command's default binding
     # or the conflict dropper will silently revert it to default.
-    save_keymap({"format.bold": "Ctrl+Alt+B"})
+    save_keymap({"format.bold": "Ctrl+Alt+Shift+B"})
     save_snippet_library(
         SnippetLibrary(
             version=1,
@@ -269,7 +269,7 @@ def test_backup_round_trip_restores_every_store(tmp_path) -> None:
     outcome = apply_import(package, section_ids, Settings(), _features())
     assert len(outcome.applied) == len(section_ids)
 
-    assert load_keymap().get("format.bold") == "Ctrl+Alt+B"
+    assert load_keymap().get("format.bold") == "Ctrl+Alt+Shift+B"
     assert any(s.trigger == ";hi" for s in load_snippet_library().snippets)
     assert "fixup" in MacroManager.load().macros
     assert any(p.name == "Drafts" for p in _watch_store().profiles())
@@ -283,7 +283,7 @@ def test_profile_merge_is_additive_for_keymap() -> None:
 
     # Use real command ids — the carry-over load path drops unknown ones
     # (#292), so the round-trip only works for valid saved bindings.
-    save_keymap({"format.bold": "Ctrl+Alt+B"})
+    save_keymap({"format.bold": "Ctrl+Alt+Shift+B"})
     offers = gather_export_offers(Settings(), _features())
     document = build_export_document(
         kind=KIND_PROFILE,
@@ -294,12 +294,12 @@ def test_profile_merge_is_additive_for_keymap() -> None:
     )
 
     # Recipient already has a different custom binding.
-    save_keymap({"format.italic": "Ctrl+Alt+I"})
+    save_keymap({"format.italic": "Ctrl+Alt+Shift+J"})
     package = read_package(document)
     apply_import(package, [SECTION_KEYMAP], Settings(), _features())
     merged = load_keymap()
-    assert merged.get("format.bold") == "Ctrl+Alt+B"  # imported
-    assert merged.get("format.italic") == "Ctrl+Alt+I"  # preserved
+    assert merged.get("format.bold") == "Ctrl+Alt+Shift+B"  # imported
+    assert merged.get("format.italic") == "Ctrl+Alt+Shift+J"  # preserved
 
 
 def test_feature_import_announces_dependency_enable() -> None:

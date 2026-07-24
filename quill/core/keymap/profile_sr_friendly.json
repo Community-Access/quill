@@ -63,7 +63,7 @@
     "tools.replace_in_files": "Ctrl+Shift+R",
     "tools.sticky_note_capture": "Ctrl+Shift+Grave, Shift+N",
     "edit.replace_all": "Ctrl+Shift+H",
-    "edit.insert_link": "Ctrl+K",
+    "edit.insert_link": "Ctrl+Alt+K",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",
     "edit.select_chunk": "Ctrl+Space",
