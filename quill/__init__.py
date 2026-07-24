@@ -23,7 +23,7 @@ del _pkg_dir, _shadowed
 
 # Version is defined first so that the build_info module (which imports
 # __version__ as a fallback) can do so without a circular import.
-__version__ = "0.9.0"
+__version__ = "1.0.0"
 
 # Re-export the new modules so callers can `from quill import branding`
 # and `from quill import build_info` without touching the package layout.
