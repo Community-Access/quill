@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import wx
 
+from quill.ui.dialog_contract import apply_modal_ids
+
 
 def _name(ctrl: wx.Control, name: str) -> None:
     ctrl.SetName(name)
@@ -52,6 +54,12 @@ class CommandPalette(wx.Dialog):
         self.filter.Bind(wx.EVT_TEXT_ENTER, lambda _e: self._activate())
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._activate())
         self.Bind(wx.EVT_CHAR_HOOK, self._on_key)
+
+        # No visible OK/Cancel buttons: Enter activates the selected command
+        # (EndModal ID_OK) and Escape closes (EndModal ID_CANCEL) via the char
+        # hook. Wire the shared contract with no backing-button ids so the
+        # button-contract audit has nothing unbacked to flag.
+        apply_modal_ids(self)
 
     def _populate(self, text: str) -> None:
         text = text.lower().strip()

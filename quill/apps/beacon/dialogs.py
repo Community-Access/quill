@@ -11,7 +11,7 @@ from __future__ import annotations
 import wx
 
 from quill.apps.beacon.model import ALL_TYPES
-from quill.ui.dialog_contract import show_message_box
+from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -76,6 +76,7 @@ class QuickCaptureDialog(wx.Dialog):
 
         self.save.Bind(wx.EVT_BUTTON, lambda _e: self._done(open_it=False))
         self.save_open.Bind(wx.EVT_BUTTON, lambda _e: self._done(open_it=True))
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _row(self, sizer, label, value, *, style=0, size=None) -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
@@ -157,6 +158,7 @@ class BuildSearchDialog(wx.Dialog):
 
         ok.Bind(wx.EVT_BUTTON, lambda _e: self._build(save_smart=False))
         save_smart.Bind(wx.EVT_BUTTON, lambda _e: self._build(save_smart=True))
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 
     def _row(self, sizer, label, value) -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
@@ -255,6 +257,7 @@ class CollectionEditorDialog(wx.Dialog):
         sizer.Fit(self)
         self.name.SetFocus()
         self.FindWindowByName("Save").Bind(wx.EVT_BUTTON, self._done)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _done(self, _e) -> None:
         name = self.name.GetValue().strip()
@@ -379,6 +382,7 @@ class PublishDialog(wx.Dialog):
         self.unpublish_btn.Bind(wx.EVT_BUTTON, self._on_unpublish)
         self.copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
         self._refresh_state()
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _current_manifest(self) -> dict | None:
         for item in self._publisher.list_published():
@@ -515,6 +519,7 @@ class TrailEditorDialog(wx.Dialog):
         down_btn.Bind(wx.EVT_BUTTON, lambda _e: self._move(1))
         rm_btn.Bind(wx.EVT_BUTTON, self._on_remove_step)
         save.Bind(wx.EVT_BUTTON, self._done)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _row(self, sizer, label, value, *, style=0, size=None) -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
@@ -634,6 +639,7 @@ class RepairReviewDialog(wx.Dialog):
         accept.Bind(wx.EVT_BUTTON, lambda _e: self._choose(self.ACCEPT_REPAIR))
         keep.Bind(wx.EVT_BUTTON, lambda _e: self._choose(self.KEEP_OLD))
         broken.Bind(wx.EVT_BUTTON, lambda _e: self._choose(self.MARK_BROKEN))
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _format(self, s: dict) -> str:
         lines = [
@@ -695,6 +701,7 @@ class RadioProgramDialog(wx.Dialog):
         sizer.Fit(self)
         self.station.SetFocus()
         save.Bind(wx.EVT_BUTTON, self._done)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _row(self, sizer, label, value) -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
@@ -777,6 +784,7 @@ class StatusCenterDialog(wx.Dialog):
         sizer.Fit(self)
         refresh.Bind(wx.EVT_BUTTON, lambda _e: self._refresh())
         self._refresh()
+        apply_modal_ids(self, escape_id=wx.ID_CLOSE)
 
     def _refresh(self) -> None:
         try:
@@ -856,6 +864,7 @@ class PreferencesDialog(wx.Dialog):
         self.sections.SetFocus()
         self.sections.Bind(wx.EVT_LISTBOX, self._on_section)
         apply_btn.Bind(wx.EVT_BUTTON, self._on_apply)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     # -- panels ---------------------------------------------------------------
 
@@ -1238,6 +1247,7 @@ class RoutingRuleDialog(wx.Dialog):
         sizer.Fit(self)
         self.keyword.SetFocus()
         ok.Bind(wx.EVT_BUTTON, self._on_ok)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _on_ok(self, _e) -> None:
         keyword = self.keyword.GetValue().strip()
@@ -1319,6 +1329,7 @@ class A11ySettingsDialog(wx.Dialog):
         sizer.Fit(self)
         self.verbosity.SetFocus()
         save.Bind(wx.EVT_BUTTON, self._on_apply)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _on_apply(self, _e) -> None:
         self._result = {
@@ -1370,6 +1381,7 @@ class SmartCollectionsDialog(wx.Dialog):
         self.delete_btn.Bind(wx.EVT_BUTTON, self._on_delete)
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_edit(None))
         self._refresh()
+        apply_modal_ids(self, escape_id=wx.ID_CLOSE)
 
     def _refresh(self) -> None:
         self.list.Clear()
@@ -1478,6 +1490,7 @@ class SmartCollectionEditorDialog(wx.Dialog):
         sizer.Fit(self)
         self.name.SetFocus()
         ok.Bind(wx.EVT_BUTTON, self._on_save)
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 
     def _on_save(self, _e) -> None:
         name = self.name.GetValue().strip()
@@ -1570,6 +1583,7 @@ class TrailStepDialog(wx.Dialog):
         self.list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_list_select())
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_open_current(None))
         self._refresh()
+        apply_modal_ids(self, escape_id=wx.ID_CLOSE)
 
     # -- helpers -------------------------------------------------------------
 
@@ -1710,6 +1724,7 @@ class AttachmentsDialog(wx.Dialog):
         self.remove_btn.Bind(wx.EVT_BUTTON, self._on_remove)
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_view(None))
         self._refresh()
+        apply_modal_ids(self, escape_id=wx.ID_CLOSE)
 
     def _refresh(self) -> None:
         self.list.Clear()
@@ -1878,6 +1893,7 @@ class AttachmentAddDialog(wx.Dialog):
             r.Bind(wx.EVT_RADIOBUTTON, lambda _e: self._update_visibility())
         self.browse.Bind(wx.EVT_BUTTON, self._on_browse)
         ok.Bind(wx.EVT_BUTTON, self._on_ok)
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 
     def _update_visibility(self) -> None:
         show_file = self.kind_file.GetValue()
@@ -2040,6 +2056,7 @@ class SyncSettingsDialog(wx.Dialog):
         self.setup_btn.Bind(wx.EVT_BUTTON, self._on_setup)
         self.pair_btn.Bind(wx.EVT_BUTTON, self._on_pair)
         self.sync_now.Bind(wx.EVT_BUTTON, self._on_sync_now)
+        apply_modal_ids(self, escape_id=wx.ID_CLOSE)
 
     def _row(self, parent, sizer, label, value, *, style=0) -> wx.TextCtrl:
         lbl = wx.StaticText(parent, label=label)
@@ -2329,6 +2346,7 @@ class SyncHistoryDialog(wx.Dialog):
         self.r_local.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("local"))
         self.r_remote.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("remote"))
         self.r_merged.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("merged"))
+        apply_modal_ids(self, escape_id=wx.ID_CLOSE)
 
     def _collect_conflicts(self) -> list[dict]:
         return self.ctrl.list_conflicts(resolved=False)
@@ -2452,6 +2470,7 @@ class PlayerSettingsDialog(wx.Dialog):
         sizer.Fit(self)
 
         self._save_btn.Bind(wx.EVT_BUTTON, self._on_save)
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
     def _row(self, sizer, label, value) -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
