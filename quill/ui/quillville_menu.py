@@ -21,6 +21,11 @@ from quill.core.app_launcher import APP_NAMES
 #: skipped via ``exclude``).
 QUILLVILLE_APP_ORDER: tuple[str, ...] = ("quill", "radio", "weather", "cast", "studio")
 
+#: Apps that have shipped a public release and may be offered as "Open ..."
+#: targets. Quill Cast and Audio Studio are built but not released yet, so they
+#: are not advertised in the menu -- add them here when they ship.
+RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather"})
+
 
 def build_quillville_menu(
     wx: Any,
@@ -40,7 +45,7 @@ def build_quillville_menu(
     """
     menu = wx.Menu()
     for key in QUILLVILLE_APP_ORDER:
-        if key == exclude:
+        if key == exclude or key not in RELEASED_APPS:
             continue
         item_id = wx.NewIdRef()
         menu.Append(item_id, f"Open {APP_NAMES[key]}")
