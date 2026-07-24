@@ -9969,7 +9969,13 @@ class MainFrame(
     def _navigate_heading(self, reverse: bool) -> None:
         markup_kind = self._effective_markup_kind()
         if markup_kind not in {"markdown", "html"}:
-            self._set_status("Heading navigation is available in Markdown or HTML documents")
+            # A rich-mode Word document has no "#" markers -- its headings are the
+            # size/bold ladder. Walk them through the TOM instead (H / Shift+H).
+            if self._navigate_heading_rich_word(reverse):
+                return
+            self._set_status(
+                "Heading navigation is available in Markdown, HTML, or a Word document"
+            )
             return
         cursor = self.editor.GetInsertionPoint()
         if reverse:
@@ -9998,6 +10004,44 @@ class MainFrame(
         else:
             prefix = f"Moved to {label}"
         self._announce_navigation_move(prefix, target)
+
+    def _navigate_heading_rich_word(self, reverse: bool) -> bool:
+        """H / Shift+H inside a rich-mode Word document. Headings there are the
+        presentational size/bold ladder (no ``#``), so the target is found by
+        reading the ladder back through the RichEdit TOM. Returns True when this
+        surface handled the request (so the caller does not fall through to the
+        Markdown/HTML message); False when it is not a rich surface."""
+        richedit = self._active_richedit()
+        if richedit is None or not hasattr(richedit, "next_heading"):
+            return False
+        try:
+            caret = self.editor.GetInsertionPoint()
+        except Exception:  # noqa: BLE001 - a non-standard surface; let the caller message
+            return False
+        result = richedit.next_heading(caret, reverse=reverse)
+        if result is None:
+            self._set_status("No previous heading" if reverse else "No next heading")
+            return True
+        target, level = result
+        self._record_location_before_jump()
+        self.editor.SetInsertionPoint(target)
+        self.editor.SetSelection(target, target)
+        self.editor.SetFocus()
+        self._location_ring.record(target)
+        title = self._heading_title_at(target) or "untitled"
+        label = "previous heading" if reverse else "next heading"
+        self._announce_navigation_move(f"Moved to {label}, H{level}: {title}", target)
+        return True
+
+    def _heading_title_at(self, offset: int) -> str:
+        """The text of the line containing ``offset`` in the editor, trimmed."""
+        try:
+            text = self.editor.GetValue()
+        except Exception:  # noqa: BLE001
+            return ""
+        start = text.rfind("\n", 0, offset) + 1
+        end = text.find("\n", offset)
+        return text[start : end if end != -1 else len(text)].strip()
 
     def navigate_next_block(self) -> None:
         self._navigate_block(reverse=False)

@@ -267,3 +267,31 @@ def test_retired_surface_overrides_are_dropped_on_load() -> None:
     seen = pop_retired_settings_keys()
     assert "editor_control_kind" in seen and "editor_hide_border" in seen
     assert pop_retired_settings_keys() == []  # consume-once
+
+
+def test_heading_level_for_font_reads_the_ladder() -> None:
+    from quill.ui.richedit_rtf_surface import heading_level_for_font
+
+    # Heading 1-4 have distinct point sizes and must be bold.
+    assert heading_level_for_font(20.0, True) == 1
+    assert heading_level_for_font(16.0, True) == 2
+    assert heading_level_for_font(14.0, True) == 3
+    assert heading_level_for_font(12.0, True) == 4
+    # Levels 5/6 share the 11pt body size -> not distinguishable, not a heading.
+    assert heading_level_for_font(11.0, True) is None
+    # Not bold, or a non-ladder size -> body text.
+    assert heading_level_for_font(20.0, False) is None
+    assert heading_level_for_font(13.0, True) is None
+    # Tolerant of tiny float drift from the control.
+    assert heading_level_for_font(20.1, True) == 1
+
+
+def test_next_heading_is_safe_without_a_handle() -> None:
+    # Off-Windows / no native handle: heading navigation degrades to None,
+    # never raising, so H / Shift+H just reports "no heading".
+    from quill.ui.richedit_rtf_surface import QuillRichEdit
+
+    surface = QuillRichEdit.__new__(QuillRichEdit)
+    surface.rtf_available = lambda: False  # type: ignore[method-assign]
+    assert surface.next_heading(0, reverse=False) is None
+    assert surface.next_heading(50, reverse=True) is None

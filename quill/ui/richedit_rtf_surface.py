@@ -67,12 +67,32 @@ _TOM_ALIGNMENT = {"left": 0, "center": 1, "right": 2, "justify": 3}
 _TOM_ALIGNMENT_NAMES = {value: name for name, value in _TOM_ALIGNMENT.items()}
 # tomParagraph unit for expanding the selection to whole paragraphs (tom.h).
 _TOM_UNIT_PARAGRAPH = 4
+#: Upper bound on paragraphs walked in one H / Shift+H step, so a pathological
+#: document can never make heading navigation loop unbounded.
+_MAX_HEADING_SCAN_PARAGRAPHS = 100000
 
 #: Rich-mode heading presentation: point size + bold per level, chosen to track
 #: Word's Heading 1-6 ladder closely enough that a saved RTF reads as headings
 #: in Word while staying legible in the editor. Body text is 11 pt.
 HEADING_POINT_SIZES: dict[int, float] = {1: 20.0, 2: 16.0, 3: 14.0, 4: 12.0, 5: 11.0, 6: 11.0}
 BODY_POINT_SIZE = 11.0
+
+
+def heading_level_for_font(size: float, bold: bool) -> int | None:
+    """The rich-mode heading level a paragraph's font implies, or ``None``.
+
+    A heading is bold and matches one of the distinct heading point sizes.
+    Levels 1-4 have their own sizes (20/16/14/12); levels 5 and 6 share the
+    11-point body size, so they cannot be told apart from body text by the
+    ladder and are not reported as headings (matching Describe Formatting).
+    """
+    if not bold:
+        return None
+    for level, points in HEADING_POINT_SIZES.items():
+        if level <= 4 and abs(float(size) - points) < 0.25:
+            return level
+    return None
+
 
 #: Named colors accepted by set_color/set_highlight, mirroring the hidden-codes
 #: vocabulary (quill/io/docx_writer.py keeps the same table for export parity).
@@ -422,17 +442,9 @@ class QuillRichEdit:
                 parts.append(name)
             size = float(getattr(font, "Size", 0) or 0)
             if size > 0:
-                point = f"{size:g} point"
-                parts.append(point)
-                heading = next(
-                    (
-                        lvl
-                        for lvl, pts in HEADING_POINT_SIZES.items()
-                        if lvl <= 4 and abs(size - pts) < 0.25
-                    ),
-                    None,
-                )
-                if heading is not None and int(getattr(font, "Bold", 0)) != 0 and heading != 5:
+                parts.append(f"{size:g} point")
+                heading = heading_level_for_font(size, int(getattr(font, "Bold", 0)) != 0)
+                if heading is not None:
                     parts.append(f"heading {heading}")
             if int(getattr(font, "Bold", 0)) != 0:
                 parts.append("bold")
@@ -454,6 +466,41 @@ class QuillRichEdit:
             raise
         except Exception as exc:  # noqa: BLE001
             raise RichEditRtfError(f"Could not read caret formatting: {exc}") from exc
+
+    def next_heading(self, from_offset: int, *, reverse: bool) -> tuple[int, int] | None:
+        """The ``(start_offset, level)`` of the next/previous heading paragraph
+        relative to ``from_offset``, or ``None`` when there is none.
+
+        Reads the size/bold ladder back through the TOM, paragraph by paragraph
+        in the requested direction, so H / Shift+H can walk a real Word document's
+        headings even though rich-mode headings are presentational (no ``#``
+        markers). Best-effort: returns ``None`` off-Windows or on any TOM error,
+        never raises. Offsets match wx GetInsertionPoint (see selection_diagnostic).
+        """
+        if not self.rtf_available():
+            return None
+        try:
+            document = _get_text_document(self.hwnd())
+            probe = document.Range(int(from_offset), int(from_offset))
+            step = -1 if reverse else 1
+            for _ in range(_MAX_HEADING_SCAN_PARAGRAPHS):
+                if int(probe.Move(_TOM_UNIT_PARAGRAPH, step)) == 0:
+                    return None  # reached the document edge
+                probe.StartOf(_TOM_UNIT_PARAGRAPH, 0)  # collapse to the paragraph start
+                start = int(probe.Start)
+                # Skip a landing that is not strictly on the wanted side (e.g. a
+                # reverse move lands on the current paragraph's own start).
+                if (reverse and start >= from_offset) or (not reverse and start <= from_offset):
+                    continue
+                font = probe.Font
+                level = heading_level_for_font(
+                    float(getattr(font, "Size", 0) or 0), int(getattr(font, "Bold", 0)) != 0
+                )
+                if level is not None:
+                    return (start, level)
+            return None
+        except Exception:  # noqa: BLE001 - navigation is best-effort; never crash a keypress
+            return None
 
     # -- reporting ---------------------------------------------------------- #
 
