@@ -180,3 +180,60 @@ def test_cadence_phrase_reflects_mode() -> None:
     assert "while an alert is active" in on.cadence_phrase()
     off = monitor.MonitorConfig(interval_minutes=10, fast_when_active=False).normalized()
     assert "while an alert is active" not in off.cadence_phrase()
+
+
+# -- multi-location watch ------------------------------------------------------
+
+
+def test_watched_ids_prefers_list_then_legacy_then_fallback() -> None:
+    assert monitor.MonitorConfig(location_ids=["a", "b"]).watched_ids() == ["a", "b"]
+    assert monitor.MonitorConfig(location_id="solo").watched_ids() == ["solo"]
+    assert monitor.MonitorConfig().watched_ids(fallback="primary") == ["primary"]
+    assert monitor.MonitorConfig().watched_ids() == []
+
+
+def test_watched_ids_dedupes_order_preserving() -> None:
+    cfg = monitor.MonitorConfig(location_ids=["a", "b", "a"], location_id="b")
+    assert cfg.watched_ids(fallback="a") == ["a", "b"]
+
+
+def test_location_ids_round_trip_and_normalize(tmp_path) -> None:
+    cfg = monitor.MonitorConfig(enabled=True, location_ids=["home", "work", "home", ""])
+    monitor.save_config(tmp_path, cfg)  # normalizes on save
+    loaded = monitor.load_config(tmp_path)
+    assert loaded.location_ids == ["home", "work"]
+    assert loaded.location_id == "home"  # legacy field kept in sync
+
+
+def test_legacy_single_location_migrates_to_list(tmp_path) -> None:
+    from quill.core.storage import write_json_atomic
+
+    # A pre-multi-location file: only the old single field.
+    write_json_atomic(
+        tmp_path / "weather_monitor.json",
+        {"enabled": True, "location_id": "oldtown", "interval_minutes": 10},
+    )
+    loaded = monitor.load_config(tmp_path)
+    assert loaded.location_ids == ["oldtown"]
+
+
+def test_start_summary_multi_names_places_and_alerting() -> None:
+    cfg = monitor.MonitorConfig(interval_minutes=10, fast_interval_seconds=60).normalized()
+    all_clear = monitor.start_summary_multi({"Tucson": 0, "Boston": 0, "Reno": 0}, cfg)
+    assert "3 places" in all_clear and "All clear" in all_clear
+    assert "Tucson, Boston, and Reno" in all_clear
+
+    some = monitor.start_summary_multi({"Tucson": 0, "Boston": 2}, cfg)
+    assert "2 active alerts" in some and "Boston" in some
+
+
+def test_start_summary_multi_single_place_reads_naturally() -> None:
+    cfg = monitor.MonitorConfig().normalized()
+    one = monitor.start_summary_multi({"Tucson": 0}, cfg)
+    assert one.startswith("Weather monitoring on for Tucson.")
+    assert "places" not in one
+
+
+def test_start_summary_multi_no_locations_is_gentle() -> None:
+    cfg = monitor.MonitorConfig().normalized()
+    assert "no locations are set" in monitor.start_summary_multi({}, cfg)

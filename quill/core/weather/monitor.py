@@ -42,14 +42,43 @@ class MonitorConfig:
     """Persisted Weather Guardian settings."""
 
     enabled: bool = False
-    #: Location to watch; "" means "whatever is the primary location".
+    #: Legacy single location to watch ("" means "the primary location"). Kept
+    #: for backward compatibility; ``location_ids`` is the source of truth now.
     location_id: str = ""
+    #: Every location to watch. Weather Guardian polls each one and announces
+    #: alerts per place, so you can keep an eye on home, work, and family at once.
+    location_ids: list[str] = field(default_factory=list)
     interval_minutes: int = 10
     #: Severe-weather mode: tighten the poll while an alert is active.
     fast_when_active: bool = True
     fast_interval_seconds: int = MONITOR_FAST_DEFAULT_SECONDS
 
+    def watched_ids(self, *, fallback: str = "") -> list[str]:
+        """The locations to actually watch, in order and de-duplicated. Uses
+        ``location_ids`` when set, else the legacy single ``location_id``, else
+        ``fallback`` (the app's primary location) when one is given, else []."""
+        seen: set[str] = set()
+        ordered: list[str] = []
+        for candidate in [*self.location_ids, self.location_id, fallback]:
+            cid = (candidate or "").strip()
+            if cid and cid not in seen:
+                seen.add(cid)
+                ordered.append(cid)
+        return ordered
+
     def normalized(self) -> MonitorConfig:
+        # De-duplicate the watch list (order-preserving) and keep the legacy
+        # single field pointing at the first entry so older readers still work.
+        seen: set[str] = set()
+        deduped: list[str] = []
+        for cid in self.location_ids:
+            cid = (cid or "").strip()
+            if cid and cid not in seen:
+                seen.add(cid)
+                deduped.append(cid)
+        self.location_ids = deduped
+        if deduped and not self.location_id:
+            self.location_id = deduped[0]
         self.interval_minutes = max(
             MONITOR_MIN_MINUTES, min(MONITOR_MAX_MINUTES, int(self.interval_minutes))
         )
@@ -140,6 +169,52 @@ def start_summary(location_label: str, current: list[WeatherAlert], config: Moni
     )
 
 
+def start_summary_multi(active_counts: dict[str, int], config: MonitorConfig) -> str:
+    """The one-time spoken line when monitoring several places at once.
+
+    ``active_counts`` maps each watched location's label to how many alerts it
+    currently has. Names the places, says which are clear and which are not, and
+    ends with the cadence -- one warm sentence, however many places you watch.
+    """
+    labels = list(active_counts)
+    if not labels:
+        return "Weather monitoring is on, but no locations are set to watch yet."
+    if len(labels) == 1:
+        # Fall back to the single-place wording (it reads more naturally).
+        only = labels[0]
+        cadence = config.cadence_phrase()
+        if active_counts[only] == 0:
+            return f"Weather monitoring on for {only}. No active alerts right now. {cadence}."
+        n = active_counts[only]
+        plural = "" if n == 1 else "s"
+        return f"Weather monitoring on for {only}. {n} active alert{plural} right now. {cadence}."
+
+    places = _join_places(labels)
+    alerting = [lbl for lbl, count in active_counts.items() if count > 0]
+    cadence = config.cadence_phrase()
+    if not alerting:
+        return (
+            f"Weather monitoring on for {len(labels)} places: {places}. "
+            f"All clear right now. {cadence}."
+        )
+    total = sum(active_counts.values())
+    plural = "" if total == 1 else "s"
+    where = _join_places(alerting)
+    return (
+        f"Weather monitoring on for {len(labels)} places: {places}. "
+        f"{total} active alert{plural} right now, at {where}. {cadence}."
+    )
+
+
+def _join_places(labels: list[str]) -> str:
+    """'A', 'A and B', or 'A, B, and C' -- a natural spoken list."""
+    if len(labels) == 1:
+        return labels[0]
+    if len(labels) == 2:
+        return f"{labels[0]} and {labels[1]}"
+    return f"{', '.join(labels[:-1])}, and {labels[-1]}"
+
+
 def update_announcement(update: MonitorUpdate, location_label: str) -> str | None:
     """The spoken line for a poll's changes, or None when nothing changed.
 
@@ -226,6 +301,13 @@ def load_config(data_dir: Path) -> MonitorConfig:
         config.enabled = raw["enabled"]
     if isinstance(raw.get("location_id"), str):
         config.location_id = raw["location_id"]
+    raw_ids = raw.get("location_ids")
+    if isinstance(raw_ids, list):
+        config.location_ids = [str(x) for x in raw_ids if isinstance(x, str) and x.strip()]
+    elif config.location_id:
+        # Migrate a pre-multi-location config: the single watched place becomes
+        # the first entry of the new list.
+        config.location_ids = [config.location_id]
     if isinstance(raw.get("interval_minutes"), (int, float)):
         config.interval_minutes = int(raw["interval_minutes"])
     if isinstance(raw.get("fast_when_active"), bool):
@@ -245,6 +327,7 @@ def save_config(data_dir: Path, config: MonitorConfig) -> None:
         {
             "enabled": config.enabled,
             "location_id": config.location_id,
+            "location_ids": config.location_ids,
             "interval_minutes": config.interval_minutes,
             "fast_when_active": config.fast_when_active,
             "fast_interval_seconds": config.fast_interval_seconds,
