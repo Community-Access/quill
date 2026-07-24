@@ -623,3 +623,51 @@ def test_extract_portable_update_default_cap_fits_a_full_app_bundle(tmp_path) ->
     dest = tmp_path / "out"
     extract_portable_update(zip_path, dest)  # no max_total -> UPDATE_MAX_UNCOMPRESSED
     assert (dest / "QuillRadio" / "QuillRadio.exe").is_file()
+
+
+# -- per-app independent updates (shared repo, own assets) ---------------------
+
+
+def test_app_version_from_tag_extracts_number() -> None:
+    from quill.core.updates import _app_version_from_tag
+
+    assert _app_version_from_tag("quill-radio-v2.2.0") == "2.2.0"
+    assert _app_version_from_tag("quill-weather-2.2.0") == "2.2.0"
+    assert _app_version_from_tag("v1.0.0") == "1.0.0"
+    assert _app_version_from_tag("2.2.0-beta.3") == "2.2.0-beta.3"
+
+
+def test_app_asset_url_picks_own_app_and_flavor() -> None:
+    from quill.core.updates import _app_asset_url
+
+    assets = [
+        {
+            "name": "Quill-Radio-Setup-2.2.0.exe",
+            "browser_download_url": "https://x/Quill-Radio-Setup-2.2.0.exe",
+        },
+        {
+            "name": "Quill-Radio-Portable-2.2.0.zip",
+            "browser_download_url": "https://x/Quill-Radio-Portable-2.2.0.zip",
+        },
+        {
+            "name": "Quill-Weather-Setup-2.2.0.exe",
+            "browser_download_url": "https://x/Quill-Weather-Setup-2.2.0.exe",
+        },
+    ]
+    # Installed radio -> radio's Setup .exe, never Weather's.
+    assert _app_asset_url(assets, "Quill-Radio", prefer_portable=False).endswith(
+        "Quill-Radio-Setup-2.2.0.exe"
+    )
+    # Portable radio -> radio's Portable .zip.
+    assert _app_asset_url(assets, "Quill-Radio", prefer_portable=True).endswith(
+        "Quill-Radio-Portable-2.2.0.zip"
+    )
+    # An app with no asset in this release -> "".
+    assert _app_asset_url(assets, "Quill-Cast", prefer_portable=False) == ""
+
+
+def test_app_asset_url_rejects_non_https() -> None:
+    from quill.core.updates import _app_asset_url
+
+    assets = [{"name": "Quill-Radio-Setup-2.2.0.exe", "browser_download_url": "http://x/a.exe"}]
+    assert _app_asset_url(assets, "Quill-Radio", prefer_portable=False) == ""

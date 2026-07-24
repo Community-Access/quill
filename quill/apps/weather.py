@@ -28,6 +28,9 @@ _TITLE = "Quill Weather"
 #: Versioned in lockstep with Quill Radio (2.2.0): the two ship the same weather
 #: feature code and were released together, so they share a version line.
 _VERSION = "2.2.0"
+#: Every QuillVille app now updates from the one shared repo, each resolving its
+#: own release asset (Quill-Weather-*), so they update and maintain independently.
+_REPO = "Community-Access/quill"
 #: Single-instance slot -- distinct from QUILL (""), Radio, and Cast so the
 #: sibling apps sharing one data dir never block each other (#1152).
 _IPC_SLOT = "weather"
@@ -157,6 +160,15 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         )
 
         help_menu = wx.Menu()
+        updates_id = wx.NewIdRef()
+        help_menu.Append(updates_id, "Check for &Updates...")
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.check_for_app_updates(
+                repo_slug=_REPO, current_version=_VERSION, app_key="weather"
+            ),
+            id=updates_id,
+        )
         about_id = wx.NewIdRef()
         help_menu.Append(about_id, "&About Quill Weather")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
@@ -173,6 +185,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
             self._close_tray_item_id,
             self._background_item_id,
             self._features_item_id,
+            updates_id,
             about_id,
         )
 

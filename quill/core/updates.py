@@ -348,6 +348,83 @@ def fetch_releases(
     ]
 
 
+def _app_asset_url(assets: object, app_prefix: str, *, prefer_portable: bool) -> str:
+    """The download URL of ``app_prefix``'s own asset in one release's asset list
+    (``Quill-Radio-Setup-*.exe`` for an installed build, ``-Portable-*.zip`` for a
+    portable one), or "" when this release carries no asset for that app."""
+    if not isinstance(assets, list):
+        return ""
+    low = app_prefix.lower()
+    installer = portable = ""
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+        url = str(asset.get("browser_download_url") or "")
+        name = str(asset.get("name") or "").lower()
+        if not url.lower().startswith("https://") or not name.startswith(low):
+            continue
+        if "-portable-" in name and name.endswith(".zip"):
+            portable = url
+        elif "-setup-" in name and name.endswith(".exe"):
+            installer = url
+    if prefer_portable and portable:
+        return portable
+    return installer or portable
+
+
+def _app_version_from_tag(tag: str) -> str:
+    """'quill-radio-v2.2.0' / 'weather-2.2.0' / 'v2.2.0' -> '2.2.0'. Pulls the
+    trailing dotted-number version out of a per-app release tag so each app's
+    own version can be compared even when several apps share one repo's tags."""
+    match = re.search(r"(\d+\.\d+(?:\.\d+)?(?:[-.][0-9A-Za-z.]+)?)\s*$", tag or "")
+    return match.group(1) if match else (tag or "").strip()
+
+
+def fetch_app_releases(
+    app_prefix: str,
+    api_url: str | None = None,
+    timeout: int = 10,
+    *,
+    prefer_portable: bool | None = None,
+) -> list[GitHubRelease]:
+    """Releases in the shared repo that carry an asset for one specific app,
+    newest-first. Each app updates independently from its own assets in the
+    common Community-Access/quill repo: the release's ``download_url`` is set to
+    *this app's* asset and its ``version`` to the app-specific tag's number, so a
+    Quill Radio update is never confused with a Quill Weather one. A release with
+    no asset for this app is skipped entirely.
+    """
+    api_url = api_url or resolve_releases_api_url()
+    if prefer_portable is None:
+        prefer_portable = running_portable()
+    request = Request(
+        api_url,
+        headers={"Accept": "application/vnd.github+json", "User-Agent": "Quill-Updater"},
+    )
+    with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
+        payload = response.read().decode("utf-8", errors="strict")
+    raw = json.loads(payload)
+    if not isinstance(raw, list):
+        raise ValueError("GitHub releases payload must be a JSON array")
+    releases: list[GitHubRelease] = []
+    for r in raw:
+        if not isinstance(r, dict) or r.get("draft"):
+            continue
+        url = _app_asset_url(r.get("assets"), app_prefix, prefer_portable=bool(prefer_portable))
+        if not url:
+            continue
+        releases.append(
+            GitHubRelease(
+                version=_app_version_from_tag(str(r.get("tag_name") or r.get("name") or "")),
+                download_url=url,
+                published_at=str(r.get("published_at") or "").strip(),
+                notes=str(r.get("body") or "").strip(),
+                prerelease=bool(r.get("prerelease")),
+            )
+        )
+    return releases
+
+
 def select_latest(
     releases: list[GitHubRelease], include_prereleases: bool = False
 ) -> GitHubRelease | None:

@@ -584,7 +584,12 @@ class AppShellFrame:
         return not (Path(sys.executable).resolve().parent / "unins000.exe").is_file()
 
     def check_for_app_updates(
-        self, *, repo_slug: str, current_version: str, silent_no_update: bool = False
+        self,
+        *,
+        repo_slug: str,
+        current_version: str,
+        silent_no_update: bool = False,
+        app_key: str = "",
     ) -> None:
         """The same in-app experience QUILL gives: check this app's own GitHub
         releases, download the installer in-app with spoken progress
@@ -599,15 +604,26 @@ class AppShellFrame:
         update still shows the same interactive prompt either way, since
         these small apps have no notification-center equivalent to defer to.
         """
-        from quill.core.updates import fetch_releases, is_newer_version
+        from quill.core.updates import fetch_app_releases, fetch_releases, is_newer_version
 
         api_url = f"https://api.github.com/repos/{repo_slug}/releases"
         if not silent_no_update:
             self._announce("Checking for updates")
         prefer_portable = self._running_portable_build()
+        # When an app_key is given the apps share one repo (Community-Access/quill)
+        # and each resolves ITS OWN release asset (Quill-Radio-*, Quill-Weather-*,
+        # ...) so every QuillVille app updates independently. Without it, fall back
+        # to the legacy per-repo, platform-suffix pick.
+        app_prefix = ""
+        if app_key:
+            from quill.core.companion_install import ASSET_PREFIX
+
+            app_prefix = ASSET_PREFIX.get(app_key, "")
 
         def _fetch(**_kw: object) -> object:
             # Absorb the task manager's injected kwargs (cancellation_token, ...).
+            if app_prefix:
+                return fetch_app_releases(app_prefix, api_url, prefer_portable=prefer_portable)
             return fetch_releases(api_url, prefer_portable=prefer_portable)
 
         def _report(_name: str, releases: object) -> None:

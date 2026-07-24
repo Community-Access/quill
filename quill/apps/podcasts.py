@@ -21,7 +21,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
 _VERSION = "1.0.5"
-_REPO = "Community-Access/quill-cast"
+_REPO = "Community-Access/quill"
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for playback/processing; libmpv is intentionally not used -- wx.media).
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
@@ -598,7 +598,9 @@ class PodcastsAppFrame(
             return
         history.last_update_check = datetime.now(UTC).isoformat()
         podcast_history.save_history(app_data_dir(), history)
-        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, silent_no_update=True)
+        self.check_for_app_updates(
+            repo_slug=_REPO, current_version=_VERSION, app_key="cast", silent_no_update=True
+        )
 
     # -- menu bar -------------------------------------------------------------
 
@@ -763,7 +765,9 @@ class PodcastsAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
-            lambda _e: self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION),
+            lambda _e: self.check_for_app_updates(
+                repo_slug=_REPO, current_version=_VERSION, app_key="cast"
+            ),
             id=updates_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)

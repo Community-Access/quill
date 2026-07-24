@@ -26,7 +26,7 @@ from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
 _VERSION = "2.2.0"
-_REPO = "Community-Access/quill-radio"
+_REPO = "Community-Access/quill"
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for recording; mpv/libmpv is the playback engine).
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
@@ -1087,7 +1087,9 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
-            lambda _e: self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION),
+            lambda _e: self.check_for_app_updates(
+                repo_slug=_REPO, current_version=_VERSION, app_key="radio"
+            ),
             id=updates_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
@@ -1759,7 +1761,9 @@ class RadioAppFrame(
             return
         history.last_update_check = datetime.now(UTC).isoformat()
         radio_history.save_history(app_data_dir(), history)
-        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, silent_no_update=True)
+        self.check_for_app_updates(
+            repo_slug=_REPO, current_version=_VERSION, app_key="radio", silent_no_update=True
+        )
 
     def _show_about(self) -> None:
         self._show_message_box(

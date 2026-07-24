@@ -77,7 +77,7 @@ _VERSION = __version__
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for audio processing/export; mpv is opt-in, not required).
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
-_REPO = "Community-Access/quill-audio-studio"
+_REPO = "Community-Access/quill"
 
 # Generate Captions accepts these; ffmpeg transcodes them to 16 kHz mono WAV
 # before transcription (mirrors QUILL's Tools > Speech caption wildcard).
@@ -2436,7 +2436,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         )
 
     def check_updates_manual(self) -> None:
-        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION)
+        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, app_key="studio")
 
     def _maybe_check_updates_on_startup(self) -> None:
         from datetime import UTC, datetime
@@ -2448,7 +2448,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             return
         prefs["last_update_check"] = datetime.now(UTC).isoformat()
         _save_app_prefs(prefs)
-        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, silent_no_update=True)
+        self.check_for_app_updates(
+            repo_slug=_REPO, current_version=_VERSION, app_key="studio", silent_no_update=True
+        )
 
     # -- lifecycle --------------------------------------------------------------
 

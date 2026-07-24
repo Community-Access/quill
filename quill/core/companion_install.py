@@ -32,7 +32,7 @@ from quill.core.app_launcher import app_name, portable_sibling_dirname
 
 #: app key -> the release-asset basename prefix each app publishes. Kept beside
 #: the launcher's app table on purpose: a new app is added in both places.
-_ASSET_PREFIX: dict[str, str] = {
+ASSET_PREFIX: dict[str, str] = {
     "quill": "QUILL",
     "radio": "Quill-Radio",
     "weather": "Quill-Weather",
@@ -56,7 +56,7 @@ def can_offer_download(app_key: str) -> bool:
     """Whether obtaining ``app_key`` is even possible on this build. Only a
     frozen build has a real install/portable layout to add a sibling to; from
     source, ``python -m`` already runs any app, so there is nothing to fetch."""
-    return bool(getattr(sys, "frozen", False)) and app_key in _ASSET_PREFIX
+    return bool(getattr(sys, "frozen", False)) and app_key in ASSET_PREFIX
 
 
 def _kind_markers(portable: bool) -> tuple[str, str]:
@@ -75,7 +75,7 @@ def resolve_companion_asset(
     (``portable=True``) from the newest release that carries one, else ``None``.
     Releases are taken newest-first, exactly as the API returns them.
     """
-    prefix = _ASSET_PREFIX.get(app_key)
+    prefix = ASSET_PREFIX.get(app_key)
     if prefix is None or not isinstance(releases_json, list):
         return None
     needle, ext = _kind_markers(portable)

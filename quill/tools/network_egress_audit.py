@@ -306,6 +306,13 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/updates.py::fetch_latest_release": (
         "Update check against GitHub Releases; same update setting and UI."
     ),
+    "core/updates.py::fetch_app_releases": (
+        "Per-app update check: lists the shared Community-Access/quill releases to "
+        "find THIS app's own asset (Quill-Radio-*, Quill-Weather-*, ...) so each "
+        "QuillVille app updates independently. Same gating as fetch_releases -- the "
+        "app's 'check for updates' action or its throttled once-a-day startup check. "
+        "Verified TLS."
+    ),
     "core/updates.py::fetch_releases": (
         "Fetches release notes for an update the user is already reviewing (Help > "
         "Check for Updates) or, for the standalone companion apps (Quill Radio, "
