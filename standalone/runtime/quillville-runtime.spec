@@ -28,7 +28,22 @@ a = Analysis(
     hiddenimports=quill_hidden + social_hidden + nacl_hidden,
     hookspath=[],
     runtime_hooks=[],
-    excludes=[],
+    excludes=[
+        # The shared runtime backs QUILL (the full editor) too, so it KEEPS PIL
+        # (AI vision), the PDF stack, and the speech engines QUILL uses. These are
+        # only the libraries NO QuillVille app -- QUILL included -- imports at
+        # runtime, dragged in solely by collect_all pulling unused quill
+        # submodules. babel alone is ~152 MB.
+        "babel",
+        "pandas",
+        "psycopg",
+        "psycopg2",
+        "grpc",
+        "matplotlib",
+        "scipy",
+        "mypy",
+        "lxml",
+    ],
     noarchive=False,
 )
 

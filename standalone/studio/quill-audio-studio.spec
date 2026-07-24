@@ -40,6 +40,29 @@ a = Analysis(
         "onnxruntime",
         "torch",
         "numpy.f2py",
+        # Heavy transitive dependencies this app never imports at runtime
+        # (verified by tracing quill.apps.studio). collect_all("quill") force-
+        # includes every quill submodule; PyInstaller then follows their imports
+        # into these libs. Excluding them roughly halves the build (babel ~152 MB).
+        "babel",
+        "pandas",
+        "speech_recognition",
+        "pdfminer",
+        "pdfplumber",
+        "pypdfium2",
+        "pypdfium2_raw",
+        "grpc",
+        "psycopg",
+        "psycopg2",
+        "mypy",
+        "lxml",
+        "PIL",
+        "Pillow",
+        "av",
+        "imageio",
+        "imageio_ffmpeg",
+        "matplotlib",
+        "scipy",
     ],
     noarchive=False,
 )
