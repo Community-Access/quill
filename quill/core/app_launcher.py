@@ -28,6 +28,25 @@ _APPS: dict[str, tuple[str, tuple[str, ...]]] = {
     "studio": ("quill.apps.studio", ("QuillStudio.exe", "Quill Studio.exe")),
 }
 
+#: app key -> the folder name each app's portable bundle unpacks to. Portable
+#: siblings live as adjacent folders under a shared parent (…/QuillRadio/,
+#: …/QuillWeather/), so a sibling's exe is found one level over, not only in the
+#: current app's own folder. Installed builds usually co-locate, so both the
+#: same-folder and the adjacent-folder layouts are searched.
+_PORTABLE_DIRNAMES: dict[str, str] = {
+    "quill": "QUILL",
+    "radio": "QuillRadio",
+    "weather": "QuillWeather",
+    "cast": "QuillCast",
+    "studio": "QuillStudio",
+}
+
+
+def portable_sibling_dirname(app_key: str) -> str | None:
+    """The adjacent folder name a portable ``app_key`` bundle unpacks to."""
+    return _PORTABLE_DIRNAMES.get(app_key)
+
+
 #: Friendly names, for menu labels and announcements.
 APP_NAMES: dict[str, str] = {
     "quill": "QUILL",
@@ -52,10 +71,18 @@ def build_launch_argv(app_key: str) -> list[str] | None:
     module, exe_names = entry
     if getattr(sys, "frozen", False):
         here = Path(sys.executable).resolve().parent
-        for name in exe_names:
-            candidate = here / name
-            if candidate.exists():
-                return [str(candidate)]
+        # 1) Same folder as the current app (co-located / shared-folder install).
+        # 2) An adjacent folder under the shared parent (the portable layout,
+        #    …/QuillRadio/ next to …/QuillWeather/).
+        search_dirs = [here]
+        sibling_dir = _PORTABLE_DIRNAMES.get(app_key)
+        if sibling_dir:
+            search_dirs.append(here.parent / sibling_dir)
+        for folder in search_dirs:
+            for name in exe_names:
+                candidate = folder / name
+                if candidate.exists():
+                    return [str(candidate)]
         return None  # sibling app is not installed alongside this one
     return [sys.executable, "-m", module]
 

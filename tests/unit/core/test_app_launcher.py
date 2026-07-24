@@ -46,6 +46,30 @@ def test_frozen_sibling_installed_alongside_launches(monkeypatch, tmp_path) -> N
     assert app_launcher.build_launch_argv("radio") == [str(tmp_path / "QuillRadio.exe")]
 
 
+def test_frozen_portable_sibling_in_adjacent_folder_launches(monkeypatch, tmp_path) -> None:
+    # Portable layout: each app in its own folder under a shared parent, e.g.
+    #   USB\QuillRadio\QuillRadio.exe   and   USB\QuillWeather\QuillWeather.exe
+    # Radio must find Weather one level over (its own folder is not enough).
+    (tmp_path / "QuillRadio").mkdir()
+    (tmp_path / "QuillRadio" / "QuillRadio.exe").write_bytes(b"MZ")
+    (tmp_path / "QuillWeather").mkdir()
+    (tmp_path / "QuillWeather" / "QuillWeather.exe").write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(
+        sys, "executable", str(tmp_path / "QuillRadio" / "QuillRadio.exe"), raising=False
+    )
+    assert app_launcher.build_launch_argv("weather") == [
+        str(tmp_path / "QuillWeather" / "QuillWeather.exe")
+    ]
+    # And the reverse direction (Weather finding Radio) from Weather's folder.
+    monkeypatch.setattr(
+        sys, "executable", str(tmp_path / "QuillWeather" / "QuillWeather.exe"), raising=False
+    )
+    assert app_launcher.build_launch_argv("radio") == [
+        str(tmp_path / "QuillRadio" / "QuillRadio.exe")
+    ]
+
+
 def test_app_names() -> None:
     assert app_launcher.app_name("weather") == "Quill Weather"
     assert app_launcher.app_name("radio") == "Quill Radio"

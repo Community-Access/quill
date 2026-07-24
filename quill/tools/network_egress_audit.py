@@ -317,6 +317,13 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/updates.py::download_release_asset": (
         "User chooses to download an offered update; verified TLS, visible progress."
     ),
+    "core/companion_install.py::fetch_companion_asset": (
+        "Lists the Community-Access/quill GitHub releases to find a sibling app's "
+        "installer/portable asset, only after the user answers 'yes, get it' to the "
+        "offer shown when they try to open a companion app (Quill Radio/Weather/Cast, "
+        "or QUILL) that is not installed. Verified TLS; the asset bytes themselves go "
+        "through the already-reviewed updates.download_release_asset path."
+    ),
     "core/glow_updates.py::fetch_glow_manifest": (
         "Opt-in GLOW engine update check (GLOW-8); runs only when the user invokes "
         "'Check for GLOW Updates' or enables the GLOW auto-check setting. Fetches a "
