@@ -342,7 +342,50 @@ class AppShellFrame:
             self.frame.Bind(wx.EVT_HOTKEY, lambda _e, h=handler: h(), id=hotkey_id)
             self._media_key_ids.append(hotkey_id)
 
+    #: App-local hotkey id for the show/hide-to-tray toggle (distinct from the
+    #: media-key id space above).
+    _TRAY_TOGGLE_HOTKEY_ID = 0x7B00
+
+    def _register_tray_hotkey(self, chord: str) -> None:
+        """Register a unique system-wide chord that shows this app or hides it to
+        the tray, so it is one keystroke away even when another window has focus.
+        Best-effort and Windows-only; a chord another app owns stays theirs."""
+        if not sys.platform.startswith("win") or not chord:
+            return
+        from quill.ui.tray_hotkey import parse_hotkey
+
+        parsed = parse_hotkey(wx, chord)
+        if parsed is None:
+            return
+        flags, key_code = parsed
+        try:
+            if not self.frame.RegisterHotKey(self._TRAY_TOGGLE_HOTKEY_ID, flags, key_code):
+                return
+        except Exception:  # noqa: BLE001 - a denied chord must never block startup
+            return
+        self.frame.Bind(
+            wx.EVT_HOTKEY, lambda _e: self.toggle_window_to_tray(), id=self._TRAY_TOGGLE_HOTKEY_ID
+        )
+        self._tray_hotkey_registered = True
+
+    def toggle_window_to_tray(self) -> None:
+        """Hide the window to the tray if it is showing, or bring it back if it is
+        hidden/minimized (the show/hide global-hotkey action)."""
+        frame = self.frame
+        if frame.IsShown() and not frame.IsIconized():
+            frame.Hide()  # the tray icon keeps the app reachable
+            self._announce(f"{frame.GetTitle()} hidden to the tray.")
+        else:
+            self._restore_from_tray()
+            self._announce(f"{frame.GetTitle()} shown.")
+
     def _unregister_media_keys(self) -> None:
+        if getattr(self, "_tray_hotkey_registered", False):
+            try:
+                self.frame.UnregisterHotKey(self._TRAY_TOGGLE_HOTKEY_ID)
+            except Exception:  # noqa: BLE001 - shutdown must never block
+                pass
+            self._tray_hotkey_registered = False
         for hotkey_id in getattr(self, "_media_key_ids", []):
             try:
                 self.frame.UnregisterHotKey(hotkey_id)

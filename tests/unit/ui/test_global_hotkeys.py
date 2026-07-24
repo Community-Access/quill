@@ -75,9 +75,16 @@ def test_legacy_sticky_binding_survives_unless_overridden() -> None:
 
 
 def test_every_allowlisted_command_is_low_risk_by_construction() -> None:
-    """Meta-guard: the allowlist stays media/notes/compose only. Anything
-    document-editing or destructive being added here should fail review AND
-    this test."""
-    allowed_prefixes = ("radio.", "podcasts.", "notes.", "tools.sticky", "tools.post_to_mastodon")
+    """Meta-guard: the allowlist stays media/notes/compose/window-visibility
+    only. Anything document-editing or destructive being added here should fail
+    review AND this test."""
+    allowed_prefixes = (
+        "radio.",
+        "podcasts.",
+        "notes.",
+        "tools.sticky",
+        "tools.post_to_mastodon",
+        "view.toggle_window_to_tray",  # shows/hides the window; touches no document
+    )
     for command_id, _label, _needs in GLOBAL_HOTKEY_SAFE_COMMANDS:
         assert command_id.startswith(allowed_prefixes), command_id

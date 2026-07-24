@@ -160,6 +160,7 @@ class RadioAppFrame(
             "play_pause": self._on_play_stop_button,
             "stop": self.radio_stop,
         })
+        self._register_tray_hotkey("Ctrl+Alt+Shift+R")  # show/hide Radio to the tray
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
         # Alt+F4-to-tray (opt-in preference): intercepted at the char hook,

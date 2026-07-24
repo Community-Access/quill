@@ -27,6 +27,7 @@ from __future__ import annotations
 #: run wherever you are. THE SAFETY BOUNDARY: nothing off this list can be
 #: bound globally, whatever the settings file says.
 GLOBAL_HOTKEY_SAFE_COMMANDS: tuple[tuple[str, str, bool], ...] = (
+    ("view.toggle_window_to_tray", "Show/Hide QUILL to the tray", False),
     ("tools.sticky_note_capture", "New Sticky Note", True),
     ("notes.sticky_browser", "Sticky Notes Browser", True),
     ("tools.post_to_mastodon", "Post to Mastodon (opens compose; never auto-sends)", True),
@@ -61,6 +62,11 @@ class GlobalHotkeysMixin:
             legacy = self._binding_for("tools.sticky_note_capture")
             if legacy and self._parse_keybinding(legacy) is not None:
                 bindings["tools.sticky_note_capture"] = legacy
+        # A unique default so show/hide-to-tray works out of the box, matching
+        # the standalone apps (Radio Ctrl+Alt+Shift+R, Weather ...+W). The user
+        # can rebind or clear it in Tools > Global Hotkeys.
+        if "view.toggle_window_to_tray" not in bindings:
+            bindings["view.toggle_window_to_tray"] = "Ctrl+Alt+Shift+Q"
         return bindings
 
     def _global_hotkey_wx_id(self, command_id: str) -> int:
@@ -180,7 +186,24 @@ class GlobalHotkeysMixin:
         self._reload_global_hotkeys()
         self._announce("Global hotkeys saved and active")
 
+    def toggle_window_to_tray(self) -> None:
+        """Hide QUILL to the tray if it is showing, or bring it back if it is
+        hidden -- the show/hide global-hotkey action. Restoring uses the same
+        path as the tray icon so state stays consistent."""
+        if self.frame.IsShown() and not self.frame.IsIconized():
+            self.send_to_tray()
+        else:
+            self._restore_from_tray()
+            self._announce("Quill shown")
+
     def _register_global_hotkey_commands(self) -> None:
+        self.commands.try_register(
+            "view.toggle_window_to_tray",
+            "Show/Hide Quill to the Tray",
+            self.toggle_window_to_tray,
+            self._binding_for("view.toggle_window_to_tray"),
+            feature_id="core.app",
+        )
         self.commands.try_register(
             "notes.sticky_browser",
             "Sticky Notes Browser...",

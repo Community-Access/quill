@@ -68,6 +68,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_weather_tray_menu, tooltip=_TITLE)
+        self._register_tray_hotkey("Ctrl+Alt+Shift+W")  # show/hide Weather to the tray
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_weather_app_close)
         # Resume/start the alert watch once the frame and task manager are up
