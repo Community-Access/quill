@@ -4904,6 +4904,34 @@ document-editing or destructive). Requirements:
 - Windows-only (`RegisterHotKey`); macOS states the limitation once via the
   status bar, and every allowlisted command remains reachable in-app.
 
+**Show/Hide to the tray — a family-wide global hotkey, one unique chord per
+app.** A new allowlisted command `view.toggle_window_to_tray`
+(`toggle_window_to_tray` on `GlobalHotkeysMixin`) hides QUILL to the tray when
+it is showing and restores+focuses it when hidden, reusing the existing
+`send_to_tray` / `_restore_from_tray` paths. It is a **window-visibility**
+command — not document-editing, not destructive — so the allowlist meta-test
+was widened to admit exactly this one new prefix, keeping the boundary explicit.
+Because the command toggles both directions itself, it is registered *not*
+needs-window (the dispatcher must not pre-restore before it runs). Requirements:
+
+- A unique default per app so the family never collides: QUILL
+  **Ctrl+Alt+Shift+Q**, Quill Radio **Ctrl+Alt+Shift+R**, Quill Weather
+  **Ctrl+Alt+Shift+W**. In QUILL the default is supplied by
+  `_global_hotkey_bindings` when the settings table has no entry, so it works
+  out of the box yet remains an ordinary, rebindable/clearable row in the
+  manager.
+- The standalone apps (`AppShellFrame`) gain `_register_tray_hotkey(chord)` and
+  `toggle_window_to_tray`, reusing the same `RegisterHotKey` + `EVT_HOTKEY`
+  pattern already proven by `_register_media_keys` (hardware media keys), with
+  the hotkey released on teardown alongside the media keys. Hiding uses
+  `frame.Hide()` (the tray icon keeps the app reachable); the toggle speaks
+  "hidden to the tray" / "shown".
+- The chord→(flags, virtual-key) parser is the new wx-free, unit-tested
+  `quill/ui/tray_hotkey.py` (`parse_hotkey(wx, chord)`), shared by QUILL and
+  both standalone apps so the parse is identical everywhere.
+- Best-effort and non-fatal: a chord another program already owns simply is not
+  grabbed (registration fails quietly), never blocking startup or shutdown.
+
 ### 5.85 Portable API key store
 
 By default QUILL stores AI provider keys in the Windows Credential Manager, which ties them to the current Windows user account. Portable mode offers an alternative: a DPAPI-encrypted file (`keys.enc`) in the QUILL data directory, activated by the presence of a `data/` folder next to `quill.exe` in the portable bundle.

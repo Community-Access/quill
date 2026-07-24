@@ -197,6 +197,8 @@ If your keyboard has media keys, Play/Pause and Stop control Quill Radio system-
 
 Closing the window keeps Quill Radio available in the notification area with its own icon, announced by name. Right-click (or keyboard-invoke) the tray icon for: Show, the live now-playing line, a single **Play/Stop** item whose label is always current, Mute/Unmute, your **Favorite Stations** (nested by folder) and **Recently Played** submenus, Record Now/Stop Recording, Schedule Recording, Recording Settings, Browse Stations, and Exit. Double-click brings the window back.
 
+**Show or hide Quill Radio from any program** with **Ctrl+Alt+Shift+R**. This is a system-wide hotkey -- like the hardware media keys above, it works even when another app has focus, so you never have to hunt for Quill Radio's window first. Press it while the window is showing and Quill Radio tucks itself into the tray (it says "hidden to the tray"); press it again and the window returns and takes focus (it says "shown"). Playback and any recording keep running the whole time. If another app has already claimed Ctrl+Alt+Shift+R, Quill Radio simply does not take it -- there is no error, and you still show and hide the window with the tray icon and the "Alt+F4 minimizes to the system tray" preference. Each app in the family uses its own chord so they never clash: QUILL is Ctrl+Alt+Shift+Q and Quill Weather is Ctrl+Alt+Shift+W. (Windows only.)
+
 ## Sharing data with QUILL
 
 Quill Radio reads and writes the same data store as QUILL and QUILL Cast (`%APPDATA%\Quill`): favorites (folders, custom names, and per-station volumes included), history, recordings, schedules, timers, and settings. A station you favorite here is a favorite in QUILL's radio; the wake-up timer you set in QUILL fires here. Uninstalling Quill Radio never deletes that shared data.
@@ -228,6 +230,7 @@ Weather is still built into Quill Radio: the **Weather** menu appears whenever t
 | Back to Live | Ctrl+Shift+L |
 | What's Playing? | Ctrl+T |
 | Send to tray | Ctrl+W |
+| Show / hide from any app (system-wide) | Ctrl+Alt+Shift+R |
 | Next / previous window | Ctrl+Tab / Ctrl+Shift+Tab |
 | Jump to window 1-9 | Ctrl+1 ... Ctrl+9 |
 | Preferences | Ctrl+, |

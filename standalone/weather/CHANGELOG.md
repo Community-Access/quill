@@ -14,6 +14,13 @@ installed, updated, and left running on its own.
   window and it keeps monitoring; **Start Quill Weather with Windows** puts it
   on guard from login; and an optional scheduled background check watches with
   no window open at all and toasts you when a new alert appears.
+- **A global show/hide hotkey -- Ctrl+Alt+Shift+W.** Press it from any app to
+  tuck Quill Weather to the tray (the watch keeps running) or bring it back and
+  focus it; it speaks "hidden to the tray" or "shown". The chord is unique to
+  Quill Weather in the QuillVille family, so it never collides with QUILL or
+  Quill Radio. Windows-only, and best-effort -- if another app already owns the
+  chord, Quill Weather simply leaves it be and still shows and hides from the
+  tray icon.
 - **Weather Guardian -- spoken alerts the moment they are issued.** Background
   monitoring of your location's official National Weather Service watches,
   warnings, and advisories, speaking each new one aloud (interrupting for

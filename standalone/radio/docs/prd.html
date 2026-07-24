@@ -172,17 +172,17 @@
   </style>
 </head>
 <body>
-<h1 id="quill-radio-product-requirements">Quill Radio – Product
+<h1 id="quill-radio----product-requirements">Quill Radio -- Product
 Requirements</h1>
 <p>Version 2.0</p>
-<h2 id="product-statement">1. Product statement</h2>
-<p>Quill Radio is QUILL’s internet radio, shipped as its own small
+<h2 id="1-product-statement">1. Product statement</h2>
+<p>Quill Radio is QUILL's internet radio, shipped as its own small
 Windows app for people who want the radio on without loading a full
 writing environment. It is screen-reader-first, keyboard-complete, and
-deliberately small – and by 1.0 it is a complete radio product:
+deliberately small -- and by 1.0 it is a complete radio product:
 organization, recording resilience, timers, and appliance-grade
 startup.</p>
-<h2 id="architecture-requirement-not-a-fork">2. Architecture
+<h2 id="2-architecture-requirement-not-a-fork">2. Architecture
 requirement: not a fork</h2>
 <ul>
 <li>R-1. All feature code lives in the upstream <code>quill</code>
@@ -199,34 +199,36 @@ for content that exists because QUILL is not in the picture.</li>
 per-station volumes), recently-played history, recordings, schedules,
 the wake-up timer, and settings live in the same
 <code>%APPDATA%\Quill</code> store QUILL uses.</li>
-<li>R-4. Keystrokes are the app’s own (menu accelerators), kept separate
-from QUILL’s keymap so nothing collides with editor shortcuts.</li>
+<li>R-4. Keystrokes are the app's own (menu accelerators), kept separate
+from QUILL's keymap so nothing collides with editor shortcuts.</li>
 </ul>
-<h2 id="scope-all-reused-from-upstream-all-shipped-in-1.0">3. Scope (all
-reused from upstream; all shipped in 1.0)</h2>
-<p><strong>Listening</strong> - Station browser over four blended
-directories – RadioBrowser, SomaFM, iHeart, TuneIn – with a Source
-facet, genre/country dropdown filters, test-play, and favorite; bundled
-ACB Media directory; custom stream URLs; website stream finder with a
-Test/Stop Test toggle. - iHeart and TuneIn directory sources + Unified
-Find Stations (upstream <code>core/radio/iheart.py</code>,
+<h2 id="3-scope-all-reused-from-upstream-all-shipped-in-10">3. Scope
+(all reused from upstream; all shipped in 1.0)</h2>
+<p><strong>Listening</strong></p>
+<ul>
+<li>Station browser over four blended directories -- RadioBrowser,
+SomaFM, iHeart, TuneIn -- with a Source facet, genre/country dropdown
+filters, test-play, and favorite; bundled ACB Media directory; custom
+stream URLs; website stream finder with a Test/Stop Test toggle.</li>
+<li>iHeart and TuneIn directory sources + Unified Find Stations
+(upstream <code>core/radio/iheart.py</code>,
 <code>core/radio/tunein.py</code>,
 <code>core/radio/directory_search.py</code>; #1116, #1117, #1132).
 iHeart is indexed from its public XML sitemap
 (<code>www.iheart.com/sitemap.xml</code> -&gt; the
 <code>livestations</code> sub-sitemap, two HTTPS GETs) and each
-station’s real stream (iHeart-native HLS or a StreamTheWorld redirect)
+station's real stream (iHeart-native HLS or a StreamTheWorld redirect)
 is resolved lazily from its own page on demand; the sitemap index is
 cached once per Browse Stations session with a Refresh button, and a
 name search resolves up to <code>IHEART_RESOLVE_CAP = 5</code> matches.
-TuneIn goes through RadioTime’s open OPML API
-(<code>opml.radiotime.com</code> –
+TuneIn goes through RadioTime's open OPML API
+(<code>opml.radiotime.com</code> --
 <code>Search.ashx</code>/<code>Browse.ashx</code>/<code>Tune.ashx?partnerId=RadioTime</code>,
-no key/auth; a bad guide id self-validates to “nothing found”),
+no key/auth; a bad guide id self-validates to "nothing found"),
 resolving up to <code>TUNEIN_RESOLVE_CAP = 10</code> per search.
 <code>directory_search.merge_and_rank</code> blends all four sources
 into one de-duped (by stream URL, then name+country), exact-match-first
-list; each non-RadioBrowser row is labeled “via <source>”. The Browse
+list; each non-RadioBrowser row is labeled "via <source>". The Browse
 Stations dialog adds a Source facet dropdown (All sources / RadioBrowser
 / iHeart / TuneIn / SomaFM / ACB Media / Website) and turns the
 tag/country free-text into a genre editable combo and a country dropdown
@@ -235,31 +237,33 @@ Streams also resolves iHeart/TuneIn station pages directly
 (<code>link_finder</code> <code>_PORTAL_HOSTS</code>,
 <code>_tunein_candidates</code>; #1131, #1105, #1087). All
 failure-tolerant (a down source never blanks the list), egress via each
-client’s single reviewed <code>_fetch</code>, off in Safe Mode via
-<code>refuse_in_safe_mode</code>. This reverses the earlier “TuneIn
-deliberately left out” non-goal (upstream QUILL PRD §5.84f), approved
-2026-07-17; TuneIn uses RadioTime’s public API, not a competitor-data
-scrape. - JavaScript-player resolution in the website stream finder
-(upstream <code>core/radio/triton.py</code>): Triton Digital /
-StreamTheWorld players (the <code>player.listenlive.co</code> network
-and thousands of broadcast stations) compute their stream URL in
-JavaScript, so it never appears in the page HTML and a plain-HTML scan
-finds nothing. Quill Radio detects the player, reads the station
-callsign from the Triton PWA’s own logo asset name, and resolves it to a
-real playable mount through Triton’s JS-free provisioning API
+client's single reviewed <code>_fetch</code>, off in Safe Mode via
+<code>refuse_in_safe_mode</code>. This reverses the earlier "TuneIn
+deliberately left out" non-goal (upstream QUILL PRD §5.84f), approved
+2026-07-17; TuneIn uses RadioTime's public API, not a competitor-data
+scrape.</li>
+<li>JavaScript-player resolution in the website stream finder (upstream
+<code>core/radio/triton.py</code>): Triton Digital / StreamTheWorld
+players (the <code>player.listenlive.co</code> network and thousands of
+broadcast stations) compute their stream URL in JavaScript, so it never
+appears in the page HTML and a plain-HTML scan finds nothing. Quill
+Radio detects the player, reads the station callsign from the Triton
+PWA's own logo asset name, and resolves it to a real playable mount
+through Triton's JS-free provisioning API
 (<code>playerservices.streamtheworld.com</code>), offering both the MP3
 and AAC streams. Gated to pages that actually are Triton players and to
 a callsign the API validates, so it never surfaces a wrong stream; the
 response is parsed through the hardened <code>core/safe_xml</code>
-wrapper. One added egress, inventoried in QUILL’s network-egress audit
+wrapper. One added egress, inventoried in QUILL's network-egress audit
 (§N-1), reached only from the same explicit Scan button and disabled in
-Safe Mode. - One transport control (Play becomes Stop), mute, volume
-with per-station memory, single-player rule (starting any stream
-silences sibling media, radio or podcast, in every app). - What’s
-Playing (Ctrl+T) with a clean, configurable announcement (upstream
-<code>core/radio/now_playing.py</code>, #1068): parses the
+Safe Mode.</li>
+<li>One transport control (Play becomes Stop), mute, volume with
+per-station memory, single-player rule (starting any stream silences
+sibling media, radio or podcast, in every app).</li>
+<li>What's Playing (Ctrl+T) with a clean, configurable announcement
+(upstream <code>core/radio/now_playing.py</code>, #1068): parses the
 <code>key="value"</code> broadcast-automation metadata some stations
-pack into their ICY StreamTitle (and the plain “Artist - Title”
+pack into their ICY StreamTitle (and the plain "Artist - Title"
 convention) into title/artist fields, and renders them through a
 user-set token template
 (<code>{title}</code>/<code>{artist}</code>/<code>{raw}</code> with
@@ -269,48 +273,59 @@ user-set token template
 review/copy: <code>radio.whats_playing_details</code> opens a read-only,
 selectable, character-reviewable dialog with a Copy button, and
 <code>radio.copy_whats_playing</code> copies the clean text straight to
-the clipboard (#1134). - What’s Playing server status-endpoint fallback
-(upstream <code>core/radio/station_status.py</code>, #1111, #1112): when
-the ICY side-tap and the playback engine’s own <code>media-title</code>
-both come up empty (common on HLS), Quill Radio reads the current title
-from the stream server’s own public now-playing status endpoint –
-Icecast <code>/status-json.xsl</code>, SHOUTcast v2
-<code>/stats?json=1</code>, or v1 <code>/7.html</code> – on the same
-host it is already streaming from. Same-host only, off in Safe Mode. -
-Paged station search (upstream
+the clipboard (#1134).</li>
+<li>What's Playing server status-endpoint fallback (upstream
+<code>core/radio/station_status.py</code>, #1111, #1112): when the ICY
+side-tap and the playback engine's own <code>media-title</code> both
+come up empty (common on HLS), Quill Radio reads the current title from
+the stream server's own public now-playing status endpoint -- Icecast
+<code>/status-json.xsl</code>, SHOUTcast v2 <code>/stats?json=1</code>,
+or v1 <code>/7.html</code> -- on the same host it is already streaming
+from. Same-host only, off in Safe Mode.</li>
+<li>Paged station search (upstream
 <code>radio_browser.search_stations</code> offset + the Browse Stations
 dialog, #1064): 200 most-listened-first results per request (was 50)
 plus a More Stations button that pages the RadioBrowser directory beyond
 the first page; a finished search states when more exist and suggests
-narrowing. - Self-healing stream recovery (upstream
+narrowing.</li>
+<li>Self-healing stream recovery (upstream
 <code>core/radio/recovery.py</code>, #1065): on a playback error, a
-confidence-ordered ladder runs off-thread – re-resolve a moved
+confidence-ordered ladder runs off-thread -- re-resolve a moved
 StreamTheWorld mount, refresh the URL from the directory, then (opt-in,
 <code>RadioHistory.recover_from_website</code>, default on, off in Safe
-Mode) scan the station’s website with the shared Triton + “Listen Live”
+Mode) scan the station's website with the shared Triton + "Listen Live"
 link-following scanner. A single unambiguous result auto-plays and
 self-heals the favorite; multiple candidates are announced for the user
 to pick in Find Streams. One attempt per station per session; all egress
 via the already-reviewed sites. <code>link_finder</code> also now
 follows a bounded allowlist of listen/live/play/tune-in
 <code>&lt;a&gt;</code> links one level deep, benefiting the manual Find
-Streams too. - Recently Played (capped, de-duplicated), Play Last
-Station, optional resume-on-launch. - What’s Playing: ICY track titles
-on demand and optional announce-on-change (off by default). - Stream
-fallback: a directory station whose stream errors is re-fetched by uuid
-and retried once, self-healing the saved favorite.</p>
-<p><strong>Organization</strong> - Favorites Manager: nested path-based
-folders, live rich search, Move Up/Down, Mark-and-Move (Move Above/Below
-adopting the destination folder), station rename (custom display names
-used everywhere), folder rename carrying descendants, folder delete that
-returns stations to the top level.</p>
-<p><strong>Recording</strong> - Record now; Record Station (a different
-station than the one playing, for N minutes); scheduled recordings
-(once/daily/weekly). - Concurrent recording (2.0.2, upstream
+Streams too.</li>
+<li>Recently Played (capped, de-duplicated), Play Last Station, optional
+resume-on-launch.</li>
+<li>What's Playing: ICY track titles on demand and optional
+announce-on-change (off by default).</li>
+<li>Stream fallback: a directory station whose stream errors is
+re-fetched by uuid and retried once, self-healing the saved
+favorite.</li>
+</ul>
+<p><strong>Organization</strong></p>
+<ul>
+<li>Favorites Manager: nested path-based folders, live rich search, Move
+Up/Down, Mark-and-Move (Move Above/Below adopting the destination
+folder), station rename (custom display names used everywhere), folder
+rename carrying descendants, folder delete that returns stations to the
+top level.</li>
+</ul>
+<p><strong>Recording</strong></p>
+<ul>
+<li>Record now; Record Station (a different station than the one
+playing, for N minutes); scheduled recordings (once/daily/weekly).</li>
+<li>Concurrent recording (2.0.2, upstream
 <code>quill/core/radio/*</code>, <code>ui/radio/*</code>): the recorder
 holds any number of independent recordings, not one.
 <code>RadioRecorder</code> became a manager of
-<code>{job_id: RecordingJob}</code> – each job owns its own ffmpeg
+<code>{job_id: RecordingJob}</code> -- each job owns its own ffmpeg
 process, recent-stderr tail (no cross-contamination of the
 fatal/transient verdict), reconnect counter, user-stopped flag, Windows
 kill-on-close handle, and resume marker;
@@ -323,67 +338,71 @@ carries the <code>job_id</code>.
 concurrency (0 = unlimited, the default); at the cap
 <code>start()</code> raises <code>RecordingLimitError</code> (a
 <code>RecordingError</code> subclass) and the scheduler holds the entry
-pending via <code>on_busy</code> and retries within its window – the old
-“already in progress” hard refusal and its fragile string-match in the
-scheduler are gone, so overlapping scheduled shows all record. A
+pending via <code>on_busy</code> and retries within its window -- the
+old "already in progress" hard refusal and its fragile string-match in
+the scheduler are gone, so overlapping scheduled shows all record. A
 reconnect reuses the same <code>job_id</code> (and the original
-<code>started_at</code>/<code>scheduled_end</code>) so a recording’s row
+<code>started_at</code>/<code>scheduled_end</code>) so a recording's row
 and marker keep a stable identity across a drop. Record Now targets the
 listened station (<code>_radio_playing_job_id</code>): stop it if it is
-recording, else start a new job; Record Station’s single-recording guard
+recording, else start a new job; Record Station's single-recording guard
 is removed. UI: the Recordings window lists one row per active recording
 with per-row <strong>Stop Recording</strong> (by job id) and
 <strong>Stop All Recordings</strong> (shown at &gt;=2), mirrored in the
 Record menu and the tray/status menu
-(<code>radio.stop_all_recordings</code>); the status bar / tray read “(N
-recording)”. Crash-resume is multi-marker:
+(<code>radio.stop_all_recordings</code>); the status bar / tray read "(N
+recording)". Crash-resume is multi-marker:
 <code>recording_resume.py</code> writes one
 <code>&lt;job_id&gt;.json</code> per recording under a markers directory
 (migrating a legacy single-marker file), and launch offers a single
 <code>ResumeRecordingDialog</code> for one interrupted recording or a
 batched <code>ResumeRecordingsBatchDialog</code> for several. Everything
 lands in the shared <code>quill</code> package; nothing is vendored into
-the wrapper. - Schedule management (upstream
+the wrapper.</li>
+<li>Schedule management (upstream
 <code>ui/radio/schedule_recording_dialog.py</code>, #1106): Edit an
 entry in place, Duplicate it, and Enable/disable it without deleting (a
-disabled entry renders “(disabled)” and does not fire); 12-hour or
-24-hour time entry (<code>parse_time_of_day</code>, “7:30 PM” or
-“19:30”); and a per-entry time-zone dropdown (“(local time)” plus all
+disabled entry renders "(disabled)" and does not fire); 12-hour or
+24-hour time entry (<code>parse_time_of_day</code>, "7:30 PM" or
+"19:30"); and a per-entry time-zone dropdown ("(local time)" plus all
 zoneinfo zones) so an entry fires at the correct absolute moment and the
-list shows zone-labeled times. - Recordings list: live status (Recording
-with growing size / Recorded / Scheduled), Play, Stop Recording, Open in
-Folder, Remove. Refresh is an in-place diff keyed by file path (no-op
-when unchanged; selection/focus/scroll preserved), not a rebuild; the
-active row shows a live elapsed time and scheduled rows show their
-zone-labeled times; the tray tooltip carries “(recording)”. -
-Auto-reconnect: ffmpeg HTTP reconnect flags plus process-level retry
+list shows zone-labeled times.</li>
+<li>Recordings list: live status (Recording with growing size / Recorded
+/ Scheduled), Play, Stop Recording, Open in Folder, Remove. Refresh is
+an in-place diff keyed by file path (no-op when unchanged;
+selection/focus/scroll preserved), not a rebuild; the active row shows a
+live elapsed time and scheduled rows show their zone-labeled times; the
+tray tooltip carries "(recording)".</li>
+<li>Auto-reconnect: ffmpeg HTTP reconnect flags plus process-level retry
 into numbered part files; enabled/attempts/spacing configurable; user
-stops and duration-cap finishes never retry. - Settings: format
-(mp3/ogg/flac/wav, plus a raw stream-copy mode), bitrate, destination,
-filename pattern with tokens, max-duration safety cap. - Raw/lossless
-capture (upstream <code>core/radio/recording.py</code>, listener
-request): a “Raw stream – exactly as sent, no re-encoding (lossless)”
-format (<code>format="copy"</code>) stream-copies the server’s audio
-packets with ffmpeg’s <code>-c:a copy</code> – no decode, no re-encode –
-so the saved file is bit-for-bit the original broadcast, the most
-faithful capture for a listener who wants to do their own lossless
-editing/conversion. Bitrate and Sound Enhancements are meaningless with
-no re-encode and are dropped. The output container follows the stream’s
-own codec, chosen from a one-time bounded <code>ffprobe</code> of the
-first audio stream (mp3-&gt;<code>.mp3</code>,
-aac-&gt;<code>.aac</code>, vorbis-&gt;<code>.ogg</code>,
-opus-&gt;<code>.opus</code>, flac-&gt;<code>.flac</code>, …), falling
-back to Matroska audio (<code>.mka</code>) for anything unrecognized – a
-universal lossless copy container; a missing/failed probe degrades to
-<code>.mka</code> rather than blocking the recording, and the resolved
-extension is reused across auto-reconnect continuation files. -
-Recording reliability (upstream <code>quill/core/radio/*</code>, 2.0.0;
-R1-R4): a reported round of recording bugs closed in four phases,
+stops and duration-cap finishes never retry.</li>
+<li>Settings: format (mp3/ogg/flac/wav, plus a raw stream-copy mode),
+bitrate, destination, filename pattern with tokens, max-duration safety
+cap.</li>
+<li>Raw/lossless capture (upstream <code>core/radio/recording.py</code>,
+listener request): a "Raw stream -- exactly as sent, no re-encoding
+(lossless)" format (<code>format="copy"</code>) stream-copies the
+server's audio packets with ffmpeg's <code>-c:a copy</code> -- no
+decode, no re-encode -- so the saved file is bit-for-bit the original
+broadcast, the most faithful capture for a listener who wants to do
+their own lossless editing/conversion. Bitrate and Sound Enhancements
+are meaningless with no re-encode and are dropped. The output container
+follows the stream's own codec, chosen from a one-time bounded
+<code>ffprobe</code> of the first audio stream
+(mp3-&gt;<code>.mp3</code>, aac-&gt;<code>.aac</code>,
+vorbis-&gt;<code>.ogg</code>, opus-&gt;<code>.opus</code>,
+flac-&gt;<code>.flac</code>, ...), falling back to Matroska audio
+(<code>.mka</code>) for anything unrecognized -- a universal lossless
+copy container; a missing/failed probe degrades to <code>.mka</code>
+rather than blocking the recording, and the resolved extension is reused
+across auto-reconnect continuation files.</li>
+<li>Recording reliability (upstream <code>quill/core/radio/*</code>,
+2.0.0; R1-R4): a reported round of recording bugs closed in four phases,
 delivered in the 2.0.0 release. (R1) the Recordings list is an in-place
-diff keyed by file path – a screen reader is no longer yanked to the top
-mid-read; the active recording is counted from the recorder itself (a
-temp-folder recording is no longer invisible), a firing schedule is no
-longer double-counted, completed one-time entries drop out of the
+diff keyed by file path -- a screen reader is no longer yanked to the
+top mid-read; the active recording is counted from the recorder itself
+(a temp-folder recording is no longer invisible), a firing schedule is
+no longer double-counted, completed one-time entries drop out of the
 scheduled count, and the active row shows a live elapsed time. (R2) the
 scheduler uses a next-due-timestamp window model (an entry is due from
 <code>start</code> through <code>start + duration</code>, so a late
@@ -400,7 +419,7 @@ destination and leaves a still-writing file untouched, then per
 (<code>ask</code>|<code>always</code>|<code>never</code>, default
 <code>ask</code>) Quill Radio offers to resume for the remaining minutes
 within a 10-minute grace via an accessible dialog
-(Resume/Skip/Don’t-ask-again; a corrupt marker is discarded). (R4)
+(Resume/Skip/Don't-ask-again; a corrupt marker is discarded). (R4)
 pipeline hardening: a reconnect records only the remaining time to
 <code>_scheduled_end</code> (not a fresh full duration);
 <code>uniquify()</code> replaces the unconditional <code>-y</code>
@@ -413,29 +432,49 @@ later verdict; and on Windows ffmpeg runs in a job object with
 <code>JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE</code> so a crashed host takes
 the child down, with the stop wait moved off the UI thread. Everything
 lands in the shared <code>quill</code> package; nothing is vendored into
-the wrapper.</p>
-<p><strong>Timers</strong> - Sleep timer (shared radio/podcasts
-fade-and-restore). - Wake-up timer: once or daily at HH:MM; fires only
-within a 5-minute window (never retro-fires); “once” disables itself;
-requires the app running (tray counts); honest about that in the UI.</p>
-<p><strong>Shell</strong> - System tray with full controls and the app’s
-own icon; Send to Tray (Ctrl+W) and Exit; hardware media keys
-(play/pause, stop) system-wide while running, never stolen from an app
-that already owns them, released on exit. - Command Palette scoped to
-the app’s registry; Redeem Unlock Code (shared store); in-app update
-check that downloads the installer with spoken progress and offers
-Install now; About. - Unlock-gated Audio Description Project menu when
-<code>future.adp_assistant</code> is unlocked. - Diagnostics (upstream
-<code>core/radio/radio_logging.py</code>,
+the wrapper.</li>
+</ul>
+<p><strong>Timers</strong></p>
+<ul>
+<li>Sleep timer (shared radio/podcasts fade-and-restore).</li>
+<li>Wake-up timer: once or daily at HH:MM; fires only within a 5-minute
+window (never retro-fires); "once" disables itself; requires the app
+running (tray counts); honest about that in the UI.</li>
+</ul>
+<p><strong>Shell</strong></p>
+<ul>
+<li>System tray with full controls and the app's own icon; Send to Tray
+(Ctrl+W) and Exit; hardware media keys (play/pause, stop) system-wide
+while running, never stolen from an app that already owns them, released
+on exit.</li>
+<li>Global show/hide-to-tray hotkey (2.2.0, upstream
+<code>ui/app_shell.py</code>, <code>ui/tray_hotkey.py</code>,
+<code>apps/radio.py</code>): a system-wide chord toggles the main window
+between shown and hidden-to-tray from any app, even without focus, over
+the same Windows <code>RegisterHotKey</code> mechanism the hardware
+media keys use. Best-effort registration -- if another app already owns
+the chord it is skipped silently (no error), with the tray icon and the
+Alt+F4-to-tray preference as the always-present fallbacks;
+playback/recording continue while hidden. One unique chord per family
+app so they never collide -- Quill Radio Ctrl+Alt+Shift+R, QUILL
+Ctrl+Alt+Shift+Q, Quill Weather Ctrl+Alt+Shift+W. Windows-only. Detailed
+in §8.</li>
+<li>Command Palette scoped to the app's registry; Redeem Unlock Code
+(shared store); in-app update check that downloads the installer with
+spoken progress and offers Install now; About.</li>
+<li>Unlock-gated Audio Description Project menu when
+<code>future.adp_assistant</code> is unlocked.</li>
+<li>Diagnostics (upstream <code>core/radio/radio_logging.py</code>,
 <code>RadioHistory.debug_mode</code>/<code>log_dir</code>; #1130, #1124,
 #1122): a Verbose logging (debug-mode) checkbox in Preferences applied
 live via <code>set_radio_debug</code> (no restart), and a settable Log
 folder; recording stderr is captured into the log so a failed capture
-leaves a trail.</p>
-<p>Out of scope by decision: QUILL’s editor, AI, speech transcription,
+leaves a trail.</li>
+</ul>
+<p>Out of scope by decision: QUILL's editor, AI, speech transcription,
 braille, and TTS stacks (not installed); a custom update engine beyond
 download-and-run.</p>
-<h2 id="accessibility-requirements">4. Accessibility requirements</h2>
+<h2 id="4-accessibility-requirements">4. Accessibility requirements</h2>
 <ul>
 <li>A-1. Every interactive element has an accessible name; upstream
 inventory gates audit the shared surfaces.</li>
@@ -451,14 +490,14 @@ surprises anyone.</li>
 tray menu; Delete/F2/Enter conventions consistent across lists.</li>
 <li>A-6. The main window exposes a focusable, arrow-navigable status bar
 (F6 to enter, a second F6 or Escape to leave) whose cells announce live
-state and act on Enter, with a per-cell context menu – a keyboard- and
+state and act on Enter, with a per-cell context menu -- a keyboard- and
 screen-reader-first alternative to a passive, sighted-only status line.
 It is user-hideable (View &gt; Show Status Bar).</li>
 <li>A-7. View-menu visibility toggles (Show Station Details, Show Status
 Bar) persist across sessions and are honored by every surface that owns
 the affected control; a hidden control is never a focus stop.</li>
 <li>A-8. A low-vision text-size control (View &gt; Text Size) scales the
-main window’s fonts (favorites tree, transport buttons, now-playing
+main window's fonts (favorites tree, transport buttons, now-playing
 line, status bar) and persists; reordering and every list action remain
 fully keyboard-operable at every size.</li>
 <li>A-9. Long-running background audio (playback, recording) keeps the
@@ -466,53 +505,53 @@ machine awake so it does not stop unattended; the behavior is
 user-controllable and defaults on, and never inhibits display sleep
 (audio-only need).</li>
 </ul>
-<h2 id="packaging-requirements">5. Packaging requirements</h2>
+<h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
-<li>P-1. PyInstaller onedir build with the app’s own icon; Inno Setup
-installer with its own AppId installing to {autopf}Radio, per-user by
-default.</li>
+<li>P-1. PyInstaller onedir build with the app's own icon; Inno Setup
+installer with its own AppId installing to {autopf}\Quill Radio,
+per-user by default.</li>
 <li>P-2. Everything bundled, nothing downloaded at install or runtime:
 the onedir build carries the whole quill package and data; ffmpeg
-installs to {app}and libmpv (the mpv playback engine, with its GPL
-license texts and source-offer note) to {app}, both found via the
-wrapper exporting QUILL_APP_ROOT. A portable zip ships the same onedir
-build plus a <code>data\</code> folder that switches storage to travel
-with the app.</li>
-<li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> – QUILL or
-QUILL Cast may still use it.</li>
+installs to {app}\tools\ffmpeg and libmpv (the mpv playback engine, with
+its GPL license texts and source-offer note) to {app}\tools\mpv, both
+found via the wrapper exporting QUILL_APP_ROOT. A portable zip ships the
+same onedir build plus a <code>data\</code> folder that switches storage
+to travel with the app.</li>
+<li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> -- QUILL
+or QUILL Cast may still use it.</li>
 <li>P-4. Release artifacts:
 <code>Quill-Radio-Setup-&lt;version&gt;.exe</code>, tagged
 <code>v&lt;version&gt;</code>, which Help &gt; Check for Updates
 compares against and downloads.</li>
 </ul>
-<h2 id="network-requirements">6. Network requirements</h2>
+<h2 id="6-network-requirements">6. Network requirements</h2>
 <ul>
-<li>N-1. Every outbound surface is inventoried in QUILL’s network-egress
+<li>N-1. Every outbound surface is inventoried in QUILL's network-egress
 audit: RadioBrowser and SomaFM (search/tags/countries/click-votes/byuuid
 fallback); iHeart (<code>www.iheart.com</code> public sitemap index +
-on-demand station-page GETs to resolve a stream); TuneIn via RadioTime’s
+on-demand station-page GETs to resolve a stream); TuneIn via RadioTime's
 OPML directory (<code>opml.radiotime.com</code> search/browse/tune,
 <code>partnerId=RadioTime</code>, no key); the user-typed page for Find
 Streams (plus, for a Triton/StreamTheWorld player page or an
-iHeart/TuneIn page, one follow-on call to that provider’s public API to
+iHeart/TuneIn page, one follow-on call to that provider's public API to
 resolve the stream); the playing stream itself for ICY titles and, as a
-same-host last-resort for What’s Playing, that stream server’s own
-Icecast/SHOUTcast status endpoint; and this repository’s GitHub releases
+same-host last-resort for What's Playing, that stream server's own
+Icecast/SHOUTcast status endpoint; and this repository's GitHub releases
 for the update check. Playback (mpv) and the metadata/status requests
-send a “Quill Radio” User-Agent. No telemetry of any kind. (Sound
-Enhancements’ local relay, §8, is loopback-only and never reaches the
-network itself – it filters the same stream this section already
+send a "Quill Radio" User-Agent. No telemetry of any kind. (Sound
+Enhancements' local relay, §8, is loopback-only and never reaches the
+network itself -- it filters the same stream this section already
 covers.)</li>
-<li>N-2. Safe Mode disables the radio’s network surfaces along with the
+<li>N-2. Safe Mode disables the radio's network surfaces along with the
 feature.</li>
 </ul>
-<h2 id="non-goals">7. Non-goals</h2>
+<h2 id="7-non-goals">7. Non-goals</h2>
 <p>macOS/Linux standalone builds (upstream QUILL covers macOS; the tray
 pattern does not exist there), auto-updating in place, telemetry. A full
-DSP effects rack (reverb, tempo/pitch, spatial audio) – Sound
+DSP effects rack (reverb, tempo/pitch, spatial audio) -- Sound
 Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
-<h2 id="since-1.0">8. Since 1.0</h2>
+<h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
 <li><strong>2.2.0 (upstream <code>quill/core/radio/backup.py</code>,
 <code>ui/radio/backup_ui.py</code>, <code>apps/radio.py</code>,
@@ -521,17 +560,18 @@ compressor, not a general effects rack.</p>
 <code>core/radio/wxindex.py</code>,
 <code>core/radio/favorites.py</code>, <code>ui/window_manager.py</code>,
 <code>ui/window_menu.py</code>, <code>ui/dialog_contract.py</code>,
-<code>ui/app_shell.py</code>). Everything since 2.1.2; 2.2.0 was never
-shipped as a separate build.</strong>
+<code>ui/app_shell.py</code>, <code>ui/tray_hotkey.py</code>).
+Everything since 2.1.2; 2.2.0 was never shipped as a separate
+build.</strong>
 <ul>
 <li><em>Modeless multi-window model (menu-bar-loss root fix).</em> The
-heavy surfaces – Browse Stations (<code>BrowseTreeDialog</code>), Search
-Stations (<code>StationBrowserDialog</code>), Manage Favorites
+heavy surfaces -- Browse Stations (<code>BrowseTreeDialog</code>),
+Search Stations (<code>StationBrowserDialog</code>), Manage Favorites
 (<code>FavoritesManagerDialog</code>), Schedule Recording
 (<code>ScheduleRecordingDialog</code>), and the Weather Center
-(<code>WeatherCenterDialog</code>) – convert from <code>wx.Dialog</code>
-to modeless <code>wx.Frame</code>s, each carrying the shared menu bar,
-fixing the reported “menu bar disappears” defect (a
+(<code>WeatherCenterDialog</code>) -- convert from
+<code>wx.Dialog</code> to modeless <code>wx.Frame</code>s, each carrying
+the shared menu bar, fixing the reported "menu bar disappears" defect (a
 <code>wx.Dialog</code> cannot host a menu bar) and removing the modal
 lock-out of the main window. A pure <code>WindowRegistry</code>
 (<code>ui/window_manager.py</code>) holds open order + numbering +
@@ -540,7 +580,7 @@ cyclic next/previous (unit-tested, wx-free); the wx
 dynamic <strong>&amp;Window</strong> menu (numbered 1-9 in open order),
 the Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 accelerators, and
 register-on-show / unregister-and-activate-previous on close, with
-“Entered …”/“Exited …” cues and primary-control focus via
+"Entered ..."/"Exited ..." cues and primary-control focus via
 <code>dialog_contract.show_modeless_surface</code>. Each surface takes
 an optional <code>windows=</code> param: present (standalone Quill
 Radio) -&gt; modeless frame; absent (embedded QUILL) -&gt; the classic
@@ -555,17 +595,17 @@ filenames, is zip-slip-guarded, and reloads the running app.
 Station-menu UI in <code>ui/radio/backup_ui.py</code> (worker-threaded,
 native file dialogs). Directly serves R-3 device migration.</li>
 <li><em>Now Playing window on Ctrl+T (#1134 wiring).</em> Ctrl+T
-(“What’s Playing?”) now opens the reviewable
+("What's Playing?") now opens the reviewable
 <code>NowPlayingDialog</code> (arrow/copy the title+artist) instead of
 only speaking it; the window existed but had no menu item or key.
 Fetch-and-speak fallback when no title is cached.</li>
 <li><em>Per-favorite Station Details.</em> Favorites context menu -&gt;
-Station Details… shows <code>RadioStation.details_text</code> in the
+Station Details... shows <code>RadioStation.details_text</code> in the
 same reviewable window the search results use.</li>
 <li><em>Radio Browser clarity + genre browse (#1194).</em> The Search
-source facet reads “Radio Browser” (two words) and the derived label is
-spelled the human way everywhere; a first-class “Radio Browser (by
-Genre)” node joins the Browse tree via
+source facet reads "Radio Browser" (two words) and the derived label is
+spelled the human way everywhere; a first-class "Radio Browser (by
+Genre)" node joins the Browse tree via
 <code>radio_browser.fetch_genres/genre_display/fetch_genre_stations</code>
 over the existing tag/search API.</li>
 <li><em>View menu.</em> A new top-level <strong>View</strong> menu
@@ -580,7 +620,7 @@ Bar</em> (<code>RadioHistory.show_status_bar</code>, default on)
 shows/hides the main-window status bar.</li>
 <li><em>Focusable status bar (A-6).</em> A self-contained
 <code>ui/radio/status_bar.py</code> (<code>RadioStatusBar</code>) builds
-an arrow-navigable status strip along the bottom of the main window –
+an arrow-navigable status strip along the bottom of the main window --
 cells for Now Playing, Volume (Volume Boost indicator), Recording, Sleep
 timer, Favorites count, and time. F6 enters it (a second F6 / Escape
 returns focus to the favorites tree), Left/Right/Home/End navigate,
@@ -602,10 +642,10 @@ Move Up/Down/Above/Below in <code>FavoritesManagerDialog</code> were
 disabled unless the folder was already manual; they now switch to manual
 on the first move (<code>_switch_to_manual_if_needed</code>, which flips
 the sort only) and move within the preserved stored order, mirroring the
-main list’s Alt+Shift+Up/Down. The stored list is NOT baked to the
-sorted view – doing so silently destroyed a hand-arranged order (#1186);
-the reload reveals the preserved order. The host persists the switch via
-<code>_radio_switch_favorites_to_manual</code> (new
+main list's Alt+Shift+Up/Down. The stored list is NOT baked to the
+sorted view -- doing so silently destroyed a hand-arranged order
+(#1186); the reload reveals the preserved order. The host persists the
+switch via <code>_radio_switch_favorites_to_manual</code> (new
 <code>on_switch_to_manual</code> callback).</li>
 <li><em>Keep-awake while playing/recording (A-9).</em>
 <code>platform/keep_awake.set_keep_awake</code> (Windows
@@ -616,15 +656,32 @@ when neither is active. <code>_update_sleep_inhibitor</code> reads live
 playback + recorder state and <code>RadioHistory.prevent_sleep</code>
 (default on; Preferences checkbox) on every state change. Display sleep
 is deliberately not inhibited.</li>
+<li><em>Global show/hide-to-tray hotkey.</em> A system-wide hotkey
+toggles the main window between shown and hidden-to-tray from any
+application, even when Quill Radio does not have focus, over the same
+Windows <code>RegisterHotKey</code> path the hardware media keys already
+use. <code>app_shell._register_tray_hotkey</code> claims the chord on
+show and <code>app_shell.toggle_window_to_tray</code> hides the window
+(announcing "hidden to the tray", playback/recording left running) or
+restores-and-focuses it (announcing "shown"); the wx-free chord parser
+is shared in <code>ui/tray_hotkey.py</code>, and
+<code>apps/radio.py</code> supplies Quill Radio's chord. Registration is
+best-effort: a chord another app already owns is left to that app and
+skipped silently (no error, no crash), so the tray icon and the "Alt+F4
+minimizes to the system tray" preference remain the reliable show/hide
+fallbacks. Each family app registers a distinct chord so they never
+collide -- Quill Radio <strong>Ctrl+Alt+Shift+R</strong>, QUILL
+Ctrl+Alt+Shift+Q, Quill Weather Ctrl+Alt+Shift+W. Windows-only (no-op
+elsewhere).</li>
 <li><em>Fixes.</em> Alt+Shift+Up/Down reorder from a sorted view
 switches to manual and preserves the stored order (it does NOT bake the
-visible order over it – baking silently destroyed a hand-arranged list,
+visible order over it -- baking silently destroyed a hand-arranged list,
 #1186; the reload reveals the preserved order and the move happens
 within it); explicit Exit (menu/tray) quits for real instead of bouncing
 to the tray under minimize-on-close (#1193); keyboard focus lands inside
 the window after show so Alt reaches the menu bar on launch (#1193);
 NOAA state folders count from the same directory tier the leaves come
-from, so “(N items)” always matches what expanding shows
+from, so "(N items)" always matches what expanding shows
 (<code>wxindex.states_with_playable_feeds</code>). A later feedback
 round also fixed: the transport button dropped its colliding Alt+S/Alt+P
 mnemonic so Ctrl+P is the reliable Stop/Play key (#1208); New Folder
@@ -656,22 +713,22 @@ in <code>_refresh_statusbar</code> (#1214).</li>
 <code>ui/main_frame_weather.py</code>,
 <code>apps/radio.py</code>).</strong>
 <ul>
-<li><em>NOAA Weather Radio via WeatherIndex.</em> The Browse “Weather /
-NOAA” source drops the fuzzy RadioBrowser name search
+<li><em>NOAA Weather Radio via WeatherIndex.</em> The Browse "Weather /
+NOAA" source drops the fuzzy RadioBrowser name search
 (<code>radio_browser.noaa_weather_stations</code>, removed) for the
 authoritative <strong>WeatherIndex</strong> directory (api.wxindex.org):
 a lazy State -&gt; Station tree (call sign, frequency, place), SAME-code
-/ callsign / “County, ST” routing in unified search
+/ callsign / "County, ST" routing in unified search
 (<code>directory_search.wxindex_search_stations</code>), and Weather
 menu &gt; <strong>Listen to your Local NOAA Weather Radio</strong>,
-resolved from the saved Weather location’s county and coordinates
+resolved from the saved Weather location's county and coordinates
 (<code>wxindex.local_stations</code>: county/SAME match first, nearest
-covering transmitter fallback). A three-tier resolver – live API
+covering transmitter fallback). A three-tier resolver -- live API
 (Safe-Mode-blocked, in the network-egress audit) -&gt; app-data cache
 (<code>&lt;app_data&gt;/radio/wxindex-cache/</code>) -&gt; bundled
 snapshot <code>quill/data/noaa_directory.json</code> (1,035 transmitters
 across every state and territory; regenerated by
-<code>scripts/snapshot_wxindex.py</code>) – keeps every capability
+<code>scripts/snapshot_wxindex.py</code>) -- keeps every capability
 working offline and outliving the API. Weather menu &gt; <strong>Update
 NOAA Weather Radio Directory</strong> force-pulls the directory into the
 cache tier on demand; the bundled snapshot is the permanent floor and is
@@ -680,7 +737,7 @@ never overwritten. Stations adapt to <code>RadioStation</code>
 scheduling work unchanged. Partially delivers the §18 NWR stream
 capability (directory + streams; alert interruption and generated audio
 remain future work). Detailed in §18.5.</li>
-<li><em>Radio Reading Services.</em> A new “Radio Reading Services”
+<li><em>Radio Reading Services.</em> A new "Radio Reading Services"
 Browse category and unified-search blend
 (<code>directory_search.reading_services_search_stations</code>) for the
 audio information services that read print aloud for blind and
@@ -693,20 +750,20 @@ mirroring wxindex (Safe-Mode-guarded). Detailed in §18.6-18.7.</li>
 §8, 2.0.0), gains a Browse Stations branch: genre folders, each an A-Z
 sub-directory, all lazy (<code>ui/radio/browse_tree_dialog.py</code>).
 The XML sitemap the search path uses carries no genre, so browse reads
-iHeart’s free, keyless JSON content API (<code>us.api.iheart.com</code>:
+iHeart's free, keyless JSON content API (<code>us.api.iheart.com</code>:
 <code>/content/genre</code>,
 <code>/content/liveStations?genreId=</code>), where each row embeds its
-own stream – one GET per genre, no per-station page fetch. New core:
+own stream -- one GET per genre, no per-station page fetch. New core:
 <code>iheart.parse_genres</code>/<code>parse_genre_stations</code>/<code>fetch_genres</code>/<code>fetch_genre_stations</code>,
 routed through the existing reviewed <code>iheart._fetch</code> egress
 site (rationale expanded to cover the content API).
 Safe-Mode-guarded.</li>
 <li><em>Unified-search Source filter de-dup fix.</em> A station carried
-by more than one directory (e.g. a SomaFM channel RadioBrowser also
+by more than one directory (e.g. a SomaFM channel RadioBrowser also
 lists) was de-duplicated to a single result, so the Source facet could
 hide it under the wrong directory.
 <code>directory_search.merge_and_rank</code> now records every absorbed
-duplicate’s source on a transient, identity-neutral
+duplicate's source on a transient, identity-neutral
 <code>RadioStation.alt_sources</code>, and the facet matches the full
 set via <code>directory_search.station_source_labels</code>; the result
 row still badges the winning source.</li>
@@ -715,7 +772,7 @@ row still badges the winning source.</li>
 <code>quill/apps/radio.py</code>,
 <code>quill/ui/radio/*</code>).</strong>
 <ul>
-<li><em>Channel mode Left/Right one-ear fix.</em> 2.0.1’s
+<li><em>Channel mode Left/Right one-ear fix.</em> 2.0.1's
 <code>pan=stereo|c0=c0|c1=c0</code> duplicated a single source channel
 to both outputs; corrected to send the whole stereo field to one output
 and silence the other (<code>pan=stereo|c0=0.5*c0+0.5*c1|c1=0*c0</code>,
@@ -731,7 +788,7 @@ Preferences choice for the default; a folder context-menu override.</li>
 <li><em>M3U/M3U8 station import.</em> Pure
 <code>core/radio/playlist_import.parse_m3u</code> +
 <code>split_new_and_duplicates</code>; Station &gt; Import Stations from
-Playlist… with folder targeting/creation at any depth and a
+Playlist... with folder targeting/creation at any depth and a
 skip-vs-import-all duplicate prompt.</li>
 </ul></li>
 <li><strong>2.0.1 fast-follow (upstream <code>quill/core/radio/*</code>,
@@ -744,13 +801,13 @@ matches only genuinely-terminal outcomes (disk full; HTTP 404/410/451);
 a transient 403 (rotating CDN token), 408/409, 5xx, or bare EOF
 reconnects within the attempt budget. The stderr tail is cleared on a
 reconnect/progress signal (<code>_RECOVERY_STDERR_RE</code>) so an error
-ffmpeg recovered from can’t poison a later drop’s verdict – fixing
-“recording stops after ~1 minute” reports.</li>
+ffmpeg recovered from can't poison a later drop's verdict -- fixing
+"recording stops after ~1 minute" reports.</li>
 <li><em>Recording-started announcement.</em> Record Now / Record Station
-announce “Recording started: <station>”
+announce "Recording started: <station>"
 (<code>main_frame_radio.radio_record_toggle</code> /
 <code>open_record_station_dialog</code>).</li>
-<li><em>What’s Playing review/copy (#1134).</em> New
+<li><em>What's Playing review/copy (#1134).</em> New
 <code>radio.whats_playing_details</code> (a read-only, selectable,
 char-reviewable <code>NowPlayingDialog</code> with Copy) and
 <code>radio.copy_whats_playing</code> (<code>_copy_to_clipboard</code>);
@@ -760,19 +817,19 @@ no new setting.</li>
 replace the <code>mono_enabled</code> bool (migrated on load).
 <code>audio_enhance</code> gains left/right pan filters
 (<code>pan=stereo|c0=c0|c1=c0</code> / <code>...|c0=c1|c1=c1</code>);
-the Sound Enhancements dialog’s mono checkbox becomes a Channel-mode
+the Sound Enhancements dialog's mono checkbox becomes a Channel-mode
 RadioBox. Global default AND per-station override (resolved with the EQ
 via <code>_radio_resolve_enhancement</code>); night mode stays
 global.</li>
 <li><em>Recording-playback volume.</em> A <code>Ctrl+Up/Down</code>
 char-hook on the (modal) Recordings dialog drives the shared
-controller’s volume, so a played-back recording is adjustable like a
+controller's volume, so a played-back recording is adjustable like a
 live stream.</li>
 </ul></li>
 <li><strong>Recordings reliability overhaul (2.0.0, upstream
 <code>quill/core/radio/*</code>; R1-R4).</strong> The headline of 2.0.0:
 a reported round of recording bugs closed and the one missing piece
-added – a recording that survives a restart. Resume across restart with
+added -- a recording that survives a restart. Resume across restart with
 an ask-on-launch dialog and a 10-minute grace window; window-based
 scheduling with launch catch-up; a flicker-free, place-keeping
 Recordings list with honest counts and a live elapsed time; and pipeline
@@ -786,7 +843,7 @@ wrapper.</li>
 <code>core/radio/directory_search.py</code>; #1116, #1117,
 #1132).</strong> Two of the largest internet-radio directories added as
 keyless, account-free station sources blended into Browse Stations, with
-a Source facet, genre/country dropdown filters, “via <source>” result
+a Source facet, genre/country dropdown filters, "via <source>" result
 labels, a Refresh button for the cached iHeart index, and iHeart/TuneIn
 page resolution in Find Streams. Detailed as delivered scope in §3
 (Listening). Reverses the earlier TuneIn non-goal (upstream QUILL PRD
@@ -796,9 +853,9 @@ page resolution in Find Streams. Detailed as delivered scope in §3
 Edit, Duplicate, and Enable/disable for schedule entries; 12-or-24-hour
 time entry; per-entry time zones with zone-labeled list times. Detailed
 in §3 (Recording).</li>
-<li><strong>What’s Playing server status-endpoint fallback (2.0.0,
+<li><strong>What's Playing server status-endpoint fallback (2.0.0,
 upstream <code>core/radio/station_status.py</code>, #1111,
-#1112).</strong> A same-host last resort reading the stream server’s own
+#1112).</strong> A same-host last resort reading the stream server's own
 Icecast/SHOUTcast now-playing status page when ICY and the engine title
 channel are both empty. Detailed in §3 (Listening).</li>
 <li><strong>Diagnostics (2.0.0, upstream
@@ -813,10 +870,10 @@ audio backend: libmpv, live-stream-aware (readiness from
 <code>core-idle</code>, not the duration a live stream never reports),
 bundled at <code>{app}\tools\mpv</code>.
 <code>RadioHistory.playback_engine</code> = auto (mpv when present) / wx
-(“Windows Media (classic)”, the byte-for-byte pre-1.1 escape hatch) /
+("Windows Media (classic)", the byte-for-byte pre-1.1 escape hatch) /
 mpv; one silent cross-engine rescue per play attempt in either
 direction. Combined stream-format coverage is effectively complete: MP3,
-AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) –
+AAC and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8) --
 Ogg Vorbis/Opus/HLS were undecodable by WMP. The engine delivers:
 <strong>Radio output device</strong> (Preferences;
 <code>RadioHistory.output_device</code>; screen reader and app sounds
@@ -826,9 +883,9 @@ fallback when unusable); <strong>live DVR</strong> (a seekable
 Seconds, Back to Live, each announcing how far behind live);
 <strong>Volume Boost</strong> (up to 150% for quiet stations; the 0-100
 scale, per-station volumes, and mute untouched); <strong>engine-native
-What’s Playing fallback</strong> (mpv <code>media-title</code> when the
+What's Playing fallback</strong> (mpv <code>media-title</code> when the
 ICY side-tap gets nothing or the stream is HLS); and
-<strong>“Buffering…” announcements</strong> on mid-stream stalls.</li>
+<strong>"Buffering..." announcements</strong> on mid-stream stalls.</li>
 <li><strong>OptiLab broadcast polish (2.0.2, upstream
 <code>core/audio_enhance.py</code>,
 <code>ui/sound_enhance_dialog.py</code>).</strong> One-touch
@@ -836,14 +893,14 @@ broadcast-processing modes in Sound Enhancements, adapted from OptiLab
 Core by dgl1984 (github.com/dgl1984/optilab, Apache-2.0). OptiLab is a
 GUI-only plugin (JSFX/CLAP/Winamp DSP) with no library API and a
 Windows-64-only binary, so rather than hosting the binary the modes
-reproduce the <em>shape</em> of its three chains – Podcast Leveler (HPF
+reproduce the <em>shape</em> of its three chains -- Podcast Leveler (HPF
 -&gt; speechnorm -&gt; acompressor -&gt; 65 Hz tame -&gt; alimiter),
 Stream Polish (dynaudnorm -&gt; acompressor -&gt; presence -&gt;
-alimiter), Smooth Limiter (acompressor -&gt; alimiter) – as ffmpeg
+alimiter), Smooth Limiter (acompressor -&gt; alimiter) -- as ffmpeg
 filter chains appended last in <code>build_filter_graph</code> (their
 lookahead limiter guards the output), so they ride the same three
 delivery paths (mpv-native live, relay, recordings) and work
-cross-platform. Controls map OptiLab’s onto ffmpeg: Mode picks the
+cross-platform. Controls map OptiLab's onto ffmpeg: Mode picks the
 chain, Input is a front-end <code>volume</code> trim (0 dB default, per
 product choice), Auto-Adapt (0-100%) leans the leveling/density more
 assertive. A bypass checkbox (<code>optilab_enabled</code>) keeps the
@@ -862,9 +919,9 @@ the Sound Enhancements dialog previews live on the playing stream via an
 <code>RadioPlayerController.preview_enhancements</code> (one apply for
 the whole set, so a wx drag reconnects once, not per field; mpv applies
 natively). OK keeps; Cancel/Escape reverts to the snapshot captured on
-open (the Reset button’s own restore is exempted). And all
-listener-level settings – previously EQ/compressor/channel per-station
-but night mode + OptiLab global-only – are now per-station as well as
+open (the Reset button's own restore is exempted). And all
+listener-level settings -- previously EQ/compressor/channel per-station
+but night mode + OptiLab global-only -- are now per-station as well as
 global: <code>FavoriteStation</code> gained
 <code>night_mode_enabled</code>/<code>optilab_*</code>,
 <code>set_enhancement</code> and the <code>ResolvedEnhancement</code>
@@ -875,32 +932,32 @@ dialog to the favorite override (when a favorite plays) or the shared
 Reset All Stations both restore the shared default including night mode
 and OptiLab.</li>
 <li><strong>Sound Enhancements</strong> (Playback &gt; Sound
-Enhancements…): a three-band equalizer (Bass/Mid/Treble sliders, -12 to
-+12 dB) and a compressor, applied live via an ffmpeg filter graph
-relayed to the playback engine over a loopback-only local HTTP server –
+Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12
+to +12 dB) and a compressor, applied live via an ffmpeg filter graph
+relayed to the playback engine over a loopback-only local HTTP server --
 or, on the mpv engine (1.1.0), natively inside the player with no relay
 and with changes heard live, no reconnect. Off by default. 1.1.0 adds
 two listener-level (deliberately global, not per-station) options riding
 the same shared graph everywhere including recordings: <strong>mono
-downmix</strong> (single-sided hearing / one earbud – hard-panned
+downmix</strong> (single-sided hearing / one earbud -- hard-panned
 content never disappears) and <strong>night mode</strong> (real-time
 loudness normalization lifting quiet passages), plus the Small Speakers
-and Late Night quick presets. A “Quick preset” shortcut sets all three
+and Late Night quick presets. A "Quick preset" shortcut sets all three
 sliders at once. Remembered per favorite station (a whole-record
-override on <code>FavoriteStation</code>, mirroring QUILL Cast’s
+override on <code>FavoriteStation</code>, mirroring QUILL Cast's
 per-podcast override) as well as a shared default in
 <code>RadioHistory</code>; <code>RadioPlayerController</code> resolves
 which applies via an injected callback at the top of every
-<code>play_station</code>. Recording Settings’ “Apply Sound Enhancements
-to recordings” (off by default) optionally records the filtered audio
+<code>play_station</code>. Recording Settings' "Apply Sound Enhancements
+to recordings" (off by default) optionally records the filtered audio
 too.</li>
 <li><strong>SomaFM</strong>, a second free, keyless station directory,
 blended into Browse Stations search alongside RadioBrowser.</li>
 <li><strong>Exit/Minimize to Tray confirmation</strong>: closing the
-window asks Exit, Minimize to Tray, or Cancel (with a one-time “Don’t
-ask me again”), instead of always exiting immediately and silently
+window asks Exit, Minimize to Tray, or Cancel (with a one-time "Don't
+ask me again"), instead of always exiting immediately and silently
 stopping an in-progress recording. Adjustable in Preferences.</li>
-<li><strong>Quieter dialogs and a real “up to date” answer</strong>:
+<li><strong>Quieter dialogs and a real "up to date" answer</strong>:
 dialog-transition announcements are now off by default (Preferences),
 and a manual Check for Updates that finds nothing newer shows a dialog
 instead of only announcing it.</li>
@@ -909,7 +966,7 @@ Release Notes / Product Requirements open the bundled docs in your
 browser.</li>
 </ul>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
-<h2 id="weather-now-its-own-product">9. Weather – now its own
+<h2 id="9-weather----now-its-own-product">9. Weather -- now its own
 product</h2>
 <p>The weather feature set (Weather Center, Weather Guardian alert
 monitoring, the alert model, voice/speech plans, and the roadmap) has
@@ -917,7 +974,7 @@ its own home now that Quill Weather is a standalone app: see
 <strong><code>../../weather/docs/prd.md</code></strong>.</p>
 <p>Weather remains available inside Quill Radio via the
 <strong>Weather</strong> menu when the Weather feature is enabled (View
-&gt; Customize Features…), and that menu offers <strong>Open the Quill
+&gt; Customize Features...), and that menu offers <strong>Open the Quill
 Weather App</strong> to hand off to the standalone watcher. The two are
 separate, independently-distributed apps that run side by side.</p>
 </body>

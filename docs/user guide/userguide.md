@@ -11026,8 +11026,11 @@ Global hotkeys let a key combination work **system-wide** — in your browser, y
 - New Sticky Note
 - Sticky Notes Browser
 - Post to Mastodon — this opens the compose window; nothing is ever sent by the hotkey itself
+- Show/Hide QUILL to the tray — hides the window to the system tray, or brings it back and focuses it
 
 Nothing that edits a document, deletes anything, or acts invisibly can ever be a global hotkey, no matter what a settings file says. Commands that open a window restore QUILL first; media commands act right where you are; and every press speaks its result ("Radio paused", "Note saved") so you always know what happened even when QUILL isn't visible. Your existing system-wide sticky-note hotkey keeps working exactly as it always has unless you reassign it here. Global hotkeys are Windows-only — macOS offers no equivalent mechanism — but every one of these commands remains available from the menus and the command palette on every platform.
+
+**Show or hide QUILL with one keystroke — Ctrl+Alt+Shift+Q.** QUILL ships with one global hotkey already set: **Ctrl+Alt+Shift+Q** tucks the window to the system tray when it is showing, and brings it back — focused — when it is hidden, from wherever you happen to be. It's an ordinary entry in the table above, so you can change it or clear it like any other. Each app in the family carries the same convenience with its own, deliberately different chord so they never clash: **Quill Radio uses Ctrl+Alt+Shift+R** and **Quill Weather uses Ctrl+Alt+Shift+W** — handy for apps that live in the tray (Quill Weather watching for alerts, Quill Radio playing in the background), which are then a single keystroke away without hunting for the tray icon. Hiding never stops anything the app is doing; the toggle announces "hidden to the tray" or "shown"; and if some other program already owns Ctrl+Alt+Shift+Q, that combination stays theirs and QUILL simply leaves it alone — pick a different one in this dialog.
 
 ## Future Directions: Double-Tap and Beyond
 

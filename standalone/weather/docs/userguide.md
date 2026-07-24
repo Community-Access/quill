@@ -22,6 +22,15 @@ Quill Weather is built to keep running.
 
 - **Minimize to Tray** (File menu, or Ctrl+W) tucks the window into the system
   tray; monitoring keeps going.
+- **Ctrl+Alt+Shift+W** is a global show/hide hotkey: it works from any app, even
+  when Quill Weather does not have focus. Press it once to hide the window to the
+  tray (monitoring keeps running); press it again to bring the window back and
+  focus it. Quill Weather speaks "hidden to the tray" or "shown" so you know
+  which happened, and you never have to go looking for the tray icon. The chord
+  is unique to Quill Weather (QUILL uses Ctrl+Alt+Shift+Q and Quill Radio uses
+  Ctrl+Alt+Shift+R), so the three apps never collide. It is Windows-only; if
+  another program has already claimed Ctrl+Alt+Shift+W, Quill Weather leaves it
+  alone and you still show and hide the window from the tray icon.
 - By default, **closing the window** also goes to the tray rather than quitting
   (so a stray Alt+F4 does not end your watch). Only **Exit** (File menu or the
   tray) truly quits. You can change this in **Options > Close button keeps
