@@ -96,6 +96,14 @@ class MastodonComposeDialog:
         self._count = wx.StaticText(self.dialog, label="")
         root.Add(self._count, 0, wx.LEFT | wx.BOTTOM, 12)
 
+        # On-demand spell check (F7 or the button), not only the per-account
+        # check-before-post: run the shared review, which speaks the misspelled
+        # word first and never over-talks.
+        spell_button = wx.Button(self.dialog, label="Check &Spelling (F7)")
+        spell_button.SetName("Check the spelling of the post")
+        spell_button.Bind(wx.EVT_BUTTON, self._on_spell_check)
+        root.Add(spell_button, 0, wx.LEFT | wx.BOTTOM, 12)
+
         # Visibility and language sit side by side so the dialog does not grow
         # taller just for the new chooser (#922).
         options_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -135,6 +143,12 @@ class MastodonComposeDialog:
         self._text.Bind(wx.EVT_TEXT, lambda _e: self._update_count())
         self._account_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh_character_limit())
         post_button.Bind(wx.EVT_BUTTON, self._on_post)
+        # F7 runs the spelling review from anywhere in the dialog (Leasey parity).
+        spell_accel_id = wx.NewIdRef()
+        self.dialog.Bind(wx.EVT_MENU, self._on_spell_check, id=spell_accel_id)
+        self.dialog.SetAcceleratorTable(
+            wx.AcceleratorTable([wx.AcceleratorEntry(wx.ACCEL_NORMAL, wx.WXK_F7, spell_accel_id)])
+        )
         # Fetch the selected account's real per-instance limit now, then update
         # the counter against it. Best-effort: a failed lookup keeps the default.
         self._refresh_character_limit()
@@ -172,6 +186,19 @@ class MastodonComposeDialog:
             return None
         index = max(0, self._account_choice.GetSelection())
         return self._accounts[index]
+
+    def _on_spell_check(self, _event: object) -> None:
+        """F7 / Check Spelling: run the shared spelling review over the post text
+        now. The review speaks the misspelled word first, then spells it, and
+        cancels pending speech so it never over-talks (Leasey Social parity)."""
+        if self._spell_review is None:
+            self._announce("Spell check is not available here.")
+            return
+        if not self._text.GetValue().strip():
+            self._announce("Nothing to check: the post is empty.")
+            self._text.SetFocus()
+            return
+        self._spell_review(self._text)
 
     def _on_post(self, _event: object) -> None:
         text = self._text.GetValue()
