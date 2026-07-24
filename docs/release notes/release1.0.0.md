@@ -1,10 +1,10 @@
-# QUILL 0.9.0 Beta 3
+# QUILL 1.0.0
 
 ## One Editor. Every Format. A Community Moving Forward Together.
 
 *From Community Access. Free. Optional by design. Private by default. Built with you.*
 
-QUILL 0.9.0 Beta 3 is more than another beta. It is a celebration of what becomes possible when people test boldly, report honestly, imagine generously, and build together.
+QUILL 1.0.0 is more than a version number. It is a celebration of what becomes possible when people test boldly, report honestly, imagine generously, and build together.
 
 Three flagship stories headline this release.
 
@@ -18,13 +18,13 @@ Around those three is an extraordinary collection of community-powered progress:
 
 Every shortcut is explained. Every important safeguard is named. Every limitation is stated honestly. Nothing here asks you to discover essential behavior by accident.
 
-This is the full, friendly companion to the **“0.9.0 Beta 3”** section of `CHANGELOG.md`. The shorter summaries shown under **Help > What's New** and **Check for Updates** come from that changelog. This document tells the complete story: what changed, why it matters, how to use it, and how the community helped make it real.
+This is the full, friendly companion to the **“1.0.0”** section of `CHANGELOG.md`. The shorter summaries shown under **Help > What's New** and **Check for Updates** come from that changelog. This document tells the complete story: what changed, why it matters, how to use it, and how the community helped make it real.
 
 ---
 
-## The Heart of Beta 3: One Editor, Every Format
+## The Heart of 1.0.0: One Editor, Every Format
 
-For years, document formats have tried to dictate the experience: one tool for plain text, another for Markdown, another for rich text, another for Word. Beta 3 turns that relationship around. The format now serves the writer. The editor remains familiar.
+For years, document formats have tried to dictate the experience: one tool for plain text, another for Markdown, another for rich text, another for Word. 1.0.0 turns that relationship around. The format now serves the writer. The editor remains familiar.
 
 ### The braille fix graduates — enabled for everyone by default
 
@@ -32,7 +32,7 @@ In Beta 2, we asked braille display users to step into an experimental space, te
 
 Text now begins in **braille cell 1**, eliminating the long-standing “cell two” behavior that RichEdit controls share with Microsoft Word. When text is selected, the display now shows **dots 7-8**, restoring the tactile selection feedback braille users expect.
 
-In Beta 3, the experiment becomes the standard. There is nothing special to turn on, no Experimental tab to find, and no restart ritual. Every document opens in the same native Windows editor QUILL users already know, now carrying the braille correction automatically.
+In 1.0.0, the experiment becomes the standard. There is nothing special to turn on, no Experimental tab to find, and no restart ritual. Every document opens in the same native Windows editor QUILL users already know, now carrying the braille correction automatically.
 
 Two straightforward checkboxes under **Preferences > Braille** control the complete behavior, and both are checked by default:
 
@@ -45,7 +45,7 @@ This is exactly how a beta should work: the community tests an idea, the evidenc
 
 ### Rich text becomes real: RTF documents are truly formatted in the editor
 
-Open an `.rtf` file in Beta 3 and the formatting is no longer flattened, simulated, or merely described. It is there, alive in the document.
+Open an `.rtf` file in 1.0.0 and the formatting is no longer flattened, simulated, or merely described. It is there, alive in the document.
 
 Bold text is genuinely bold. Headings carry real sizes. **Ctrl+B** applies true bold formatting. **Insert > Heading 2** creates an actual heading. **Describe Formatting at Cursor** reads the live document state and can report, for example: “Arial, 14 point, bold, centered.”
 
@@ -152,7 +152,7 @@ Two companion repairs round out the story. **Downloading the Braille Translation
 
 ## Your Media, Your Way: Quill Radio and QUILL Cast
 
-Internet Radio and Podcasts arrived inside QUILL this release cycle — but not everyone wants to launch a full document editor to turn the radio on. Beta 3 introduces **Quill Radio** and **QUILL Cast**: standalone apps with their own window, their own menu bar, their own system tray icon, and their own Start Menu entries.
+Internet Radio and Podcasts arrived inside QUILL this release cycle — but not everyone wants to launch a full document editor to turn the radio on. 1.0.0 introduces **Quill Radio** and **QUILL Cast**: standalone apps with their own window, their own menu bar, their own system tray icon, and their own Start Menu entries.
 
 The important word is *same*. These are not stripped-down copies or forks. Each app runs the exact same feature code QUILL itself uses — the same station browser, the same podcast manager, the same download queue with pause and resume, the same recording scheduler, the same dialogs with the same keyboard behavior your screen reader already knows. They read and write the same settings, favorites, and subscriptions from the same place on disk. Subscribe to a show in QUILL Cast tonight, and it is there in QUILL tomorrow morning. Fix a radio bug in QUILL, and Quill Radio has the fix too, automatically, because there is only one copy of the code.
 
@@ -198,7 +198,7 @@ Two things worth naming plainly. First, a deliberate scope decision, learned fro
 
 No video podcasts, ever — audio only, matching every other playback surface in QUILL.
 
-### Podcasts Phase 4: the promised next phases, delivered in this same beta
+### Podcasts Phase 4: the promised next phases, delivered in this same release
 
 Those "real, planned next phases" didn't wait for the next release. Every one of them ships here.
 
@@ -240,7 +240,7 @@ These apps are new — tell us how they behave with your screen reader through H
 
 ## Community Reports, Real Repairs
 
-Every bug report is a person encountering friction while trying to create, read, learn, or contribute. Beta 3 treats those reports accordingly: not as loose tickets to close, but as invitations to make QUILL more trustworthy.
+Every bug report is a person encountering friction while trying to create, read, learn, or contribute. 1.0.0 treats those reports accordingly: not as loose tickets to close, but as invitations to make QUILL more trustworthy.
 
 ### Portable updates now offer an actual next step
 
@@ -248,7 +248,7 @@ A community member on Mastodon reported that a portable update finished with onl
 
 The underlying detection was already correct: portable installations received the portable ZIP rather than the Windows installer. The problem came afterward. The completion dialog knew how to act on `.exe` and `.msi` files, but a `.zip` fell through to a bare folder-opening path.
 
-Beta 3 adds an **Extract now** button for portable updates. QUILL extracts the ZIP into a ready-to-run sibling folder and reveals that folder instead of leaving you at the raw archive.
+1.0.0 adds an **Extract now** button for portable updates. QUILL extracts the ZIP into a ready-to-run sibling folder and reveals that folder instead of leaving you at the raw archive.
 
 QUILL still does not replace its own running files while open. You must copy your `data` folder and swap the folders yourself, just as with any portable application update. What disappears is the needless archaeology of locating and unpacking the download.
 
@@ -258,7 +258,7 @@ A community member reported — and correctly identified the root cause of — a
 
 Pandoc emits UTF-8. QUILL’s shared subprocess helper had been decoding that output using the operating system’s default locale encoding. On Windows systems whose locale uses a legacy code page rather than UTF-8, decoding could fail and leave QUILL with no text, yet the import path still reported success.
 
-Beta 3 makes two important corrections:
+1.0.0 makes two important corrections:
 
 - Subprocess output is always decoded as UTF-8, with a safe fallback so even genuinely non-UTF-8 bytes cannot crash the process or silently blank the result.
 - The Pandoc import path now fails loudly when no output is received instead of handing the user an empty page and calling it success.
@@ -269,7 +269,7 @@ Because many tools share this subprocess helper, the change strengthens far more
 
 Four testers independently found the same crash. Opening **Tools > Speech > Speech and Dictation** raised a `TypeError` instead of displaying the dialog, whether the Offline or Online tab was involved.
 
-The dialog constructor had gained two required arguments — `kokoro_ok` and `kokoro_can_install` — but its caller had not been updated to supply them. Beta 3 now populates both values using the same availability logic already used for Vosk, and the Speech and Dictation dialog opens normally again.
+The dialog constructor had gained two required arguments — `kokoro_ok` and `kokoro_can_install` — but its caller had not been updated to supply them. 1.0.0 now populates both values using the same availability logic already used for Vosk, and the Speech and Dictation dialog opens normally again.
 
 ### The Kokoro installation message now points to the menu that actually exists
 
@@ -291,7 +291,7 @@ The cause lived in the keyboard-shortcut hint shown at the right side of a menu 
 
 wxWidgets recognizes modifier words such as “Ctrl,” “Alt,” and “Shift,” but not “Cmd.” Rather than rejecting the unsupported hint, it dropped “Cmd,” retained the bare **G**, and registered that single letter as a system-level shortcut for Find Next. The shortcut then intercepted every G before it could reach the editor.
 
-This could affect every macOS-only `Cmd+something` hint, not only Find Next. Beta 3 changes how the hint is built so wxWidgets receives a modifier name it understands, while the visible shortcut continues to read **Cmd+G** exactly as Mac users expect.
+This could affect every macOS-only `Cmd+something` hint, not only Find Next. 1.0.0 changes how the hint is built so wxWidgets receives a modifier name it understands, while the visible shortcut continues to read **Cmd+G** exactly as Mac users expect.
 
 ### Portable updates now describe the manual swap honestly
 
@@ -299,7 +299,7 @@ After downloading a portable update and restarting, a user reasonably asked why 
 
 Portable updates have never installed themselves automatically in any QUILL release. The downloaded ZIP has always required a manual replacement step. Previously, that meant choosing **Open folder** and extracting it yourself. With the new **Extract now** button, QUILL performs the extraction, but you still swap the new folder into place.
 
-If QUILL’s wording suggested that the update would apply automatically “on next launch,” the wording was the bug. Beta 3 tightens both this document and the in-app dialog so **swap it into place** is unmistakably described as the manual step it has always been.
+If QUILL’s wording suggested that the update would apply automatically “on next launch,” the wording was the bug. 1.0.0 tightens both this document and the in-app dialog so **swap it into place** is unmistakably described as the manual step it has always been.
 
 ### Tree-navigator dialogs no longer expand a root that is intentionally hidden
 
@@ -309,7 +309,7 @@ The dialogs no longer attempt to expand their intentionally hidden root node.
 
 ### Narrator becomes a first-class citizen
 
-George Kerscher reported that QUILL’s self-voice spoke at the same time as Narrator, especially in the Command Palette. Beta 3 addresses both the detection problem and the announcement path.
+George Kerscher reported that QUILL’s self-voice spoke at the same time as Narrator, especially in the Command Palette. 1.0.0 addresses both the detection problem and the announcement path.
 
 #### Narrator detection now uses the Windows API marker
 
@@ -325,7 +325,7 @@ Status changes, Command Palette narration, and other QUILL feedback can therefor
 
 If the notification channel is unavailable on a particular system, the message is placed in the status bar. The old failure mode is removed unconditionally: when any screen reader is running, QUILL’s SAPI self-voice is silenced, including announcements previously marked as “forced.” QUILL will no longer talk over the screen reader.
 
-One important caveat remains. The direct Narrator path is verified in code and automated tests, but it still needs real Narrator users to confirm the complete experience. Please test Beta 3 and report through **Help > Report a Bug** whether announcements arrive once, through One Core, and in the expected voice.
+One important caveat remains. The direct Narrator path is verified in code and automated tests, but it still needs real Narrator users to confirm the complete experience. Please test 1.0.0 and report through **Help > Report a Bug** whether announcements arrive once, through One Core, and in the expected voice.
 
 ### Starter Snippet Packs now behave like an accessible list
 
@@ -339,7 +339,7 @@ A tester supplied precise reproduction steps: open **Help > Status Page**, move 
 
 The page refreshes every two seconds to keep task and download progress current. Each refresh had been rebuilding the lists without preserving the focused row.
 
-Beta 3 keeps focus anchored across refreshes. You can now navigate the lists under **Status**, **Tasks & Downloads**, and **Features** without being pulled back to the top.
+1.0.0 keeps focus anchored across refreshes. You can now navigate the lists under **Status**, **Tasks & Downloads**, and **Features** without being pulled back to the top.
 
 ### Creating a Notebook on macOS can no longer crash through window activation
 
@@ -353,13 +353,13 @@ Two reports arrived for a bug already corrected in Beta 2, yet they appeared to 
 
 Reports now include the full version string, such as **0.9.0 Beta 2**, making an older installation immediately recognizable.
 
-If you encounter the Profiles and Features crash involving `_LazyString`, update to the current beta; that issue was already fixed there.
+If you encounter the Profiles and Features crash involving `_LazyString`, update to the current release; that issue was already fixed there.
 
 ### QUILL no longer offers crash recovery when there is no crash evidence
 
 Two automatic crash-recovery submissions contained only normal background activity until the application stopped. There was no exception, no error, and no actionable trace. That pattern is consistent with an external termination — such as a forced shutdown or killed task — rather than a crash inside QUILL.
 
-Beta 3 turns that observation into a real behavior change. Before showing crash recovery, QUILL now looks for genuine evidence in the log: an `ERROR`, a `CRITICAL`, or a traceback.
+1.0.0 turns that observation into a real behavior change. Before showing crash recovery, QUILL now looks for genuine evidence in the log: an `ERROR`, a `CRITICAL`, or a traceback.
 
 An inconclusive exit no longer produces the **“Quill detected an unclean exit”** dialog because there is nothing meaningful to diagnose. A real crash still records an error and offers recovery exactly as before.
 
@@ -413,7 +413,7 @@ Every comtypes call site now requests the redirect itself before touching comtyp
 
 ### Check for Updates could hand a Windows user the macOS download
 
-A release that only publishes assets for one platform — which is exactly what happened when a Beta 3 Windows build failed in CI while the macOS build succeeded — used to fall through to whatever asset *was* published, regardless of platform. A Windows client checking for updates against that release got pointed at the release's only file: a `.dmg`.
+A release that only publishes assets for one platform — which is exactly what happened when a 1.0.0 Windows build failed in CI while the macOS build succeeded — used to fall through to whatever asset *was* published, regardless of platform. A Windows client checking for updates against that release got pointed at the release's only file: a `.dmg`.
 
 Asset selection now excludes every other platform's installer extensions outright, and a release with nothing installable for the running platform is skipped entirely, so Check for Updates falls back to the newest release that actually has a matching build for you rather than ever offering a foreign-platform link.
 
@@ -421,7 +421,7 @@ Asset selection now excludes every other platform's installer extensions outrigh
 
 ## GitHub Grows from a Viewer into a Workspace
 
-Beta 2 introduced the read-only GitHub Items viewer. Beta 3 begins unifying the best ideas from [GHManage](https://github.com/kellylford/GHManage) — Kelly Ford's open-source, screen-reader-first GitHub browser, QUILL's reference viewer for this entire integration — and fastgh, and moves QUILL toward something much bigger: a keyboard-first GitHub environment where information can be found, understood, and — with explicit consent — acted upon. Every feature below with a GHManage ancestor keeps its idea and extends it with something specific to QUILL.
+Beta 2 introduced the read-only GitHub Items viewer. 1.0.0 begins unifying the best ideas from [GHManage](https://github.com/kellylford/GHManage) — Kelly Ford's open-source, screen-reader-first GitHub browser, QUILL's reference viewer for this entire integration — and fastgh, and moves QUILL toward something much bigger: a keyboard-first GitHub environment where information can be found, understood, and — with explicit consent — acted upon. Every feature below with a GHManage ancestor keeps its idea and extends it with something specific to QUILL.
 
 ### GitHub Items gains pins, favorites, real search, automatic repository awareness, and View Upstream
 
@@ -493,9 +493,9 @@ The viewer and every GitHub feature continue to honor QUILL’s token, consent, 
 
 ## GitHub Stops Being a One-Way Window
 
-Before Beta 3, QUILL could show you a great deal of GitHub while changing very little. You could browse a repository, open a file, save that one file back, list issues and pull requests, and perform limited batch labeling or state changes. Creating repositories, opening and merging pull requests, or deleting obsolete branches still pushed you into the browser.
+Before 1.0.0, QUILL could show you a great deal of GitHub while changing very little. You could browse a repository, open a file, save that one file back, list issues and pull requests, and perform limited batch labeling or state changes. Creating repositories, opening and merging pull requests, or deleting obsolete branches still pushed you into the browser.
 
-The planning document at `docs/planning/github.md` examines how far QUILL can go without adding a dependency on the `gh` CLI. Beta 3 ships the part of that plan we can support confidently: repository administration, richer item actions, organization browsing, releases, workflow dispatch, notifications, and security alerts.
+The planning document at `docs/planning/github.md` examines how far QUILL can go without adding a dependency on the `gh` CLI. 1.0.0 ships the part of that plan we can support confidently: repository administration, richer item actions, organization browsing, releases, workflow dispatch, notifications, and security alerts.
 
 ### A new Tools > GitHub command center
 
@@ -593,7 +593,7 @@ Discussions, Projects v2, Packages, and repository transfer remain legitimate fu
 
 ## Local Git, Reimagined for Screen Reader Users
 
-This section is not about GitHub. It is about `git` itself — and it may be the capability in Beta 3 of which we are proudest.
+This section is not about GitHub. It is about `git` itself — and it may be the capability in 1.0.0 of which we are proudest.
 
 Traditional git tools expose complex operations as punctuation-heavy text and visually arranged changes. QUILL starts from a different question: what would these workflows look like if structure, sequence, context, and choice were communicated directly?
 
@@ -660,7 +660,7 @@ Everything across these three GitHub chapters — browsing and saving files, wor
 
 Beta 2’s Header/Footer Builder could apply headers and footers during printing, but the saved files themselves did not contain them.
 
-Beta 3 carries them into the document:
+1.0.0 carries them into the document:
 
 - Save as `.docx` and the header or footer becomes a real Word header or footer.
 - Page numbers use a live Word field, so Word continues renumbering them as the document changes.
@@ -679,7 +679,7 @@ We explored what it would mean to build a complete QUILL synchronization service
 
 We chose not to build a new cloud merely because we could.
 
-Cloud-synchronized folders and git already solve the essential problems well. Beta 3 lets QUILL work with those systems instead of competing with them. Two focused capabilities deliver practical synchronization without making QUILL a storage provider.
+Cloud-synchronized folders and git already solve the essential problems well. 1.0.0 lets QUILL work with those systems instead of competing with them. Two focused capabilities deliver practical synchronization without making QUILL a storage provider.
 
 ### Synchronize settings through a folder you already trust
 
@@ -715,7 +715,7 @@ The reasoning behind this approach, including the larger synchronization design 
 
 ## Small Features, Enormous Everyday Impact
 
-Some features change an architecture. Others remove one interruption, one unnecessary dialog, one repeated search, or one inaccessible ritual from a person’s day. Beta 3 makes room for both.
+Some features change an architecture. Others remove one interruption, one unnecessary dialog, one repeated search, or one inaccessible ritual from a person’s day. 1.0.0 makes room for both.
 
 These accessibility-first additions came from real workflows and direct requests. They are small enough to feel natural and powerful enough to become habits.
 
@@ -781,7 +781,7 @@ It does **not** persist across sessions. Closing and reopening QUILL clears it. 
 
 ### Ten numbered quick bookmarks, each one keystroke away
 
-Beta 3 also adds ten fixed bookmark slots numbered 0 through 9.
+1.0.0 also adds ten fixed bookmark slots numbered 0 through 9.
 
 - **Alt+Shift+0** through **Alt+Shift+9** sets the corresponding slot at the cursor. For example: “Quick bookmark 3 set.”
 - **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jumps directly to that slot. QUILL announces “Jumped to quick bookmark 3,” or “Quick bookmark 3 is not set” when the slot is empty.
@@ -843,7 +843,7 @@ Windows recent folders answer one question: what did you open lately?
 
 Favorite folders answer a different and often more useful one: what must always be easy to reach?
 
-A folder holding a document your supervisor might request at any moment may deserve permanent prominence even if you have not opened it in months. Beta 3 adds a short, curated favorites list modeled on a valued Kurzweil 1000 workflow.
+A folder holding a document your supervisor might request at any moment may deserve permanent prominence even if you have not opened it in months. 1.0.0 adds a short, curated favorites list modeled on a valued Kurzweil 1000 workflow.
 
 - **Ctrl+Alt+Shift+A — Add Favorite Folder.** Adds the folder containing the current document. An untitled document must be saved first because QUILL needs a real folder path.
 - **Ctrl+Alt+Shift+R — Remove Favorite Folder...** Opens the favorites list and lets you choose one to remove.
@@ -962,7 +962,7 @@ Closing QUILL while an Audio Studio export was running used to exit immediately,
 
 A community member installed the Offline Edition and discovered that Kokoro neural voices still requested an internet connection on first use — inside a build whose defining promise is that the internet should not be required.
 
-That report did not become a one-line patch. It triggered an audit of every optional speech component QUILL offers. Beta 3 closes every gap found in that audit except one clearly documented remaining limitation.
+That report did not become a one-line patch. It triggered an audit of every optional speech component QUILL offers. 1.0.0 closes every gap found in that audit except one clearly documented remaining limitation.
 
 ### What “Offline Edition” is supposed to mean
 
@@ -994,7 +994,7 @@ Choose any of them in the Offline Edition and installation completes without a n
 
 Vosk also becomes more reliable in the process. It depended on one supporting library that previously came only from the internet even when the verified Vosk package itself was available locally. That final external dependency is now bundled.
 
-A second, more fundamental Vosk problem surfaced during this beta's own build process: Vosk also lists a subtitle-file helper library as a dependency that QUILL never actually uses, and that library has never published a ready-to-install package — only its source code. Because the Offline Edition build only ever installs verified, ready-to-install packages (never source code that would need to be compiled), it rejected that one unused dependency every time, which meant the Offline Edition installer could not be built at all until this was found and fixed. It now fetches exactly what Vosk actually needs and skips the one piece it doesn't.
+A second, more fundamental Vosk problem surfaced during this release's own build process: Vosk also lists a subtitle-file helper library as a dependency that QUILL never actually uses, and that library has never published a ready-to-install package — only its source code. Because the Offline Edition build only ever installs verified, ready-to-install packages (never source code that would need to be compiled), it rejected that one unused dependency every time, which meant the Offline Edition installer could not be built at all until this was found and fixed. It now fetches exactly what Vosk actually needs and skips the one piece it doesn't.
 
 ### Piper arrives with an engine and a ready-to-speak voice
 
@@ -1018,7 +1018,7 @@ This is a known and tracked limitation, not an overlooked dependency. It remains
 
 ## Built by the Community, Not Merely Released to It
 
-Every fix in Beta 3 traces to a specific community report. Nine reports, spanning issues **#939 through #953**, are now closed with an explanation of what was discovered and, where a change was needed, what was done.
+Every fix in 1.0.0 traces to a specific community report. Nine reports, spanning issues **#939 through #953**, are now closed with an explanation of what was discovered and, where a change was needed, what was done.
 
 The two reports containing no crash evidence — **#940** and **#948** — were not dismissed as unreproducible. They inspired QUILL to recognize that pattern itself and stop presenting crash recovery when the log contains nothing actionable.
 
@@ -1036,7 +1036,7 @@ This is not simply how QUILL improves. **This is how QUILL is built.**
 
 ## Toward 1.0 — Together
 
-Beta 3 moves the 0.9.0 cycle closer to 1.0 with a stronger editor, clearer safeguards, deeper accessibility, and a growing set of workflows shaped by the people who use them.
+1.0.0 moves the 0.9.0 cycle closer to 1.0 with a stronger editor, clearer safeguards, deeper accessibility, and a growing set of workflows shaped by the people who use them.
 
 Please keep exploring. Open the formats that matter to you. Try the braille behavior, Narrator announcements, VoiceOver rich editing, portable update flow, local git tools, GitHub commands, spell-checking workflows, folder favorites, folding, speech engines, and offline installation.
 
@@ -1046,13 +1046,13 @@ A successful report matters. A failure report matters. A strange edge case matte
 
 Thank you for testing. Thank you for challenging assumptions. Thank you for helping turn an editor into a community-built place where more people can create, contribute, and belong.
 
-**QUILL 0.9.0 Beta 3 is here. One editor. Every format. Built with you.**
+**QUILL 1.0.0 is here. One editor. Every format. Built with you.**
 
 ---
 
-## After Beta 3 — in progress (unreleased)
+## After 1.0.0 — in progress (unreleased)
 
-These improvements have landed on the development branch since Beta 3 and will ship in the next build. They are staged in the **Unreleased** section of `CHANGELOG.md`.
+These improvements have landed on the development branch since 1.0.0 and will ship in the next build. They are staged in the **Unreleased** section of `CHANGELOG.md`.
 
 ### Writing Tools that match your document's format
 

@@ -1,10 +1,10 @@
-<h1 id="quill-0.9.0-beta-3">QUILL 0.9.0 Beta 3</h1>
+<h1 id="quill-0.9.0-beta-3">QUILL 1.0.0</h1>
 <h2
 id="one-editor.-every-format.-a-community-moving-forward-together.">One
 Editor. Every Format. A Community Moving Forward Together.</h2>
 <p><em>From Community Access. Free. Optional by design. Private by
 default. Built with you.</em></p>
-<p>QUILL 0.9.0 Beta 3 is more than another beta. It is a celebration of
+<p>QUILL 1.0.0 is more than another beta. It is a celebration of
 what becomes possible when people test boldly, report honestly, imagine
 generously, and build together.</p>
 <p>At the heart of this release is one transformative promise:
@@ -36,7 +36,7 @@ community helped make it real.</p>
 3: One Editor, Every Format</h2>
 <p>For years, document formats have tried to dictate the experience: one
 tool for plain text, another for Markdown, another for rich text,
-another for Word. Beta 3 turns that relationship around. The format now
+another for Word. 1.0.0 turns that relationship around. The format now
 serves the writer. The editor remains familiar.</p>
 <h3 id="the-braille-fix-graduates-enabled-for-everyone-by-default">The
 braille fix graduates — enabled for everyone by default</h3>
@@ -48,7 +48,7 @@ long-standing “cell two” behavior that RichEdit controls share with
 Microsoft Word. When text is selected, the display now shows
 <strong>dots 7-8</strong>, restoring the tactile selection feedback
 braille users expect.</p>
-<p>In Beta 3, the experiment becomes the standard. There is nothing
+<p>In 1.0.0, the experiment becomes the standard. There is nothing
 special to turn on, no Experimental tab to find, and no restart ritual.
 Every document opens in the same native Windows editor QUILL users
 already know, now carrying the braille correction automatically.</p>
@@ -77,7 +77,7 @@ everyone.</p>
 <h3
 id="rich-text-becomes-real-rtf-documents-are-truly-formatted-in-the-editor">Rich
 text becomes real: RTF documents are truly formatted in the editor</h3>
-<p>Open an <code>.rtf</code> file in Beta 3 and the formatting is no
+<p>Open an <code>.rtf</code> file in 1.0.0 and the formatting is no
 longer flattened, simulated, or merely described. It is there, alive in
 the document.</p>
 <p>Bold text is genuinely bold. Headings carry real sizes.
@@ -205,7 +205,7 @@ reports made the Windows correction ready for everyone.</p>
 <h2 id="community-reports-real-repairs">Community Reports, Real
 Repairs</h2>
 <p>Every bug report is a person encountering friction while trying to
-create, read, learn, or contribute. Beta 3 treats those reports
+create, read, learn, or contribute. 1.0.0 treats those reports
 accordingly: not as loose tickets to close, but as invitations to make
 QUILL more trustworthy.</p>
 <h3 id="portable-updates-now-offer-an-actual-next-step">Portable updates
@@ -220,7 +220,7 @@ received the portable ZIP rather than the Windows installer. The problem
 came afterward. The completion dialog knew how to act on
 <code>.exe</code> and <code>.msi</code> files, but a <code>.zip</code>
 fell through to a bare folder-opening path.</p>
-<p>Beta 3 adds an <strong>Extract now</strong> button for portable
+<p>1.0.0 adds an <strong>Extract now</strong> button for portable
 updates. QUILL extracts the ZIP into a ready-to-run sibling folder and
 reveals that folder instead of leaving you at the raw archive.</p>
 <p>QUILL still does not replace its own running files while open. You
@@ -239,7 +239,7 @@ decoding that output using the operating system’s default locale
 encoding. On Windows systems whose locale uses a legacy code page rather
 than UTF-8, decoding could fail and leave QUILL with no text, yet the
 import path still reported success.</p>
-<p>Beta 3 makes two important corrections:</p>
+<p>1.0.0 makes two important corrections:</p>
 <ul>
 <li>Subprocess output is always decoded as UTF-8, with a safe fallback
 so even genuinely non-UTF-8 bytes cannot crash the process or silently
@@ -258,7 +258,7 @@ again</h3>
 Offline or Online tab was involved.</p>
 <p>The dialog constructor had gained two required arguments —
 <code>kokoro_ok</code> and <code>kokoro_can_install</code> — but its
-caller had not been updated to supply them. Beta 3 now populates both
+caller had not been updated to supply them. 1.0.0 now populates both
 values using the same availability logic already used for Vosk, and the
 Speech and Dictation dialog opens normally again.</p>
 <h3
@@ -300,7 +300,7 @@ dropped “Cmd,” retained the bare <strong>G</strong>, and registered that
 single letter as a system-level shortcut for Find Next. The shortcut
 then intercepted every G before it could reach the editor.</p>
 <p>This could affect every macOS-only <code>Cmd+something</code> hint,
-not only Find Next. Beta 3 changes how the hint is built so wxWidgets
+not only Find Next. 1.0.0 changes how the hint is built so wxWidgets
 receives a modifier name it understands, while the visible shortcut
 continues to read <strong>Cmd+G</strong> exactly as Mac users
 expect.</p>
@@ -315,7 +315,7 @@ folder</strong> and extracting it yourself. With the new <strong>Extract
 now</strong> button, QUILL performs the extraction, but you still swap
 the new folder into place.</p>
 <p>If QUILL’s wording suggested that the update would apply
-automatically “on next launch,” the wording was the bug. Beta 3 tightens
+automatically “on next launch,” the wording was the bug. 1.0.0 tightens
 both this document and the in-app dialog so <strong>swap it into
 place</strong> is unmistakably described as the manual step it has
 always been.</p>
@@ -332,7 +332,7 @@ root node.</p>
 <h3 id="narrator-becomes-a-first-class-citizen">Narrator becomes a
 first-class citizen</h3>
 <p>George Kerscher reported that QUILL’s self-voice spoke at the same
-time as Narrator, especially in the Command Palette. Beta 3 addresses
+time as Narrator, especially in the Command Palette. 1.0.0 addresses
 both the detection problem and the announcement path.</p>
 <h4 id="narrator-detection-now-uses-the-windows-api-marker">Narrator
 detection now uses the Windows API marker</h4>
@@ -358,7 +358,7 @@ self-voice is silenced, including announcements previously marked as
 “forced.” QUILL will no longer talk over the screen reader.</p>
 <p>One important caveat remains. The direct Narrator path is verified in
 code and automated tests, but it still needs real Narrator users to
-confirm the complete experience. Please test Beta 3 and report through
+confirm the complete experience. Please test 1.0.0 and report through
 <strong>Help &gt; Report a Bug</strong> whether announcements arrive
 once, through One Core, and in the expected voice.</p>
 <h3
@@ -379,7 +379,7 @@ back to the first row before you can act.</p>
 <p>The page refreshes every two seconds to keep task and download
 progress current. Each refresh had been rebuilding the lists without
 preserving the focused row.</p>
-<p>Beta 3 keeps focus anchored across refreshes. You can now navigate
+<p>1.0.0 keeps focus anchored across refreshes. You can now navigate
 the lists under <strong>Status</strong>, <strong>Tasks &amp;
 Downloads</strong>, and <strong>Features</strong> without being pulled
 back to the top.</p>
@@ -412,7 +412,7 @@ background activity until the application stopped. There was no
 exception, no error, and no actionable trace. That pattern is consistent
 with an external termination — such as a forced shutdown or killed task
 — rather than a crash inside QUILL.</p>
-<p>Beta 3 turns that observation into a real behavior change. Before
+<p>1.0.0 turns that observation into a real behavior change. Before
 showing crash recovery, QUILL now looks for genuine evidence in the log:
 an <code>ERROR</code>, a <code>CRITICAL</code>, or a traceback.</p>
 <p>An inconclusive exit no longer produces the <strong>“Quill detected
@@ -482,7 +482,7 @@ on any install type, with or without administrator elevation.</p>
 <hr />
 <h2 id="github-grows-from-a-viewer-into-a-workspace">GitHub Grows from a
 Viewer into a Workspace</h2>
-<p>Beta 2 introduced the read-only GitHub Items viewer. Beta 3 begins
+<p>Beta 2 introduced the read-only GitHub Items viewer. 1.0.0 begins
 unifying the best ideas from GHManage and fastgh and moves QUILL toward
 something much bigger: a keyboard-first GitHub environment where
 information can be found, understood, and — with explicit consent —
@@ -580,7 +580,7 @@ release.</p>
 <hr />
 <h2 id="github-stops-being-a-one-way-window">GitHub Stops Being a
 One-Way Window</h2>
-<p>Before Beta 3, QUILL could show you a great deal of GitHub while
+<p>Before 1.0.0, QUILL could show you a great deal of GitHub while
 changing very little. You could browse a repository, open a file, save
 that one file back, list issues and pull requests, and perform limited
 batch labeling or state changes. Creating repositories, opening and
@@ -588,7 +588,7 @@ merging pull requests, or deleting obsolete branches still pushed you
 into the browser.</p>
 <p>The planning document at <code>docs/planning/github.md</code>
 examines how far QUILL can go without adding a dependency on the
-<code>gh</code> CLI. Beta 3 ships the part of that plan we can support
+<code>gh</code> CLI. 1.0.0 ships the part of that plan we can support
 confidently: repository administration, richer item actions,
 organization browsing, releases, workflow dispatch, notifications, and
 security alerts.</p>
@@ -777,7 +777,7 @@ responsibly.</p>
 <h2 id="local-git-reimagined-for-screen-reader-users">Local Git,
 Reimagined for Screen Reader Users</h2>
 <p>This section is not about GitHub. It is about <code>git</code> itself
-— and it may be the capability in Beta 3 of which we are proudest.</p>
+— and it may be the capability in 1.0.0 of which we are proudest.</p>
 <p>Traditional git tools expose complex operations as punctuation-heavy
 text and visually arranged changes. QUILL starts from a different
 question: what would these workflows look like if structure, sequence,
@@ -867,7 +867,7 @@ QUILL</a>.</p>
 Footers Become Part of the Document</h2>
 <p>Beta 2’s Header/Footer Builder could apply headers and footers during
 printing, but the saved files themselves did not contain them.</p>
-<p>Beta 3 carries them into the document:</p>
+<p>1.0.0 carries them into the document:</p>
 <ul>
 <li>Save as <code>.docx</code> and the header or footer becomes a real
 Word header or footer.</li>
@@ -890,7 +890,7 @@ synchronization engine, and the operational burden that comes with all
 of it.</p>
 <p>We chose not to build a new cloud merely because we could.</p>
 <p>Cloud-synchronized folders and git already solve the essential
-problems well. Beta 3 lets QUILL work with those systems instead of
+problems well. 1.0.0 lets QUILL work with those systems instead of
 competing with them. Two focused capabilities deliver practical
 synchronization without making QUILL a storage provider.</p>
 <h3
@@ -944,7 +944,7 @@ synchronization design that was considered and rejected, is preserved in
 Enormous Everyday Impact</h2>
 <p>Some features change an architecture. Others remove one interruption,
 one unnecessary dialog, one repeated search, or one inaccessible ritual
-from a person’s day. Beta 3 makes room for both.</p>
+from a person’s day. 1.0.0 makes room for both.</p>
 <p>These accessibility-first additions came from real workflows and
 direct requests. They are small enough to feel natural and powerful
 enough to become habits.</p>
@@ -1013,7 +1013,7 @@ existing unlimited, persistent <strong>Set Bookmark…</strong>,
 commands.</p>
 <h3 id="ten-numbered-quick-bookmarks-each-one-keystroke-away">Ten
 numbered quick bookmarks, each one keystroke away</h3>
-<p>Beta 3 also adds ten fixed bookmark slots numbered 0 through 9.</p>
+<p>1.0.0 also adds ten fixed bookmark slots numbered 0 through 9.</p>
 <ul>
 <li><strong>Alt+Shift+0</strong> through <strong>Alt+Shift+9</strong>
 sets the corresponding slot at the cursor. For example: “Quick bookmark
@@ -1102,7 +1102,7 @@ lately?</p>
 must always be easy to reach?</p>
 <p>A folder holding a document your supervisor might request at any
 moment may deserve permanent prominence even if you have not opened it
-in months. Beta 3 adds a short, curated favorites list modeled on a
+in months. 1.0.0 adds a short, curated favorites list modeled on a
 valued Kurzweil 1000 workflow.</p>
 <ul>
 <li><strong>Ctrl+Alt+Shift+A — Add Favorite Folder.</strong> Adds the
@@ -1390,7 +1390,7 @@ Kokoro neural voices still requested an internet connection on first use
 — inside a build whose defining promise is that the internet should not
 be required.</p>
 <p>That report did not become a one-line patch. It triggered an audit of
-every optional speech component QUILL offers. Beta 3 closes every gap
+every optional speech component QUILL offers. 1.0.0 closes every gap
 found in that audit except one clearly documented remaining
 limitation.</p>
 <h3 id="what-offline-edition-is-supposed-to-mean">What “Offline Edition”
@@ -1469,7 +1469,7 @@ It remains on the list for future work.</p>
 <hr />
 <h2 id="built-by-the-community-not-merely-released-to-it">Built by the
 Community, Not Merely Released to It</h2>
-<p>Every fix in Beta 3 traces to a specific community report. Nine
+<p>Every fix in 1.0.0 traces to a specific community report. Nine
 reports, spanning issues <strong>#939 through #953</strong>, are now
 closed with an explanation of what was discovered and, where a change
 was needed, what was done.</p>
@@ -1492,7 +1492,7 @@ member tested its promise rather than assuming the label was enough.</p>
 built.</strong></p>
 <hr />
 <h2 id="toward-1.0-together">Toward 1.0 — Together</h2>
-<p>Beta 3 moves the 0.9.0 cycle closer to 1.0 with a stronger editor,
+<p>1.0.0 moves the 0.9.0 cycle closer to 1.0 with a stronger editor,
 clearer safeguards, deeper accessibility, and a growing set of workflows
 shaped by the people who use them.</p>
 <p>Please keep exploring. Open the formats that matter to you. Try the
@@ -1507,5 +1507,5 @@ case matters. A feature request grounded in real work matters.</p>
 <p>Thank you for testing. Thank you for challenging assumptions. Thank
 you for helping turn an editor into a community-built place where more
 people can create, contribute, and belong.</p>
-<p><strong>QUILL 0.9.0 Beta 3 is here. One editor. Every format. Built
+<p><strong>QUILL 1.0.0 is here. One editor. Every format. Built
 with you.</strong></p>
