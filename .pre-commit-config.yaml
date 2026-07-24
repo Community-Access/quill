@@ -18,8 +18,14 @@ repos:
   - repo: local
     hooks:
       - id: ruff-format
-        name: ruff format
-        entry: ruff format --force-exclude
+        name: ruff format (check)
+        # --check (verify) not auto-fix: a formatter that rewrites files mid-commit
+        # stashes your unstaged edits, rewrites the staged copy, then conflicts on
+        # restore and rolls back with a cryptic failure whenever a file is only
+        # partially staged. This mirrors CI's `ruff format --check .` exactly, so
+        # the hook fails cleanly ("would reformat X") and you run `ruff format`
+        # deliberately. Never touches your working tree.
+        entry: ruff format --check --force-exclude
         language: system
         types_or: [python, pyi]
         require_serial: true
