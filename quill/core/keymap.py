@@ -341,6 +341,17 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.blockquote": "Ctrl+Alt+Q",  # §edsharp-ok — authorized authoring chord (x.md)
     "format.horizontal_rule": "Ctrl+Alt+H",  # §edsharp-ok — authorized authoring chord (x.md)
     "power.insert_image": "Ctrl+Alt+I",  # §edsharp-ok — authoring chord (x.md)
+    # Table cell navigation (Leasey Word parity): move cell by cell inside a
+    # pipe/Markdown table, hearing each cell + its position. Context-sensitive --
+    # harmless outside a table. §edsharp-ok authoring/navigation chords.
+    "table.next_cell": "Ctrl+Alt+Right",  # §edsharp-ok — table cell navigation
+    "table.previous_cell": "Ctrl+Alt+Left",  # §edsharp-ok — table cell navigation
+    "table.cell_below": "Ctrl+Alt+Down",  # §edsharp-ok — table cell navigation
+    "table.cell_above": "Ctrl+Alt+Up",  # §edsharp-ok — table cell navigation
+    "table.first_cell": "Ctrl+Alt+Home",  # §edsharp-ok — table cell navigation
+    "table.last_cell": "Ctrl+Alt+End",  # §edsharp-ok — table cell navigation
+    "table.row_start": "Alt+Home",
+    "table.row_end": "Alt+End",
     "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",
     "power.non_ascii_jump_to_source": "",  # assign via Keymap Editor; use from Non-ASCII report
     "power.non_ascii_jump_to_report": "",  # assign via Keymap Editor; jump back to report

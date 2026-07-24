@@ -740,6 +740,17 @@ class CommandRegistryMixin:
             self.navigate_previous_region,
             self._binding_for("navigate.previous_region"),
         )
+        for command_id, label, handler in (
+            ("table.next_cell", "Table: Next Cell", self.table_next_cell),
+            ("table.previous_cell", "Table: Previous Cell", self.table_previous_cell),
+            ("table.cell_below", "Table: Cell Below", self.table_cell_below),
+            ("table.cell_above", "Table: Cell Above", self.table_cell_above),
+            ("table.row_start", "Table: First Cell in Row", self.table_row_start),
+            ("table.row_end", "Table: Last Cell in Row", self.table_row_end),
+            ("table.first_cell", "Table: First Cell", self.table_first_cell),
+            ("table.last_cell", "Table: Last Cell", self.table_last_cell),
+        ):
+            self.commands.register(command_id, label, handler, self._binding_for(command_id))
         self.commands.register(
             "navigate.set_bookmark",
             "Set Bookmark...",

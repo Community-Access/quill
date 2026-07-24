@@ -453,6 +453,7 @@ from quill.ui.main_frame_spellcheck import SpellcheckCommandsMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
+from quill.ui.main_frame_table_nav import TableNavMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
 from quill.ui.main_frame_vault import VaultMixin
@@ -821,6 +822,7 @@ class MainFrame(
     BrowseModeMixin,
     MenuBuilderMixin,
     MenuBindingsMixin,
+    TableNavMixin,
     NotebookUIMixin,
     QuillKeyMixin,
     RichModeMixin,
@@ -2507,9 +2509,38 @@ class MainFrame(
             self._maybe_announce_indent()
             self._maybe_play_indent_tone()
             self._maybe_announce_format_transition()
+            self._maybe_announce_table_transition()
         except RuntimeError:  # #603/#269: editor can be a dead TextCtrl mid-event.
             pass
         event.Skip()
+
+    def _maybe_announce_table_transition(self) -> None:
+        """Say "Entering table" / "Out of table" when ordinary navigation crosses
+        a table boundary (Leasey Word parity). A cheap current-line check avoids
+        parsing the whole document except when the caret sits on a pipe row."""
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return
+        try:
+            text = editor.GetValue()
+            caret = editor.GetInsertionPoint()
+        except Exception:  # noqa: BLE001 - a non-text surface has no tables
+            return
+        line_start = text.rfind("\n", 0, caret) + 1
+        line_end = text.find("\n", caret)
+        current_line = text[line_start : line_end if line_end != -1 else len(text)]
+        if "|" not in current_line:
+            in_table = False
+        else:
+            from quill.core import table_nav
+
+            in_table = table_nav.find_table_at(text, caret) is not None
+        was_in_table = getattr(self, "_caret_in_table", False)
+        if in_table and not was_in_table:
+            self._announce("Entering table")
+        elif was_in_table and not in_table:
+            self._announce("Out of table")
+        self._caret_in_table = in_table
 
     def _on_editor_key_up(self, event: object) -> None:
         wx = self._wx

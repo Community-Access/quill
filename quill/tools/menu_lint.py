@@ -74,6 +74,14 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "format.horizontal_rule",  # Ctrl+Alt+H
     "edit.insert_link",  # Ctrl+Alt+K
     "power.insert_image",  # Ctrl+Alt+I
+    # Table cell navigation (Leasey Word parity): Ctrl+Alt+arrow/Home/End move
+    # cell by cell; context-sensitive and harmless outside a table.
+    "table.next_cell",  # Ctrl+Alt+Right
+    "table.previous_cell",  # Ctrl+Alt+Left
+    "table.cell_below",  # Ctrl+Alt+Down
+    "table.cell_above",  # Ctrl+Alt+Up
+    "table.first_cell",  # Ctrl+Alt+Home
+    "table.last_cell",  # Ctrl+Alt+End
     # #357 keymap consolidation: AI commands use Ctrl+Alt+Shift+<letter> as
     # their chord class. Inline accelerators were stripped from main_frame_menu
     # because they collided with the F7/F8 selection bindings. The chord class
