@@ -1803,6 +1803,14 @@ class MenuBuilderMixin:
             self._menu_label(_("S&ync Folder with GitHub..."), "sync.sync_folder"),
         )
         github_admin_menu = wx.Menu()
+        # Open/browse a repository -- the everyday "I just want to open a repo"
+        # action, alongside the admin operations. Reuses the same command (and its
+        # existing binding) as File > Open Remote > GitHub Repository.
+        github_admin_menu.Append(
+            self._id_github_repository,
+            self._menu_label(_("&Open a Repository..."), "file.open_github_repository"),
+        )
+        github_admin_menu.AppendSeparator()
         github_admin_menu.Append(
             self._id_github_create_repo,
             self._menu_label(_("&Create Repository..."), "github.create_repository"),
