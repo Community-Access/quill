@@ -428,8 +428,8 @@ class WeatherMixin:
         data_dir = self._weather_data_dir()
         config = monitor.load_config(data_dir)
         store = loc_store.load_locations(data_dir)
-        primary = store.primary()
-        watched_ids = config.watched_ids(fallback=primary.id if primary is not None else "")
+        # Explicit list wins; else watch every saved place, not just the primary.
+        watched_ids = config.watched_ids() or [loc.id for loc in store.locations]
         locations = [loc for cid in watched_ids if (loc := store.find(cid)) is not None]
         if not locations:
             # Force a choice before monitoring can start: there is nothing to watch.
