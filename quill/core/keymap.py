@@ -260,7 +260,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Batch Conversion... (one in each, both invoking the same wizard).
     "file.batch_conversion": "Ctrl+Shift+Grave, B",
     "edit.replace_all": "Ctrl+Shift+H",
-    "edit.insert_link": "Ctrl+K",
+    "edit.insert_link": "Ctrl+Alt+K",  # §edsharp-ok — authoring chord (x.md)
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
     # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The
@@ -331,8 +331,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.heading_6": "Ctrl+Alt+6",  # §edsharp-ok — overrides NVDA switch-to-synth-6
     "format.decrease_heading_level": "Alt+Shift+Left",
     "format.increase_heading_level": "Alt+Shift+Right",
-    "format.toggle_bullet_list": "Ctrl+Alt+7",  # §edsharp-ok — overrides NVDA review-cursor
-    "format.toggle_numbered_list": "Ctrl+Alt+8",  # §edsharp-ok — overrides NVDA review-cursor
+    "format.toggle_bullet_list": "Ctrl+Alt+B",  # §edsharp-ok — authoring chord (x.md)
+    "format.toggle_numbered_list": "Ctrl+Alt+N",  # §edsharp-ok — authoring chord (x.md)
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
     "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
     # Format-aware structured inserts: direct authoring chords mirroring Leasey
@@ -340,6 +340,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.insert_table": "Ctrl+Alt+T",  # §edsharp-ok — authorized authoring chord (x.md)
     "format.blockquote": "Ctrl+Alt+Q",  # §edsharp-ok — authorized authoring chord (x.md)
     "format.horizontal_rule": "Ctrl+Alt+H",  # §edsharp-ok — authorized authoring chord (x.md)
+    "power.insert_image": "Ctrl+Alt+I",  # §edsharp-ok — authoring chord (x.md)
     "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",
     "power.non_ascii_jump_to_source": "",  # assign via Keymap Editor; use from Non-ASCII report
     "power.non_ascii_jump_to_report": "",  # assign via Keymap Editor; jump back to report

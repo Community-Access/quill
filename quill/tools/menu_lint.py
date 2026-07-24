@@ -64,15 +64,16 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "format.heading_4",
     "format.heading_5",
     "format.heading_6",
-    # EdSharp port: list-toggle shortcuts override NVDA review-cursor.
-    "format.toggle_bullet_list",  # Ctrl+Alt+7
-    "format.toggle_numbered_list",  # Ctrl+Alt+8
-    # Format-aware structured inserts: direct authoring chords mirroring Leasey
-    # Word (x.md "Authoring"), user-authorized as in-app Ctrl+Alt chords. None
+    # Format-aware structured inserts / authoring chords mirroring Leasey Word
+    # (x.md "Authoring"), user-authorized as in-app Ctrl+Alt chords. None
     # collides with a default NVDA/JAWS command.
+    "format.toggle_bullet_list",  # Ctrl+Alt+B
+    "format.toggle_numbered_list",  # Ctrl+Alt+N
     "format.insert_table",  # Ctrl+Alt+T
     "format.blockquote",  # Ctrl+Alt+Q
     "format.horizontal_rule",  # Ctrl+Alt+H
+    "edit.insert_link",  # Ctrl+Alt+K
+    "power.insert_image",  # Ctrl+Alt+I
     # #357 keymap consolidation: AI commands use Ctrl+Alt+Shift+<letter> as
     # their chord class. Inline accelerators were stripped from main_frame_menu
     # because they collided with the F7/F8 selection bindings. The chord class

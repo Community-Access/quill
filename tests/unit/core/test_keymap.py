@@ -650,3 +650,18 @@ def test_build_keymap_for_pack_off_darwin_is_verbatim(monkeypatch) -> None:
     monkeypatch.setattr(keymap_module.sys, "platform", "win32")
     keymap = build_keymap_for_pack("VS Code")
     assert keymap["file.open"] == "Ctrl+P"
+
+
+def test_leasey_word_authoring_chords_are_the_defaults() -> None:
+    # Leasey Word "Authoring" chord set (x.md), user-authorized. Locks in parity.
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    assert DEFAULT_KEYMAP["edit.insert_link"] == "Ctrl+Alt+K"
+    assert DEFAULT_KEYMAP["format.toggle_bullet_list"] == "Ctrl+Alt+B"
+    assert DEFAULT_KEYMAP["format.toggle_numbered_list"] == "Ctrl+Alt+N"
+    assert DEFAULT_KEYMAP["power.insert_image"] == "Ctrl+Alt+I"
+    assert DEFAULT_KEYMAP["format.insert_table"] == "Ctrl+Alt+T"
+    assert DEFAULT_KEYMAP["format.blockquote"] == "Ctrl+Alt+Q"
+    assert DEFAULT_KEYMAP["format.horizontal_rule"] == "Ctrl+Alt+H"
+    for level in range(1, 7):
+        assert DEFAULT_KEYMAP[f"format.heading_{level}"] == f"Ctrl+Alt+{level}"
