@@ -20,6 +20,32 @@ def test_unknown_key_returns_none() -> None:
     assert app_launcher.build_launch_argv("nope") is None
 
 
+def test_frozen_sibling_not_installed_returns_none(monkeypatch, tmp_path) -> None:
+    # A frozen build whose sibling .exe is NOT next to it (the app was installed
+    # on its own -- e.g. Quill Radio present but Quill Weather never installed,
+    # and the reverse) must report "cannot launch" rather than guess a path.
+    # The running exe is a neutral name so it is not itself a Radio/Weather
+    # candidate; no sibling exes exist beside it.
+    running = tmp_path / "Launcher.exe"
+    running.write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(running), raising=False)
+    assert app_launcher.build_launch_argv("weather") is None
+    assert app_launcher.build_launch_argv("radio") is None
+    assert app_launcher.launch_app("weather") is False
+    assert app_launcher.launch_app("radio") is False
+
+
+def test_frozen_sibling_installed_alongside_launches(monkeypatch, tmp_path) -> None:
+    # When the sibling .exe IS present next to the running app, launch it by path.
+    (tmp_path / "QuillRadio.exe").write_bytes(b"MZ")
+    (tmp_path / "QuillWeather.exe").write_bytes(b"MZ")
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "QuillRadio.exe"), raising=False)
+    assert app_launcher.build_launch_argv("weather") == [str(tmp_path / "QuillWeather.exe")]
+    assert app_launcher.build_launch_argv("radio") == [str(tmp_path / "QuillRadio.exe")]
+
+
 def test_app_names() -> None:
     assert app_launcher.app_name("weather") == "Quill Weather"
     assert app_launcher.app_name("radio") == "Quill Radio"

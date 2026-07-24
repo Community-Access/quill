@@ -38,6 +38,30 @@ a = Analysis(
         "numpy.f2py",
         "mpv",
         "ffmpeg",
+        # Heavy transitive dependencies the app never imports at runtime (verified
+        # by tracing `import quill.apps.weather`). collect_all("quill") force-
+        # includes every quill submodule -- AI vision, PDF I/O, publishing, dev
+        # tooling -- and PyInstaller then follows their imports into these libs.
+        # Excluding them roughly halves the build (babel alone is ~152 MB).
+        "babel",  # i18n .po/.mo compiler -- build tooling only
+        "pandas",
+        "speech_recognition",
+        "pdfminer",
+        "pdfplumber",
+        "pypdfium2",
+        "pypdfium2_raw",
+        "grpc",
+        "psycopg",
+        "psycopg2",
+        "mypy",  # type checker -- must never ship in a release
+        "lxml",
+        "PIL",  # AI vision + Windows screen capture only
+        "Pillow",
+        "av",  # PyAV / video codecs (pulls the libx265 DLL)
+        "imageio",
+        "imageio_ffmpeg",
+        "matplotlib",
+        "scipy",
     ],
     noarchive=False,
 )

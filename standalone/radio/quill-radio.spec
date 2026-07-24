@@ -36,6 +36,31 @@ a = Analysis(
         "onnxruntime",
         "torch",
         "numpy.f2py",
+        # Heavy transitive dependencies Radio never imports at runtime (verified
+        # by tracing `import quill.apps.radio`). collect_all("quill") force-
+        # includes every quill submodule -- AI vision, PDF I/O, publishing, dev
+        # tooling -- and PyInstaller then follows their imports into these libs.
+        # Radio keeps its real audio stack (bundled ffmpeg.exe + libmpv-2.dll,
+        # driven as external binaries, not these Python packages).
+        "babel",  # i18n .po/.mo compiler -- build tooling only (~152 MB)
+        "pandas",
+        "speech_recognition",
+        "pdfminer",
+        "pdfplumber",
+        "pypdfium2",
+        "pypdfium2_raw",
+        "grpc",
+        "psycopg",
+        "psycopg2",
+        "mypy",  # type checker -- must never ship in a release
+        "lxml",
+        "PIL",  # AI vision + Windows screen capture only
+        "Pillow",
+        "av",  # PyAV / video codecs (pulls the libx265 DLL)
+        "imageio",
+        "imageio_ffmpeg",
+        "matplotlib",
+        "scipy",
     ],
     noarchive=False,
 )
