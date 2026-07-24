@@ -400,7 +400,9 @@ class WeatherCenterDialog:
         if self._settings.show_local_time and result.time_zone:
             from datetime import datetime
 
-            local_time = render.local_time_phrase(datetime.now(UTC), result.time_zone)
+            now = datetime.now(UTC)
+            # "Right now it is <there>, and <here> where you are. Checked just now."
+            local_time = render.time_summary(now, result.time_zone, place=place)
         lead = f"{local_time} " if local_time else ""
         if result.current is not None:
             block = render.current_conditions_block(

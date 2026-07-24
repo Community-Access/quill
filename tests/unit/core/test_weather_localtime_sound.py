@@ -49,6 +49,43 @@ def test_open_meteo_report_carries_timezone(monkeypatch) -> None:
     assert report.time_zone == "America/Phoenix"
 
 
+def test_time_summary_shows_both_zones_and_checked() -> None:
+    # 2023-04-27 13:51 UTC. Location New York (EDT, 9:51 AM), reviewer Los
+    # Angeles (PDT, 6:51 AM) -- different zones, so both are named.
+    now = datetime(2023, 4, 27, 13, 51, tzinfo=UTC)
+    text = render.time_summary(
+        now, "America/New_York", place="Tucson, AZ", reviewer_tz="America/Los_Angeles"
+    )
+    assert "9:51 AM in Tucson, AZ" in text
+    assert "6:51 AM where you are" in text
+    assert "checked just now" in text
+
+
+def test_time_summary_same_zone_says_so_once() -> None:
+    now = datetime(2023, 4, 27, 13, 51, tzinfo=UTC)
+    text = render.time_summary(
+        now, "America/New_York", place="Boston", reviewer_tz="America/New_York"
+    )
+    assert text.count("9:51 AM") == 1  # not repeated
+    assert "the same time zone" in text
+
+
+def test_time_summary_names_an_older_check_time() -> None:
+    now = datetime(2023, 4, 27, 13, 51, tzinfo=UTC)
+    checked = datetime(2023, 4, 27, 13, 20, tzinfo=UTC)  # 31 minutes earlier
+    text = render.time_summary(
+        now, "America/New_York", place="NYC", reviewer_tz="America/New_York", checked=checked
+    )
+    assert "just now" not in text
+    assert "your time" in text  # names the actual check time in your zone
+
+
+def test_time_summary_empty_without_zone_or_aware_now() -> None:
+    now = datetime(2023, 4, 27, 13, 51, tzinfo=UTC)
+    assert render.time_summary(now, "") == ""
+    assert render.time_summary(datetime(2023, 4, 27, 13, 51), "America/New_York") == ""
+
+
 def test_local_time_setting_round_trips(tmp_path) -> None:
     s = WeatherSettings()
     s.show_local_time = False

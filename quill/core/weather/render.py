@@ -195,6 +195,78 @@ def local_time_phrase(now: object, tz_name: str) -> str:
     )
 
 
+def _format_clock(dt: object) -> str:
+    """An aware datetime (already in its target zone) as a friendly wall clock:
+    'Thursday, April 27, 9:51 AM'."""
+    from datetime import datetime
+
+    if not isinstance(dt, datetime):
+        return ""
+    weekday = _WEEKDAYS[dt.weekday()]
+    suffix = "AM" if dt.hour < 12 else "PM"
+    hour12 = dt.hour % 12 or 12
+    return f"{weekday}, {_MONTHS[dt.month - 1]} {dt.day}, {hour12}:{dt.minute:02d} {suffix}"
+
+
+def time_summary(
+    now: object,
+    location_tz: str,
+    *,
+    place: str = "",
+    reviewer_tz: str | None = None,
+    checked: object = None,
+) -> str:
+    """A warm, understandable summary of *when*: the local time where the weather
+    is, the local time where **you** are, and when this reading was checked.
+
+    ``now`` is the current instant (a timezone-aware datetime -- the caller reads
+    the clock). ``location_tz`` is the weather location's IANA zone; ``place`` its
+    friendly name. ``reviewer_tz`` is your own zone (defaults to the machine's
+    local zone -- pass an IANA name to make it testable). ``checked`` is when the
+    reading was fetched (aware datetime; ``None`` means "just now"). Returns '' if
+    the location zone is unknown or ``now`` is unusable.
+
+    When you and the weather are in the same time zone, it says so once instead
+    of repeating the same clock twice.
+    """
+    from datetime import datetime
+
+    if not location_tz or not isinstance(now, datetime) or now.tzinfo is None:
+        return ""
+    try:
+        from zoneinfo import ZoneInfo
+
+        there = now.astimezone(ZoneInfo(location_tz))
+        here = now.astimezone(ZoneInfo(reviewer_tz)) if reviewer_tz else now.astimezone()
+    except Exception:  # noqa: BLE001 - unknown zone: no line rather than a crash
+        return ""
+
+    where = f"in {place}" if place else "there"
+    if there.utcoffset() == here.utcoffset():
+        lead = (
+            f"Right now it is {_format_clock(here)} -- {where} and right where "
+            "you are, the same time zone."
+        )
+    else:
+        lead = (
+            f"Right now it is {_format_clock(there)} {where}, "
+            f"and {_format_clock(here)} where you are."
+        )
+
+    checked_str = "just now"
+    if isinstance(checked, datetime) and checked.tzinfo is not None:
+        try:
+            age = (now - checked).total_seconds()
+        except (TypeError, ValueError):
+            age = 0.0
+        if age >= 90:  # older than a moment -> name the actual time it was taken
+            checked_here = (
+                checked.astimezone(ZoneInfo(reviewer_tz)) if reviewer_tz else checked.astimezone()
+            )
+            checked_str = f"at {_format_clock(checked_here)}, your time"
+    return f"{lead} This reading was checked {checked_str}."
+
+
 def air_quality_phrase(air: object) -> str:
     """A spoken sentence for an AirQuality value (duck-typed to avoid a model
     import cycle in the signature); '' when nothing usable."""
