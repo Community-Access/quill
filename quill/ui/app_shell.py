@@ -288,12 +288,9 @@ class AppShellFrame:
             self._keep_menu_ids(item_id)
 
     def _launch_sibling(self, key: str) -> None:
-        from quill.core.app_launcher import app_name, launch_app
+        from quill.ui.companion_offer import try_open_or_offer
 
-        if launch_app(key):
-            self._announce(f"Opening {app_name(key)}.")
-        else:
-            self._announce(f"{app_name(key)} could not be opened; it may not be installed.")
+        try_open_or_offer(self, key)
 
     def _on_tray_right_click(self, build_menu: Callable[[wx.Menu], None]) -> None:
         if self._tray_icon is None:

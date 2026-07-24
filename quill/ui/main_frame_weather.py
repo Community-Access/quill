@@ -60,13 +60,11 @@ class WeatherMixin:
         return True if checker is None else bool(checker(area_id))
 
     def open_weather_app(self) -> None:
-        """Launch the standalone Quill Weather app in its own window/tray."""
-        from quill.core.app_launcher import launch_app
+        """Launch the standalone Quill Weather app in its own window/tray; if it
+        isn't installed, warmly offer to download and install it."""
+        from quill.ui.companion_offer import try_open_or_offer
 
-        if launch_app("weather"):
-            self._announce("Opening the Quill Weather app.")
-        else:
-            self._announce("The Quill Weather app could not be opened; it may not be installed.")
+        try_open_or_offer(self, "weather")
 
     def _append_weather_menu(self, menu_bar: Any) -> None:
         """Build and append the top-level &Weather menu (PRD 20 command IDs)."""

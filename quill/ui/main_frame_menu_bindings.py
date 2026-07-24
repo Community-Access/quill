@@ -21,13 +21,11 @@ class MenuBindingsMixin:
     def open_companion_app(self, key: str) -> None:
         """Tools > Companion Apps: launch Quill Radio or Quill Weather in its own
         window and process. If it is already running, it just comes forward
-        (each is single-instance). Best-effort; never disrupts QUILL."""
-        from quill.core.app_launcher import app_name, launch_app
+        (each is single-instance); if it isn't installed, offer to get it.
+        Best-effort; never disrupts QUILL."""
+        from quill.ui.companion_offer import try_open_or_offer
 
-        if launch_app(key):
-            self._announce(f"Opening {app_name(key)}.")
-        else:
-            self._announce(f"{app_name(key)} could not be opened; it may not be installed.")
+        try_open_or_offer(self, key)
 
     def _bind_menu_events(self) -> None:
         wx = self._wx
