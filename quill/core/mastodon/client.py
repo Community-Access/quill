@@ -25,6 +25,7 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 from quill import __version__
@@ -35,11 +36,10 @@ CLIENT_NAME = "QUILL"
 CLIENT_WEBSITE = "https://github.com/Community-Access/quill"
 #: Out-of-band redirect: the instance shows the user a code to paste back.
 REDIRECT_OOB = "urn:ietf:wg:oauth:2.0:oob"
-#: Scopes QUILL requests: publish statuses, plus read:accounts so
-#: verify_credentials can fetch the signed-in @handle for display. The GET
-#: /api/v1/accounts/verify_credentials endpoint rejects a write-only token
-#: with 403, so read:accounts is required for sign-in to complete.
-SCOPES = "read:accounts write:statuses"
+#: OAuth scopes QUILL requests. "read" covers profiles, relationships, lists,
+#: filters and favourited/boosted-by lookups; the write scopes cover posting,
+#: following/unfollowing, and list membership -- the read/interact surface.
+SCOPES = "read write:statuses write:follows write:lists"
 
 #: Mastodon's status visibilities, with human labels (stored value, label).
 VISIBILITIES: tuple[tuple[str, str], ...] = (
@@ -94,22 +94,31 @@ def normalize_instance_url(raw: str) -> str:
     return f"https://{parsed.netloc}"
 
 
-def _http_json(
+def _http_payload(
     method: str,
     url: str,
     *,
-    data: dict[str, str] | None = None,
+    data: Mapping[str, object] | None = None,
     token: str | None = None,
-) -> dict[str, object]:
-    """Perform one HTTPS request and return the decoded JSON object.
+) -> str:
+    """Perform one HTTPS request and return the raw response body.
 
     The single network-egress site for Mastodon support. HTTPS-only, verified
     TLS context, short timeout; raises :class:`MastodonError` on any failure so
-    callers never leak a raw traceback to the user.
+    callers never leak a raw traceback to the user. ``data`` may hold list values
+    (e.g. ``account_ids``), encoded as repeated ``key[]=`` params.
     """
     if not url.startswith("https://"):
         raise MastodonError("Refusing a non-HTTPS Mastodon request.")
-    body = urllib.parse.urlencode(data).encode("utf-8") if data is not None else None
+    body = None
+    if data is not None:
+        pairs: list[tuple[str, str]] = []
+        for key, value in data.items():
+            if isinstance(value, (list, tuple)):
+                pairs.extend((f"{key}[]", str(item)) for item in value)
+            else:
+                pairs.append((key, str(value)))
+        body = urllib.parse.urlencode(pairs).encode("utf-8")
     headers = {"User-Agent": _USER_AGENT, "Accept": "application/json"}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -117,11 +126,22 @@ def _http_json(
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
-            payload = resp.read().decode("utf-8")
+            return str(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         raise MastodonError(_describe_http_error(error)) from error
     except (urllib.error.URLError, TimeoutError, ssl.SSLError) as error:
         raise MastodonError(f"Could not reach the server: {error}") from error
+
+
+def _http_json(
+    method: str,
+    url: str,
+    *,
+    data: Mapping[str, object] | None = None,
+    token: str | None = None,
+) -> dict[str, object]:
+    """One HTTPS request whose response is a JSON object."""
+    payload = _http_payload(method, url, data=data, token=token)
     try:
         parsed = json.loads(payload) if payload else {}
     except ValueError as error:
@@ -129,6 +149,25 @@ def _http_json(
     if not isinstance(parsed, dict):
         raise MastodonError("The server returned an unexpected response.")
     return parsed
+
+
+def http_json_list(
+    method: str,
+    url: str,
+    *,
+    data: Mapping[str, object] | None = None,
+    token: str | None = None,
+) -> list[dict[str, object]]:
+    """One HTTPS request whose response is a JSON array of objects (the shape the
+    relationships / favourited-by / lists / filters endpoints return)."""
+    payload = _http_payload(method, url, data=data, token=token)
+    try:
+        parsed = json.loads(payload) if payload else []
+    except ValueError as error:
+        raise MastodonError("The server returned an unexpected response.") from error
+    if not isinstance(parsed, list):
+        raise MastodonError("The server returned an unexpected response.")
+    return [item for item in parsed if isinstance(item, dict)]
 
 
 def _describe_http_error(error: urllib.error.HTTPError) -> str:

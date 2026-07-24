@@ -266,17 +266,16 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "credential is ever sent. Disabled in Safe Mode via "
         "nws.refuse_in_safe_mode / geocoding.refuse_in_safe_mode."
     ),
-    "core/mastodon/client.py::_http_json": (
-        "Single egress site for the 'Post to Mastodon' feature. Reached only by an "
-        "explicit user action -- adding an account (app registration + OAuth token "
-        "exchange), opening the compose dialog or switching accounts (a one-time "
-        "unauthenticated limit lookup: GET /api/v2/instance for Mastodon 4.0+ / "
-        "glitch-soc, falling back to GET /api/v1/instance -> max_toot_chars for "
-        "non-Mastodon forks like GoToSocial / Pleroma / Akkoma; cached for the "
-        "process lifetime), or pressing Post -- to the user's own instance. "
-        "HTTPS-only over a verified TLS context; the access token travels "
-        "in the Authorization header, never the URL. The instance-limit lookup is "
-        "unauthenticated and falls back to the default 500 on any failure."
+    "core/mastodon/client.py::_http_payload": (
+        "Single egress site for QUILL's Mastodon support (both _http_json and "
+        "http_json_list funnel through it). Reached only by an explicit user action "
+        "-- adding an account (app registration + OAuth token exchange), the compose "
+        "dialog's one-time unauthenticated instance-limit lookup, pressing Post, or "
+        "the read/interact features (view a profile, follow/unfollow, see who "
+        "favourited/boosted a post, manage lists and add a user to one, read "
+        "filters) -- always to the user's own instance. HTTPS-only over a verified "
+        "TLS context; the access token travels in the Authorization header, never "
+        "the URL."
     ),
     "core/dectalk_runtime.py::download_dectalk_runtime": (
         "User explicitly installs the optional DECTALK voice runtime; download "
