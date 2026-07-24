@@ -352,6 +352,12 @@ extend-exclude = [
 
 [tool.ruff.format]
 preview = true
+# Markdown under docs/ is pandoc-owned source (rendered to .html/.epub by
+# scripts/gen.ps1), not executed code. Ruff's preview mode reformats Python
+# code-fences inside Markdown, which only churns historical planning docs and
+# forces artifact regeneration on every ruff bump. Keep .md out of the
+# formatter; the docs-artifacts gate is the sole authority on doc rendering.
+exclude = ["**/*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

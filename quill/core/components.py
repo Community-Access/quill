@@ -35,9 +35,9 @@ def _load(data_dir: Path) -> dict[str, list[str]]:
         if isinstance(entries, dict):
             for component_id, apps in entries.items():
                 if isinstance(apps, list):
-                    refs[str(component_id)] = sorted(
-                        {str(app) for app in apps if isinstance(app, str)}
-                    )
+                    refs[str(component_id)] = sorted({
+                        str(app) for app in apps if isinstance(app, str)
+                    })
     return refs
 
 

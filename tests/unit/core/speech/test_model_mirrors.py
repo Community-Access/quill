@@ -98,12 +98,10 @@ def _zip_bytes(members: dict[str, bytes]) -> bytes:
 
 
 def test_fetch_mirror_archive_verifies_then_unpacks(monkeypatch, tmp_path) -> None:
-    payload = _zip_bytes(
-        {
-            "faster-whisper-small/model.bin": b"weights",
-            "faster-whisper-small/config.json": b"{}",
-        }
-    )
+    payload = _zip_bytes({
+        "faster-whisper-small/model.bin": b"weights",
+        "faster-whisper-small/config.json": b"{}",
+    })
     asset = MirrorAsset("fw-small.zip", "c" * 64, archive_member="model.bin")
 
     def _dv(_url, dest, **_kwargs):

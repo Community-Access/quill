@@ -36,9 +36,7 @@ def _load(data_dir: Path) -> dict[str, list[str]]:
         if isinstance(entries, dict):
             for version, apps in entries.items():
                 if isinstance(apps, list):
-                    refs[str(version)] = sorted(
-                        {str(app) for app in apps if isinstance(app, str)}
-                    )
+                    refs[str(version)] = sorted({str(app) for app in apps if isinstance(app, str)})
     return refs
 
 
@@ -108,7 +106,5 @@ def unreferenced(data_dir: Path, candidates: Iterable[str]) -> list[str]:
     """Of *candidates*, the runtime versions no installed app needs -- removable."""
     refs = _load(data_dir)
     return sorted(
-        version
-        for version in {str(candidate) for candidate in candidates}
-        if not refs.get(version)
+        version for version in {str(candidate) for candidate in candidates} if not refs.get(version)
     )

@@ -388,9 +388,7 @@ def fetch_mirror_archive(
         if asset.archive_member:
             hits = list(extract.rglob(asset.archive_member))
             if not hits:
-                raise ReleaseAssetError(
-                    f"{asset.filename} did not contain {asset.archive_member}."
-                )
+                raise ReleaseAssetError(f"{asset.filename} did not contain {asset.archive_member}.")
             source = hits[0].parent
         target.mkdir(parents=True, exist_ok=True)
         shutil.copytree(source, target, dirs_exist_ok=True)

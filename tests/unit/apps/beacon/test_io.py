@@ -90,7 +90,7 @@ class ImporterTests(unittest.TestCase):
         text = (
             '<?xml version="1.0"?><opml><body><outline text="Tech">'
             '<outline type="rss" text="Show" xmlUrl="https://feed.example.org/rss"/>'
-            '</outline></body></opml>'
+            "</outline></body></opml>"
         )
         items = list(importers.import_opml(text))
         self.assertEqual(len(items), 1)

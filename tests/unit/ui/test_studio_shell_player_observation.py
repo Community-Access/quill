@@ -106,6 +106,7 @@ def test_queue_advances_after_finish_then_close(app, tmp_path, monkeypatch) -> N
         from quill.core.audio_studio.play_queue import (
             add as queue_add,
         )
+
         q = PlayQueue()
         queue_add(q, QueueEntry(str(a), "A"))
         queue_add(q, QueueEntry(str(b), "B"))
@@ -113,9 +114,7 @@ def test_queue_advances_after_finish_then_close(app, tmp_path, monkeypatch) -> N
         # Capture CallAfter instead of flushing events (which would also fire
         # the deferred startup update check and hit the network).
         scheduled: list[tuple[object, tuple]] = []
-        monkeypatch.setattr(
-            wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2))
-        )
+        monkeypatch.setattr(wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2)))
         # Simulate book A finishing, then the workbench closing.
         frame._on_book_finished(str(a))
         frame._on_book_closed(str(a), position_ms=1000, chapter=2)
@@ -147,6 +146,7 @@ def test_auto_advance_skips_a_missing_next_file(app, tmp_path, monkeypatch) -> N
         from quill.core.audio_studio.play_queue import (
             add as queue_add,
         )
+
         q = PlayQueue()
         queue_add(q, QueueEntry(str(a), "A"))
         queue_add(q, QueueEntry(str(tmp_path / "b.m4b"), "B"))  # missing
@@ -183,6 +183,7 @@ def test_auto_advance_all_missing_says_end_of_book(app, tmp_path, monkeypatch) -
         from quill.core.audio_studio.play_queue import (
             add as queue_add,
         )
+
         q = PlayQueue()
         queue_add(q, QueueEntry(str(a), "A"))
         queue_add(q, QueueEntry(str(tmp_path / "gone.m4b"), "Gone"))  # missing
@@ -205,9 +206,7 @@ def test_resume_missing_book_announces(app, tmp_path, monkeypatch) -> None:
     try:
         said: list[str] = []
         monkeypatch.setattr(frame, "_announce", said.append)
-        frame._history.record(
-            str(tmp_path / "gone.m4b"), title="gone", position_ms=0, chapter=0
-        )
+        frame._history.record(str(tmp_path / "gone.m4b"), title="gone", position_ms=0, chapter=0)
         frame._maybe_resume_last_book()
         assert said == ["gone is no longer where it was; it may have been moved or renamed."]
     finally:
@@ -288,9 +287,7 @@ def test_reveal_missing_file_announces(app, tmp_path, monkeypatch) -> None:
 
         said: list[str] = []
         monkeypatch.setattr(frame, "_announce", said.append)
-        frame._reveal_book_in_folder(
-            BookEntry(path=str(tmp_path / "gone.m4b"), title="Gone")
-        )
+        frame._reveal_book_in_folder(BookEntry(path=str(tmp_path / "gone.m4b"), title="Gone"))
         assert said == ["Gone is no longer where it was; it may have been moved or renamed."]
     finally:
         frame.frame.Destroy()
@@ -316,6 +313,7 @@ def test_reveal_existing_file_invokes_file_manager(app, tmp_path, monkeypatch) -
         assert said and "file manager" in said[0]
     finally:
         frame.frame.Destroy()
+
 
 def test_media_keys_grabbed_only_while_a_book_is_open(app, tmp_path, monkeypatch) -> None:
     """The system media keys are registered when a book starts playing and
