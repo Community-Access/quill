@@ -49,11 +49,14 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
         )
 
 
-def _fetch_transcript_bytes(url: str) -> bytes:
+def _fetch_transcript_bytes(url: str, *, auth_header: str = "") -> bytes:
     """One HTTPS GET returning raw transcript bytes -- the reviewed egress site."""
     if not url.startswith("https://"):
         raise TranscriptError("Only https:// transcript links can be fetched.")
-    request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+    headers = {"User-Agent": _USER_AGENT}
+    if auth_header:
+        headers["Authorization"] = auth_header
+    request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
@@ -118,13 +121,15 @@ def parse_transcript(raw_bytes: bytes, transcript_type: str) -> str:
     return text.strip()
 
 
-def fetch_and_parse_transcript(url: str, transcript_type: str, *, safe_mode: bool = False) -> str:
+def fetch_and_parse_transcript(
+    url: str, transcript_type: str, *, safe_mode: bool = False, auth_header: str = ""
+) -> str:
     """Fetch *url* and parse it in one step. Returns an empty string if *url*
     is blank (no feed-provided transcript for this episode)."""
     refuse_in_safe_mode(safe_mode)
     if not url:
         return ""
-    raw_bytes = _fetch_transcript_bytes(url)
+    raw_bytes = _fetch_transcript_bytes(url, auth_header=auth_header)
     return parse_transcript(raw_bytes, transcript_type)
 
 

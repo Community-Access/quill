@@ -474,6 +474,8 @@
   "quill/ui/podcasts/add_podcast_dialog.py::AddPodcastDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/podcasts/chapters_dialog.py::ChaptersDialog.__init__::wx.ListBox": "named",
   "quill/ui/podcasts/episode_notes_dialog.py::EpisodeNotesDialog.__init__::wx.ListBox": "named",
+  "quill/ui/podcasts/feed_credentials_dialog.py::FeedCredentialsDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/podcasts/feed_credentials_dialog.py::FeedCredentialsDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog.__init__::wx.TreeCtrl": "named",
   "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.Choice": "named",

@@ -14,9 +14,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
+from quill.core.podcasts import feed_auth, retention
 from quill.core.podcasts import history as podcast_history
 from quill.core.podcasts import opml as opml_module
-from quill.core.podcasts import retention
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import (
@@ -151,7 +151,9 @@ class PodcastsMixin:
 
         def _do_fetch(**_kwargs: object):
             return chapters_module.fetch_and_parse_chapters(
-                episode.chapters_url, safe_mode=self._safe_mode
+                episode.chapters_url,
+                safe_mode=self._safe_mode,
+                auth_header=feed_auth.auth_header_for_url(show, episode.chapters_url),
             )
 
         def _on_success(_op: str, result: list) -> None:
@@ -204,27 +206,15 @@ class PodcastsMixin:
         """Auto-advance: when an episode finishes, the Play Queue's next
         playable slot starts (stale slots self-heal away)."""
         from quill.core.podcasts.queue import pop_next_playable
+        from quill.ui.podcasts.show_actions import start_episode_playback
 
         resolved = pop_next_playable(self._podcast_library)
         if resolved is None:
             return
         next_show, next_episode = resolved
         self._save_podcast_library()
-        settings = self._podcast_library.effective_settings(next_show)
-        self._podcast_controller.play_episode(
-            show_id=next_show.id,
-            episode_guid=next_episode.guid,
-            title=next_episode.title,
-            source=next_episode.downloaded_path or next_episode.audio_url,
-            resume_ms=next_episode.position_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
+        start_episode_playback(
+            self._podcast_controller, self._podcast_library, next_show, next_episode
         )
         self._announce(f"Up next from the queue: {next_episode.title}")
 
@@ -327,22 +317,9 @@ class PodcastsMixin:
         if show is None or episode is None:
             self._announce("That episode is no longer available.")
             return
-        settings = self._podcast_library.effective_settings(show)
-        self._podcast_controller.play_episode(
-            show_id=show.id,
-            episode_guid=episode.guid,
-            title=episode.title,
-            source=episode.downloaded_path or episode.audio_url,
-            resume_ms=episode.position_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
-        )
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        start_episode_playback(self._podcast_controller, self._podcast_library, show, episode)
 
     def _open_play_queue(self) -> None:
         from quill.ui.podcasts.play_queue_dialog import PlayQueueDialog
@@ -357,22 +334,9 @@ class PodcastsMixin:
         dialog.show()
 
     def _play_queue_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        settings = self._podcast_library.effective_settings(show)
-        self._podcast_controller.play_episode(
-            show_id=show.id,
-            episode_guid=episode.guid,
-            title=episode.title,
-            source=episode.downloaded_path or episode.audio_url,
-            resume_ms=episode.position_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
-        )
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        start_episode_playback(self._podcast_controller, self._podcast_library, show, episode)
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
         from quill.ui.podcasts.player_controller import PodcastPlayerState
@@ -733,9 +697,12 @@ class PodcastsMixin:
         show = self._podcast_library.find_show(show_id)
         if show is None or not show.feed_url or show.paused or self._safe_mode:
             return
+        username, password = feed_auth.auth_for_url(show, show.feed_url)
 
         def _do_refresh(**_kwargs: object) -> feed_reader.FeedInfo:
-            return feed_reader.fetch_and_parse_feed(show.feed_url, safe_mode=self._safe_mode)
+            return feed_reader.fetch_and_parse_feed(
+                show.feed_url, username=username, password=password, safe_mode=self._safe_mode
+            )
 
         def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
             new_count = merge_episodes(show, info.episodes)
@@ -746,8 +713,15 @@ class PodcastsMixin:
                 self._announce(f"{new_count} new episode(s) for {show.title}")
             self._maybe_backfill_always_sync(show)
 
+        from quill.ui.podcasts.show_actions import announce_if_feed_auth_failure
+
         self._task_manager.submit(
-            "podcast-refresh", _do_refresh, on_success=_on_success, on_failure=lambda *_a: None
+            "podcast-refresh",
+            _do_refresh,
+            on_success=_on_success,
+            on_failure=lambda _op, exc: announce_if_feed_auth_failure(
+                exc, show, announce=self._announce
+            ),
         )
 
     def _maybe_backfill_always_sync(self, show: object) -> None:
@@ -759,7 +733,7 @@ class PodcastsMixin:
             return
         if settings.playback_mode != "download":
             return
-        from quill.ui.podcasts.manager_dialog import episode_destination
+        from quill.ui.podcasts.show_actions import enqueue_episode_download
 
         queued = 0
         for episode in show.episodes:
@@ -768,14 +742,12 @@ class PodcastsMixin:
             item_id = f"{show.id}:{episode.guid}"
             if self._podcast_download_queue.get(item_id) is not None:
                 continue
-            destination = episode_destination(self._podcast_download_root(), show, episode)
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            self._podcast_download_queue.enqueue(
-                item_id,
-                show_id=show.id,
-                episode_guid=episode.guid,
-                url=episode.audio_url,
-                destination=destination,
+            enqueue_episode_download(
+                self._podcast_download_queue,
+                self._podcast_download_root(),
+                show,
+                episode,
+                item_id=item_id,
             )
             queued += 1
         if queued:

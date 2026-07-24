@@ -159,3 +159,29 @@ def test_previous_chapter_returns_the_prior_one_or_none_at_the_start() -> None:
     assert previous_chapter(_CHAPTERS, 90000).title == "Intro"
     assert previous_chapter(_CHAPTERS, 300000).title == "Segment 2"
     assert previous_chapter(_CHAPTERS, 0) is None
+
+
+def test_fetch_chapters_bytes_sends_auth_header(monkeypatch) -> None:
+    from quill.core.podcasts import chapters
+
+    captured: dict[str, str] = {}
+
+    class _Resp:
+        def read(self, _n: int = -1) -> bytes:
+            return b"{}"
+
+        def __enter__(self) -> _Resp:
+            return self
+
+        def __exit__(self, *_a: object) -> None:
+            return None
+
+    def _fake_urlopen(request: object, **_k: object) -> _Resp:
+        captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
+        return _Resp()
+
+    monkeypatch.setattr(chapters.urllib.request, "urlopen", _fake_urlopen)
+    chapters._fetch_chapters_bytes("https://h.example.com/c.json", auth_header="Basic xyz")
+    assert captured["auth"] == "Basic xyz"
+    chapters._fetch_chapters_bytes("https://h.example.com/c.json")
+    assert captured["auth"] == "MISSING"

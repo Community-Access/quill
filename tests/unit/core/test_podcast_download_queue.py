@@ -383,3 +383,72 @@ def test_set_reconnect_settings_updates_live() -> None:
         assert queue._reconnect_wait_seconds == 2.0
     finally:
         queue.shutdown()
+
+
+def test_fetch_chunked_sends_auth_header_when_given(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, str] = {}
+
+    def _fake_urlopen(request: object, **_k: object) -> _FakeResponse:
+        captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
+        return _FakeResponse([b"ok"], content_length=2)
+
+    monkeypatch.setattr(download_queue.urllib.request, "urlopen", _fake_urlopen)
+    status = _fetch_chunked(
+        "https://feeds.example.com/e.mp3",
+        tmp_path / "e.mp3",
+        auth_header="Basic abc123",
+        pause_event=threading.Event(),
+        cancel_event=threading.Event(),
+        on_progress=lambda _w, _t: None,
+    )
+    assert status == "completed"
+    assert captured["auth"] == "Basic abc123"
+
+
+def test_fetch_chunked_sends_no_auth_header_by_default(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, str] = {}
+
+    def _fake_urlopen(request: object, **_k: object) -> _FakeResponse:
+        captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
+        return _FakeResponse([], content_length=0)
+
+    monkeypatch.setattr(download_queue.urllib.request, "urlopen", _fake_urlopen)
+    _fetch_chunked(
+        "https://feeds.example.com/e.mp3",
+        tmp_path / "e.mp3",
+        pause_event=threading.Event(),
+        cancel_event=threading.Event(),
+        on_progress=lambda _w, _t: None,
+    )
+    assert captured["auth"] == "MISSING"
+
+
+def test_enqueue_carries_auth_header_to_the_transfer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, str] = {}
+
+    def _fake_urlopen(request: object, **_k: object) -> _FakeResponse:
+        captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
+        return _FakeResponse([b"ok"], content_length=2)
+
+    monkeypatch.setattr(download_queue.urllib.request, "urlopen", _fake_urlopen)
+    queue = PodcastDownloadQueue()
+    item = queue.enqueue(
+        "i1",
+        show_id="s1",
+        episode_guid="g1",
+        url="https://feeds.example.com/e.mp3",
+        destination=tmp_path / "e.mp3",
+        auth_header="Basic zzz",
+    )
+    deadline = time.time() + 5
+    while item.status not in ("completed", "failed") and time.time() < deadline:
+        time.sleep(0.02)
+    queue.shutdown()
+    assert item.status == "completed"
+    assert captured["auth"] == "Basic zzz"

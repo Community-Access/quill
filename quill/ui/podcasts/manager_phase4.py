@@ -380,23 +380,9 @@ class ManagerPhase4Mixin:
         dialog.show()
 
     def _play_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        settings = self._library.effective_settings(show)
-        source = episode.downloaded_path or episode.audio_url
-        self._controller.play_episode(
-            show_id=show.id,
-            episode_guid=episode.guid,
-            title=episode.title,
-            source=source,
-            resume_ms=episode.position_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
-        )
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        start_episode_playback(self._controller, self._library, show, episode)
 
     # -- context-menu additions -----------------------------------------------
 
@@ -730,18 +716,21 @@ class ManagerPhase4Mixin:
     def _fetch_transcript_then(
         self, show: PodcastShow, episode: PodcastEpisode, consume: object
     ) -> None:
+        from quill.core.podcasts import feed_auth
         from quill.core.podcasts import transcripts as transcripts_module
 
         if self._task_manager is None:
             self._announce("Transcript fetching is unavailable right now.")
             return
         self._announce("Fetching transcript...")
+        auth_header = feed_auth.auth_header_for_url(show, episode.transcript_url)
 
         def _do_fetch(**_kwargs: object) -> str:
             text = transcripts_module.fetch_and_parse_transcript(
                 episode.transcript_url,
                 episode.transcript_type,
                 safe_mode=self._safe_mode,
+                auth_header=auth_header,
             )
             if text:
                 # Cache so Search Everywhere can search it with no re-fetch.

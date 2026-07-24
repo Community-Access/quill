@@ -156,3 +156,32 @@ def test_fetch_feed_bytes_raises_on_network_error(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr(feed_reader.urllib.request, "urlopen", always_fail)
     with pytest.raises(FeedReaderError):
         feed_reader._fetch_feed_bytes("https://example.com/feed.xml")
+
+
+def test_fetch_feed_bytes_401_raises_feed_auth_error(monkeypatch) -> None:
+    import io
+    import urllib.error
+
+    def _raise_401(*_a: object, **_k: object) -> None:
+        raise urllib.error.HTTPError(
+            "https://feeds.example.com/p.rss", 401, "Unauthorized", {}, io.BytesIO(b"")
+        )
+
+    monkeypatch.setattr(feed_reader.urllib.request, "urlopen", _raise_401)
+    with pytest.raises(feed_reader.FeedAuthError):
+        feed_reader._fetch_feed_bytes("https://feeds.example.com/p.rss")
+
+
+def test_fetch_feed_bytes_500_stays_generic_feed_reader_error(monkeypatch) -> None:
+    import io
+    import urllib.error
+
+    def _raise_500(*_a: object, **_k: object) -> None:
+        raise urllib.error.HTTPError(
+            "https://feeds.example.com/p.rss", 500, "Server Error", {}, io.BytesIO(b"")
+        )
+
+    monkeypatch.setattr(feed_reader.urllib.request, "urlopen", _raise_500)
+    with pytest.raises(feed_reader.FeedReaderError) as excinfo:
+        feed_reader._fetch_feed_bytes("https://feeds.example.com/p.rss")
+    assert not isinstance(excinfo.value, feed_reader.FeedAuthError)

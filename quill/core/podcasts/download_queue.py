@@ -80,6 +80,12 @@ class DownloadItem:
     #: How many reconnect attempts this item has used after a dropped
     #: connection (0 = still on the first, uninterrupted attempt).
     reconnect_attempts: int = 0
+    #: Ready "Authorization" header value for private feeds ("" = none).
+    #: Computed by the enqueueing UI via feed_auth.auth_header_for_url, so
+    #: the same-host gate has already been applied by the time it's here.
+    #: Session-only by construction (DownloadItem is never persisted), and
+    #: repr=False so a logged/debugged item can never print the credential.
+    auth_header: str = field(default="", repr=False)
     _pause_event: threading.Event = field(default_factory=threading.Event, repr=False)
     _cancel_event: threading.Event = field(default_factory=threading.Event, repr=False)
 
@@ -88,6 +94,7 @@ def _fetch_chunked(
     url: str,
     destination: Path,
     *,
+    auth_header: str = "",
     pause_event: threading.Event,
     cancel_event: threading.Event,
     on_progress: Callable[[int, int], None],
@@ -102,6 +109,8 @@ def _fetch_chunked(
     destination.parent.mkdir(parents=True, exist_ok=True)
     resume_from = destination.stat().st_size if destination.exists() else 0
     headers = {"User-Agent": _USER_AGENT}
+    if auth_header:
+        headers["Authorization"] = auth_header
     if resume_from:
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)
@@ -177,7 +186,14 @@ class PodcastDownloadQueue:
     # -- public API -----------------------------------------------------
 
     def enqueue(
-        self, item_id: str, *, show_id: str, episode_guid: str, url: str, destination: Path
+        self,
+        item_id: str,
+        *,
+        show_id: str,
+        episode_guid: str,
+        url: str,
+        destination: Path,
+        auth_header: str = "",
     ) -> DownloadItem:
         item = DownloadItem(
             item_id=item_id,
@@ -185,6 +201,7 @@ class PodcastDownloadQueue:
             episode_guid=episode_guid,
             url=url,
             destination=destination,
+            auth_header=auth_header,
         )
         with self._lock:
             self._items[item_id] = item
@@ -322,6 +339,7 @@ class PodcastDownloadQueue:
                 result = _fetch_chunked(
                     item.url,
                     item.destination,
+                    auth_header=item.auth_header,
                     pause_event=item._pause_event,
                     cancel_event=item._cancel_event,
                     on_progress=progress,

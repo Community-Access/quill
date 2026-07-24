@@ -348,6 +348,10 @@ class PodcastShow:
     id: str
     title: str
     feed_url: str = ""  # "" for is_local shows
+    #: Private feeds (HTTP Basic auth): the sign-in username. Not a secret;
+    #: the password lives in the platform secret store (feed_auth.py) and is
+    #: deliberately NOT a field here -- it must never reach podcasts.json.
+    feed_username: str = ""
     homepage: str = ""
     artwork_url: str = ""
     is_local: bool = False
@@ -373,6 +377,7 @@ class PodcastShow:
             "id": self.id,
             "title": self.title,
             "feed_url": self.feed_url,
+            "feed_username": self.feed_username,
             "homepage": self.homepage,
             "artwork_url": self.artwork_url,
             "is_local": self.is_local,
@@ -410,6 +415,7 @@ class PodcastShow:
             id=show_id,
             title=title,
             feed_url=str(data.get("feed_url", "")),
+            feed_username=str(data.get("feed_username", "")),
             homepage=str(data.get("homepage", "")),
             artwork_url=str(data.get("artwork_url", "")),
             is_local=bool(data.get("is_local", False)),

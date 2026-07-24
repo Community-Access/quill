@@ -19,6 +19,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
+from quill.core.podcasts import feed_auth
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.sorting import (
@@ -425,9 +426,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 unheard = self._unheard_count_for_folder(folder.id)
                 label = f"{folder.name} ({unheard} unheard)" if unheard else folder.name
                 item = self._tree.AppendItem(parent_item, label)
-                self._tree_item_folder[_item_key(item)] = (
-                    folder.id
-                )
+                self._tree_item_folder[_item_key(item)] = folder.id
                 add_folder_children(item, folder.id)
                 add_shows(item, folder.id)
             add_shows(parent_item, folder_id)
@@ -707,6 +706,17 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 "downloading new episodes for it."
             )
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_show_paused(show), pause_item)
+            from quill.ui.podcasts.show_actions import append_feed_credentials_item
+
+            append_feed_credentials_item(
+                menu,
+                wx,
+                parent=self.dialog,
+                library=self._library,
+                show=show,
+                announce=self._announce,
+                on_changed=self._on_library_changed,
+            )
             self._append_phase4_show_items(menu, show)
 
             move_item = menu.Append(wx.ID_ANY, "&Move to Folder...")
@@ -852,7 +862,9 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
 
         def _do_fetch(**_kwargs: object):
             return chapters_module.fetch_and_parse_chapters(
-                episode.chapters_url, safe_mode=self._safe_mode
+                episode.chapters_url,
+                safe_mode=self._safe_mode,
+                auth_header=feed_auth.auth_header_for_url(show, episode.chapters_url),
             )
 
         def _on_success(_op: str, result: list) -> None:
@@ -894,25 +906,12 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._play_episode(show, episode, resume_ms=episode.position_ms)
 
     def _play_episode(self, show: PodcastShow, episode: PodcastEpisode, *, resume_ms: int) -> None:
-        source = episode.downloaded_path or episode.audio_url
-        if not source:
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        if not start_episode_playback(
+            self._controller, self._library, show, episode, resume_ms=resume_ms
+        ):
             return
-        settings = self._library.effective_settings(show)
-        self._controller.play_episode(
-            show_id=show.id,
-            episode_guid=episode.guid,
-            title=episode.title,
-            source=source,
-            resume_ms=resume_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
-        )
         self._update_now_playing()
         self._announce(f"Playing {episode.title}")
 
@@ -1034,13 +1033,14 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         episode = self._selected_episode()
         if show is None or episode is None:
             return
-        destination = episode_destination(self._download_root, show, episode)
-        self._download_queue.enqueue(
-            self._download_item_id(episode),
-            show_id=show.id,
-            episode_guid=episode.guid,
-            url=episode.audio_url,
-            destination=destination,
+        from quill.ui.podcasts.show_actions import enqueue_episode_download
+
+        enqueue_episode_download(
+            self._download_queue,
+            self._download_root,
+            show,
+            episode,
+            item_id=self._download_item_id(episode),
         )
         self._announce(f"Downloading {episode.title}")
         self._refresh_selected_episode_row()
@@ -1205,6 +1205,8 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 if path.exists():
                     path.unlink(missing_ok=True)
 
+        # No orphaned secrets: unsubscribing deletes the stored feed password (S-3).
+        feed_auth.delete_feed_password(show.id)
         self._library.remove_show(show.id)
         self._on_library_changed()
         self.refresh_tree()

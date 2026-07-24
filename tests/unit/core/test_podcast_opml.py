@@ -81,3 +81,18 @@ def test_parse_opml_raises_on_malformed_xml() -> None:
 
 def test_parse_opml_returns_empty_list_without_body() -> None:
     assert parse_opml('<opml version="2.0"></opml>') == []
+
+
+def test_export_opml_never_contains_credentials() -> None:
+    library = PodcastLibrary()
+    library.add_show(
+        PodcastShow(
+            id="s1",
+            title="Private",
+            feed_url="https://feeds.example.com/p.rss",
+            feed_username="member",
+        )
+    )
+    xml = export_opml(library)
+    assert "member" not in xml
+    assert "feed_username" not in xml

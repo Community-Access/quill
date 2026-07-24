@@ -41,7 +41,14 @@ class _FakeQueue:
         return object() if item_id in self._in_flight else None
 
     def enqueue(
-        self, item_id: str, *, show_id: str, episode_guid: str, url: str, destination: Path
+        self,
+        item_id: str,
+        *,
+        show_id: str,
+        episode_guid: str,
+        url: str,
+        destination: Path,
+        auth_header: str = "",
     ) -> None:
         self.enqueued.append((item_id, show_id, episode_guid, url, destination))
 

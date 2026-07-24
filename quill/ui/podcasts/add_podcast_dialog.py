@@ -176,7 +176,13 @@ class AddPodcastDialog:
         self._subscribe_to_feed(url)
 
     def _subscribe_to_feed(
-        self, feed_url: str, *, title_hint: str = "", result_index: int | None = None
+        self,
+        feed_url: str,
+        *,
+        title_hint: str = "",
+        result_index: int | None = None,
+        username: str = "",
+        password: str = "",
     ) -> None:
         if self._safe_mode:
             self._status.SetLabel("Adding podcasts is disabled in Safe Mode.")
@@ -187,13 +193,19 @@ class AddPodcastDialog:
         self._status.SetLabel(f"Fetching {title_hint or feed_url}...")
 
         def _do_fetch(**_kwargs: Any) -> feed_reader.FeedInfo:
-            return feed_reader.fetch_and_parse_feed(feed_url, safe_mode=self._safe_mode)
+            return feed_reader.fetch_and_parse_feed(
+                feed_url, username=username, password=password, safe_mode=self._safe_mode
+            )
 
         self._task_manager.submit(
             "podcast-subscribe",
             _do_fetch,
-            on_success=lambda _op, info: self._on_fetch_done(feed_url, info, None, result_index),
-            on_failure=lambda _op, exc: self._on_fetch_done(feed_url, None, exc, result_index),
+            on_success=lambda _op, info: self._on_fetch_done(
+                feed_url, info, None, result_index, username=username, password=password
+            ),
+            on_failure=lambda _op, exc: self._on_fetch_done(
+                feed_url, None, exc, result_index, username=username, password=password
+            ),
         )
 
     def _on_fetch_done(
@@ -202,7 +214,13 @@ class AddPodcastDialog:
         info: feed_reader.FeedInfo | None,
         error: BaseException | None,
         result_index: int | None = None,
+        *,
+        username: str = "",
+        password: str = "",
     ) -> None:
+        if isinstance(error, feed_reader.FeedAuthError):
+            self._prompt_for_credentials(feed_url, last_username=username)
+            return
         if error is not None or info is None:
             self._status.SetLabel(f"Could not subscribe: {error}")
             self._return_focus_to_results(result_index)
@@ -213,6 +231,7 @@ class AddPodcastDialog:
             feed_url=feed_url,
             homepage=info.homepage,
             artwork_url=info.artwork_url,
+            feed_username=username,
             episodes=info.episodes,
         )
         added = self._library.add_show(show)
@@ -220,6 +239,10 @@ class AddPodcastDialog:
             self._status.SetLabel("You're already subscribed to that feed.")
             self._return_focus_to_results(result_index)
             return
+        if username and password:
+            from quill.core.podcasts import feed_auth
+
+            feed_auth.save_feed_password(show.id, password)
         self._on_library_changed()
         self._status.SetLabel(f"Subscribed to {show.title} ({len(show.episodes)} episodes).")
         self._announce(f"Subscribed to {show.title}")
@@ -243,6 +266,26 @@ class AddPodcastDialog:
         self._results.Select(target)
         self._results.Focus(target)
         self._results.SetFocus()
+
+    def _prompt_for_credentials(self, feed_url: str, *, last_username: str) -> None:
+        """A 401/403 lands here: ask for credentials and retry the subscribe.
+        Wrong credentials come straight back (the retry 401s again), with the
+        username kept so only the password needs re-typing."""
+        from quill.ui.podcasts.feed_credentials_dialog import FeedCredentialsDialog
+
+        message = "The username or password was not accepted. Try again." if last_username else ""
+        result = FeedCredentialsDialog(
+            self.dialog,
+            username=last_username,
+            message=message,
+            announce_cb=self._announce,
+        ).show()
+        if result is None or result.action != "save":
+            self._status.SetLabel(
+                "That feed requires a sign-in. Add it again when you have the credentials."
+            )
+            return
+        self._subscribe_to_feed(feed_url, username=result.username, password=result.password)
 
     # ------------------------------------------------------------------
     # OPML import

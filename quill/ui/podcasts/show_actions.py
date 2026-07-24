@@ -15,7 +15,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.podcasts.download_queue import PodcastDownloadQueue
-from quill.core.podcasts.models import PodcastShow
+from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 TOP_LEVEL_CHOICE = "(Top level -- no folder)"
@@ -185,6 +185,149 @@ def create_folder_prompt(
     return True
 
 
+def start_episode_playback(
+    controller: object,
+    library: PodcastLibrary,
+    show: PodcastShow,
+    episode: PodcastEpisode,
+    *,
+    resume_ms: int | None = None,
+) -> bool:
+    """Start one episode on the shared player, with the show's effective
+    settings and an authenticated source (private feeds embed same-host
+    credentials for streaming). The one implementation behind every Play
+    call site, so speed/EQ/skip settings and feed auth can never drift
+    apart between surfaces. Returns False when there is nothing to play."""
+    from quill.core.podcasts import feed_auth
+
+    source = feed_auth.playback_source(show, episode)
+    if not source:
+        return False
+    settings = library.effective_settings(show)
+    controller.play_episode(
+        show_id=show.id,
+        episode_guid=episode.guid,
+        title=episode.title,
+        source=source,
+        resume_ms=episode.position_ms if resume_ms is None else resume_ms,
+        rate=settings.speed,
+        bass_db=settings.eq_bass_db,
+        mid_db=settings.eq_mid_db,
+        treble_db=settings.eq_treble_db,
+        compressor_enabled=settings.compressor_enabled,
+        smart_speed_enabled=settings.smart_speed_enabled,
+        auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+        auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
+    )
+    return True
+
+
+def enqueue_episode_download(
+    download_queue: PodcastDownloadQueue,
+    download_root: Path,
+    show: PodcastShow,
+    episode: PodcastEpisode,
+    *,
+    item_id: str | None = None,
+) -> None:
+    """One authenticated episode download -- destination, same-host auth
+    header, enqueue. The shared path behind every Download action, so the
+    private-feed Authorization header can never be forgotten at a call site."""
+    from quill.core.podcasts import feed_auth
+    from quill.ui.podcasts.manager_dialog import episode_destination
+
+    destination = episode_destination(download_root, show, episode)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    download_queue.enqueue(
+        item_id or episode.guid,
+        show_id=show.id,
+        episode_guid=episode.guid,
+        url=episode.audio_url,
+        destination=destination,
+        auth_header=feed_auth.auth_header_for_url(show, episode.audio_url),
+    )
+
+
+def announce_if_feed_auth_failure(
+    exc: BaseException, show: PodcastShow, *, announce: Callable[[str], None]
+) -> None:
+    """Background-refresh failure hook: an auth failure gets an actionable
+    announcement, never a modal prompt (spec D-2); any other failure stays
+    quiet, exactly as refresh always behaved."""
+    from quill.core.podcasts import feed_reader
+
+    if isinstance(exc, feed_reader.FeedAuthError):
+        announce(
+            f"{show.title}: feed sign-in failed. Update credentials with "
+            "Feed Credentials on the show's menu."
+        )
+
+
+def append_feed_credentials_item(
+    menu: object,
+    wx: object,
+    *,
+    parent: object,
+    library: PodcastLibrary,
+    show: PodcastShow,
+    announce: Callable[[str], None],
+    on_changed: Callable[[], None],
+) -> None:
+    """Add "Feed Credentials..." to a show's context menu (skipped for local
+    shows -- there is no feed to sign in to)."""
+    if not show.feed_url:
+        return
+    item = menu.Append(wx.ID_ANY, "Feed Cre&dentials...")
+    item.SetHelp(
+        "Username and password for a private feed (Patreon-style supporter "
+        "feeds). Only ever sent to this feed's own host."
+    )
+
+    def _run(_event: object) -> None:
+        if feed_credentials_prompt(parent, library, show, announce=announce):
+            on_changed()
+
+    menu.Bind(wx.EVT_MENU, _run, item)
+
+
+def feed_credentials_prompt(
+    parent: object,
+    library: PodcastLibrary,
+    show: PodcastShow,
+    *,
+    announce: Callable[[str], None],
+) -> bool:
+    """Set, change, or clear the show's private-feed credentials.
+
+    Saves the username on the show record and the password in the platform
+    secret store; returns True when anything changed so the caller persists
+    the library. The *library* parameter keeps the signature consistent with
+    every other shared action here (and future-proofs a per-library hook).
+    """
+    del library  # persisted by the caller, like every other shared action
+    from quill.core.podcasts import feed_auth
+    from quill.ui.podcasts.feed_credentials_dialog import FeedCredentialsDialog
+
+    result = FeedCredentialsDialog(
+        parent,
+        username=show.feed_username,
+        allow_clear=bool(show.feed_username),
+        announce_cb=announce,
+    ).show()
+    if result is None:
+        return False
+    if result.action == "clear":
+        show.feed_username = ""
+        feed_auth.delete_feed_password(show.id)
+        announce(f"Cleared feed credentials for {show.title}")
+        return True
+    show.feed_username = result.username
+    if result.password:
+        feed_auth.save_feed_password(show.id, result.password)
+    announce(f"Saved feed credentials for {show.title}")
+    return True
+
+
 def unsubscribe_show_prompt(
     parent: object,
     library: PodcastLibrary,
@@ -222,6 +365,11 @@ def unsubscribe_show_prompt(
             path = Path(episode.downloaded_path)
             if path.exists():
                 path.unlink(missing_ok=True)
+    # Unsubscribing removes the show's stored private-feed password too --
+    # no orphaned secrets in the credential store (spec S-3).
+    from quill.core.podcasts import feed_auth
+
+    feed_auth.delete_feed_password(show.id)
     library.remove_show(show.id)
     if delete_files and downloaded:
         announce(f"Unsubscribed from {show.title} and deleted its downloaded episodes")
@@ -242,21 +390,11 @@ def download_all_episodes(
     Purely additive, like the existing single-episode Download action -- no
     confirmation prompt. Returns the number of episodes queued.
     """
-    from quill.ui.podcasts.manager_dialog import episode_destination
-
     queued = 0
     for episode in show.episodes:
         if episode.downloaded_path or download_queue.get(episode.guid) is not None:
             continue
-        destination = episode_destination(download_root, show, episode)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        download_queue.enqueue(
-            episode.guid,
-            show_id=show.id,
-            episode_guid=episode.guid,
-            url=episode.audio_url,
-            destination=destination,
-        )
+        enqueue_episode_download(download_queue, download_root, show, episode)
         queued += 1
     if queued:
         announce(f"Queued {queued} episode(s) of {show.title} for download")

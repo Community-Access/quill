@@ -196,3 +196,16 @@ def test_show_from_dict_tolerates_missing_settings_and_bad_episodes() -> None:
     assert show.settings is None
     assert len(show.episodes) == 1
     assert show.episodes[0].guid == "g1"
+
+
+def test_show_feed_username_round_trips() -> None:
+    show = PodcastShow(id="s1", title="T", feed_url="https://h/f.rss", feed_username="member")
+    data = show.to_dict()
+    assert data["feed_username"] == "member"
+    loaded = PodcastShow.from_dict(data)
+    assert loaded is not None and loaded.feed_username == "member"
+
+
+def test_show_feed_username_defaults_empty_for_old_data() -> None:
+    loaded = PodcastShow.from_dict({"id": "s1", "title": "T"})
+    assert loaded is not None and loaded.feed_username == ""

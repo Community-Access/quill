@@ -455,6 +455,7 @@
   "quill/ui/podcasts/add_podcast_dialog.py::AddPodcastDialog._on_import_opml::wx.FileDialog": "native",
   "quill/ui/podcasts/chapters_dialog.py::ChaptersDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/episode_notes_dialog.py::EpisodeNotesDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/podcasts/feed_credentials_dialog.py::FeedCredentialsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog._on_new_folder::wx.TextEntryDialog": "native",
   "quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog._on_rename::wx.TextEntryDialog": "native",

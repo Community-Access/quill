@@ -52,6 +52,14 @@ class FeedReaderError(CodedError):
     code = "QUILL-PODCASTS-FEED-READ"
 
 
+class FeedAuthError(FeedReaderError):
+    """The feed demanded a sign-in, or refused the credentials we sent
+    (HTTP 401/403) -- distinct from a network failure so the UI can prompt
+    for credentials instead of blaming the connection."""
+
+    code = "QUILL-PODCASTS-FEED-AUTH"
+
+
 def refuse_in_safe_mode(safe_mode: bool) -> None:
     """Raise :class:`FeedReaderError` when Safe Mode is active.
 
@@ -97,6 +105,12 @@ def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> by
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)
             return payload
+    except urllib.error.HTTPError as error:
+        if error.code in (401, 403):
+            raise FeedAuthError(
+                "This feed requires a sign-in, or did not accept the username/password."
+            ) from error
+        raise FeedReaderError(f"Could not reach that feed: {error}") from error
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise FeedReaderError(f"Could not reach that feed: {error}") from error
 

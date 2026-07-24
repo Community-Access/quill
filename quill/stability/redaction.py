@@ -67,6 +67,10 @@ _PREFIXED_KEY_RE = re.compile(
 # Microsoft-style account tokens (TDI / refresh / eyJ… JWT).
 _JWT_RE = re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\b")
 
+# URL userinfo (https://user:password@host/...) — private podcast feeds embed
+# credentials this way for playback engines that only take a URL string.
+_URL_USERINFO_RE = re.compile(r"(\bhttps?://)[^/\s@]+@")
+
 _MAX_LINE_BYTES = 4096
 
 
@@ -80,7 +84,13 @@ def redact_source_tokens(text: str) -> str:
     text = _TOKEN_RE.sub("[TOKEN]", text)
     text = _JWT_RE.sub("[JWT]", text)
     text = _PREFIXED_KEY_RE.sub("[TOKEN]", text)
+    text = _URL_USERINFO_RE.sub(r"\1", text)
     return text
+
+
+def redact_url_userinfo(text: str) -> str:
+    """Strip ``user:password@`` userinfo from any URL in *text*."""
+    return _URL_USERINFO_RE.sub(r"\1", text)
 
 
 def redact_command_arg(arg: str) -> str:
@@ -103,6 +113,7 @@ def redact_command_arg(arg: str) -> str:
         arg = _TOKEN_RE.sub("[TOKEN]", arg)
         arg = _JWT_RE.sub("[JWT]", arg)
         arg = _PREFIXED_KEY_RE.sub("[TOKEN]", arg)
+    arg = _URL_USERINFO_RE.sub(r"\1", arg)
     arg = _WINDOWS_PATH_RE.sub("[PATH]", arg)
     arg = _POSIX_PATH_RE.sub("[PATH]", arg)
     arg = _MACOS_PATH_RE.sub("[PATH]", arg)

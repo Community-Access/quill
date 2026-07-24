@@ -55,13 +55,14 @@ class PodcastChapter:
     link_url: str = ""
 
 
-def _fetch_chapters_bytes(url: str) -> bytes:
+def _fetch_chapters_bytes(url: str, *, auth_header: str = "") -> bytes:
     """One HTTPS GET returning raw chapters JSON bytes -- the reviewed egress site."""
     if not url.startswith("https://"):
         raise ChaptersError("Only https:// chapters links can be fetched.")
-    request = urllib.request.Request(
-        url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
-    )
+    headers = {"User-Agent": _USER_AGENT, "Accept": "application/json"}
+    if auth_header:
+        headers["Authorization"] = auth_header
+    request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
@@ -102,12 +103,14 @@ def parse_chapters(raw_bytes: bytes) -> list[PodcastChapter]:
     return chapters
 
 
-def fetch_and_parse_chapters(url: str, *, safe_mode: bool = False) -> list[PodcastChapter]:
+def fetch_and_parse_chapters(
+    url: str, *, safe_mode: bool = False, auth_header: str = ""
+) -> list[PodcastChapter]:
     """Fetch *url* and parse it in one step."""
     refuse_in_safe_mode(safe_mode)
     if not url:
         return []
-    raw_bytes = _fetch_chapters_bytes(url)
+    raw_bytes = _fetch_chapters_bytes(url, auth_header=auth_header)
     return parse_chapters(raw_bytes)
 
 

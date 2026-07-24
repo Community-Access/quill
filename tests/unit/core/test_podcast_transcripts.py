@@ -117,3 +117,29 @@ class TestTranscriptCache:
         monkeypatch.setattr(t, "_cache_dir", lambda: tmp_path / "cache")
         t.save_cached_transcript("s1", "g1", "   ")
         assert t.iter_cached_transcripts() == []
+
+
+def test_fetch_transcript_bytes_sends_auth_header(monkeypatch) -> None:
+    from quill.core.podcasts import transcripts
+
+    captured: dict[str, str] = {}
+
+    class _Resp:
+        def read(self, _n: int = -1) -> bytes:
+            return b"WEBVTT"
+
+        def __enter__(self) -> _Resp:
+            return self
+
+        def __exit__(self, *_a: object) -> None:
+            return None
+
+    def _fake_urlopen(request: object, **_k: object) -> _Resp:
+        captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
+        return _Resp()
+
+    monkeypatch.setattr(transcripts.urllib.request, "urlopen", _fake_urlopen)
+    transcripts._fetch_transcript_bytes("https://h.example.com/t.vtt", auth_header="Basic xyz")
+    assert captured["auth"] == "Basic xyz"
+    transcripts._fetch_transcript_bytes("https://h.example.com/t.vtt")
+    assert captured["auth"] == "MISSING"

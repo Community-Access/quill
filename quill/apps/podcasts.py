@@ -266,6 +266,10 @@ class PodcastsAppFrame(
                 ("&Move to Folder...", self._on_library_move_to_folder),
                 ("Download &All Episodes", self._on_library_download_all_episodes),
                 ("&Remove All Episodes...", self._on_library_remove_all_episodes),
+            ]
+            if show.feed_url:
+                entries.append(("Feed Cre&dentials...", self._on_library_feed_credentials))
+            entries += [
                 ("&Unsubscribe...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
                 ("Open &Manager...", lambda: self.open_podcast_manager()),
@@ -331,6 +335,17 @@ class PodcastsAppFrame(
             return
         if remove_all_episodes_prompt(
             self.frame, self._podcast_download_queue, show, announce=self._announce
+        ):
+            self._save_podcast_library()
+
+    def _on_library_feed_credentials(self) -> None:
+        from quill.ui.podcasts.show_actions import feed_credentials_prompt
+
+        show = self._selected_show()
+        if show is None or not show.feed_url:
+            return
+        if feed_credentials_prompt(
+            self.frame, self._podcast_library, show, announce=self._announce
         ):
             self._save_podcast_library()
 
@@ -411,22 +426,12 @@ class PodcastsAppFrame(
             self._play_episode_object(show, episode)
 
     def _play_episode_object(self, show: object, episode: object, *, note: str = "") -> None:
-        settings = self._podcast_library.effective_settings(show)
-        self._podcast_controller.play_episode(
-            show_id=show.id,
-            episode_guid=episode.guid,
-            title=episode.title,
-            source=episode.downloaded_path or episode.audio_url,
-            resume_ms=episode.position_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
-        )
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
+        if not start_episode_playback(
+            self._podcast_controller, self._podcast_library, show, episode
+        ):
+            return
         self._announce(f"Playing {episode.title} from {show.title}{note}")
 
     # -- transport & favorite controls --------------------------------------
@@ -570,26 +575,13 @@ class PodcastsAppFrame(
         last = self._podcast_history.last_played
         if last is None:
             return
+        from quill.ui.podcasts.show_actions import start_episode_playback
+
         show = self._podcast_library.find_show(last.show_id)
         episode = show.find_episode(last.episode_guid) if show is not None else None
         if show is None or episode is None:
             return
-        settings = self._podcast_library.effective_settings(show)
-        self._podcast_controller.play_episode(
-            show_id=show.id,
-            episode_guid=episode.guid,
-            title=episode.title,
-            source=episode.downloaded_path or episode.audio_url,
-            resume_ms=episode.position_ms,
-            rate=settings.speed,
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor_enabled,
-            smart_speed_enabled=settings.smart_speed_enabled,
-            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
-            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
-        )
+        start_episode_playback(self._podcast_controller, self._podcast_library, show, episode)
 
     def _maybe_check_updates_on_startup(self) -> None:
         """Silent, throttled update check -- quiet unless a genuine update
