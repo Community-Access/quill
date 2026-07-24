@@ -419,6 +419,7 @@ from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
+from quill.ui.main_frame_mastodon_social import MastodonSocialMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
 from quill.ui.main_frame_menu_bindings import MenuBindingsMixin
@@ -822,6 +823,7 @@ class MainFrame(
     BrowseModeMixin,
     MenuBuilderMixin,
     MenuBindingsMixin,
+    MastodonSocialMixin,
     TableNavMixin,
     NotebookUIMixin,
     QuillKeyMixin,

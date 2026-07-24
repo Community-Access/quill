@@ -2951,6 +2951,25 @@ class MenuBuilderMixin:
             self._id_mastodon_accounts,
             self._menu_label(_("Mastodon &Accounts..."), "tools.manage_mastodon_accounts"),
         )
+        # Ids stored on self so the NewIdRefs stay alive for the frame's lifetime.
+        self._id_mastodon_profile = wx.NewIdRef()
+        share_menu.Append(
+            self._id_mastodon_profile,
+            self._menu_label(_("&View Mastodon Profile..."), "tools.view_mastodon_profile"),
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.view_mastodon_profile(), id=self._id_mastodon_profile
+        )
+        self._id_mastodon_add_list = wx.NewIdRef()
+        share_menu.Append(
+            self._id_mastodon_add_list,
+            self._menu_label(
+                _("Add a User to a Mastodon &List..."), "tools.mastodon_add_user_to_list"
+            ),
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.mastodon_add_user_to_list(), id=self._id_mastodon_add_list
+        )
         tools_menu.AppendSubMenu(share_menu, _("&Share"))
 
         # Sticky Notes -------------------------------------------------------

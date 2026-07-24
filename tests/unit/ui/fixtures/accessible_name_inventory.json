@@ -462,6 +462,7 @@
   "quill/ui/mastodon_dialogs.py::MastodonComposeDialog.__init__::wx.Choice#2": "named",
   "quill/ui/mastodon_dialogs.py::MastodonComposeDialog.__init__::wx.Choice#3": "named",
   "quill/ui/mastodon_dialogs.py::MastodonComposeDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/mastodon_social_dialogs.py::MastodonProfileDialog.__init__::wx.ListBox": "named",
   "quill/ui/notebook_panel.py::NotebookEntriesPanel.__init__::wx.ListBox": "named",
   "quill/ui/notebook_panel.py::NotebookEntriesPanel.__init__::wx.TextCtrl": "named",
   "quill/ui/nstextview_rtf_surface.py::create_nstextview_rtf::wx.TextCtrl": "named-elsewhere",

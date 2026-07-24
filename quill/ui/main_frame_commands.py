@@ -1303,6 +1303,18 @@ class CommandRegistryMixin:
             None,
         )
         self.commands.register(
+            "tools.view_mastodon_profile",
+            "View Mastodon Profile...",
+            self.view_mastodon_profile,
+            None,
+        )
+        self.commands.register(
+            "tools.mastodon_add_user_to_list",
+            "Add a User to a Mastodon List...",
+            self.mastodon_add_user_to_list,
+            None,
+        )
+        self.commands.register(
             "tools.open_welcome_guide",
             "Open Welcome Guide",
             self.open_welcome_guide,
