@@ -423,13 +423,13 @@ class StatusBarMixin:
             return ""
 
     def _statusbar_page_text(self) -> str:
-        """Return the page cell's text: exact "N of M" or "~N of ~M (estimated)".
+        """Return the page cell's text: exact "N of M" or "N of M (estimated)".
 
         Exact when the document's text contains at least one form-feed
         (real page boundaries, e.g. from PDF import); otherwise estimated
-        from word count via ``page_estimate_words_per_page``. Never
-        returns one style's punctuation for the other -- the tilde and the
-        word "estimated" always travel together.
+        from word count via ``page_estimate_words_per_page``, marked by the
+        spelled-out "(estimated)" alone -- no "~" tildes, which a screen
+        reader voices as "tilde one of tilde one".
         """
         editor = getattr(self, "editor", None)
         if editor is None:
@@ -447,7 +447,7 @@ class StatusBarMixin:
         words_per_page = getattr(self.settings, "page_estimate_words_per_page", 300)
         total = estimate_page_count(text, words_per_page)
         current = estimate_page_for_position(text, position, words_per_page)
-        return f"~{current} of ~{total} (estimated)"
+        return f"{current} of {total} (estimated)"
 
     def _active_brf_resolver(self) -> object | None:
         """Return a BraillePositionResolver for the active BRF document, or None.

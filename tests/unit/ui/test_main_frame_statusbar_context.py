@@ -392,7 +392,7 @@ def _make_page_frame(text: str, caret: int, *, words_per_page: int = 300) -> Mai
 def test_page_cell_is_estimated_when_no_form_feeds() -> None:
     text = " ".join(["word"] * 900)  # 3 pages at 300/page
     frame = _make_page_frame(text, 0)
-    assert frame._statusbar_text_for_item("page") == "~1 of ~3 (estimated)"
+    assert frame._statusbar_text_for_item("page") == "1 of 3 (estimated)"
 
 
 def test_page_cell_is_exact_when_form_feeds_present() -> None:
