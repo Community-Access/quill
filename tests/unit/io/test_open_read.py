@@ -77,8 +77,59 @@ def test_read_open_document_returns_epub_book(tmp_path: Path) -> None:
 def test_office_and_light_suffix_sets_are_disjoint() -> None:
     assert OFFICE_STREAM_SUFFIXES.isdisjoint(LIGHT_STRUCTURED_SUFFIXES)
     assert ".docx" in OFFICE_STREAM_SUFFIXES
+    assert ".docm" in OFFICE_STREAM_SUFFIXES  # macro-enabled Word, same OOXML
     assert ".pptx" in OFFICE_STREAM_SUFFIXES
     assert ".pdf" in OFFICE_STREAM_SUFFIXES
+
+
+def _docx_to_docm_bytes(docx_bytes: bytes) -> bytes:
+    """Re-declare a .docx's main part as the macro-enabled content type."""
+    import io
+    import zipfile
+
+    docx_ct = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+    docm_ct = "application/vnd.ms-word.document.macroEnabled.main+xml"
+    out = io.BytesIO()
+    with (
+        zipfile.ZipFile(io.BytesIO(docx_bytes)) as zin,
+        zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zout,
+    ):
+        for item in zin.namelist():
+            data = zin.read(item)
+            if item == "[Content_Types].xml":
+                data = data.replace(docx_ct.encode(), docm_ct.encode())
+            zout.writestr(item, data)
+    return out.getvalue()
+
+
+def test_read_open_document_reads_macro_enabled_docm(tmp_path: Path) -> None:
+    """A .docm is byte-for-byte the same OOXML container as .docx; QUILL reads
+    its text (never executing macros) and tags the source as ``docm``."""
+    from quill.io.docx_reader import python_docx_available
+    from quill.io.docx_writer import rich_to_docx_bytes
+    from quill.io.rtf_model import InlineSpan, RichDocument, RichParagraph
+
+    if not python_docx_available():
+        import pytest
+
+        pytest.skip("python-docx not installed")
+
+    docx_bytes = rich_to_docx_bytes(
+        RichDocument(
+            paragraphs=[
+                RichParagraph(spans=[InlineSpan(text="Macro Doc")], style="heading", level=1),
+                RichParagraph(spans=[InlineSpan(text="hello from a docm")]),
+            ]
+        )
+    )
+    target = tmp_path / "sample.docm"
+    target.write_bytes(_docx_to_docm_bytes(docx_bytes))
+
+    loaded, epub_book = read_open_document(target, ".docm")
+
+    assert epub_book is None
+    assert "hello from a docm" in loaded.text
+    assert loaded.source_metadata.get("source_kind") == "docm"
 
 
 def test_brf_suffix_set_lists_braille_family() -> None:

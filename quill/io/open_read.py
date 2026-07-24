@@ -20,6 +20,7 @@ from quill.io.text import read_text_document
 OFFICE_STREAM_SUFFIXES: frozenset[str] = frozenset({
     ".doc",
     ".docx",
+    ".docm",
     ".ppt",
     ".pptx",
     ".xlsx",

@@ -43,12 +43,18 @@ def read_structured_document(
     if suffix in {".sqlite", ".db"}:
         text = _format_sqlite(path)
         metadata = {"source_kind": "sqlite", "engine": "sqlite", "quality_score": 100}
-    elif suffix == ".docx":
+    elif suffix in {".docx", ".docm"}:
+        # .docm is a macro-enabled Word file: byte-for-byte the same OOXML
+        # container as .docx, so the same reader chain handles it. QUILL reads
+        # its text (it never executes macros); saving routes through Save As
+        # like any other imported binary.
         document = _read_docx(path, engine=docx_engine)
         if document is not None:
+            if suffix == ".docm":
+                document.source_metadata["source_kind"] = "docm"
             return document
         text = _format_docx(path)
-        metadata = {"source_kind": "docx", "engine": "docx", "quality_score": 100}
+        metadata = {"source_kind": suffix.lstrip("."), "engine": "docx", "quality_score": 100}
     elif suffix == ".doc":
         document = _read_via_markitdown(path, "doc", fallback_engine="doc")
         if document is not None:
