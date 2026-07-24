@@ -20,7 +20,8 @@ param(
     [string]$LibmpvDir = "",
     [string]$TokenFile = "S:\token.txt",
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "S:\QUILL"
+    [string]$QuillRepo = "S:\QUILL",
+    [switch]$SkipToken
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,13 +31,18 @@ $version = "2.2.0"
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
-# -- bundled feedback token (hard requirement for a release build) -----------
-if (-not (Test-Path $TokenFile)) {
-    throw "Token file not found: $TokenFile -- a release build must embed the issues-only token."
+# -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
+# A public release must embed the issues-only token; -SkipToken builds a private
+# copy whose Report a Bug falls back to opening GitHub manually (same posture as
+# the Quill Weather build).
+if (-not $SkipToken) {
+    if (-not (Test-Path $TokenFile)) {
+        throw "Token file not found: $TokenFile -- a release build must embed the issues-only token (or pass -SkipToken for a private build)."
+    }
+    $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
+    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
+    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
-$env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
-& $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 if (-not $FfmpegDir) {
