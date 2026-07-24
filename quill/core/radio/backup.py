@@ -20,6 +20,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+
 #: The Quill Radio state files that live directly in the data dir. Order is
 #: stable so a backup lists them predictably. A file that is not present yet
 #: (e.g. no schedule set) is simply skipped.
@@ -38,8 +40,10 @@ _SCHEMA_VERSION = 1
 _APP_TAG = "quill-radio"
 
 
-class RadioBackupError(Exception):
+class RadioBackupError(CodedError):
     """A backup could not be created, or a restore file was invalid."""
+
+    code = "QUILL-RADIO-BACKUP-FAILED"
 
 
 @dataclass(frozen=True, slots=True)
