@@ -15,9 +15,24 @@ deterministically on any host.
 
 from __future__ import annotations
 
-import quill.platform.macos.announce as macos_announce
-import quill.platform.macos.tts as macos_tts
-import quill.platform.windows.prism_bridge as prism_bridge
+import sys
+
+import pytest
+
+# macOS routing tests. The self-voice paths reach the native NSSpeechSynthesizer
+# backend via pyobjc; on Windows CI, exercising that under a spawned pytest-xdist
+# worker crashes the worker process (a hard fault, not a catchable error), which
+# also fails whatever unrelated tests share that worker. They run single-threaded
+# locally and on the macOS CI, which is where this routing actually matters.
+pytestmark = pytest.mark.skipif(
+    sys.platform != "darwin",
+    reason="macOS VoiceOver/NSSpeechSynthesizer routing; the pyobjc TTS path crashes "
+    "xdist workers off-macOS",
+)
+
+import quill.platform.macos.announce as macos_announce  # noqa: E402
+import quill.platform.macos.tts as macos_tts  # noqa: E402
+import quill.platform.windows.prism_bridge as prism_bridge  # noqa: E402
 
 
 def _engine_without_backend() -> prism_bridge.AnnouncementEngine:

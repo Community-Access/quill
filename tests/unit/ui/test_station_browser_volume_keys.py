@@ -72,13 +72,15 @@ class _KeyEvent:
 _WXK_UP = 315
 _WXK_DOWN = 317
 _WXK_LEFT = 314
+_WXK_ESCAPE = 27
 
 
 def _make_dialog() -> tuple[StationBrowserDialog, _FakeController, list[str]]:
     dialog = StationBrowserDialog.__new__(StationBrowserDialog)
     controller = _FakeController()
     announced: list[str] = []
-    dialog._wx = types.SimpleNamespace(WXK_UP=_WXK_UP, WXK_DOWN=_WXK_DOWN)
+    dialog._wx = types.SimpleNamespace(WXK_UP=_WXK_UP, WXK_DOWN=_WXK_DOWN, WXK_ESCAPE=_WXK_ESCAPE)
+    dialog._modeless = False  # embedded modal path; the modeless-Escape branch is off
     dialog._controller = controller
     dialog._volume_slider = _FakeWidget()
     dialog._mute_btn = _FakeWidget()

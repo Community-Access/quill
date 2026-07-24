@@ -37,6 +37,10 @@ dependencies = [
     "tzdata>=2026.3",
     # Native .docx reading/writing without requiring Pandoc.
     "python-docx>=1.2.0",
+    # AES-GCM for Quill Beacon's encrypted sync (apps/beacon/quillsync/crypto.py)
+    # and PuTTY private-key parsing (core/ssh/putty_key.py). Hard-imported by the
+    # beacon sync module, so it is a base dependency, not an optional extra.
+    "cryptography>=44.0.0",
     # NOTE: huggingface_hub is deliberately NOT a base dependency. QUILL's default
     # speech models (whisper.cpp, Faster Whisper) and Piper voices download from
     # QUILL's own SHA-verified assets-v1 release, not Hugging Face, so a clean
