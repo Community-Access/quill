@@ -123,6 +123,7 @@ _PREFS_DEFAULTS: dict[str, object] = {
     "alt_f4_to_tray": False,
     "close_action": "ask",
     "announce_run_milestones": True,
+    "show_status_bar": True,
     "last_update_check": "",
 }
 
@@ -252,6 +253,10 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._app_prefs = _load_app_prefs()
         self._protected_background_jobs: dict[int, str] = {}
         self._background_task_count = 0
+        #: Live state of the current long run (label/current/total/percent/
+        #: message), or None when idle. Feeds the status bar's Progress cell and
+        #: the tray tooltip so a run is reviewable even minimized to the tray.
+        self._run_progress: dict[str, object] | None = None
         self._preview_generation = 0
         self._preview_cue_timer = None
         self._library_state = load_library(app_data_dir())
@@ -359,9 +364,22 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._library_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_tree_context_menu)
         self._library_tree.Bind(wx.EVT_KEY_DOWN, self._on_tree_key)
 
+        # The arrow-navigable status bar lives along the bottom (F6 to reach it,
+        # View > Show Status Bar to hide it). Its cells -- Activity, Progress,
+        # Sleep timer, Your books, Time -- and behaviour live in StudioStatusBar;
+        # the Progress cell is the one a screen-reader user arrows to while a
+        # narration run is going (and it keeps updating in the tray tooltip too).
+        from quill.ui.audio_studio.status_bar import StudioStatusBar
+
+        self._status_bar = StudioStatusBar(self)
+        status_panel = self._status_bar.build(panel)
+        root.Add(status_panel, 0, wx.EXPAND | wx.ALL, 2)
+        self._status_bar.set_visible(bool(self._app_prefs.get("show_status_bar", True)))
+
         panel.SetSizer(root)
         self._main_panel = panel
         self._reload_library_list()
+        self._status_bar.refresh()
         self._library_tree.SetFocus()
 
     def _recent_books(self) -> list[Path]:
@@ -969,6 +987,22 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             "Connect an AI provider for cloud voices, chapter titles, and translation",
         )
         menu_bar.Append(ai, "&AI")
+
+        view_menu = wx.Menu()
+        self._status_bar_item_id = wx.NewIdRef()
+        view_menu.AppendCheckItem(
+            self._status_bar_item_id,
+            "Show Status &Bar",
+            "Show or hide the arrow-navigable status bar; press F6 to move focus to it",
+        )
+        view_menu.Check(
+            self._status_bar_item_id, bool(self._app_prefs.get("show_status_bar", True))
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
+        )
+        self._keep_menu_ids(self._status_bar_item_id)
+        menu_bar.Append(view_menu, "&View")
 
         help_menu = wx.Menu()
         guide_id, prd_id, notes_id, palette_id = (wx.NewIdRef() for _ in range(4))
@@ -1994,7 +2028,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         milestone_state = {"last": -1}
 
         def progress(message: str, current: int, total: int) -> None:
-            wx.CallAfter(self._set_status_quiet, f"{label}: {current}/{total} - {message}")
+            wx.CallAfter(self._note_progress, label, current, total, message)
             if announce_milestones and total > 0:
                 percent = int(current * 100 / total)
                 milestone = percent - (percent % 25)
@@ -2332,6 +2366,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         activity = getattr(self, "_activity_text", None)
         if activity is not None:
             activity.SetLabel(message)
+        self._refresh_status_bar_cells()
 
     def _set_status_quiet(self, message: str) -> None:
         """Status bar text without a spoken announcement (per-progress updates)."""
@@ -2340,16 +2375,140 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         activity = getattr(self, "_activity_text", None)
         if activity is not None:
             activity.SetLabel(message)
+        self._refresh_status_bar_cells()
 
     def _refresh_statusbar(self) -> None:
         if getattr(self, "_background_task_count", 0) > 0:
             return  # a running task owns the status line
+        # Idle: no run in flight, so drop the progress state and hand the tray
+        # tooltip back to the plain app name.
+        self._run_progress = None
+        self._update_tray_tooltip(_TITLE)
         books = self._recent_books()
         if books:
             plural = "" if len(books) == 1 else "s"
             self._set_status_quiet(f"Ready - {len(books)} book{plural} in your library")
         else:
             self._set_status_quiet("Ready - narrate documents or build from recordings to begin")
+
+    # -- arrow-navigable status bar (F6) ------------------------------------------
+
+    def _refresh_status_bar_cells(self) -> None:
+        """Repaint the arrow-navigable bar from live state (cheap, dead-safe)."""
+        bar = getattr(self, "_status_bar", None)
+        if bar is not None and bar.is_shown():
+            bar.refresh()
+
+    def _focus_library(self) -> None:
+        tree = getattr(self, "_library_tree", None)
+        if tree is not None:
+            try:
+                tree.SetFocus()
+            except Exception:  # noqa: BLE001 - focus is best-effort
+                pass
+
+    #: The bar's Escape/leave path hands focus back to the library list.
+    _focus_initial_control = _focus_library
+
+    def _focus_status_bar(self) -> None:
+        """F6: move focus into the status bar, or back out of it if already there.
+
+        A no-op when the bar is hidden -- there is nowhere to land, so the key is
+        as quiet as an empty region."""
+        bar = getattr(self, "_status_bar", None)
+        if bar is None or not bar.is_shown():
+            return
+        if bar.has_focus():
+            self._focus_library()
+            self._announce("Returned to your books")
+            return
+        bar.refresh()
+        bar.focus_bar(return_focus=getattr(self, "_library_tree", None))
+
+    def _toggle_show_status_bar(self) -> None:
+        """Flip Show Status Bar, persist it, and show/hide the bar right away."""
+        show = not bool(self._app_prefs.get("show_status_bar", True))
+        self._app_prefs["show_status_bar"] = show
+        _save_app_prefs(self._app_prefs)
+        menu_bar = self.frame.GetMenuBar()
+        item_id = getattr(self, "_status_bar_item_id", None)
+        if menu_bar is not None and item_id is not None:
+            menu_bar.Check(int(item_id), show)
+        bar = getattr(self, "_status_bar", None)
+        if bar is not None:
+            bar.set_visible(show)
+            if show:
+                bar.refresh()
+        self._announce("Status bar shown." if show else "Status bar hidden.")
+
+    # -- status bar cell text (read by StudioStatusBar) ---------------------------
+
+    def studio_activity_text(self) -> str:
+        return getattr(self, "_status_message", "") or "Ready"
+
+    def studio_progress_text(self) -> str:
+        progress = getattr(self, "_run_progress", None)
+        if not progress:
+            return "Idle"
+        return f"{progress['percent']}% - {progress['label']}"
+
+    def studio_progress_details(self) -> str:
+        progress = getattr(self, "_run_progress", None)
+        if not progress:
+            return "No task is running."
+        detail = (
+            f"{progress['label']}: {progress['current']} of {progress['total']}, "
+            f"{progress['percent']} percent."
+        )
+        message = str(progress.get("message", "")).strip()
+        return f"{detail} {message}" if message else detail
+
+    def studio_sleep_timer_text(self) -> str:
+        setting = getattr(self, "_sleep_setting", None)
+        if setting is None or not getattr(setting, "enabled", False):
+            return "Off"
+        if getattr(setting, "end_of_chapter", False):
+            return "End of chapter"
+        watcher = getattr(self, "_sleep_watcher", None)
+        remaining = watcher.remaining_seconds() if watcher is not None else None
+        if remaining is None:
+            return f"{int(getattr(setting, 'delay_minutes', 0))} min"
+        minutes = max(1, (int(remaining) + 59) // 60)
+        return f"{minutes} min left" if minutes != 1 else "1 min left"
+
+    def studio_library_text(self) -> str:
+        books = self._recent_books()
+        count = len(books)
+        return "1 book" if count == 1 else f"{count} books"
+
+    # -- tray tooltip progress ----------------------------------------------------
+
+    def _update_tray_tooltip(self, text: str) -> None:
+        """Set the system-tray icon's tooltip so a run's progress is visible even
+        while the Studio is minimized to the tray. Best-effort: a missing icon or
+        a platform without a tray tooltip (macOS) is a silent no-op."""
+        icon = getattr(self, "_tray_icon", None)
+        if icon is None:
+            return
+        art = self._app_icon or wx.ArtProvider.GetIcon(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16))
+        try:
+            icon.SetIcon(art, text)
+        except Exception:  # noqa: BLE001 - a tooltip update must never crash a run
+            pass
+
+    def _note_progress(self, label: str, current: int, total: int, message: str) -> None:
+        """UI-thread progress sink: record the run state, drive the status line,
+        the arrow-navigable Progress cell, and the tray tooltip from it."""
+        percent = int(current * 100 / total) if total > 0 else 0
+        self._run_progress = {
+            "label": label,
+            "current": current,
+            "total": total,
+            "percent": percent,
+            "message": message,
+        }
+        self._set_status_quiet(f"{label}: {current}/{total} - {message}")
+        self._update_tray_tooltip(f"{_TITLE} - {percent}% {label}")
 
     # -- preferences ----------------------------------------------------------------
 
@@ -2459,12 +2618,18 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._announce(f"{_TITLE} is still running in the system tray.")
 
     def _on_char_hook(self, event: wx.KeyEvent) -> None:
+        code = event.GetKeyCode()
         if (
-            event.GetKeyCode() == wx.WXK_F4
+            code == wx.WXK_F4
             and event.AltDown()
             and bool(self._app_prefs.get("alt_f4_to_tray", False))
         ):
             self._send_to_tray()
+            return
+        # F6 jumps focus into the status bar (and a second F6 hands it back), the
+        # same region key the QUILL editor and Quill Radio use.
+        if code == wx.WXK_F6 and not event.AltDown() and not event.ControlDown():
+            self._focus_status_bar()
             return
         event.Skip()
 
