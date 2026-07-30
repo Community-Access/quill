@@ -42,6 +42,11 @@ _EGRESS_CALLEES = frozenset({
     # call site. Treat the wrapper as the reviewable egress marker so every
     # private-feed fetch site is still inventoried below.
     "urlopen_auth_safe",
+    # The audio-converter URL import (quill/core/audio/url_import.py) hands off to
+    # yt-dlp, which does all its HTTP internally. Constructing ``yt_dlp.YoutubeDL``
+    # is the single point where QUILL enters that network path, so treat it as the
+    # reviewable egress marker (mirrors the ElevenLabs SDK marker above).
+    "YoutubeDL",
 })
 
 # Module-qualified HTTP egress: a call like ``requests.get(...)`` or
@@ -106,6 +111,18 @@ def _is_qualified_egress(call: ast.Call) -> bool:
 # Reviewed, allowed egress sites: "<relative path>::<enclosing function>" mapped
 # to the reason the call is not silent. Update this when adding a network call.
 _REVIEWED_EGRESS: dict[str, str] = {
+    "core/audio/url_import.py::_default_download": (
+        "The Universal Audio Converter's optional URL import (#1255 §4.6): "
+        "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
+        "(YouTube and the many sites yt-dlp supports) so the converter can turn it "
+        "into a local audio file. Reached only by an explicit user action — pasting "
+        "a link into 'Convert from URL...' and accepting the consent + rights "
+        "notice — and only after yt-dlp has been installed on demand (never "
+        "bundled). yt-dlp performs the HTTP itself and reaches arbitrary media "
+        "hosts by design; no QUILL credential is ever sent. Disabled in Safe Mode "
+        "(url_import.download_audio refuses when QUILL_SAFE_MODE=1) and gated off "
+        "when the future.url_import feature is disabled."
+    ),
     "core/library/http.py::fetch_bytes": (
         "Single egress site for the accessible book libraries (Part 4): keyword "
         "search of Project Gutenberg via the free, no-key Gutendex API "

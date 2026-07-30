@@ -103,6 +103,15 @@ _MP3_PACK = "mp3-support"
 _MP3_MODULE = "mutagen"
 _MP3_REQUIREMENTS: tuple[str, ...] = ("mutagen>=1.48.1",)
 
+#: On-demand yt-dlp (the audio-converter URL import, #1255 §4.6). Pure-Python,
+#: updates frequently, and reaches arbitrary media hosts -- so it is never
+#: bundled: it installs on demand into an engine-pack like the others and is
+#: gated behind an explicit consent notice at the call site. Pin a floor only;
+#: yt-dlp's whole value is staying current with site changes.
+_YT_DLP_PACK = "yt-dlp"
+_YT_DLP_MODULE = "yt_dlp"
+_YT_DLP_REQUIREMENTS: tuple[str, ...] = ("yt-dlp>=2024.1.1",)
+
 _INSTALL_TIMEOUT_S = 1800.0
 
 
@@ -142,6 +151,11 @@ def mp3_pack_dir() -> Path:
     return engine_packs_dir() / _MP3_PACK
 
 
+def yt_dlp_pack_dir() -> Path:
+    """The folder on-demand yt-dlp (URL import) is installed into."""
+    return engine_packs_dir() / _YT_DLP_PACK
+
+
 def _known_pack_dirs() -> tuple[Path, ...]:
     return (
         faster_whisper_pack_dir(),
@@ -149,6 +163,7 @@ def _known_pack_dirs() -> tuple[Path, ...]:
         kokoro_onnx_pack_dir(),
         nemotron_pack_dir(),
         mp3_pack_dir(),
+        yt_dlp_pack_dir(),
     )
 
 
@@ -480,6 +495,84 @@ def install_mp3_support(
         _LOG.error("MP3 support installed into %s but mutagen is not importable", dest)
         raise EngineInstallError(
             "MP3 support was installed but could not be imported. Try restarting QUILL."
+        )
+    if progress is not None:
+        progress(1.0, "Done.")
+    return dest
+
+
+def yt_dlp_install_supported() -> bool:
+    """True when QUILL can install yt-dlp on demand (pip must be importable)."""
+    return importlib.util.find_spec("pip") is not None
+
+
+def is_yt_dlp_available() -> bool:
+    """True when the ``yt_dlp`` module is importable (after activation)."""
+    return importlib.util.find_spec(_YT_DLP_MODULE) is not None
+
+
+def install_yt_dlp(
+    progress: ProgressCallback | None = None,
+    *,
+    dest_dir: Path | None = None,
+    python_executable: str | None = None,
+    timeout_seconds: float = _INSTALL_TIMEOUT_S,
+    runner: Callable[..., object] | None = None,
+) -> Path:
+    """Install yt-dlp wheel-only into an engine-pack, returning the pack folder.
+
+    Mirrors :func:`install_mp3_support`: pure-Python, activated on ``sys.path``
+    immediately, and prefers the Offline Edition's bundled wheelhouse
+    (:func:`_bundled_wheelhouse_dir`) over PyPI when present. The caller must
+    have already obtained explicit user consent (URL import reaches arbitrary
+    media hosts). Raises :class:`EngineInstallError` on Safe Mode, unavailable
+    pip, a non-zero pip exit, or if yt-dlp still cannot import.
+    """
+    if os.environ.get("QUILL_SAFE_MODE") == "1":
+        raise EngineInstallError("Downloading components is disabled in Safe Mode.")
+    if not yt_dlp_install_supported():
+        raise EngineInstallError(
+            "This build cannot install yt-dlp automatically (pip is unavailable). "
+            "Install it from source with: pip install yt-dlp"
+        )
+    dest = Path(dest_dir) if dest_dir is not None else yt_dlp_pack_dir()
+    dest.mkdir(parents=True, exist_ok=True)
+    python_exe = python_executable or sys.executable
+    if not python_exe:
+        raise EngineInstallError("Could not locate the Python runtime to install into.")
+    wheelhouse = _bundled_wheelhouse_dir("yt-dlp")
+    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
+    if progress is not None:
+        progress(0.05, "Preparing to install yt-dlp...")
+    command = _pip_command(dest, _YT_DLP_REQUIREMENTS, python_exe, extra_args=extra_args)
+    run = runner if runner is not None else _default_runner
+    _LOG.info("yt-dlp install: running %s", " ".join(command))
+    if progress is not None:
+        label = (
+            "Installing yt-dlp from the offline bundle..."
+            if wheelhouse is not None
+            else "Downloading yt-dlp..."
+        )
+        progress(0.15, label)
+    try:
+        result = run(command, timeout_seconds=timeout_seconds)
+    except Exception as exc:  # noqa: BLE001
+        _LOG.exception("yt-dlp install: pip runner could not start")
+        raise EngineInstallError(f"Could not run the installer: {exc}") from exc
+    returncode = int(getattr(result, "returncode", 1))
+    if returncode != 0:
+        detail = _tail(getattr(result, "stderr", "") or getattr(result, "stdout", ""))
+        _LOG.error("yt-dlp install failed (pip exit %s). Output tail: %s", returncode, detail)
+        raise EngineInstallError(f"yt-dlp installation failed (pip exit {returncode}). {detail}")
+    if progress is not None:
+        progress(0.9, "Finishing up...")
+    if str(dest) not in sys.path:
+        sys.path.insert(0, str(dest))
+    importlib.invalidate_caches()
+    if not is_yt_dlp_available():
+        _LOG.error("yt-dlp installed into %s but the module is not importable", dest)
+        raise EngineInstallError(
+            "yt-dlp was installed but could not be imported. Try restarting QUILL."
         )
     if progress is not None:
         progress(1.0, "Done.")

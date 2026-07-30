@@ -475,5 +475,8 @@ module = [
     # depend on the extra being installed.
     "latex2mathml",
     "latex2mathml.*",
+    # Optional yt-dlp (audio-converter URL import, #1255 §4.6); installed on
+    # demand and imported lazily in core/audio/url_import.py. Ships no stubs.
+    "yt_dlp",
 ]
 ignore_missing_imports = true

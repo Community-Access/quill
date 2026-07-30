@@ -224,18 +224,21 @@ def plan_and_run(host: Any, request: ConvertRequest) -> None:
     )
 
 
-def run_audio_conversion(host: Any) -> None:
+def run_audio_conversion(
+    host: Any, *, initial_entries: list[tuple[Path, Path | None]] | None = None
+) -> None:
     """Open the Convert Audio dialog and run the chosen conversion (§9.2).
 
     The single entry point the Studio menu / command binds to. Resolves ffmpeg,
     filters the format list to what it can encode, shows the accessible dialog,
-    and hands a runnable request to :func:`plan_and_run`.
+    and hands a runnable request to :func:`plan_and_run`. ``initial_entries``
+    pre-seeds the queue (used by URL import to drop the downloaded file in).
     """
     from quill.core.speech.ffmpeg import find_ffmpeg
 
     ffmpeg = find_ffmpeg()
     formats = available_output_formats(ffmpeg)
-    dialog = ConvertAudioDialog(host.frame, output_formats=formats)
+    dialog = ConvertAudioDialog(host.frame, output_formats=formats, initial_entries=initial_entries)
     try:
         request = dialog.show(host._show_modal_dialog)
     finally:
@@ -247,6 +250,98 @@ def run_audio_conversion(host: Any) -> None:
     plan_and_run(host, request)
 
 
+# yt-dlp reaches arbitrary media hosts; this is the one-time rights + consent
+# notice shown before the on-demand install, per §4.6 and the egress audit.
+_URL_CONSENT = (
+    "Convert from a link uses yt-dlp to download the audio from a web address "
+    "(YouTube and many other sites) so QUILL can convert it on your machine.\n\n"
+    "The first time, QUILL will download and install the yt-dlp component "
+    "(about 3 MB, from PyPI).\n\n"
+    "Only download content you have the right to use. QUILL sends no account or "
+    "credential to the site. This feature is unavailable in Safe Mode.\n\n"
+    "Continue?"
+)
+_URL_TITLE = "Convert from URL"
+
+
+def run_url_conversion(host: Any) -> None:
+    """Studio > Convert from URL...: download a link's audio, then convert it.
+
+    Prompts for a URL, obtains one-time consent to install yt-dlp on demand,
+    downloads the best-audio stream off the UI thread (tray-aware progress), and
+    opens the Convert Audio dialog seeded with the downloaded file. Refused in
+    Safe Mode. The download/install core is the tested, wx-free
+    :mod:`quill.core.audio.url_import`.
+    """
+    from quill.core.audio.url_import import looks_like_url, url_import_available
+
+    if getattr(host, "_safe_mode", False):
+        host._show_message_box("Converting from a link is unavailable in Safe Mode.", _URL_TITLE)
+        return
+
+    url = _prompt_for_url(host)
+    if not url:
+        return
+    if not looks_like_url(url):
+        host._show_message_box(
+            "That does not look like a web address. Paste a full http:// or https:// link.",
+            _URL_TITLE,
+        )
+        return
+
+    if not url_import_available():
+        consented = host._show_message_box(_URL_CONSENT, _URL_TITLE, wx.ICON_QUESTION | wx.YES_NO)
+        if consented != wx.YES:
+            host._set_status("Convert from URL cancelled.")
+            return
+
+    _download_then_convert(host, url)
+
+
+def _prompt_for_url(host: Any) -> str:
+    """Ask for a link via the stock text-entry dialog; '' if cancelled."""
+    entry = wx.TextEntryDialog(
+        host.frame, "Paste a link to convert (YouTube and many other sites):", _URL_TITLE
+    )
+    try:
+        if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+            return ""
+        return entry.GetValue().strip()
+    finally:
+        entry.Destroy()
+
+
+def _download_then_convert(host: Any, url: str) -> None:
+    """Install-if-needed + download off-thread, then seed the converter (§4.6)."""
+    import tempfile
+
+    from quill.core.audio.url_import import ensure_and_download
+
+    dest_dir = Path(tempfile.mkdtemp(prefix="quill-url-import-"))
+
+    def work(progress: Callable[[str, int, int], None]) -> Any:
+        return ensure_and_download(
+            url,
+            dest_dir,
+            progress=lambda fraction, message: progress(message, int(fraction * 100), 100),
+        )
+
+    def on_success(downloaded: Any) -> None:
+        path = Path(downloaded)
+        host._set_status(f"Downloaded {path.name}. Choose how to convert it.")
+        run_audio_conversion(host, initial_entries=[(path, None)])
+
+    host._run_background_task(
+        "Downloading audio from the link",
+        work,
+        on_success,
+        notify_on_success=False,
+        notify_on_error=True,
+        notification_category="audio",
+        protect_on_close=True,
+    )
+
+
 class ConvertAudioDialog(wx.Dialog):
     """A ``wx.Dialog`` for Basic-mode conversion (accessible, house contract).
 
@@ -254,7 +349,13 @@ class ConvertAudioDialog(wx.Dialog):
     accessible ``_show_modal_dialog`` path (see :func:`run_audio_conversion`).
     """
 
-    def __init__(self, parent: Any, *, output_formats: list[str]) -> None:
+    def __init__(
+        self,
+        parent: Any,
+        *,
+        output_formats: list[str],
+        initial_entries: list[tuple[Path, Path | None]] | None = None,
+    ) -> None:
         super().__init__(
             parent,
             title=_TITLE,
@@ -262,8 +363,12 @@ class ConvertAudioDialog(wx.Dialog):
             name="audio_studio.convert_audio",
         )
         self._formats = output_formats or ["wav"]
-        self._entries: list[tuple[Path, Path | None]] = []
+        # Seed the queue (e.g. a file just downloaded by URL import) so the dialog
+        # opens ready to convert it.
+        self._entries: list[tuple[Path, Path | None]] = list(initial_entries or [])
         self._build()
+        if self._entries:
+            self._reload(select=0)
 
     # -- construction ----------------------------------------------------- #
 
