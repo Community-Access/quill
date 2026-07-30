@@ -23,6 +23,18 @@ def _write_silence(out: Path, fmt: PcmFormat | None = None, ms: int = 200) -> No
         w.writeframes(b"\x00" * (n * fmt.sampwidth * fmt.channels))
 
 
+def test_engine_chunk_chars_caps_kokoro_below_its_token_window() -> None:
+    # Kokoro's ~510 phoneme-token window means its char cap must stay well under
+    # a naive default; Piper needs only a modest cap; everything else (classic and
+    # cloud engines) takes the large default. Single source of truth for all paths.
+    assert ds.engine_chunk_chars("kokoro") == 500
+    assert ds.engine_chunk_chars("KOKORO") == 500  # case-insensitive
+    assert ds.engine_chunk_chars("piper") == 4000
+    assert ds.engine_chunk_chars("sapi5") == ds.DEFAULT_CHUNK_CHARS
+    assert ds.engine_chunk_chars("openai") == ds.DEFAULT_CHUNK_CHARS
+    assert ds.engine_chunk_chars("kokoro") < ds.DEFAULT_CHUNK_CHARS
+
+
 def test_make_synthesizer_dispatches_to_kokoro(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

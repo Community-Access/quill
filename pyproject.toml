@@ -130,6 +130,11 @@ fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.22.0"]
 # CPU-only models (~40 MB) for old/constrained machines. Models download from
 # alphacephei.com via Manage Speech Models; no GPU needed.
 vosk = ["vosk>=0.3.45"]
+# Optional offline English engine: NVIDIA Nemotron Speech Streaming via
+# sherpa-onnx (#669 follow-up). 600M Cache-Aware FastConformer-RNNT run int8 on
+# the CPU — no torch/CUDA (sherpa-onnx bundles its own native onnxruntime). The
+# model downloads from QUILL's assets-v1 release via Manage Speech Models.
+nemotron = ["sherpa-onnx>=1.10.0", "numpy>=1.24.0"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
 mp3 = ["mutagen>=1.48.1"]
@@ -415,6 +420,9 @@ module = [
     "torch",
     # Optional Vosk engine (quill[vosk]); imported lazily in providers/vosk.py.
     "vosk",
+    # Optional Nemotron engine (quill[nemotron]); sherpa-onnx imported lazily in
+    # providers/nemotron_onnx.py. Ships no type stubs.
+    "sherpa_onnx",
     # Optional ElevenLabs SDK (quill[elevenlabs]); imported lazily only in the
     # host-owned gateway quill/core/ai/elevenlabs_tts.py (roadmap §4.1).
     "elevenlabs",

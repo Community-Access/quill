@@ -318,12 +318,14 @@ def _export_translations(
     """Export *src* in each configured target language; return chapters produced."""
     import shutil
     import tempfile
+    from dataclasses import replace
 
     from quill.core.ai.translation import LANGUAGE_NAMES
     from quill.core.speech.document_speech import (
         CLOUD_ENGINES,
         DocumentSpeechError,
         SynthesisSpec,
+        engine_chunk_chars,
         synthesize_document_to_chaptered_file,
     )
 
@@ -354,12 +356,15 @@ def _export_translations(
         work = Path(
             tempfile.mkdtemp(prefix="quill_batch_tr_", dir=str(temp_root) if temp_root else None)
         )
+        # Resolve the chunk cap per target engine -- a Kokoro/Piper target must not
+        # inherit a caller's large default cap (which over-feeds the model).
+        target_opts = replace(opts_fn(chapter_sound), max_chunk_chars=engine_chunk_chars(t_engine))
         try:
             result = synthesize_document_to_chaptered_file(
                 src,
                 work / f"out{suffix}",
                 t_spec,
-                opts_fn(chapter_sound),
+                target_opts,
                 work_dir=work / "w",
                 pronunciation_dictionaries=t_dicts,
                 combine_headings=req.combine_headings,
@@ -845,12 +850,11 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
     # the progress dialog opens without the screen-reader focus landing on it.
     frame._wx.CallAfter(progress_dialog.show)
 
-    # Chunk size by engine. Kokoro's model has a small context window (~510 phoneme
-    # tokens); handing it one ~8000-char call (what a heading-less document produced)
-    # stalls it, which is exactly the "stuck on Preparing..." report. Keep Kokoro well
-    # under that window; Piper streams sentence-by-sentence so it only needs a modest
-    # cap; classic engines stay on the large cap to avoid needless per-call overhead.
-    chunk_chars = {"kokoro": 1000, "piper": 4000}.get(req.engine, 8000)
+    # Chunk size by engine -- single source of truth in document_speech (Kokoro's
+    # ~510 phoneme-token window means over-feeding it stalls/fails synthesis).
+    from quill.core.speech.document_speech import engine_chunk_chars
+
+    chunk_chars = engine_chunk_chars(req.engine)
 
     def opts(sound_path: Path | None = None) -> ChapterAssembleOptions:
         return ChapterAssembleOptions(

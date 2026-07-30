@@ -842,7 +842,7 @@ class Settings:
             dict(tts_normalization_raw) if isinstance(tts_normalization_raw, dict) else {}
         )
         speech_provider = str(data.get("speech_provider", "")).strip().lower()
-        if speech_provider not in {"", "whispercpp", "fasterwhisper", "vosk"}:
+        if speech_provider not in {"", "whispercpp", "fasterwhisper", "vosk", "nemotron"}:
             speech_provider = ""
         speech_default_model_id = str(data.get("speech_default_model_id", "")).strip()
         bw_speech_selection_mode = (

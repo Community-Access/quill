@@ -18,10 +18,14 @@ from typing import Any
 class TableNavMixin:
     editor: Any
     _location_ring: Any
-
-    def _announce(self, message: str, *, force: bool = False) -> None: ...  # host
-    def _set_status(self, message: str) -> None: ...  # host
-    def _record_location_before_jump(self) -> None: ...  # host
+    # Host-provided by MainFrame. These MUST be type-only annotations, not method
+    # stubs: a concrete ``def _set_status(...): ...`` here shadows the real
+    # StatusBarMixin implementation via MRO (TableNavMixin precedes it in
+    # MainFrame's bases), silently turning status messages, screen-reader
+    # announcements, and location tracking into no-ops app-wide.
+    _announce: Any
+    _set_status: Any
+    _record_location_before_jump: Any
 
     def table_next_cell(self) -> None:
         self._table_nav("next")

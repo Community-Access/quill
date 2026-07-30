@@ -43,6 +43,23 @@ SUPPORTED_ENGINES = ("sapi5", "kokoro", "piper", "dectalk", "espeak", "macos")
 # MP3/WAV into the splice-ready PCM WAV the assembler expects).
 CLOUD_ENGINES = ("openai", "gemini", "elevenlabs")
 
+# Per-engine chunk ceiling (chars) for long-document synthesis. Kokoro's neural
+# model has a small context window (~510 phoneme tokens): a dense chunk near that
+# limit makes onnx synthesis fail and forces a slower boundary-safe sub-chunk
+# retry inside ``read_aloud.synthesize_with_kokoro``, so keep Kokoro well under
+# it. Piper streams sentence-by-sentence and only needs a modest cap; every other
+# engine (subprocess/classic and the cloud providers, which have their own
+# per-request caps) takes the large default to avoid needless per-call overhead.
+# This is the single source of truth -- batch, per-document, and translated
+# export all resolve their cap here so no path silently over-feeds an engine.
+_ENGINE_CHUNK_CHARS = {"kokoro": 500, "piper": 4000}
+DEFAULT_CHUNK_CHARS = 8000
+
+
+def engine_chunk_chars(engine: str) -> int:
+    """Return the long-document chunk ceiling (chars) for *engine*."""
+    return _ENGINE_CHUNK_CHARS.get(engine.strip().lower(), DEFAULT_CHUNK_CHARS)
+
 
 class DocumentSpeechError(CodedError):
     """Raised when an engine cannot be resolved into a usable synthesizer."""

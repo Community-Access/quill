@@ -207,6 +207,10 @@ def _run(
         return
 
     def opts(_sound_path: Path | None = None) -> ChapterAssembleOptions:
+        from quill.core.speech.document_speech import DEFAULT_CHUNK_CHARS
+
+        # max_chunk_chars here is a base default; _export_translations overrides it
+        # per target with the target engine's cap (Kokoro/Piper need a smaller one).
         return ChapterAssembleOptions(
             article_gap_ms=int(s.batch_speech_article_gap_ms),
             sound_enabled=False,
@@ -214,7 +218,7 @@ def _run(
             speak_headings=True,
             sentence_gap_ms=int(s.batch_speech_sentence_gap_ms),
             tail_padding_ms=int(s.batch_speech_tail_padding_ms),
-            max_chunk_chars=8000,
+            max_chunk_chars=DEFAULT_CHUNK_CHARS,
         )
 
     voice_blacklist = load_blacklist()

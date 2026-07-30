@@ -1077,6 +1077,88 @@ def test_kokoro_onnx_failure_is_logged_before_torch_fallback(monkeypatch, tmp_pa
     assert any("Kokoro onnx synthesis failed" in r.getMessage() for r in caplog.records)
 
 
+def test_kokoro_onnx_recovers_by_subchunking_when_a_passage_overruns(monkeypatch, tmp_path):
+    """A dense passage that overruns the onnx model's ~510-token window must be
+    re-synthesized in smaller boundary-safe pieces and completed -- so a portable
+    build (no 2 GB torch) finishes on its own instead of erroring the document.
+    """
+    import pytest
+
+    np = pytest.importorskip("numpy")
+    pytest.importorskip("soundfile")
+
+    monkeypatch.setattr(read_aloud_module, "kokoro_engine_ready", lambda *a, **k: True)
+
+    calls: list[str] = []
+
+    class _FakeKokoro:
+        def create(self, text, voice, speed, lang):
+            calls.append(text)
+            # The first call is the whole passage: reject it as the real model
+            # would when the phoneme-token window is exceeded. Every smaller
+            # sub-chunk succeeds.
+            if len(calls) == 1:
+                raise RuntimeError("Token window exceeded")
+            return (np.zeros(240, dtype="float32"), 24000)
+
+    monkeypatch.setattr(
+        read_aloud_module, "_get_cached_kokoro_onnx", lambda *_a, **_k: _FakeKokoro()
+    )
+
+    passage = " ".join(
+        f"This is sentence number {n} in a fairly long passage of prose." for n in range(12)
+    )
+    assert len(passage) > read_aloud_module._KOKORO_ONNX_RETRY_CHARS
+
+    out = tmp_path / "recovered.wav"
+    read_aloud_module.synthesize_with_kokoro(passage, out, voice="af_heart")
+
+    assert out.exists()
+    assert len(calls) > 1  # the whole-passage call plus one call per sub-chunk
+
+
+def test_kokoro_installed_but_failing_reports_root_cause_not_download(monkeypatch, tmp_path):
+    """When the onnx model is installed but a passage cannot be synthesized (and
+    the torch fallback is absent), the error must name the real cause and a report
+    path -- never the misleading "download a component you already have" message.
+    """
+    import builtins
+
+    import pytest
+
+    from quill.core.read_aloud import KokoroSynthesisError
+
+    monkeypatch.setattr(read_aloud_module, "kokoro_engine_ready", lambda *a, **k: True)
+
+    def _boom(*_a, **_k):
+        raise RuntimeError("onnxruntime DLL load failed")
+
+    # Patch the onnx synthesis helper itself so the failure is the root cause the
+    # message must surface -- independent of whether numpy/soundfile (the [kokoro]
+    # extra, absent on the lean CI runner) import inside the real helper.
+    monkeypatch.setattr(read_aloud_module, "_synthesize_with_kokoro_onnx", _boom)
+
+    real_import = builtins.__import__
+
+    def _block(name, *args, **kwargs):
+        if name == "kokoro":
+            raise ImportError("no torch kokoro in the portable build")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _block)
+
+    with pytest.raises(KokoroSynthesisError) as excinfo:
+        read_aloud_module.synthesize_with_kokoro(
+            "Hello there.", tmp_path / "out.wav", voice="af_heart"
+        )
+
+    message = str(excinfo.value)
+    assert excinfo.value.code == "QUILL-READALOUD-KOKORO-SYNTH"
+    assert "onnxruntime DLL load failed" in message  # the real root cause
+    assert "Download Optional Components" not in message  # not the misleading hint
+    assert "QUILL-READALOUD-KOKORO-SYNTH" in message  # a code the user can report
+
+
 def test_worker_python_prefers_embedded_python_over_launcher(tmp_path, monkeypatch) -> None:
     """In a bundled build sys.executable is quill.exe (the launcher); the DECtalk
     worker must run through the embedded pythonw.exe beside it, or QUILL opens the

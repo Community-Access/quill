@@ -52,6 +52,12 @@ _VOSK_SUMMARY = (
     "A tiny offline engine for old or low-memory machines with no GPU. Less "
     "accurate than the other two, but works on hardware where they may struggle."
 )
+_NEMOTRON_TAGLINE = "top English accuracy on the CPU; no GPU or torch needed"
+_NEMOTRON_SUMMARY = (
+    "NVIDIA's Nemotron streaming model (English only) run on the CPU via "
+    "sherpa-onnx — very accurate and fast, with no graphics card required. A "
+    "larger download than Vosk; a strong choice for English dictation."
+)
 
 
 def _safe(predicate) -> bool:  # type: ignore[no-untyped-def]
@@ -92,14 +98,41 @@ def _vosk_install_supported() -> bool:
     return vosk_install_supported()
 
 
+def _nemotron_installed() -> bool:
+    from quill.core.speech.engine_install import is_nemotron_available
+
+    return is_nemotron_available()
+
+
+def _nemotron_install_supported() -> bool:
+    from quill.core.speech.engine_install import nemotron_install_supported
+
+    return nemotron_install_supported()
+
+
+def _nemotron_model_available() -> bool:
+    """True only when the Nemotron model is hosted+pinned on the assets-v1 release.
+
+    Until the verified ONNX zip is uploaded and its SHA pinned in
+    :mod:`quill.core.speech.model_mirrors`, the engine cannot finish setup (its
+    ``download_model`` would fail), so it is not offered in the guided picker at
+    all — no half-install of the runtime followed by a dead end. It appears
+    automatically once the asset is live.
+    """
+    from quill.core.speech import catalog, model_mirrors
+
+    return model_mirrors.mirror_for("nemotron", catalog.NEMOTRON_RECOMMENDED_MODEL_ID) is not None
+
+
 def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
     """The engine choices for the guided offline-speech flow, recommended first.
 
     whisper.cpp downloads from QUILL's own verified release asset (always
     installable); Faster Whisper installs via pip and is only offered when that
-    is supported in this build.
+    is supported in this build. Nemotron is appended only when its model asset is
+    hosted+pinned (otherwise it cannot complete setup, so it is not shown).
     """
-    return [
+    options = [
         OfflineSpeechEngineOption(
             engine_id="whispercpp",
             name="Whisper.cpp",
@@ -126,6 +159,20 @@ def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
             install_supported=_safe(_vosk_install_supported),
         ),
     ]
+    # Nemotron appears only once its model asset is hosted+pinned (see
+    # _nemotron_model_available); until then it is fully inert and unlisted.
+    if _safe(_nemotron_model_available):
+        options.append(
+            OfflineSpeechEngineOption(
+                engine_id="nemotron",
+                name="Nemotron (NVIDIA)",
+                tagline=_NEMOTRON_TAGLINE,
+                summary=_NEMOTRON_SUMMARY,
+                installed=_safe(_nemotron_installed),
+                install_supported=_safe(_nemotron_install_supported),
+            )
+        )
+    return options
 
 
 def recommended_engine_id(options: list[OfflineSpeechEngineOption] | None = None) -> str:
@@ -162,6 +209,8 @@ def _catalog_models(engine_id: str) -> tuple:  # type: ignore[type-arg]
         return catalog.FASTER_WHISPER_MODELS
     if engine_id == "vosk":
         return catalog.VOSK_MODELS
+    if engine_id == "nemotron":
+        return catalog.NEMOTRON_MODELS
     return catalog.WHISPER_CPP_MODELS
 
 
