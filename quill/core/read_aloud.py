@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.punctuation_speech import normalize_punctuation_level, verbalize_punctuation
 from quill.core.sentence_split import SentenceSpan, sentence_spans
 from quill.core.speech.text_polish import clean_markdown_text
@@ -584,6 +585,74 @@ def warm_kokoro_onnx() -> bool:
         return False
 
 
+# When a single kokoro-onnx call fails, re-synthesize the passage in pieces no
+# larger than this. The onnx model's context window is ~510 phoneme tokens; a
+# dense ~1000-char chunk (what the batch runner hands it) can overrun that and
+# make ``create`` raise. Re-splitting on safe sentence/word boundaries and
+# concatenating recovers without needing the 2 GB torch fallback, so a portable
+# build completes on its own.
+_KOKORO_ONNX_RETRY_CHARS = 400
+
+
+def _synthesize_with_kokoro_onnx(
+    text: str,
+    output_path: Path,
+    model_dir: Path,
+    *,
+    voice: str,
+    speed: float,
+) -> None:
+    """Synthesize *text* via kokoro-onnx, writing a WAV to *output_path*.
+
+    On a single-call failure -- most often a chunk that overran the model's
+    ~510 phoneme-token window -- re-synthesize the passage in smaller
+    boundary-safe pieces and concatenate. Only ``create`` failures trigger the
+    retry; a model-load failure (bad DLL, unreadable model) is unrecoverable and
+    propagates unchanged. Re-raises the original error if the retry cannot help.
+    """
+    import numpy as np  # type: ignore[import]
+    import soundfile as sf  # type: ignore[import]
+
+    from quill.core.ai.tts_chunk import chunk_text
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    lang = kokoro_lang_for_voice(voice)
+    # A model-load failure here is unrecoverable and must surface as-is; only a
+    # per-passage ``create`` failure (below) is worth retrying in smaller pieces.
+    kokoro = _get_cached_kokoro_onnx(model_dir)
+    try:
+        samples, sample_rate = kokoro.create(text, voice=voice, speed=float(speed), lang=lang)
+        sf.write(str(output_path), np.array(samples), sample_rate)
+        return
+    except Exception:  # noqa: BLE001 - fall through to boundary-safe sub-chunk retry
+        pieces = chunk_text(text, _KOKORO_ONNX_RETRY_CHARS)
+        if len(pieces) <= 1:
+            # Nothing to split -- the passage itself is what the model rejects.
+            raise
+        logging.getLogger(__name__).warning(
+            "Kokoro onnx failed on a %d-char passage; retrying as %d smaller chunks",
+            len(text),
+            len(pieces),
+        )
+        parts: list[Any] = []
+        sample_rate = 24000
+        for piece in pieces:
+            piece_samples, sample_rate = kokoro.create(
+                piece, voice=voice, speed=float(speed), lang=lang
+            )
+            arr = np.array(piece_samples)
+            if arr.size:
+                parts.append(arr)
+        if not parts:
+            raise
+        sf.write(str(output_path), np.concatenate(parts), sample_rate)
+        logging.getLogger(__name__).info(
+            "Kokoro onnx recovered a %d-char passage by splitting it into %d chunks",
+            len(text),
+            len(parts),
+        )
+
+
 def synthesize_with_kokoro(
     text: str,
     output_path: Path,
@@ -597,33 +666,44 @@ def synthesize_with_kokoro(
     # Try kokoro-onnx first — no torch required, just onnxruntime (~20 MB).
     # Uses the int8 quantized model downloaded to the default model directory.
     model_dir = default_kokoro_model_dir()
-    if kokoro_engine_ready(model_dir):
+    onnx_ready = kokoro_engine_ready(model_dir)
+    onnx_error: Exception | None = None
+    if onnx_ready:
         try:
-            import numpy as _np  # type: ignore[import]
-            import soundfile as _sf  # type: ignore[import]
-
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-            lang = kokoro_lang_for_voice(voice)
-            _k = _get_cached_kokoro_onnx(model_dir)
-            samples, sample_rate = _k.create(text, voice=voice, speed=float(speed), lang=lang)
-            _sf.write(str(output_path), _np.array(samples), sample_rate)
+            _synthesize_with_kokoro_onnx(text, output_path, model_dir, voice=voice, speed=speed)
             return
-        except Exception:  # noqa: BLE001 - fall through to kokoro + torch
-            # The onnx path is the primary route once kokoro_engine_ready() is
-            # True (models present + kokoro_onnx importable). If it still throws
-            # -- e.g. onnxruntime cannot load its native DLL, or the model is
-            # unreadable -- the fallback below raises a generic "needs a
-            # component" error that hides the real cause (a freshly downloaded
-            # Kokoro that will not speak). Log the true error so Help > Save
-            # Diagnostics captures it instead of losing it here (#kokoro-onnx).
+        except Exception as exc:  # noqa: BLE001 - fall through to kokoro + torch
+            # The onnx path (with its own boundary-safe sub-chunk retry) is the
+            # primary route once kokoro_engine_ready() is True (models present +
+            # kokoro_onnx importable). If it still throws -- e.g. onnxruntime
+            # cannot load its native DLL, or the model rejects this passage --
+            # log the true cause so Help > Save Diagnostics captures it, and
+            # keep it so the fallback below can report it instead of the
+            # misleading "download a component you already have" message
+            # (#kokoro-onnx).
+            onnx_error = exc
             logging.getLogger(__name__).exception(
                 "Kokoro onnx synthesis failed; falling back to kokoro+torch"
             )
 
-    # Fall back to kokoro + torch.
+    # Fall back to kokoro + torch — only useful if that ~2 GB package is present.
     try:
         from kokoro import KPipeline  # type: ignore[attr-defined]
     except ImportError as exc:
+        if onnx_ready:
+            # The onnx model IS installed (it just failed on this passage), so do
+            # not tell the user to download it again. Name the real cause and how
+            # to report it -- never a vague "needs a component" for a component
+            # that is already present.
+            raise KokoroSynthesisError(
+                "Kokoro is installed but could not turn this passage into speech. "
+                f"Root cause: {onnx_error}. "
+                "This usually means the passage was too long or held characters "
+                "the voice model cannot pronounce; the rest of the document is "
+                "unaffected. Please report it (Help > Report a Problem; Help > "
+                "Save Diagnostics captures the details) quoting error code "
+                "QUILL-READALOUD-KOKORO-SYNTH."
+            ) from onnx_error
         raise ReadAloudUnavailableError(
             "Kokoro voices need one more component. "
             "Help > Download Optional Components will fetch it (~114 MB).\n"
@@ -1034,8 +1114,20 @@ def list_elevenlabs_voices(api_key: str) -> list[VoiceOption]:
         return []
 
 
-class ReadAloudUnavailableError(RuntimeError):
-    pass
+class ReadAloudUnavailableError(CodedError):
+    code = "QUILL-READALOUD-UNAVAILABLE"
+
+
+class KokoroSynthesisError(ReadAloudUnavailableError):
+    """Kokoro is installed but could not synthesize a specific passage.
+
+    Distinct from the generic "component missing" case: the onnx model is
+    present and loaded (other passages synthesized fine), so the message names
+    the real cause and a report path rather than telling the user to re-download
+    a component they already have.
+    """
+
+    code = "QUILL-READALOUD-KOKORO-SYNTH"
 
 
 class ReadAloudController:

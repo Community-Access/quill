@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
+from quill.core.speech.chapter_assemble import ChapterAssembleOptions
 from quill.ui.audio_studio.request import BatchSpeechRequest
 from quill.ui.batch_speech_runner import (
     _book_output_path,
@@ -108,6 +109,7 @@ def test_export_translations_local_engine(tmp_path: Path, monkeypatch) -> None:
         seen["engine"] = spec.engine
         seen["voice"] = spec.voice
         seen["translate"] = kw.get("translate")
+        seen["max_chunk_chars"] = options.max_chunk_chars
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_bytes(b"RIFF")
         return _Result(out)
@@ -132,14 +134,63 @@ def test_export_translations_local_engine(tmp_path: Path, monkeypatch) -> None:
         final,
         ".mp3",
         None,
-        lambda _sp=None: object(),
+        lambda _sp=None: ChapterAssembleOptions(output_format="mp3"),
         for_language=lambda name: lambda t: f"ES[{t}]",
     )
     assert chapters == 2
     assert seen["engine"] == "espeak" and seen["voice"] == "es"
     assert seen["translate"]("x") == "ES[x]"  # the per-language translator was passed
+    # espeak keeps the large default cap (no small context window).
+    assert seen["max_chunk_chars"] == 8000
     # Output named "<stem> (Spanish).mp3".
     assert (tmp_path / "doc (Spanish).mp3").is_file()
+
+
+def test_export_translations_caps_chunk_chars_for_kokoro_target(
+    tmp_path: Path, monkeypatch
+) -> None:
+    # A Kokoro translation target must get Kokoro's small chunk cap (500), not a
+    # caller's large default -- over-feeding the ~510-token model is what forced
+    # the misleading "needs a component" error on a portable build.
+    import quill.core.speech.document_speech as ds
+
+    seen: dict = {}
+
+    class _Result:
+        with_tones_path = None
+
+        def __init__(self, out: Path) -> None:
+            self.output_path = out
+            self.chapters = [1]
+
+    def _fake_synth(src, out, spec, options, **kw):
+        seen["max_chunk_chars"] = options.max_chunk_chars
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(b"RIFF")
+        return _Result(out)
+
+    monkeypatch.setattr(ds, "synthesize_document_to_chaptered_file", _fake_synth)
+    frame = _tr_frame(tmp_path)
+    src = tmp_path / "doc.md"
+    src.write_text("# Hi\n\nbody\n", encoding="utf-8")
+    req = SimpleNamespace(
+        translation_targets=(("es", "kokoro", "ef_dora"),),
+        rate=200,
+        speed=1.0,
+        combine_headings=False,
+        source_folder=tmp_path,
+    )
+    _export_translations(
+        frame,
+        req,
+        src,
+        tmp_path / "doc.mp3",
+        ".mp3",
+        None,
+        lambda _sp=None: ChapterAssembleOptions(output_format="mp3", max_chunk_chars=8000),
+        for_language=lambda name: lambda t: t,
+    )
+    assert seen["max_chunk_chars"] == 500
 
 
 def test_export_translations_skips_cloud_engine_without_key(tmp_path: Path, monkeypatch) -> None:
@@ -164,7 +215,7 @@ def test_export_translations_skips_cloud_engine_without_key(tmp_path: Path, monk
         tmp_path / "doc.mp3",
         ".mp3",
         None,
-        lambda _sp=None: object(),
+        lambda _sp=None: ChapterAssembleOptions(output_format="mp3"),
         for_language=lambda name: lambda t: t,
     )
     assert chapters == 0
@@ -213,7 +264,7 @@ def test_export_translations_cloud_engine_with_key(tmp_path: Path, monkeypatch) 
         tmp_path / "doc.mp3",
         ".mp3",
         None,
-        lambda _sp=None: object(),
+        lambda _sp=None: ChapterAssembleOptions(output_format="mp3"),
         for_language=lambda name: lambda t: t,
     )
     assert chapters == 1
