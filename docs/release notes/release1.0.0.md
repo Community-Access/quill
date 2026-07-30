@@ -102,6 +102,21 @@ The conversion is meaningful, not cosmetic. Moving a Markdown draft into Rich Te
 
 A format change also never silently overwrites the old file. The next save proposes a filename with the correct extension — for example, `notes.md` becomes `notes.rtf` — so the file on disk always tells the truth about the format inside it.
 
+### Reveal Codes — see, hear, and now *edit* the hidden scaffolding
+
+QUILL keeps formatting codes hidden so your editing buffer stays clean plain text. **Reveal Codes** (**Alt+F3**, or **View → Reveal Codes**) is the on-demand companion that makes every one of them visible and speakable — the beloved WordPerfect feature, rebuilt screen-reader-first. In 1.0.0 it grew up from a list you scan into a surface you *live in*.
+
+**It now feels like editing text.** The default **Flowed** view reads like your document with the hidden scaffolding shown inline (`[Bold On]Hello[Bold Off]`), and the caret moves exactly the way it does in the editor:
+
+- **Left/Right** walk one character at a time through text — but step *over* a whole code as a single unit. One press crosses `[Bold On]` and you simply hear "bold on," never spelled out.
+- **Ctrl+Left/Right** move by word; **Up/Down** move by line and read it; **Home/End** (and **Ctrl+Home/End**) go to the ends of the line and document.
+
+**It stopped talking over itself.** Reveal Codes used to say "Reveal Codes" on *every* arrow press, and JAWS and NVDA narrated the same move differently because two voices were speaking at once. Now the pane is the single voice while you navigate: the region is named once when you enter it, and after that you hear only the character, word, line, or code you landed on — identically in JAWS and NVDA.
+
+**Edit a run in place with F2.** Land on text that sits between a pair of codes — the words inside `[Bold On] … [Bold Off]` — and press **F2**. The pane restricts you to just that region for free editing; **Enter** applies your change back into the document, **Escape** cancels, and the surrounding codes are left untouched. The whole region comes along as a unit, so a run containing a `[Tab]` or a nested code (bold text with an italic word inside) edits together.
+
+**The two carets stay locked together, however you move** — arrows, word jumps, Home/End, Page Up/Down, a mouse click, or a jump from Find. Move in the editor and the pane follows; move in the pane and the editor follows. A **Structured** list view (one labelled item per code) remains available for scanning, and your view and verbosity choices persist between sessions.
+
 ### Rich editing on macOS — ready from the first launch
 
 Rich mode ships ready to use on the Mac. The macOS editor remains the same native text view VoiceOver users already know, and the application now **bundles everything required for rich mode**. There is nothing additional to install and nothing to configure.
