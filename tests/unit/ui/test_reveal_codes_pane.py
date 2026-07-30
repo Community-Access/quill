@@ -61,7 +61,7 @@ def _make_host(frame, markup: str):
     return host, editor, spoken
 
 
-def test_arrow_navigation_speaks_bare_characters_without_reveal_codes_prefix(app) -> None:
+def test_plain_text_moves_are_silent_so_the_screen_reader_narrates(app) -> None:
     frame = wx.Frame(None)
     host, editor, spoken = _make_host(frame, "ab")
     pane = RevealCodesPane(wx, frame, host)
@@ -71,23 +71,24 @@ def test_arrow_navigation_speaks_bare_characters_without_reveal_codes_prefix(app
     pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))
     pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))
 
-    # Each move speaks only the character it landed on — never "Reveal Codes: ...".
-    assert spoken == ["b", "b"] or spoken == ["b"]  # clamps at the last cell
-    assert all("Reveal Codes" not in str(s) for s in spoken)
+    # The flowed control is a real text control; the screen reader reads each
+    # character move itself. QUILL stays quiet on text so nothing is said twice.
+    assert spoken == []
     frame.Destroy()
 
 
-def test_right_arrow_steps_over_a_code_atomically(app) -> None:
+def test_right_arrow_steps_over_a_code_atomically_and_only_the_code_speaks(app) -> None:
     frame = wx.Frame(None)
     host, editor, spoken = _make_host(frame, "a**b**c")
     pane = RevealCodesPane(wx, frame, host)
     pane.rebuild()
     pane._caret = 0  # on 'a'
 
-    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> [Bold On]
+    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> [Bold On]: QUILL speaks it
     assert "bold on" in spoken[-1]
-    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> 'b' (whole code skipped)
-    assert spoken[-1] == "b"
+    assert "Reveal Codes" not in spoken[-1]  # bare phrase, no repeated prefix
+    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> 'b': text, so QUILL is silent
+    assert spoken == [spoken[0]]  # nothing new was spoken for the character
     frame.Destroy()
 
 

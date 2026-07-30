@@ -44,6 +44,16 @@ class RevealCodesMixin:
         target = (not visible) if show is None else bool(show)
         if target == visible:
             return
+        # Hiding the pane while focus lives inside it would strand focus on a
+        # hidden window; move it back to the editor first so the user lands
+        # somewhere sensible (and the screen reader follows).
+        if not target and pane.has_focus():
+            editor = getattr(self, "editor", None)
+            if editor is not None:
+                try:
+                    editor.SetFocus()
+                except Exception:  # noqa: BLE001
+                    pass
         pane.panel.Show(target)
         self.settings.reveal_codes_visible = target
         try:

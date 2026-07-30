@@ -40,7 +40,6 @@ from quill.core.reveal_nav import (
     EditableRegion,
     FlowView,
     announce_cell,
-    announce_line,
     build_flow_view,
     cell_at_flow_offset,
     cell_for_markup_offset,
@@ -52,7 +51,6 @@ from quill.core.reveal_nav import (
     move_word,
     region_source,
     splice_region,
-    word_at,
 )
 
 
@@ -265,29 +263,22 @@ class RevealCodesPane:
 
         ctrl = event.ControlDown()
         handled = True
-        speak_mode = "cell"
         if key == wx.WXK_LEFT:
             self._caret = (
                 move_word(cells, self._caret, -1) if ctrl else move_char(cells, self._caret, -1)
             )
-            speak_mode = "word" if ctrl else "cell"
         elif key == wx.WXK_RIGHT:
             self._caret = (
                 move_word(cells, self._caret, +1) if ctrl else move_char(cells, self._caret, +1)
             )
-            speak_mode = "word" if ctrl else "cell"
         elif key == wx.WXK_UP:
             self._caret = move_line(cells, self._caret, -1)
-            speak_mode = "line"
         elif key == wx.WXK_DOWN:
             self._caret = move_line(cells, self._caret, +1)
-            speak_mode = "line"
         elif key == wx.WXK_HOME:
             self._caret = 0 if ctrl else line_home(cells, self._caret)
-            speak_mode = "line" if ctrl else "cell"
         elif key == wx.WXK_END:
             self._caret = len(cells) - 1 if ctrl else line_end(cells, self._caret)
-            speak_mode = "line" if ctrl else "cell"
         else:
             handled = False
 
@@ -295,17 +286,17 @@ class RevealCodesPane:
             event.Skip()
             return
 
-        # We deliberately do NOT call event.Skip(): consuming the key means the
-        # screen reader has no keystroke to pair with the programmatic caret move,
-        # so it stays silent and our _announce below is the single voice. This is
-        # what makes JAWS and NVDA behave identically here.
+        # We consume the key (no event.Skip) so the caret moves under our control,
+        # then move both the flowed caret and the editor caret to the new cell.
+        # The flowed control is a real text control, so the screen reader narrates
+        # the caret move itself for plain text — character, word, and line, at the
+        # right granularity. We therefore speak ONLY when the caret lands on a code,
+        # where the raw "[Bold On]" bracket text is not what we want heard; that is
+        # the single voice for codes and avoids the double-speak the SR + our own
+        # announcement produced on every character move.
         self._place_flow_caret()
         self._drive_editor_from_caret()
-        if speak_mode == "line":
-            self._announce(announce_line(cells, self._caret))
-        elif speak_mode == "word":
-            self._announce(word_at(cells, self._caret))
-        else:
+        if cells[self._caret].is_code:
             self._announce(announce_cell(self._tokens, cells, self._caret, self._verbosity()))
 
     # -- F2 region editing ------------------------------------------------ #
