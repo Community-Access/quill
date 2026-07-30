@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from quill.core.audio.convert import Channels, ConversionJob, ConversionSpec, OnExisting
+from quill.core.audio.dsp import DspOptions
 from quill.ui.audio_studio import convert_audio_dialog as cad
 
 _UI = Path(__file__).resolve().parents[4] / "quill" / "ui"
@@ -71,6 +72,42 @@ def test_build_request_none_without_destination() -> None:
         )
         is None
     )
+
+
+# --------------------------------------------------------------------------- #
+# apply_advanced (pure)
+# --------------------------------------------------------------------------- #
+
+
+def test_apply_advanced_none_leaves_preset_untouched() -> None:
+    base = ConversionSpec(fmt="mp3", bitrate_kbps=192, channels=Channels.MONO)
+    out = cad.apply_advanced(base)  # all-neutral == a no-op
+    assert out.bitrate_kbps == 192
+    assert out.channels is Channels.MONO
+    assert out.filters == base.filters
+
+
+def test_apply_advanced_overrides_only_what_is_set() -> None:
+    base = ConversionSpec(fmt="mp3", bitrate_kbps=192, channels=Channels.STEREO)
+    out = cad.apply_advanced(base, bitrate_kbps=320, sample_rate=48000)
+    assert out.bitrate_kbps == 320
+    assert out.sample_rate == 48000
+    assert out.channels is Channels.STEREO  # untouched
+
+
+def test_apply_advanced_dsp_populates_filters() -> None:
+    base = ConversionSpec(fmt="mp3")
+    out = cad.apply_advanced(base, dsp=DspOptions(high_pass=True, loudness="podcast"))
+    assert any("highpass" in f for f in out.filters)
+    assert any("loudnorm" in f for f in out.filters)
+
+
+def test_advanced_choice_tables_start_neutral() -> None:
+    # Index 0 of every Advanced table is the "keep preset/source" sentinel.
+    assert cad._BITRATE_CHOICES[0][0] == ""
+    assert cad._RATE_CHOICES[0][0] == ""
+    assert cad._DEPTH_CHOICES[0][0] == ""
+    assert cad._CHANNEL_CHOICES[0][0] is Channels.KEEP
 
 
 # --------------------------------------------------------------------------- #
@@ -152,6 +189,14 @@ def test_dialog_follows_house_contract() -> None:
     assert "set_accessible_name(" in src
     # Stock wx.FileDialog / wx.DirDialog ShowModal calls carry the exempt pragma.
     assert src.count("dialog_button_contract: exempt") >= 3
+
+
+def test_advanced_reveal_moves_focus() -> None:
+    # Advanced is a collapsible reveal that re-fits and moves focus (announce).
+    src = _src("audio_studio/convert_audio_dialog.py")
+    assert "Advanced o&ptions" in src
+    assert "def _on_toggle_advanced(" in src
+    assert ".SetFocus()" in src and "self.Fit()" in src
 
 
 def test_studio_wires_convert_audio() -> None:
