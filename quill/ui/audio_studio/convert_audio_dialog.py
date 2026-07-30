@@ -29,6 +29,7 @@ import wx
 
 from quill.core.audio.convert import (
     Channels,
+    ConversionJob,
     ConversionSpec,
     OnExisting,
     available_output_formats,
@@ -167,13 +168,13 @@ def plan_and_run(host: Any, request: ConvertRequest) -> None:
 
     Uses the host's ``_run_background_task`` (protected on close) so a long batch
     never owns the window and closing while converting routes through the shared
-    confirm. Progress feeds the status bar; the final summary is spoken. wx-free
-    logic lives in the engine; this only marshals progress back via the host.
+    confirm. Progress is reported through the task's ``progress(message, current,
+    total)`` callback — the shared contract that updates the status bar, the
+    **tray tooltip** (so a batch stays reviewable while minimized), and the
+    25/50/75 percent milestone announcements. wx-free logic lives in the engine;
+    this only marshals progress back via that callback.
     """
-    from quill.core.audio.convert import (
-        CancelToken,
-        run_conversion_batch,
-    )
+    from quill.core.audio.convert import run_conversion_batch
     from quill.core.speech.ffmpeg import find_ffmpeg
 
     ffmpeg = find_ffmpeg()
@@ -198,20 +199,14 @@ def plan_and_run(host: Any, request: ConvertRequest) -> None:
         return
 
     total = len(jobs)
-    cancel = CancelToken()
 
-    def work(progress: Any) -> Any:
-        def on_progress(done: int, total_jobs: int, _job: Any) -> None:
-            pct = int(done * 100 / total_jobs) if total_jobs else 100
-            host._wx.CallAfter(host._set_status, f"Converting {done}/{total_jobs} ({pct}%)")
-            if (
-                progress is not None
-                and hasattr(progress, "is_cancelled")
-                and progress.is_cancelled()
-            ):
-                cancel.cancel()
+    def work(progress: Callable[[str, int, int], None]) -> Any:
+        def on_progress(done: int, total_jobs: int, job: ConversionJob) -> None:
+            # Route through the task progress callback so the status bar AND the
+            # tray tooltip AND the milestone announcements all update together.
+            progress(f"Converting {done} of {total_jobs}: {job.source.name}", done, total_jobs)
 
-        return run_conversion_batch(ffmpeg, jobs, on_progress=on_progress, cancel=cancel)
+        return run_conversion_batch(ffmpeg, jobs, on_progress=on_progress)
 
     def on_success(result: Any) -> None:
         summary = result.summary(total)
