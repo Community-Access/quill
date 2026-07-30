@@ -1133,8 +1133,10 @@ def test_kokoro_installed_but_failing_reports_root_cause_not_download(monkeypatc
     def _boom(*_a, **_k):
         raise RuntimeError("onnxruntime DLL load failed")
 
-    # Model load fails outright -- unrecoverable, no sub-chunk retry can help.
-    monkeypatch.setattr(read_aloud_module, "_get_cached_kokoro_onnx", _boom)
+    # Patch the onnx synthesis helper itself so the failure is the root cause the
+    # message must surface -- independent of whether numpy/soundfile (the [kokoro]
+    # extra, absent on the lean CI runner) import inside the real helper.
+    monkeypatch.setattr(read_aloud_module, "_synthesize_with_kokoro_onnx", _boom)
 
     real_import = builtins.__import__
 
