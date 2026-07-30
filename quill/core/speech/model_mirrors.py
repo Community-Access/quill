@@ -302,14 +302,14 @@ _MIRRORS: dict[str, MirrorAsset] = {
         archive_member="it_IT-riccardo-x_low.onnx",
     ),
     # Nemotron ONNX (NVIDIA Nemotron Speech Streaming EN, int8) for the
-    # sherpa-onnx dictation engine: encoder/decoder/joiner + tokens.txt packaged
-    # as one zip. The SHA is a placeholder until the verified zip is uploaded to
-    # the assets-v1 release; a placeholder is ignored (``mirror_for`` returns
-    # None), so the Nemotron engine reports the model as "not yet available"
-    # until then and nothing tries to download an unpinned artifact.
+    # sherpa-onnx dictation engine: encoder/decoder/joiner .int8.onnx + tokens.txt
+    # packaged as one zip (test_wavs removed; a NOTICE.txt records provenance and
+    # the NVIDIA Open Model License). Source: the k2-fsa/sherpa-onnx "asr-models"
+    # release; repackaged and re-hosted on QUILL's assets-v1 release. Verified
+    # end-to-end (the provider transcribes the model's own test clips correctly).
     "nemotron:nemotron-streaming-en-0.6b": MirrorAsset(
         "sherpa-onnx-nemotron-speech-streaming-en-0.6b-int8.zip",
-        "TODO_UPLOAD_AND_PIN_SHA256",
+        "1fd10e7d6d5c8d37274eec4942f47447482b374043aae0f72a2eb363030c1132",
         archive_member="tokens.txt",
     ),
 }

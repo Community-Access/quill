@@ -6,7 +6,9 @@ import quill.core.speech.guided_setup as gs
 def test_offline_speech_engine_options_lists_both_recommended_first() -> None:
     opts = gs.offline_speech_engine_options()
     ids = [o.engine_id for o in opts]
-    assert ids == ["whispercpp", "fasterwhisper", "vosk"]
+    # The three always-listed engines lead, recommended first; Nemotron may be
+    # appended after them when its model asset is hosted (see the gate tests).
+    assert ids[:3] == ["whispercpp", "fasterwhisper", "vosk"]
     # whisper.cpp is the friendly default and always installable (release asset).
     whispercpp = opts[0]
     assert whispercpp.recommended is True
@@ -25,6 +27,7 @@ def test_engine_options_never_crash_on_detector_failure(monkeypatch) -> None:
     monkeypatch.setattr(gs, "_whispercpp_installed", boom)
     monkeypatch.setattr(gs, "_faster_whisper_installed", boom)
     monkeypatch.setattr(gs, "_vosk_installed", boom)
+    monkeypatch.setattr(gs, "_nemotron_installed", boom)
     opts = gs.offline_speech_engine_options()  # must not raise
     assert all(o.installed is False for o in opts)
 
@@ -34,6 +37,7 @@ def test_recommended_engine_prefers_an_installed_one_else_whispercpp(monkeypatch
     monkeypatch.setattr(gs, "_whispercpp_installed", lambda: False)
     monkeypatch.setattr(gs, "_faster_whisper_installed", lambda: False)
     monkeypatch.setattr(gs, "_vosk_installed", lambda: False)
+    monkeypatch.setattr(gs, "_nemotron_installed", lambda: False)
     assert gs.recommended_engine_id() == "whispercpp"
 
     # Faster Whisper already installed -> keep the user on what they have.
@@ -69,9 +73,10 @@ def test_vosk_is_a_third_engine_with_its_own_model_catalog() -> None:
     assert {m.model_id for m in vosk} != cpp_ids
 
 
-def test_nemotron_hidden_until_model_asset_is_hosted() -> None:
-    # With the placeholder SHA in model_mirrors, the Nemotron model is not yet
-    # fetchable, so the guided picker must NOT offer it (no half-install dead end).
+def test_nemotron_hidden_when_model_asset_unavailable(monkeypatch) -> None:
+    # If the model mirror is not hosted/pinned, the guided picker must NOT offer
+    # Nemotron -- no half-install of the runtime followed by a dead end.
+    monkeypatch.setattr(gs, "_nemotron_model_available", lambda: False)
     ids = [o.engine_id for o in gs.offline_speech_engine_options()]
     assert "nemotron" not in ids
 
@@ -84,6 +89,12 @@ def test_nemotron_appears_once_its_model_asset_is_available(monkeypatch) -> None
     nem = [o for o in opts if o.engine_id == "nemotron"]
     assert len(nem) == 1
     assert nem[0].name and nem[0].tagline and len(nem[0].summary) > 20
+
+
+def test_nemotron_model_asset_is_hosted_and_pinned() -> None:
+    # The assets-v1 zip has been uploaded and its SHA pinned in model_mirrors, so
+    # the availability gate is really open (guards against dropping the pin).
+    assert gs._nemotron_model_available() is True
 
 
 def test_models_for_engine_nemotron_uses_its_own_catalog() -> None:

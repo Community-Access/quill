@@ -95,11 +95,12 @@ def test_download_blocked_in_safe_mode(monkeypatch) -> None:
         nem.NemotronOnnxProvider().download_model("nemotron-streaming-en-0.6b")
 
 
-def test_download_unavailable_until_mirror_pinned(monkeypatch) -> None:
-    # With the placeholder SHA in model_mirrors, mirror_for() returns None, so the
-    # provider must fail clean ("not yet available") rather than fetch an
-    # unverifiable artifact -- the inert-until-hosted safety property.
+def test_download_unavailable_when_mirror_not_pinned(monkeypatch) -> None:
+    # When no mirror is pinned (mirror_for returns None), the provider must fail
+    # clean ("not yet available") rather than fetch an unverifiable artifact --
+    # the inert-until-hosted safety property, independent of the real manifest.
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    monkeypatch.setattr(nem.model_mirrors, "mirror_for", lambda *_a, **_k: None)
     with pytest.raises(SpeechError, match="not yet available"):
         nem.NemotronOnnxProvider().download_model("nemotron-streaming-en-0.6b")
 
