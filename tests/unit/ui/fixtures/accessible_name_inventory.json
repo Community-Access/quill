@@ -173,7 +173,7 @@
   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._build::wx.ListBox": "named",
   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._build::wx.TextCtrl": "named",
   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._build_advanced.choice::wx.Choice": "named",
-  "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._build_advanced::wx.SpinCtrlDouble": "named",
+  "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._build_advanced.new_spin::wx.SpinCtrlDouble": "named",
   "quill/ui/audio_studio/feed_dialog.py::FolderFeedDialog.__init__::wx.ListBox": "named",
   "quill/ui/audio_studio/feed_dialog.py::FolderFeedDialog._field::wx.TextCtrl": "named",
   "quill/ui/audio_studio/pages_audio.py::AudioSourcePage.__init__::wx.ComboBox": "named",
