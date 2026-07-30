@@ -394,3 +394,28 @@ def test_install_mp3_support_blocked_in_safe_mode(monkeypatch, tmp_path: Path) -
     monkeypatch.setenv("QUILL_SAFE_MODE", "1")
     with pytest.raises(ei.EngineInstallError, match="Safe Mode"):
         ei.install_mp3_support(dest_dir=tmp_path / "mp3", runner=_make_runner({}))
+
+
+def test_install_yt_dlp_builds_wheel_only_command(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(ei, "is_yt_dlp_available", lambda: True)
+    captured: dict = {}
+    dest = tmp_path / "ytdlp"
+    out = ei.install_yt_dlp(
+        dest_dir=dest, python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert out == dest and dest.is_dir()
+    assert cmd[1:4] == ["-m", "pip", "install"]
+    assert "--only-binary=:all:" in cmd
+    assert any(c.startswith("yt-dlp>=") for c in cmd)
+    assert str(dest) in sys.path  # activated on success
+
+
+def test_install_yt_dlp_blocked_in_safe_mode(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    with pytest.raises(ei.EngineInstallError, match="Safe Mode"):
+        ei.install_yt_dlp(dest_dir=tmp_path / "ytdlp", runner=_make_runner({}))
+
+
+def test_yt_dlp_pack_registered_for_startup_activation() -> None:
+    assert ei.yt_dlp_pack_dir() in ei._known_pack_dirs()

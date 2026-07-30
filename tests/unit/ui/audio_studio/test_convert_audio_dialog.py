@@ -243,3 +243,25 @@ def test_studio_wires_convert_audio() -> None:
     assert "run_audio_conversion(self)" in src
     assert '"studio.convert_audio"' in src
     assert "Con&vert Audio..." in src
+
+
+def test_studio_wires_convert_from_url() -> None:
+    src = (_UI.parent / "apps" / "studio.py").read_text(encoding="utf-8")
+    assert "def convert_from_url(self)" in src
+    assert "run_url_conversion(self)" in src
+    assert '"studio.convert_from_url"' in src
+    assert "Convert from &URL..." in src
+
+
+def test_url_conversion_contract() -> None:
+    # URL import: Safe-Mode guarded, one-time consent before the on-demand
+    # install, stock text-entry prompt carries the exempt pragma, and it seeds
+    # the converter with the downloaded file.
+    src = _src("audio_studio/convert_audio_dialog.py")
+    assert "def run_url_conversion(" in src
+    assert "_safe_mode" in src  # Safe-Mode guard
+    assert "wx.YES_NO" in src and "_URL_CONSENT" in src  # consent before install
+    assert "Only download content you have the right to use" in src  # rights notice
+    assert "ensure_and_download(" in src
+    assert "initial_entries=[(path, None)]" in src  # seeds the converter
+    assert src.count("dialog_button_contract: exempt") >= 4  # + the URL prompt
