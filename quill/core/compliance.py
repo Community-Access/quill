@@ -6,12 +6,16 @@ import tomllib
 from collections.abc import Iterable
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+
 _NAME_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+")
 _PROJECT_URL_PREFERENCE = ("homepage", "source", "repository", "documentation")
 
 
-class ComplianceConfigError(ValueError):
+class ComplianceConfigError(CodedError):
     """Raised when a project metadata file (``pyproject.toml``) cannot be parsed."""
+
+    code = "QUILL-COMPLIANCE-CONFIG-INVALID"
 
 
 def _load_pyproject(path: Path) -> dict[str, object]:
@@ -39,6 +43,7 @@ _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
     "keynote-parser": ("MIT", "https://pypi.org/project/keynote-parser/"),
     "llama-cpp-python": ("MIT", "https://github.com/abetlen/llama-cpp-python"),
     "markitdown": ("MIT", "https://github.com/microsoft/markitdown"),
+    "sherpa-onnx": ("Apache-2.0", "https://github.com/k2-fsa/sherpa-onnx"),
     "mypy": ("MIT", "https://github.com/python/mypy"),
     "prismatoid": ("MIT", "https://pypi.org/project/prismatoid/"),
     "pyenchant": ("LGPL-2.1-or-later", "https://github.com/pyenchant/pyenchant"),
@@ -78,6 +83,7 @@ _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
     "pytest-xdist": "Parallel test execution.",
     "regex": "Core regular expression engine.",
     "ruff": "Linting and formatting.",
+    "sherpa-onnx": "ONNX speech runtime for the optional NVIDIA Nemotron offline dictation engine.",
     "speechrecognition": "Speech-recognition helper components.",
     "wx-accessible-webview": "Accessible web preview and dialog surfaces.",
     "wxpython": "Desktop UI framework.",
@@ -150,6 +156,21 @@ _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
         "homepage": "https://huggingface.co/hexgrad/Kokoro-82M",
         "source": "",
         "notes": "Optional neural speech voices.",
+    },
+    {
+        "name": "NVIDIA Nemotron Speech Streaming (English)",
+        "scope": "bundled-speech",
+        "version": "0.6b int8",
+        "license": "NVIDIA Open Model License",
+        "homepage": "https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b",
+        "source": "",
+        "notes": (
+            "Optional offline English dictation model (Cache-Aware "
+            "FastConformer-RNNT), run on the CPU via sherpa-onnx. Downloaded on "
+            "demand from QUILL's assets-v1 release; the model NOTICE.txt records "
+            "provenance and the license. Commercial use and redistribution are "
+            "permitted under the NVIDIA Open Model License."
+        ),
     },
     {
         "name": "DECtalk",
