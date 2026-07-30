@@ -408,6 +408,13 @@ class LaunchRequest:
 
 
 def main() -> int:
+    # Headless `quill convert ...` subcommand: route to the wx-free converter CLI
+    # before the GUI argument parse (which treats leading tokens as files to open).
+    if sys.argv[1:2] == ["convert"]:
+        from quill.core.audio.convert_cli import run_cli
+
+        return run_cli(sys.argv[2:])
+
     parsed = _parse_cli_arguments(sys.argv[1:])
     if parsed.version:
         print(__version__)
