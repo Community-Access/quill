@@ -72,6 +72,15 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
+    try:
+        from quill.core.speech.providers.nemotron_onnx import NemotronOnnxProvider
+
+        nemotron = NemotronOnnxProvider()
+        if nemotron.is_available():
+            registry.register(nemotron)
+    except Exception:  # noqa: BLE001 - an optional engine must never break the registry
+        pass
+
     # Cloud providers contributed by enabled Quillins (network-backed; the offline
     # transcribe paths skip them). Empty in Safe Mode or with no provider Quillins.
     try:

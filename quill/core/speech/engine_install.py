@@ -86,6 +86,17 @@ _KOKORO_ONNX_REQUIREMENTS: tuple[str, ...] = (
     "soundfile>=0.14.0",
 )
 
+#: The Nemotron ONNX pack's folder name and import name.
+_NEMOTRON_PACK = "nemotron-onnx"
+_NEMOTRON_MODULE = "sherpa_onnx"
+
+# sherpa-onnx bundles its own native onnxruntime; numpy handles the audio array.
+# Keep in sync with the pyproject ``nemotron`` extra. Wheel-only, no torch/CUDA.
+_NEMOTRON_REQUIREMENTS: tuple[str, ...] = (
+    "sherpa-onnx>=1.10.0",
+    "numpy>=1.24.0",
+)
+
 #: On-demand MP3 chapter-marker support (the pyproject ``mp3`` extra). Pure-Python
 #: and small; installed into an engine-pack like the speech engines.
 _MP3_PACK = "mp3-support"
@@ -121,6 +132,11 @@ def kokoro_onnx_pack_dir() -> Path:
     return engine_packs_dir() / _KOKORO_ONNX_PACK
 
 
+def nemotron_pack_dir() -> Path:
+    """The folder a downloaded Nemotron ONNX engine (sherpa-onnx) is installed into."""
+    return engine_packs_dir() / _NEMOTRON_PACK
+
+
 def mp3_pack_dir() -> Path:
     """The folder on-demand MP3 support (mutagen) is installed into."""
     return engine_packs_dir() / _MP3_PACK
@@ -131,6 +147,7 @@ def _known_pack_dirs() -> tuple[Path, ...]:
         faster_whisper_pack_dir(),
         vosk_pack_dir(),
         kokoro_onnx_pack_dir(),
+        nemotron_pack_dir(),
         mp3_pack_dir(),
     )
 
@@ -295,6 +312,95 @@ def install_kokoro_onnx(
         _LOG.error("Kokoro ONNX installed into %s but the module is not importable", dest)
         raise EngineInstallError(
             "Kokoro ONNX was installed but could not be imported. Try restarting QUILL."
+        )
+    if progress is not None:
+        progress(1.0, "Done.")
+    return dest
+
+
+def nemotron_install_supported() -> bool:
+    """True when QUILL can install the Nemotron ONNX engine on demand (pip importable)."""
+    return importlib.util.find_spec("pip") is not None
+
+
+def is_nemotron_available() -> bool:
+    """True when ``sherpa_onnx`` (the Nemotron runtime) is importable (after activation)."""
+    return importlib.util.find_spec(_NEMOTRON_MODULE) is not None
+
+
+def install_nemotron(
+    progress: ProgressCallback | None = None,
+    *,
+    dest_dir: Path | None = None,
+    requirements: Sequence[str] | None = None,
+    python_executable: str | None = None,
+    timeout_seconds: float = _INSTALL_TIMEOUT_S,
+    runner: Callable[..., object] | None = None,
+) -> Path:
+    """Install the Nemotron ONNX engine (sherpa-onnx + numpy), returning the pack folder.
+
+    Mirrors :func:`install_kokoro_onnx` exactly: wheel-only into a user-writable
+    engine-pack folder, activated on ``sys.path`` immediately, preferring the
+    Offline Edition's bundled wheelhouse (:func:`_bundled_wheelhouse_dir`) over
+    PyPI when present. ``sherpa-onnx`` bundles its own native onnxruntime, so no
+    torch/CUDA is ever pulled in. Raises :class:`EngineInstallError` on Safe Mode,
+    unavailable pip, a non-zero pip exit, or if the engine still cannot be
+    imported afterward.
+    """
+    if os.environ.get("QUILL_SAFE_MODE") == "1":
+        raise EngineInstallError("Downloading speech engines is disabled in Safe Mode.")
+    if not nemotron_install_supported():
+        raise EngineInstallError(
+            "This build cannot install the Nemotron engine automatically (pip is "
+            "unavailable). Install it from source with: pip install sherpa-onnx numpy"
+        )
+
+    dest = Path(dest_dir) if dest_dir is not None else nemotron_pack_dir()
+    dest.mkdir(parents=True, exist_ok=True)
+    reqs = tuple(requirements) if requirements is not None else _NEMOTRON_REQUIREMENTS
+    python_exe = python_executable or sys.executable
+    if not python_exe:
+        raise EngineInstallError("Could not locate the Python runtime to install into.")
+
+    wheelhouse = _bundled_wheelhouse_dir("nemotron") if requirements is None else None
+    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
+
+    if progress is not None:
+        progress(0.05, "Preparing to install the Nemotron engine...")
+    command = _pip_command(dest, reqs, python_exe, extra_args=extra_args)
+    run = runner if runner is not None else _default_runner
+    _LOG.info("Nemotron install: running %s", " ".join(command))
+    if progress is not None:
+        label = (
+            "Installing the Nemotron engine from the offline bundle..."
+            if wheelhouse is not None
+            else "Downloading the Nemotron engine (sherpa-onnx); this may take a few minutes..."
+        )
+        progress(0.15, label)
+
+    try:
+        result = run(command, timeout_seconds=timeout_seconds)
+    except Exception as exc:  # noqa: BLE001
+        _LOG.exception("Nemotron install: pip runner could not start")
+        raise EngineInstallError(f"Could not run the installer: {exc}") from exc
+
+    returncode = int(getattr(result, "returncode", 1))
+    if returncode != 0:
+        detail = _tail(getattr(result, "stderr", "") or getattr(result, "stdout", ""))
+        _LOG.error("Nemotron install failed (pip exit %s). Output tail: %s", returncode, detail)
+        raise EngineInstallError(
+            f"Nemotron engine installation failed (pip exit {returncode}). {detail}"
+        )
+
+    if progress is not None:
+        progress(0.9, "Finishing up...")
+    if str(dest) not in sys.path:
+        sys.path.insert(0, str(dest))
+    importlib.invalidate_caches()
+    if not is_nemotron_available():
+        _LOG.error("Nemotron installed into %s but sherpa_onnx is not importable", dest)
+        raise EngineInstallError(
+            "The Nemotron engine was installed but could not be imported. Try restarting QUILL."
         )
     if progress is not None:
         progress(1.0, "Done.")

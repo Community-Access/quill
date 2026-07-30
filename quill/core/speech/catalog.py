@@ -278,6 +278,45 @@ def vosk_model_by_id(model_id: str) -> SpeechModelInfo | None:
     return None
 
 
+# --------------------------------------------------------------------------- #
+# Nemotron ONNX (NVIDIA Nemotron Speech Streaming, English) — optional, offline.
+#
+# A 600M-parameter Cache-Aware FastConformer-RNNT streaming transducer, run
+# torch-free on CPU via sherpa-onnx (the same engine VS Code uses for its
+# offline dictation). We consume the prebuilt int8 ONNX bundle (encoder /
+# decoder / joiner / tokens) re-hosted on QUILL's assets-v1 release as a single
+# zip; the underlying weights are NVIDIA-Open-Model-Licensed (commercial +
+# redistribution permitted). Download goes through ``model_mirrors`` (SHA-pinned);
+# until the asset is hosted the provider reports the model as unavailable.
+# --------------------------------------------------------------------------- #
+
+NEMOTRON_RECOMMENDED_MODEL_ID = "nemotron-streaming-en-0.6b"
+
+NEMOTRON_MODELS: tuple[SpeechModelInfo, ...] = (
+    SpeechModelInfo(
+        id="nemotron-streaming-en-0.6b",
+        display_name="Nemotron Streaming (English, NVIDIA)",
+        language_mode="english",
+        approximate_size_mb=632,
+        accuracy_tier="high",
+        speed_tier="fast",
+        recommended_use=(
+            "English-only, low-latency streaming accuracy on the CPU — no GPU or "
+            "torch needed. Larger download than Vosk; the strongest offline English."
+        ),
+        license_name="NVIDIA Open Model License",
+    ),
+)
+
+
+def nemotron_model_by_id(model_id: str) -> SpeechModelInfo | None:
+    """Look up a Nemotron ONNX catalog model by id."""
+    for model in NEMOTRON_MODELS:
+        if model.id == model_id:
+            return model
+    return None
+
+
 def is_diarization_model(model_id: str) -> bool:
     """True when a model supports speaker-turn detection (whisper.cpp tinydiarize)."""
     return model_id.endswith("-tdrz")
