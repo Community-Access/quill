@@ -43,17 +43,10 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "copy tray",
             "tray",
             "clipboard tray",
-            "abbreviations",
-            "abbreviation",
-            "text expansion",
-            "expand",
-            "snippet",
-            "snippets",
-            "shorthand",
         ),
         description=(
-            "Core editing commands including the Copy Tray (multi-slot clipboard), "
-            "abbreviation expansion, and text transformation tools."
+            "Core editing commands including the Copy Tray (multi-slot clipboard) "
+            "and text transformation tools."
         ),
         category="core",
         dependencies=("core.app",),
@@ -62,11 +55,17 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         "core.abbreviations",
         "Abbreviations and Snippet Packs",
         aliases=(
+            "abbreviation",
+            "abbreviations",
             "abbreviation expansion",
-            "text shortcuts",
-            "snippet packs",
-            "typed shortcuts",
             "text expansion",
+            "text shortcuts",
+            "typed shortcuts",
+            "snippet",
+            "snippets",
+            "snippet packs",
+            "expand",
+            "shorthand",
         ),
         description=(
             "Typed abbreviation expansion, the Manage Abbreviations dialog, "
@@ -418,14 +417,14 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
     ),
     "core.emmet": FeatureDefinition(
         "core.emmet",
-        "Abbreviation Expansion",
+        "Emmet Markup Expansion",
         aliases=(
             "emmet",
-            "abbreviation",
             "expand abbreviation",
             "zen coding",
             "html shorthand",
             "css shorthand",
+            "markup abbreviation",
         ),
         description=(
             "Expands compact HTML/CSS markup abbreviations (child/sibling/climb-up "

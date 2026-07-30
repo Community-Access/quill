@@ -171,6 +171,34 @@ def test_feature_manager_finds_feature_by_alias() -> None:
     assert feature.id == "core.search.regex"
 
 
+def test_no_ambiguous_feature_aliases() -> None:
+    """Every id/name/alias must resolve to exactly one feature.
+
+    A term claimed by two definitions makes ``find_feature`` order-dependent
+    (last wins) and logs a warning on import; this guards against reintroducing
+    such a collision (e.g. "abbreviation" / "text expansion" once mapped to both
+    core.edit and core.abbreviations/core.emmet)."""
+    from quill.core.feature_catalog import FEATURE_DEFINITIONS
+
+    owners: dict[str, list[str]] = {}
+    for feature in FEATURE_DEFINITIONS.values():
+        for term in (feature.id, feature.name, *feature.aliases):
+            owners.setdefault(term.lower(), []).append(feature.id)
+    clashes = {term: ids for term, ids in owners.items() if len(set(ids)) > 1}
+    assert not clashes, f"Ambiguous feature aliases (term -> feature ids): {clashes}"
+
+
+def test_abbreviation_terms_resolve_to_the_abbreviations_feature() -> None:
+    # Typed text expansion terms belong to the dedicated feature, not core.edit
+    # (generic editing) or core.emmet (HTML/CSS markup expansion).
+    for term in ("abbreviation", "abbreviations", "text expansion", "abbreviation expansion"):
+        feature = find_feature(term)
+        assert feature is not None and feature.id == "core.abbreviations", term
+    # Emmet keeps its markup-specific terms.
+    emmet = find_feature("emmet")
+    assert emmet is not None and emmet.id == "core.emmet"
+
+
 def test_feature_registry_includes_shipped_profiles() -> None:
     assert PROFILE_ESSENTIAL in PROFILE_DEFINITIONS
     assert PROFILE_DEVELOPER_POWER_TEXT in PROFILE_DEFINITIONS
