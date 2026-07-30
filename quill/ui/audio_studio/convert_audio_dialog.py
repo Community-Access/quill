@@ -28,12 +28,14 @@ from typing import Any
 import wx
 
 from quill.core.audio.convert import (
+    Channels,
     ConversionSpec,
     OnExisting,
     available_output_formats,
     default_destination,
     plan_jobs,
 )
+from quill.core.audio.dsp import DspOptions, build_dsp_filters, loudness_choices
 from quill.core.audio.presets import DEFAULT_PRESET_ID, preset_choices, preset_spec
 
 _TITLE = "Convert Audio"
@@ -98,6 +100,65 @@ def build_request(
         recurse=recurse,
         on_existing=on_existing,
         flatten=flatten,
+    )
+
+
+# Advanced-mode choice tables (§6). The first value in each is the neutral
+# "keep the preset's / source's setting" sentinel (empty / KEEP) so Advanced only
+# overrides what the user deliberately touches; unset controls leave the preset.
+_BITRATE_CHOICES: tuple[tuple[str, str], ...] = (
+    ("", "Auto (use preset)"),
+    ("96", "96 kbps"),
+    ("128", "128 kbps"),
+    ("192", "192 kbps"),
+    ("256", "256 kbps"),
+    ("320", "320 kbps"),
+)
+_RATE_CHOICES: tuple[tuple[str, str], ...] = (
+    ("", "Keep source rate"),
+    ("48000", "48 kHz"),
+    ("44100", "44.1 kHz"),
+    ("22050", "22.05 kHz"),
+    ("16000", "16 kHz"),
+)
+_CHANNEL_CHOICES: tuple[tuple[Channels, str], ...] = (
+    (Channels.KEEP, "Keep source channels"),
+    (Channels.MONO, "Mono (1 channel)"),
+    (Channels.STEREO, "Stereo (2 channels)"),
+)
+_DEPTH_CHOICES: tuple[tuple[str, str], ...] = (
+    ("", "Keep source depth"),
+    ("16", "16-bit"),
+    ("24", "24-bit"),
+    ("32", "32-bit float"),
+)
+
+
+def apply_advanced(
+    base: ConversionSpec,
+    *,
+    bitrate_kbps: int | None = None,
+    sample_rate: int | None = None,
+    channels: Channels | None = None,
+    bit_depth: int | None = None,
+    dsp: DspOptions | None = None,
+) -> ConversionSpec:
+    """Layer Advanced overrides onto a preset's *base* spec (pure).
+
+    Every argument is optional: ``None`` (the neutral choice) leaves the preset's
+    value untouched, so Advanced only changes what the user explicitly set. The
+    DSP toggles compose into ``ConversionSpec.filters`` via
+    :func:`build_dsp_filters`, replacing any preset filters when *dsp* is given.
+    """
+    from dataclasses import replace
+
+    return replace(
+        base,
+        bitrate_kbps=bitrate_kbps if bitrate_kbps is not None else base.bitrate_kbps,
+        sample_rate=sample_rate if sample_rate is not None else base.sample_rate,
+        channels=channels if channels is not None else base.channels,
+        bit_depth=bit_depth if bit_depth is not None else base.bit_depth,
+        filters=build_dsp_filters(dsp) if dsp is not None else base.filters,
     )
 
 
@@ -263,6 +324,12 @@ class ConvertAudioDialog(wx.Dialog):
         set_accessible_name(self._conflict, "On conflict")
         sizer.Add(self._conflict, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
+        self._advanced = wx.CheckBox(self, label="Advanced o&ptions")
+        set_accessible_name(self._advanced, "Advanced options")
+        sizer.Add(self._advanced, 0, wx.ALL, 8)
+        self._main_sizer = sizer
+        self._build_advanced(set_accessible_name)
+
         buttons = self.CreateSeparatedButtonSizer(wx.OK | wx.CANCEL)
         sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
@@ -271,12 +338,84 @@ class ConvertAudioDialog(wx.Dialog):
         self._add_folder_btn.Bind(wx.EVT_BUTTON, self._on_add_folder)
         self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove)
         self._browse_btn.Bind(wx.EVT_BUTTON, self._on_browse)
+        self._advanced.Bind(wx.EVT_CHECKBOX, self._on_toggle_advanced)
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
         apply_listbox_activation(self._list, lambda _e: None)
         # Convert is the affirmative; a real Cancel/Escape button (no trap).
         apply_modal_ids(
             self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL, affirmative_label="Convert"
         )
+
+    def _build_advanced(self, set_accessible_name: Callable[[Any, str], None]) -> None:
+        """Build the collapsed Advanced panel (§6): codec knobs + DSP toggles.
+
+        Everything lives on the dialog (never an intermediate panel, per the
+        accessible-name contract) inside one sizer we show/hide as a unit. Each
+        control's neutral first choice means "leave the preset alone", so an
+        untouched Advanced panel changes nothing.
+        """
+        box = wx.BoxSizer(wx.VERTICAL)
+        box.Add(wx.StaticText(self, label="Advanced encoding and processing:"), 0, wx.ALL, 6)
+
+        # z-order-safe row helper (A11Y-Z-ORDER): create the label first, then run
+        # the factory so each control is created *after* its label. Call sites must
+        # pass a real ``lambda`` (the gate checks for it) — never a pre-made control.
+        def labeled(caption: str, make_ctrl: Callable[[], Any]) -> Any:
+            box.Add(wx.StaticText(self, label=caption), 0, wx.LEFT | wx.TOP, 6)
+            ctrl = make_ctrl()
+            box.Add(ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
+            return ctrl
+
+        def choice(pairs: tuple[tuple[Any, str], ...], name: str) -> wx.Choice:
+            ctrl = wx.Choice(self, choices=[label for _value, label in pairs])
+            ctrl.SetSelection(0)
+            set_accessible_name(ctrl, name)
+            return ctrl
+
+        self._adv_bitrate = labeled("Bit &rate:", lambda: choice(_BITRATE_CHOICES, "Bit rate"))
+        self._adv_rate = labeled("Sa&mple rate:", lambda: choice(_RATE_CHOICES, "Sample rate"))
+        self._adv_channels = labeled("C&hannels:", lambda: choice(_CHANNEL_CHOICES, "Channels"))
+        self._adv_depth = labeled("Bit &depth:", lambda: choice(_DEPTH_CHOICES, "Bit depth"))
+        self._adv_loudness = labeled(
+            "&Loudness:", lambda: choice(tuple(loudness_choices()), "Loudness normalization")
+        )
+
+        # Gain: manual label-then-control (correct z-order; not a helper call).
+        box.Add(wx.StaticText(self, label="&Gain (dB):"), 0, wx.LEFT | wx.TOP, 6)
+        self._adv_gain = wx.SpinCtrlDouble(self, min=-30.0, max=30.0, inc=0.5)
+        self._adv_gain.SetDigits(1)
+        set_accessible_name(self._adv_gain, "Gain in decibels")
+        box.Add(self._adv_gain, 0, wx.LEFT | wx.RIGHT, 6)
+
+        self._adv_highpass = wx.CheckBox(self, label="Remove low-frequency r&umble (high-pass)")
+        self._adv_trim = wx.CheckBox(self, label="&Trim leading and trailing silence")
+        self._adv_compressor = wx.CheckBox(self, label="&Compress dynamics (even out loud/quiet)")
+        self._adv_leveler = wx.CheckBox(self, label="Le&vel volume across the file")
+        for cb, name in (
+            (self._adv_highpass, "Remove low-frequency rumble"),
+            (self._adv_trim, "Trim leading and trailing silence"),
+            (self._adv_compressor, "Compress dynamics"),
+            (self._adv_leveler, "Level volume across the file"),
+        ):
+            set_accessible_name(cb, name)
+            box.Add(cb, 0, wx.LEFT | wx.TOP, 6)
+
+        self._adv_box = box
+        self._main_sizer.Add(box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self._main_sizer.Hide(box, recursive=True)
+
+    def _on_toggle_advanced(self, _event: Any) -> None:
+        """Reveal or collapse the Advanced panel, then re-fit and move focus.
+
+        Focus lands on the first revealed control (or back on the checkbox when
+        collapsing) so a screen-reader user hears the state change — the reveal
+        is announced by the focus move, not a silent resize.
+        """
+        show = self._advanced.GetValue()
+        self._main_sizer.Show(self._adv_box, show, recursive=True)
+        self.Layout()
+        self.Fit()
+        (self._adv_bitrate if show else self._advanced).SetFocus()
 
     # -- row + queue helpers ---------------------------------------------- #
 
@@ -354,12 +493,14 @@ class ConvertAudioDialog(wx.Dialog):
 
     def collect(self) -> ConvertRequest | None:
         """Build a :class:`ConvertRequest` from the current widget state."""
+        from dataclasses import replace
+
         fmt = self._formats[max(0, self._format.GetSelection())]
         preset_id = self._preset_ids[max(0, self._preset.GetSelection())]
         dest = self._dest.GetValue().strip()
         if not dest and self._entries:
             dest = str(default_destination(self._entries[0][0]))
-        return build_request(
+        request = build_request(
             self._entries,
             fmt=fmt,
             preset_id=preset_id,
@@ -367,6 +508,37 @@ class ConvertAudioDialog(wx.Dialog):
             recurse=self._recurse.GetValue(),
             on_existing=self._selected_conflict(),
         )
+        if request is not None and self._advanced.GetValue():
+            request = replace(
+                request, spec=apply_advanced(request.spec, **self._collect_advanced())
+            )
+        return request
+
+    def _choice_value(self, choice: Any, table: tuple[tuple[Any, str], ...]) -> Any:
+        """The value paired with a wx.Choice's current selection (index 0 = neutral)."""
+        return table[max(0, choice.GetSelection())][0]
+
+    def _collect_advanced(self) -> dict[str, Any]:
+        """Read the Advanced controls into keyword args for :func:`apply_advanced`."""
+        bitrate = self._choice_value(self._adv_bitrate, _BITRATE_CHOICES)
+        rate = self._choice_value(self._adv_rate, _RATE_CHOICES)
+        channels = self._choice_value(self._adv_channels, _CHANNEL_CHOICES)
+        depth = self._choice_value(self._adv_depth, _DEPTH_CHOICES)
+        dsp = DspOptions(
+            loudness=self._choice_value(self._adv_loudness, tuple(loudness_choices())),
+            gain_db=float(self._adv_gain.GetValue()),
+            high_pass=self._adv_highpass.GetValue(),
+            trim_silence=self._adv_trim.GetValue(),
+            compressor=self._adv_compressor.GetValue(),
+            leveler=self._adv_leveler.GetValue(),
+        )
+        return {
+            "bitrate_kbps": int(bitrate) if bitrate else None,
+            "sample_rate": int(rate) if rate else None,
+            "channels": channels if channels is not Channels.KEEP else None,
+            "bit_depth": int(depth) if depth else None,
+            "dsp": dsp,
+        }
 
     def show(self, show_modal: Callable[[Any, str], int]) -> ConvertRequest | None:
         """Show the dialog via the host's ``_show_modal_dialog`` and collect."""
