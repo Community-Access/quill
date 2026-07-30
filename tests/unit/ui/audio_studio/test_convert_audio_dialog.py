@@ -177,6 +177,35 @@ def test_plan_and_run_starts_background_task(monkeypatch, tmp_path: Path) -> Non
     assert "1 file" in label
 
 
+def test_work_reports_progress_through_task_callback(monkeypatch, tmp_path: Path) -> None:
+    # The batch progress must flow through the task's progress(message, current,
+    # total) callback so the status bar AND the tray tooltip AND the milestone
+    # announcements update — not a bare _set_status that bypasses the tray.
+    monkeypatch.setattr("quill.core.speech.ffmpeg.find_ffmpeg", lambda: "ffmpeg")
+    jobs = [
+        ConversionJob(tmp_path / "in1.wav", tmp_path / "out1.mp3", ConversionSpec(fmt="mp3")),
+        ConversionJob(tmp_path / "in2.wav", tmp_path / "out2.mp3", ConversionSpec(fmt="mp3")),
+    ]
+    monkeypatch.setattr(cad, "plan_jobs", lambda *a, **k: (jobs, []))
+
+    def fake_batch(_ffmpeg, batch_jobs, *, on_progress=None, **_k):
+        for done, job in enumerate(batch_jobs, start=1):
+            on_progress(done, len(batch_jobs), job)
+        return SimpleNamespace(summary=lambda total: f"Converted {total} of {total} files.")
+
+    monkeypatch.setattr("quill.core.audio.convert.run_conversion_batch", fake_batch)
+
+    host = _host()
+    cad.plan_and_run(host, _req(tmp_path))
+    _label, work, _on_success = host._calls["bg"]
+
+    progress_calls: list[tuple[str, int, int]] = []
+    work(lambda message, current, total: progress_calls.append((message, current, total)))
+
+    assert [(c, t) for _m, c, t in progress_calls] == [(1, 2), (2, 2)]  # current/total for the bar
+    assert "in1.wav" in progress_calls[0][0] and "in2.wav" in progress_calls[1][0]
+
+
 # --------------------------------------------------------------------------- #
 # Dialog contract (source scrape — no wx needed)
 # --------------------------------------------------------------------------- #
