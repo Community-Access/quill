@@ -69,6 +69,32 @@ def test_vosk_is_a_third_engine_with_its_own_model_catalog() -> None:
     assert {m.model_id for m in vosk} != cpp_ids
 
 
+def test_nemotron_hidden_until_model_asset_is_hosted() -> None:
+    # With the placeholder SHA in model_mirrors, the Nemotron model is not yet
+    # fetchable, so the guided picker must NOT offer it (no half-install dead end).
+    ids = [o.engine_id for o in gs.offline_speech_engine_options()]
+    assert "nemotron" not in ids
+
+
+def test_nemotron_appears_once_its_model_asset_is_available(monkeypatch) -> None:
+    # Once the assets-v1 zip is hosted+pinned (mirror_for returns a real asset),
+    # Nemotron becomes a first-class guided engine automatically.
+    monkeypatch.setattr(gs, "_nemotron_model_available", lambda: True)
+    opts = gs.offline_speech_engine_options()
+    nem = [o for o in opts if o.engine_id == "nemotron"]
+    assert len(nem) == 1
+    assert nem[0].name and nem[0].tagline and len(nem[0].summary) > 20
+
+
+def test_models_for_engine_nemotron_uses_its_own_catalog() -> None:
+    models = gs.models_for_engine("nemotron")
+    assert models
+    assert models[0].model_id == gs.default_model_id("nemotron")
+    assert sum(1 for m in models if m.recommended) == 1
+    cpp_ids = {m.model_id for m in gs.models_for_engine("whispercpp")}
+    assert {m.model_id for m in models} != cpp_ids
+
+
 def test_models_for_engine_never_crashes_on_detection_failure(monkeypatch) -> None:
     from quill.core.speech import service
 

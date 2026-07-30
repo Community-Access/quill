@@ -521,26 +521,23 @@ class SpeechDownloadsMixin:
                     should_cancel=cancel.is_set,  # type: ignore[attr-defined]
                     label="Downloading offline speech engine...",
                 )
-        elif engine_id == "fasterwhisper":
-            from quill.core.speech.engine_install import (
-                activate_engine_packs,
-                install_faster_whisper,
-                is_faster_whisper_available,
-            )
+        else:
+            # The pip-installed offline engines share one install path: install the
+            # pack if the runtime is absent, then activate it on sys.path. Unknown
+            # engine ids are a no-op (unchanged behavior).
+            import quill.core.speech.engine_install as ei
 
-            if not is_faster_whisper_available():
-                install_faster_whisper(progress)
-                activate_engine_packs()
-        elif engine_id == "vosk":
-            from quill.core.speech.engine_install import (
-                activate_engine_packs,
-                install_vosk,
-                is_vosk_available,
-            )
-
-            if not is_vosk_available():
-                install_vosk(progress)
-                activate_engine_packs()
+            pip_engines = {
+                "fasterwhisper": (ei.is_faster_whisper_available, ei.install_faster_whisper),
+                "vosk": (ei.is_vosk_available, ei.install_vosk),
+                "nemotron": (ei.is_nemotron_available, ei.install_nemotron),
+            }
+            entry = pip_engines.get(engine_id)
+            if entry is not None:
+                is_available, install_engine = entry
+                if not is_available():
+                    install_engine(progress)
+                    ei.activate_engine_packs()
 
     def _install_offline_speech(self, engine_id: str, model_id: str) -> None:
         """Install the chosen engine (if needed) and download the chosen model in

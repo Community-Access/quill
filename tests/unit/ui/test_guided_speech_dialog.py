@@ -60,10 +60,13 @@ def test_guided_install_does_engine_then_model_and_returns_to_hub() -> None:
     assert "self.settings.speech_default_model_id = model_id" in src
 
 
-def test_ensure_offline_engine_handles_vosk() -> None:
+def test_ensure_offline_engine_handles_pip_installed_engines() -> None:
     src = _src("main_frame_speech.py")
-    assert 'elif engine_id == "vosk":' in src
-    assert "install_vosk(progress)" in src
+    # Faster Whisper, Vosk and Nemotron share one data-driven pip-install path.
+    assert "pip_engines = {" in src
+    assert "ei.install_vosk" in src
+    assert "ei.install_nemotron" in src
+    assert "ei.activate_engine_packs()" in src
 
 
 def test_dictation_dialog_set_default_action_is_handled() -> None:
