@@ -457,6 +457,8 @@
     "_rebaseline_2026_07_03_agent_harness_wizard": "Agent harness build-out: the \"use an agent you already pay for\" onboarding path + agent celebration lines in onboarding.py (612 -> 636); the agent-path handling + open_engines_cb hand-off to the AI Hub Engines tab in ai_setup_wizard.py (792 -> 815). The harness framework, packs, and Engines tab already existed; this surfaces them.",
     "quill/core/ai/onboarding.py": 716,
     "quill/core/assistant_ai.py": 1459,
+    "quill/core/audio/convert.py": 715,
+    "_rebaseline_2026_07_30_audio_converter_core": "New Universal Audio Converter core (#1255 v1): quill/core/audio/convert.py enters the budget at 715. The pure, wx-free foundation the spec (#1255 §9.1) mandates building first -- format matrix + capability probe, ConversionSpec, plan_jobs (mixed file/folder queue -> jobs with source-tree mirror/flatten, filename templates, extension filtering, de-dup and the skip/overwrite/auto-number conflict policy), build_convert_command (format + CBR bitrate + sample rate + channels + bit depth + copy/remux + video-audio extract + DSP graph hook), and a multi-worker cancellable run_conversion_batch. 31 unit tests. The spec permits a reviewed budget entry for the core module; ruff's vertical formatting of the extension frozensets accounts for ~40 of the lines. Splitting the batch runner into a sibling module is the path to lower this.",
     "quill/core/copy_tray.py": 139,
     "quill/core/emmet.py": 637,
     "quill/core/features.py": 1029,
