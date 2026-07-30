@@ -102,6 +102,15 @@ def test_apply_advanced_dsp_populates_filters() -> None:
     assert any("loudnorm" in f for f in out.filters)
 
 
+def test_apply_advanced_carries_tempo_and_fades() -> None:
+    base = ConversionSpec(fmt="mp3")
+    out = cad.apply_advanced(base, dsp=DspOptions(tempo=1.5, fade_in_s=2.0, fade_out_s=3.0))
+    joined = ",".join(out.filters)
+    assert "atempo" in joined
+    assert "afade=t=in:st=0:d=2" in joined
+    assert out.filters.count("areverse") == 2  # fade-out via reverse-fade-reverse
+
+
 def test_advanced_choice_tables_start_neutral() -> None:
     # Index 0 of every Advanced table is the "keep preset/source" sentinel.
     assert cad._BITRATE_CHOICES[0][0] == ""

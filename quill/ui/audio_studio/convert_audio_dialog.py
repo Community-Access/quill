@@ -380,12 +380,26 @@ class ConvertAudioDialog(wx.Dialog):
             "&Loudness:", lambda: choice(tuple(loudness_choices()), "Loudness normalization")
         )
 
-        # Gain: manual label-then-control (correct z-order; not a helper call).
-        box.Add(wx.StaticText(self, label="&Gain (dB):"), 0, wx.LEFT | wx.TOP, 6)
-        self._adv_gain = wx.SpinCtrlDouble(self, min=-30.0, max=30.0, inc=0.5)
-        self._adv_gain.SetDigits(1)
-        set_accessible_name(self._adv_gain, "Gain in decibels")
-        box.Add(self._adv_gain, 0, wx.LEFT | wx.RIGHT, 6)
+        def new_spin(lo: float, hi: float, inc: float, digits: int, name: str) -> wx.SpinCtrlDouble:
+            spin = wx.SpinCtrlDouble(self, min=lo, max=hi, inc=inc)
+            spin.SetDigits(digits)
+            set_accessible_name(spin, name)
+            return spin
+
+        self._adv_gain = labeled(
+            "&Gain (dB):", lambda: new_spin(-30.0, 30.0, 0.5, 1, "Gain in decibels")
+        )
+        self._adv_gain.SetValue(0.0)  # 0 dB = no change
+        self._adv_tempo = labeled(
+            "&Speed (tempo):", lambda: new_spin(0.5, 2.0, 0.05, 2, "Speed, tempo multiplier")
+        )
+        self._adv_tempo.SetValue(1.0)  # 1.0x = unchanged; no pitch shift
+        self._adv_fade_in = labeled(
+            "Fade &in (seconds):", lambda: new_spin(0.0, 10.0, 0.5, 1, "Fade-in seconds")
+        )
+        self._adv_fade_out = labeled(
+            "Fade &out (seconds):", lambda: new_spin(0.0, 10.0, 0.5, 1, "Fade-out seconds")
+        )
 
         self._adv_highpass = wx.CheckBox(self, label="Remove low-frequency r&umble (high-pass)")
         self._adv_trim = wx.CheckBox(self, label="&Trim leading and trailing silence")
@@ -529,8 +543,11 @@ class ConvertAudioDialog(wx.Dialog):
             gain_db=float(self._adv_gain.GetValue()),
             high_pass=self._adv_highpass.GetValue(),
             trim_silence=self._adv_trim.GetValue(),
+            tempo=float(self._adv_tempo.GetValue()),
             compressor=self._adv_compressor.GetValue(),
             leveler=self._adv_leveler.GetValue(),
+            fade_in_s=float(self._adv_fade_in.GetValue()),
+            fade_out_s=float(self._adv_fade_out.GetValue()),
         )
         return {
             "bitrate_kbps": int(bitrate) if bitrate else None,
