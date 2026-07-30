@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.verbosity.profiles import CustomProfile
 
 __all__ = [
@@ -31,8 +32,10 @@ PROFILE_IO_FORMAT = "quill-verbosity-profile"
 PROFILE_IO_VERSION = "1"
 
 
-class ProfileImportError(ValueError):
+class ProfileImportError(CodedError):
     """Raised when an imported profile is structurally invalid."""
+
+    code = "QUILL-VERBOSITY-PROFILE-IMPORT"
 
 
 def export_profile(custom: CustomProfile) -> dict[str, Any]:

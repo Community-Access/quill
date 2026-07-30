@@ -78,7 +78,16 @@ def load_sites() -> list[SiteConfig]:
     items = raw.get("sites", []) if isinstance(raw, dict) else raw
     if not isinstance(items, list):
         return []
-    sites = [_from_dict(item) for item in items if isinstance(item, dict) and item.get("name")]
+    sites: list[SiteConfig] = []
+    for item in items:
+        if not isinstance(item, dict) or not item.get("name"):
+            continue
+        try:
+            sites.append(_from_dict(item))
+        except (TypeError, ValueError):
+            # A single corrupt entry (e.g. a non-numeric ``port``) must not take
+            # the whole site list down with it -- skip it and keep the rest.
+            continue
     return sorted(sites, key=lambda site: site.name.lower())
 
 

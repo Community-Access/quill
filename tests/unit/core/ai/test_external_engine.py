@@ -3,11 +3,19 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 
 import pytest
 
 from quill.core.ai import external_engine as ee
+
+# An absolute path on whatever platform the suite runs on. run_request now hands
+# ``subprocess`` a fully-resolved absolute path (and rejects CWD-relative ``which``
+# results), so the injected resolver must return an absolute path just like the
+# real ``_resolve_which`` does. ``os.path.abspath`` yields a drive-rooted path on
+# Windows and a ``/``-rooted one on POSIX.
+_ABS_NODE = os.path.abspath("node")
 
 
 @pytest.fixture(autouse=True)
@@ -78,7 +86,7 @@ def test_successful_round_trip_with_injected_runner():
     result = ee.run_request(
         config,
         ee.JsonlRequest("audit", {"text": "hi"}),
-        which=lambda name: "/usr/bin/node",
+        which=lambda name: _ABS_NODE,
         runner=_echo_runner({"result": "ok"}),
     )
     assert result.ok is True
@@ -96,7 +104,7 @@ def test_engine_error_field_surfaces():
     result = ee.run_request(
         ee.load_engine_config("a11y"),
         ee.JsonlRequest("audit"),
-        which=lambda name: "/usr/bin/node",
+        which=lambda name: _ABS_NODE,
         runner=runner,
     )
     assert result.ok is False
@@ -113,7 +121,7 @@ def test_nonzero_exit_reports_stderr():
     result = ee.run_request(
         ee.load_engine_config("a11y"),
         ee.JsonlRequest("audit"),
-        which=lambda name: "/usr/bin/node",
+        which=lambda name: _ABS_NODE,
         runner=runner,
     )
     assert result.ok is False
@@ -130,7 +138,7 @@ def test_invalid_json_is_reported():
     result = ee.run_request(
         ee.load_engine_config("a11y"),
         ee.JsonlRequest("audit"),
-        which=lambda name: "/usr/bin/node",
+        which=lambda name: _ABS_NODE,
         runner=runner,
     )
     assert result.ok is False
@@ -147,7 +155,7 @@ def test_timeout_is_reported():
     result = ee.run_request(
         ee.load_engine_config("a11y"),
         ee.JsonlRequest("audit"),
-        which=lambda name: "/usr/bin/node",
+        which=lambda name: _ABS_NODE,
         runner=runner,
     )
     assert result.ok is False

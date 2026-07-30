@@ -22,6 +22,9 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+#: Hard cap on a Quillin fetch response body (mirrors host.FETCH_MAX_BYTES).
+_FETCH_MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
+
 
 class _EditorHostServices:
     """Adapt :class:`MainFrame`'s editor to the host ``HostServices`` protocol.
@@ -118,10 +121,17 @@ class _EditorHostServices:
         Path(path).write_text(text, encoding="utf-8")
 
     def fetch(self, url: str, method: str, body: str | None) -> dict[str, Any]:
+        # URL scheme/host safety (https-only for non-loopback, private/link-local
+        # blocking) is enforced by the host dispatcher before this runs; here we
+        # keep the bounded timeout and add a hard response-size cap so a hostile
+        # endpoint cannot stream an unbounded body into memory.
         data = body.encode("utf-8") if body is not None else None
         request = urllib.request.Request(url, data=data, method=method)  # noqa: S310
         with urllib.request.urlopen(request, timeout=15) as response:  # noqa: S310
-            payload = response.read().decode("utf-8", errors="replace")
+            raw = response.read(_FETCH_MAX_BYTES + 1)
+            if len(raw) > _FETCH_MAX_BYTES:
+                raise ValueError(f"fetch response exceeds the {_FETCH_MAX_BYTES} byte cap")
+            payload = raw.decode("utf-8", errors="replace")
             return {"status": int(getattr(response, "status", 200)), "body": payload}
 
     def get_clipboard(self) -> str:

@@ -31,6 +31,7 @@ import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import TYPE_CHECKING
 
 import wx
 
@@ -40,7 +41,11 @@ from quill.core.audio_enhance import (
     is_enhancement_active,
     probe_source_duration_ms,
 )
+from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
+
+if TYPE_CHECKING:
+    from quill.ui.spotify.web_player import SpotifyWebEngine
 
 _log = logging.getLogger(__name__)
 
@@ -88,6 +93,7 @@ class PodcastPlayerController:
         on_position_checkpoint: Callable[[str, str, int], None] | None = None,
         before_play: Callable[[], None] | None = None,
         on_enhance_error: Callable[[str], None] | None = None,
+        spotify_token_provider: Callable[[], str] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Runs before every play_episode: the host stops sibling media (the
@@ -139,6 +145,13 @@ class PodcastPlayerController:
             on_finished=self._on_finished,
             on_error=self._on_error,
         )
+        #: The mpv/wx stream engine stays the default; a spotify:episode: URI
+        #: swaps ``self._engine`` to the Spotify Web Playback engine for the
+        #: duration of that episode (DRM audio the stream engines cannot play).
+        self._stream_engine = self._engine
+        self._spotify_engine: SpotifyWebEngine | None = None
+        self._spotify_token_provider = spotify_token_provider
+        self._parent = parent
         self._state = PodcastPlaybackState(
             state=PodcastPlayerState.STOPPED, show_id=None, episode_guid=None, title=""
         )
@@ -219,9 +232,55 @@ class PodcastPlayerController:
 
     def _start_load(self, source: str, *, start_ms: int) -> None:
         self._resume_ms = start_ms
+        # A spotify:episode: URI is DRM audio only the Spotify Web Playback
+        # engine can play; load the URI directly (no relay/enhancement) and
+        # never fall through to the stream engine.
+        if is_spotify_uri(source):
+            spotify = self._select_spotify_engine()
+            if spotify is None or not spotify.load(source):
+                self._set_state(
+                    PodcastPlayerState.ERROR,
+                    message=(
+                        "That Spotify episode could not be played. "
+                        "Spotify Premium sign-in is required."
+                    ),
+                )
+            return
+        self._select_stream_engine()
         url = self._resolve_playback_url(source, start_ms=start_ms)
         if self._engine is None or not self._engine.load(url):
             self._set_state(PodcastPlayerState.ERROR, message="That episode could not be opened.")
+
+    def _ensure_spotify_engine(self) -> SpotifyWebEngine | None:
+        """Lazily create the Spotify engine, or None if no token source (not
+        signed in to Spotify)."""
+        if self._spotify_engine is not None:
+            return self._spotify_engine
+        if self._spotify_token_provider is None:
+            return None
+        from quill.ui.spotify.web_player import SpotifyWebEngine
+
+        self._spotify_engine = SpotifyWebEngine(
+            self._parent,
+            token_provider=self._spotify_token_provider,
+            on_error=self._on_error,
+        )
+        return self._spotify_engine
+
+    def _select_spotify_engine(self) -> SpotifyWebEngine | None:
+        """Make the Spotify engine the active engine (stream engine stays alive
+        for the next non-Spotify episode)."""
+        spotify = self._ensure_spotify_engine()
+        if spotify is not None:
+            self._engine = spotify
+        return spotify
+
+    def _select_stream_engine(self) -> None:
+        """Restore the mpv/wx stream engine as the active engine when leaving a
+        Spotify episode. Only swaps back *from* the Spotify engine, so any other
+        active engine (including a test-injected fake) is left in place."""
+        if self._spotify_engine is not None and self._engine is self._spotify_engine:
+            self._engine = self._stream_engine
 
     def _is_enhanced(self) -> bool:
         return is_enhancement_active(
@@ -386,6 +445,14 @@ class PodcastPlayerController:
                 self._engine.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("podcast engine close failed during shutdown")
+        # Close the Spotify WebView engine if it exists and was not the active
+        # engine just closed above (tears down the hidden WebView + page host).
+        if self._spotify_engine is not None and self._engine is not self._spotify_engine:
+            try:
+                self._spotify_engine.close()
+            except Exception:  # noqa: BLE001 - never block app close
+                _log.exception("Spotify engine close failed during shutdown")
+        self._spotify_engine = None
         try:
             self._enhance_relay.shutdown()
         except Exception:  # noqa: BLE001 - never block app close

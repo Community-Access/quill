@@ -67,6 +67,16 @@ Unchecking one removes its menu items the next time you open Quill Weather, so
 you can trim the app to just what you use. (This is the same customization Quill
 Radio offers.)
 
+## Quillins
+
+Quill Weather can run **Quillins** -- QUILL's small, sandboxed, permission-gated
+add-ons -- from its own **Quillins** menu. A Quillin declares which apps it
+targets, so only add-ons written for Quill Weather appear here. The bundled
+`weather-extra-alerts` sample shows the idea: it contributes an additional alert
+source whose alerts are merged into the ones Weather Monitoring already watches.
+Quillins are off in Safe Mode, and third-party Quillins are disabled in this
+release -- the bundled ones are the foundation.
+
 ## Reaching the other apps
 
 Quill Weather, Quill Radio, and QUILL are separate apps that can open each other.
@@ -75,11 +85,54 @@ launch a sibling in its own window; if it is already running, it simply comes to
 the front. On the same machine all three share one data store, so a location you
 saved in one is there in the others.
 
+## Editions and the QuillVille Runtime
+
+Quill Weather shares one Python runtime -- the **QuillVille Runtime** -- with
+every other QuillVille app (QUILL, Quill Radio, and QUILL Audio Studio). It is
+installed once per user and reused by all of them, so once any Quill app has
+installed it, every app you add afterward starts instantly. The runtime is
+reference-counted: it is removed only when the last app that needs it is
+uninstalled.
+
+There are four downloads. Pick the one that fits how you want to run Quill
+Weather:
+
+- **Full portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) is
+  fully self-contained: it runs from a USB stick with no installation and no
+  internet, and it carries a genuine, unmodified copy of Python. Weather is a
+  small app, so this build is already compact. Extract it anywhere and run
+  `QuillWeather.exe`. A `data` folder next to the exe (holding a
+  `storage-mode.json` marker set to portable) keeps everything on the stick.
+- **Companion edition** (`Quill-Weather-Companion-<version>.zip`, about 2 MB) is
+  feather-light: just the app and its docs, running on the shared QuillVille
+  Runtime. The first time you launch it, if the runtime is not already
+  installed, it offers to download and install it (about 230 MB, once) with a
+  fully accessible progress bar. After that, this app and every other QuillVille
+  app start instantly.
+- **Full installer** (`Quill-Weather-Setup-Shared-<version>.exe`) installs the
+  shared runtime, if it is not already present, plus the app, with a Start Menu
+  entry and an uninstaller.
+- **Thin installer** (the `-Lite` setup) is a tiny installer that downloads the
+  shared runtime only if it is not already present, then installs the app.
+
+Whenever the QuillVille Runtime is downloaded -- whether an installer or the
+app's own first launch starts it -- you get a fully accessible progress bar that
+works with NVDA, JAWS, and Narrator, announcing progress as a percentage. You
+can follow it and know exactly how far along the one-time download is.
+
+**A note on antivirus:** the app's launcher is now a genuine, tiny native
+program, and the bundled Python is the official unmodified build. Earlier
+versions used a renamed and modified copy of Python's `pythonw.exe` as the
+launcher, which some antivirus tools flagged as a false positive. That pattern
+is gone, so the Quill apps are far less likely to be flagged.
+
 ## Updating
 
 **Help > Check for Updates** knows whether you run the installer or the portable
 build and downloads the matching one. Quill Weather updates on its own schedule,
-separate from Quill Radio.
+separate from Quill Radio. Because the QuillVille Runtime is shared, an app
+update is usually just the small app itself; the large runtime is downloaded
+only when a new one is required, and again with a fully accessible progress bar.
 
 ## Weather features -- full reference
 

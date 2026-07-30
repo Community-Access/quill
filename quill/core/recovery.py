@@ -226,12 +226,34 @@ def latest_crash_report(crash_dir: Path, *, min_mtime: float | None = None) -> s
     return text or None
 
 
+def _prune_orphaned_session_state(state: dict[str, object]) -> None:
+    """Drop per-session bookkeeping for sessions with no autosave dir left.
+
+    ``cursor_positions`` and ``recovery_dismissal_counts`` are keyed by session
+    id and were never pruned, so they grew without bound across the lifetime of
+    an install. A session whose ``autosave/<id>`` directory no longer exists can
+    never be recovered, so its entries are dead weight -- remove them so the two
+    maps stay bounded by the number of live autosave dirs.
+    """
+    autosave_root = app_data_dir() / "autosave"
+    for field_name in ("cursor_positions", "recovery_dismissal_counts"):
+        raw = state.get(field_name)
+        if not isinstance(raw, dict):
+            continue
+        state[field_name] = {
+            key: value
+            for key, value in raw.items()
+            if isinstance(key, str) and (autosave_root / key).is_dir()
+        }
+
+
 def begin_session(session_id: str) -> list[RecoveryOffer]:
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
     try:
         with _state_lock:
             state = _load_state()
+            _prune_orphaned_session_state(state)
             offers: list[RecoveryOffer] = []
             previous_session = state.get("last_session_id")
             previous_clean = bool(state.get("clean_exit", True))

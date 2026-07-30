@@ -33,6 +33,7 @@ def data_dir(tmp_path, monkeypatch):
 def _close_event() -> tuple[SimpleNamespace, dict]:
     flags: dict = {"vetoed": False, "skipped": False}
     event = SimpleNamespace(
+        CanVeto=lambda: True,
         Veto=lambda: flags.__setitem__("vetoed", True),
         Skip=lambda: flags.__setitem__("skipped", True),
     )

@@ -263,14 +263,10 @@ class SocialStore:
             (str(SCHEMA_VERSION),),
         )
         self.conn.commit()
-        row = self.conn.execute(
-            "SELECT value FROM schema_meta WHERE key='version'"
-        ).fetchone()
+        row = self.conn.execute("SELECT value FROM schema_meta WHERE key='version'").fetchone()
         current = int(row["value"]) if row else 1
         if current > SCHEMA_VERSION:
-            raise RuntimeError(
-                f"store schema v{current} is newer than engine v{SCHEMA_VERSION}"
-            )
+            raise RuntimeError(f"store schema v{current} is newer than engine v{SCHEMA_VERSION}")
         # Future additive migrations land here, mirroring quill_beacon.db.
 
     # -- workspaces -----------------------------------------------------------
@@ -287,9 +283,7 @@ class SocialStore:
         return ws
 
     def list_workspaces(self) -> list[Workspace]:
-        rows = self.conn.execute(
-            "SELECT * FROM workspaces ORDER BY position, created"
-        ).fetchall()
+        rows = self.conn.execute("SELECT * FROM workspaces ORDER BY position, created").fetchall()
         return [Workspace.from_row(dict(r)) for r in rows]
 
     # -- accounts -------------------------------------------------------------
@@ -322,9 +316,7 @@ class SocialStore:
 
     def list_accounts(self, *, include_paused: bool = True) -> list[Account]:
         where = "" if include_paused else "WHERE paused=0"
-        rows = self.conn.execute(
-            f"SELECT * FROM accounts {where} ORDER BY created"
-        ).fetchall()
+        rows = self.conn.execute(f"SELECT * FROM accounts {where} ORDER BY created").fetchall()
         return [Account.from_row(dict(r)) for r in rows]
 
     def delete_account(self, account_id: str) -> None:
@@ -416,9 +408,7 @@ class SocialStore:
         )
 
     def get_item(self, item_id: str) -> SocialItem | None:
-        row = self.conn.execute(
-            "SELECT * FROM items WHERE item_id=?", (item_id,)
-        ).fetchone()
+        row = self.conn.execute("SELECT * FROM items WHERE item_id=?", (item_id,)).fetchone()
         return SocialItem.from_row(dict(row)) if row else None
 
     def list_items(
@@ -473,16 +463,12 @@ class SocialStore:
                 (account_id,),
             ).fetchone()
         else:
-            row = self.conn.execute(
-                "SELECT COUNT(*) AS n FROM items WHERE read=0"
-            ).fetchone()
+            row = self.conn.execute("SELECT COUNT(*) AS n FROM items WHERE read=0").fetchone()
         return row["n"]
 
     def set_read(self, item_id: str, read: bool = True) -> None:
         with self.conn:
-            self.conn.execute(
-                "UPDATE items SET read=? WHERE item_id=?", (int(read), item_id)
-            )
+            self.conn.execute("UPDATE items SET read=? WHERE item_id=?", (int(read), item_id))
 
     def set_flag(self, item_id: str, column: str, value: bool) -> None:
         if column not in ("favourited", "bookmarked", "reblogged", "flagged", "read"):
@@ -491,6 +477,47 @@ class SocialStore:
             self.conn.execute(
                 f"UPDATE items SET {column}=? WHERE item_id=?",
                 (int(value), item_id),
+            )
+
+    def mark_all_read(
+        self, *, account_ids: list[str] | None = None, read: bool = True
+    ) -> list[str]:
+        """Bulk-set read state across a scope; return the item_ids that changed.
+
+        Scope is all cached items, or -- when ``account_ids`` is given -- just
+        those feeds/accounts (the set of feed subscriptions under a folder, for a
+        per-folder "mark all read"). Returning only the rows whose state actually
+        flipped lets the UI announce an accurate count and offer an exact undo via
+        :meth:`set_read_bulk` (plan xxx.md 3.10.3).
+        """
+        target = int(read)
+        where = "read != ?"
+        params: list[object] = [target]
+        if account_ids is not None:
+            if not account_ids:
+                return []
+            placeholders = ",".join("?" for _ in account_ids)
+            where += f" AND account_id IN ({placeholders})"
+            params.extend(account_ids)
+        with self.conn:
+            changed = [
+                r["item_id"]
+                for r in self.conn.execute(
+                    f"SELECT item_id FROM items WHERE {where}", params
+                ).fetchall()
+            ]
+            if changed:
+                self.conn.execute(f"UPDATE items SET read={target} WHERE {where}", params)
+        return changed
+
+    def set_read_bulk(self, item_ids: list[str], read: bool = True) -> None:
+        """Set read state for an explicit set of items (the undo of a bulk mark)."""
+        if not item_ids:
+            return
+        with self.conn:
+            self.conn.executemany(
+                "UPDATE items SET read=? WHERE item_id=?",
+                [(int(read), iid) for iid in item_ids],
             )
 
     def search_items(self, query: str, *, limit: int = 200) -> list[SocialItem]:
@@ -505,20 +532,35 @@ class SocialStore:
         ).fetchall()
         return [SocialItem.from_row(dict(r)) for r in rows]
 
-    def prune_items(self, *, keep_days: int = 30, protect_flagged: bool = True) -> int:
+    def prune_items(
+        self,
+        *,
+        keep_days: int = 30,
+        protect_flagged: bool = True,
+        account_id: str | None = None,
+    ) -> int:
         """Evict old cached posts. Never touches bookmarked/flagged rows.
 
         Drafts, notes, schedules, folders, and campaigns are separate tables and
-        are never affected (PRD 30). Returns the number of rows removed.
+        are never affected (PRD 30). When ``account_id`` is given, only that
+        account's (feed's) items are considered -- per-feed retention that never
+        evicts starred/kept entries. Returns the number of rows removed.
         """
         cutoff = now_ms() - keep_days * 86_400_000
-        protect = "AND flagged=0 AND bookmarked=0" if protect_flagged else ""
+        clauses = ["fetched_at < ?"]
+        params: list[object] = [cutoff]
+        if protect_flagged:
+            clauses.append("flagged=0 AND bookmarked=0")
+        if account_id is not None:
+            clauses.append("account_id=?")
+            params.append(account_id)
+        where = " AND ".join(clauses)
         with self.conn:
             doomed = [
                 r["item_id"]
                 for r in self.conn.execute(
-                    f"SELECT item_id FROM items WHERE fetched_at < ? {protect}",
-                    (cutoff,),
+                    f"SELECT item_id FROM items WHERE {where}",
+                    tuple(params),
                 ).fetchall()
             ]
             for iid in doomed:
@@ -555,9 +597,7 @@ class SocialStore:
         return draft
 
     def get_draft(self, draft_id: str) -> Draft | None:
-        row = self.conn.execute(
-            "SELECT * FROM drafts WHERE draft_id=?", (draft_id,)
-        ).fetchone()
+        row = self.conn.execute("SELECT * FROM drafts WHERE draft_id=?", (draft_id,)).fetchone()
         return Draft.from_row(dict(row)) if row else None
 
     def list_drafts(self, *, campaign_id: str | None = None) -> list[Draft]:
@@ -567,9 +607,7 @@ class SocialStore:
                 (campaign_id,),
             ).fetchall()
         else:
-            rows = self.conn.execute(
-                "SELECT * FROM drafts ORDER BY updated DESC"
-            ).fetchall()
+            rows = self.conn.execute("SELECT * FROM drafts ORDER BY updated DESC").fetchall()
         return [Draft.from_row(dict(r)) for r in rows]
 
     def delete_draft(self, draft_id: str) -> None:
@@ -599,23 +637,18 @@ class SocialStore:
                 "SELECT * FROM folders WHERE kind=? ORDER BY position, name", (kind,)
             ).fetchall()
         else:
-            rows = self.conn.execute(
-                "SELECT * FROM folders ORDER BY position, name"
-            ).fetchall()
+            rows = self.conn.execute("SELECT * FROM folders ORDER BY position, name").fetchall()
         return [Folder.from_row(dict(r)) for r in rows]
 
     def delete_folder(self, folder_id: str) -> None:
         with self.conn:
             self.conn.execute("DELETE FROM folders WHERE folder_id=?", (folder_id,))
-            self.conn.execute(
-                "DELETE FROM folder_members WHERE folder_id=?", (folder_id,)
-            )
+            self.conn.execute("DELETE FROM folder_members WHERE folder_id=?", (folder_id,))
 
     def add_to_folder(self, folder_id: str, item_id: str) -> None:
         with self.conn:
             pos = self.conn.execute(
-                "SELECT COALESCE(MAX(position), -1) + 1 AS p FROM folder_members "
-                "WHERE folder_id=?",
+                "SELECT COALESCE(MAX(position), -1) + 1 AS p FROM folder_members WHERE folder_id=?",
                 (folder_id,),
             ).fetchone()["p"]
             self.conn.execute(
@@ -659,8 +692,7 @@ class SocialStore:
 
     def notes_for(self, target_type: str, target_id: str) -> list[Note]:
         rows = self.conn.execute(
-            "SELECT * FROM notes WHERE target_type=? AND target_id=? "
-            "ORDER BY updated DESC",
+            "SELECT * FROM notes WHERE target_type=? AND target_id=? ORDER BY updated DESC",
             (target_type, target_id),
         ).fetchall()
         return [Note.from_row(dict(r)) for r in rows]
@@ -687,9 +719,7 @@ class SocialStore:
         return campaign
 
     def list_campaigns(self) -> list[Campaign]:
-        rows = self.conn.execute(
-            "SELECT * FROM campaigns ORDER BY created DESC"
-        ).fetchall()
+        rows = self.conn.execute("SELECT * FROM campaigns ORDER BY created DESC").fetchall()
         return [Campaign.from_row(dict(r)) for r in rows]
 
     # -- publication plans ----------------------------------------------------
@@ -714,9 +744,7 @@ class SocialStore:
         return plan
 
     def get_plan(self, plan_id: str) -> PublicationPlan | None:
-        row = self.conn.execute(
-            "SELECT * FROM plans WHERE plan_id=?", (plan_id,)
-        ).fetchone()
+        row = self.conn.execute("SELECT * FROM plans WHERE plan_id=?", (plan_id,)).fetchone()
         return PublicationPlan.from_row(dict(row)) if row else None
 
     def list_plans(
@@ -731,8 +759,7 @@ class SocialStore:
             params.append(draft_id)
         where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
         rows = self.conn.execute(
-            f"SELECT * FROM plans {where} ORDER BY "
-            "COALESCE(scheduled_for, created)",
+            f"SELECT * FROM plans {where} ORDER BY COALESCE(scheduled_for, created)",
             params,
         ).fetchall()
         return [PublicationPlan.from_row(dict(r)) for r in rows]
@@ -764,16 +791,12 @@ class SocialStore:
         return s
 
     def list_saved_searches(self) -> list[SavedSearch]:
-        rows = self.conn.execute(
-            "SELECT * FROM saved_searches ORDER BY created DESC"
-        ).fetchall()
+        rows = self.conn.execute("SELECT * FROM saved_searches ORDER BY created DESC").fetchall()
         return [SavedSearch.from_row(dict(r)) for r in rows]
 
     def delete_saved_search(self, search_id: str) -> None:
         with self.conn:
-            self.conn.execute(
-                "DELETE FROM saved_searches WHERE search_id=?", (search_id,)
-            )
+            self.conn.execute("DELETE FROM saved_searches WHERE search_id=?", (search_id,))
 
     # -- reading positions ----------------------------------------------------
 
@@ -801,9 +824,7 @@ class SocialStore:
     # doc_id), without adding bespoke tables. ``put_document`` stamps ``updated``;
     # ``ordinal`` is an optional stable sort key the caller controls.
 
-    def put_document(
-        self, kind: str, doc_id: str, data: dict, *, ordinal: int = 0
-    ) -> None:
+    def put_document(self, kind: str, doc_id: str, data: dict, *, ordinal: int = 0) -> None:
         import json as _json
 
         with self.conn:
@@ -846,9 +867,7 @@ class SocialStore:
 
     def delete_document(self, kind: str, doc_id: str) -> None:
         with self.conn:
-            self.conn.execute(
-                "DELETE FROM documents WHERE kind=? AND doc_id=?", (kind, doc_id)
-            )
+            self.conn.execute("DELETE FROM documents WHERE kind=? AND doc_id=?", (kind, doc_id))
 
 
 def _fts_query(query: str) -> str:

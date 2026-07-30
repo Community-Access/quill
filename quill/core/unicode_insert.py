@@ -13,13 +13,17 @@ retired (migration plan Wave N), this module can be removed.
 
 from __future__ import annotations
 
+from quill.core.error_codes import CodedError
+
 __all__ = ["CodepointError", "parse_codepoint"]
 
 _MAX_CODEPOINT = 0x10FFFF
 
 
-class CodepointError(ValueError):
+class CodepointError(CodedError):
     """Raised when a code point string cannot be turned into a character."""
+
+    code = "QUILL-UNICODE-CODEPOINT-INVALID"
 
 
 def parse_codepoint(value: str) -> str:

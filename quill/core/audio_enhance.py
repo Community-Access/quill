@@ -244,6 +244,7 @@ def build_filter_graph(
     optilab_mode: str = "off",
     optilab_input_db: float = 0.0,
     optilab_auto_adapt: int = 0,
+    pipeline_stage: str = "",
 ) -> str:
     """Build the ffmpeg ``-af`` filter graph for the three-band equalizer
     (Bass/Mid/Treble, in dB, each clamped to ``EQ_BAND_MIN_DB``..
@@ -281,6 +282,15 @@ def build_filter_graph(
         filters.append(_NIGHT_MODE_FILTER)
     if _optilab_active(optilab_enabled, optilab_mode):
         filters += _optilab_filters(optilab_mode, optilab_input_db, optilab_auto_adapt)
+    # Audio Studio pipeline steps contributed by enabled Quillins (studio.pipeline).
+    # A caller opts in by naming a stage (the Studio export path); radio callers
+    # leave it "" so their graph is unchanged. The steps' handlers touch no audio
+    # bytes and make no network call -- they return ffmpeg filter fragments the
+    # host appends here. The registry is empty when no Quillins / in Safe Mode.
+    if pipeline_stage:
+        from quill.core.audio_studio import pipeline_registry
+
+        filters += pipeline_registry.filters_for_stage(pipeline_stage)
     return ",".join(filters)
 
 

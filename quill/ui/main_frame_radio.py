@@ -73,6 +73,12 @@ class RadioMixin:
             lambda _e: self._radio_fetch_track_title(),
             self._radio_title_timer,
         )
+        from quill.core.spotify.session import SpotifySession
+
+        #: Hands the radio player a fresh Spotify access token (refreshing the
+        #: stored one as needed) so a spotify: station can play on the Web
+        #: Playback engine. Returns "" until the user connects Spotify.
+        self._spotify_session = SpotifySession()
         self._radio_controller = RadioPlayerController(
             self.frame,
             on_state_changed=self._on_radio_state_changed,
@@ -85,6 +91,7 @@ class RadioMixin:
             on_output_device_error=self._on_radio_output_device_error,
             playback_engine=self._radio_history.playback_engine,
             on_buffering=lambda: self._wx.CallAfter(self._announce, "Buffering..."),
+            spotify_token_provider=self._spotify_session.access_token,
         )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
@@ -1640,6 +1647,7 @@ class RadioMixin:
             on_favorites_changed=self._save_radio_favorites,
             on_open_add_custom=self._radio_open_add_custom,
             on_open_link_finder=self._radio_open_link_finder,
+            on_report_bad_station=getattr(self, "report_bad_station", None),
             show_details=self._radio_history.show_station_details,
             windows=getattr(self, "_windows", None),
         )
@@ -1665,6 +1673,7 @@ class RadioMixin:
             safe_mode=self._safe_mode,
             announce_cb=self._announce,
             on_favorites_changed=self._save_radio_favorites,
+            on_report_bad_station=getattr(self, "report_bad_station", None),
             show_details=self._radio_history.show_station_details,
             windows=getattr(self, "_windows", None),
         )
@@ -1825,3 +1834,67 @@ class RadioMixin:
             self.commands.try_register(
                 command_id, title, handler, self._binding_for(command_id), feature_id="core.radio"
             )
+        # Spotify commands live behind future.spotify (locked_off), so they are
+        # registered but stay hidden until the feature is unlocked.
+        for command_id, title, handler in (
+            ("spotify.connect", "Spotify: Connect to Spotify...", self.open_spotify_connect),
+            ("spotify.browse", "Spotify: Browse Spotify...", self.open_spotify_browse),
+        ):
+            self.commands.try_register(
+                command_id,
+                title,
+                handler,
+                self._binding_for(command_id),
+                feature_id="future.spotify",
+            )
+
+    def open_spotify_connect(self) -> None:
+        """Open the accessible Spotify sign-in dialog (Radio)."""
+        from quill.core.spotify import auth
+
+        try:
+            auth.refuse_in_safe_mode(self._safe_mode)
+        except auth.SpotifyAuthError as error:
+            self._announce(str(error))
+            return
+        from quill.ui.spotify.connect_dialog import SpotifyConnectDialog
+
+        dialog = SpotifyConnectDialog(
+            self.frame,
+            announce=self._announce,
+            task_runner=getattr(self, "_task_manager", None),
+            safe_mode=self._safe_mode,
+        )
+        self._show_modal_dialog(dialog, "Connect to Spotify")
+
+    def open_spotify_browse(self) -> None:
+        """Open the accessible Spotify browse dialog and play the chosen track (Radio)."""
+        from quill.core.spotify import auth, token_store
+
+        try:
+            auth.refuse_in_safe_mode(self._safe_mode)
+        except auth.SpotifyAuthError as error:
+            self._announce(str(error))
+            return
+        tokens = token_store.load_tokens()
+        if tokens.is_empty:
+            self._announce("Connect to Spotify first (Spotify: Connect to Spotify).")
+            return
+        from quill.core.radio.models import RadioStation
+        from quill.core.spotify.client import SpotifyClient
+        from quill.ui.spotify.browse_dialog import BrowseItem, SpotifyBrowseDialog
+
+        client = SpotifyClient(
+            tokens,
+            token_store.load_client_id(),
+            on_tokens_refreshed=token_store.save_tokens,
+        )
+
+        def _play(item: BrowseItem) -> None:
+            station = RadioStation(name=item.label, stream_url=item.uri, source="Spotify")
+            self._radio_controller.play_station(station)
+
+        dialog = SpotifyBrowseDialog(
+            self.frame, client=client, on_play=_play, announce=self._announce, kind="radio"
+        )
+        self._show_modal_dialog(dialog, "Browse Spotify")

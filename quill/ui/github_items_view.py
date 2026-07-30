@@ -18,6 +18,7 @@ from quill.core.github.items_provider import (
     GitHubCommit,
     GitHubItem,
     GitHubRelease,
+    GitHubReleaseAsset,
     GitHubTag,
     GitHubWorkflow,
     GitHubWorkflowRun,
@@ -50,9 +51,14 @@ _ISSUE_COLUMNS = ("number", "type", "state", "title", "author", "updated", "labe
 _BRANCH_COLUMNS = ("name", "protected", "author", "date", "commit")
 _COMMIT_COLUMNS = ("short_sha", "author", "date", "message")
 _TAG_COLUMNS = ("name", "commit_sha")
-_RELEASE_COLUMNS = ("tag", "name", "draft", "prerelease", "created")
+_RELEASE_COLUMNS = ("tag", "name", "downloads", "assets", "created", "draft", "prerelease")
 _WORKFLOW_COLUMNS = ("name", "state", "path")
 _RUN_COLUMNS = ("name", "status", "conclusion", "branch", "event", "run_number")
+
+#: Columns for the per-release asset drill-down (Enter on a release row). Not a
+#: switchable top-level view -- assets belong to a specific release -- so this
+#: is kept out of ``VIEW_COLUMNS`` and applied only while drilled in.
+RELEASE_ASSET_COLUMNS = ("name", "downloads", "size", "updated")
 
 VIEW_COLUMNS: dict[str, tuple[str, ...]] = {
     VIEW_ISSUES: _ISSUE_COLUMNS,
@@ -184,12 +190,25 @@ def _cell(model: object, col: str) -> str:
             return model.tag
         if col == "name":
             return model.name
+        if col == "downloads":
+            return str(model.total_downloads)
+        if col == "assets":
+            return str(model.asset_count)
         if col == "draft":
             return "draft" if model.draft else ""
         if col == "prerelease":
             return "prerelease" if model.prerelease else ""
         if col == "created":
             return model.created_at[:10]
+    if isinstance(model, GitHubReleaseAsset):
+        if col == "name":
+            return model.name
+        if col == "downloads":
+            return str(model.download_count)
+        if col == "size":
+            return model.size_display
+        if col == "updated":
+            return model.updated_at[:10]
     if isinstance(model, GitHubWorkflow):
         if col == "name":
             return model.name
@@ -298,14 +317,50 @@ def model_detail(model: object) -> str:
     if isinstance(model, GitHubTag):
         return f"Tag: {model.name}\nCommit: {model.commit_sha}\nURL: {model.url}"
     if isinstance(model, GitHubRelease):
-        return "\n".join([
+        lines = [
             f"Release: {model.name} ({model.tag})",
             f"Draft: {'Yes' if model.draft else 'No'}",
             f"Prerelease: {'Yes' if model.prerelease else 'No'}",
             f"Created: {model.created_at}",
+            f"Total downloads: {model.total_downloads} across {model.asset_count} asset"
+            f"{'' if model.asset_count == 1 else 's'}",
             f"URL: {model.url}",
+        ]
+        if model.assets:
+            lines += ["", "Downloads by file (most downloaded first):"]
+            lines += [
+                f"  {a.name}: {a.download_count} downloads, {a.size_display}" for a in model.assets
+            ]
+            lines += [
+                "",
+                "Press Enter to open this release's assets, most downloaded first.",
+            ]
+        else:
+            lines += [
+                "",
+                "This release has no downloadable assets. The auto-generated "
+                "Source code (zip/tar.gz) archives are not assets and have no "
+                "download count.",
+            ]
+        lines += [
+            "",
+            "A download count is a lifetime running total of HTTP requests -- not "
+            "unique people (no de-duplication), and with no date breakdown (no "
+            "GitHub API provides one).",
             "",
             model.body or "(no release notes)",
+        ]
+        return "\n".join(lines)
+    if isinstance(model, GitHubReleaseAsset):
+        return "\n".join([
+            f"Asset: {model.name}",
+            f"Downloads: {model.download_count} (lifetime total of HTTP requests, "
+            "not unique people)",
+            f"Size: {model.size_display}",
+            f"Updated: {model.updated_at}",
+            f"Download URL: {model.browser_download_url}",
+            "",
+            "Press Enter to open this file's download URL in your browser.",
         ])
     if isinstance(model, GitHubWorkflow):
         return "\n".join([
@@ -331,7 +386,23 @@ def model_detail(model: object) -> str:
 
 
 def model_url(model: object) -> str:
+    if isinstance(model, GitHubReleaseAsset):
+        return model.browser_download_url
     return getattr(model, "url", "") or ""
+
+
+def release_drill_status(release: GitHubRelease) -> str:
+    """The status line shown while drilled into a release's assets.
+
+    Repeats the correctness caveat (a download is an HTTP request, not a unique
+    person) so it is present wherever the count is read, not just in Details.
+    """
+    n = release.asset_count
+    return (
+        f"{release.tag}: {n} asset{'' if n == 1 else 's'}, "
+        f"{release.total_downloads} total downloads (lifetime HTTP requests, not "
+        "unique people).  Enter=open download  Backspace=back to releases"
+    )
 
 
 def model_label(model: object) -> str:
@@ -345,6 +416,8 @@ def model_label(model: object) -> str:
         return f"tag {model.name}"
     if isinstance(model, GitHubRelease):
         return f"release {model.tag}"
+    if isinstance(model, GitHubReleaseAsset):
+        return f"asset {model.name}"
     if isinstance(model, GitHubWorkflow):
         return f"workflow {model.name}"
     if isinstance(model, GitHubWorkflowRun):
@@ -353,6 +426,7 @@ def model_label(model: object) -> str:
 
 
 __all__ = [
+    "RELEASE_ASSET_COLUMNS",
     "SORT_ORDERS",
     "VIEWS",
     "VIEW_BRANCHES",
@@ -368,6 +442,7 @@ __all__ = [
     "model_label",
     "model_url",
     "parse_repo_reference",
+    "release_drill_status",
     "row_cells",
     "sort_items",
     "view_label",

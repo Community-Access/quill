@@ -27,13 +27,16 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 
+from quill.core.error_codes import CodedError
 from quill.core.vault.sync import Runner
 
 _DEFAULT_TIMEOUT = 30.0
 
 
-class GhBridgeError(RuntimeError):
+class GhBridgeError(CodedError):
     """A `gh`-CLI operation failed, or `gh` itself is not available."""
+
+    code = "QUILL-GITHUB-GHBRIDGE-FAILED"
 
 
 def _run_ok(

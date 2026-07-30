@@ -423,6 +423,9 @@ module = [
     # Optional Nemotron engine (quill[nemotron]); sherpa-onnx imported lazily in
     # providers/nemotron_onnx.py. Ships no type stubs.
     "sherpa_onnx",
+    # PyNaCl (Ed25519 unlock-code verification, quill/core/unlock_codes.py); no stubs.
+    "nacl",
+    "nacl.*",
     # Optional ElevenLabs SDK (quill[elevenlabs]); imported lazily only in the
     # host-owned gateway quill/core/ai/elevenlabs_tts.py (roadmap §4.1).
     "elevenlabs",

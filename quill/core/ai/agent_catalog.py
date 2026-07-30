@@ -43,6 +43,7 @@ from pathlib import Path
 from quill.core.ai.context_builder import ContextScope
 from quill.core.ai.harness import AgentSpec
 from quill.core.ai.permissions import Decision, PermissionCategory, RiskLevel
+from quill.core.error_codes import CodedError
 
 __all__ = [
     "SCHEMA_ID",
@@ -59,6 +60,22 @@ __all__ = [
 ]
 
 SCHEMA_ID = "quill.agent/1"
+
+# Mutating permission categories that must always keep a human in the loop: a
+# hand-edited (or Quillin-supplied) agent file may never grant these ``allow``.
+# This mirrors the GATE the agent-standards lint enforces in
+# ``quill/tools/agent_lint.py`` (``_MUTATING``); it is duplicated here — rather
+# than imported — because ``quill/core`` must not import ``quill/tools``. The two
+# lists must stay in lock-step (a test asserts the schema/lint/catalog agree).
+_MUTATING_PERMISSIONS = frozenset({
+    PermissionCategory.MODIFY_SELECTION.value,
+    PermissionCategory.MODIFY_DOCUMENT.value,
+    PermissionCategory.CREATE_FILE.value,
+    PermissionCategory.GITHUB.value,
+    PermissionCategory.TERMINAL.value,
+    PermissionCategory.RUN_COMMAND.value,
+    PermissionCategory.WEB.value,
+})
 
 _ID_PATTERN = re.compile(r"^[a-z0-9]+([._-][a-z0-9]+)*$")
 _REQUIRED = ("schema", "id", "display_name", "system_prompt")
@@ -78,8 +95,10 @@ _ALLOWED_KEYS = {
 }
 
 
-class AgentSpecError(ValueError):
+class AgentSpecError(CodedError):
     """Raised by :func:`parse_agent` for an invalid agent file; lists all problems."""
+
+    code = "QUILL-AI-AGENTSPEC-INVALID"
 
     def __init__(self, problems: list[str]) -> None:
         self.problems = problems
@@ -149,6 +168,14 @@ def validate_agent(data: object) -> list[str]:
                     problems.append(f"permissions: unknown category {cat!r}.")
                 if decision not in _enum_values(Decision):
                     problems.append(f"permissions[{cat!r}]: unknown decision {decision!r}.")
+                elif cat in _MUTATING_PERMISSIONS and decision == Decision.ALLOW.value:
+                    # Runtime floor (not just the CI lint): a mutating capability
+                    # may never load as `allow`, so a hand-edited agent file cannot
+                    # grant run_command/terminal/github silent-execute rights.
+                    problems.append(
+                        f"permissions[{cat!r}] may not be 'allow' — a mutating action must "
+                        "keep a human in the loop ('ask', 'preview_required', or 'deny')."
+                    )
 
     return problems
 

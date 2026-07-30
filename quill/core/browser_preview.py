@@ -214,7 +214,9 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
         "th,td{border-color:#555;}"
         "}"
         "</style>"
-        '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>'
+        # Only pull the remote MathJax CDN when the document actually has math,
+        # so a plain document makes no third-party network request on preview.
+        f"{_MATHJAX_SCRIPT if contains_math(text) else ''}"
         f"{anchor_script}</head><body>{body}</body></html>"
     )
 
@@ -296,10 +298,49 @@ def _slugify(value: str) -> str:
     return normalized or "preview"
 
 
+# MathJax's default delimiters: ``\( \)`` inline, ``$$`` and ``\[ \]`` display,
+# plus a fenced ```` ```math ```` block. Detecting these lets the preview and HTML
+# export gate the remote MathJax CDN include on a document actually containing
+# math, so a doc with none never triggers the network fetch (privacy/egress).
+_MATH_DELIMITERS_RE = re.compile(r"\\\(|\\\[|\$\$|`{3,}\s*math|~{3,}\s*math", re.IGNORECASE)
+
+_MATHJAX_SCRIPT = (
+    '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>'
+)
+
+
+def contains_math(text: str) -> bool:
+    """Return ``True`` when *text* contains TeX math MathJax would render."""
+    return bool(_MATH_DELIMITERS_RE.search(text))
+
+
+# In-app HTML preview renders in a WebView that executes page script, so an
+# opened .html document is scrubbed before it reaches the pane: <script> blocks,
+# inline event handlers (``on*=...``), and ``javascript:`` URLs are stripped.
+# This is a defensive scrub, not a full HTML parser -- the preview surface never
+# needs to run document script, and there is no CSP on the WebView to fall back
+# on.
+_SCRIPT_BLOCK_RE = re.compile(r"<script\b[^>]*>.*?</script\s*>", re.IGNORECASE | re.DOTALL)
+_SCRIPT_TAG_RE = re.compile(r"</?script\b[^>]*>", re.IGNORECASE)
+_ON_ATTR_RE = re.compile(r"""\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)""", re.IGNORECASE)
+_JS_URL_RE = re.compile(
+    r"""((?:href|src)\s*=\s*)(["']?)\s*javascript:[^"'>\s]*(["']?)""", re.IGNORECASE
+)
+
+
+def _sanitize_html(text: str) -> str:
+    """Strip active content (<script>, on* handlers, javascript: URLs) from HTML."""
+    text = _SCRIPT_BLOCK_RE.sub("", text)
+    text = _SCRIPT_TAG_RE.sub("", text)
+    text = _ON_ATTR_RE.sub("", text)
+    text = _JS_URL_RE.sub(r"\1\2#\3", text)
+    return text
+
+
 def _render_html(text: str) -> str:
     stripped = text.lstrip()
     if stripped.startswith("<"):
-        return text
+        return _sanitize_html(text)
     return f"<pre>{html.escape(text)}</pre>"
 
 

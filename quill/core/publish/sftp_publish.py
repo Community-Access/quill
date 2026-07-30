@@ -13,11 +13,14 @@ import posixpath
 from collections.abc import Callable
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
 from quill.core.publish.destinations import SftpDestination
 
 
-class PublishError(RuntimeError):
+class PublishError(CodedError):
     """An upload failed; the message is speakable."""
+
+    code = "QUILL-PUBLISH-SFTP-FAILED"
 
 
 class PublishCancelled(PublishError):

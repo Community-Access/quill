@@ -2525,7 +2525,10 @@ from the shared weather feature set above.
 3. **Independent distribution and updates.** Its own installer, portable build,
    and update feed. It carries the **same version number as Quill Radio** (2.2.0,
    shared weather code, released together) but a Quill Weather release can go out
-   without a Quill Radio release and vice versa.
+   without a Quill Radio release and vice versa. Quill Weather also participates
+   in the shared **QuillVille Runtime** distribution model, with a full portable
+   edition, a lightweight companion edition, a full (shared-runtime) installer,
+   and a thin installer -- detailed in "Distribution model" below.
 4. **Sibling interoperability.** Quill Weather can launch Quill Radio and QUILL
    (File menu and tray) and is reachable the same way from them; Quill Radio's
    Weather menu offers "Open the Quill Weather App". On one machine the apps
@@ -2548,3 +2551,53 @@ from the shared weather feature set above.
    `quill/ui/app_shell.py` (`_register_tray_hotkey`, `toggle_window_to_tray`)
    with a shared wx-free chord parser in `quill/ui/tray_hotkey.py`, wired for
    Quill Weather in `quill/apps/weather.py`.
+
+### Distribution model: editions and the QuillVille Runtime
+
+Quill Weather ships under the shared **QuillVille Runtime** model used by every
+QuillVille app (QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio).
+
+**The shared runtime.** All QuillVille apps share one Python runtime, the
+QuillVille Runtime, installed once per user and reused by all of them. Install it
+a single time -- through any app or installer that needs it -- and every app
+added afterward starts instantly, with no second copy of Python. The runtime is
+**reference-counted**: each app that depends on it registers a reference, and the
+runtime is removed only when the last app that needs it is uninstalled. This
+keeps total disk use down (one runtime, not one per app) without ever pulling the
+runtime out from under an app that still needs it.
+
+**Editions.** Four downloads are offered for Quill Weather, so the user can trade
+download size against self-containment:
+
+1. **Full portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) --
+   fully self-contained: runs from a USB stick with no installation and no
+   internet, carrying a genuine, unmodified copy of Python. Weather bundles no
+   audio, AI, transcription, braille, or speech-synthesis stacks, so this build
+   is already compact. A `data` folder beside the exe with a `storage-mode.json`
+   marker (`{"mode": "portable"}`) keeps all state on the removable medium.
+2. **Companion edition** (`Quill-Weather-Companion-<version>.zip`, about 2 MB) --
+   feather-light: only the app and its docs, running on the shared QuillVille
+   Runtime. On first launch, if the runtime is not already installed, the app
+   offers to download and install it (about 230 MB, once) with a fully
+   accessible progress bar; afterward this app and every other QuillVille app
+   start instantly.
+3. **Full installer** (`Quill-Weather-Setup-Shared-<version>.exe`) -- installs
+   the shared runtime (if not already present) plus the app, with a Start Menu
+   entry, an uninstaller, and the shared data store.
+4. **Thin installer** (the `-Lite` setup) -- a tiny installer that downloads the
+   shared runtime only if it is not already present, then installs the app.
+
+**Accessible runtime downloads (requirement).** Any time the QuillVille Runtime
+is downloaded -- whether triggered by an installer or by an app's own first
+launch -- the operation MUST present a fully accessible progress bar that works
+with NVDA, JAWS, and Narrator, announcing progress as a spoken percentage. The
+one-time nature of the download (once per user, then reused) MUST be clear to the
+user before it begins.
+
+**Security and antivirus (requirement).** The app's launcher MUST be a genuine,
+tiny native program, and the bundled Python MUST be the official, unmodified
+build. Earlier builds used a renamed and modified copy of Python's `pythonw.exe`
+as the launcher, a pattern some antivirus engines flagged as a false positive;
+that pattern is eliminated. This reduces spurious antivirus detections across the
+whole QuillVille family and complements (but does not replace) the still-planned
+code-signing work.

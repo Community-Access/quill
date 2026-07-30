@@ -14,6 +14,31 @@ def test_read_structured_json_formats_document(tmp_path: Path) -> None:
     assert document.text == '{\n  "a": 1,\n  "b": 2\n}\n'
 
 
+def test_read_structured_malformed_json_falls_back_to_raw_text(tmp_path: Path) -> None:
+    # #1228: opening a malformed .json must not raise JSONDecodeError out of the open
+    # flow. Fall back to the file's raw text so the user can read/repair it, and record
+    # the parse error in metadata instead of crashing.
+    target = tmp_path / "broken.json"
+    raw = '{\n  "a": 1\n  "b": 2\n}\n'  # missing comma between members
+    target.write_text(raw, encoding="utf-8")
+    document = read_structured_document(target)
+    assert document.text == raw
+    assert document.source_metadata["source_kind"] == "text"
+    assert document.source_metadata["quality_score"] == 0
+    assert "JSONDecodeError" in str(document.source_metadata["structured_parse_error"])
+
+
+def test_read_structured_malformed_xml_falls_back_to_raw_text(tmp_path: Path) -> None:
+    # #1228 (same class): a malformed .xml opens as raw text rather than crashing.
+    target = tmp_path / "broken.xml"
+    raw = "<root><a>1</root>"  # unclosed <a>
+    target.write_text(raw, encoding="utf-8")
+    document = read_structured_document(target)
+    assert document.text == raw
+    assert document.source_metadata["source_kind"] == "text"
+    assert "structured_parse_error" in document.source_metadata
+
+
 def test_read_structured_toml_validates_document(tmp_path: Path) -> None:
     target = tmp_path / "sample.toml"
     target.write_text('name = "quill"\n', encoding="utf-8")

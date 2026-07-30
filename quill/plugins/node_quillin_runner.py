@@ -106,6 +106,14 @@ def run_node_command(
     if manifest.main is None:
         raise QuillinError("node Quillin manifest has no 'main' module")
 
+    # Containment: a crafted ``main`` (e.g. "../evil.js") must never let the Node
+    # runner execute a script outside the extension directory. Mirrors the guard
+    # the Python worker/loader apply.
+    directory_resolved = directory.resolve()
+    main_path = (directory_resolved / manifest.main).resolve()
+    if directory_resolved != main_path and directory_resolved not in main_path.parents:
+        raise QuillinError("node Quillin main module escapes the extension directory")
+
     if node_executable is None:
         try:
             from quill.core.node_install import node_executable_path
@@ -118,7 +126,7 @@ def run_node_command(
     handler_name = _handler_for(manifest, command_id)
     config = EngineConfig(
         engine_id=f"quillin.node.{manifest.id}",
-        command=(node_executable, str(directory / manifest.main)),
+        command=(node_executable, str(main_path)),
         enabled=True,
     )
     request = JsonlRequest(

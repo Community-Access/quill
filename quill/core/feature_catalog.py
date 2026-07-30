@@ -8,7 +8,10 @@ semantics are unchanged.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -282,6 +285,17 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         ),
         category="core",
     ),
+    "core.library": FeatureDefinition(
+        "core.library",
+        "Book Library",
+        aliases=("books", "library", "gutenberg", "ebooks", "opds", "read book"),
+        description=(
+            "Search free, accessible book libraries -- Project Gutenberg via the "
+            "Gutendex API and Standard Ebooks / Feedbooks via OPDS -- and open a "
+            "chosen title (plain text or EPUB) directly in QUILL's reader."
+        ),
+        category="core",
+    ),
     "core.notebook": FeatureDefinition(
         "core.notebook",
         "Notebook (Workspace)",
@@ -457,14 +471,13 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "Chat with the Audio Description Project assistant: search "
             "described films, series, and TV schedules by natural language, "
             "with spoken answers and an accessible results table. Calls a "
-            "hosted ADP service over HTTPS. Pre-release: enabled only by a "
-            "signed unlock code."
+            "hosted ADP service over HTTPS. Pre-release: available for testing, "
+            "undocumented in user-facing surfaces until public launch."
         ),
         maturity="experimental",
         privacy="network after confirmation",
         category="future",
         dependencies=("core.app",),
-        locked_off=True,
     ),
     "future.adp_voice_mode": FeatureDefinition(
         "future.adp_voice_mode",
@@ -504,6 +517,25 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         maturity="advanced",
         privacy="network after confirmation",
         category="future",
+    ),
+    "future.spotify": FeatureDefinition(
+        "future.spotify",
+        "Spotify",
+        aliases=("spotify", "spotify connect", "spotify premium"),
+        description=(
+            "Connect a Spotify account to search and browse shows, episodes, and "
+            "music and play them through QUILL's hidden Web Playback engine "
+            "(Spotify Premium required). Sign-in uses OAuth PKCE; playback streams "
+            "DRM audio inside an embedded WebView. Locked off pre-release: reaches "
+            "Spotify's servers, so it is gated behind a one-time network-access "
+            "consent and Safe-Mode refusal, and undocumented in user-facing "
+            "surfaces until public launch."
+        ),
+        maturity="experimental",
+        privacy="network after confirmation",
+        category="future",
+        dependencies=("core.app",),
+        locked_off=True,
     ),
     "future.ai_menu_top_level": FeatureDefinition(
         "future.ai_menu_top_level",
@@ -581,7 +613,19 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
 
 FEATURE_ALIASES: dict[str, str] = {}
 for _feature in FEATURE_DEFINITIONS.values():
-    FEATURE_ALIASES[_feature.id.lower()] = _feature.id
-    FEATURE_ALIASES[_feature.name.lower()] = _feature.id
-    for _alias in _feature.aliases:
-        FEATURE_ALIASES[_alias.lower()] = _feature.id
+    for _alias in (_feature.id, _feature.name, *_feature.aliases):
+        _key = _alias.lower()
+        _existing = FEATURE_ALIASES.get(_key)
+        if _existing is not None and _existing != _feature.id:
+            # A term that legitimately points at two features (e.g. "abbreviation"
+            # -> both the editor and Emmet). Previously the later definition
+            # silently overwrote the earlier one, making resolution depend on
+            # definition order with no signal. Log it so the ambiguity is visible;
+            # last-writer-wins behaviour is preserved to avoid a lookup change.
+            logger.warning(
+                "Feature alias %r maps to both %s and %s (last wins).",
+                _key,
+                _existing,
+                _feature.id,
+            )
+        FEATURE_ALIASES[_key] = _feature.id

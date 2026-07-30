@@ -24,6 +24,7 @@ import io
 import json
 import re
 
+from quill.core.error_codes import CodedError
 from quill.core.speech.chapters import Chapter
 
 #: Export formats accepted by :func:`export_chapter_text`.
@@ -32,8 +33,10 @@ EXPORT_FORMATS: tuple[str, ...] = ("audacity", "timestamps", "cue", "pod2", "csv
 POD2_VERSION = "1.2.0"
 
 
-class ChapterParseError(ValueError):
+class ChapterParseError(CodedError):
     """The text contained no usable chapter markers."""
+
+    code = "QUILL-SPEECH-CHAPTER-PARSE"
 
 
 def format_timestamp(ms: int) -> str:

@@ -189,10 +189,59 @@ def occurrence_start(entry: RecordingScheduleEntry, now: datetime) -> datetime |
         return None
     hour, minute = time_of_day
     local = _local_now(entry, now)
-    if entry.recurrence == "weekly" and local.weekday() != entry.weekday:
+    now_abs = _to_absolute(now)
+    today = local.date()
+    today_start = datetime(today.year, today.month, today.day, hour, minute, tzinfo=local.tzinfo)
+    # A window that opened yesterday can still contain *now* just after midnight
+    # (e.g. 23:30 + 60 min crosses into 00:30). When now is before today's start,
+    # the occurrence in effect is yesterday's, not today's; is_due/remaining_minutes
+    # then bound it against start + duration. Otherwise today's occurrence is in
+    # effect. Weekly matches the weekday of whichever day owns the occurrence.
+    if now_abs >= _to_absolute(today_start):
+        day = today
+        start_local = today_start
+    else:
+        day = today - timedelta(days=1)
+        start_local = datetime(day.year, day.month, day.day, hour, minute, tzinfo=local.tzinfo)
+    if entry.recurrence == "weekly" and day.weekday() != entry.weekday:
         return None
-    start_local = datetime(local.year, local.month, local.day, hour, minute, tzinfo=local.tzinfo)
     return _to_absolute(start_local)
+
+
+def next_occurrence(entry: RecordingScheduleEntry, now: datetime) -> datetime | None:
+    """The next absolute moment *entry* would fire at or after *now*.
+
+    For display ordering only (#1220: the schedule list showed entries in the
+    order they were entered, not the order they occur). Unlike
+    :func:`occurrence_start` this ignores ``enabled``/``last_fired`` and looks
+    *forward* -- a daily entry whose time has already passed today returns
+    tomorrow's occurrence, a weekly entry the next matching weekday within a
+    week. Returns ``None`` only when the entry's time can't be parsed.
+    """
+    zone = _entry_zone(entry)
+    if entry.recurrence == "once":
+        try:
+            target = datetime.fromisoformat(entry.run_at)
+        except ValueError:
+            return None
+        if zone is not None and target.tzinfo is None:
+            target = target.replace(tzinfo=zone)
+        return _to_absolute(target)
+    time_of_day = _time_of_day(entry.run_at)
+    if time_of_day is None:
+        return None
+    hour, minute = time_of_day
+    local = _local_now(entry, now)
+    now_abs = _to_absolute(now)
+    for ahead in range(0, 8):
+        day = local.date() + timedelta(days=ahead)
+        if entry.recurrence == "weekly" and day.weekday() != entry.weekday:
+            continue
+        occ = datetime(day.year, day.month, day.day, hour, minute, tzinfo=local.tzinfo)
+        occ_abs = _to_absolute(occ)
+        if occ_abs >= now_abs:
+            return occ_abs
+    return None
 
 
 def is_due(entry: RecordingScheduleEntry, now: datetime) -> bool:
@@ -214,7 +263,11 @@ def is_due(entry: RecordingScheduleEntry, now: datetime) -> bool:
     now_abs = _to_absolute(now)
     if now_abs < start:
         return False
-    if _today_in_zone(entry, now) == entry.last_fired_date:
+    # Key the once-per-occurrence guard off the occurrence's *own* start date,
+    # not "today": a midnight-crossing window that fired before midnight stamped
+    # yesterday's date, so comparing against today would let it fire a second
+    # time just after 00:00.
+    if _occurrence_date_in_zone(entry, start) == entry.last_fired_date:
         return False
     end = start + timedelta(minutes=max(1, entry.duration_minutes))
     return now_abs < end
@@ -228,6 +281,18 @@ def _today_in_zone(entry: RecordingScheduleEntry, now: datetime) -> str:
     entry even when the machine's local date differs from the entry-zone date.
     """
     return _local_now(entry, now).date().isoformat()
+
+
+def _occurrence_date_in_zone(entry: RecordingScheduleEntry, start: datetime) -> str:
+    """ISO date of an occurrence's *start* in the entry's effective zone.
+
+    The once-per-occurrence guard and the fired-stamp both key off this (rather
+    than "now" / "today") so a window that opened before midnight and is still
+    running afterwards is recognised as the same occurrence and not re-fired.
+    """
+    zone = _entry_zone(entry)
+    local = start.astimezone(zone) if zone is not None else start.astimezone()
+    return local.date().isoformat()
 
 
 def due_entries(
@@ -519,7 +584,15 @@ class RecordingScheduler:
         with self._lock:
             for existing in self.entries:
                 if existing.id == entry.id:
-                    existing.last_fired_date = _today_in_zone(existing, now)
+                    # Stamp the occurrence's own start date so a midnight-crossing
+                    # window is not re-fired after 00:00 (falls back to now's date
+                    # if the occurrence can't be resolved).
+                    start = occurrence_start(existing, now)
+                    existing.last_fired_date = (
+                        _occurrence_date_in_zone(existing, start)
+                        if start is not None
+                        else _today_in_zone(existing, now)
+                    )
                     if existing.recurrence == "once":
                         existing.enabled = False
                     save_schedule(self._data_dir, self.entries)

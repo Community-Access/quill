@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 import regex as regex_module
 
+from quill.core.error_codes import CodedError
 from quill.stability.safe_regex import RegexTimeoutError, safe_finditer, safe_subn
 
 
@@ -16,8 +17,8 @@ class SearchOptions:
     wildcard: bool = False
 
 
-class SearchPatternError(ValueError):
-    pass
+class SearchPatternError(CodedError):
+    code = "QUILL-SEARCH-PATTERN-INVALID"
 
 
 def find_matches(

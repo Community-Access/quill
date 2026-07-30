@@ -128,11 +128,12 @@ def caret_positions_from_session(payload: dict[str, object]) -> list[int]:
         return [0]
     positions: list[int] = []
     for item in documents_payload:
+        # Non-dict items are skipped by documents_from_session(); skip them here
+        # too so the positions list stays index-aligned with the documents list
+        # (appending a 0 for a skipped item would shift every later caret).
         if isinstance(item, dict):
             raw = item.get("caret_position", 0)
             positions.append(int(raw) if isinstance(raw, int) else 0)
-        else:
-            positions.append(0)
     return positions or [0]
 
 

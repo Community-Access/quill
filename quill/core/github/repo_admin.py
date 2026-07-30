@@ -25,6 +25,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
 from quill.core.github.models import RemoteRepository
 
@@ -40,8 +41,10 @@ class ReleaseInfo:
     prerelease: bool = False
 
 
-class GitHubRepoAdminError(RuntimeError):
+class GitHubRepoAdminError(CodedError):
     """A repository admin operation failed (auth, API, or not-found)."""
+
+    code = "QUILL-GITHUB-REPOADMIN-FAILED"
 
 
 def _translate(exc: Exception, *, context: str) -> GitHubRepoAdminError:

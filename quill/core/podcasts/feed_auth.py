@@ -15,10 +15,56 @@ from __future__ import annotations
 
 import base64
 import urllib.parse
+import urllib.request
+from typing import Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 
 _CRED_PREFIX = "quill-podcast-feed:"
+
+
+def _same_origin(url_a: str, url_b: str) -> bool:
+    """True when scheme, host, and port all match (case-insensitive)."""
+    a = urllib.parse.urlsplit(url_a)
+    b = urllib.parse.urlsplit(url_b)
+    return (
+        a.scheme.lower() == b.scheme.lower()
+        and (a.hostname or "").lower() == (b.hostname or "").lower()
+        and a.port == b.port
+    )
+
+
+class _AuthStrippingRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Redirect handler that drops the ``Authorization`` header whenever a
+    redirect crosses origin (scheme/host/port).
+
+    CPython's default handler re-sends every non-``Content-*`` header —
+    including ``Authorization`` — to the redirect target regardless of
+    host, so a ``302`` to a third party would leak private-feed
+    credentials. This restores the guarantee that a feed password is
+    never sent anywhere but the feed's own origin.
+    """
+
+    def redirect_request(
+        self, req: Any, fp: Any, code: int, msg: str, headers: Any, newurl: str
+    ) -> Any:
+        new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new is not None and not _same_origin(req.full_url, newurl):
+            new.headers = {
+                key: value for key, value in new.headers.items() if key.lower() != "authorization"
+            }
+        return new
+
+
+def urlopen_auth_safe(request: Any, *, timeout: float, context: Any = None) -> Any:
+    """``urlopen`` for authenticated feed requests that strips credentials on
+    cross-origin redirects. Use this at every private-feed fetch site
+    instead of the default opener."""
+    handlers: list[Any] = [_AuthStrippingRedirectHandler()]
+    if context is not None:
+        handlers.append(urllib.request.HTTPSHandler(context=context))
+    opener = urllib.request.build_opener(*handlers)
+    return opener.open(request, timeout=timeout)
 
 
 def _cred_name(show_id: str) -> str:
@@ -53,9 +99,26 @@ def basic_auth_header(username: str, password: str) -> str:
 
 
 def _hosts_match(feed_url: str, url: str) -> bool:
-    feed_host = (urllib.parse.urlsplit(feed_url).hostname or "").lower()
-    host = (urllib.parse.urlsplit(url).hostname or "").lower()
-    return bool(feed_host) and feed_host == host
+    """True only when *url* shares the feed's scheme AND host.
+
+    Requiring the scheme to match prevents credentials stored for an
+    ``https`` feed from being attached to an ``http`` request to the same
+    host (a downgrade that would put HTTP Basic on the wire in cleartext).
+    The port is intentionally not compared here: a feed legitimately
+    serves enclosures on a different port of the same host. Cross-origin
+    *redirects* are the attacker-influenced case and are guarded
+    separately, strictly (scheme+host+port), by
+    :class:`_AuthStrippingRedirectHandler`.
+    """
+    feed = urllib.parse.urlsplit(feed_url)
+    target = urllib.parse.urlsplit(url)
+    feed_host = (feed.hostname or "").lower()
+    target_host = (target.hostname or "").lower()
+    return (
+        bool(feed_host)
+        and feed_host == target_host
+        and feed.scheme.lower() == target.scheme.lower()
+    )
 
 
 def auth_for_url(show: PodcastShow, url: str) -> tuple[str, str]:
@@ -76,7 +139,19 @@ def auth_for_url(show: PodcastShow, url: str) -> tuple[str, str]:
 
 
 def auth_header_for_url(show: PodcastShow, url: str) -> str:
-    """A ready ``Authorization`` header value for *url*, or ``""``."""
+    """A ready ``Authorization`` header value for *url*, or ``""``.
+
+    A Quillin-contributed feed-auth provider (Quill Cast, ``podcast.feed.auth``)
+    is consulted first: when one matches *url*'s host and returns a header, it
+    wins. Otherwise the built-in per-show HTTP Basic path is used, so existing
+    private feeds behave exactly as before. The provider returns a header the
+    host attaches -- it makes no network call of its own.
+    """
+    from quill.core.podcasts import feed_auth_registry
+
+    provider_header = feed_auth_registry.auth_header_from_providers(show.feed_url, url)
+    if provider_header:
+        return provider_header
     username, password = auth_for_url(show, url)
     return basic_auth_header(username, password) if username else ""
 

@@ -188,15 +188,19 @@ def migrate(raw: object) -> dict[str, Any]:
 def _accepts(key: str, value: Any) -> bool:
     try:
         Settings.from_dict({key: value})
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return False
     return True
 
 
 def _safe_from_dict(flat: dict[str, Any]) -> Settings:
+    # OverflowError is included alongside (TypeError, ValueError): a JSON ``1e999``
+    # parses to ``float('inf')`` and an ``int(inf)`` cast inside ``from_dict``
+    # raises OverflowError, which -- uncaught -- would crash startup on every
+    # launch. Treating it like any other bad value drops the offending field.
     try:
         return Settings.from_dict(flat)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         # A corrupt value raised on the whole load; keep every field that
         # validates on its own and drop only the offending ones.
         good: dict[str, Any] = {}
@@ -204,7 +208,7 @@ def _safe_from_dict(flat: dict[str, Any]) -> Settings:
             try:
                 Settings.from_dict({key: value})
                 good[key] = value
-            except (TypeError, ValueError):
+            except (TypeError, ValueError, OverflowError):
                 continue
         return Settings.from_dict(good)
 

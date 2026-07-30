@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 import quill.core.podcasts.download_queue as download_queue
+from quill.core.podcasts import feed_auth
 from quill.core.podcasts.download_queue import (
     DownloadError,
     PodcastDownloadQueue,
@@ -53,8 +54,8 @@ def test_fetch_chunked_refuses_non_https(tmp_path: Path) -> None:
 
 def test_fetch_chunked_downloads_full_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        download_queue.urllib.request,
-        "urlopen",
+        feed_auth,
+        "urlopen_auth_safe",
         lambda *a, **k: _FakeResponse([b"hello ", b"world"], content_length=11),
     )
     dest = tmp_path / "ep.mp3"
@@ -74,9 +75,7 @@ def test_fetch_chunked_downloads_full_file(tmp_path: Path, monkeypatch: pytest.M
 def test_fetch_chunked_cancel_event_preempts_before_any_write(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(
-        download_queue.urllib.request, "urlopen", lambda *a, **k: _FakeResponse([b"data"])
-    )
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", lambda *a, **k: _FakeResponse([b"data"]))
     dest = tmp_path / "e.mp3"
     cancel_event = threading.Event()
     cancel_event.set()
@@ -95,8 +94,8 @@ def test_fetch_chunked_pause_mid_transfer_stops_before_next_chunk(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
-        download_queue.urllib.request,
-        "urlopen",
+        feed_auth,
+        "urlopen_auth_safe",
         lambda *a, **k: _FakeResponse([b"chunk1", b"chunk2"]),
     )
     dest = tmp_path / "e.mp3"
@@ -127,7 +126,7 @@ def test_fetch_chunked_resumes_from_partial_file_with_range_header(
         captured_headers.update(dict(request.headers))  # type: ignore[attr-defined]
         return _FakeResponse([b"chunk2"], status=206, content_length=6)
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", fake_urlopen)
     status = _fetch_chunked(
         "https://x/e.mp3",
         dest,
@@ -146,7 +145,7 @@ def test_fetch_chunked_raises_on_network_error(
     def always_fail(*_a: object, **_k: object) -> None:
         raise OSError("connection refused")
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", always_fail)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", always_fail)
     with pytest.raises(DownloadError):
         _fetch_chunked(
             "https://x/e.mp3",
@@ -162,8 +161,8 @@ def test_fetch_chunked_raises_on_network_error(
 
 def test_enqueue_downloads_and_completes(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        download_queue.urllib.request,
-        "urlopen",
+        feed_auth,
+        "urlopen_auth_safe",
         lambda *a, **k: _FakeResponse([b"hello world"], content_length=11),
     )
     completed = threading.Event()
@@ -188,8 +187,8 @@ def test_pause_all_blocks_new_start_until_resume_all(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
-        download_queue.urllib.request,
-        "urlopen",
+        feed_auth,
+        "urlopen_auth_safe",
         lambda *a, **k: _FakeResponse([b"hello"], content_length=5),
     )
     completed = threading.Event()
@@ -216,8 +215,8 @@ def test_pause_item_then_resume_item_completes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
-        download_queue.urllib.request,
-        "urlopen",
+        feed_auth,
+        "urlopen_auth_safe",
         lambda *a, **k: _FakeResponse([b"hello"], content_length=5),
     )
     completed = threading.Event()
@@ -244,9 +243,7 @@ def test_pause_item_then_resume_item_completes(
 
 
 def test_cancel_item_marks_cancelled(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        download_queue.urllib.request, "urlopen", lambda *a, **k: _FakeResponse([b"hello"])
-    )
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", lambda *a, **k: _FakeResponse([b"hello"]))
     queue = PodcastDownloadQueue()
     try:
         queue.pause_all()
@@ -293,7 +290,7 @@ def test_reconnect_retries_and_completes_after_a_dropped_connection(
             raise download_queue.urllib.error.URLError("connection dropped")
         return _FakeResponse([b"hello world"], content_length=11)
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", flaky_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", flaky_urlopen)
     completed = threading.Event()
     reconnects: list[tuple[int, int]] = []
     queue = PodcastDownloadQueue(
@@ -326,7 +323,7 @@ def test_reconnect_disabled_fails_immediately_on_a_dropped_connection(
     def always_fails(*_a: object, **_k: object) -> _FakeResponse:
         raise download_queue.urllib.error.URLError("connection dropped")
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", always_fails)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", always_fails)
     failed = threading.Event()
     queue = PodcastDownloadQueue(
         on_status_changed=lambda item: failed.set() if item.status == "failed" else None,
@@ -353,7 +350,7 @@ def test_reconnect_gives_up_after_max_attempts(
     def always_fails(*_a: object, **_k: object) -> _FakeResponse:
         raise download_queue.urllib.error.URLError("connection dropped")
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", always_fails)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", always_fails)
     failed = threading.Event()
     queue = PodcastDownloadQueue(
         on_status_changed=lambda item: failed.set() if item.status == "failed" else None,
@@ -394,7 +391,7 @@ def test_fetch_chunked_sends_auth_header_when_given(
         captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
         return _FakeResponse([b"ok"], content_length=2)
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", _fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _fake_urlopen)
     status = _fetch_chunked(
         "https://feeds.example.com/e.mp3",
         tmp_path / "e.mp3",
@@ -416,7 +413,7 @@ def test_fetch_chunked_sends_no_auth_header_by_default(
         captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
         return _FakeResponse([], content_length=0)
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", _fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _fake_urlopen)
     _fetch_chunked(
         "https://feeds.example.com/e.mp3",
         tmp_path / "e.mp3",
@@ -436,7 +433,7 @@ def test_enqueue_carries_auth_header_to_the_transfer(
         captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
         return _FakeResponse([b"ok"], content_length=2)
 
-    monkeypatch.setattr(download_queue.urllib.request, "urlopen", _fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _fake_urlopen)
     queue = PodcastDownloadQueue()
     item = queue.enqueue(
         "i1",

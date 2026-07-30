@@ -18,7 +18,7 @@ from xml.etree.ElementTree import Element
 
 from quill.core.document import Document
 from quill.core.epub import load_epub_book, render_epub_book
-from quill.core.safe_archive import open_zip
+from quill.core.safe_archive import check_zip_safety, open_zip
 from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.markitdown_bridge import convert_with_markitdown
 from quill.io.pages import read_pages_document
@@ -48,6 +48,7 @@ def read_structured_document(
         # container as .docx, so the same reader chain handles it. QUILL reads
         # its text (it never executes macros); saving routes through Save As
         # like any other imported binary.
+        _guard_office_zip(path)
         document = _read_docx(path, engine=docx_engine)
         if document is not None:
             if suffix == ".docm":
@@ -77,6 +78,7 @@ def read_structured_document(
     elif suffix == ".rtf":
         return read_rtf_document(path)
     elif suffix == ".pptx":
+        _guard_office_zip(path)
         document = _read_via_markitdown(path, "pptx", fallback_engine="pptx")
         if document is not None:
             return document
@@ -90,34 +92,14 @@ def read_structured_document(
             path, converted_suffix=".pptx", source_kind="ppt", fallback_engine="ppt"
         )
     elif suffix in {".xlsx", ".xls"}:
+        _guard_office_zip(path)
         document = _read_spreadsheet_via_markitdown(path)
         if document is not None:
             return document
         text, metadata = _format_spreadsheet(path)
     else:
         raw_text = path.read_text(encoding=encoding)
-        if suffix == ".json":
-            text = _format_json(raw_text)
-            metadata = {"source_kind": "json", "engine": "json", "quality_score": 100}
-        elif suffix == ".toml":
-            text = _validate_toml(raw_text)
-            metadata = {"source_kind": "toml", "engine": "toml", "quality_score": 100}
-        elif suffix in {".xml"}:
-            text = _format_xml(raw_text)
-            metadata = {"source_kind": "xml", "engine": "xml", "quality_score": 100}
-        elif suffix in {".csv", ".tsv"}:
-            text = _format_delimited(raw_text, delimiter="\t" if suffix == ".tsv" else ",")
-            metadata = {
-                "source_kind": suffix.lstrip("."),
-                "engine": "delimited",
-                "quality_score": 100,
-            }
-        elif suffix == ".ipynb":
-            text = _format_notebook(raw_text)
-            metadata = {"source_kind": "ipynb", "engine": "notebook", "quality_score": 100}
-        else:
-            text = raw_text
-            metadata = {"source_kind": "text", "engine": "plain text", "quality_score": 100}
+        text, metadata = _format_structured_text(raw_text, suffix)
 
     line_ending = "\r\n" if "\r\n" in text else "\n"
     return Document(
@@ -128,6 +110,25 @@ def read_structured_document(
         line_ending=line_ending,
         source_metadata=metadata,
     )
+
+
+def _guard_office_zip(path: Path) -> None:
+    """Reject a decompression bomb before a primary OOXML reader expands it.
+
+    The office formats (.docx/.docm/.pptx/.xlsx) are ZIP containers, and the
+    preferred readers (MarkItDown, openpyxl, python-docx) all expand entries
+    without a size guard of their own. Running :func:`check_zip_safety` up front
+    refuses a crafted archive whose declared expansion exceeds the safe limits
+    before any entry is read, raising
+    :class:`~quill.core.safe_archive.DecompressionBombError`. A non-ZIP file (a
+    legacy .doc/.xls, or a corrupt upload) is left for the downstream reader to
+    diagnose -- only a genuine bomb is refused here.
+    """
+    try:
+        with zipfile.ZipFile(path) as archive:
+            check_zip_safety(archive)
+    except (zipfile.BadZipFile, OSError):
+        return
 
 
 def _read_via_markitdown(
@@ -229,6 +230,7 @@ def _read_spreadsheet_via_libreoffice(path: Path) -> Document | None:
             )
             if not converted_path.exists():
                 return None
+            _guard_office_zip(converted_path)
             try:
                 from openpyxl import load_workbook  # type: ignore[import-not-found]
             except ImportError:
@@ -291,10 +293,11 @@ def _read_legacy_office_via_libreoffice(
 
 def _format_spreadsheet(path: Path) -> tuple[str, dict[str, object]]:
     # Detect ZIP-level corruption before attempting openpyxl so the "corrupted"
-    # message reaches the user regardless of whether openpyxl is installed.
+    # message reaches the user regardless of whether openpyxl is installed, and
+    # refuse a decompression bomb (check_zip_safety) before openpyxl expands it.
     try:
-        with zipfile.ZipFile(path):
-            pass
+        with zipfile.ZipFile(path) as archive:
+            check_zip_safety(archive)
     except zipfile.BadZipFile:
         return _corrupt_spreadsheet_text(path)
 
@@ -443,6 +446,44 @@ def _format_pdf(path: Path, *, password: str | None = None) -> tuple[str, dict[s
         "markitdown_used": True,
     })
     return markitdown_document.text, metadata
+
+
+def _format_structured_text(raw_text: str, suffix: str) -> tuple[str, dict[str, object]]:
+    """Pretty-print / validate a structured text file, falling back to raw on failure.
+
+    A malformed structured file (invalid JSON, TOML, XML, CSV, or notebook) must never
+    crash the open flow — the user asked to *see* the file, most often precisely because
+    it is broken and they want to read or repair it. When the format-specific parser
+    raises, we return the file's raw text unchanged with a ``structured_parse_error``
+    note in the metadata instead of letting the exception propagate (#1228).
+    """
+    formatters: dict[str, tuple[str, str, object]] = {
+        ".json": ("json", "json", lambda t: _format_json(t)),
+        ".toml": ("toml", "toml", lambda t: _validate_toml(t)),
+        ".xml": ("xml", "xml", lambda t: _format_xml(t)),
+        ".csv": ("csv", "delimited", lambda t: _format_delimited(t, delimiter=",")),
+        ".tsv": ("tsv", "delimited", lambda t: _format_delimited(t, delimiter="\t")),
+        ".ipynb": ("ipynb", "notebook", lambda t: _format_notebook(t)),
+    }
+    entry = formatters.get(suffix)
+    if entry is None:
+        return raw_text, {"source_kind": "text", "engine": "plain text", "quality_score": 100}
+    source_kind, engine, formatter = entry
+    try:
+        text = formatter(raw_text)  # type: ignore[operator]
+    except (ValueError, SyntaxError, csv.Error) as exc:
+        # ValueError covers json.JSONDecodeError and tomllib.TOMLDecodeError;
+        # SyntaxError covers ElementTree's ParseError; csv.Error covers delimited parsing.
+        return (
+            raw_text,
+            {
+                "source_kind": "text",
+                "engine": "plain text",
+                "quality_score": 0,
+                "structured_parse_error": f"{type(exc).__name__}: {exc}",
+            },
+        )
+    return text, {"source_kind": source_kind, "engine": engine, "quality_score": 100}
 
 
 def _format_json(text: str) -> str:

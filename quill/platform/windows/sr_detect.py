@@ -68,6 +68,12 @@ def narrator_event_present() -> bool:
     """
     try:
         kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        # A HANDLE is pointer-sized (64-bit on Win64); the default c_int restype
+        # would truncate it, so declare the real signatures before calling.
+        kernel32.OpenEventW.restype = wintypes.HANDLE
+        kernel32.OpenEventW.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.LPCWSTR)
+        kernel32.CloseHandle.restype = wintypes.BOOL
+        kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
         handle = kernel32.OpenEventW(_SYNCHRONIZE, False, "NarratorRunning")
         if handle:
             kernel32.CloseHandle(handle)

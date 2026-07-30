@@ -71,6 +71,12 @@ _RAW_FALLBACK_EXT = "mka"
 #: anything else falls back to ``"error"``. Debug mode uses ``"verbose"``.
 _FFMPEG_LOGLEVELS = frozenset({"quiet", "error", "warning", "info", "verbose", "debug"})
 
+#: Default ffmpeg ``-rw_timeout`` for network recordings (#1222): abort a read
+#: that stalls this long so a half-open socket can't wedge the recorder. Long
+#: enough to ride out ordinary rebuffering, short enough to detect a dead stream
+#: promptly and hand off to the reconnect path.
+_DEFAULT_RW_TIMEOUT_SECONDS = 30
+
 
 def _sanitize_filename_component(text: str) -> str:
     """Strip characters that are invalid in a filename on any of QUILL's
@@ -92,19 +98,29 @@ def build_filename(pattern: str, *, station: str, when: datetime) -> str:
     return sanitized or "recording"
 
 
-def uniquify(path: Path) -> Path:
+def uniquify(path: Path, reserved: set[Path] | None = None) -> Path:
     """Return a path that does not yet exist, appending ``" (2)"``, ``" (3)"``
     before the extension (R4/13.2). Replaces the old unconditional ``-y``
     overwrite, so a user pattern without ``{time}`` no longer silently destroys
-    an earlier recording of the same name."""
-    if not path.exists():
+    an earlier recording of the same name.
+
+    ``reserved`` is an optional set of paths that are *about to* be written but do
+    not exist on disk yet (a recording still starting up). A path in it is treated
+    as taken, so two concurrent same-name recordings resolve to distinct names
+    even before either file exists -- closing the check-then-write race."""
+    taken = reserved if reserved is not None else set()
+
+    def _free(candidate: Path) -> bool:
+        return not candidate.exists() and candidate not in taken
+
+    if _free(path):
         return path
     stem = path.stem
     suffix = path.suffix
     parent = path.parent
     for n in range(2, 1000):
         candidate = parent / f"{stem} ({n}){suffix}"
-        if not candidate.exists():
+        if _free(candidate):
             return candidate
     # Pathological fallback (999 same-name files): keep the original; -y is gone
     # so ffmpeg would refuse to overwrite, but we never expect to reach here.
@@ -120,6 +136,7 @@ def build_record_command(
     bitrate_kbps: int,
     duration_seconds: int,
     reconnect_delay_max: int = 0,
+    rw_timeout_seconds: int = _DEFAULT_RW_TIMEOUT_SECONDS,
     filter_graph: str = "",
     user_agent: str = "",
     loglevel: str = "error",
@@ -147,6 +164,17 @@ def build_record_command(
     ``"error"`` keeps the captured stderr quiet; debug mode passes ``"verbose"``
     so the recording's connection and codec decisions land in ``quill.log``. An
     unrecognized value falls back to ``"error"``.
+
+    ``rw_timeout_seconds`` (#1222) sets ffmpeg's ``-rw_timeout`` I/O read timeout
+    for http(s) inputs, so a *stalled* connection -- a half-open socket where the
+    stream neither delivers data nor errors -- makes ffmpeg abort and exit
+    instead of blocking in ``recv()`` forever. Without it, a dropped network that
+    leaves the socket half-open left the recorder wedged: still "recording" but
+    advancing nothing, and never reaching the reconnect/finalize path (which only
+    runs once ffmpeg exits). A timeout error is transient, so the recorder then
+    reconnects (or, with reconnect off, finalizes the partial) -- "continue or
+    fail as necessary". ``0`` disables it. It never trips on a healthy stream,
+    whose reads complete continuously; only a genuine stall exceeds the window.
     """
     level = loglevel if loglevel in _FFMPEG_LOGLEVELS else "error"
     args = [ffmpeg, "-hide_banner", "-loglevel", level]
@@ -155,6 +183,10 @@ def build_record_command(
         # Identify as Quill Radio in the station's listener logs instead of the
         # default "Lavf" (quill-radio #6). Input option, so it goes before -i.
         args.extend(["-user_agent", user_agent])
+    if is_http and rw_timeout_seconds > 0:
+        # -rw_timeout is in MICROSECONDS and applies to the network read, so a
+        # silent stall (not just a clean disconnect) is detected and aborted.
+        args.extend(["-rw_timeout", str(int(rw_timeout_seconds) * 1_000_000)])
     if reconnect_delay_max > 0 and stream_url.lower().startswith(("http://", "https://")):
         args.extend([
             "-reconnect",

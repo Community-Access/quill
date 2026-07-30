@@ -1444,6 +1444,7 @@ class MenuBuilderMixin:
             self._id_insert_emoji,
             self._menu_label(_("Insert &Emoji..."), "edit.insert_emoji"),
         )
+        self._id_new_tab = wx.NewIdRef()  # #1246: Ctrl+T new document tab
         self._id_next_document = wx.NewIdRef()
         self._id_previous_document = wx.NewIdRef()
         # Accelerator-only ids for Go to Document 1..10 (Alt+1..Alt+9, Alt+0).
@@ -1451,6 +1452,10 @@ class MenuBuilderMixin:
         self._id_go_to_document = [wx.NewIdRef() for _ in range(10)]
         self._id_close_other_documents = wx.NewIdRef()
         window_menu = wx.Menu()
+        window_menu.Append(
+            self._id_new_tab,
+            self._menu_label(_("New &Tab"), "window.new_document_tab"),
+        )
         window_menu.Append(
             self._id_next_document,
             self._menu_label(_("&Next Document"), "window.next_document"),
@@ -2298,7 +2303,8 @@ class MenuBuilderMixin:
         # Media (Internet Radio, Podcasts) -------------------------------------
         radio_enabled = self._feature_enabled("core.radio")
         podcasts_enabled = self._feature_enabled("core.podcasts")
-        if radio_enabled or podcasts_enabled:
+        library_enabled = self._feature_enabled("core.library")
+        if radio_enabled or podcasts_enabled or library_enabled:
             media_menu = wx.Menu()
         if radio_enabled:
             id_radio_browse = wx.NewIdRef()
@@ -2574,6 +2580,14 @@ class MenuBuilderMixin:
                 lambda _e: self.podcast_resume_all_downloads(),
                 id=id_podcasts_resume_downloads,
             )
+        if library_enabled:
+            if radio_enabled or podcasts_enabled:
+                media_menu.AppendSeparator()
+            id_library_open = wx.NewIdRef()
+            media_menu.Append(
+                id_library_open, self._menu_label(_("&Book Library..."), "library.open")
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_library_dialog(), id=id_library_open)
         if radio_enabled or podcasts_enabled:
             media_menu.AppendSeparator()
             id_sleep_timer = wx.NewIdRef()
@@ -2583,7 +2597,7 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=id_sleep_timer
             )
-            self._append_adp_media_items(media_menu)
+        if radio_enabled or podcasts_enabled or library_enabled:
             tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------
@@ -3250,6 +3264,13 @@ class MenuBuilderMixin:
         menu_bar.Append(search_menu, _("&Search"))
         menu_bar.Append(tools_menu, _("&Tools"))
         menu_bar.Append(ai_menu, _("&AI"))
+        # Pre-release top-level Audio Description Project menu, promoted out of
+        # Tools > Media so QUILL matches the companion apps (Quill Radio, QUILL
+        # Cast). Present by default (see ``_build_adp_menu``); like the AI and
+        # QuillVille menus it is conditional and stays out of ``_TOP_MENU_DEFS``.
+        adp_menu = self._build_adp_menu()
+        if adp_menu is not None:
+            menu_bar.Append(adp_menu, _("A&udio Description Project"))
         menu_bar.Append(window_menu, _("&Window"))
         # The standard QuillVille cross-app switcher, just before Help -- the
         # same menu every QuillVille app carries.

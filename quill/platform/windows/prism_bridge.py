@@ -151,17 +151,51 @@ def reset_tts_engine_for_tests() -> None:
 
 
 def flush_tts_for_tests(timeout: float = 2.0) -> None:
-    """Block until the TTS worker has processed all queued messages. Test-only."""
-    _tts_queue.join()
+    """Block until the TTS worker has processed all queued messages. Test-only.
+
+    Honors *timeout*: :meth:`queue.Queue.join` has no timeout of its own, so if
+    the worker never drains the queue this returns after *timeout* seconds
+    instead of hanging the test run.
+    """
+    deadline = _time.monotonic() + timeout
+    with _tts_queue.all_tasks_done:
+        while _tts_queue.unfinished_tasks:
+            remaining = deadline - _time.monotonic()
+            if remaining <= 0:
+                return
+            _tts_queue.all_tasks_done.wait(remaining)
 
 
 # ------------------------------------------------------------------
 # Non-blocking TTS worker (fix #52: speech must not block the UI thread)
 # ------------------------------------------------------------------
 
-_tts_queue: _queue.Queue[str | None] = _queue.Queue()
+# SAPI SpVoice.Speak flag: treat the text as plain, not XML markup (#doc-content).
+_SVSF_IS_NOT_XML = 16
+
+# Bound the queue so a wedged/slow SAPI worker cannot let announcements pile up
+# without limit (each is a live document-derived string). When full we drop the
+# oldest queued announcement rather than block the UI thread — the newest status
+# is the one worth speaking.
+_TTS_QUEUE_MAXSIZE = 128
+_tts_queue: _queue.Queue[str | None] = _queue.Queue(maxsize=_TTS_QUEUE_MAXSIZE)
 _tts_worker_started = False
 _tts_worker_lock = threading.Lock()
+
+
+def _enqueue_tts(message: str) -> None:
+    """Queue *message* for the worker, dropping the oldest item when full."""
+    while True:
+        try:
+            _tts_queue.put_nowait(message)
+            return
+        except _queue.Full:
+            try:
+                _tts_queue.get_nowait()
+                _tts_queue.task_done()
+            except _queue.Empty:
+                # Drained concurrently between the Full and here; retry the put.
+                continue
 
 
 def _ensure_tts_worker() -> None:
@@ -203,7 +237,11 @@ def _tts_worker_loop() -> None:
             try:
                 # Synchronous Speak on this dedicated worker thread; the queue
                 # already keeps announcements off the UI thread.
-                voice.Speak(msg, 0)
+                # SVSFIsNotXML (16): announcements are derived from document
+                # content and may begin with '<'. The default (0) makes SAPI
+                # parse them as XML markup, so a line like "<tag>" would be
+                # swallowed or mis-spoken; this flag forces plain-text speaking.
+                voice.Speak(msg, _SVSF_IS_NOT_XML)
             except Exception:  # noqa: BLE001
                 pass
         _tts_queue.task_done()
@@ -368,7 +406,7 @@ class AnnouncementEngine:
                 # it on the caller (the UI thread) would block for that long on
                 # the first announcement of the session.
                 _ensure_tts_worker()
-                _tts_queue.put_nowait(message)
+                _enqueue_tts(message)
                 self._state = replace(
                     self._state,
                     active_backend="speech",

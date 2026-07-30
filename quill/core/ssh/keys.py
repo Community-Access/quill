@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
 from quill.core.ssh.putty_key import load_ppk, looks_like_ppk
 
 _SSHCOM_MARKERS = (
@@ -20,8 +21,10 @@ _SSHCOM_MARKERS = (
 )
 
 
-class KeyFormatError(ValueError):
+class KeyFormatError(CodedError):
     """Raised when a private key file cannot be loaded."""
+
+    code = "QUILL-SSH-KEY-FORMAT"
 
 
 def looks_like_sshcom(text: str) -> bool:

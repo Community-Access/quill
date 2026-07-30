@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+from quill.ui.keybinding_parse import KeybindingParseMixin
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 
@@ -30,7 +31,10 @@ _FAKE_WX = SimpleNamespace(
 )
 
 
-class _Stub(KeymapEditorMixin, QuillKeyMixin):
+class _Stub(KeymapEditorMixin, QuillKeyMixin, KeybindingParseMixin):
+    # KeybindingParseMixin is where the three pure parsers (_is_bare_modifier_key,
+    # _parse_keybinding, _parse_chord_second_key) now live -- shared by MainFrame
+    # and the standalone app frames.
     def __init__(self) -> None:
         self._wx = _FAKE_WX
 

@@ -129,13 +129,137 @@ _DEFAULTS: dict[str, Capabilities] = {
         max_alt_text=0,
         max_poll_options=0,
     ),
+    "rss": Capabilities(
+        network="rss",
+        char_limit=0,
+        visibilities=("public",),
+        supports_quote=False,
+        supports_edit=False,
+        supports_delete=False,  # read-only: you cannot delete someone's post
+        supports_polls=False,
+        supports_native_scheduling=False,
+        supports_content_warnings=False,
+        supports_thread_gates=False,
+        supports_bookmarks=True,  # star / save-for-later maps to a local bookmark
+        supports_lists=False,
+        supports_custom_feeds=False,
+        supports_search=True,
+        supports_filters=True,
+        supports_video=True,  # feeds can carry video enclosures
+        supports_direct_messages=False,
+        max_media_attachments=0,  # you cannot attach media to a (non-existent) post
+        max_alt_text=0,
+        max_poll_options=0,
+    ),
+    "lemmy": Capabilities(
+        network="lemmy",
+        char_limit=10000,
+        visibilities=("public",),
+        supports_quote=False,
+        supports_edit=False,
+        supports_delete=False,
+        supports_polls=False,
+        supports_native_scheduling=False,
+        supports_content_warnings=False,
+        supports_thread_gates=False,
+        supports_bookmarks=True,  # local save
+        supports_lists=False,
+        supports_custom_feeds=False,
+        supports_search=True,
+        supports_filters=True,
+        supports_video=True,
+        supports_direct_messages=False,
+        max_media_attachments=0,  # read-only in this version
+        max_alt_text=0,
+        max_poll_options=0,
+    ),
+    "opds": Capabilities(
+        network="opds",
+        char_limit=0,
+        visibilities=("public",),
+        supports_quote=False,
+        supports_edit=False,
+        supports_delete=False,
+        supports_polls=False,
+        supports_native_scheduling=False,
+        supports_content_warnings=False,
+        supports_thread_gates=False,
+        supports_bookmarks=True,
+        supports_lists=False,
+        supports_custom_feeds=False,
+        supports_search=True,
+        supports_filters=True,
+        supports_video=False,
+        supports_direct_messages=False,
+        max_media_attachments=0,
+        max_alt_text=0,
+        max_poll_options=0,
+    ),
+    "hackernews": Capabilities(
+        network="hackernews",
+        char_limit=0,
+        visibilities=("public",),
+        supports_quote=False,
+        supports_edit=False,
+        supports_delete=False,
+        supports_polls=False,
+        supports_native_scheduling=False,
+        supports_content_warnings=False,
+        supports_thread_gates=False,
+        supports_bookmarks=True,
+        supports_lists=False,
+        supports_custom_feeds=False,
+        supports_search=True,
+        supports_filters=True,
+        supports_video=False,
+        supports_direct_messages=False,
+        max_media_attachments=0,
+        max_alt_text=0,
+        max_poll_options=0,
+    ),
+    "telegram": Capabilities(
+        network="telegram",
+        char_limit=4096,
+        visibilities=("public",),
+        supports_quote=False,
+        supports_edit=False,
+        supports_delete=False,
+        supports_polls=False,
+        supports_native_scheduling=False,
+        supports_content_warnings=False,
+        supports_thread_gates=False,
+        supports_bookmarks=True,  # local save
+        supports_lists=False,
+        supports_custom_feeds=False,
+        supports_search=True,
+        supports_filters=True,
+        supports_video=True,
+        supports_direct_messages=False,
+        max_media_attachments=0,  # read-only in this version
+        max_alt_text=0,
+        max_poll_options=0,
+    ),
     "mock": Capabilities(network="mock"),
 }
+
+# Mastodon-API-compatible fediverse servers reuse the Mastodon adapter and its
+# capability baseline (plan xxx.md 2.3).
+MASTODON_COMPATIBLE: tuple[str, ...] = (
+    "pixelfed",
+    "gotosocial",
+    "firefish",
+    "sharkey",
+    "iceshrimp",
+)
 
 
 def default_for(network: str) -> Capabilities:
     """Baseline capabilities for a network, before any live probe."""
-    return _DEFAULTS.get(network, Capabilities(network=network))
+    if network in _DEFAULTS:
+        return _DEFAULTS[network]
+    if network in MASTODON_COMPATIBLE:
+        return _DEFAULTS["mastodon"].merge(network=network)
+    return Capabilities(network=network)
 
 
 class CapabilityRegistry:

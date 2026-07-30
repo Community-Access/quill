@@ -18,7 +18,13 @@ Two accessibility details worth calling out:
 
 from __future__ import annotations
 
-from quill.ui.github_items_view import VIEW_BRANCHES, VIEW_WORKFLOWS, row_cells, view_label
+from quill.ui.github_items_view import (
+    VIEW_BRANCHES,
+    VIEW_RELEASES,
+    VIEW_WORKFLOWS,
+    row_cells,
+    view_label,
+)
 
 
 class GitHubQuickFilterMixin:
@@ -44,13 +50,23 @@ class GitHubQuickFilterMixin:
             ]
         self._populate_list()
         count = len(self._rows)
-        noun = view_label(self._view)
+        drilling_assets = self._view == VIEW_RELEASES and getattr(self, "_drill_release", None)
+        noun = "asset" if drilling_assets else view_label(self._view)
         prefix = f"search '{self._search_query}': " if self._search_query else ""
         if self._quick_filter_query:
             prefix += f"filter '{self._quick_filter_query}': "
         view_hint = "  Ctrl+Shift+B=compare branches" if self._view == VIEW_BRANCHES else ""
         if self._view == VIEW_WORKFLOWS:
             view_hint = "  Enter=run on branch"
+        if drilling_assets:
+            rel = self._drill_release
+            view_hint = (
+                f"  {rel.total_downloads} downloads in {rel.tag} (lifetime HTTP "
+                "requests, not unique people)  Enter=open download  Backspace=back"
+            )
+        elif self._view == VIEW_RELEASES:
+            total = sum(getattr(model, "total_downloads", 0) for model in self._rows)
+            view_hint = f"  {total} total downloads across loaded releases.  Enter=asset breakdown"
         self._set_status(
             f"{self._repo} - {prefix}{count} {noun}{'' if count == 1 else 's'}. "
             "Enter=open/drill  Ctrl+R=refresh  Ctrl+O=browser  Ctrl+G=go to  "

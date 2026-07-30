@@ -15,8 +15,13 @@ standalone/
   radio/            Quill Radio          -> quill.apps.radio
   weather/          Quill Weather        -> quill.apps.weather   (2.2.0, paired with radio)
   cast/             QUILL Cast           -> quill.apps.podcasts
-  audio-studio/     Quill Audio Studio   -> quill.apps.studio   (see note)
+  studio/           Quill Audio Studio   -> quill.apps.studio   (see note)
+  runtime/          QuillVille Runtime   -> shared CPython used by every app
 ```
+
+Two more folders are **not** build shells of the kind described below:
+`beacon/` and `social/` (and the macOS radio port `radio-mac/`) hold apps whose
+code is not yet in the `quill` package — see "Not yet migrated" at the end.
 
 Per folder:
 - `launcher.py` + `quill_<product>/__init__.py` — PyInstaller entry point.
@@ -60,7 +65,7 @@ rules (never delete a live updater-target repo; archive instead).
 
 ## Audio Studio
 
-`audio-studio/` is recreated from the radio template (Audio Studio was folded
+`studio/` is recreated from the radio template (Audio Studio was folded
 into `quill.apps.studio` but never shipped, so it has no wrapper repo and no
 users). It builds the same way once its icon and product docs are in place.
 

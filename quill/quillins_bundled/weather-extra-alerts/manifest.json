@@ -1,0 +1,23 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.weatherextraalerts",
+  "name": "Weather Extra Alerts",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Contributes an extra weather alert source to Quill Weather's alert watch, returning a demo advisory from the Quillin's own storage. Sample of the weather.alerts capability.",
+  "license": "MIT",
+  "categories": ["integration"],
+  "targets": ["weather"],
+  "capabilities": ["weather.alerts", "storage"],
+  "main": "extension.py",
+  "contributes": {
+    "alert_sources": [
+      {
+        "id": "ext.weatherextraalerts.source",
+        "handler": "extra_alerts",
+        "interval_seconds": 300,
+        "description": "Returns a demo community advisory (no network); a real source would read a regional feed the user configured."
+      }
+    ]
+  }
+}

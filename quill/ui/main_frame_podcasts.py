@@ -49,6 +49,12 @@ class PodcastsMixin:
             app_data_dir()
         )
         self._podcast_history_key: tuple[str, str] = ("", "")
+        from quill.core.spotify.session import SpotifySession
+
+        #: Hands the podcast player a fresh Spotify access token so a
+        #: spotify:episode: can play on the Web Playback engine; "" until the
+        #: user connects Spotify.
+        self._spotify_session = SpotifySession()
         self._podcast_controller = PodcastPlayerController(
             self.frame,
             on_state_changed=self._on_podcast_state_changed,
@@ -56,6 +62,7 @@ class PodcastsMixin:
             on_position_checkpoint=self._on_podcast_position_checkpoint,
             before_play=self._stop_radio_before_podcast,
             on_enhance_error=self._on_podcast_enhance_error,
+            spotify_token_provider=self._spotify_session.access_token,
         )
         settings = self._podcast_library.settings
         self._podcast_controller.set_enhancement(
@@ -987,3 +994,73 @@ class PodcastsMixin:
                 self._binding_for(command_id),
                 feature_id="core.podcasts",
             )
+        # Spotify podcast commands live behind future.spotify (locked_off), so
+        # they register but stay hidden until the feature is unlocked.
+        for command_id, title, handler in (
+            ("spotify.connect", "Spotify: Connect to Spotify...", self.open_spotify_connect),
+            ("spotify.browse", "Spotify: Browse Spotify Podcasts...", self.open_spotify_browse),
+        ):
+            self.commands.try_register(
+                command_id,
+                title,
+                handler,
+                self._binding_for(command_id),
+                feature_id="future.spotify",
+            )
+
+    def open_spotify_connect(self) -> None:
+        """Open the accessible Spotify sign-in dialog (Cast)."""
+        from quill.core.spotify import auth
+
+        try:
+            auth.refuse_in_safe_mode(self._safe_mode)
+        except auth.SpotifyAuthError as error:
+            self._announce(str(error))
+            return
+        from quill.ui.spotify.connect_dialog import SpotifyConnectDialog
+
+        dialog = SpotifyConnectDialog(
+            self.frame,
+            announce=self._announce,
+            task_runner=getattr(self, "_task_manager", None),
+            safe_mode=self._safe_mode,
+        )
+        self._show_modal_dialog(dialog, "Connect to Spotify")
+
+    def open_spotify_browse(self) -> None:
+        """Browse Spotify podcasts and play the chosen episode (Cast)."""
+        from quill.core.spotify import auth, token_store
+
+        try:
+            auth.refuse_in_safe_mode(self._safe_mode)
+        except auth.SpotifyAuthError as error:
+            self._announce(str(error))
+            return
+        tokens = token_store.load_tokens()
+        if tokens.is_empty:
+            self._announce("Connect to Spotify first (Spotify: Connect to Spotify).")
+            return
+        from quill.core.spotify.client import SpotifyClient
+        from quill.ui.spotify.browse_dialog import BrowseItem, SpotifyBrowseDialog
+
+        client = SpotifyClient(
+            tokens,
+            token_store.load_client_id(),
+            on_tokens_refreshed=token_store.save_tokens,
+        )
+
+        def _play(item: BrowseItem) -> None:
+            # Play the spotify:episode: URI directly through the podcast player,
+            # whose _start_load routes a spotify: source to the Spotify engine.
+            self._podcast_controller.play_episode(
+                show_id="spotify",
+                episode_guid=item.uri,
+                title=item.label,
+                source=item.uri,
+            )
+            self._announce(f"Playing {item.label}")
+
+        dialog = SpotifyBrowseDialog(
+            self.frame, client=client, on_play=_play, announce=self._announce, kind="cast"
+        )
+        self._show_modal_dialog(dialog, "Browse Spotify Podcasts")

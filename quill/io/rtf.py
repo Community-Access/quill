@@ -741,6 +741,12 @@ def write_rtf_document(document: Document, path: Path | None = None) -> Path:
             )
     except Exception:  # noqa: BLE001 - header export must never break a save
         pass
-    target_path.write_text(rtf, encoding=_RTF_ENCODING, errors="replace")
+    from quill.core.storage import write_bytes_atomic
+
+    # Write atomically (temp + os.replace): a crash or disk-full mid-save must
+    # leave the previous file intact, never a truncated one. Encode with the RTF
+    # code page first (errors="replace" keeps the old writer's out-of-codepage
+    # robustness) and write the bytes atomically.
+    write_bytes_atomic(target_path, rtf.encode(_RTF_ENCODING, errors="replace"))
     document.mark_saved(target_path)
     return target_path

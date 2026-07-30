@@ -22,6 +22,7 @@ from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Weather"
@@ -55,7 +56,7 @@ WEATHER_AREAS: tuple[AppArea, ...] = (
 )
 
 
-class WeatherAppFrame(AppShellFrame, WeatherMixin):
+class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
     """A tray-resident window whose job is to keep the alert watch running."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
@@ -67,6 +68,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self._windows = WindowManager(wx)
         self._build_menu_bar()
         self._build_main_panel()
+        self._register_adp_commands()  # palette/keybinding parity for Ask ADP
         self._ensure_tray_icon(self._build_weather_tray_menu, tooltip=_TITLE)
         self._register_tray_hotkey("Ctrl+Alt+Shift+W")  # show/hide Weather to the tray
         self._refresh_statusbar()
@@ -146,6 +148,14 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
             wx.EVT_MENU, lambda _e: self._open_app_features(), id=self._features_item_id
         )
         menu_bar.Append(options_menu, "&Options")
+
+        # Pre-release top-level Audio Description Project menu, shared with QUILL,
+        # Radio, and Cast. Present by default (future.adp_assistant is on); the
+        # hands-free conversational mode (future.adp_voice_mode) stays locked
+        # until a signed unlock code is redeemed. Undocumented until launch.
+        adp_menu = self._build_adp_menu()
+        if adp_menu is not None:
+            menu_bar.Append(adp_menu, "A&udio Description Project")
 
         from quill.ui.quillville_menu import build_quillville_menu
 
@@ -460,7 +470,9 @@ def _run_headless_check() -> int:
     """The OS-scheduled ``--check-once`` path: one short-lived alert check with
     no window. Fetches the watched location's NWS alerts, and toasts any that
     are newly issued. Never raises -- a scheduled task must fail quietly."""
-    safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
+    from quill.stability.safe_mode import should_enable_safe_mode
+
+    safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
     from quill.core.paths import app_data_dir
     from quill.core.weather import headless_check, nws
 

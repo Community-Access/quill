@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.github.models import (
     RemoteAccount,
     RemoteFile,
@@ -21,8 +22,10 @@ from quill.core.github.provider import RemoteProvider
 _GITHUB_FILE_SIZE_LIMIT = 1_000_000  # bytes; GitHub's file-contents API limit
 
 
-class GitHubDependencyError(RuntimeError):
+class GitHubDependencyError(CodedError):
     """Raised when PyGithub is not installed."""
+
+    code = "QUILL-GITHUB-DEPENDENCY-MISSING"
 
 
 def require_pygithub() -> None:

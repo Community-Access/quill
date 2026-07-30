@@ -1,0 +1,58 @@
+// QuillVille native launcher -- per-product Windows resource file.
+//
+// This is generated at CMake configure time from version.rc.in with the
+// PRODUCT_* values supplied by -DPRODUCT_NAME / -DPRODUCT_DISPLAY_NAME /
+// -DPRODUCT_VERSION / -DPRODUCT_ICON. It embeds:
+//
+//   - VERSIONINFO with ProductName, FileDescription, CompanyName,
+//     OriginalFilename, FileVersion, ProductVersion. The screen-reader
+//     identity (JAWS Ctrl+JAWSKey+V reads the foreground process's
+//     VERSIONINFO at the OS layer) and the AV-replacement identity
+//     (the heuristic that used to flag "repackaged pythonw.exe" sees
+//     a launcher with the right product name now) both depend on this.
+//   - An optional icon group, when -DPRODUCT_ICON points at a real .ico.
+//     The icon is also visible in the taskbar / Alt-Tab and to bundlers
+//     that read the exe's embedded icon as the user-facing icon.
+//
+// The four fields below are configured by @PRODUCT_NAME@, etc. CMake
+// substitute them at configure_file() time. Everything else is fixed
+// boilerplate -- 1 VERSIONINFO resource with 1 StringFileInfo block
+// (the en-US English block; the launcher is en-US only by design, the
+// installer is the localized layer).
+
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    @PRODUCT_VERSION_COMMA@
+PRODUCTVERSION @PRODUCT_VERSION_COMMA@
+FILEOS         VOS__WINDOWS32
+FILETYPE       VFT_APP
+FILESUBTYPE    VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"  // en-US, Unicode
+        BEGIN
+            VALUE "CompanyName",      "Community Access"
+            VALUE "FileDescription",  "@PRODUCT_DISPLAY_NAME@"
+            VALUE "FileVersion",      "@PRODUCT_VERSION@"
+            VALUE "InternalName",     "@PRODUCT_NAME@"
+            VALUE "OriginalFilename", "@PRODUCT_NAME@.exe"
+            VALUE "ProductName",      "@PRODUCT_DISPLAY_NAME@"
+            VALUE "ProductVersion",   "@PRODUCT_VERSION@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1252  // en-US, Windows-1252
+    END
+END
+
+#ifdef PRODUCT_ICON
+// ICON_GROUP resource: the user-facing icon shown in the taskbar,
+// Alt-Tab, the Explorer "type" column, and the Inno Setup installer's
+// source for the program icon. The numeric ID (101) is a stable
+// placeholder -- Windows does not care about the number, only that it
+// is unique within the resource table.
+101 ICON "@PRODUCT_ICON_PATH@"
+#endif

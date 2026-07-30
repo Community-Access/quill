@@ -17,6 +17,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
 from quill.core.speech.chapters import Chapter
 from quill.core.speech.ffmpeg import (
     INSTALL_HINT,
@@ -28,8 +29,10 @@ from quill.core.speech.ffmpeg import (
 )
 
 
-class BookReadError(ValueError):
+class BookReadError(CodedError):
     """The file could not be read as a chaptered audiobook; message is speakable."""
+
+    code = "QUILL-SPEECH-BOOK-READ"
 
 
 @dataclass(slots=True)

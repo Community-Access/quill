@@ -111,6 +111,10 @@ def default_fetcher(url: str, timeout: int):
         import requests
     except ImportError as ex:  # pragma: no cover - exercised when requests absent
         raise RuntimeError("requests is not installed") from ex
+
+    from quill.apps.beacon.net_guard import validate_public_url
+
+    validate_public_url(url)
     r = requests.head(url, timeout=timeout, allow_redirects=True)
     return r.status_code, r.headers.get("Content-Type", "")
 

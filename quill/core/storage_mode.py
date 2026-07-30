@@ -26,11 +26,22 @@ def _has_portable_evidence(anchor: Path) -> bool:
     """
     if not anchor.is_dir():
         return False
-    # quill.exe = the QUILL portable bundle; QuillRadio.exe / QUILLCast.exe =
-    # the standalone companion apps' portable folders (same rule: the app's
-    # own exe at the anchor root plus a deliberate sibling data/ folder).
+    # The per-product on-disk EXE names are the contract the native
+    # launcher (quill/native/launcher/) commits to: each per-product
+    # build_native_launcher.py build writes the launcher to that exact
+    # name in the onedir root. A name mismatch silently breaks portable
+    # mode -- the data writes to %APPDATA% instead of the bundle
+    # ``data/`` folder. Locked in by
+    # tests/unit/scripts/test_storage_mode.py::_test_portable_evidence_allowlist.
     has_exe = any(
-        (anchor / name).is_file() for name in ("quill.exe", "QuillRadio.exe", "QUILLCast.exe")
+        (anchor / name).is_file()
+        for name in (
+            "quill.exe",
+            "QuillRadio.exe",
+            "QuillWeather.exe",
+            "QuillAudioStudio.exe",
+            "QUILLCast.exe",
+        )
     )
     has_data = (anchor / "data").is_dir()
     if has_exe and has_data:

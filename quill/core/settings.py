@@ -709,30 +709,16 @@ class Settings:
         read_aloud_elevenlabs_voice = str(data.get("read_aloud_elevenlabs_voice", "")).strip()
         read_aloud_elevenlabs_model = str(data.get("read_aloud_elevenlabs_model", "")).strip()
         read_aloud_voice = str(data.get("read_aloud_voice", ""))
-        read_aloud_rate = int(data.get("read_aloud_rate", 200))
-        if read_aloud_rate < 80:
-            read_aloud_rate = 80
-        if read_aloud_rate > 450:
-            read_aloud_rate = 450
-        read_aloud_volume = int(data.get("read_aloud_volume", 100))
-        if read_aloud_volume < 0:
-            read_aloud_volume = 0
-        if read_aloud_volume > 100:
-            read_aloud_volume = 100
-        read_aloud_pitch = int(data.get("read_aloud_pitch", 50))
-        if read_aloud_pitch < 0:
-            read_aloud_pitch = 0
-        if read_aloud_pitch > 100:
-            read_aloud_pitch = 100
+        # _clamp_int (not a bare int()) so a JSON 1e999 -> float('inf') value
+        # falls back to the default instead of raising OverflowError at startup.
+        read_aloud_rate = _clamp_int(data.get("read_aloud_rate", 200), 200, 80, 450)
+        read_aloud_volume = _clamp_int(data.get("read_aloud_volume", 100), 100, 0, 100)
+        read_aloud_pitch = _clamp_int(data.get("read_aloud_pitch", 50), 50, 0, 100)
         read_aloud_dectalk_executable = str(data.get("read_aloud_dectalk_executable", "")).strip()
         read_aloud_dectalk_voice = str(data.get("read_aloud_dectalk_voice", "paul")).strip().lower()
         if not read_aloud_dectalk_voice:
             read_aloud_dectalk_voice = "paul"
-        read_aloud_dectalk_rate = int(data.get("read_aloud_dectalk_rate", 180))
-        if read_aloud_dectalk_rate < 75:
-            read_aloud_dectalk_rate = 75
-        if read_aloud_dectalk_rate > 650:
-            read_aloud_dectalk_rate = 650
+        read_aloud_dectalk_rate = _clamp_int(data.get("read_aloud_dectalk_rate", 180), 180, 75, 650)
         read_aloud_dectalk_dictionary = str(data.get("read_aloud_dectalk_dictionary", "")).strip()
         read_aloud_piper_executable = str(data.get("read_aloud_piper_executable", "")).strip()
         read_aloud_piper_model = str(data.get("read_aloud_piper_model", "")).strip()
@@ -749,17 +735,9 @@ class Settings:
         read_aloud_kokoro_speed = max(0.5, min(2.0, read_aloud_kokoro_speed))
         read_aloud_espeak_executable = str(data.get("read_aloud_espeak_executable", "")).strip()
         read_aloud_espeak_voice = str(data.get("read_aloud_espeak_voice", "en")).strip() or "en"
-        read_aloud_espeak_rate = int(data.get("read_aloud_espeak_rate", 175))
-        if read_aloud_espeak_rate < 80:
-            read_aloud_espeak_rate = 80
-        if read_aloud_espeak_rate > 450:
-            read_aloud_espeak_rate = 450
+        read_aloud_espeak_rate = _clamp_int(data.get("read_aloud_espeak_rate", 175), 175, 80, 450)
         read_aloud_macos_voice = str(data.get("read_aloud_macos_voice", "")).strip()
-        read_aloud_macos_rate = int(data.get("read_aloud_macos_rate", 175))
-        if read_aloud_macos_rate < 80:
-            read_aloud_macos_rate = 80
-        if read_aloud_macos_rate > 450:
-            read_aloud_macos_rate = 450
+        read_aloud_macos_rate = _clamp_int(data.get("read_aloud_macos_rate", 175), 175, 80, 450)
         ai_tts_provider = str(data.get("ai_tts_provider", "openai")).strip().lower()
         if ai_tts_provider not in {"openai", "gemini", "elevenlabs"}:
             ai_tts_provider = "openai"
@@ -792,9 +770,12 @@ class Settings:
         dictation_engine = engine if engine in {"offline", "windows", "cloud"} else "windows"
         dictation_language = str(data.get("dictation_language", "en-US")).strip() or "en-US"
         dictation_model = str(data.get("dictation_model", "base")).strip() or "base"
-        dictation_device_index = int(data.get("dictation_device_index", -1))
-        if dictation_device_index < -1:
-            dictation_device_index = -1
+        # _clamp_int guards against a non-finite JSON value (int(inf) would raise
+        # OverflowError). -1 means "default device"; the high ceiling never clips
+        # a real audio-device index.
+        dictation_device_index = _clamp_int(
+            data.get("dictation_device_index", -1), -1, -1, 1_000_000
+        )
         # Dictation policy: durations clamp non-negative (0 disables a cap).
         dictation_max_locked_seconds = _coerce_non_negative_float(
             data.get("dictation_max_locked_seconds", 300.0), 300.0
@@ -1153,8 +1134,8 @@ class Settings:
         if spell_review_verbosity not in {"concise", "balanced", "detailed"}:
             spell_review_verbosity = "balanced"
         spell_review_spell_word = bool(data.get("spell_review_spell_word", True))
-        spell_review_spell_word_pause_ms = max(
-            100, min(3000, int(data.get("spell_review_spell_word_pause_ms", 800)))
+        spell_review_spell_word_pause_ms = _clamp_int(
+            data.get("spell_review_spell_word_pause_ms", 800), 800, 100, 3000
         )
         spell_review_wrap_to_beginning = bool(data.get("spell_review_wrap_to_beginning", True))
         spell_review_context_mode = (
@@ -1197,8 +1178,7 @@ class Settings:
             e.get("id") == vision_default_prompt_style for e in vision_custom_prompts
         ):
             vision_default_prompt_style = "accessibility"
-        raw_mp = int(data.get("multi_press_window_ms", 400))
-        multi_press_window_ms = max(100, min(1000, raw_mp))
+        multi_press_window_ms = _clamp_int(data.get("multi_press_window_ms", 400), 400, 100, 1000)
         hygiene_min_confidence = str(data.get("hygiene_min_confidence", "high")).strip().lower()
         if hygiene_min_confidence not in {"high", "medium", "low"}:
             hygiene_min_confidence = "high"

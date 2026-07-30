@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import shutil
 import subprocess
 import sys
@@ -162,6 +163,26 @@ def total_ram_gb() -> float:
 _gpu_probe_cache: bool | None = None
 
 
+def _resolve_nvidia_smi() -> str | None:
+    """Resolve ``nvidia-smi`` to an absolute path, never a CWD-relative one.
+
+    On Windows ``shutil.which`` searches the current directory, so a planted
+    ``nvidia-smi.exe`` in the working directory could be launched. Prefer the
+    real System32 binary; otherwise accept a PATH hit only when it is absolute
+    (``shutil.which`` returns a relative ``.\\nvidia-smi.exe`` for a CWD match,
+    which is rejected here).
+    """
+    if sys.platform.startswith("win"):
+        system_root = os.environ.get("SystemRoot") or os.environ.get("windir") or r"C:\Windows"
+        candidate = Path(system_root) / "System32" / "nvidia-smi.exe"
+        if candidate.exists():
+            return str(candidate)
+    found = shutil.which("nvidia-smi")
+    if found is None:
+        return None
+    return found if Path(found).is_absolute() else None
+
+
 def has_nvidia_gpu() -> bool:
     """Detect an NVIDIA GPU via ``nvidia-smi``.
 
@@ -174,7 +195,7 @@ def has_nvidia_gpu() -> bool:
     global _gpu_probe_cache
     if _gpu_probe_cache is not None:
         return _gpu_probe_cache
-    cmd = shutil.which("nvidia-smi")
+    cmd = _resolve_nvidia_smi()
     if not cmd:
         _gpu_probe_cache = False
         return _gpu_probe_cache

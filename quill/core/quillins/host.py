@@ -17,6 +17,8 @@ off for 1.0).
 
 from __future__ import annotations
 
+import ipaddress
+import socket
 import subprocess
 import sys
 import urllib.parse
@@ -112,9 +114,79 @@ class HostServices(Protocol):
 
 ConsentCallback = Callable[[str, str], bool]
 
+#: Hard cap on a single Quillin fetch response body, mirrored by the UI adapter
+#: which enforces it while reading the socket. Keeps a hostile endpoint from
+#: streaming an unbounded body into memory even after consent is granted.
+FETCH_MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
+
+_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1", "[::1]"})
+
 
 def _always_deny(capability: str, detail: str) -> bool:
     return False
+
+
+def _resolve_addresses(host: str) -> list[str]:
+    """Best-effort resolve ``host`` to IP strings.
+
+    A literal IP resolves to itself; a hostname is resolved via DNS, and a
+    resolution failure returns ``[]`` (the actual fetch will then fail on its
+    own — we never *block* purely because DNS was unavailable, so offline unit
+    tests that pass a public hostname are unaffected).
+    """
+
+    try:
+        ipaddress.ip_address(host)
+        return [host]
+    except ValueError:
+        pass
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except OSError:
+        return []
+    return [str(info[4][0]) for info in infos]
+
+
+def _blocked_fetch_reason(url: str) -> str | None:
+    """Return why ``url`` is an unsafe Quillin fetch target, or ``None`` if safe.
+
+    SSRF hardening (finding: host.py fetch had no scheme/IP guards): require
+    https for any non-loopback host, and block private, link-local (incl. the
+    169.254.169.254 cloud-metadata address), loopback-masquerading, reserved and
+    multicast destinations. Loopback over http is allowed so a Quillin can reach
+    a genuine local helper service, matching the rest of QUILL's networking.
+    """
+
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except ValueError:
+        return "malformed URL"
+    scheme = (parsed.scheme or "").lower()
+    host = parsed.hostname or ""
+    if not host:
+        return "URL has no host"
+    if scheme not in ("http", "https"):
+        return f"unsupported URL scheme {scheme!r} (only http/https allowed)"
+    is_loopback = host.lower() in _LOOPBACK_HOSTS
+    if scheme != "https" and not is_loopback:
+        return "a non-loopback fetch must use https"
+    for addr in _resolve_addresses(host):
+        try:
+            ip = ipaddress.ip_address(addr)
+        except ValueError:
+            continue
+        if is_loopback and ip.is_loopback:
+            continue
+        if (
+            ip.is_private
+            or ip.is_link_local
+            or ip.is_loopback
+            or ip.is_reserved
+            or ip.is_multicast
+            or ip.is_unspecified
+        ):
+            return f"host {host} resolves to a blocked address ({addr})"
+    return None
 
 
 class ApiDispatcher:
@@ -132,6 +204,7 @@ class ApiDispatcher:
         consent: ConsentCallback = _always_deny,
         granted_capabilities: tuple[str, ...] | None = None,
         storage: dict[str, str] | None = None,
+        extension_dir: Path | None = None,
     ) -> None:
         self._services = services
         self._consent = consent
@@ -141,6 +214,11 @@ class ApiDispatcher:
         self._granted: frozenset[str] = frozenset(granted)
         self._storage: dict[str, str] = storage if storage is not None else {}
         self._net_allowed_hosts: tuple[str, ...] = manifest.net_allowed_hosts
+        # Containment root for fs.read/fs.write. When set (always, in production,
+        # via ExtensionHost), every filesystem path is resolved and must stay
+        # inside this directory. Left None only by unit tests that drive the
+        # dispatcher directly, which preserves their pass-through expectations.
+        self._extension_dir: Path | None = extension_dir
 
     def handle(self, message: dict[str, Any]) -> dict[str, Any]:
         call_id = int(message.get("id", 0))
@@ -194,6 +272,36 @@ class ApiDispatcher:
                 return True
         return False
 
+    def _contain_fs_path(self, raw_path: str) -> str:
+        """Resolve ``raw_path`` and confine it to the extension directory.
+
+        Relative paths resolve against the extension dir; an absolute path must
+        land inside it. Any ``..`` traversal (or absolute path) that escapes the
+        sandbox is rejected with a :class:`QuillinError`. Returns the resolved
+        absolute path so the executor opens exactly the vetted target. When no
+        extension dir is configured the original string is returned unchanged
+        (unit-test dispatch), so production — which always sets it — is contained
+        while the pure-logic tests keep their existing behaviour.
+
+        User-chosen files outside the sandbox (e.g. via a future host file
+        picker) are not yet re-admitted here; third-party Quillins stay locked
+        off for 1.0 (SEC-8), so the strict extension-dir floor is the safe
+        pre-unlock default and bundled Quillins (none of which read/write
+        outside their own folder) are unaffected.
+        """
+
+        root = self._extension_dir
+        if root is None:
+            return raw_path
+        root_resolved = root.resolve()
+        candidate = Path(raw_path)
+        target = (candidate if candidate.is_absolute() else root_resolved / candidate).resolve()
+        if target != root_resolved and root_resolved not in target.parents:
+            raise QuillinError(
+                f"filesystem access blocked: path escapes the extension directory ({raw_path!r})"
+            )
+        return str(target)
+
     def _invoke_service(self, method: str, args: list[Any]) -> Any:
         services = self._services
         if method == "get_text":
@@ -225,14 +333,17 @@ class ApiDispatcher:
             default = str(args[2]) if len(args) > 2 else ""
             return services.prompt(str(args[0]), label, default)
         if method == "read_file":
-            return services.read_file(str(args[0]))
+            return services.read_file(self._contain_fs_path(str(args[0])))
         if method == "write_file":
-            services.write_file(str(args[0]), str(args[1]))
+            services.write_file(self._contain_fs_path(str(args[0])), str(args[1]))
             return None
         if method == "fetch":
             url = str(args[0])
             if not self._is_host_allowed(url):
                 raise QuillinError(f"fetch blocked: host not in net_allowed_hosts ({url!r})")
+            blocked = _blocked_fetch_reason(url)
+            if blocked is not None:
+                raise QuillinError(f"fetch blocked: {blocked}")
             http_method = str(args[1]) if len(args) > 1 else "GET"
             body = args[2] if len(args) > 2 else None
             return services.fetch(url, http_method, None if body is None else str(body))
@@ -313,6 +424,7 @@ class ExtensionHost:
             consent=consent,
             granted_capabilities=granted_capabilities,
             storage=storage,
+            extension_dir=directory,
         )
         self._python = python_executable or sys.executable
         self._process: subprocess.Popen[str] | None = None

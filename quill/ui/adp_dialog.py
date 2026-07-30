@@ -124,12 +124,15 @@ class AdpAskDialog:
             return self._ask(question, history=history or None)
 
         def _on_success(_op: str, response: AskResponse) -> None:
-            wx = self._wx
-            wx.CallAfter(self._apply_response, response)
+            # Already on the UI thread: the task manager marshals its callbacks
+            # here via call_ui_safely (which also guards them). Apply directly --
+            # a second raw CallAfter would run outside that guard, so an Escape
+            # that destroys the dialog first would raise an uncaught RuntimeError
+            # on the dead widgets.
+            self._apply_response(response)
 
         def _on_failure(_op: str, error: object) -> None:
-            wx = self._wx
-            wx.CallAfter(self._apply_failure, str(error))
+            self._apply_failure(str(error))
 
         self._task_manager.submit(
             "adp-ask", _do_ask, on_success=_on_success, on_failure=_on_failure
@@ -148,7 +151,10 @@ class AdpAskDialog:
         self._answer.SetFocus()
         if self._speak_check.GetValue():
             self._announce(response.answer)
-        self._question.SelectAll()
+        # Clear the box after a successful ask so the next question starts fresh
+        # (the answer already has focus). On failure the text is left in place
+        # (see _apply_failure) so it's recoverable.
+        self._question.SetValue("")
 
     def _apply_failure(self, message: str) -> None:
         self._busy = False
@@ -185,5 +191,10 @@ class AdpAskDialog:
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
         self._question.SetFocus()
-        show_modal_dialog(self.dialog)
-        self.dialog.Destroy()
+        # Pass the label + announce hook so the screen-reader enter/exit region
+        # cues fire like every other modal (NowPlayingDialog, the radio
+        # dialogs); Destroy in finally so a show-time failure never leaks it.
+        try:
+            show_modal_dialog(self.dialog, "Ask ADP", announce=self._announce)
+        finally:
+            self.dialog.Destroy()

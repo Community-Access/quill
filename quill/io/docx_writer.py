@@ -350,10 +350,19 @@ def write_docx(document: Document, target: Path) -> Path:
     document has a Header/Footer Builder spec (#892), it is written as real
     Word header/footer parts with a live PAGE field.
     """
+    import io
+
+    from quill.core.storage import write_bytes_atomic
+
     rich = markdown_to_rich(document.text)
     built = rich_to_docx(rich)
     _maybe_apply_header_footer(built, document, target)
-    built.save(str(target))
+    # Atomic write: serialize to memory, then write the bytes via temp +
+    # os.replace so a failure mid-serialize never destroys the previous file at
+    # ``target``.
+    buffer = io.BytesIO()
+    built.save(buffer)
+    write_bytes_atomic(target, buffer.getvalue())
     return target
 
 

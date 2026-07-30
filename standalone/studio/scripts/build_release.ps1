@@ -15,12 +15,17 @@
 # with a silently broken bug reporter.
 
 param(
-    [string]$Python = "S:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "D:\QUILL\.venv\Scripts\python.exe",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "S:\token.txt",
+    [string]$TokenFile = "D:\token.txt",
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "S:\QUILL"
+    [string]$QuillRepo = "D:\QUILL",
+    [switch]$SkipToken,
+    # Reuse an already-built shared runtime at ..\..\runtime\dist\QuillVilleRuntime
+    # instead of rebuilding it (a full PyInstaller onedir, ~10 min). The installer
+    # still needs it to exist.
+    [switch]$SkipSharedRuntime
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,12 +36,17 @@ $version = "2.2.0"
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
 # -- bundled feedback token (hard requirement for a release build) -----------
-if (-not (Test-Path $TokenFile)) {
-    throw "Token file not found: $TokenFile -- a release build must embed the issues-only token."
+# A public release must embed the issues-only token; -SkipToken builds a private
+# copy whose Report a Bug falls back to opening GitHub manually (same posture as
+# the Quill Radio and Quill Weather builds).
+if (-not $SkipToken) {
+    if (-not (Test-Path $TokenFile)) {
+        throw "Token file not found: $TokenFile -- a release build must embed the issues-only token (or pass -SkipToken for a private build)."
+    }
+    $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
+    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
+    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
-$env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
-& $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 if (-not $FfmpegDir) {
@@ -65,69 +75,59 @@ if (-not (Test-Path $Iscc)) {
     if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
 }
 
-# -- onedir build -------------------------------------------------------------
-Push-Location $repoRoot
-try {
-    & $Python -m PyInstaller quill-audio-studio.spec --noconfirm --distpath dist --workpath build
-    if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
-} finally {
-    Pop-Location
+# -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
+# The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
+# per-app installer (quill-audio-studio.iss) installs into
+# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. Audio Studio uses
+# both ffmpeg (recording) and the mpv engine (player preview) -- both go
+# into the shared runtime's tools\, not the per-app $appDir\tools\, so the
+# per-app install stays tiny. The portable zip below still gets its own
+# ffmpeg/mpv copy at $appDir\tools\ so the stick is self-contained.
+$sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
+if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
+    Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
+} else {
+    Push-Location (Join-Path $repoRoot "..\runtime")
+    try {
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+        if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
+    } finally {
+        Pop-Location
+    }
 }
+
+# -- portable bundle (self-contained "Lean" edition) --------------------------
+# The portable is NOT a PyInstaller onedir and NOT a stamped pythonw.exe. It is
+# a genuine CPython embeddable runtime (unmodified python.exe / pythonw.exe)
+# with the native C launcher (QuillAudioStudio.exe) spawning
+# `pythonw.exe -m quill.apps.studio`, plus the offline speech/TTS engines
+# staged into data\ and ffmpeg/mpv into tools\. See build_portable.py and
+# docs/design/native-launcher-2026-07-24.md for why the stamped-pythonw shape
+# (the AV-flagged pattern) is gone. build_portable.py hard-fails if the native
+# launcher cannot be compiled -- it must never fall back to a stamped pythonw.
 $appDir = Join-Path $repoRoot "dist\QuillAudioStudio"
+& $Python (Join-Path $PSScriptRoot "build_portable.py") `
+    --product studio `
+    --out $appDir `
+    --source-root $QuillRepo `
+    --ffmpeg-dir $FfmpegDir `
+    --mpv-dir $LibmpvDir `
+    --engines-dir (Join-Path $env:APPDATA "Quill") `
+    --version $version
+if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 if (-not (Test-Path (Join-Path $appDir "QuillAudioStudio.exe"))) {
-    throw "Onedir build did not produce QuillAudioStudio.exe"
+    throw "Portable build did not produce the native QuillAudioStudio.exe launcher."
+}
+if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
+    throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
 
-# -- stage the shared payload (both artifacts ship this) ----------------------
-$toolsDir = Join-Path $appDir "tools\ffmpeg"
-New-Item -ItemType Directory -Force $toolsDir | Out-Null
-Copy-Item (Join-Path $FfmpegDir "ffmpeg.exe") $toolsDir -Force
-if (Test-Path (Join-Path $FfmpegDir "ffprobe.exe")) {
-    Copy-Item (Join-Path $FfmpegDir "ffprobe.exe") $toolsDir -Force
-}
-$ffLicense = Join-Path (Split-Path -Parent $FfmpegDir) "LICENSE"
-if (Test-Path $ffLicense) { Copy-Item $ffLicense (Join-Path $toolsDir "FFMPEG-LICENSE.txt") -Force }
-$mpvDir = Join-Path $appDir "tools\mpv"
-New-Item -ItemType Directory -Force $mpvDir | Out-Null
-Copy-Item (Join-Path $LibmpvDir "libmpv-2.dll") $mpvDir -Force
-# GPL compliance: ship mpv's license texts and the source-offer note next
-# to the DLL (the engine pack carries them; QUILL's Offline Edition ships
-# the same set).
-Get-ChildItem $LibmpvDir -File | Where-Object { $_.Extension -eq ".txt" } | ForEach-Object {
-    Copy-Item $_.FullName $mpvDir -Force
-}
-$docsDir = Join-Path $appDir "docs"
-New-Item -ItemType Directory -Force $docsDir | Out-Null
-# .md + .html for every doc (Help > User Guide / Release Notes / Product
-# Requirements... prefers the pre-rendered .html; .md is the fallback source
-# if a build ever ships without render_docs.ps1 having run).
-Copy-Item (Join-Path $repoRoot "docs\userguide.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\userguide.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\prd.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\prd.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "README.md") (Join-Path $appDir "README-Quill-AudioStudio.md") -Force
-
-# -- portable zip (adds the data\ folder = portable-mode evidence) ------------
-$dataDir = Join-Path $appDir "data"
-New-Item -ItemType Directory -Force $dataDir | Out-Null
-Set-Content (Join-Path $dataDir "README.txt") @"
-This folder makes QUILL Audio Studio portable: your favorites, history, and
-settings live here, right next to the app, so the whole thing travels
-on a stick. Delete this folder and the app uses the shared Quill data
-in your Windows profile instead.
-"@
-# The storage-mode marker is what actually routes data here (the folder
-# alone is only the portable-bundle evidence); QUILL portable ships the
-# same marker.
-Set-Content (Join-Path $dataDir "storage-mode.json") '{"mode": "portable"}'
-$zipPath = Join-Path $repoRoot "dist\Quill-AudioStudio-Portable-$version.zip"
+# The old shipping artifact was QUILL-Audio-Studio-Portable-Lean-<ver>.zip;
+# keep that name so it slots straight into the release page.
+$zipPath = Join-Path $repoRoot "dist\QUILL-Audio-Studio-Portable-Lean-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
-# The installed flavor must NOT carry the data folder (it would flip the
-# installed copy into portable mode), so remove it before the installer runs.
-Remove-Item $dataDir -Recurse -Force
 
 # -- installer ----------------------------------------------------------------
 & $Iscc "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-audio-studio.iss") "/O$(Join-Path $repoRoot 'dist')"

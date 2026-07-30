@@ -387,23 +387,8 @@ class QuillKeyMixin:
     def _event_has_modifiers(self, event: object) -> bool:
         return bool(event.ControlDown() or event.AltDown() or event.ShiftDown())
 
-    def _is_bare_modifier_key(self, key_code: int) -> bool:
-        """True when ``key_code`` is a modifier key pressed on its own.
-
-        wx fires EVT_CHAR_HOOK for the modifier keydown itself (e.g. Shift
-        going down just before the "/" that makes "?"), separately from the
-        combo it's part of. Chord/browse-mode dispatch must ignore these or
-        they get misread as an unrecognized second key.
-        """
-        wx = self._wx
-        return key_code in {
-            getattr(wx, "WXK_SHIFT", -11),
-            getattr(wx, "WXK_CONTROL", -10),
-            getattr(wx, "WXK_ALT", -12),
-            getattr(wx, "WXK_RAW_CONTROL", -13),
-            getattr(wx, "WXK_WINDOWS_LEFT", -14),
-            getattr(wx, "WXK_WINDOWS_RIGHT", -15),
-        }
+    # ``_is_bare_modifier_key`` now lives on KeybindingParseMixin (one shared
+    # copy with the standalone apps); MainFrame resolves it via the MRO.
 
     def _quill_key_action_for_event(self, event: object) -> str | None:
         wx = self._wx
@@ -576,45 +561,8 @@ class QuillKeyMixin:
                 return command_id
         return None
 
-    def _parse_chord_second_key(self, second_key: str) -> tuple[bool, bool, bool, int] | None:
-        """Parse the second part of a chord binding into (ctrl, shift, alt, key_code).
-
-        Handles bare keys (``V``, ``1``), modifier combos (``Shift+O``), and
-        named keys (``Tab``, ``Enter``, ``F1``–``F12``).
-        """
-        wx = self._wx
-        parts = [p.strip() for p in second_key.split("+") if p.strip()]
-        if not parts:
-            return None
-        ctrl = shift = alt = False
-        for modifier in parts[:-1]:
-            lowered = modifier.lower()
-            if lowered == "ctrl":
-                ctrl = True
-            elif lowered == "shift":
-                shift = True
-            elif lowered == "alt":
-                alt = True
-            else:
-                return None
-        token = parts[-1].upper()
-        if len(token) == 1:
-            return ctrl, shift, alt, ord(token)
-        named: dict[str, int] = {
-            "ENTER": getattr(wx, "WXK_RETURN", 13),
-            "TAB": getattr(wx, "WXK_TAB", 9),
-            "SPACE": getattr(wx, "WXK_SPACE", 32),
-            "ESC": getattr(wx, "WXK_ESCAPE", 27),
-            "ESCAPE": getattr(wx, "WXK_ESCAPE", 27),
-            "DELETE": getattr(wx, "WXK_DELETE", 127),
-            "BACKSPACE": getattr(wx, "WXK_BACK", 8),
-            "HOME": getattr(wx, "WXK_HOME", 313),
-            "END": getattr(wx, "WXK_END", 312),
-            **{f"F{i}": getattr(wx, f"WXK_F{i}", 339 + i) for i in range(1, 13)},
-        }
-        if token in named:
-            return ctrl, shift, alt, named[token]
-        return None
+    # ``_parse_chord_second_key`` now lives on KeybindingParseMixin (one shared
+    # copy with the standalone apps); MainFrame resolves it via the MRO.
 
     def _second_key_matches_event(
         self, parsed: tuple[bool, bool, bool, int], event: object

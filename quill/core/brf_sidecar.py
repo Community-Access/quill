@@ -18,6 +18,7 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.storage import read_json, write_json_atomic
 
 SCHEMA_VERSION = 1
@@ -25,8 +26,10 @@ SIDECAR_SUFFIX = ".quill.json"
 DOCUMENT_TYPE = "brf"
 
 
-class BRFSidecarError(ValueError):
+class BRFSidecarError(CodedError):
     """Raised when a sidecar file exists but cannot be parsed or validated."""
+
+    code = "QUILL-BRAILLE-SIDECAR-INVALID"
 
 
 def sidecar_path(brf_path: Path) -> Path:

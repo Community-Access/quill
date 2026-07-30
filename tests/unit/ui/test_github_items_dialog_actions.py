@@ -17,8 +17,15 @@ from typing import Any
 import pytest
 import wx
 
-from quill.core.github.items_provider import GitHubItem, GitHubItemsError, GitHubRepoForkInfo
+from quill.core.github.items_provider import (
+    GitHubItem,
+    GitHubItemsError,
+    GitHubRelease,
+    GitHubReleaseAsset,
+    GitHubRepoForkInfo,
+)
 from quill.ui.github_items_dialog import GitHubItemsDialog
+from quill.ui.github_items_view import RELEASE_ASSET_COLUMNS, VIEW_RELEASES
 
 
 class _FakeProvider:
@@ -476,3 +483,103 @@ def test_view_upstream_click_does_nothing_when_no_fork_info(dlg) -> None:
     dlg._on_load = lambda _e: loaded.append("called")
     dlg._on_view_upstream(None)
     assert loaded == []
+
+
+# ---------------------------------------------------------------------------
+# Release download counts: asset drill-down (Enter in, Backspace out)
+# ---------------------------------------------------------------------------
+
+
+def _release_with_assets() -> GitHubRelease:
+    return GitHubRelease(
+        tag="v2.0",
+        name="Release 2.0",
+        url="https://github.com/owner/repo/releases/tag/v2.0",
+        assets=(
+            GitHubReleaseAsset(
+                name="big.exe",
+                download_count=900,
+                size_bytes=2 * 1024 * 1024,
+                browser_download_url="https://example.com/big.exe",
+            ),
+            GitHubReleaseAsset(
+                name="small.zip",
+                download_count=100,
+                size_bytes=1024,
+                browser_download_url="https://example.com/small.zip",
+            ),
+        ),
+    )
+
+
+def _load_releases_into_list(dlg, releases: list[GitHubRelease]) -> None:
+    dlg._view = VIEW_RELEASES
+    dlg._drill_release = None
+    dlg._rebuild_columns()
+    dlg._rows = list(releases)
+    dlg._unfiltered_rows = list(releases)
+    dlg._populate_list()
+    if releases:
+        dlg._list.Select(0)
+        dlg._list.Focus(0)
+
+
+def test_enter_on_release_drills_into_assets_most_downloaded_first(dlg) -> None:
+    release = _release_with_assets()
+    _load_releases_into_list(dlg, [release])
+    dlg._on_activate(None)  # Enter on the release row
+    assert dlg._drill_release is release
+    assert [a.name for a in dlg._rows] == ["big.exe", "small.zip"]
+    assert dlg._current_columns() == RELEASE_ASSET_COLUMNS
+    # Status line totals the release's downloads with the correctness caveat.
+    assert "1000 total downloads" in dlg.statuses[-1]
+    assert "unique people" in dlg.statuses[-1]
+
+
+def test_enter_on_asset_opens_browser_download_url(dlg, monkeypatch: pytest.MonkeyPatch) -> None:
+    opened: list[str] = []
+    monkeypatch.setattr(
+        "quill.ui.github_items_dialog.webbrowser.open", lambda url: opened.append(url)
+    )
+    release = _release_with_assets()
+    _load_releases_into_list(dlg, [release])
+    dlg._on_activate(None)  # drill in; row 0 (big.exe) is selected
+    dlg._on_activate(None)  # Enter on the most-downloaded asset
+    assert opened == ["https://example.com/big.exe"]
+
+
+def test_backspace_in_asset_drill_returns_to_releases(dlg) -> None:
+    reloaded: list[bool] = []
+    dlg._reload = lambda: reloaded.append(True)
+    release = _release_with_assets()
+    _load_releases_into_list(dlg, [release])
+    dlg._on_activate(None)  # drill in
+    assert dlg._drill_release is release
+
+    class _Key:
+        def GetKeyCode(self) -> int:
+            return wx.WXK_BACK
+
+        def Skip(self) -> None:
+            pass
+
+    dlg._on_list_key(_Key())
+    assert reloaded == [True]  # stepped back out via a reload of the releases list
+
+
+def test_clear_list_resets_asset_drill(dlg) -> None:
+    release = _release_with_assets()
+    _load_releases_into_list(dlg, [release])
+    dlg._on_activate(None)
+    assert dlg._drill_release is release
+    dlg._clear_list()
+    assert dlg._drill_release is None
+
+
+def test_release_with_no_assets_announces_and_does_not_drill_open(dlg) -> None:
+    release = GitHubRelease(tag="v1.0", name="Release 1.0")
+    _load_releases_into_list(dlg, [release])
+    dlg._on_activate(None)
+    assert dlg._drill_release is release
+    assert dlg._rows == []
+    assert "no downloadable assets" in dlg.announcements[-1]

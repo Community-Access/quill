@@ -31,6 +31,8 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 
+from quill.core.error_codes import CodedError
+
 ProgressCallback = Callable[[int, int | None], None]
 """``(bytes_so_far, total_bytes_or_none)`` callback.
 
@@ -39,13 +41,15 @@ ProgressCallback = Callable[[int, int | None], None]
 """
 
 
-class RemoteTransportError(RuntimeError):
+class RemoteTransportError(CodedError):
     """Base class for all transport-layer errors (connection, auth, IO).
 
     The editor's "Open from Remote" path catches this class to surface a
     single screen-reader-friendly message ("Could not connect to ``host``,
     reason: <error>") without leaking stack traces.
     """
+
+    code = "QUILL-IO-REMOTE-TRANSPORT"
 
 
 class RemoteAuthError(RemoteTransportError):

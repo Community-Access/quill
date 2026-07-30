@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from quill.ui.radio.schedule_recording_dialog import build_schedule_entry
+from quill.core.radio.recording_schedule import RecordingScheduleEntry
+from quill.ui.radio.schedule_recording_dialog import _entry_summary, build_schedule_entry
 
 # Recurrence dropdown order: Once=0, Daily=1, Weekly=2.
 _ONCE, _DAILY, _WEEKLY = 0, 1, 2
@@ -138,3 +139,29 @@ def test_hours_and_minutes_combine_into_total_minutes() -> None:
     assert error is None
     assert entry is not None
     assert entry.duration_minutes == 150
+
+
+def _summary_entry(**overrides: object) -> RecordingScheduleEntry:
+    base = dict(
+        id="e1",
+        station_name="WXYZ",
+        stream_url="https://cdn.example.com/live",
+        recurrence="daily",
+        run_at="2026-01-01T08:00:00",
+        duration_minutes=60,
+    )
+    base.update(overrides)
+    return RecordingScheduleEntry(**base)  # type: ignore[arg-type]
+
+
+def test_entry_summary_shows_the_stream_host() -> None:
+    # #1220: the list showed no URL, so a duplicate (same name/time, same URL)
+    # looked identical to its original. The host now disambiguates them.
+    summary = _entry_summary(_summary_entry())
+    assert "[cdn.example.com]" in summary
+    assert "WXYZ" in summary and "daily at 08:00" in summary
+
+
+def test_entry_summary_omits_host_when_url_has_none() -> None:
+    summary = _entry_summary(_summary_entry(stream_url=""))
+    assert "[" not in summary

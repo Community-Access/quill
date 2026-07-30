@@ -12,15 +12,18 @@ import sys
 
 import wx
 
+from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_adp import AdpMixin
+from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
-_VERSION = "1.0.5"
+_VERSION = "1.0.7"
 _REPO = "Community-Access/quill"
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for playback/processing; libmpv is intentionally not used -- wx.media).
@@ -28,11 +31,23 @@ REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
 
 
 class PodcastsAppFrame(
-    AppShellFrame, PodcastsMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin
+    # AppShellFrame is listed first so its toggle_window_to_tray / _send_to_tray
+    # (which the apps have) win over GlobalHotkeysMixin's send_to_tray-based copy.
+    AppShellFrame,
+    PodcastsMixin,
+    MediaSleepTimerMixin,
+    AdpMixin,
+    UnlockCodesMixin,
+    GlobalHotkeysMixin,
+    KeymapEditorMixin,
+    QuillinsAppMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_podcasts()
+        # Quillins for Quill Cast (app id "cast"): load contributions before the
+        # menu bar is built so contributed items appear in the &Quillins menu.
+        self._init_app_quillins("cast")
         from quill.ui.dialog_contract import set_transition_announcement_policy
 
         set_transition_announcement_policy(
@@ -52,6 +67,22 @@ class PodcastsAppFrame(
             "next": self.podcast_next_chapter,
             "previous": self.podcast_previous_chapter,
         })
+        # Per-command system-wide hotkeys (Help > Global Hotkeys...). Register
+        # the show/hide command the default table binds so its Ctrl+Alt+Shift+Q
+        # actually dispatches; the transport commands (podcasts.play_pause/stop)
+        # are already registered above. We do NOT call
+        # _register_global_hotkey_commands -- that also adds the sticky-note /
+        # editor commands the apps don't want. Then bind the message hook and
+        # register whatever the user has configured.
+        self.commands.try_register(
+            "view.toggle_window_to_tray",
+            "Show/Hide QUILL Cast to the Tray",
+            self.toggle_window_to_tray,
+            self._binding_for("view.toggle_window_to_tray"),
+            feature_id="core.app",
+        )
+        self.frame.Bind(wx.EVT_HOTKEY, self._on_global_hotkey)
+        self._reload_global_hotkeys()
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
         # Alt+F4-to-tray (opt-in preference): intercepted at the char hook,
@@ -721,12 +752,18 @@ class PodcastsAppFrame(
         )
         menu_bar.Append(downloads_menu, "&Downloads")
 
-        # Unlock-gated: a top-level Audio Description Project menu, absent
-        # entirely until future.adp_assistant is unlocked (Help > Redeem
-        # Unlock Code..., here or in QUILL -- they share one unlock store).
+        # Pre-release top-level Audio Description Project menu. The typed Ask
+        # ADP assistant (future.adp_assistant) is ON by default for testing, so
+        # this is present by default; _build_adp_menu returns None only if a
+        # profile turns it off. The hands-free conversational mode
+        # (future.adp_voice_mode) is the part that stays locked until a signed
+        # unlock code is redeemed (Help > Redeem Unlock Code..., here or in
+        # QUILL -- they share one unlock store). Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
             menu_bar.Append(adp_menu, "A&udio Description Project")
+
+        menu_bar.Append(self._build_quillins_menu(), "&Quillins")
 
         help_menu = wx.Menu()
         palette_id, redeem_id, updates_id, about_id = (
@@ -735,8 +772,28 @@ class PodcastsAppFrame(
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        help_menu.Append(palette_id, "Command &Palette...\tCtrl+Shift+P")
+        help_menu.Append(palette_id, self._menu_label("Command &Palette...", "app.command_palette"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
+        # The Keyboard Shortcuts editor and the Global Hotkeys manager open the
+        # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
+        # GlobalHotkeysMixin), scoped to this app's own commands.
+        shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...")
+        help_menu.Append(hotkeys_id, "&Global Hotkeys...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
+        # Spotify (future.spotify) ships dark: ids always created for pinning,
+        # items shown only once the feature is unlocked and Safe Mode is off.
+        spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
+        if self.features.is_enabled("future.spotify") and not self._safe_mode:
+            help_menu.Append(spotify_connect_id, "Connect to &Spotify...")
+            help_menu.Append(spotify_browse_id, "&Browse Spotify Podcasts...")
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
+            )
         bug_id = wx.NewIdRef()
         help_menu.Append(bug_id, "Report a &Bug...")
         self.frame.Bind(
@@ -776,6 +833,8 @@ class PodcastsAppFrame(
         self.frame.SetMenuBar(menu_bar)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
+            spotify_connect_id,
+            spotify_browse_id,
             manager_id,
             add_id,
             import_id,
@@ -813,6 +872,8 @@ class PodcastsAppFrame(
             redeem_id,
             updates_id,
             about_id,
+            shortcuts_id,
+            hotkeys_id,
         )
 
     def _open_podcasts_doc(self, stem: str) -> None:
@@ -920,6 +981,10 @@ class PodcastsAppFrame(
 
     def _cast_shutdown(self) -> None:
         try:
+            self._app_host.shutdown()
+        except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
+            pass
+        try:
             self._save_podcast_library()
         except Exception:  # noqa: BLE001 - a failed save must never block exit
             pass
@@ -935,11 +1000,19 @@ class PodcastsAppFrame(
                 pass
         self._task_manager.shutdown(wait=False)
         self._unregister_media_keys()
+        # Guarded like MainFrame's teardown: a hotkey unregister failure must
+        # never block the window from closing.
+        try:
+            self._unregister_global_hotkeys()
+        except Exception:  # noqa: BLE001 - shutdown must never block exit
+            pass
         self._remove_tray_icon()
 
 
 def main() -> int:
-    safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
+    from quill.stability.safe_mode import should_enable_safe_mode
+
+    safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
     from quill.core import components
 
     components.register_running_app("cast", REQUIRED_COMPONENTS)

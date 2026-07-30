@@ -6,6 +6,23 @@ It also widens the net for finding stations: **iHeart and TuneIn now join the se
 
 As always, everything below also lands in QUILL itself. Quill Radio and QUILL share one codebase and one data store, so these fixes arrive in both at once -- nothing here is vendored into the Quill Radio wrapper.
 
+## The headline: the QuillVille Runtime, and downloads that finally travel light
+
+This is the big change in how Quill Radio is delivered, and it is the headline of this release. Quill Radio, QUILL, Quill Weather, and QUILL Audio Studio now share **one** Python engine -- the **QuillVille Runtime** -- installed just once per user and reused by every app in the family. Install any one of them, and every app you add afterward starts instantly, because the engine it needs is already there. No second copy, no second long download. The runtime is reference-counted, so it is removed only when the last app that relies on it is uninstalled; uninstalling Quill Radio while Quill Weather is still around leaves the shared engine in place for Weather.
+
+That shared engine unlocks two brand-new, much smaller ways to get Quill Radio, alongside the two full downloads you already knew:
+
+- **Companion edition (new)** -- `Quill-Radio-Companion-<version>.zip`, about **3 MB**. Just the app and its docs, running on the shared runtime. The first time you launch it, if the runtime is not already installed, Quill Radio offers to download and install it once (about 230 MB) with a fully accessible progress bar. After that first time, this app and every other QuillVille app start instantly. Three megabytes instead of three hundred.
+- **Thin installer (new)** -- the small "Lite" setup. It installs the app and downloads the shared runtime only if it is not already present. If you already run another QuillVille app, there is nothing large to fetch.
+- **Full portable zip** -- `Quill-Radio-Portable-<version>.zip`, about **311 MB**. Unchanged and still the one for a USB stick: fully self-contained, runs with no installation and no internet, carrying its own genuine, unmodified copy of Python plus the bundled ffmpeg and mpv engines.
+- **Full installer** -- `Quill-Radio-Setup-Shared-<version>.exe`. The recommended path for most people: it installs the shared runtime (unless another QuillVille app already put it there) plus the app.
+
+**Accessible progress, every time.** Whenever the runtime is downloaded -- by an installer or by the Companion edition's own first launch -- Quill Radio shows a progress bar that works with NVDA, JAWS, and Narrator, announcing progress as a percentage the whole way.
+
+**Friendlier to antivirus.** Quill Radio's launcher is now a genuine, tiny native program, and the Python it runs is the official, unmodified build. Earlier versions used a renamed and modified copy of Python's own `pythonw.exe` as the launcher -- a pattern some antivirus tools flagged as a false positive. That pattern is completely gone, so the app is far less likely to be mistaken for something it is not. (Releases are still not code-signed, so SmartScreen may caution on first run; choose More info, then Run anyway. Signing is planned.)
+
+The full picture, edition by edition, is in the **Installing** chapter of the Quill Radio User Guide.
+
 ## Update 2.2.0
 
 Quill Radio 2.2.0 is the release where the app grows up around you. Windows stop wandering off. Your stations learn to look after themselves -- backed up, kept in the order you left them, recoverable when a finger slips. And the Weather menu quietly becomes a guardian: something that watches the sky for you and speaks up the moment it matters, even after you have closed the app and walked away. Everything here lives in the shared `quill` package, so QUILL gains it too.
@@ -51,6 +68,10 @@ The weather work that grew up in this release has moved into a home of its own: 
 It is still right where you expect it inside Quill Radio, too. The **Weather** menu is present whenever the **Weather** feature is enabled (**View > Customize Features...**), and it now leads with an **Open the Quill Weather App** item so you can hand the watch off to the standalone app in one step. Turn Weather off in Customize Features and the menu disappears entirely -- perfect if you only want the radio. Weather and Quill Radio are separate apps that run side by side, each in its own window and tray, reachable from the other.
 
 And on the radio side, **Station > Start Quill Radio with Windows** launches Quill Radio automatically when you sign in.
+
+### Coming: play from Spotify (experimental)
+
+Groundwork has landed for playing music straight from Spotify inside Quill Radio. It is **experimental and off by default** -- it ships hidden behind a feature flag, so you will not see it on a normal install, and turning it on takes a signed unlock code, a Spotify **Premium** account, and your own Spotify Client ID (Spotify only lets an app stream its audio for Premium subscribers, and its audio can never be recorded or downloaded). The full story -- what you need, how to connect, and how to browse and play -- is in the new **"Spotify (experimental)"** section of the Quill Radio User Guide.
 
 ## Update 2.1.2
 

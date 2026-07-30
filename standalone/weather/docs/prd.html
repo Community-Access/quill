@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>prd</title>
+  <title>Quill Weather -- Product Requirements</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -234,9 +234,36 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. Only the color is
+       changed; each token keeps its default weight/style. Placed last so it
+       wins the cascade over the styles.html() highlighting defaults above. */
+    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
+    code span.an, code span.co, code span.cv,
+    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
+    code span.at { color: #55631a; }                            /* was #7d9029 */
+    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
+    code span.ch, code span.sc, code span.st,
+    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
+    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
+    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-weather----product-requirements">Quill Weather -- Product
 Requirements</h1>
 <p>This is the complete, authoritative product-requirements document for
@@ -2827,7 +2854,11 @@ required).</li>
 installer, portable build, and update feed. It carries the <strong>same
 version number as Quill Radio</strong> (2.2.0, shared weather code,
 released together) but a Quill Weather release can go out without a
-Quill Radio release and vice versa.</li>
+Quill Radio release and vice versa. Quill Weather also participates in
+the shared <strong>QuillVille Runtime</strong> distribution model, with
+a full portable edition, a lightweight companion edition, a full
+(shared-runtime) installer, and a thin installer -- detailed in
+"Distribution model" below.</li>
 <li><strong>Sibling interoperability.</strong> Quill Weather can launch
 Quill Radio and QUILL (File menu and tray) and is reachable the same way
 from them; Quill Radio's Weather menu offers "Open the Quill Weather
@@ -2856,5 +2887,65 @@ with a shared wx-free chord parser in
 <code>quill/ui/tray_hotkey.py</code>, wired for Quill Weather in
 <code>quill/apps/weather.py</code>.</li>
 </ol>
+<h3
+id="distribution-model-editions-and-the-quillville-runtime">Distribution
+model: editions and the QuillVille Runtime</h3>
+<p>Quill Weather ships under the shared <strong>QuillVille
+Runtime</strong> model used by every QuillVille app (QUILL, Quill Radio,
+Quill Weather, and QUILL Audio Studio).</p>
+<p><strong>The shared runtime.</strong> All QuillVille apps share one
+Python runtime, the QuillVille Runtime, installed once per user and
+reused by all of them. Install it a single time -- through any app or
+installer that needs it -- and every app added afterward starts
+instantly, with no second copy of Python. The runtime is
+<strong>reference-counted</strong>: each app that depends on it
+registers a reference, and the runtime is removed only when the last app
+that needs it is uninstalled. This keeps total disk use down (one
+runtime, not one per app) without ever pulling the runtime out from
+under an app that still needs it.</p>
+<p><strong>Editions.</strong> Four downloads are offered for Quill
+Weather, so the user can trade download size against
+self-containment:</p>
+<ol type="1">
+<li><strong>Full portable</strong>
+(<code>Quill-Weather-Portable-&lt;version&gt;.zip</code>, about 82 MB)
+-- fully self-contained: runs from a USB stick with no installation and
+no internet, carrying a genuine, unmodified copy of Python. Weather
+bundles no audio, AI, transcription, braille, or speech-synthesis
+stacks, so this build is already compact. A <code>data</code> folder
+beside the exe with a <code>storage-mode.json</code> marker
+(<code>{"mode": "portable"}</code>) keeps all state on the removable
+medium.</li>
+<li><strong>Companion edition</strong>
+(<code>Quill-Weather-Companion-&lt;version&gt;.zip</code>, about 2 MB)
+-- feather-light: only the app and its docs, running on the shared
+QuillVille Runtime. On first launch, if the runtime is not already
+installed, the app offers to download and install it (about 230 MB,
+once) with a fully accessible progress bar; afterward this app and every
+other QuillVille app start instantly.</li>
+<li><strong>Full installer</strong>
+(<code>Quill-Weather-Setup-Shared-&lt;version&gt;.exe</code>) --
+installs the shared runtime (if not already present) plus the app, with
+a Start Menu entry, an uninstaller, and the shared data store.</li>
+<li><strong>Thin installer</strong> (the <code>-Lite</code> setup) -- a
+tiny installer that downloads the shared runtime only if it is not
+already present, then installs the app.</li>
+</ol>
+<p><strong>Accessible runtime downloads (requirement).</strong> Any time
+the QuillVille Runtime is downloaded -- whether triggered by an
+installer or by an app's own first launch -- the operation MUST present
+a fully accessible progress bar that works with NVDA, JAWS, and
+Narrator, announcing progress as a spoken percentage. The one-time
+nature of the download (once per user, then reused) MUST be clear to the
+user before it begins.</p>
+<p><strong>Security and antivirus (requirement).</strong> The app's
+launcher MUST be a genuine, tiny native program, and the bundled Python
+MUST be the official, unmodified build. Earlier builds used a renamed
+and modified copy of Python's <code>pythonw.exe</code> as the launcher,
+a pattern some antivirus engines flagged as a false positive; that
+pattern is eliminated. This reduces spurious antivirus detections across
+the whole QuillVille family and complements (but does not replace) the
+still-planned code-signing work.</p>
+</main>
 </body>
 </html>

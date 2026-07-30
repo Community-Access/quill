@@ -32,6 +32,7 @@ import feedparser
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.podcasts import feed_auth
 from quill.core.podcasts.models import PodcastEpisode
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
@@ -102,7 +103,9 @@ def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> by
     request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
     try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
+        with feed_auth.urlopen_auth_safe(
+            request, timeout=_TIMEOUT_SECONDS, context=context
+        ) as resp:
             payload: bytes = resp.read(_MAX_BYTES)
             return payload
     except urllib.error.HTTPError as error:

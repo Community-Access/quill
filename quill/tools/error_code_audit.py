@@ -36,6 +36,63 @@ _SCAN_DIRS = ("core", "io", "stability")
 
 _CODE_RE = re.compile(r"^QUILL-[A-Z0-9]+(-[A-Z0-9]+){1,4}$")
 
+#: Builtin exception base names that, when subclassed directly, make a class a
+#: GATE-EC candidate just as ``Exception`` does. Matching only the literal
+#: ``Exception``/``CodedError`` names let an uncoded ``class X(ValueError):``
+#: (or ``RuntimeError``/``OSError``/...) slip past the gate entirely. A class
+#: that instead derives from an *already-coded custom* error (e.g.
+#: ``SpeechCancelledError(SpeechError)``) inherits its parent's code and is
+#: intentionally NOT a candidate -- those base names are not builtins, so they
+#: are absent here.
+_BUILTIN_EXCEPTION_BASES: frozenset[str] = frozenset({
+    "BaseException",
+    "Exception",
+    "ArithmeticError",
+    "OverflowError",
+    "AssertionError",
+    "AttributeError",
+    "BufferError",
+    "EOFError",
+    "ImportError",
+    "ModuleNotFoundError",
+    "LookupError",
+    "IndexError",
+    "KeyError",
+    "MemoryError",
+    "NameError",
+    "NotImplementedError",
+    "OSError",
+    "IOError",
+    "EnvironmentError",
+    "BlockingIOError",
+    "ChildProcessError",
+    "ConnectionError",
+    "BrokenPipeError",
+    "ConnectionAbortedError",
+    "ConnectionRefusedError",
+    "ConnectionResetError",
+    "FileExistsError",
+    "FileNotFoundError",
+    "InterruptedError",
+    "IsADirectoryError",
+    "NotADirectoryError",
+    "PermissionError",
+    "ProcessLookupError",
+    "TimeoutError",
+    "ReferenceError",
+    "RuntimeError",
+    "RecursionError",
+    "StopIteration",
+    "SyntaxError",
+    "SystemError",
+    "TypeError",
+    "UnboundLocalError",
+    "UnicodeError",
+    "UnicodeDecodeError",
+    "UnicodeEncodeError",
+    "ValueError",
+})
+
 
 def _base_names(node: ast.ClassDef) -> set[str]:
     return {b.id for b in node.bases if isinstance(b, ast.Name)}
@@ -61,9 +118,10 @@ def _own_code_value(node: ast.ClassDef) -> str | None:
 
 def _classes_with_exception_base(source: str, filename: str) -> dict[str, ast.ClassDef]:
     """Return {"<filename>::<ClassName>": node} for every class whose bases
-    include the literal name ``Exception`` (not yet migrated) or
+    include a builtin exception name -- ``Exception`` or any concrete builtin
+    like ``ValueError``/``RuntimeError``/``OSError`` (not yet migrated) -- or
     ``CodedError`` (already migrated -- re-checked so a future edit can't
-    silently drop the mixin or the code).
+    silently drop the mixin or the code). See ``_BUILTIN_EXCEPTION_BASES``.
 
     Excludes ``CodedError`` itself (defined in ``core/error_codes.py``): it is
     the generic base every other class here is required to mix in, with an
@@ -78,7 +136,7 @@ def _classes_with_exception_base(source: str, filename: str) -> dict[str, ast.Cl
         if node.name == "CodedError" and filename.endswith("core/error_codes.py"):
             continue
         bases = _base_names(node)
-        if "Exception" in bases or "CodedError" in bases:
+        if bases & _BUILTIN_EXCEPTION_BASES or "CodedError" in bases:
             found[f"{filename}::{node.name}"] = node
     return found
 

@@ -14,6 +14,8 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+
 # Maximum total uncompressed bytes we are willing to extract from one archive.
 MAX_TOTAL_UNCOMPRESSED = 512 * 1024 * 1024  # 512 MiB
 # Maximum uncompressed-to-compressed ratio for a single entry. Legitimate
@@ -23,8 +25,10 @@ MAX_COMPRESSION_RATIO = 200
 _RATIO_MIN_COMPRESSED = 1024
 
 
-class DecompressionBombError(ValueError):
+class DecompressionBombError(CodedError):
     """Raised when an archive's declared expansion exceeds safe limits."""
+
+    code = "QUILL-ARCHIVE-BOMB"
 
 
 def check_zip_safety(

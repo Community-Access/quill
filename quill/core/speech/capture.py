@@ -13,13 +13,17 @@ import wave
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
+
 SAMPLE_RATE = 16_000
 CHANNELS = 1
 _SAMPLE_WIDTH = 2  # int16
 
 
-class CaptureUnavailableError(RuntimeError):
+class CaptureUnavailableError(CodedError):
     """Raised when microphone capture support is not installed."""
+
+    code = "QUILL-SPEECH-CAPTURE-UNAVAILABLE"
 
 
 def capture_available() -> bool:

@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill import __version__ as _QUILL_VERSION
+from quill.core.error_codes import CodedError
 from quill.core.verbosity.parser import validate as validate_template
 from quill.core.verbosity.registry import VerbRegistry, default_registry
 
@@ -40,8 +41,10 @@ __all__ = [
 KIND = "quill-verbosity-pack"
 
 
-class QVPError(ValueError):
+class QVPError(CodedError):
     """Raised when a pack is structurally invalid. Carries every problem found."""
+
+    code = "QUILL-VERBOSITY-QVP-INVALID"
 
     def __init__(self, errors: list[str]) -> None:
         self.errors = list(errors)

@@ -15,6 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
+from quill.core.error_codes import CodedError
+
 __all__ = [
     "WebResult",
     "WebResearchProvider",
@@ -24,8 +26,10 @@ __all__ = [
 ]
 
 
-class WebResearchUnavailable(RuntimeError):
+class WebResearchUnavailable(CodedError):
     """Raised when web research is requested but no backend is configured."""
+
+    code = "QUILL-AI-WEBRESEARCH-UNAVAILABLE"
 
 
 @dataclass(frozen=True, slots=True)

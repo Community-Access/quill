@@ -13,6 +13,7 @@ from quill.core.radio.recording_schedule import (
     load_schedule,
     missed_occurrences,
     new_id,
+    next_occurrence,
     save_schedule,
 )
 
@@ -30,6 +31,45 @@ def _entry(**overrides: object) -> RecordingScheduleEntry:
     )
     base.update(overrides)
     return RecordingScheduleEntry(**base)  # type: ignore[arg-type]
+
+
+def test_next_occurrence_once_returns_the_target() -> None:
+    entry = _entry(recurrence="once", run_at="2026-07-20T08:00:00")
+    got = next_occurrence(entry, datetime(2026, 7, 14, 9, 0))
+    assert got is not None
+    assert got.hour == 8 and got.day == 20
+
+
+def test_next_occurrence_daily_rolls_to_tomorrow_when_time_passed() -> None:
+    entry = _entry(recurrence="daily", run_at="2026-01-01T08:00:00")
+    # It's 09:00 today, so today's 08:00 is gone -> tomorrow's 08:00.
+    got = next_occurrence(entry, datetime(2026, 7, 14, 9, 0))
+    assert got is not None
+    assert (got.hour, got.day) == (8, 15)
+
+
+def test_next_occurrence_daily_is_today_when_still_ahead() -> None:
+    entry = _entry(recurrence="daily", run_at="2026-01-01T08:00:00")
+    got = next_occurrence(entry, datetime(2026, 7, 14, 7, 0))
+    assert got is not None
+    assert (got.hour, got.day) == (8, 14)
+
+
+def test_next_occurrence_weekly_finds_next_matching_weekday() -> None:
+    # 2026-07-14 is a Tuesday (weekday 1); target weekday Friday (4).
+    entry = _entry(recurrence="weekly", run_at="2026-01-01T08:00:00", weekday=4)
+    got = next_occurrence(entry, datetime(2026, 7, 14, 9, 0))
+    assert got is not None
+    assert got.weekday() == 4 and got.day == 17
+
+
+def test_next_occurrence_orders_a_mixed_list_chronologically() -> None:
+    now = datetime(2026, 7, 14, 9, 0)
+    later_today = _entry(id="a", recurrence="daily", run_at="2026-01-01T22:00:00")
+    tomorrow = _entry(id="b", recurrence="daily", run_at="2026-01-01T06:00:00")
+    once_soon = _entry(id="c", recurrence="once", run_at="2026-07-14T12:00:00")
+    order = sorted([tomorrow, later_today, once_soon], key=lambda e: next_occurrence(e, now))
+    assert [e.id for e in order] == ["c", "a", "b"]  # 12:00 today, 22:00 today, 06:00 tomorrow
 
 
 def test_missed_occurrences_once_in_window() -> None:

@@ -150,11 +150,15 @@ class TaskManager:
                     task.result_summary = RESULT_FAILED
                 raise
 
-        future = self._executor.submit(wrapped)
+        # Bind ``task`` *before* submitting so ``wrapped``'s except block (which
+        # pre-tags ``task.result_summary``) never runs against an unbound name:
+        # a fast-failing func could reach the closure before the assignment,
+        # turning the real exception into a ``NameError``. The future is a
+        # throwaway placeholder replaced the instant ``submit`` returns.
         task = QuillTask(
             operation_id=operation_id,
             name=name,
-            future=future,
+            future=concurrent.futures.Future(),
             cancellation_token=token,
             started_at=time.monotonic(),
             timeout_seconds=timeout_seconds,
@@ -163,6 +167,8 @@ class TaskManager:
             submitted_at=time.time(),
             result_summary=RESULT_PENDING,
         )
+        future = self._executor.submit(wrapped)
+        task.future = future
         with self._lock:
             self._tasks[operation_id] = task
         future.add_done_callback(self._make_done_callback(task, operation_id))
@@ -192,7 +198,13 @@ class TaskManager:
         if task is None:
             return False
         task.cancellation_token.cancel()
-        return task.future.cancel()
+        # A not-yet-started future cancels outright. A *running* future cannot
+        # be cancelled (``future.cancel()`` returns False), but the cooperative
+        # cancellation token has still been signalled, so report success for a
+        # cooperatively-cancellable task rather than a misleading False.
+        if task.future.cancel():
+            return True
+        return task.safe_to_cancel
 
     def snapshot(self) -> list[QuillTask]:
         with self._lock:

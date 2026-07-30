@@ -62,6 +62,8 @@ from quill.core.github.items_provider import (
     GitHubItem,
     GitHubItemsError,
     GitHubItemsProvider,
+    GitHubRelease,
+    GitHubReleaseAsset,
     GitHubRepoForkInfo,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
@@ -84,6 +86,7 @@ from quill.ui.github_items_view import (
     model_label,
     model_url,
     parse_repo_reference,
+    release_drill_status,
     row_cells,
     sort_items,
     view_label,
@@ -135,6 +138,11 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         self._unfiltered_rows: list[object] = []
         self._quick_filter_query = ""  # GHManage parity, Ctrl+Shift+F
         self._drill_branch: str | None = None
+        # When set, the Releases view shows this release's assets (download
+        # counts, most-downloaded first) instead of the releases list; Backspace
+        # clears it. Mirrors _drill_branch (Branches -> Commits) but stays within
+        # the Releases view slot since assets belong to a specific release.
+        self._drill_release: GitHubRelease | None = None
         self._search_query = ""  # non-empty = issues view shows search results
         # Per-selection comment thread + positions for Alt+N/Alt+P navigation.
         self._comments: list[dict[str, str]] = []
@@ -541,6 +549,9 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         self._populate_list()
 
     def _clear_list(self) -> None:
+        # A fresh load (repo change or Refresh) leaves any release-asset drill;
+        # rebuild the columns so the ListCtrl matches the (non-drill) view again.
+        self._drill_release = None
         self._rows = []
         self._unfiltered_rows = []
         self._list.DeleteAllItems()
@@ -548,6 +559,7 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         self._comments = []
         self._comment_positions = []
         self._current_comment = -1
+        self._rebuild_columns()
 
     # ------------------------------------------------------------------
     # Selection / details / comment navigation
@@ -659,6 +671,17 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
             self._drill_branch = model.name
             self._switch_view(VIEW_COMMITS)
             return
+        if self._view == VIEW_RELEASES:
+            if self._drill_release is None and isinstance(model, GitHubRelease):
+                self._enter_release_drill(model)
+                return
+            if self._drill_release is not None and isinstance(model, GitHubReleaseAsset):
+                if model.browser_download_url:
+                    webbrowser.open(model.browser_download_url)
+                    self._announce(f"Opening download for {model.name} in browser")
+                else:
+                    self._announce("This asset has no download link.")
+                return
         if self._view == VIEW_WORKFLOWS:
             self._run_selected_workflow(model)
             return
@@ -666,6 +689,38 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         if url:
             webbrowser.open(url)
             self._announce(f"Opened {model_label(model)} in browser")
+
+    def _enter_release_drill(self, release: GitHubRelease) -> None:
+        """Show *release*'s assets (most-downloaded first) in place of the
+        releases list. The assets are already in hand from the releases fetch,
+        so this is an instant client-side switch -- no extra network call."""
+        self._drill_release = release
+        self._unfiltered_rows = list(release.assets)
+        self._rows = list(release.assets)
+        # A quick filter typed for the releases columns rarely means anything
+        # for the asset columns -- reset it, as the branch/view switches do.
+        self._quick_filter_query = ""
+        self._quick_filter_ctrl.ChangeValue("")
+        self._rebuild_columns()  # swap to RELEASE_ASSET_COLUMNS
+        self._populate_list()
+        self._set_status(release_drill_status(release))
+        if release.assets:
+            self._list.SetFocus()
+            self._list.Select(0)
+            self._list.Focus(0)
+            self._show_detail(0)
+        else:
+            self._details.Clear()
+            self._announce(
+                f"{release.tag} has no downloadable assets. Backspace returns to the releases list."
+            )
+
+    def _exit_release_drill(self) -> None:
+        """Backspace out of a release's asset breakdown, back to the releases
+        list (mirrors Backspace out of a branch's Commits drill-down)."""
+        # _reload -> _clear_list resets _drill_release and rebuilds the columns.
+        self._reload()
+        self._announce("Back to releases.")
 
     def _open_selected(self) -> None:
         idx = self._list.GetFirstSelected()
@@ -1327,6 +1382,7 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         if view == self._view:
             return
         self._drill_branch = None  # leaving Branches cancels any drill target
+        self._drill_release = None  # leaving Releases cancels any asset drill
         self._switch_view(view)
 
     def _switch_view(self, view: str) -> None:
@@ -1363,6 +1419,13 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
             # otherwise it would eat Backspace in the repo/search text fields.
             self._drill_branch = None
             self._switch_view(VIEW_BRANCHES)
+        elif (
+            key == self._wx.WXK_BACK
+            and self._view == VIEW_RELEASES
+            and self._drill_release is not None
+        ):
+            # Step back out of a release's asset breakdown to the releases list.
+            self._exit_release_drill()
         else:
             event.Skip()
 

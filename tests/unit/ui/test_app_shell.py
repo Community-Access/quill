@@ -66,28 +66,6 @@ class _ShellWithAdp(AppShellFrame, AdpMixin):
     pass
 
 
-class _MenuSpy:
-    def __init__(self) -> None:
-        self.appended: list[str] = []
-        self.separators = 0
-
-    def AppendSeparator(self) -> None:  # noqa: N802 - wx spelling
-        self.separators += 1
-
-    def Append(self, _id: object, label: str) -> None:  # noqa: N802 - wx spelling
-        self.appended.append(label)
-
-
-def test_adp_menu_items_absent_while_locked():
-    shell = _ShellWithAdp.__new__(_ShellWithAdp)
-    shell.features = _Features(set())
-    shell._feature_locks = _Locks(set())
-    menu = _MenuSpy()
-    shell._append_adp_media_items(menu)
-    assert menu.appended == []
-    assert menu.separators == 0
-
-
 def test_top_level_adp_menu_is_none_while_locked():
     shell = _ShellWithAdp.__new__(_ShellWithAdp)
     shell.features = _Features(set())

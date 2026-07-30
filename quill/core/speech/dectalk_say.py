@@ -17,7 +17,11 @@ deliberately self-contained (standard library only, no ``quill`` imports) so it
 can be spawned as ``python dectalk_say.py`` in a short-lived child process. That
 isolation matters: the DLL locates its dictionary relative to the current
 working directory, and changing cwd process-wide inside the wx UI thread would
-be unsafe, so synthesis runs out-of-process.
+be unsafe, so synthesis runs out-of-process. The only non-stdlib import is the
+tiny, dependency-free :mod:`quill.core.error_codes` (for the shared support-code
+contract every QUILL exception carries); it stays spawnable as
+``python dectalk_say.py`` under the QUILL interpreter, where ``quill`` is always
+importable.
 
 Interface
 ---------
@@ -40,6 +44,8 @@ import wave
 from ctypes import wintypes
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+
 # DECtalk / mmsystem constants (see dectalk src/dapi/src/api/ttsapi.h).
 _DO_NOT_USE_AUDIO_DEVICE = 0x80000000
 _TTS_FORCE = 1
@@ -52,8 +58,10 @@ _DICTIONARY_NAME = "dtalk_us.dic"
 _VOICE_MODULE_NAME = "dtalk_us.dll"
 
 
-class DectalkSayError(RuntimeError):
+class DectalkSayError(CodedError):
     """Raised when DECtalk synthesis fails; message is a user-facing diagnostic."""
+
+    code = "QUILL-SPEECH-DECTALK-SAY"
 
 
 def _resolve_runtime(dll_path: Path) -> tuple[Path, Path]:

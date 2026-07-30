@@ -15,6 +15,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from quill.core.error_codes import CodedError
+
 try:  # pragma: no cover - Windows-only runtime hook
     # `launch_windows_dictation` is set to the real Windows shell
     # launcher when running on Windows. On macOS/Linux the import
@@ -47,8 +49,8 @@ class DictationSettings:
     device_index: int | None = None
 
 
-class DictationUnavailableError(RuntimeError):
-    pass
+class DictationUnavailableError(CodedError):
+    code = "QUILL-DICTATION-UNAVAILABLE"
 
 
 class DictationController:

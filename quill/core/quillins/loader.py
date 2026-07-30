@@ -35,6 +35,7 @@ from pathlib import Path
 from quill.core.paths import app_data_dir
 from quill.core.quillins.model import (
     CONSENT_GATED_CAPABILITIES,
+    DEFAULT_TARGETS,
     ExtensionManifest,
 )
 from quill.core.quillins.validation import parse_manifest
@@ -106,6 +107,27 @@ def _check_requires_errors(
 STATE_SCHEMA_VERSION = 1
 _MANIFEST_FILENAME = "manifest.json"
 _STATE_FILENAME = "state.json"
+
+#: The implicit app id of the editor. Every discovery/load call defaults to it,
+#: so the editor's existing (targets-less, ``["quill"]`` by default) Quillins are
+#: unaffected while the standalone apps pass their own id (``"radio"``,
+#: ``"cast"``, ...) to load only Quillins that opt into them.
+EDITOR_APP_ID = "quill"
+
+
+def _manifest_targets_app(manifest: ExtensionManifest | None, app_id: str) -> bool:
+    """True when ``manifest`` should load in ``app_id``.
+
+    A ``None`` manifest (a folder whose manifest failed to parse) is always kept
+    so the Manager can still surface its errors -- filtering only ever hides a
+    *valid* Quillin that did not opt into this app. An empty ``targets`` defaults
+    to :data:`~quill.core.quillins.model.DEFAULT_TARGETS` (the editor only).
+    """
+
+    if manifest is None:
+        return True
+    return app_id in (manifest.targets or DEFAULT_TARGETS)
+
 
 #: Feature flag gating the bundled (Tier C) Quillin path. On by default; entirely
 #: separate from the SEC-8 ``core.third_party_plugins`` lock.
@@ -220,7 +242,13 @@ def _check_main_has_register(directory: Path, manifest: ExtensionManifest) -> st
     """
     if manifest.main is None:
         return None
-    main_path = (directory / manifest.main).resolve()
+    directory_resolved = directory.resolve()
+    main_path = (directory_resolved / manifest.main).resolve()
+    # Containment: a crafted ``main`` (e.g. "../evil.py") must never let the
+    # loader read a file outside the extension directory. Mirrors the same guard
+    # the Python worker applies before importing the module.
+    if directory_resolved != main_path and directory_resolved not in main_path.parents:
+        return "main module escapes the extension directory"
     if not main_path.exists():
         return f"main module '{manifest.main}' not found"
     try:
@@ -258,12 +286,16 @@ def _read_manifest(directory: Path) -> tuple[ExtensionManifest | None, tuple[str
     return manifest, ()
 
 
-def discover_extensions(features: object, *, root: Path | None = None) -> list[InstalledExtension]:
-    """Discover installed Quillins.
+def discover_extensions(
+    features: object, *, root: Path | None = None, app_id: str = EDITOR_APP_ID
+) -> list[InstalledExtension]:
+    """Discover installed Quillins that target ``app_id``.
 
     Returns an empty list unless the ``core.third_party_plugins`` flag is enabled
     (SEC-8). Because that flag is ``locked_off`` for 1.0, a default build always
-    returns ``[]`` and never reads third-party manifests.
+    returns ``[]`` and never reads third-party manifests. ``app_id`` defaults to
+    the editor, so the editor's callers are unaffected; the standalone apps pass
+    their own id to load only Quillins whose ``targets`` include them.
     """
 
     if not third_party_plugins_enabled(features):
@@ -279,6 +311,8 @@ def discover_extensions(features: object, *, root: Path | None = None) -> list[I
         if not child.is_dir():
             continue
         manifest, errors = _read_manifest(child)
+        if not _manifest_targets_app(manifest, app_id):
+            continue
         extension_id = manifest.id if manifest is not None else child.name
         entry = state.entry(extension_id)
         discovered.append(
@@ -312,12 +346,12 @@ def discover_extensions(features: object, *, root: Path | None = None) -> list[I
 
 
 def load_enabled_manifests(
-    features: object, *, root: Path | None = None
+    features: object, *, root: Path | None = None, app_id: str = EDITOR_APP_ID
 ) -> list[ExtensionManifest]:
     """Return validated manifests for enabled, valid Quillins only (SEC-8 gated)."""
 
     manifests: list[ExtensionManifest] = []
-    for installed in discover_extensions(features, root=root):
+    for installed in discover_extensions(features, root=root, app_id=app_id):
         if installed.enabled and installed.manifest is not None and installed.is_valid:
             manifests.append(installed.manifest)
     return manifests
@@ -407,13 +441,16 @@ def install_extension(source_dir: Path, *, root: Path | None = None) -> str:
     id on success. Raises ``ValueError`` when the manifest is absent or unreadable,
     and ``ManifestError`` when it fails validation.
 
-    Path containment is enforced: the destination is always directly inside
-    ``extensions_root()`` — a crafted id cannot install outside it.
+    The manifest is fully validated (:func:`parse_manifest`) *before* anything is
+    copied, so a malformed Quillin never lands on disk. The freshly installed
+    Quillin is left **disabled**: the user must explicitly enable it from the
+    Quillins Manager, matching the default-deny posture (a crafted folder cannot
+    self-activate on install). Path containment is enforced: the destination is
+    always directly inside ``extensions_root()`` — a crafted id cannot install
+    outside it.
     """
 
     import json as _json
-
-    from quill.core.quillins.model import ManifestError
 
     manifest_path = source_dir / _MANIFEST_FILENAME
     if not manifest_path.is_file():
@@ -422,9 +459,11 @@ def install_extension(source_dir: Path, *, root: Path | None = None) -> str:
         raw = _json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, _json.JSONDecodeError) as exc:
         raise ValueError(f"manifest.json unreadable: {exc}") from exc
-    if not isinstance(raw, dict) or not isinstance(raw.get("id"), str):
-        raise ManifestError(["manifest must have a string 'id' field"])
-    extension_id: str = raw["id"]
+    # Full schema validation before any copy: raises ManifestError listing every
+    # problem (which also guarantees a string, well-formed id and a contained
+    # ``main``). Replaces the previous "id is a string" spot-check.
+    manifest = parse_manifest(raw)
+    extension_id: str = manifest.id
 
     dest_root = extensions_root(root=root).resolve()
     dest = (dest_root / extension_id).resolve()
@@ -435,7 +474,7 @@ def install_extension(source_dir: Path, *, root: Path | None = None) -> str:
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(source_dir, dest)
-    set_enabled(extension_id, True, root=root)
+    # Deliberately NOT auto-enabled — the user enables it explicitly afterwards.
     return extension_id
 
 
@@ -486,14 +525,15 @@ def _bundled_granted_capabilities(manifest: ExtensionManifest) -> tuple[str, ...
 
 
 def discover_bundled_extensions(
-    features: object, *, root: Path | None = None
+    features: object, *, root: Path | None = None, app_id: str = EDITOR_APP_ID
 ) -> list[InstalledExtension]:
-    """Discover QUILL's bundled Quillins (Tier C).
+    """Discover QUILL's bundled Quillins (Tier C) that target ``app_id``.
 
     Returns an empty list unless ``core.bundled_quillins`` is enabled. Each
     bundled Quillin is reported as ``enabled=True`` with its non-consent
     capabilities pre-granted; invalid manifests are surfaced with their errors so
-    the Manager can show them.
+    the Manager can show them. ``app_id`` defaults to the editor, so existing
+    editor callers see every (targets-less) bundled Quillin unchanged.
     """
 
     if not bundled_quillins_enabled(features):
@@ -508,6 +548,8 @@ def discover_bundled_extensions(
         if not child.is_dir():
             continue
         manifest, errors = _read_manifest(child)
+        if not _manifest_targets_app(manifest, app_id):
+            continue
         extension_id = manifest.id if manifest is not None else child.name
         granted = _bundled_granted_capabilities(manifest) if manifest is not None else ()
         discovered.append(
@@ -541,12 +583,12 @@ def discover_bundled_extensions(
 
 
 def load_enabled_bundled_manifests(
-    features: object, *, root: Path | None = None
+    features: object, *, root: Path | None = None, app_id: str = EDITOR_APP_ID
 ) -> list[ExtensionManifest]:
     """Return validated manifests for all valid bundled Quillins (flag-gated)."""
 
     manifests: list[ExtensionManifest] = []
-    for installed in discover_bundled_extensions(features, root=root):
+    for installed in discover_bundled_extensions(features, root=root, app_id=app_id):
         if installed.manifest is not None and installed.is_valid:
             manifests.append(installed.manifest)
     return manifests

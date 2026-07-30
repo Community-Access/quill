@@ -1,0 +1,23 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.beacontransitresolver",
+  "name": "Beacon Transit Resolver",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Contributes a fallback location resolver to Quill Beacon, matching a saved quote against current content when the built-in locators fail. Sample of the beacon.resolver capability.",
+  "license": "MIT",
+  "categories": ["integration"],
+  "targets": ["beacon"],
+  "capabilities": ["beacon.resolver", "storage"],
+  "main": "extension.py",
+  "contributes": {
+    "location_resolvers": [
+      {
+        "id": "ext.beacontransitresolver.resolver",
+        "handler": "resolve_location",
+        "content_types": ["web", "text"],
+        "description": "A last-ditch case-insensitive quote search; returns a low-confidence match (needs review) when the exact locators could not place the location."
+      }
+    ]
+  }
+}

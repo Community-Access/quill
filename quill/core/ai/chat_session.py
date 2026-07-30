@@ -21,6 +21,7 @@ from dataclasses import asdict, dataclass
 
 from quill.core.ai.compaction import SUMMARY_SPEAKER, Message, compact_conversation
 from quill.core.ai.events import AgentEvent, AgentEventKind
+from quill.core.error_codes import CodedError
 
 __all__ = ["ChatTurn", "ChatError", "ChatSession"]
 
@@ -28,8 +29,10 @@ Emit = Callable[[AgentEvent], None]
 OnDelta = Callable[[str], None]
 
 
-class ChatError(RuntimeError):
+class ChatError(CodedError):
     """A chat turn could not complete (backend/provider failure)."""
+
+    code = "QUILL-AI-CHATSESSION-FAILED"
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,12 +77,17 @@ class ChatSession:
 
     def send(self, user_text: str) -> str:
         """Append the user turn, (compact if needed), call the model, return reply."""
+        # Snapshot so a failed turn leaves no dangling user message behind: on
+        # error we restore the prior turns exactly (including any compaction the
+        # attempt triggered), so a retry re-sends the message once, not twice.
+        snapshot = list(self._turns)
         self._turns.append(ChatTurn("user", user_text))
         self._maybe_compact()
         self._emit(AgentEvent(AgentEventKind.AGENT_STARTED, "Thinking."))
         try:
             reply = str(self._backend.respond(self._render_prompt()))  # type: ignore[attr-defined]
         except Exception as exc:  # contained: surface as ChatError + ERROR event
+            self._turns = snapshot
             self._emit(AgentEvent(AgentEventKind.ERROR, "The assistant could not respond."))
             raise ChatError(str(exc)) from exc
         self._turns.append(ChatTurn("assistant", reply))
@@ -88,6 +96,8 @@ class ChatSession:
 
     def send_stream(self, user_text: str, on_delta: OnDelta) -> str:
         """Streaming variant; falls back to blocking when the backend can't stream."""
+        # See send(): roll back the failed user turn so a retry is not duplicated.
+        snapshot = list(self._turns)
         self._turns.append(ChatTurn("user", user_text))
         self._maybe_compact()
         self._emit(AgentEvent(AgentEventKind.AGENT_STARTED, "Thinking."))
@@ -105,6 +115,7 @@ class ChatSession:
                 if reply:
                     delta(reply)
         except Exception as exc:
+            self._turns = snapshot
             self._emit(AgentEvent(AgentEventKind.ERROR, "The assistant could not respond."))
             raise ChatError(str(exc)) from exc
         self._turns.append(ChatTurn("assistant", reply))

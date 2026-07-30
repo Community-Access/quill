@@ -120,6 +120,69 @@ def test_build_record_command_includes_user_agent_before_input() -> None:
     assert ua_index < args.index("-i")
 
 
+def test_local_now_is_close_to_wall_clock() -> None:
+    # #1223: the recording timestamp source. It must track the actual local
+    # wall clock (on Windows it reads GetLocalTime; elsewhere datetime.now()).
+    from quill.core.radio import local_clock
+
+    got = local_clock.local_now()
+    assert isinstance(got, datetime)
+    assert got.tzinfo is None  # naive local, as build_filename's strftime expects
+    assert abs((got - datetime.now()).total_seconds()) < 5
+
+
+def test_local_now_falls_back_to_now_when_os_api_unavailable(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    # Force the non-Windows branch: it must still return a sane local datetime.
+    from quill.core.radio import local_clock
+
+    monkeypatch.setattr(local_clock.os, "name", "posix")
+    got = local_clock.local_now()
+    assert isinstance(got, datetime)
+    assert abs((got - datetime.now()).total_seconds()) < 5
+
+
+def test_build_record_command_http_sets_rw_timeout_before_input() -> None:
+    # #1222: a stalled read must abort ffmpeg instead of wedging it forever.
+    # -rw_timeout is an input option (microseconds), so it precedes -i.
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+    )
+    assert "-rw_timeout" in args
+    idx = args.index("-rw_timeout")
+    assert args[idx + 1] == str(30 * 1_000_000)  # 30s default, in microseconds
+    assert idx < args.index("-i")
+
+
+def test_build_record_command_rw_timeout_can_be_disabled() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "https://example.com/stream",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        rw_timeout_seconds=0,
+    )
+    assert "-rw_timeout" not in args
+
+
+def test_build_record_command_no_rw_timeout_for_non_http_input() -> None:
+    args = build_record_command(
+        "ffmpeg",
+        "/local/stream.aac",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+    )
+    assert "-rw_timeout" not in args
+
+
 def test_build_record_command_default_loglevel_is_error() -> None:
     args = build_record_command(
         "ffmpeg",

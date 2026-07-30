@@ -8,6 +8,7 @@ import json
 import pytest
 
 import quill.core.podcasts.chapters as chapters_module
+from quill.core.podcasts import feed_auth
 from quill.core.podcasts.chapters import (
     ChaptersError,
     PodcastChapter,
@@ -113,9 +114,7 @@ class _FakeResponse:
 
 def test_fetch_and_parse_chapters_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
     payload = json.dumps(_SAMPLE).encode()
-    monkeypatch.setattr(
-        chapters_module.urllib.request, "urlopen", lambda *a, **k: _FakeResponse(payload)
-    )
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", lambda *a, **k: _FakeResponse(payload))
     result = fetch_and_parse_chapters("https://x/chapters.json")
     assert len(result) == 3
 
@@ -124,7 +123,7 @@ def test_fetch_chapters_bytes_raises_on_network_error(monkeypatch: pytest.Monkey
     def always_fail(*_a: object, **_k: object) -> None:
         raise OSError("connection refused")
 
-    monkeypatch.setattr(chapters_module.urllib.request, "urlopen", always_fail)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", always_fail)
     with pytest.raises(ChaptersError):
         chapters_module._fetch_chapters_bytes("https://x/chapters.json")
 
@@ -180,7 +179,7 @@ def test_fetch_chapters_bytes_sends_auth_header(monkeypatch) -> None:
         captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
         return _Resp()
 
-    monkeypatch.setattr(chapters.urllib.request, "urlopen", _fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _fake_urlopen)
     chapters._fetch_chapters_bytes("https://h.example.com/c.json", auth_header="Basic xyz")
     assert captured["auth"] == "Basic xyz"
     chapters._fetch_chapters_bytes("https://h.example.com/c.json")

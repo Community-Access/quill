@@ -380,6 +380,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.html_paste_cleaner import analyze_paste
+from quill.ui.keybinding_parse import KeybindingParseMixin
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_abbreviations import AbbreviationsMixin
 from quill.ui.main_frame_adp import AdpMixin
@@ -416,6 +417,7 @@ from quill.ui.main_frame_inline_notes import InlineNotesMixin
 from quill.ui.main_frame_intellisense import IntellisensePopupMixin
 from quill.ui.main_frame_keymap_io import KeymapIoMixin
 from quill.ui.main_frame_language_detect import LanguageDetectMixin
+from quill.ui.main_frame_library import LibraryMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
@@ -806,6 +808,7 @@ class MainFrame(
     EmojiPickerMixin,
     RadioMixin,
     PodcastsMixin,
+    LibraryMixin,
     MediaSleepTimerMixin,
     FormatCodesMixin,
     SpeechCommandsMixin,
@@ -878,6 +881,7 @@ class MainFrame(
     ContextHelpMixin,
     WatchProfileDialogMixin,
     KeymapEditorMixin,
+    KeybindingParseMixin,
 ):
     _ANNOUNCEMENT_BACKEND_LABELS: dict[str, str] = {
         "auto": "Automatic (use Prism when available)",
@@ -1724,62 +1728,8 @@ class MainFrame(
         if callable(skip):
             skip()
 
-    def _parse_keybinding(self, keybinding: str | None) -> tuple[int, int] | None:
-        if not keybinding:
-            return None
-        wx = self._wx
-        parts = [part.strip() for part in keybinding.split("+") if part.strip()]
-        if not parts:
-            return None
-
-        flags = 0
-        for modifier in parts[:-1]:
-            lowered = modifier.lower()
-            if lowered == "ctrl":
-                flags |= wx.ACCEL_CTRL
-            elif lowered == "shift":
-                flags |= wx.ACCEL_SHIFT
-            elif lowered == "alt":
-                flags |= wx.ACCEL_ALT
-            elif lowered in ("cmd", "command"):
-                # "Cmd" is how DEFAULT_KEYMAP spells the macOS-only bindings
-                # (navigate.back_location/forward_location, and
-                # window.next_document/previous_document — see keymap.py).
-                # wx has no separate ACCEL_CMD flag: wx.ACCEL_CTRL is what
-                # already maps to the Command key in a wx.AcceleratorTable on
-                # macOS, so "Cmd" parses to the same flag as "Ctrl". Without
-                # this, a "Cmd+..." binding fell through to the "else: return
-                # None" branch below and silently never got an accelerator
-                # table entry at all on any platform.
-                flags |= wx.ACCEL_CTRL
-            else:
-                return None
-
-        key_token = parts[-1].upper()
-        if len(key_token) == 1:
-            return flags, ord(key_token)
-
-        function_keys: dict[str, int] = {
-            f"F{index}": getattr(wx, f"WXK_F{index}") for index in range(1, 13)
-        }
-        named_keys: dict[str, int] = {
-            "ENTER": wx.WXK_RETURN,
-            "TAB": wx.WXK_TAB,
-            "SPACE": wx.WXK_SPACE,
-            "ESC": wx.WXK_ESCAPE,
-            "ESCAPE": wx.WXK_ESCAPE,
-            "DELETE": wx.WXK_DELETE,
-            "BACKSPACE": wx.WXK_BACK,
-            "HOME": wx.WXK_HOME,
-            "END": wx.WXK_END,
-            "LEFT": wx.WXK_LEFT,
-            "RIGHT": wx.WXK_RIGHT,
-        }
-        if key_token in function_keys:
-            return flags, function_keys[key_token]
-        if key_token in named_keys:
-            return flags, named_keys[key_token]
-        return None
+    # ``_parse_keybinding`` now lives on KeybindingParseMixin (one shared copy
+    # with the standalone apps); MainFrame resolves it via the MRO.
 
     def _bind_events(self) -> None:
         wx = self._wx
@@ -13844,8 +13794,9 @@ class MainFrame(
             wx.StaticText(
                 dialog,
                 label=(
-                    "Quill notifications appear below. Selecting a row copies it to the clipboard, "
-                    "or use Copy Selected."
+                    "Quill notifications appear below. Double-click a row or press Ctrl+C to "
+                    "copy it to the clipboard, or use Copy Selected. Arrowing through the list "
+                    "does not copy."
                 ),
             ),
             0,
@@ -13893,7 +13844,19 @@ class MainFrame(
                 return
             self._set_status("Copied notification to clipboard")
 
-        chooser.Bind(wx.EVT_LISTBOX, lambda _e: copy_selected())
+        # Copy is *explicit* only: double-click or Ctrl+C on the list, or the button.
+        # Do NOT bind EVT_LISTBOX (selection-changed) — that fires on every arrow-key
+        # move, so screen-reader users navigating the list would silently clobber the
+        # clipboard on each row (#1247).
+        def _on_list_key(event: object) -> None:
+            key_code = event.GetKeyCode()
+            if event.ControlDown() and key_code in (ord("C"), ord("c")):
+                copy_selected()
+                return
+            event.Skip()
+
+        chooser.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: copy_selected())
+        chooser.Bind(wx.EVT_KEY_DOWN, _on_list_key)
         copy_button.Bind(wx.EVT_BUTTON, lambda _e: copy_selected())
         clear_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLEAR))
         close_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLOSE))

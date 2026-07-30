@@ -9,6 +9,11 @@
 # package -- code and package data (schemas, sounds, bundled quillins,
 # assets, and the build-time _feedback_token module) -- so nothing the
 # shared feature code needs is missing.
+#
+# As of 2026-07-24, the entry-point EXE is NOT produced by PyInstaller
+# anymore -- it is replaced by the native QuillVille launcher
+# (quill-audio-studio.exe) which is placed at the onedir root by
+# scripts/build_release.ps1. See quill/native/launcher/README.md.
 
 from PyInstaller.utils.hooks import collect_all
 
@@ -69,17 +74,21 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+# COLLECT-only build. See quill-radio.spec for the full rationale. The
+# native launcher (quill-audio-studio.exe) is built by
+# scripts/build_native_launcher.py and placed at the onedir root by
+# scripts/build_release.ps1. The EXE() below is a PyInstaller-required
+# placeholder -- COLLECT() refuses to run without one -- and is
+# overwritten by the native launcher at the same path.
 exe = EXE(
     pyz,
     a.scripts,
     exclude_binaries=True,
     name="QuillAudioStudio",
-    icon="assets/quill-audio-studio.ico",
     console=False,
     upx=False,
     disable_windowed_traceback=False,
 )
-
 coll = COLLECT(
     exe,
     a.binaries,

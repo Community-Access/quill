@@ -19,6 +19,8 @@ import xml.etree.ElementTree as _ET
 from typing import cast
 from xml.etree.ElementTree import Element
 
+from quill.core.error_codes import CodedError
+
 ParseError = _ET.ParseError
 
 # Matches a DOCTYPE declaration or an explicit ENTITY definition, the building
@@ -26,9 +28,11 @@ ParseError = _ET.ParseError
 _DTD_OR_ENTITY = re.compile(rb"<!(?:DOCTYPE|ENTITY)\b", re.IGNORECASE)
 
 
-class UnsafeXMLError(ValueError):
+class UnsafeXMLError(CodedError):
     """Raised when untrusted XML uses a forbidden construct (entity expansion
     or external entities)."""
+
+    code = "QUILL-XML-UNSAFE"
 
 
 try:  # Preferred: defusedxml disables entity expansion and external entities.

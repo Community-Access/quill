@@ -93,7 +93,9 @@ def test_faster_whisper_status_returns_message() -> None:
 
 
 def test_has_nvidia_gpu_caches_after_first_call(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(bw_speech.shutil, "which", lambda _name: "nvidia-smi")
+    # The resolver rejects CWD-relative results, so a "found" nvidia-smi is now
+    # represented by an absolute path rather than a bare name.
+    monkeypatch.setattr(bw_speech, "_resolve_nvidia_smi", lambda: "/usr/bin/nvidia-smi")
     calls = []
 
     def fake_run_safely(args, *, timeout_seconds=5.0):
@@ -108,7 +110,7 @@ def test_has_nvidia_gpu_caches_after_first_call(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_has_nvidia_gpu_treats_timeout_as_no_gpu(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(bw_speech.shutil, "which", lambda _name: "nvidia-smi")
+    monkeypatch.setattr(bw_speech, "_resolve_nvidia_smi", lambda: "/usr/bin/nvidia-smi")
 
     def fake_run_safely(args, *, timeout_seconds=5.0):
         raise subprocess.TimeoutExpired(cmd=args, timeout=timeout_seconds)
@@ -119,6 +121,6 @@ def test_has_nvidia_gpu_treats_timeout_as_no_gpu(monkeypatch: pytest.MonkeyPatch
 
 
 def test_has_nvidia_gpu_false_when_binary_missing(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(bw_speech.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(bw_speech, "_resolve_nvidia_smi", lambda: None)
 
     assert has_nvidia_gpu() is False
