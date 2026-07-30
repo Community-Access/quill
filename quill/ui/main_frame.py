@@ -6471,6 +6471,19 @@ class MainFrame(
             index = self._active_tab_index
         return self._document_tabs[index]
 
+    @property
+    def _current_tab(self) -> _DocumentTab | None:
+        """The active tab, or None before tabs exist. Resolves ~10 reader sites
+        that did ``getattr(self, "_current_tab", None)`` and always got None
+        (never assigned), silently disabling their tab-scoped features."""
+        active = getattr(self, "_active_tab", None)
+        if not callable(active):
+            return None
+        try:
+            return active()
+        except (IndexError, AttributeError):
+            return None
+
     def _close_tab(self, index: int) -> None:
         if index < 0 or index >= len(self._document_tabs):
             return
