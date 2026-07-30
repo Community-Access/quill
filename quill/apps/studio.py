@@ -963,7 +963,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
 
         voices = wx.Menu()
         hub_id, models_id, components_id, ffmpeg_id = (wx.NewIdRef() for _ in range(4))
-        pronunciation_id, captions_id, convert_id = (wx.NewIdRef() for _ in range(3))
+        pronunciation_id, captions_id, convert_id, convert_url_id = (
+            wx.NewIdRef() for _ in range(4)
+        )
         voices.Append(hub_id, "Speech &Hub (Voices and Engines)...")
         voices.Append(models_id, "&Manage Speech Models...")
         voices.Append(
@@ -980,6 +982,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             convert_id,
             "Con&vert Audio...",
             "Convert audio files between formats — offline, on this machine",
+        )
+        voices.Append(
+            convert_url_id,
+            "Convert from &URL...",
+            "Download the audio from a link (YouTube and more) and convert it",
         )
         voices.AppendSeparator()
         voices.Append(components_id, "&Download Optional Components...")
@@ -1060,6 +1067,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             (pronunciation_id, self.open_pronunciation_dictionaries),
             (captions_id, self.generate_captions_offline),
             (convert_id, self.convert_audio),
+            (convert_url_id, self.convert_from_url),
             (components_id, self.open_optional_components),
             (ffmpeg_id, self.download_ffmpeg_component),
             (ai_setup_id, self.open_ai_setup),
@@ -1180,6 +1188,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             ),
             ("studio.captions", "Generate Captions (Offline)...", self.generate_captions_offline),
             ("studio.convert_audio", "Convert Audio...", self.convert_audio),
+            ("studio.convert_from_url", "Convert from URL...", self.convert_from_url),
             (
                 "studio.components",
                 "Download Optional Components...",
@@ -1239,6 +1248,15 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         from quill.ui.audio_studio.convert_audio_dialog import run_audio_conversion
 
         run_audio_conversion(self)
+
+    def convert_from_url(self) -> None:
+        """Studio > Convert from URL...: download a link's audio, then convert it.
+
+        Consent-gated, on-demand yt-dlp install; unavailable in Safe Mode. See
+        quill.core.audio.url_import (#1255 §4.6)."""
+        from quill.ui.audio_studio.convert_audio_dialog import run_url_conversion
+
+        run_url_conversion(self)
 
     def open_book_picker(self) -> None:
         """Edit a Book: straight to a file picker, then the Chapter Workbench."""
