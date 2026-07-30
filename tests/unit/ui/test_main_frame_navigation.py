@@ -1913,6 +1913,8 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
             "ID_CLOSE": 1000,
             "NOT_FOUND": -1,
             "EVT_LISTBOX": 200,
+            "EVT_LISTBOX_DCLICK": 202,
+            "EVT_KEY_DOWN": 203,
             "EVT_BUTTON": 201,
         },
     )()
