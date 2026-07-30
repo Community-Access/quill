@@ -25,6 +25,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import wx
+
 from quill.core.audio.convert import (
     ConversionSpec,
     OnExisting,
@@ -173,66 +175,58 @@ def run_audio_conversion(host: Any) -> None:
     filters the format list to what it can encode, shows the accessible dialog,
     and hands a runnable request to :func:`plan_and_run`.
     """
-    import wx
-
     from quill.core.speech.ffmpeg import find_ffmpeg
 
     ffmpeg = find_ffmpeg()
     formats = available_output_formats(ffmpeg)
-    dialog = ConvertAudioDialog(host.frame, wx, output_formats=formats)
+    dialog = ConvertAudioDialog(host.frame, output_formats=formats)
     try:
         request = dialog.show(host._show_modal_dialog)
     finally:
         # show_modal_dialog only ShowModal()s; the caller owns teardown (A11Y-4).
-        dialog.dialog.Destroy()
+        dialog.Destroy()
     if request is None:
         host._set_status("Audio conversion cancelled.")
         return
     plan_and_run(host, request)
 
 
-class ConvertAudioDialog:
-    """Wraps a ``wx.Dialog`` for Basic-mode conversion (thin, accessible shell).
+class ConvertAudioDialog(wx.Dialog):
+    """A ``wx.Dialog`` for Basic-mode conversion (accessible, house contract).
 
-    Composed rather than subclassed so the widget wiring is injectable/testable
-    with a fake ``wx``; the real dialog is built in :meth:`_build`.
+    A subclass so it owns its keyboard contract and is shown through the host's
+    accessible ``_show_modal_dialog`` path (see :func:`run_audio_conversion`).
     """
 
-    def __init__(self, parent: Any, wx: Any, *, output_formats: list[str]) -> None:
-        self._wx = wx
-        self._parent = parent
+    def __init__(self, parent: Any, *, output_formats: list[str]) -> None:
+        super().__init__(
+            parent,
+            title=_TITLE,
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            name="audio_studio.convert_audio",
+        )
         self._formats = output_formats or ["wav"]
-        # The queue: (entry path, mirror root or None).
         self._entries: list[tuple[Path, Path | None]] = []
-        self.dialog: Any = None
         self._build()
 
     # -- construction ----------------------------------------------------- #
 
     def _build(self) -> None:
-        wx = self._wx
         from quill.ui.accessible_names import set_accessible_name
         from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
-        dlg = wx.Dialog(
-            self._parent,
-            title=_TITLE,
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-            name="audio_studio.convert_audio",
-        )
-        self.dialog = dlg
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        sizer.Add(wx.StaticText(dlg, label="&Files to convert:"), 0, wx.ALL, 8)
-        self._list = wx.ListBox(dlg, name="Files to convert")
+        sizer.Add(wx.StaticText(self, label="&Files to convert:"), 0, wx.ALL, 8)
+        self._list = wx.ListBox(self, name="Files to convert")
         set_accessible_name(self._list, "Files to convert")
         sizer.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         add_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._add_files_btn = wx.Button(dlg, label="&Add files...")
-        self._add_folder_btn = wx.Button(dlg, label="Add f&older...")
-        self._remove_btn = wx.Button(dlg, label="&Remove")
-        self._recurse = wx.CheckBox(dlg, label="&Include sub-folders")
+        self._add_files_btn = wx.Button(self, label="&Add files...")
+        self._add_folder_btn = wx.Button(self, label="Add f&older...")
+        self._remove_btn = wx.Button(self, label="&Remove")
+        self._recurse = wx.CheckBox(self, label="&Include sub-folders")
         self._recurse.SetValue(True)
         set_accessible_name(self._recurse, "Include sub-folders")
         for widget in (self._add_files_btn, self._add_folder_btn, self._remove_btn, self._recurse):
@@ -240,38 +234,38 @@ class ConvertAudioDialog:
         sizer.Add(add_row, 0, wx.ALL, 8)
 
         # Convert to / Preset row.
-        sizer.Add(wx.StaticText(dlg, label="Con&vert to:"), 0, wx.LEFT | wx.TOP, 8)
-        self._format = wx.Choice(dlg, choices=[f.upper() for f in self._formats])
+        sizer.Add(wx.StaticText(self, label="Con&vert to:"), 0, wx.LEFT | wx.TOP, 8)
+        self._format = wx.Choice(self, choices=[f.upper() for f in self._formats])
         self._format.SetSelection(0)
         set_accessible_name(self._format, "Convert to format")
         sizer.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        sizer.Add(wx.StaticText(dlg, label="&Preset:"), 0, wx.LEFT | wx.TOP, 8)
+        sizer.Add(wx.StaticText(self, label="&Preset:"), 0, wx.LEFT | wx.TOP, 8)
         self._preset_ids = [pid for pid, _label in preset_choices()]
-        self._preset = wx.Choice(dlg, choices=[label for _pid, label in preset_choices()])
+        self._preset = wx.Choice(self, choices=[label for _pid, label in preset_choices()])
         self._preset.SetSelection(max(0, self._preset_ids.index(DEFAULT_PRESET_ID)))
         set_accessible_name(self._preset, "Preset")
         sizer.Add(self._preset, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         # Destination folder + conflict policy.
-        sizer.Add(wx.StaticText(dlg, label="Output f&older:"), 0, wx.LEFT | wx.TOP, 8)
+        sizer.Add(wx.StaticText(self, label="Output f&older:"), 0, wx.LEFT | wx.TOP, 8)
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._dest = wx.TextCtrl(dlg)
+        self._dest = wx.TextCtrl(self)
         set_accessible_name(self._dest, "Output folder")
-        self._browse_btn = wx.Button(dlg, label="&Browse...")
+        self._browse_btn = wx.Button(self, label="&Browse...")
         dest_row.Add(self._dest, 1, wx.RIGHT | wx.ALIGN_CENTER_VERTICAL, 6)
         dest_row.Add(self._browse_btn, 0)
         sizer.Add(dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        sizer.Add(wx.StaticText(dlg, label="On &conflict:"), 0, wx.LEFT | wx.TOP, 8)
-        self._conflict = wx.Choice(dlg, choices=[label for _policy, label in _CONFLICT_CHOICES])
+        sizer.Add(wx.StaticText(self, label="On &conflict:"), 0, wx.LEFT | wx.TOP, 8)
+        self._conflict = wx.Choice(self, choices=[label for _policy, label in _CONFLICT_CHOICES])
         self._conflict.SetSelection(0)
         set_accessible_name(self._conflict, "On conflict")
         sizer.Add(self._conflict, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        buttons = dlg.CreateSeparatedButtonSizer(wx.OK | wx.CANCEL)
+        buttons = self.CreateSeparatedButtonSizer(wx.OK | wx.CANCEL)
         sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        dlg.SetSizerAndFit(sizer)
+        self.SetSizerAndFit(sizer)
 
         self._add_files_btn.Bind(wx.EVT_BUTTON, self._on_add_files)
         self._add_folder_btn.Bind(wx.EVT_BUTTON, self._on_add_folder)
@@ -281,7 +275,7 @@ class ConvertAudioDialog:
         apply_listbox_activation(self._list, lambda _e: None)
         # Convert is the affirmative; a real Cancel/Escape button (no trap).
         apply_modal_ids(
-            dlg, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL, affirmative_label="Convert"
+            self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL, affirmative_label="Convert"
         )
 
     # -- row + queue helpers ---------------------------------------------- #
@@ -312,9 +306,8 @@ class ConvertAudioDialog:
     # -- events ----------------------------------------------------------- #
 
     def _on_add_files(self, event: Any) -> None:
-        wx = self._wx
         with wx.FileDialog(
-            self.dialog,
+            self,
             message="Add files to convert",
             wildcard=_ADD_WILDCARD,
             style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST,
@@ -326,8 +319,7 @@ class ConvertAudioDialog:
         self._reload(select=len(self._entries) - 1)
 
     def _on_add_folder(self, event: Any) -> None:
-        wx = self._wx
-        with wx.DirDialog(self.dialog, message="Add a folder of audio to convert") as picker:
+        with wx.DirDialog(self, message="Add a folder of audio to convert") as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return
             folder = Path(picker.GetPath())
@@ -343,14 +335,13 @@ class ConvertAudioDialog:
             self._reload(select=sel)
 
     def _on_browse(self, event: Any) -> None:
-        wx = self._wx
-        with wx.DirDialog(self.dialog, message="Choose an output folder") as picker:
+        with wx.DirDialog(self, message="Choose an output folder") as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return
             self._dest.SetValue(picker.GetPath())
 
     def _on_list_key(self, event: Any) -> None:
-        if event.GetKeyCode() == self._wx.WXK_DELETE:
+        if event.GetKeyCode() == wx.WXK_DELETE:
             self._on_remove(event)
             return
         event.Skip()
@@ -379,6 +370,6 @@ class ConvertAudioDialog:
 
     def show(self, show_modal: Callable[[Any, str], int]) -> ConvertRequest | None:
         """Show the dialog via the host's ``_show_modal_dialog`` and collect."""
-        if show_modal(self.dialog, _TITLE) != self._wx.ID_OK:  # dialog_button_contract: exempt
+        if show_modal(self, _TITLE) != wx.ID_OK:  # dialog_button_contract: exempt
             return None
         return self.collect()
