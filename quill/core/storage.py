@@ -11,6 +11,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
+
 logger = logging.getLogger(__name__)
 
 # On Windows os.replace can transiently fail with PermissionError when another
@@ -55,8 +57,10 @@ def retry_on_transient_lock[T](
     raise last_error
 
 
-class PathEscapeError(ValueError):
+class PathEscapeError(CodedError):
     """Raised when a write target resolves outside its permitted base directory."""
+
+    code = "QUILL-STORAGE-PATH-ESCAPE"
 
 
 def resolve_within(base: Path, candidate: Path) -> Path:
@@ -108,7 +112,10 @@ def read_json(path: Path, default: Any) -> Any:
 
 def write_json_atomic(path: Path, data: Any, *, base: Path | None = None) -> None:
     if base is not None:
-        resolve_within(base, path)
+        # Write to the *resolved* path, not the caller's original: validating one
+        # path and then writing another leaves a TOCTOU gap (a symlink/``..`` in
+        # the original could still point outside ``base``).
+        path = resolve_within(base, path)
     path.parent.mkdir(parents=True, exist_ok=True)
     # Use a UUID-named temp file in the same directory so concurrent writers
     # cannot collide on a fixed name like path.suffix + ".tmp".
@@ -156,7 +163,9 @@ def write_text_atomic(
     written byte-for-byte).
     """
     if base is not None:
-        resolve_within(base, path)
+        # Write to the resolved path (see write_json_atomic): closes the TOCTOU
+        # gap between validating and writing.
+        path = resolve_within(base, path)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, raw_temp = tempfile.mkstemp(
         prefix=f".{path.name}.",
@@ -187,7 +196,9 @@ def write_bytes_atomic(path: Path, data: bytes, *, base: Path | None = None) -> 
     become the recovery source.
     """
     if base is not None:
-        resolve_within(base, path)
+        # Write to the resolved path (see write_json_atomic): closes the TOCTOU
+        # gap between validating and writing.
+        path = resolve_within(base, path)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, raw_temp = tempfile.mkstemp(
         prefix=f".{path.name}.",

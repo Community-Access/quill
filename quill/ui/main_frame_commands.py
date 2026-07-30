@@ -19,6 +19,14 @@ class CommandRegistryMixin:
             self.new_file,
             self._binding_for("file.new"),
         )
+        # #1246: Ctrl+T = new document tab in the current notebook. Reuses new_file
+        # (which already opens a new tab); this is a second, tab-oriented entry point.
+        self.commands.register(
+            "window.new_document_tab",
+            "New Tab",
+            self.new_file,
+            self._binding_for("window.new_document_tab"),
+        )
         self.commands.register(
             "file.open",
             "Open File...",
@@ -2283,6 +2291,7 @@ class CommandRegistryMixin:
     def _command_to_menu_id_map(self) -> dict[str, int]:
         return {
             "file.new": self._id_new,
+            "window.new_document_tab": self._id_new_tab,
             "file.open": self._id_open,
             "file.open_from_favorite_folder": self._id_open_from_favorite_folder,
             "file.add_favorite_folder": self._id_add_favorite_folder,

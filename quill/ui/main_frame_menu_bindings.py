@@ -31,6 +31,8 @@ class MenuBindingsMixin:
         wx = self._wx
 
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.new_file(), id=self._id_new)
+        # #1246: Ctrl+T new document tab (reuses new_file).
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.new_file(), id=self._id_new_tab)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_file(), id=self._id_open)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_url(), id=self._id_open_url)
         self.frame.Bind(

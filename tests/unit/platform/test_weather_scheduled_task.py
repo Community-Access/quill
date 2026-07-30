@@ -42,7 +42,10 @@ def test_register_builds_a_per_minute_task(monkeypatch) -> None:
     monkeypatch.setattr(scheduled_task, "run_subprocess_safely", fake_run)
     assert scheduled_task.register(15) is True
     args = captured["args"]
-    assert args[0] == "schtasks"
+    # Hardened to launch the absolute System32 binary rather than a bare
+    # "schtasks" that a PATH/CWD plant could hijack.
+    assert args[0].lower().endswith("schtasks.exe")
+    assert args[0].replace("/", "\\").lower().endswith(r"system32\schtasks.exe")
     assert "/Create" in args
     assert "QuillWeatherAlertCheck" in args
     assert "/SC" in args and "MINUTE" in args

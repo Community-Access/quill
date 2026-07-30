@@ -631,6 +631,9 @@ class FavoritesManagerDialog:
             id_refs.append(item_id)
             menu.Append(item_id, label)
             menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
-        self._menu_id_refs = id_refs  # pinned while the popup can fire
+        # A SEPARATE attribute: assigning self._menu_id_refs here would drop the
+        # menu-bar Close id ref pinned in it, re-exposing the id-reuse bug where
+        # a random menu item closes the window.
+        self._context_menu_id_refs = id_refs  # pinned while the popup can fire
         self._tree.PopupMenu(menu)
         menu.Destroy()

@@ -164,7 +164,17 @@ def run_agent(ctx: AgentContext, *, refine: bool = False) -> AgentResult:
         return result
 
     if error:
-        if "401" in error or "auth" in error.lower() or "key" in error.lower():
+        lowered = error.lower()
+        # Narrow auth signals only: the previous bare ``"key" in error`` matched
+        # any "KeyError"/"keyword"/"missing key" text and mislabelled unrelated
+        # failures as an auth problem.
+        if (
+            "401" in error
+            or "unauthorized" in lowered
+            or "api key" in lowered
+            or "authentication" in lowered
+            or "invalid key" in lowered
+        ):
             raise AgentSessionAuthError(error)
         raise AgentSessionError(error)
 

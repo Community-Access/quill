@@ -529,7 +529,13 @@ def _close_frame(
 def _close_event() -> tuple[SimpleNamespace, list[bool], list[bool]]:
     skipped: list[bool] = []
     vetoed: list[bool] = []
-    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+    event = SimpleNamespace(
+        Skip=lambda: skipped.append(True),
+        Veto=lambda: vetoed.append(True),
+        # A normal user-initiated close is vetoable; the P1-8 guard only
+        # short-circuits when CanVeto() is False (OS log-off/shutdown).
+        CanVeto=lambda: True,
+    )
     return event, skipped, vetoed
 
 

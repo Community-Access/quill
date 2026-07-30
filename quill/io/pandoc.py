@@ -35,6 +35,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.core import pandoc_formats
+from quill.core.error_codes import CodedError
 from quill.core.external_tools import ExternalToolStatus, get_external_tool_status
 from quill.stability.safe_subprocess import run_subprocess_safely
 
@@ -58,16 +59,18 @@ _BINARY_WRITERS: frozenset[str] = frozenset({"docx", "odt", "epub", "pdf", "pptx
 ProgressCallback = Callable[[str, int, int], None]
 
 
-class PandocUnavailableError(RuntimeError):
-    pass
+class PandocUnavailableError(CodedError):
+    code = "QUILL-PANDOC-UNAVAILABLE"
 
 
-class PandocConversionError(RuntimeError):
-    pass
+class PandocConversionError(CodedError):
+    code = "QUILL-PANDOC-CONVERSION-FAILED"
 
 
-class PandocCancelledError(RuntimeError):
+class PandocCancelledError(CodedError):
     """Raised when a cancel event was set before the conversion started."""
+
+    code = "QUILL-PANDOC-CANCELLED"
 
 
 @dataclass(frozen=True, slots=True)
@@ -295,7 +298,7 @@ def _resolve_writer(output_kind: str) -> str:
     return output_kind
 
 
-def _map_exception(exc: BaseException) -> RuntimeError:
+def _map_exception(exc: BaseException) -> PandocConversionError | PandocUnavailableError:
     """Translate a subprocess / OS exception into a Pandoc error class."""
 
     import subprocess

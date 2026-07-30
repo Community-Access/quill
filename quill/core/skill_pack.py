@@ -17,6 +17,8 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+from quill.core.error_codes import CodedError
+
 SQP_SCHEMA = "quill.skill/1"
 
 _VALID_PARAM_TYPES = {"text", "multiline", "choice", "bool", "number"}
@@ -33,8 +35,10 @@ _VALID_ACCEPT_INTO = {"selection", "clipboard", "none"}
 _VALID_OUTPUT_FORMATS = {"text", "list", "json"}
 
 
-class SkillValidationError(ValueError):
+class SkillValidationError(CodedError):
     """Raised by :func:`parse_skill` when the .sqp source is invalid."""
+
+    code = "QUILL-SKILL-VALIDATION"
 
     def __init__(self, errors: list[str]) -> None:
         self.errors = errors

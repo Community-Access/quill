@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release-notes-1.0</title>
+  <title>QUILL Cast 1.0 -- Release Notes</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -173,15 +169,65 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. Only the color is
+       changed; each token keeps its default weight/style. Placed last so it
+       wins the cascade over the styles.html() highlighting defaults above. */
+    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
+    code span.an, code span.co, code span.cv,
+    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
+    code span.at { color: #55631a; }                            /* was #7d9029 */
+    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
+    code span.ch, code span.sc, code span.st,
+    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
+    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
+    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-cast-10----release-notes">QUILL Cast 1.0 -- Release
 Notes</h1>
 <p>Your shows, on their own. QUILL Cast takes the podcast environment
 QUILL users already know and gives it a window, a menu bar, and a tray
 icon of its own -- for the days you want your queue without the
 manuscript.</p>
+<h2 id="coming-spotify-podcasts-experimental">Coming: Spotify podcasts
+(experimental)</h2>
+<p>Groundwork has landed for playing podcasts hosted on Spotify inside
+QUILL Cast. It is <strong>experimental and off by default</strong> -- it
+ships hidden behind a feature flag, so you will not see it on a normal
+install, and turning it on takes a signed unlock code, a Spotify
+<strong>Premium</strong> account, and your own Spotify Client ID.
+Spotify audio is copy-protected, so a Spotify episode plays but cannot
+be downloaded, and many Spotify shows are exclusive with no public feed.
+The full story -- what you need, how to connect, and how to browse and
+play -- is in the new <strong>"Spotify podcasts (experimental)"</strong>
+section of the QUILL Cast User Guide.</p>
+<h2 id="whats-new-in-107">What's new in 1.0.7</h2>
+<ul>
+<li><strong>Update in one click -- QUILL Cast installs it and restarts
+itself.</strong> When an update is available, choose Download, then
+<strong>Install and restart now</strong>: QUILL Cast applies the update
+-- extracting the new portable files over your folder, or running the
+installer silently -- and relaunches on its own, keeping all your shows,
+downloads, and settings. No more closing the app, unzipping, and
+swapping folders by hand. This is the same one-click self-update shared
+across every Quill app.</li>
+</ul>
 <h2 id="whats-new-in-106">What's new in 1.0.6</h2>
 <ul>
 <li><strong>Private feeds -- your supporter subscriptions, finally
@@ -407,5 +453,6 @@ installation required.</p>
 <li>Global hotkeys for transport are configured from full QUILL (Tools
 &gt; Global Hotkeys...), not from this app, in 1.0.</li>
 </ul>
+</main>
 </body>
 </html>

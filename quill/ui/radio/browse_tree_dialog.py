@@ -155,6 +155,7 @@ class BrowseTreeDialog:
         safe_mode: bool,
         announce_cb: Callable[[str], None] | None = None,
         on_favorites_changed: Callable[[], None] | None = None,
+        on_report_bad_station: Callable[[Any], None] | None = None,
         show_details: bool = True,
         windows: object | None = None,
     ) -> None:
@@ -167,6 +168,7 @@ class BrowseTreeDialog:
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_favorites_changed = on_favorites_changed or (lambda: None)
+        self._on_report_bad_station = on_report_bad_station
         self._menu_id_refs: list[object] = []
         self._find_active = False
         self._find_return_node: Any = None
@@ -513,14 +515,19 @@ class BrowseTreeDialog:
             return self._find_matches(kind, payload, query)
 
         def _ok(_op: str, result: object) -> None:
+            # Already on the UI thread (call_ui_safely marshals + guards this);
+            # call directly. A second raw CallAfter would run outside that guard,
+            # so a closed dialog would hit a destroyed TreeCtrl and raise.
             matches, capped = result if isinstance(result, tuple) else ([], False)
-            self._wx.CallAfter(self._show_find_results, anchor, label, matches, capped)
+            self._show_find_results(anchor, label, matches, capped)
 
         self._task_manager.submit("radio-browse-find", _work, on_success=_ok, on_failure=None)
 
     def _show_find_results(
         self, anchor: Any, label: str, matches: list[dict], capped: bool
     ) -> None:
+        if not self._tree:  # dialog closed while the search was in flight
+            return
         tree = self._tree
         if not anchor.IsOk():
             return
@@ -572,6 +579,8 @@ class BrowseTreeDialog:
             self._announce(f"Search cleared. Back on {self._tree.GetItemText(node)}.")
 
     def _add_children(self, node: Any, kind: str, raw: list[Any]) -> None:
+        if not self._tree:  # dialog closed while children were being fetched
+            return
         tree = self._tree
         if not node.IsOk():
             return
@@ -715,9 +724,9 @@ class BrowseTreeDialog:
             return self._fetch_children(data["kind"], data.get("payload"))
 
         def _ok(_op: str, raw: object) -> None:
-            self._wx.CallAfter(
-                self._add_children, node, data["kind"], raw if isinstance(raw, list) else []
-            )
+            # Already on the UI thread (call_ui_safely marshals + guards this);
+            # call directly rather than scheduling a second unguarded CallAfter.
+            self._add_children(node, data["kind"], raw if isinstance(raw, list) else [])
 
         self._task_manager.submit("radio-browse-tree", _work, on_success=_ok, on_failure=None)
 
@@ -787,13 +796,15 @@ class BrowseTreeDialog:
                 return []
 
         def _ok(_op: str, streams: object) -> None:
-            self._wx.CallAfter(
-                self._tunein_resolved, title, streams if isinstance(streams, list) else []
-            )
+            # Already on the UI thread (call_ui_safely marshals + guards this);
+            # call directly rather than scheduling a second unguarded CallAfter.
+            self._tunein_resolved(title, streams if isinstance(streams, list) else [])
 
         self._task_manager.submit("radio-tunein-resolve", _work, on_success=_ok, on_failure=None)
 
     def _tunein_resolved(self, title: str, streams: list[str]) -> None:
+        if not self._tree:  # dialog closed while the stream was resolving
+            return
         if not streams:
             self._announce(f"Could not play {title}.")
             return
@@ -832,13 +843,15 @@ class BrowseTreeDialog:
                 return []
 
         def _ok(_op: str, streams: object) -> None:
-            self._wx.CallAfter(
-                self._tunein_favorite_resolved, title, streams if isinstance(streams, list) else []
-            )
+            # Already on the UI thread (call_ui_safely marshals + guards this);
+            # call directly rather than scheduling a second unguarded CallAfter.
+            self._tunein_favorite_resolved(title, streams if isinstance(streams, list) else [])
 
         self._task_manager.submit("radio-tunein-favorite", _work, on_success=_ok, on_failure=None)
 
     def _tunein_favorite_resolved(self, title: str, streams: list[str]) -> None:
+        if not self._tree:  # dialog closed while the stream was resolving
+            return
         if not streams:
             self._announce(f"Could not add {title} to Favorites.")
             return
@@ -946,6 +959,11 @@ class BrowseTreeDialog:
             ]
             if station.homepage:
                 entries.append(("Open &Website", lambda: self._open_url(station.homepage)))
+            if self._on_report_bad_station is not None:
+                entries.append((
+                    "Report &Bad Station...",
+                    lambda s=station: self._on_report_bad_station(s),
+                ))
         elif kind == "tunein-station":
             entries = [
                 ("&Play", self._play_selected),
@@ -968,7 +986,10 @@ class BrowseTreeDialog:
             id_refs.append(item_id)
             menu.Append(item_id, label)
             menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
-        self._menu_id_refs = id_refs  # pinned while the popup can fire
+        # A SEPARATE attribute: assigning self._menu_id_refs here would drop the
+        # menu-bar Close id ref pinned in it, re-exposing the id-reuse bug where
+        # a random menu item closes the window.
+        self._context_menu_id_refs = id_refs  # pinned while the popup can fire
         self._tree.PopupMenu(menu)
         menu.Destroy()
 

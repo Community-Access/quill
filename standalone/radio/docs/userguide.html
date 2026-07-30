@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>userguide</title>
+  <title>Quill Radio User Guide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,11 +169,38 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. Only the color is
+       changed; each token keeps its default weight/style. Placed last so it
+       wins the cascade over the styles.html() highlighting defaults above. */
+    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
+    code span.an, code span.co, code span.cv,
+    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
+    code span.at { color: #55631a; }                            /* was #7d9029 */
+    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
+    code span.ch, code span.sc, code span.st,
+    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
+    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
+    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-radio-user-guide">Quill Radio User Guide</h1>
-<p>Version 2.1.1</p>
+<p>Version 2.2.0</p>
 <p>Quill Radio is internet radio the way a screen reader user would
 design it: a small window whose favorites tree has focus the instant it
 opens, menus that say everything they do, spoken feedback for every
@@ -181,22 +208,99 @@ action, and a tray icon so the music keeps playing while you work. It
 runs the exact same radio code as QUILL itself and shares its data, so
 nothing you set up here is ever stranded.</p>
 <h2 id="installing">Installing</h2>
-<p>Two flavors, both fully bundled (ffmpeg included, nothing ever
-downloads):</p>
-<ul>
-<li><strong>The installer</strong>
-(<code>Quill-Radio-Setup-2.1.1.exe</code>) -- its own folder, Start Menu
-entry, uninstaller. Your data lives in the shared Quill store in your
-Windows profile.</li>
-<li><strong>The portable zip</strong>
-(<code>Quill-Radio-Portable-2.1.1.zip</code>) -- extract anywhere, even
-a USB stick, and run <code>QuillRadio\QuillRadio.exe</code>. Its
-<code>data</code> folder keeps your favorites, history, and settings
-inside the app folder, so the whole radio travels with you.</li>
-</ul>
-<p>Windows SmartScreen may warn on first run because this release is not
-code-signed; choose "More info" then "Run anyway". The build is exactly
-what this repository's source produces.</p>
+<p>Quill Radio comes in four downloads. Two of them are brand new in
+this release and much smaller than before, because Quill Radio can now
+share one Python engine -- the QuillVille Runtime -- with every other
+QuillVille app. The section just below explains the runtime; the one
+after it lays out the four downloads so you can pick the one that suits
+you.</p>
+<p>If you are not sure which to choose: the <strong>full
+installer</strong> is the easy, recommended path for most people, and
+the <strong>full portable zip</strong> is the one to put on a USB
+stick.</p>
+<h3
+id="the-quillville-runtime-install-the-engine-once-and-every-app-starts-instantly">The
+QuillVille Runtime: install the engine once, and every app starts
+instantly</h3>
+<p>Quill Radio is part of a small family of apps -- QUILL itself, Quill
+Radio, Quill Weather, and QUILL Audio Studio. They are separate apps,
+but underneath they all run on the same Python engine.</p>
+<p>Starting with this release, that engine is installed just once per
+user, as a shared component called the <strong>QuillVille
+Runtime</strong>, and every QuillVille app reuses it. Install any one
+app that carries the runtime, and every app you add afterward starts
+instantly, because the engine it needs is already on your PC. There is
+no second copy, no second long download.</p>
+<p>The runtime looks after itself. It is reference-counted: Windows
+keeps track of how many QuillVille apps rely on it, and it is only
+removed when you uninstall the very last app that needs it. Uninstalling
+Quill Radio while, say, Quill Weather is still installed leaves the
+shared runtime in place for Weather; uninstalling the last one cleans it
+up for you.</p>
+<h3 id="the-four-downloads">The four downloads</h3>
+<p>You can install Quill Radio in whichever of these ways fits you best.
+In each filename, <code>&lt;version&gt;</code> is the release you are
+downloading, such as 2.2.0.</p>
+<ol type="1">
+<li><p><strong>Full portable zip</strong> -- the file named
+<code>Quill-Radio-Portable-&lt;version&gt;.zip</code> (about 311 MB).
+Fully self-contained: extract it anywhere -- a folder, an external
+drive, a USB stick -- and run <code>QuillRadio\QuillRadio.exe</code>.
+There is no installation and nothing ever downloads at runtime. It
+carries its own genuine, unmodified copy of Python, plus the bundled
+ffmpeg (for recording) and mpv (for playback) engines. Its
+<code>data</code> folder keeps your favorites, history, recordings, and
+settings inside the app folder, so the whole radio travels with you.
+This is the one to reach for when you want a self-contained radio with
+no installer and no internet.</p></li>
+<li><p><strong>Companion edition (new)</strong> -- the file named
+<code>Quill-Radio-Companion-&lt;version&gt;.zip</code> (about 3 MB).
+Feather-light: it contains only the app itself and its documentation,
+and it runs on the shared QuillVille Runtime. The first time you launch
+it, if the runtime is not already installed, Quill Radio offers to
+download and install it for you -- about 230 MB, once -- with a fully
+accessible progress bar (see "Accessible progress every time" below).
+After that, this app and every other QuillVille app start instantly.
+Choose the Companion edition when you would rather download three
+megabytes than three hundred, and you are happy for the shared engine to
+be fetched once on first launch.</p></li>
+<li><p><strong>Full installer</strong> -- the file named
+<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>. A standard
+Windows installer that gives Quill Radio its own Start Menu entry and an
+uninstaller. It installs the shared QuillVille Runtime (unless it is
+already present from another QuillVille app) and then the app. Your
+favorites, history, and settings live in the shared Quill store in your
+Windows profile. This is the recommended path for most people.</p></li>
+<li><p><strong>Thin installer (new)</strong> -- the "Lite" installer, a
+very small setup program that installs the app and downloads the shared
+QuillVille Runtime only if it is not already present. If you already run
+another QuillVille app, there is nothing large to fetch and the install
+finishes quickly. Choose it when you want a proper installed app but the
+smallest possible download.</p></li>
+</ol>
+<h3 id="accessible-progress-every-time">Accessible progress every
+time</h3>
+<p>Whenever the QuillVille Runtime is being downloaded -- whether an
+installer is fetching it or the Companion edition is fetching it on its
+own first launch -- Quill Radio shows a fully accessible progress bar.
+It works with NVDA, JAWS, and Narrator, and progress is announced as a
+percentage as it climbs. You always know how far along the download is,
+and when it is finished.</p>
+<h3 id="about-security-software-and-antivirus">About security software
+and antivirus</h3>
+<p>This release changes how Quill Radio starts, specifically to be
+friendlier to antivirus software.</p>
+<p>Quill Radio's launcher is now a genuine, tiny native program, and the
+Python it runs is the official, unmodified build. Earlier versions used
+a renamed and modified copy of Python's own <code>pythonw.exe</code> as
+the launcher. That pattern is a common one for antivirus tools to flag,
+and some of them did -- as a false positive, but an understandable one.
+That pattern is now completely gone. The result is an app that is far
+less likely to be mistaken for something it is not.</p>
+<p>Windows SmartScreen may still show a caution on first run because
+this release is not yet code-signed; choose "More info" then "Run
+anyway". The build is exactly what this repository's source
+produces.</p>
 <h2 id="getting-started">Getting started</h2>
 <p>Launch Quill Radio from the Start Menu (or the portable folder's
 <code>QuillRadio.exe</code>). The window opens with keyboard focus on
@@ -640,53 +744,102 @@ Preferences' Reset All Stations' Sound Enhancements both drop a station
 back to that shared default.</p>
 <h3 id="record-altr">Record (Alt+R)</h3>
 <ul>
-<li><strong>Record Now / Stop Recording</strong> -- capture the station
-you are listening to. When a capture begins, Quill Radio announces
-"Recording started" with the station name, so it is always clear the
-command took effect. This command follows what you are listening to: if
-the station on now is the one recording, it stops that recording;
-otherwise it starts a new one. A recording of a <em>different</em>
-station running in the background is never stopped by Record Now -- stop
-those from the Recordings window.</li>
-<li><strong>Record Station...</strong> -- record a <em>different</em>
+<li><p><strong>Record Now / Stop Recording</strong> -- capture the
+station you are listening to. When a capture begins, Quill Radio
+announces "Recording started" with the station name, so it is always
+clear the command took effect. This command follows what you are
+listening to: if the station on now is the one recording, it stops that
+recording; otherwise it starts a new one. A recording of a
+<em>different</em> station running in the background is never stopped by
+Record Now -- stop those from the Recordings window.</p></li>
+<li><p><strong>Record Station...</strong> -- record a <em>different</em>
 station for a set number of minutes while you listen to something else
 (or to nothing). The recorder is its own process; it never needed the
 player. You can start as many of these as you like -- they all record at
-once (see "Recording several stations at once" below).</li>
-<li><strong>Stop All Recordings</strong> -- stop every recording in
+once (see "Recording several stations at once" below).</p></li>
+<li><p><strong>Stop All Recordings</strong> -- stop every recording in
 progress at once. (It is also in the tray/status menu, and appears as a
 button in the Recordings window when two or more recordings are
-running.)</li>
-<li><strong>Schedule Recording...</strong> -- record a show later, once,
-daily, or weekly, even from the tray. Pick a favorite from the list and
-its name and stream fill in for you (both stay editable for one-off
-streams). Enter the time however you think of it -- "7:30 PM" or
+running.)</p></li>
+<li><p><strong>Schedule Recording...</strong> -- record a show later,
+once, daily, or weekly, even from the tray. Pick a favorite from the
+list and its name and stream fill in for you (both stay editable for
+one-off streams). Enter the time however you think of it -- "7:30 PM" or
 "19:30", both are understood -- and pin each entry to its own
 <strong>time zone</strong> (defaulting to your local time), so a show
 quoted in another zone records at the right moment and the list shows
 each entry's time with its zone. Set how long to record with the
 <strong>Hours</strong> (0-24) and <strong>Minutes</strong> (0-59) fields
 -- a three-hour show is simply "3" and "0", no arithmetic. The schedule
-is something you manage, not just add to:
+is something you manage, not just add to:</p>
 <ul>
 <li><strong>Edit</strong> -- change a selected entry's station, time,
-duration, or repeat without deleting and re-adding it.</li>
-<li><strong>Duplicate</strong> -- copy a selected entry as a starting
-point for another day or a second time slot.</li>
+duration, or repeat <em>in place</em>, without deleting and re-adding
+it. The Add button relabels to <strong>Save Changes</strong> while you
+edit, and the status line names the entry you are editing so it is
+always clear you are changing that one, not adding a new one. Choose
+<strong>New</strong> to abandon the edit and start a fresh entry
+instead.</li>
+<li><strong>Duplicate</strong> -- start a <strong>new,
+independent</strong> entry pre-filled from the selected one (its name
+gets " (copy)"), as a quick starting point for another day or a second
+time slot. It keeps the original's stream URL until you change it, so
+pick a different favorite or edit the URL if you meant a different
+station; the two are separate schedules from the moment you choose
+<strong>Add Schedule</strong>.</li>
 <li><strong>Enable / disable</strong> -- turn an entry off without
 losing it; a disabled entry reads "(disabled)" in the list and does not
 fire, and you can turn it back on any time.</li>
 <li><strong>Remove</strong> names the schedule it will delete and dims
 when none is selected; the Delete key and a context menu work on the
-list too. A schedule is due from its start time through the end of its
+list too. The list is ordered by <strong>when each recording next
+occurs</strong> (the soonest first), not the order you entered them, and
+each row shows the stream's host in brackets so two similar entries --
+or a duplicate that still points at the original station -- are easy to
+tell apart. After you choose <strong>Add Schedule</strong> (or
+<strong>Save Changes</strong>), focus moves to your entry in the list,
+and the form clears for the next one, so you are never left on the Add
+button wondering whether it worked.</li>
+</ul>
+<p>A schedule is due from its start time through the end of its
 duration, so if Quill Radio reaches a few seconds late it still starts
 with the remaining minutes, and on launch it catches up anything whose
 window is still open. (Quill Radio has to be running for a scheduled
 recording to fire -- the tray icon counts -- so a show whose whole
 window passed while Quill Radio was closed is simply missed, and the
 next launch tells you, naming up to three and collapsing the rest to a
-count.)</li>
-</ul></li>
+count.)</p></li>
+</ul>
+<h4 id="scheduling-a-recording-step-by-step">Scheduling a recording,
+step by step</h4>
+<p>The one thing to remember: you <strong>fill in the details first,
+then choose Add Schedule last</strong> -- Add is the button that commits
+the entry you have just described, not a "start a new form" button.</p>
+<ol type="1">
+<li>Open <strong>Record &gt; Schedule Recording...</strong> (Alt+R, then
+Schedule Recording).</li>
+<li>In the <strong>Station</strong> list, pick a favorite -- its name
+and stream URL fill in for you. (You can only choose from your favorites
+here; add the station to Favorites first if it is not listed. For a
+one-off stream, type the name and paste the URL by hand instead.)</li>
+<li>Set the <strong>time</strong> ("7:30 PM" or "19:30", whichever you
+think in) and choose a <strong>time zone</strong> if the show is quoted
+in one other than your own (otherwise leave it at "(local time)").</li>
+<li>Choose how often: <strong>Once</strong> (also pick a date),
+<strong>Daily</strong>, or <strong>Weekly</strong> (also pick the
+weekday).</li>
+<li>Set the length with <strong>Hours</strong> (0-24) and
+<strong>Minutes</strong> (0-59) -- a three-hour show is just "3" and
+"0".</li>
+<li>Choose <strong>Add Schedule</strong>. Your entry appears in the list
+(ordered by when it will next record), focus lands on it, and the form
+clears so you can add another the same way.</li>
+</ol>
+<p>To change one later, select it and choose <strong>Edit</strong> (the
+button becomes <strong>Save Changes</strong>); to make a similar one,
+select it and choose <strong>Duplicate</strong>, adjust the fields, and
+choose <strong>Add Schedule</strong> again.</p>
+<ul>
 <li><strong>Recordings...</strong> -- everything you have recorded,
 live. See "The Recordings list" below.</li>
 <li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
@@ -713,7 +866,17 @@ and the rest were dropped.</p>
 <p>Each recording is fully self-contained -- its own connection, its own
 reconnect-on-a-hiccup handling (below), its own crash-resume -- so one
 recording dropping, finishing, or being stopped never affects the
-others.</p>
+others. This now covers a stream that <em>stalls</em> -- a connection
+that goes quiet without cleanly disconnecting (a pulled Ethernet cable,
+a dropped Wi-Fi adaptor) -- which used to leave a recording wedged:
+still shown as "recording" but no longer growing. Quill Radio detects
+the stall within about half a minute and either reconnects and continues
+into a "(part 2)" file or, if reconnection is off or the show's window
+has ended, stops and saves what it captured.</p>
+<p>Recording filenames use your computer's <strong>current</strong> time
+zone. If you change the computer's time zone (or it shifts for daylight
+saving) while Quill Radio is running, new recordings are named with the
+new local time straight away -- no restart needed.</p>
 <p>If you would rather cap it (a slower machine, a metered connection),
 set <strong>Maximum simultaneous recordings</strong> in Recording
 Settings to a number; <strong>0</strong> means unlimited, which is the
@@ -775,6 +938,12 @@ between sessions.</li>
 <ul>
 <li><strong>Command Palette...</strong> (Ctrl+Shift+P) -- every Quill
 Radio command in one searchable list.</li>
+<li><strong>Keyboard Shortcuts...</strong> -- open the Keyboard Manager
+to view, search, and change Quill Radio's keyboard shortcuts (see
+"Global hotkeys and keyboard shortcuts" below).</li>
+<li><strong>Global Hotkeys...</strong> -- assign a system-wide key to
+Quill Radio's playback controls so they work while another program has
+focus (see below).</li>
 <li><strong>Redeem Unlock Code...</strong> -- enter a signed code for a
 pre-release capability. Verified entirely on your machine; nothing is
 transmitted; one code counts for QUILL, Quill Radio, and QUILL Cast
@@ -931,10 +1100,142 @@ is. A <strong>Don't ask me again</strong> checkbox remembers your choice
 -- always resume, or never ask -- changeable later in Preferences.
 Nothing happens when nothing was in progress, and a corrupt marker is
 discarded rather than driving a bogus resume.</p>
+<h2 id="spotify-experimental">Spotify (experimental)</h2>
+<p>Quill Radio can play music straight from Spotify -- but this is an
+<strong>experimental capability that is off by default and hidden until
+you deliberately turn it on</strong>. It ships "dark" behind a feature
+flag, so on a normal install there is no sign of it: no Spotify menu
+items, no settings, nothing reaching Spotify's servers. Lighting it up
+takes four separate things, and it is honest to say up front that one of
+them is a paid <strong>Spotify Premium</strong> account -- Spotify only
+lets an app stream its audio for Premium subscribers.</p>
+<h3 id="what-you-need-to-enable-it">What you need to enable it</h3>
+<p>All four of these must be in place; missing any one means the Spotify
+items never appear or never play.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Why it is needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Spotify feature, unlocked</td>
+<td>Spotify is a locked, pre-release feature. Unlock it with a signed
+code via <strong>Help &gt; Redeem Unlock Code...</strong> -- the same
+one-time, verified-on-your-machine unlock QUILL uses for other early
+features. One code counts for QUILL, Quill Radio, and QUILL Cast
+together.</td>
+</tr>
+<tr>
+<td>A Spotify Premium account</td>
+<td>Spotify's Web Playback engine only streams audio to Premium
+subscribers. A free account can sign in and browse, but will not
+play.</td>
+</tr>
+<tr>
+<td>Your own Spotify Client ID</td>
+<td>Quill Radio does not ship a Spotify app identity; you supply your
+own. Register an app in the Spotify Developer Dashboard, then set its
+redirect address to exactly
+<code>http://127.0.0.1:43217/callback</code>. There is no client secret
+to copy -- Quill Radio signs in with the modern Authorization Code with
+PKCE flow, which needs only the Client ID.</td>
+</tr>
+<tr>
+<td>Windows with the Edge WebView2 runtime</td>
+<td>Spotify audio is copy-protected and can only be played by Spotify's
+own Web Playback engine, which runs inside a hidden Microsoft Edge
+WebView2 component. The WebView2 runtime is part of current Windows (it
+ships with Microsoft Edge), so it is normally already present.</td>
+</tr>
+</tbody>
+</table>
+<p>Once the feature is unlocked and you are not in Safe Mode, two new
+items appear in the <strong>Help</strong> menu: <strong>Connect to
+Spotify...</strong> and <strong>Browse Spotify...</strong></p>
+<h3 id="connecting-to-spotify">Connecting to Spotify</h3>
+<p>Choose <strong>Help &gt; Connect to Spotify...</strong> to open an
+accessible sign-in dialog. Enter your Client ID and start the sign-in:
+your web browser opens to Spotify's own approval page, you approve
+access, and Spotify sends you back to a tiny local address on your own
+machine (<code>127.0.0.1</code>) that Quill Radio is listening on for
+exactly that one moment. Quill Radio captures the result and stores your
+sign-in tokens in the <strong>Windows credential vault</strong> -- never
+in a plain file, never in <code>podcasts.json</code> or a log. Your
+Client ID is stored alongside them so the whole connection lives in one
+place and clears together.</p>
+<h3 id="browsing-and-playing">Browsing and playing</h3>
+<p>Choose <strong>Help &gt; Browse Spotify...</strong> to open an
+accessible search box with a results list. Type what you are looking
+for, arrow to a result, and press <strong>Enter</strong> to play it. A
+Spotify item plays through the hidden Web Playback engine, which
+coexists with Quill Radio's normal mpv and Windows Media engines -- a
+Spotify selection is routed to it automatically, and everything you
+already know keeps working: the one transport control (Play/Stop),
+volume, the status-bar mini-player, the tray, and any system-wide Global
+Hotkeys you have assigned all drive Spotify playback exactly as they
+drive a normal station.</p>
+<h3 id="what-spotify-playback-cannot-do">What Spotify playback cannot
+do</h3>
+<ul>
+<li><strong>No downloading or recording.</strong> Spotify audio is
+copy-protected (DRM), and the Web Playback engine is the only sanctioned
+way to play it, so a Spotify station cannot be recorded or saved the way
+an ordinary stream can.</li>
+<li><strong>Premium only.</strong> Without Spotify Premium, playback
+will not start even after you sign in.</li>
+<li><strong>Off in Safe Mode.</strong> Like every network feature,
+Spotify is disabled when Quill Radio runs in Safe Mode.</li>
+<li><strong>First-time network notice.</strong> Because connecting
+reaches Spotify's servers, the first sign-in asks for a one-time
+network-access confirmation, the same as QUILL's other online
+features.</li>
+</ul>
 <h2 id="hardware-media-keys">Hardware media keys</h2>
 <p>If your keyboard has media keys, Play/Pause and Stop control Quill
 Radio system-wide while it runs -- even from the tray. Keys another app
 already owns are left alone.</p>
+<h2 id="global-hotkeys-and-keyboard-shortcuts">Global hotkeys and
+keyboard shortcuts</h2>
+<p>Quill Radio's shortcuts are now yours to change, and its playback
+controls can reach across your whole desktop.</p>
+<p><strong>Keyboard Shortcuts (Help &gt; Keyboard Shortcuts...)</strong>
+opens the Keyboard Manager: a searchable, conflict-aware list of every
+Quill Radio command and the key assigned to it. Find a command, assign a
+new key (it warns you if the key is already in use, or is a risky one
+such as a plain letter or an arrow key), clear it, or restore the
+defaults. The keymap is <strong>shared with QUILL and QUILL
+Cast</strong> -- the same <code>%APPDATA%\Quill</code> data store
+described below -- so a shortcut you change here changes it in the
+editor too, and vice versa. One note: a few commands whose default is a
+two-key chord (the media transport keys) or uses a comma (Preferences on
+Ctrl+,) keep their built-in shortcut until you next launch Quill Radio;
+a plain single-key command such as the Command Palette takes effect
+immediately.</p>
+<p><strong>Global Hotkeys (Help &gt; Global Hotkeys...)</strong> lets
+you give a <strong>system-wide</strong> key to Quill Radio's transport
+actions -- Play/Pause, Stop, Mute, Volume Up, Volume Down, and Show/Hide
+to the tray -- so you can, for example, pause the radio without leaving
+the program you are working in. Only these safe playback and window
+commands can be assigned a global key; a global hotkey can never trigger
+anything that changes a document or a file. None are set by default. The
+first time you assign one, Quill Radio reminds you that a system-wide
+key may override the same key in another program; as with the media keys
+and the Ctrl+Alt+Shift+R show/hide chord, a key another app already owns
+is left alone. (Windows only.)</p>
+<h2 id="quillins-in-quill-radio">Quillins in Quill Radio</h2>
+<p>Quill Radio can now run <strong>Quillins</strong> -- QUILL's small,
+sandboxed, permission-gated add-ons -- from its own
+<strong>Quillins</strong> menu, not just inside the editor. A Quillin
+says in its manifest which apps it is for (its <code>targets</code>), so
+only add-ons written for Quill Radio appear here. The bundled
+<code>radio-community-directory</code> sample shows the idea: it
+contributes an extra station directory that appears alongside
+RadioBrowser and the others when you Find Stations. Quillins are off in
+Safe Mode. (Third-party Quillins remain disabled in this release; the
+bundled ones are the foundation.)</p>
 <h2 id="the-system-tray">The system tray</h2>
 <p>Closing the window keeps Quill Radio available in the notification
 area with its own icon, announced by name. Right-click (or
@@ -1184,5 +1485,6 @@ back to Automatic; these features live in the mpv engine.</li>
 the old behavior. Please report what you heard either way (Help &gt;
 Report a Bug...).</li>
 </ul>
+</main>
 </body>
 </html>

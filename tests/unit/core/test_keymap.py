@@ -107,17 +107,52 @@ def test_load_keymap_preserves_unknown_command_id(
     assert loaded["a.sibling_app_command"] == "Ctrl+Alt+Z"
 
 
-def test_load_keymap_drops_empty_binding(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """A saved binding that is whitespace-only is treated as 'use default'."""
+def test_load_keymap_persists_cleared_binding(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A deliberately CLEARED binding stays cleared across a restart.
+
+    When the user unbinds a command in the editor, an empty override is saved.
+    That empty override is a delta entry, distinct from an absent one: on the
+    next load it must keep the command UNBOUND rather than silently restoring
+    the (non-empty) default chord and dropping the user's reassignment. The
+    empty override normalizes to "" and round-trips to disk as such.
+    """
     store_path = tmp_path / "keymap-store.json"
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+
+    assert DEFAULT_KEYMAP["file.save"].strip()  # guard: default is non-empty
 
     save_keymap({"file.save": "   "})
 
     loaded = load_keymap()
 
-    assert loaded["file.save"] == DEFAULT_KEYMAP["file.save"]
+    # Cleared, not restored to the default.
+    assert loaded["file.save"] == ""
+
+    # Round-trips to disk as a real unbind (whitespace normalized to "").
+    on_disk = keymap_module.read_json(store_path, default={})
+    assert on_disk["file.save"] == ""
+
+
+def test_load_keymap_absent_binding_falls_back_to_default(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A command with no override at all still tracks the current default.
+
+    Only a command PRESENT in the delta with an empty value is treated as a
+    deliberate unbind; a genuinely-absent command falls back to DEFAULT_KEYMAP.
+    """
+    store_path = tmp_path / "keymap-store.json"
+    monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+
+    save_keymap({"file.save": "Ctrl+Alt+Shift+Y"})  # unrelated override only
+
+    loaded = load_keymap()
+
+    assert loaded["edit.find"] == DEFAULT_KEYMAP["edit.find"]
 
 
 def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

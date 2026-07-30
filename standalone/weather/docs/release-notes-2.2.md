@@ -10,6 +10,37 @@ effort and run the very same code, so 2.2.0 means the same weather in both. But
 they are separate apps now, each with its own installer, its own tray icon, and
 its own update feed -- install one, both, or neither.
 
+## Headline: the QuillVille Runtime and lighter downloads
+
+Quill Weather now shares one Python runtime -- the **QuillVille Runtime** --
+with every other QuillVille app (QUILL, Quill Radio, and QUILL Audio Studio). It
+is installed once per user and reused by all of them, so once any Quill app has
+installed it, every app you add afterward starts instantly. The runtime is
+reference-counted: it is removed only when the last app that needs it is
+uninstalled.
+
+That shared runtime adds two feather-light ways to get Quill Weather, alongside
+the fully self-contained editions:
+
+- **Companion edition** -- just the app and its docs (about 2 MB). The first
+  time you launch it, if the runtime is not already on your machine, it offers
+  to download and install it (about 230 MB, once) with a fully accessible
+  progress bar. After that, this app and every other QuillVille app start
+  instantly.
+- **Thin installer** -- a tiny installer that downloads the shared runtime only
+  if it is not already present.
+
+Every runtime download, whether triggered by an installer or by the app's own
+first launch, shows a fully accessible progress bar that works with NVDA, JAWS,
+and Narrator, announcing progress as a percentage. See "Editions and the
+QuillVille Runtime" below for the full list of downloads.
+
+The app's launcher is also now a genuine, tiny native program, and the bundled
+Python is the official unmodified build. Earlier versions used a renamed and
+modified copy of Python's `pythonw.exe` as the launcher, which some antivirus
+tools flagged as a false positive. That pattern is gone, so the Quill apps are
+far less likely to be flagged.
+
 ## The idea: a guardian, not a screen
 
 Most weather apps are something you open, glance at, and close. Quill Weather can
@@ -103,9 +134,43 @@ reach all three together. This app is only the wrapper, the installer, the icon,
 and these docs -- so choosing Quill Weather never means choosing an older or
 lesser version of the weather.
 
+## Editions and the QuillVille Runtime
+
+All QuillVille apps now share one Python runtime, the **QuillVille Runtime**,
+installed once per user and reused by every app. Install it a single time and
+every Quill app you add afterward starts instantly. It is reference-counted, so
+it is removed only when the last app that needs it is uninstalled. Pick the
+edition that fits how you want to run Quill Weather:
+
+- **Full portable** (`Quill-Weather-Portable-<version>.zip`, about 82 MB) --
+  fully self-contained: runs from a USB stick with no installation and no
+  internet. It carries a genuine, unmodified copy of Python. Weather is a small
+  app, so this build is already compact. Extract anywhere and run
+  `QuillWeather.exe`; a `data` folder next to the exe holding a
+  `storage-mode.json` marker (`{"mode": "portable"}`) keeps everything on the
+  stick.
+- **Companion edition** (`Quill-Weather-Companion-<version>.zip`, about 2 MB) --
+  feather-light: just the app and its docs, running on the shared QuillVille
+  Runtime. The first time you launch it, if the runtime is not already
+  installed, it offers to download and install it (about 230 MB, once) with a
+  fully accessible progress bar. After that, this app and every other QuillVille
+  app start instantly.
+- **Full installer** (`Quill-Weather-Setup-Shared-<version>.exe`) -- installs
+  the shared runtime, if it is not already present, plus the app, with a Start
+  Menu group, an uninstaller, and the shared data store.
+- **Thin installer** (the `-Lite` setup) -- a tiny installer that downloads the
+  shared runtime only if it is not already present, then installs the app.
+
+Every runtime download, whether triggered by an installer or by the app's own
+first launch, shows a fully accessible progress bar that works with NVDA, JAWS,
+and Narrator, and announces progress as a percentage.
+
 ## Known notes
 
 - Releases are not yet code-signed: Windows SmartScreen may warn on first run.
   Choose More info, then Run anyway. Signing is planned.
+- Antivirus false positives are far less likely now: the launcher is a genuine
+  native program and the bundled Python is the official unmodified build, so the
+  old renamed-`pythonw.exe` pattern that some tools flagged is gone.
 - No audio engine ships here, so NOAA Weather Radio *playback* needs Quill Radio
   installed; Quill Weather still finds your local transmitter.

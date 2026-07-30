@@ -28,13 +28,16 @@ import tempfile
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
+from quill.core.error_codes import CodedError
 from quill.core.vault.sync import Runner, detect_conflicts
 
 _DEFAULT_TIMEOUT = 30.0
 
 
-class LocalGitError(RuntimeError):
+class LocalGitError(CodedError):
     """A local git operation failed. Carries git's own stderr where useful."""
+
+    code = "QUILL-GIT-LOCAL-FAILED"
 
 
 @dataclass(frozen=True, slots=True)

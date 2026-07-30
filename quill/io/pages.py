@@ -3,11 +3,13 @@ from __future__ import annotations
 import subprocess
 import tempfile
 import threading
+import zipfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from quill.core.document import Document
+from quill.core.safe_archive import check_zip_safety
 from quill.io.markitdown_bridge import convert_with_markitdown
 
 # Pages paragraph style names → Markdown heading prefix
@@ -30,6 +32,19 @@ def read_pages_document(path: Path) -> Document:
     (LibreOffice + MarkItDown) for higher fidelity. If neither is available,
     returns a graceful error message.
     """
+    # Refuse a decompression bomb before either route expands the bundle: a
+    # .pages file is a ZIP, and both the IWA parser (which reads each .iwa member
+    # fully into memory) and the LibreOffice route would otherwise expand a
+    # crafted archive. check_zip_safety bounds the declared total size and the
+    # per-entry compression ratio, raising DecompressionBombError on a bomb. A
+    # non-ZIP or unreadable file falls through to the readers below, which report
+    # it gracefully.
+    try:
+        with zipfile.ZipFile(path) as bundle:
+            check_zip_safety(bundle)
+    except (zipfile.BadZipFile, OSError):
+        pass
+
     try:
         return _read_pages_via_iwa(path)
     except Exception:  # noqa: BLE001 - fall through to the LibreOffice route

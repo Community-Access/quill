@@ -178,6 +178,7 @@ class StationBrowserDialog:
         on_favorites_changed: Callable[[], None] | None = None,
         on_open_add_custom: Callable[[RadioStation | None], None] | None = None,
         on_open_link_finder: Callable[[], None] | None = None,
+        on_report_bad_station: Callable[[RadioStation], None] | None = None,
         show_details: bool = True,
         windows: object | None = None,
     ) -> None:
@@ -193,6 +194,7 @@ class StationBrowserDialog:
         self._on_favorites_changed = on_favorites_changed or (lambda: None)
         self._on_open_add_custom = on_open_add_custom
         self._on_open_link_finder = on_open_link_finder
+        self._on_report_bad_station = on_report_bad_station
 
         self._current_results: list[RadioStation] = []
         #: The unfiltered list behind _current_results, so the Source facet can
@@ -1213,6 +1215,11 @@ class StationBrowserDialog:
                 lambda: self._on_toggle_favorite(None),
             ),
         ]
+        if self._on_report_bad_station is not None:
+            entries.append((
+                "Report &Bad Station...",
+                lambda s=station: self._on_report_bad_station(s),
+            ))
         menu = wx.Menu()
         id_refs = []
         for label, handler in entries:

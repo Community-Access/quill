@@ -36,10 +36,17 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.keybinding_parse import KeybindingParseMixin
 
 
-class AppShellFrame:
-    """Mixin: implements the MainFrame host protocol for standalone apps."""
+class AppShellFrame(KeybindingParseMixin):
+    """Mixin: implements the MainFrame host protocol for standalone apps.
+
+    Inheriting :class:`KeybindingParseMixin` gives the companion app frames the
+    same three pure keybinding parsers ``MainFrame`` uses, so the shared
+    ``GlobalHotkeysMixin`` and ``KeymapEditorMixin`` resolve them via the MRO
+    without a second copy.
+    """
 
     def _init_app_shell(
         self, title: str, *, safe_mode: bool = False, size: tuple[int, int] = (480, 360)
@@ -145,6 +152,41 @@ class AppShellFrame:
             return title
         return f"{title}\t{binding}"
 
+    # -- keymap editing support (Help > Keyboard Shortcuts...) ----------------
+    #
+    # The Keyboard Shortcuts editor (KeymapEditorMixin) and keymap import/reset
+    # call these three the same way MainFrame's KeymapIoMixin does. The apps
+    # bake accelerators into their menu-item labels via _menu_label (they use no
+    # AcceleratorTable for menus), so re-applying a keymap edit is a menu-bar
+    # rebuild plus a global-hotkey reload -- there is nothing else to refresh.
+
+    def _set_keyboard_pack(self, pack_name: str) -> None:
+        from quill.core.settings import save_settings
+
+        self.settings.keyboard_pack = pack_name
+        save_settings(self.settings)
+
+    def _mark_keyboard_pack_custom(self) -> None:
+        from quill.core.keymap import KEYBOARD_PACK_CUSTOM
+
+        if self.settings.keyboard_pack == KEYBOARD_PACK_CUSTOM:
+            return
+        self._set_keyboard_pack(KEYBOARD_PACK_CUSTOM)
+
+    def _reload_shortcuts_from_keymap(self) -> None:
+        """Live-reapply a keymap change: rebuild the menu bar so the baked-in
+        accelerator labels refresh, re-sync the app's dynamic status, then
+        re-register the system-wide hotkeys. ``_build_menu_bar`` replaces the
+        menu bar cleanly (wx deletes the old one) so nothing is duplicated."""
+        build = getattr(self, "_build_menu_bar", None)
+        if callable(build):
+            build()
+        refresh = getattr(self, "_refresh_statusbar", None)
+        if callable(refresh):
+            refresh()
+        if hasattr(self, "_reload_global_hotkeys"):
+            self._reload_global_hotkeys()
+
     def _show_modal_dialog(
         self, dialog: object, label: str, *, restore_editor_focus: bool = True
     ) -> int:
@@ -218,6 +260,15 @@ class AppShellFrame:
         while a station plays" bug). When a confirm is needed we veto and run it
         deferred via CallAfter, then act on the result in ``_run_close_confirm``.
         """
+        if not event.CanVeto():
+            # An OS log-off / shutdown (or a forced close) cannot be vetoed.
+            # Honour it directly: run teardown -- recorder cleanup, resume-marker
+            # clear -- then Skip so the window actually closes. Vetoing to
+            # minimize or to defer a confirm would be ignored by the OS AND skip
+            # shutdown, stranding a stale resume marker and leaking the recorder.
+            shutdown()
+            event.Skip()
+            return
         if getattr(self, "_closing_in_progress", False):
             event.Veto()
             return
@@ -521,7 +572,39 @@ class AppShellFrame:
 
     # -- report a bug ------------------------------------------------------------
 
-    def report_app_bug(self, *, source_app: str, app_version: str = "") -> None:
+    def report_bad_station(
+        self, station: object, *, source_app: str = "", app_version: str = ""
+    ) -> None:
+        """Report a station that would not play (#1218).
+
+        Composes a station-scoped report (name, source, UUID, stream URL,
+        format) and hands it to the normal Report a Bug flow pre-filled, so the
+        user does not have to describe the station by hand. Station metadata
+        only -- no user or machine details -- so it is safe on the clipboard or
+        in a browser issue form.
+
+        ``source_app`` defaults to this app's window title (e.g. "Quill Radio"),
+        so shared surfaces can call it without re-stating the product name."""
+        from quill.core.radio.bad_station_report import build_bad_station_report
+
+        summary, body = build_bad_station_report(station)
+        frame = getattr(self, "frame", None)
+        app = source_app or (frame.GetTitle() if frame is not None else "Quill Radio")
+        self.report_app_bug(
+            source_app=app,
+            app_version=app_version,
+            prefill_summary=summary,
+            prefill_body=body,
+        )
+
+    def report_app_bug(
+        self,
+        *,
+        source_app: str,
+        app_version: str = "",
+        prefill_summary: str = "",
+        prefill_body: str = "",
+    ) -> None:
         """Report a Bug, same shape as QUILL's: the in-app feedback-hub form
         when a GitHub token is available, else the online support form
         (opened in the browser and copied to the clipboard) -- a missing or
@@ -529,7 +612,12 @@ class AppShellFrame:
 
         Reports carry THIS app's identity and version ("Quill Radio 1.0.0"),
         not the underlying quill package version, so triage always knows
-        which product the user was actually running."""
+        which product the user was actually running.
+
+        ``prefill_summary``/``prefill_body`` (used by Report Bad Station) go
+        straight into the online issue form. The in-app feedback-hub dialog
+        takes no per-call defaults, so when a body is supplied it is staged on
+        the clipboard and the user is told to paste it into the description."""
         from quill.core.feedback_token import github_token_present
 
         version = f"{source_app} {app_version}" if app_version else source_app
@@ -539,8 +627,16 @@ class AppShellFrame:
                 app_version,
                 "Direct bug reporting isn't set up in this build. You can still "
                 "file the report on the online support form.",
+                prefill_summary=prefill_summary,
+                prefill_body=prefill_body,
             )
             return
+        if prefill_body:
+            self._copy_to_clipboard(prefill_body)
+            self._announce(
+                "The station's details are on your clipboard. Paste them into the "
+                "description with Control V, then submit."
+            )
         try:
             from pathlib import Path
 
@@ -556,8 +652,10 @@ class AppShellFrame:
                 app_version=version,
                 github_token=effective_github_token(),
             )
-            result = self._show_modal_dialog(dialog, "Report an Issue")
-            dialog.Destroy()
+            try:
+                result = self._show_modal_dialog(dialog, "Report an Issue")
+            finally:
+                dialog.Destroy()
             if result == wx.ID_OK:
                 self._announce("Thanks -- your report was submitted.")
         except Exception:  # noqa: BLE001 - never strand the user without a path
@@ -571,13 +669,32 @@ class AppShellFrame:
                 "on the online support form instead.",
             )
 
-    def _report_app_bug_online(self, source_app: str, app_version: str, reason: str) -> None:
+    def _copy_to_clipboard(self, text: str) -> None:
+        """Best-effort copy; a clipboard we can't open is never fatal."""
+        try:
+            if wx.TheClipboard.Open():
+                try:
+                    wx.TheClipboard.SetData(wx.TextDataObject(text))
+                finally:
+                    wx.TheClipboard.Close()
+        except Exception:  # noqa: BLE001 - clipboard failures must not strand the user
+            pass
+
+    def _report_app_bug_online(
+        self,
+        source_app: str,
+        app_version: str,
+        reason: str,
+        *,
+        prefill_summary: str = "",
+        prefill_body: str = "",
+    ) -> None:
         import webbrowser
 
         from quill.core.diagnostics import build_support_issue_url, collect_environment_info
 
         issue_url = build_support_issue_url(
-            {"summary": f"Bug report: {source_app}", "body": ""},
+            {"summary": prefill_summary or f"Bug report: {source_app}", "body": prefill_body},
             source_app=source_app,
             version=app_version or "0.0.0",
             platform_label=str(collect_environment_info()["platform"]),
@@ -587,11 +704,7 @@ class AppShellFrame:
             opened = bool(webbrowser.open(issue_url))
         except Exception:  # noqa: BLE001 - a browser failure falls back to the clipboard
             opened = False
-        if wx.TheClipboard.Open():
-            try:
-                wx.TheClipboard.SetData(wx.TextDataObject(issue_url))
-            finally:
-                wx.TheClipboard.Close()
+        self._copy_to_clipboard(issue_url)
         tail = (
             "Your browser is opening it now; the link is also on your clipboard."
             if opened

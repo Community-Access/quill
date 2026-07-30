@@ -21,6 +21,7 @@ from dataclasses import dataclass
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.podcasts import feed_auth
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 10.0
@@ -65,7 +66,9 @@ def _fetch_chapters_bytes(url: str, *, auth_header: str = "") -> bytes:
     request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
     try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
+        with feed_auth.urlopen_auth_safe(
+            request, timeout=_TIMEOUT_SECONDS, context=context
+        ) as resp:
             payload: bytes = resp.read(_MAX_BYTES)
             return payload
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:

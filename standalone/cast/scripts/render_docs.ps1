@@ -16,11 +16,23 @@ if (-not $pandoc) {
     throw "Pandoc is required to render docs. Install with: winget install --id JohnMacFarlane.Pandoc -e"
 }
 
+# Shared accessible HTML template (adds <html lang="en">, a descriptive
+# <title>, a skip link, and a <main> landmark) lives in the top-level repo at
+# docs/pandoc. Fall back to Pandoc's default template if it is unavailable.
+$templatePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\..\docs\pandoc\quill-accessible.html5"))
+$htmlTemplateArgs = @()
+if (Test-Path $templatePath) { $htmlTemplateArgs = @("--template", $templatePath) }
+else { Write-Warning "Accessible pandoc template not found at $templatePath; using pandoc default." }
+
 Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
     $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")
     $epubOut = [System.IO.Path]::ChangeExtension($_.FullName, "epub")
     Write-Host "Rendering $($_.Name) -> $(Split-Path -Leaf $htmlOut), $(Split-Path -Leaf $epubOut)"
-    & $pandoc.Source $_.FullName -f gfm -t html5 -s -o $htmlOut
+    # A descriptive <title>/<h1> comes from the document's first Markdown H1
+    # (falls back to the file name), so pages are never titled by bare filename.
+    $h1 = Select-String -Path $_.FullName -Pattern '^#\s+(.+?)\s*$' | Select-Object -First 1
+    $pageTitle = if ($h1) { $h1.Matches[0].Groups[1].Value } else { $_.BaseName }
+    & $pandoc.Source $_.FullName -f gfm -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
     if ($LASTEXITCODE -ne 0) { throw "Pandoc HTML render failed for $($_.Name)" }
     & $pandoc.Source $_.FullName -f gfm -t epub3 -o $epubOut
     if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }

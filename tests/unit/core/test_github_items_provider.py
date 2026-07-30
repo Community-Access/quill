@@ -23,7 +23,9 @@ from quill.core.github.items_provider import (
     GitHubItemsError,
     GitHubItemsProvider,
     GitHubRepoForkInfo,
+    parse_release_assets,
     refuse_in_safe_mode,
+    total_release_downloads,
 )
 
 # ---------------------------------------------------------------------------
@@ -560,6 +562,126 @@ def test_fetch_releases_flags_draft_and_prerelease(
     assert r.prerelease is False
     assert r.created_at.startswith("2026-02-01")
     assert r.body == "release notes"
+    # A release with no assets totals zero downloads and no files.
+    assert r.assets == ()
+    assert r.total_downloads == 0
+    assert r.asset_count == 0
+
+
+# ---------------------------------------------------------------------------
+# Release download counts (GHManage "release download counts" feature)
+# ---------------------------------------------------------------------------
+
+
+def _asset_json(name: str, downloads: int, size: int) -> dict[str, Any]:
+    """One asset in the REST JSON shape (dict) the parse layer accepts."""
+    return {
+        "name": name,
+        "download_count": downloads,
+        "size": size,
+        "browser_download_url": f"https://example.com/{name}",
+        "updated_at": "2026-02-01T00:00:00Z",
+        "content_type": "application/octet-stream",
+    }
+
+
+def test_parse_release_assets_sorts_most_downloaded_first() -> None:
+    raw = [
+        _asset_json("small.zip", downloads=5, size=1024),
+        _asset_json("popular.exe", downloads=900, size=2 * 1024 * 1024),
+        _asset_json("mid.tar.gz", downloads=42, size=512),
+    ]
+    assets = parse_release_assets(raw)
+    assert [a.name for a in assets] == ["popular.exe", "mid.tar.gz", "small.zip"]
+    assert [a.download_count for a in assets] == [900, 42, 5]
+    # Byte-size formatting is shared with GitHubArtifact.size_display.
+    assert assets[0].size_display == "2.0 MB"
+    assert assets[2].size_display == "1.0 KB"
+    assert assets[0].browser_download_url == "https://example.com/popular.exe"
+
+
+def test_parse_release_assets_empty_is_empty_tuple() -> None:
+    assert parse_release_assets(None) == ()
+    assert parse_release_assets([]) == ()
+
+
+def test_fetch_releases_totals_asset_download_counts(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    # A release whose assets are inline on the list response (no extra call) --
+    # PyGithub GitReleaseAsset objects are attribute-accessed, so a
+    # SimpleNamespace stands in for one here.
+    repo._releases = [
+        SimpleNamespace(
+            tag_name="v3.0",
+            title="Release 3.0",
+            draft=False,
+            prerelease=False,
+            created_at=datetime(2026, 3, 1, tzinfo=UTC),
+            html_url="https://github.com/owner/repo/releases/tag/v3.0",
+            body="notes",
+            assets=[
+                SimpleNamespace(
+                    name="setup.exe",
+                    download_count=1000,
+                    size=5 * 1024 * 1024,
+                    browser_download_url="https://example.com/setup.exe",
+                    updated_at="2026-03-01T00:00:00Z",
+                    content_type="application/octet-stream",
+                ),
+                SimpleNamespace(
+                    name="portable.zip",
+                    download_count=250,
+                    size=3 * 1024 * 1024,
+                    browser_download_url="https://example.com/portable.zip",
+                    updated_at="2026-03-01T00:00:00Z",
+                    content_type="application/zip",
+                ),
+            ],
+        ),
+    ]
+    releases = provider.fetch_releases("owner/repo")
+    r = releases[0]
+    assert r.total_downloads == 1250
+    assert r.asset_count == 2
+    # Most-downloaded first when drilled into.
+    assert [a.name for a in r.assets] == ["setup.exe", "portable.zip"]
+    # The repo-wide summary sums every asset of every loaded release.
+    assert total_release_downloads(releases) == 1250
+
+
+def test_fetch_releases_falls_back_to_get_assets(
+    provider: GitHubItemsProvider, repo: _FakeRepo
+) -> None:
+    # Older PyGithub builds expose assets only as a lazy get_assets() list.
+    assets = [_asset_json("only.bin", downloads=7, size=100)]
+    repo._releases = [
+        SimpleNamespace(
+            tag_name="v4.0",
+            title="Release 4.0",
+            draft=False,
+            prerelease=False,
+            created_at=datetime(2026, 4, 1, tzinfo=UTC),
+            html_url="https://github.com/owner/repo/releases/tag/v4.0",
+            body="",
+            assets=None,
+            get_assets=lambda: assets,
+        ),
+    ]
+    r = provider.fetch_releases("owner/repo")[0]
+    assert r.total_downloads == 7
+    assert r.assets[0].name == "only.bin"
+
+
+def test_total_release_downloads_across_releases() -> None:
+    from quill.core.github.items_provider import GitHubRelease
+
+    releases = [
+        GitHubRelease(tag="a", name="a", assets=parse_release_assets([_asset_json("x", 3, 1)])),
+        GitHubRelease(tag="b", name="b", assets=parse_release_assets([_asset_json("y", 4, 1)])),
+        GitHubRelease(tag="c", name="c"),  # no assets
+    ]
+    assert total_release_downloads(releases) == 7
 
 
 def test_fetch_workflow_runs_maps_status_and_conclusion(

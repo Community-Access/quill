@@ -22,17 +22,24 @@ from __future__ import annotations
 import re
 
 from quill.core.quillins.model import (
+    APP_IDS,
+    CAP_BEACON_RESOLVER,
     CAP_DOCUMENT_EVENTS,
     CAP_NET,
+    CAP_PODCAST_FEED_AUTH,
+    CAP_RADIO_DIRECTORY,
     CAP_SCHEDULE,
     CAP_SETTINGS_OWN_READ,
     CAP_SETTINGS_OWN_WRITE,
+    CAP_STUDIO_PIPELINE,
     CAP_UI_COMMAND,
     CAP_UI_STATUS,
+    CAP_WEATHER_ALERTS,
     CAPABILITIES,
     CONTEXT_WHEN_ALWAYS,
     CONTEXT_WHEN_VALUES,
     DOCUMENT_EVENTS,
+    EDITOR_ONLY_CAPABILITIES,
     MENU_PARENTS,
     QUILLIN_CATEGORIES,
     RUNTIME_NODE,
@@ -40,12 +47,17 @@ from quill.core.quillins.model import (
     RUNTIMES,
     SCHEMA_ID,
     TRANSCRIPTION_PROVIDER_KINDS,
+    AlertSourceContribution,
+    AudioPipelineStepContribution,
     ContextMenuContribution,
     Contributions,
+    DirectoryProviderContribution,
     ExtensionCommand,
     ExtensionManifest,
+    FeedAuthProviderContribution,
     FileTypeContribution,
     HotkeyContribution,
+    LocationResolverContribution,
     ManifestError,
     MenuContribution,
     RequiresDependency,
@@ -55,6 +67,9 @@ from quill.core.quillins.model import (
     StatusBarContribution,
     TranscriptionProviderContribution,
 )
+
+#: The pipeline stages a studio.pipeline step may attach to (schema enum mirror).
+_PIPELINE_STAGES: frozenset[str] = frozenset({"pre", "master", "post"})
 
 _ID_PATTERN = re.compile(r"^[a-z0-9]+([._-][a-z0-9]+)*$")
 _HOSTNAME_PATTERN = re.compile(
@@ -83,6 +98,7 @@ _TOP_LEVEL_KEYS = frozenset({
     "categories",
     "requires",
     "net_allowed_hosts",
+    "targets",
 })
 _CONTRIBUTES_KEYS = frozenset({
     "commands",
@@ -100,6 +116,42 @@ _CONTRIBUTES_KEYS = frozenset({
     "file_types",
     "snippet_gallery",
     "transcription_providers",
+    "feed_auth_providers",
+    "directory_providers",
+    "alert_sources",
+    "pipeline_steps",
+    "location_resolvers",
+})
+_FEED_AUTH_PROVIDER_KEYS = frozenset({
+    "id",
+    "match_hosts",
+    "handler",
+    "description",
+})
+_DIRECTORY_PROVIDER_KEYS = frozenset({
+    "id",
+    "display_name",
+    "handler",
+    "description",
+})
+_ALERT_SOURCE_KEYS = frozenset({
+    "id",
+    "handler",
+    "interval_seconds",
+    "description",
+})
+_PIPELINE_STEP_KEYS = frozenset({
+    "id",
+    "stage",
+    "handler",
+    "display_name",
+    "description",
+})
+_LOCATION_RESOLVER_KEYS = frozenset({
+    "id",
+    "handler",
+    "content_types",
+    "description",
 })
 _TRANSCRIPTION_PROVIDER_KEYS = frozenset({
     "id",
@@ -635,6 +687,259 @@ def _validate_transcription_providers(
     return tuple(result)
 
 
+def _validate_feed_auth_providers(
+    raw: object, errors: list[str]
+) -> tuple[FeedAuthProviderContribution, ...]:
+    if not isinstance(raw, list):
+        errors.append("contributes.feed_auth_providers must be an array")
+        return ()
+    result: list[FeedAuthProviderContribution] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(raw):
+        label = f"contributes.feed_auth_providers[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        _check_unknown_keys(item, _FEED_AUTH_PROVIDER_KEYS, label, errors)
+        provider_id = _require_str(item.get("id"), f"{label}.id", errors)
+        if provider_id is not None:
+            if not _COMMAND_ID_PATTERN.match(provider_id):
+                errors.append(f"{label}.id must be namespaced under 'ext.' (e.g. ext.acme.premium)")
+                provider_id = None
+            elif provider_id in seen_ids:
+                errors.append(f"{label}.id is a duplicate: '{provider_id}'")
+                provider_id = None
+            else:
+                seen_ids.add(provider_id)
+        raw_hosts = item.get("match_hosts")
+        hosts: list[str] = []
+        if not isinstance(raw_hosts, list) or not raw_hosts:
+            errors.append(f"{label}.match_hosts must be a non-empty array")
+        else:
+            for hi, host in enumerate(raw_hosts):
+                hlabel = f"{label}.match_hosts[{hi}]"
+                if not isinstance(host, str):
+                    errors.append(f"{hlabel} must be a string")
+                elif not _HOSTNAME_PATTERN.match(host):
+                    errors.append(
+                        f"{hlabel} must be a hostname or *.hostname pattern (got '{host}')"
+                    )
+                else:
+                    hosts.append(host)
+        handler = _require_str(item.get("handler"), f"{label}.handler", errors)
+        if handler is not None and not handler:
+            errors.append(f"{label}.handler must not be empty")
+            handler = None
+        description = ""
+        if "description" in item:
+            desc = _require_str(item.get("description"), f"{label}.description", errors)
+            if desc is not None:
+                if len(desc) > 400:
+                    errors.append(f"{label}.description must be at most 400 characters")
+                else:
+                    description = desc
+        if provider_id is not None and hosts and handler is not None:
+            result.append(
+                FeedAuthProviderContribution(
+                    id=provider_id,
+                    match_hosts=tuple(hosts),
+                    handler=handler,
+                    description=description,
+                )
+            )
+    return tuple(result)
+
+
+def _validate_ext_id(raw_id: object, label: str, seen: set[str], errors: list[str]) -> str | None:
+    """Validate an ``ext.``-namespaced, unique provider id. Returns None if bad."""
+
+    provider_id = _require_str(raw_id, f"{label}.id", errors)
+    if provider_id is None:
+        return None
+    if not _COMMAND_ID_PATTERN.match(provider_id):
+        errors.append(f"{label}.id must be namespaced under 'ext.' (e.g. ext.acme.provider)")
+        return None
+    if provider_id in seen:
+        errors.append(f"{label}.id is a duplicate: '{provider_id}'")
+        return None
+    seen.add(provider_id)
+    return provider_id
+
+
+def _validate_handler(raw_handler: object, label: str, errors: list[str]) -> str | None:
+    handler = _require_str(raw_handler, f"{label}.handler", errors)
+    if handler is not None and not handler:
+        errors.append(f"{label}.handler must not be empty")
+        return None
+    return handler
+
+
+def _validate_optional_desc(item: dict[str, object], label: str, errors: list[str]) -> str:
+    if "description" not in item:
+        return ""
+    desc = _require_str(item.get("description"), f"{label}.description", errors)
+    if desc is None:
+        return ""
+    if len(desc) > 400:
+        errors.append(f"{label}.description must be at most 400 characters")
+        return ""
+    return desc
+
+
+def _validate_directory_providers(
+    raw: object, errors: list[str]
+) -> tuple[DirectoryProviderContribution, ...]:
+    if not isinstance(raw, list):
+        errors.append("contributes.directory_providers must be an array")
+        return ()
+    result: list[DirectoryProviderContribution] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(raw):
+        label = f"contributes.directory_providers[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        _check_unknown_keys(item, _DIRECTORY_PROVIDER_KEYS, label, errors)
+        provider_id = _validate_ext_id(item.get("id"), label, seen_ids, errors)
+        display_name = _require_str(item.get("display_name"), f"{label}.display_name", errors)
+        if display_name is not None and not (1 <= len(display_name) <= 80):
+            errors.append(f"{label}.display_name must be 1-80 characters")
+            display_name = None
+        handler = _validate_handler(item.get("handler"), label, errors)
+        description = _validate_optional_desc(item, label, errors)
+        if provider_id is not None and display_name is not None and handler is not None:
+            result.append(
+                DirectoryProviderContribution(
+                    id=provider_id,
+                    display_name=display_name,
+                    handler=handler,
+                    description=description,
+                )
+            )
+    return tuple(result)
+
+
+def _validate_alert_sources(raw: object, errors: list[str]) -> tuple[AlertSourceContribution, ...]:
+    if not isinstance(raw, list):
+        errors.append("contributes.alert_sources must be an array")
+        return ()
+    result: list[AlertSourceContribution] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(raw):
+        label = f"contributes.alert_sources[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        _check_unknown_keys(item, _ALERT_SOURCE_KEYS, label, errors)
+        provider_id = _validate_ext_id(item.get("id"), label, seen_ids, errors)
+        handler = _validate_handler(item.get("handler"), label, errors)
+        interval = 300
+        if "interval_seconds" in item:
+            value = item.get("interval_seconds")
+            if not isinstance(value, int) or isinstance(value, bool) or not (60 <= value <= 86400):
+                errors.append(f"{label}.interval_seconds must be an integer 60-86400")
+            else:
+                interval = value
+        description = _validate_optional_desc(item, label, errors)
+        if provider_id is not None and handler is not None:
+            result.append(
+                AlertSourceContribution(
+                    id=provider_id,
+                    handler=handler,
+                    interval_seconds=interval,
+                    description=description,
+                )
+            )
+    return tuple(result)
+
+
+def _validate_pipeline_steps(
+    raw: object, errors: list[str]
+) -> tuple[AudioPipelineStepContribution, ...]:
+    if not isinstance(raw, list):
+        errors.append("contributes.pipeline_steps must be an array")
+        return ()
+    result: list[AudioPipelineStepContribution] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(raw):
+        label = f"contributes.pipeline_steps[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        _check_unknown_keys(item, _PIPELINE_STEP_KEYS, label, errors)
+        provider_id = _validate_ext_id(item.get("id"), label, seen_ids, errors)
+        stage = _require_str(item.get("stage"), f"{label}.stage", errors)
+        if stage is not None and stage not in _PIPELINE_STAGES:
+            errors.append(
+                f"{label}.stage must be one of {sorted(_PIPELINE_STAGES)} (got '{stage}')"
+            )
+            stage = None
+        handler = _validate_handler(item.get("handler"), label, errors)
+        display_name = _require_str(item.get("display_name"), f"{label}.display_name", errors)
+        if display_name is not None and not (1 <= len(display_name) <= 80):
+            errors.append(f"{label}.display_name must be 1-80 characters")
+            display_name = None
+        description = _validate_optional_desc(item, label, errors)
+        if (
+            provider_id is not None
+            and stage is not None
+            and handler is not None
+            and display_name is not None
+        ):
+            result.append(
+                AudioPipelineStepContribution(
+                    id=provider_id,
+                    stage=stage,
+                    handler=handler,
+                    display_name=display_name,
+                    description=description,
+                )
+            )
+    return tuple(result)
+
+
+def _validate_location_resolvers(
+    raw: object, errors: list[str]
+) -> tuple[LocationResolverContribution, ...]:
+    if not isinstance(raw, list):
+        errors.append("contributes.location_resolvers must be an array")
+        return ()
+    result: list[LocationResolverContribution] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(raw):
+        label = f"contributes.location_resolvers[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        _check_unknown_keys(item, _LOCATION_RESOLVER_KEYS, label, errors)
+        provider_id = _validate_ext_id(item.get("id"), label, seen_ids, errors)
+        handler = _validate_handler(item.get("handler"), label, errors)
+        content_types: list[str] = []
+        if "content_types" in item:
+            raw_types = item.get("content_types")
+            if not isinstance(raw_types, list):
+                errors.append(f"{label}.content_types must be an array")
+            else:
+                for ti, ct in enumerate(raw_types):
+                    if not isinstance(ct, str):
+                        errors.append(f"{label}.content_types[{ti}] must be a string")
+                    elif not (1 <= len(ct) <= 32):
+                        errors.append(f"{label}.content_types[{ti}] must be 1-32 characters")
+                    else:
+                        content_types.append(ct)
+        description = _validate_optional_desc(item, label, errors)
+        if provider_id is not None and handler is not None:
+            result.append(
+                LocationResolverContribution(
+                    id=provider_id,
+                    handler=handler,
+                    content_types=tuple(content_types),
+                    description=description,
+                )
+            )
+    return tuple(result)
+
+
 def _validate_schedule(raw: object, errors: list[str]) -> tuple[ScheduleContribution, ...]:
     if not isinstance(raw, list):
         errors.append("contributes.schedule must be an array")
@@ -921,6 +1226,32 @@ def _validate_net_allowed_hosts(raw: object, errors: list[str]) -> tuple[str, ..
     return tuple(result)
 
 
+def _validate_targets(raw: object, errors: list[str]) -> tuple[str, ...]:
+    if not isinstance(raw, list):
+        errors.append("targets must be an array")
+        return ()
+    if not raw:
+        errors.append("targets must not be empty (omit the field for the editor-only default)")
+        return ()
+    result: list[str] = []
+    seen: set[str] = set()
+    for index, item in enumerate(raw):
+        if not isinstance(item, str):
+            errors.append(f"targets[{index}] must be a string")
+            continue
+        if item not in APP_IDS:
+            errors.append(
+                f"targets[{index}] is not a known app id: '{item}' (valid: {sorted(APP_IDS)})"
+            )
+            continue
+        if item in seen:
+            errors.append(f"targets[{index}] is a duplicate: '{item}'")
+            continue
+        seen.add(item)
+        result.append(item)
+    return tuple(result)
+
+
 def _validate_contributes(
     raw: object, errors: list[str]
 ) -> tuple[Contributions, list[str], bool, bool]:
@@ -1013,6 +1344,26 @@ def _validate_contributes(
             raw["transcription_providers"], errors
         )
 
+    feed_auth_providers: tuple[FeedAuthProviderContribution, ...] = ()
+    if "feed_auth_providers" in raw:
+        feed_auth_providers = _validate_feed_auth_providers(raw["feed_auth_providers"], errors)
+
+    directory_providers: tuple[DirectoryProviderContribution, ...] = ()
+    if "directory_providers" in raw:
+        directory_providers = _validate_directory_providers(raw["directory_providers"], errors)
+
+    alert_sources: tuple[AlertSourceContribution, ...] = ()
+    if "alert_sources" in raw:
+        alert_sources = _validate_alert_sources(raw["alert_sources"], errors)
+
+    pipeline_steps: tuple[AudioPipelineStepContribution, ...] = ()
+    if "pipeline_steps" in raw:
+        pipeline_steps = _validate_pipeline_steps(raw["pipeline_steps"], errors)
+
+    location_resolvers: tuple[LocationResolverContribution, ...] = ()
+    if "location_resolvers" in raw:
+        location_resolvers = _validate_location_resolvers(raw["location_resolvers"], errors)
+
     contributions = Contributions(
         commands=tuple(commands),
         menus=menus,
@@ -1029,6 +1380,11 @@ def _validate_contributes(
         file_types=file_types,
         snippet_gallery=snippet_gallery,
         transcription_providers=transcription_providers,
+        feed_auth_providers=feed_auth_providers,
+        directory_providers=directory_providers,
+        alert_sources=alert_sources,
+        pipeline_steps=pipeline_steps,
+        location_resolvers=location_resolvers,
     )
     return contributions, contributed_ids, any_handler, has_document_events
 
@@ -1137,6 +1493,10 @@ def validate_manifest(
     if "net_allowed_hosts" in raw:
         net_allowed_hosts = _validate_net_allowed_hosts(raw.get("net_allowed_hosts"), errors)
 
+    targets: tuple[str, ...] = ()
+    if "targets" in raw:
+        targets = _validate_targets(raw.get("targets"), errors)
+
     runtime = RUNTIME_PYTHON
     if "runtime" in raw:
         runtime_raw = raw.get("runtime")
@@ -1153,7 +1513,12 @@ def validate_manifest(
     if "main" in raw:
         candidate = _require_str(raw.get("main"), "main", errors)
         if candidate is not None:
-            if not _MAIN_PATTERN.match(candidate):
+            if ".." in candidate.split("/"):
+                # Reject path escape: ``main`` must stay inside the extension dir.
+                # The loader and both runtime workers re-check containment, but
+                # failing here keeps a traversal manifest from ever validating.
+                errors.append("main must not contain '..' path segments (path escape)")
+            elif not _MAIN_PATTERN.match(candidate):
                 errors.append("main must be a relative '*.py' or '*.js' path")
             elif runtime == RUNTIME_NODE and not _MAIN_JS_PATTERN.match(candidate):
                 errors.append("node runtime requires main to be a '*.js' path")
@@ -1236,6 +1601,71 @@ def validate_manifest(
             " either add 'net' to capabilities or remove net_allowed_hosts"
         )
 
+    # A feed auth provider is a host-mediated podcast credential provider: it
+    # requires the podcast.feed.auth capability and a main module to host the
+    # handler that returns the header.
+    if contributions.feed_auth_providers:
+        if CAP_PODCAST_FEED_AUTH not in capabilities:
+            errors.append(
+                "contributes.feed_auth_providers requires the 'podcast.feed.auth' capability"
+            )
+        if main is None:
+            errors.append("contributes.feed_auth_providers requires a top-level 'main' module")
+
+    # Station-directory providers (Quill Radio) are host-mediated: the handler
+    # returns station rows the host folds into Find Stations. They require the
+    # radio.directory capability and a main module to host the handler.
+    if contributions.directory_providers:
+        if CAP_RADIO_DIRECTORY not in capabilities:
+            errors.append(
+                "contributes.directory_providers requires the 'radio.directory' capability"
+            )
+        if main is None:
+            errors.append("contributes.directory_providers requires a top-level 'main' module")
+
+    # Weather alert sources (Quill Weather) are host-mediated: the handler
+    # returns extra active alerts merged into the watch. They require the
+    # weather.alerts capability and a main module.
+    if contributions.alert_sources:
+        if CAP_WEATHER_ALERTS not in capabilities:
+            errors.append("contributes.alert_sources requires the 'weather.alerts' capability")
+        if main is None:
+            errors.append("contributes.alert_sources requires a top-level 'main' module")
+
+    # Audio-processing steps (Audio Studio) are host-mediated: the handler
+    # returns an ffmpeg filter fragment the host appends to the graph. They
+    # require the studio.pipeline capability and a main module.
+    if contributions.pipeline_steps:
+        if CAP_STUDIO_PIPELINE not in capabilities:
+            errors.append("contributes.pipeline_steps requires the 'studio.pipeline' capability")
+        if main is None:
+            errors.append("contributes.pipeline_steps requires a top-level 'main' module")
+
+    # Location resolvers (Quill Beacon) are host-mediated: the handler resolves a
+    # ULD against current content as a fallback layer. They require the
+    # beacon.resolver capability and a main module.
+    if contributions.location_resolvers:
+        if CAP_BEACON_RESOLVER not in capabilities:
+            errors.append(
+                "contributes.location_resolvers requires the 'beacon.resolver' capability"
+            )
+        if main is None:
+            errors.append("contributes.location_resolvers requires a top-level 'main' module")
+
+    # Editor-only capabilities (editor.read/write, document.*) only make sense in
+    # the full editor; a manifest declaring any of them must not target a
+    # non-editor app. ``targets`` defaults to the editor only, so a targets-less
+    # (editor) Quillin is unaffected.
+    effective_targets = targets or ("quill",)
+    editor_only_declared = sorted(set(capabilities) & EDITOR_ONLY_CAPABILITIES)
+    non_editor_targets = sorted(t for t in effective_targets if t != "quill")
+    if editor_only_declared and non_editor_targets:
+        errors.append(
+            "editor-only capabilities "
+            f"({', '.join(editor_only_declared)}) cannot target non-editor apps "
+            f"({', '.join(non_editor_targets)}); those apps have no document to act on"
+        )
+
     return errors
 
 
@@ -1267,6 +1697,7 @@ def parse_manifest(
     categories = _validate_categories(raw.get("categories", []), [])
     requires = _validate_requires(raw.get("requires", []), [])
     net_allowed_hosts = _validate_net_allowed_hosts(raw.get("net_allowed_hosts", []), [])
+    targets = _validate_targets(raw.get("targets", []), []) if "targets" in raw else ()
 
     return ExtensionManifest(
         id=str(raw["id"]),
@@ -1283,4 +1714,5 @@ def parse_manifest(
         categories=categories,
         requires=requires,
         net_allowed_hosts=net_allowed_hosts,
+        targets=targets,
     )

@@ -53,8 +53,22 @@
           "document.directives",
           "document.events",
           "schedule",
-          "ui.log"
+          "ui.log",
+          "podcast.feed.auth",
+          "radio.directory",
+          "weather.alerts",
+          "studio.pipeline",
+          "beacon.resolver"
         ]
+      }
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Apps this Quillin loads in. Omit for the editor-only default (['quill']). Editor-only capabilities (editor.read/write, document.directives, document.events) cannot target a non-editor app.",
+      "items": {
+        "enum": ["quill", "radio", "cast", "weather", "studio", "beacon"]
       }
     },
     "categories": {
@@ -542,6 +556,135 @@
                 "exclusiveMinimum": 0,
                 "description": "Optional upload-size ceiling override, in MB."
               }
+            }
+          }
+        },
+        "feed_auth_providers": {
+          "type": "array",
+          "description": "Host-mediated podcast feed authentication providers (Quill Cast). The Quillin declares which feed hosts it can authenticate and a handler returning an Authorization header for a matching request; the host attaches it. Purely declarative -- the Quillin makes no network call. Requires the 'podcast.feed.auth' capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "match_hosts", "handler"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "match_hosts": {
+                "type": "array",
+                "minItems": 1,
+                "description": "Hostnames (or *.host wildcards) this provider supplies credentials for.",
+                "items": { "type": "string", "description": "Hostname or *.hostname wildcard." }
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that returns the Authorization header for a matching request."
+              },
+              "description": { "type": "string", "maxLength": 400 }
+            }
+          }
+        },
+        "directory_providers": {
+          "type": "array",
+          "description": "Host-mediated station-directory providers (Quill Radio). The Quillin declares a handler the host calls with the search query; it returns station rows the host folds into Find Stations. Purely declarative -- the Quillin makes no network call. Requires the 'radio.directory' capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "display_name", "handler"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "display_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that returns the station rows for a query."
+              },
+              "description": { "type": "string", "maxLength": 400 }
+            }
+          }
+        },
+        "alert_sources": {
+          "type": "array",
+          "description": "Host-mediated weather alert sources (Quill Weather). The Quillin declares a handler the host calls for extra active alerts, merged into the alert watch. Purely declarative -- the Quillin makes no network call. Requires the 'weather.alerts' capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "handler"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that returns the active alert rows."
+              },
+              "interval_seconds": {
+                "type": "integer",
+                "minimum": 60,
+                "maximum": 86400,
+                "description": "Suggested poll cadence in seconds (60 to 86400)."
+              },
+              "description": { "type": "string", "maxLength": 400 }
+            }
+          }
+        },
+        "pipeline_steps": {
+          "type": "array",
+          "description": "Host-mediated audio-processing steps (Audio Studio). The Quillin declares a handler the host calls for a named stage; it returns an ffmpeg filter fragment the host appends to the export/enhancement graph. Purely declarative -- the Quillin touches no audio bytes and makes no network call. Requires the 'studio.pipeline' capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "stage", "handler", "display_name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "stage": {
+                "type": "string",
+                "description": "The pipeline stage the step attaches to.",
+                "enum": ["pre", "master", "post"]
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that returns the ffmpeg filter fragment for a stage."
+              },
+              "display_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "description": { "type": "string", "maxLength": 400 }
+            }
+          }
+        },
+        "location_resolvers": {
+          "type": "array",
+          "description": "Host-mediated location (ULD) resolvers (Quill Beacon). The Quillin declares a handler the host calls as a fallback resolver layer when the built-in locators fail. Purely declarative -- the Quillin makes no network call. Requires the 'beacon.resolver' capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "handler"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that resolves a ULD against current content."
+              },
+              "content_types": {
+                "type": "array",
+                "description": "Optional resource kinds this resolver handles (e.g. ['web', 'epub']). Empty means any.",
+                "items": { "type": "string", "maxLength": 32 }
+              },
+              "description": { "type": "string", "maxLength": 400 }
             }
           }
         }

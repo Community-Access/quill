@@ -13,14 +13,17 @@ from quill.core.github.items_provider import (
     GitHubCommit,
     GitHubItem,
     GitHubRelease,
+    GitHubReleaseAsset,
     GitHubTag,
     GitHubWorkflow,
     GitHubWorkflowRun,
 )
 from quill.ui.github_items_view import (
+    RELEASE_ASSET_COLUMNS,
     VIEW_BRANCHES,
     VIEW_COLUMNS,
     VIEW_ISSUES,
+    VIEW_RELEASES,
     VIEW_RUNS,
     VIEWS,
     item_detail,
@@ -28,10 +31,21 @@ from quill.ui.github_items_view import (
     model_label,
     model_url,
     parse_repo_reference,
+    release_drill_status,
     row_cells,
     sort_items,
     view_label,
 )
+
+
+def _asset(name: str, downloads: int, size: int = 1024) -> GitHubReleaseAsset:
+    return GitHubReleaseAsset(
+        name=name,
+        download_count=downloads,
+        size_bytes=size,
+        browser_download_url=f"https://example.com/{name}",
+        updated_at="2026-02-01T00:00:00Z",
+    )
 
 
 def _item(number: int, *, title: str = "T", state: str = "open", is_pr: bool = False) -> GitHubItem:
@@ -207,6 +221,67 @@ def test_model_detail_release_body() -> None:
     detail = model_detail(release)
     assert "release notes go here" in detail  # the body
     assert "Release: R2 (v2.0)" in detail
+
+
+def test_release_row_shows_downloads_and_asset_count() -> None:
+    release = GitHubRelease(
+        tag="v2.0",
+        name="R2",
+        assets=(_asset("big.exe", 900), _asset("small.zip", 100)),
+    )
+    cells = row_cells(release, VIEW_COLUMNS[VIEW_RELEASES], full=False)
+    columns = VIEW_COLUMNS[VIEW_RELEASES]
+    assert cells[columns.index("downloads")] == "1000"
+    assert cells[columns.index("assets")] == "2"
+
+
+def test_asset_row_cells_render_downloads_and_size() -> None:
+    asset = _asset("setup.exe", 1234, size=2 * 1024 * 1024)
+    cells = row_cells(asset, RELEASE_ASSET_COLUMNS, full=False)
+    assert cells[RELEASE_ASSET_COLUMNS.index("name")] == "setup.exe"
+    assert cells[RELEASE_ASSET_COLUMNS.index("downloads")] == "1234"
+    assert cells[RELEASE_ASSET_COLUMNS.index("size")] == "2.0 MB"
+
+
+def test_release_detail_breaks_down_by_file_and_states_caveat() -> None:
+    release = GitHubRelease(
+        tag="v2.0",
+        name="R2",
+        body="notes",
+        assets=(_asset("big.exe", 900), _asset("small.zip", 100)),
+    )
+    detail = model_detail(release)
+    assert "Total downloads: 1000 across 2 assets" in detail
+    # Per-file breakdown, most-downloaded first.
+    assert detail.index("big.exe") < detail.index("small.zip")
+    assert "900 downloads" in detail
+    # Correctness caveat surfaced in UI text.
+    assert "not" in detail and "unique people" in detail
+    assert "notes" in detail
+
+
+def test_release_detail_notes_no_assets_and_excludes_source_archives() -> None:
+    release = GitHubRelease(tag="v1.0", name="R1")
+    detail = model_detail(release)
+    assert "no downloadable assets" in detail
+    assert "Source code" in detail  # explains source archives are not assets
+
+
+def test_asset_detail_and_url_point_at_browser_download_url() -> None:
+    asset = _asset("setup.exe", 5)
+    detail = model_detail(asset)
+    assert "Asset: setup.exe" in detail
+    assert "Downloads: 5" in detail
+    assert model_url(asset) == "https://example.com/setup.exe"
+    assert model_label(asset) == "asset setup.exe"
+
+
+def test_release_drill_status_repeats_download_caveat() -> None:
+    release = GitHubRelease(tag="v2.0", name="R2", assets=(_asset("a", 3),))
+    status = release_drill_status(release)
+    assert "v2.0" in status
+    assert "3 total downloads" in status
+    assert "Backspace" in status
 
 
 def test_model_detail_workflow_run() -> None:

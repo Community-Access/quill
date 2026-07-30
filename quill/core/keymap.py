@@ -64,6 +64,9 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_KEYMAP: dict[str, str] = {
     "file.new": "Ctrl+N",
+    # #1246: Ctrl+T opens a new document tab in the current notebook window
+    # (a second entry point to New; Ctrl+N stays bound to file.new).
+    "window.new_document_tab": "Ctrl+T",
     "file.open": "Ctrl+O",
     "file.save": "Ctrl+S",
     "file.save_as": "Ctrl+Shift+S",
@@ -886,9 +889,19 @@ def merge_keymaps(raw: object) -> dict[str, str]:
                     _QUILL_LEADER_PREFIX
                 ):
                     normalized = DEFAULT_KEYMAP["edit.find"]
-            # An empty binding means "use the default" — drop it so the
-            # default in DEFAULT_KEYMAP takes effect (do not store "" on top).
+            # An empty binding needs care: in a current-epoch delta it is a
+            # deliberately CLEARED binding, not an absent one. The file is a
+            # delta, so a command the user never touched is simply absent (it
+            # keeps its DEFAULT_KEYMAP value copied into ``merged`` above); a
+            # command that appears with "" was explicitly unbound in the editor
+            # and must STAY unbound, or the next launch silently restores the
+            # default chord and drops the user's reassignment. Persist the
+            # unbind only when the command actually has a non-empty default to
+            # override; a pre-epoch (legacy full-snapshot) file is still treated
+            # as "use default" so a newly-added default can reach upgraders.
             if not normalized.strip():
+                if not is_pre_epoch and DEFAULT_KEYMAP.get(command_id, "").strip():
+                    merged[command_id] = ""
                 continue
             conflict = find_keymap_conflict(merged, command_id, normalized)
             if conflict is None:

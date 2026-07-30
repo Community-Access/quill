@@ -28,6 +28,7 @@ spawning real processes.
 from __future__ import annotations
 
 import json
+import os
 import shlex
 import shutil
 import subprocess
@@ -137,6 +138,36 @@ def _resolve_which(name: str) -> str | None:
         except Exception:  # noqa: BLE001 - node_install is optional; never crash the boundary
             pass
     return None
+
+
+def _resolved_executable(executable: str, which: Callable[[str], str | None]) -> str | None:
+    """Resolve *executable* to an absolute path, or None if it cannot be found
+    without relying on the current working directory.
+
+    Three cases, all of which must land on an absolute path before we hand it to
+    ``subprocess``:
+
+    * An **absolute path** is accepted only when it exists on disk.
+    * A **relative path with a directory component** (``bin/node``, ``./node``)
+      is rejected outright: resolving it would go through the process CWD, so a
+      planted ``./node`` could hijack the engine.
+    * A **bare name** (``node``) is resolved through ``which`` (PATH + the
+      QUILL-managed/macOS fallbacks); the result is accepted only when it is
+      itself absolute, so a CWD hit from ``shutil.which`` is discarded.
+    """
+    # ``os.path.isabs`` (not ``Path.is_absolute``) so the check matches how the
+    # OS/``subprocess`` will interpret the string on this platform -- e.g. on
+    # Windows ``/usr/bin/node`` is treated as rooted, while ``.\\node`` and a
+    # bare ``node`` are not.
+    if os.path.isabs(executable):
+        return executable if Path(executable).exists() else None
+    if os.path.dirname(executable):
+        # A relative path with a directory component -> would resolve via CWD.
+        return None
+    resolved = which(executable)
+    if resolved is None:
+        return None
+    return resolved if os.path.isabs(resolved) else None
 
 
 # ---------------------------------------------------------------------------
@@ -336,7 +367,7 @@ def probe_engine(
             False,
             f"The program '{executable}' is not in the QUILL external-engine allowlist.",
         )
-    if which(executable) is None and not Path(executable).exists():
+    if _resolved_executable(executable, which) is None:
         return EngineStatus(
             config.engine_id, False, f"The program '{executable}' was not found on this computer."
         )
@@ -382,7 +413,7 @@ def run_request(
     request: JsonlRequest,
     *,
     master_enabled: bool | None = None,
-    which: Callable[[str], str | None] = shutil.which,
+    which: Callable[[str], str | None] = _resolve_which,
     runner: Runner = _default_runner,
     timeout: float = 30.0,
 ) -> EngineResult:
@@ -396,8 +427,19 @@ def run_request(
     if not status.available:
         return EngineResult(ok=False, error=status.reason, unavailable=True)
 
+    # Hand ``subprocess`` the fully-resolved absolute path rather than the
+    # configured token, so it performs no PATH/CWD lookup of its own.
+    resolved = _resolved_executable(config.command[0], which)
+    if resolved is None:
+        return EngineResult(
+            ok=False,
+            error=f"The program '{config.command[0]}' was not found on this computer.",
+            unavailable=True,
+        )
+    command = [resolved, *config.command[1:]]
+
     try:
-        returncode, stdout, stderr = runner(list(config.command), request.to_line() + "\n", timeout)
+        returncode, stdout, stderr = runner(command, request.to_line() + "\n", timeout)
     except subprocess.TimeoutExpired:
         return EngineResult(ok=False, error=f"The {config.engine_id} engine timed out.")
     except OSError as error:

@@ -21,7 +21,12 @@ import threading
 from typing import TYPE_CHECKING
 
 from quill.core.github.items_provider import GitHubBranch, GitHubBranchComparison, GitHubItemsError
-from quill.ui.github_items_view import VIEW_BRANCHES, VIEW_COLUMNS
+from quill.ui.github_items_view import (
+    RELEASE_ASSET_COLUMNS,
+    VIEW_BRANCHES,
+    VIEW_COLUMNS,
+    VIEW_RELEASES,
+)
 
 if TYPE_CHECKING:
     pass
@@ -35,7 +40,13 @@ class GitHubBranchActionsMixin:
     # Column selection (GHManage parity, Columns... menu)
 
     def _current_columns(self) -> tuple[str, ...]:
-        """The visible column subset for the current view (Columns... menu)."""
+        """The visible column subset for the current view (Columns... menu).
+
+        While drilled into a release's assets (Enter on a release row), the
+        Releases view shows the fixed asset columns instead -- assets are not a
+        switchable top-level view, so they have no Columns... entry."""
+        if self._view == VIEW_RELEASES and getattr(self, "_drill_release", None) is not None:
+            return RELEASE_ASSET_COLUMNS
         return tuple(self._visible_columns.get(self._view, VIEW_COLUMNS[self._view]))
 
     def _on_columns_menu(self, _event: object) -> None:

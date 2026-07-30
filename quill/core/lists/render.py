@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import replace
 from html import escape
 
+from quill.core.error_codes import CodedError
 from quill.core.lists.model import (
     DefinitionList,
     FlatList,
@@ -26,8 +27,10 @@ from quill.core.lists.settings import (
 _MD_INDENT = "  "  # two spaces per nesting level in Markdown
 
 
-class DefinitionProfileError(ValueError):
+class DefinitionProfileError(CodedError):
     """Raised when definition Markdown is requested without a usable profile."""
+
+    code = "QUILL-LISTS-DEFINITION-PROFILE"
 
 
 # The resolutions the §7.6/§21.3 prompt offers when no Markdown definition-list

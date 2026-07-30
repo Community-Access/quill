@@ -43,6 +43,18 @@ a = Analysis(
         "scipy",
         "mypy",
         "lxml",
+        # Additional dead weight dragged in transitively that NO QuillVille app
+        # imports (verified: no `import speech_recognition|onnxruntime|av|imageio`
+        # anywhere under quill/). speech_recognition (~44 MB) is unused -- QUILL's
+        # offline speech is whisper.cpp / faster-whisper. onnxruntime (~29 MB)
+        # arrives with the on-demand kokoro-onnx engine-pack, not the base runtime.
+        # av / imageio pull in libx265 (~22 MB of H.265 VIDEO encoding) that these
+        # audio/text apps never use. Together ~100 MB off the shared runtime.
+        "speech_recognition",
+        "onnxruntime",
+        "av",
+        "imageio",
+        "imageio_ffmpeg",
     ],
     noarchive=False,
 )

@@ -37,6 +37,7 @@ from typing import Literal
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.podcasts import feed_auth
 
 _log = logging.getLogger(__name__)
 
@@ -116,7 +117,9 @@ def _fetch_chunked(
     request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
     try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
+        with feed_auth.urlopen_auth_safe(
+            request, timeout=_TIMEOUT_SECONDS, context=context
+        ) as resp:
             resumed = resume_from and getattr(resp, "status", 200) == 206
             written = resume_from if resumed else 0
             content_length = resp.headers.get("Content-Length")

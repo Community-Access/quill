@@ -1,0 +1,23 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.castpremiumauth",
+  "name": "Cast Premium Auth",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Supplies an Authorization header for premium podcast feeds on a matching host, so authenticated shows can refresh and download in Quill Cast. Sample of the podcast.feed.auth capability.",
+  "license": "MIT",
+  "categories": ["integration"],
+  "targets": ["cast"],
+  "capabilities": ["podcast.feed.auth", "storage"],
+  "main": "extension.py",
+  "contributes": {
+    "feed_auth_providers": [
+      {
+        "id": "ext.castpremiumauth.provider",
+        "match_hosts": ["premium.example.com", "*.premium.example.com"],
+        "handler": "feed_auth_header",
+        "description": "Returns a Bearer token for premium.example.com feeds, read from this Quillin's own storage."
+      }
+    ]
+  }
+}

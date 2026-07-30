@@ -97,6 +97,19 @@ def test_load_rejects_non_job_files(tmp_path: Path) -> None:
         load_job(wrong_format, _defaults(tmp_path))
 
 
+def test_binary_document_gives_clean_speakable_error(tmp_path: Path) -> None:
+    # A .docx is a binary ZIP; picking it here must not leak a raw codec error
+    # (e.g. "'utf-8' codec can't decode byte 0xd2"). It should read cleanly and
+    # steer the user to the Narrate-documents journey.
+    docx = tmp_path / "chapter.docx"
+    docx.write_bytes(b"PK\x03\x04\xd2\x00binary zip bytes, not text")
+    with pytest.raises(JobFileError) as excinfo:
+        load_job(docx, _defaults(tmp_path))
+    message = str(excinfo.value)
+    assert "codec" not in message and "0xd2" not in message
+    assert "Narrate documents" in message
+
+
 def test_preview_and_private_fields_never_persist(tmp_path: Path) -> None:
     request = _request(tmp_path)
     request.preview = True

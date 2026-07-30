@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from quill.core.error_codes import CodedError
 from quill.core.storage import write_json_atomic
 
 _SCHEMA_PATH = Path(__file__).parent / "schemas" / "notebook.json"
@@ -310,8 +311,10 @@ class Notebook:
 # ---------------------------------------------------------------------------
 
 
-class NotebookFormatError(ValueError):
+class NotebookFormatError(CodedError):
     """Raised when a .quillnotebook file cannot be parsed."""
+
+    code = "QUILL-NOTEBOOK-FORMAT-INVALID"
 
 
 # ---------------------------------------------------------------------------

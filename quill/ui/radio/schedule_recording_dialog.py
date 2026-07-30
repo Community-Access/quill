@@ -6,10 +6,11 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import replace
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
+from urllib.parse import urlparse
 from zoneinfo import available_timezones
 
-from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id
+from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id, next_occurrence
 from quill.core.radio.wake_timer import parse_time_of_day
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -36,7 +37,12 @@ def _entry_summary(entry: RecordingScheduleEntry) -> str:
         when = f"every {weekday} at {time_text}"
     zone = f" {entry.timezone}" if entry.timezone else ""
     state = "" if entry.enabled else " (disabled)"
-    return f"{entry.station_name} -- {when}{zone}, {entry.duration_minutes} min{state}"
+    # Show the stream's host so two entries with the same name/time (notably a
+    # duplicate, which keeps the original's URL) are distinguishable in the list
+    # instead of looking identical (#1220).
+    host = urlparse(entry.stream_url).netloc if entry.stream_url else ""
+    source = f" [{host}]" if host else ""
+    return f"{entry.station_name} -- {when}{zone}, {entry.duration_minutes} min{state}{source}"
 
 
 def build_schedule_entry(
@@ -418,6 +424,15 @@ class ScheduleRecordingDialog:
             self._win.Destroy()
 
     def _refresh_list(self, keep_id: str | None = None) -> None:
+        # Order the list the way the recordings actually occur, not the order
+        # they were entered (#1220). Sorting self._entries in place keeps the
+        # index-based selection (_selected_entry / keep_id) in step with the
+        # display. Undetermined times sort last, then by name for stability.
+        far_future = datetime.max.replace(tzinfo=UTC)
+        now = datetime.now()
+        self._entries.sort(
+            key=lambda e: (next_occurrence(e, now) or far_future, e.station_name.lower())
+        )
         self._list.Clear()
         for entry in self._entries:
             self._list.Append(_entry_summary(entry), entry.id)
@@ -456,6 +471,11 @@ class ScheduleRecordingDialog:
         self._recurrence_choice.SetSelection(0)
         self._weekday_choice.SetSelection(0)
         self._timezone_choice.SetSelection(0)
+        # Reset Date/Time to the same now+5min default the form opened with, so a
+        # previously-edited entry's values don't linger into the next add.
+        default_moment = datetime.now() + timedelta(minutes=5)
+        self._date_ctrl.SetValue(default_moment.strftime("%Y-%m-%d"))
+        self._time_ctrl.SetValue(default_moment.strftime("%H:%M"))
         self._hours_ctrl.SetValue(1)
         self._minutes_ctrl.SetValue(0)
         self._status.SetLabel("")
@@ -544,11 +564,21 @@ class ScheduleRecordingDialog:
                 self._entries = [entry if e.id == entry.id else e for e in self._entries]
                 self._enter_add_mode()
                 self._refresh_list(keep_id=entry.id)
+                self._reset_form()
                 self._status.SetLabel(f"Saved: {_entry_summary(entry)}")
                 self._announce(f"Saved changes to {entry.station_name}")
+                self._focus_saved_entry()
             return
         self._on_add(entry)
         self._entries.append(entry)
         self._refresh_list(keep_id=entry.id)
+        self._reset_form()
         self._status.SetLabel(f"Added: {_entry_summary(entry)}")
         self._announce(f"Scheduled recording added for {entry.station_name}")
+        self._focus_saved_entry()
+
+    def _focus_saved_entry(self) -> None:
+        """After Add/Save, land on the entry in the list -- not back on the Add
+        button, which read as "press me again to add another" (#1220)."""
+        if self._entries:
+            self._list.SetFocus()

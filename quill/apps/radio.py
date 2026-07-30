@@ -16,9 +16,12 @@ from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.radio import reading_services
 from quill.core.radio.radio_browser import RadioBrowserError
+from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_adp import AdpMixin
+from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
@@ -125,7 +128,17 @@ RADIO_AREAS: tuple[AppArea, ...] = (
 
 
 class RadioAppFrame(
-    AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin, WeatherMixin
+    # AppShellFrame is listed first so its toggle_window_to_tray / _send_to_tray
+    # (which the apps have) win over GlobalHotkeysMixin's send_to_tray-based copy.
+    AppShellFrame,
+    RadioMixin,
+    MediaSleepTimerMixin,
+    AdpMixin,
+    UnlockCodesMixin,
+    WeatherMixin,
+    GlobalHotkeysMixin,
+    KeymapEditorMixin,
+    QuillinsAppMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
@@ -149,6 +162,9 @@ class RadioAppFrame(
         # frame in the standalone app; embedded QUILL passes no manager, so the
         # same surfaces stay modal there.
         self._windows = WindowManager(wx)
+        # Quillins for Quill Radio (app id "radio"): load contributions before
+        # the menu bar is built so contributed items appear in the &Quillins menu.
+        self._init_app_quillins("radio")
         self._build_menu_bar()
         self._build_main_panel()
         self._register_radio_commands()
@@ -161,6 +177,22 @@ class RadioAppFrame(
             "stop": self.radio_stop,
         })
         self._register_tray_hotkey("Ctrl+Alt+Shift+R")  # show/hide Radio to the tray
+        # Per-command system-wide hotkeys (Help > Global Hotkeys...). Register
+        # the show/hide command the default table binds so its Ctrl+Alt+Shift+Q
+        # actually dispatches; the transport commands (radio.play_pause/stop/...)
+        # are already registered above. We do NOT call
+        # _register_global_hotkey_commands -- that also adds the sticky-note /
+        # editor commands the apps don't want. Then bind the message hook and
+        # register whatever the user has configured.
+        self.commands.try_register(
+            "view.toggle_window_to_tray",
+            "Show/Hide Quill Radio to the Tray",
+            self.toggle_window_to_tray,
+            self._binding_for("view.toggle_window_to_tray"),
+            feature_id="core.app",
+        )
+        self.frame.Bind(wx.EVT_HOTKEY, self._on_global_hotkey)
+        self._reload_global_hotkeys()
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
         # Alt+F4-to-tray (opt-in preference): intercepted at the char hook,
@@ -896,6 +928,13 @@ class RadioAppFrame(
         import_id = wx.NewIdRef()
         station_menu.Append(import_id, "&Import Stations from Playlist...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id)
+        # #1249: export favorites to an M3U playlist. Thin wiring lives in
+        # playlist_export_ui (radio.py is at budget).
+        from quill.ui.radio.playlist_export_ui import export_favorites_to_playlist
+
+        export_id = wx.NewIdRef()
+        station_menu.Append(export_id, "&Export Favorites to Playlist...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: export_favorites_to_playlist(self), id=export_id)
         # #1193: move your stations/settings/recordings to a new device or recover
         # after a reinstall. Thin wiring lives in backup_ui (radio.py is at budget).
         from quill.ui.radio.backup_ui import back_up_radio_data, restore_radio_data
@@ -921,7 +960,12 @@ class RadioAppFrame(
         self._station_menu = station_menu
         self._append_radio_recent_submenu(station_menu)
         self._append_radio_favorites_submenu(station_menu)
-        self.frame.Bind(wx.EVT_MENU_OPEN, self._on_station_menu_open)
+        # Bind the just-in-time Recently-Played refresh once: _build_menu_bar is
+        # re-callable (a keymap edit rebuilds it), and EVT_MENU_OPEN is a
+        # frame-level bind that would otherwise stack a new handler each rebuild.
+        if not getattr(self, "_station_menu_open_bound", False):
+            self.frame.Bind(wx.EVT_MENU_OPEN, self._on_station_menu_open)
+            self._station_menu_open_bound = True
         self._resume_menu_item_id = wx.NewIdRef()
         station_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Station on Lau&nch")
         station_menu.Check(self._resume_menu_item_id, self._radio_history.resume_on_launch)
@@ -965,6 +1009,13 @@ class RadioAppFrame(
         self._volume_boost_item_id = wx.NewIdRef()
         playback_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
         playback_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
+        # #1253: pick the audio output device (sound card) with a shortcut, without
+        # opening full Preferences. Thin wiring lives in output_device_ui.
+        from quill.ui.radio.output_device_ui import choose_output_device
+
+        output_device_id = wx.NewIdRef()
+        playback_menu.Append(output_device_id, "&Output Device...\tCtrl+Shift+D")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: choose_output_device(self), id=output_device_id)
         playback_menu.AppendSeparator()
         # Live DVR (mpv engine): pause is the Play/Stop item; these move
         # within the buffered live window.
@@ -1044,9 +1095,13 @@ class RadioAppFrame(
         if self._app_area_enabled("weather"):
             self._append_weather_menu(menu_bar)
 
-        # Unlock-gated: a top-level Audio Description Project menu, absent
-        # entirely until future.adp_assistant is unlocked (Help > Redeem
-        # Unlock Code..., here or in QUILL -- they share one unlock store).
+        # Pre-release top-level Audio Description Project menu. The typed Ask
+        # ADP assistant (future.adp_assistant) is ON by default for testing, so
+        # this is present by default; _build_adp_menu returns None only if a
+        # profile turns it off. The hands-free conversational mode
+        # (future.adp_voice_mode) is the part that stays locked until a signed
+        # unlock code is redeemed (Help > Redeem Unlock Code..., here or in
+        # QUILL -- they share one unlock store). Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
             menu_bar.Append(adp_menu, "A&udio Description Project")
@@ -1058,8 +1113,29 @@ class RadioAppFrame(
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        help_menu.Append(palette_id, "Command &Palette...\tCtrl+Shift+P")
+        help_menu.Append(palette_id, self._menu_label("Command &Palette...", "app.command_palette"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
+        # The Keyboard Shortcuts editor and the Global Hotkeys manager open the
+        # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
+        # GlobalHotkeysMixin), scoped to this app's own commands.
+        shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...")
+        help_menu.Append(hotkeys_id, "&Global Hotkeys...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
+        # Spotify (future.spotify) ships dark: the ids are always created (so
+        # _keep_menu_ids can pin them) but the items appear only once the
+        # feature is unlocked and Safe Mode is off.
+        spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
+        if self.features.is_enabled("future.spotify") and not self._safe_mode:
+            help_menu.Append(spotify_connect_id, "Connect to &Spotify...")
+            help_menu.Append(spotify_browse_id, "&Browse Spotify...")
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
+            )
         bug_id = wx.NewIdRef()
         help_menu.Append(bug_id, "Report a &Bug...")
         self.frame.Bind(
@@ -1163,6 +1239,7 @@ class RadioAppFrame(
             ),
             "&QuillVille",
         )
+        menu_bar.Append(self._build_quillins_menu(), "&Quillins")
         menu_bar.Append(help_menu, "&Help")
 
         # Persistent &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 on the
@@ -1173,6 +1250,8 @@ class RadioAppFrame(
         self._windows.register(self.frame, _TITLE)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
+            spotify_connect_id,
+            spotify_browse_id,
             browse_id,
             rrs_update_id,
             search_id,
@@ -1220,6 +1299,8 @@ class RadioAppFrame(
             collapse_id,
             *self._sort_item_ids,
             *self._text_size_item_ids,
+            shortcuts_id,
+            hotkeys_id,
         )
 
     def _open_radio_doc(self, stem: str) -> None:
@@ -1891,6 +1972,10 @@ class RadioAppFrame(
         (R3, so a clean close is not mistaken for a crash), then shut the
         controller, recorder, scheduler, task manager, media keys, and tray down
         (all non-blocking)."""
+        try:
+            self._app_host.shutdown()
+        except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
+            pass
         self._stamp_radio_last_seen()
         # Stop Weather Guardian's timer without flipping its persisted on state,
         # so a clean exit resumes monitoring on the next launch.
@@ -1916,6 +2001,12 @@ class RadioAppFrame(
                 pass
         self._task_manager.shutdown(wait=False)
         self._unregister_media_keys()
+        # Guarded like MainFrame's teardown: a hotkey unregister failure must
+        # never block the window from closing.
+        try:
+            self._unregister_global_hotkeys()
+        except Exception:  # noqa: BLE001 - shutdown must never block exit
+            pass
         self._remove_tray_icon()
 
 
@@ -1926,7 +2017,9 @@ _IPC_SLOT = "radio"
 
 
 def main() -> int:
-    safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
+    from quill.stability.safe_mode import should_enable_safe_mode
+
+    safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
     from quill.core.ipc import (
         enqueue_open_request,
         release_primary_instance,

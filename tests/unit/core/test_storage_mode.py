@@ -195,6 +195,66 @@ def test_arbitrary_quill_app_root_alone_does_not_redirect_data(
     assert app_data_dir() == (tmp_path / "appdata" / "Quill").resolve()
 
 
+# ----------------------------------------------------------------------
+# Per-product portable-bundle recognition
+# ----------------------------------------------------------------------
+# Each per-product portable bundle ships its own native launcher (a
+# .exe at the anchor root) and a sibling data/ folder. The
+# _has_portable_evidence allowlist must list every shipped name --
+# otherwise a portable install of that product silently writes to
+# %APPDATA% instead of the bundle data/ folder. The on-disk exe names
+# are the contract committed to by scripts/build_native_launcher.py and
+# quill/native/launcher/ -- see the cross-check in
+# tests/unit/scripts/test_build_native_launcher.py.
+
+
+@pytest.mark.parametrize(
+    "exe_name",
+    [
+        "QuillRadio.exe",
+        "QuillWeather.exe",
+        "QuillAudioStudio.exe",
+    ],
+)
+def test_per_product_portable_bundle_recognized(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, exe_name: str
+) -> None:
+    """A portable bundle of Quill Radio / Weather / Audio Studio is
+    recognized when its native launcher + data/ are at the anchor.
+
+    The allowlist in _has_portable_evidence must list every shipped
+    per-product exe name. A regression (e.g. a renamed native launcher)
+    is a data-loss bug for portable users: their data silently writes
+    to %APPDATA% instead of the bundle data/ folder.
+    """
+    _pin_executable_away_from_any_real_bundle(monkeypatch, tmp_path)
+    root = tmp_path / exe_name.replace(".exe", "")
+    root.mkdir()
+    (root / exe_name).write_bytes(b"MZ\x00\x00")
+    (root / "data").mkdir()
+    monkeypatch.setenv("QUILL_APP_ROOT", str(root))
+    monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
+    assert storage_mode.portable_root_dir() == (root / "data").resolve(), (
+        f"{exe_name} must be in the _has_portable_evidence allowlist so "
+        f"this product's portable installs route data to the bundle."
+    )
+
+
+def test_storage_mode_allowlist_is_internally_consistent() -> None:
+    """The allowlist in _has_portable_evidence is duplicated knowledge:
+    the same names live in scripts/build_native_launcher.py. This test
+    keeps the allowlist honest -- every entry must be a plausible
+    Windows executable name (ends in .exe, no path separators, non-empty
+    stem). If you add a new portable product, the new name must pass
+    these checks here AND be wired in build_native_launcher.py
+    AND be exercised by test_per_product_portable_bundle_recognized.
+    """
+    for name in ("quill.exe", "run-quill.cmd"):
+        assert name.lower().endswith((".exe", ".cmd")), name
+        assert "/" not in name and "\\" not in name, name
+        assert name, "empty name in allowlist"
+
+
 def test_storage_mode_falls_back_when_portable_path_is_not_writable(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

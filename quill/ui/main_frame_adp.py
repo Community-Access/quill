@@ -1,10 +1,20 @@
-"""ADP Assistant wiring (mixin on ``MainFrame``) -- pre-release, unlock-gated.
+"""ADP Assistant wiring (mixin on ``MainFrame``) -- pre-release, undocumented.
 
-Everything here is invisible until ``future.adp_assistant`` is unlocked by a
-signed code (Help > Redeem Unlock Code...): the Media menu items are only
-built when the feature is enabled, and the commands are registered with the
-feature id so the palette and keybindings obey the same gate. Deliberately
-absent from user documentation until public launch.
+Two features, two very different gates (see ``quill.core.adp``):
+
+* ``future.adp_assistant`` -- the typed **Ask ADP** search and its settings --
+  is un-gated for testing: ON by default, so the top-level Audio Description
+  Project menu is present by default. A profile can still turn it off, in
+  which case ``_build_adp_menu`` returns ``None`` and no menu is built. The
+  commands are registered with this feature id so the palette and keybindings
+  obey the same gate.
+* ``future.adp_voice_mode`` -- the hands-free *conversational* mode -- stays
+  ``locked_off`` and is reachable only via a signed unlock code (Help > Redeem
+  Unlock Code...). Nothing here unlocks it; while it is off, the "Route spoken
+  questions to ADP" checkbox in ADP Settings is hidden entirely (no
+  conversation-mode reference is shown until the feature is unlocked).
+
+Both are deliberately absent from user documentation until public launch.
 
 The rich ADP Settings dialog lives inline here (a small wx form): server
 address, client access key (stored in the OS credential vault, never
@@ -26,23 +36,11 @@ class AdpMixin:
 
     # -- menu ------------------------------------------------------------------
 
-    def _append_adp_media_items(self, media_menu: object) -> None:
-        """Called from the Media submenu builder; no-op unless unlocked."""
-        if not self._feature_enabled("future.adp_assistant"):
-            return
-        wx = self._wx
-        media_menu.AppendSeparator()
-        ask_id = wx.NewIdRef()
-        media_menu.Append(ask_id, self._menu_label("Ask AD&P...", "adp.ask"))
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_ask_adp(), id=ask_id)
-        settings_id = wx.NewIdRef()
-        media_menu.Append(settings_id, "ADP Se&ttings...")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_adp_settings(), id=settings_id)
-
     def _build_adp_menu(self) -> object | None:
-        """Top-level Audio Description Project menu for the companion apps
-        (Quill Radio, QUILL Cast); ``None`` while the feature is locked, so
-        nothing appears on the menu bar at all."""
+        """Top-level Audio Description Project menu, shared by QUILL and the
+        companion apps (Quill Radio, QUILL Cast). Returns ``None`` when
+        ``future.adp_assistant`` is off (default is on), so the caller appends
+        nothing and no menu appears on the bar at all."""
         if not self._feature_enabled("future.adp_assistant"):
             return None
         wx = self._wx
@@ -145,9 +143,13 @@ class AdpMixin:
         grid.Add(url_ctrl, 1, wx.EXPAND)
 
         grid.Add(wx.StaticText(dialog, label="Client access &key:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        key_ctrl = wx.TextCtrl(dialog, style=wx.TE_PASSWORD, value=adp_client.load_client_key())
+        # Vault override only, not load_client_key(): an empty field means "use
+        # the built-in key," so we never surface the bundled default here.
+        key_ctrl = wx.TextCtrl(dialog, style=wx.TE_PASSWORD, value=adp_client.stored_client_key())
         set_accessible_name(
-            key_ctrl, "ADP client access key; stored in the system credential vault"
+            key_ctrl,
+            "ADP client access key; stored in the system credential vault. Leave "
+            "blank to use the built-in key that ships with QUILL.",
         )
         grid.Add(key_ctrl, 1, wx.EXPAND)
 
@@ -158,22 +160,36 @@ class AdpMixin:
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
+        key_hint = wx.StaticText(
+            dialog,
+            label=(
+                "Leave the access key blank to use the key built into QUILL. "
+                "Enter one only to override it (for example, a rotated key)."
+            ),
+        )
+        root.Add(key_hint, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         speak_check = wx.CheckBox(dialog, label="S&peak answers automatically")
         set_accessible_name(speak_check, "Speak each ADP answer aloud through Quill's own voice")
         speak_check.SetValue(bool(getattr(self.settings, "adp_speak_answers", True)))
         root.Add(speak_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        voice_check = wx.CheckBox(
-            dialog, label="Route spoken &questions to ADP (hands-free conversation)"
-        )
-        set_accessible_name(
-            voice_check,
-            "When Hey Quill hears a question, open Ask ADP with it and ask "
-            "immediately; voice stays on this device",
-        )
-        voice_check.SetValue(bool(getattr(self.settings, "adp_route_voice_questions", False)))
-        voice_check.Enable(self._feature_enabled("future.adp_voice_mode"))
-        root.Add(voice_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        # Hands-free conversation routing is a pre-release, unlock-gated feature.
+        # While it's locked off (the public default), hide the control entirely
+        # rather than showing it disabled -- no conversation-mode reference is
+        # exposed until the feature is actually unlocked.
+        voice_check = None
+        if self._feature_enabled("future.adp_voice_mode"):
+            voice_check = wx.CheckBox(
+                dialog, label="Route spoken &questions to ADP (hands-free conversation)"
+            )
+            set_accessible_name(
+                voice_check,
+                "When Hey Quill hears a question, open Ask ADP with it and ask "
+                "immediately; voice stays on this device",
+            )
+            voice_check.SetValue(bool(getattr(self.settings, "adp_route_voice_questions", False)))
+            root.Add(voice_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
@@ -189,21 +205,27 @@ class AdpMixin:
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         dialog.CentreOnParent()
         result = self._show_modal_dialog(dialog, "ADP Settings")
-        if result == wx.ID_OK:
-            url = url_ctrl.GetValue().strip()
-            if url and not url.startswith("https://"):
-                self._announce("The server address must start with https; not saved.")
-            else:
+        try:
+            if result == wx.ID_OK:
+                url = url_ctrl.GetValue().strip()
+                if url and not url.startswith("https://"):
+                    # Reject and stop before persisting anything: otherwise the
+                    # rejection announcement is immediately followed by a
+                    # contradictory "ADP settings saved." and a partial save.
+                    self._announce("The server address must start with https; not saved.")
+                    return
                 self.settings.adp_base_url = url
-            self.settings.adp_user_name = name_ctrl.GetValue().strip()
-            self.settings.adp_speak_answers = speak_check.GetValue()
-            self.settings.adp_route_voice_questions = voice_check.GetValue()
-            save_settings(self.settings)
-            if not adp_client.save_client_key(key_ctrl.GetValue()):
-                self._announce(
-                    "Settings saved, but the access key could not be stored "
-                    "in the credential vault."
-                )
-            else:
-                self._announce("ADP settings saved.")
-        dialog.Destroy()
+                self.settings.adp_user_name = name_ctrl.GetValue().strip()
+                self.settings.adp_speak_answers = speak_check.GetValue()
+                if voice_check is not None:  # only when the (unlock-gated) control was shown
+                    self.settings.adp_route_voice_questions = voice_check.GetValue()
+                save_settings(self.settings)
+                if not adp_client.save_client_key(key_ctrl.GetValue()):
+                    self._announce(
+                        "Settings saved, but the access key could not be stored "
+                        "in the credential vault."
+                    )
+                else:
+                    self._announce("ADP settings saved.")
+        finally:
+            dialog.Destroy()

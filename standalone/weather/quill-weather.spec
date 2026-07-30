@@ -12,6 +12,12 @@
 # Note: drop a `quill-weather.ico` into assets/ before building (or set
 # icon=None). Quill Weather is a much smaller app than Radio -- it needs no
 # ffmpeg or mpv engine -- so this build excludes the heavy media/AI stacks.
+#
+# As of 2026-07-24, the entry-point EXE is NOT produced by PyInstaller
+# anymore -- it is replaced by the native QuillVille launcher
+# (quill-weather.exe, ~50-200 KB, compiled from quill/native/launcher/) which
+# is placed at the onedir root by scripts/build_release.ps1 after
+# PyInstaller runs. See quill/native/launcher/README.md for the design.
 
 from PyInstaller.utils.hooks import collect_all
 
@@ -68,17 +74,23 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+# COLLECT-only build (see quill-radio.spec for the rationale). The native
+# QuillVille launcher (quill-weather.exe) is built by
+# scripts/build_native_launcher.py and placed at the onedir root by
+# scripts/build_release.ps1. The EXE() below is a PyInstaller-required
+# placeholder -- COLLECT() refuses to run without one -- and is overwritten
+# by the native launcher at the same path. The placeholder keeps the
+# product's AppExeName name so the Inno installer ({app}\QuillWeather.exe)
+# and the storage_mode._has_portable_evidence allowlist still resolve.
 exe = EXE(
     pyz,
     a.scripts,
     exclude_binaries=True,
     name="QuillWeather",
-    icon="assets/quill-weather.ico",
     console=False,
     upx=False,
     disable_windowed_traceback=False,
 )
-
 coll = COLLECT(
     exe,
     a.binaries,

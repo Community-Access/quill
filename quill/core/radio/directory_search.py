@@ -183,6 +183,29 @@ def wxindex_search_stations(query: str, *, safe_mode: bool = False) -> list[Radi
     return [_wx_to_radio_station(station) for station in results if station.feeds]
 
 
+def directory_provider_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation]:
+    """Stations contributed by enabled Quillin ``radio.directory`` providers.
+
+    Consults :mod:`quill.core.radio.directory_registry`, which a
+    :class:`~quill.core.quillins.app_host.QuillinAppHost` populates from every
+    enabled provider. Each contributed row (``{"name", "url", "source"}``) becomes
+    a :class:`RadioStation` badged with the provider's Source label, so the Find
+    Stations fan-out can merge and rank them beside the built-in sources. A
+    provider handler makes no network call of its own, so this adds no egress.
+
+    Safe Mode contributes nothing (the host loads no Quillins in Safe Mode, so the
+    registry is already empty, but the guard keeps that explicit here too).
+    """
+    if safe_mode or not query.strip():
+        return []
+    from quill.core.radio import directory_registry
+
+    stations: list[RadioStation] = []
+    for row in directory_registry.stations_from_providers(query):
+        stations.append(RadioStation(name=row["name"], stream_url=row["url"], source=row["source"]))
+    return stations
+
+
 def reading_services_search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation]:
     """Radio Reading Services matching *query*, as ``source="Radio Reading Service"``.
 

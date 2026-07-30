@@ -58,11 +58,46 @@ def installed_version(runtime_dir: Path) -> str | None:
     return marker["python"] if marker is not None else None
 
 
-def needs_install(runtime_dir: Path, required_version: str) -> bool:
-    """True when *runtime_dir* does not already hold exactly *required_version*.
+def installed_build(runtime_dir: Path) -> str | None:
+    """The build id already installed in *runtime_dir*, or None.
+
+    Returns None both when the marker is absent and when it predates build
+    tracking (empty ``build`` field), so callers can treat "no known build" as
+    "older than any real build" -- see :func:`needs_install`.
+    """
+    marker = read_marker(runtime_dir)
+    if marker is None:
+        return None
+    return marker["build"] or None
+
+
+def needs_install(
+    runtime_dir: Path,
+    required_version: str,
+    required_build: str | None = None,
+) -> bool:
+    """True when *runtime_dir* does not already hold the wanted shared runtime.
 
     The installer's skip test: install the shared runtime only when this returns
-    True. An exact version match is required (the runtime folder is keyed by
-    version, so two minors coexist rather than overwrite -- see the program spec).
+    True. It reinstalls when either
+
+    * the installed CPython version differs from *required_version* -- the folder
+      is keyed by ``major.minor`` so two minors coexist rather than overwrite
+      (see the program spec); or
+    * *required_build* is given and the installed payload is **older** than it.
+      Same CPython, but the bundled ``quill`` app code/data has moved on. This is
+      the #1217 case: a sibling app (or an earlier build) had already dropped a
+      same-Python runtime, so the version-only gate skipped the copy and the app
+      kept running stale code -- Quill Radio's Reading Services folder collapsed
+      to just the live tier (~7 entries) because the bundled catalog never
+      shipped. Build ids are ISO dates (``yyyy-mm-dd``), so a plain string
+      compare orders them.
+
+    A newer-or-equal installed build is left in place, so installing an older app
+    beside a newer one never downgrades the shared runtime.
     """
-    return installed_version(runtime_dir) != str(required_version)
+    if installed_version(runtime_dir) != str(required_version):
+        return True
+    if required_build:
+        return (installed_build(runtime_dir) or "") < str(required_build)
+    return False

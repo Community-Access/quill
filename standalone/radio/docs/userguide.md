@@ -1,17 +1,46 @@
 # Quill Radio User Guide
 
-Version 2.1.1
+Version 2.2.0
 
 Quill Radio is internet radio the way a screen reader user would design it: a small window whose favorites tree has focus the instant it opens, menus that say everything they do, spoken feedback for every action, and a tray icon so the music keeps playing while you work. It runs the exact same radio code as QUILL itself and shares its data, so nothing you set up here is ever stranded.
 
 ## Installing
 
-Two flavors, both fully bundled (ffmpeg included, nothing ever downloads):
+Quill Radio comes in four downloads. Two of them are brand new in this release and much smaller than before, because Quill Radio can now share one Python engine -- the QuillVille Runtime -- with every other QuillVille app. The section just below explains the runtime; the one after it lays out the four downloads so you can pick the one that suits you.
 
-- **The installer** (`Quill-Radio-Setup-2.1.1.exe`) -- its own folder, Start Menu entry, uninstaller. Your data lives in the shared Quill store in your Windows profile.
-- **The portable zip** (`Quill-Radio-Portable-2.1.1.zip`) -- extract anywhere, even a USB stick, and run `QuillRadio\QuillRadio.exe`. Its `data` folder keeps your favorites, history, and settings inside the app folder, so the whole radio travels with you.
+If you are not sure which to choose: the **full installer** is the easy, recommended path for most people, and the **full portable zip** is the one to put on a USB stick.
 
-Windows SmartScreen may warn on first run because this release is not code-signed; choose "More info" then "Run anyway". The build is exactly what this repository's source produces.
+### The QuillVille Runtime: install the engine once, and every app starts instantly
+
+Quill Radio is part of a small family of apps -- QUILL itself, Quill Radio, Quill Weather, and QUILL Audio Studio. They are separate apps, but underneath they all run on the same Python engine.
+
+Starting with this release, that engine is installed just once per user, as a shared component called the **QuillVille Runtime**, and every QuillVille app reuses it. Install any one app that carries the runtime, and every app you add afterward starts instantly, because the engine it needs is already on your PC. There is no second copy, no second long download.
+
+The runtime looks after itself. It is reference-counted: Windows keeps track of how many QuillVille apps rely on it, and it is only removed when you uninstall the very last app that needs it. Uninstalling Quill Radio while, say, Quill Weather is still installed leaves the shared runtime in place for Weather; uninstalling the last one cleans it up for you.
+
+### The four downloads
+
+You can install Quill Radio in whichever of these ways fits you best. In each filename, `<version>` is the release you are downloading, such as 2.2.0.
+
+1. **Full portable zip** -- the file named `Quill-Radio-Portable-<version>.zip` (about 311 MB). Fully self-contained: extract it anywhere -- a folder, an external drive, a USB stick -- and run `QuillRadio\QuillRadio.exe`. There is no installation and nothing ever downloads at runtime. It carries its own genuine, unmodified copy of Python, plus the bundled ffmpeg (for recording) and mpv (for playback) engines. Its `data` folder keeps your favorites, history, recordings, and settings inside the app folder, so the whole radio travels with you. This is the one to reach for when you want a self-contained radio with no installer and no internet.
+
+2. **Companion edition (new)** -- the file named `Quill-Radio-Companion-<version>.zip` (about 3 MB). Feather-light: it contains only the app itself and its documentation, and it runs on the shared QuillVille Runtime. The first time you launch it, if the runtime is not already installed, Quill Radio offers to download and install it for you -- about 230 MB, once -- with a fully accessible progress bar (see "Accessible progress every time" below). After that, this app and every other QuillVille app start instantly. Choose the Companion edition when you would rather download three megabytes than three hundred, and you are happy for the shared engine to be fetched once on first launch.
+
+3. **Full installer** -- the file named `Quill-Radio-Setup-Shared-<version>.exe`. A standard Windows installer that gives Quill Radio its own Start Menu entry and an uninstaller. It installs the shared QuillVille Runtime (unless it is already present from another QuillVille app) and then the app. Your favorites, history, and settings live in the shared Quill store in your Windows profile. This is the recommended path for most people.
+
+4. **Thin installer (new)** -- the "Lite" installer, a very small setup program that installs the app and downloads the shared QuillVille Runtime only if it is not already present. If you already run another QuillVille app, there is nothing large to fetch and the install finishes quickly. Choose it when you want a proper installed app but the smallest possible download.
+
+### Accessible progress every time
+
+Whenever the QuillVille Runtime is being downloaded -- whether an installer is fetching it or the Companion edition is fetching it on its own first launch -- Quill Radio shows a fully accessible progress bar. It works with NVDA, JAWS, and Narrator, and progress is announced as a percentage as it climbs. You always know how far along the download is, and when it is finished.
+
+### About security software and antivirus
+
+This release changes how Quill Radio starts, specifically to be friendlier to antivirus software.
+
+Quill Radio's launcher is now a genuine, tiny native program, and the Python it runs is the official, unmodified build. Earlier versions used a renamed and modified copy of Python's own `pythonw.exe` as the launcher. That pattern is a common one for antivirus tools to flag, and some of them did -- as a false positive, but an understandable one. That pattern is now completely gone. The result is an app that is far less likely to be mistaken for something it is not.
+
+Windows SmartScreen may still show a caution on first run because this release is not yet code-signed; choose "More info" then "Run anyway". The build is exactly what this repository's source produces.
 
 ## Getting started
 
@@ -104,11 +133,26 @@ Each window opens only when you ask for it, and closing a window puts focus back
 - **Record Station...** -- record a *different* station for a set number of minutes while you listen to something else (or to nothing). The recorder is its own process; it never needed the player. You can start as many of these as you like -- they all record at once (see "Recording several stations at once" below).
 - **Stop All Recordings** -- stop every recording in progress at once. (It is also in the tray/status menu, and appears as a button in the Recordings window when two or more recordings are running.)
 - **Schedule Recording...** -- record a show later, once, daily, or weekly, even from the tray. Pick a favorite from the list and its name and stream fill in for you (both stay editable for one-off streams). Enter the time however you think of it -- "7:30 PM" or "19:30", both are understood -- and pin each entry to its own **time zone** (defaulting to your local time), so a show quoted in another zone records at the right moment and the list shows each entry's time with its zone. Set how long to record with the **Hours** (0-24) and **Minutes** (0-59) fields -- a three-hour show is simply "3" and "0", no arithmetic. The schedule is something you manage, not just add to:
-  - **Edit** -- change a selected entry's station, time, duration, or repeat without deleting and re-adding it.
-  - **Duplicate** -- copy a selected entry as a starting point for another day or a second time slot.
+  - **Edit** -- change a selected entry's station, time, duration, or repeat *in place*, without deleting and re-adding it. The Add button relabels to **Save Changes** while you edit, and the status line names the entry you are editing so it is always clear you are changing that one, not adding a new one. Choose **New** to abandon the edit and start a fresh entry instead.
+  - **Duplicate** -- start a **new, independent** entry pre-filled from the selected one (its name gets " (copy)"), as a quick starting point for another day or a second time slot. It keeps the original's stream URL until you change it, so pick a different favorite or edit the URL if you meant a different station; the two are separate schedules from the moment you choose **Add Schedule**.
   - **Enable / disable** -- turn an entry off without losing it; a disabled entry reads "(disabled)" in the list and does not fire, and you can turn it back on any time.
   - **Remove** names the schedule it will delete and dims when none is selected; the Delete key and a context menu work on the list too.
+  The list is ordered by **when each recording next occurs** (the soonest first), not the order you entered them, and each row shows the stream's host in brackets so two similar entries -- or a duplicate that still points at the original station -- are easy to tell apart. After you choose **Add Schedule** (or **Save Changes**), focus moves to your entry in the list, and the form clears for the next one, so you are never left on the Add button wondering whether it worked.
+
   A schedule is due from its start time through the end of its duration, so if Quill Radio reaches a few seconds late it still starts with the remaining minutes, and on launch it catches up anything whose window is still open. (Quill Radio has to be running for a scheduled recording to fire -- the tray icon counts -- so a show whose whole window passed while Quill Radio was closed is simply missed, and the next launch tells you, naming up to three and collapsing the rest to a count.)
+
+#### Scheduling a recording, step by step
+
+The one thing to remember: you **fill in the details first, then choose Add Schedule last** -- Add is the button that commits the entry you have just described, not a "start a new form" button.
+
+1. Open **Record > Schedule Recording...** (Alt+R, then Schedule Recording).
+2. In the **Station** list, pick a favorite -- its name and stream URL fill in for you. (You can only choose from your favorites here; add the station to Favorites first if it is not listed. For a one-off stream, type the name and paste the URL by hand instead.)
+3. Set the **time** ("7:30 PM" or "19:30", whichever you think in) and choose a **time zone** if the show is quoted in one other than your own (otherwise leave it at "(local time)").
+4. Choose how often: **Once** (also pick a date), **Daily**, or **Weekly** (also pick the weekday).
+5. Set the length with **Hours** (0-24) and **Minutes** (0-59) -- a three-hour show is just "3" and "0".
+6. Choose **Add Schedule**. Your entry appears in the list (ordered by when it will next record), focus lands on it, and the form clears so you can add another the same way.
+
+To change one later, select it and choose **Edit** (the button becomes **Save Changes**); to make a similar one, select it and choose **Duplicate**, adjust the fields, and choose **Add Schedule** again.
 - **Recordings...** -- everything you have recorded, live. See "The Recordings list" below.
 - **Recording Settings...** -- format (MP3, OGG, FLAC, WAV, or **Raw stream** -- see below), bitrate, destination folder, filename pattern, a maximum-length safety cap, **Maximum simultaneous recordings** (0 = unlimited, the default -- see "Recording several stations at once" below), the **If the connection drops** section (reconnect on/off, how many attempts, and how many seconds between them), and **Apply Sound Enhancements to recordings** -- off by default, so recordings stay an unfiltered archival copy even with Sound Enhancements on for live listening; turn it on to record the filtered (EQ/compressor) audio instead, for every recording method (Record Now, Record Station, and scheduled recordings alike).
 
@@ -116,7 +160,9 @@ Each window opens only when you ask for it, and closing a window puts focus back
 
 Quill Radio records as many stations at the same time as you want. Start a Record Station capture, then another, then another -- each records independently while you go on listening to whatever you like. Overlapping **scheduled** recordings all fire too: two shows booked for the same hour both record, where before only one would and the rest were dropped.
 
-Each recording is fully self-contained -- its own connection, its own reconnect-on-a-hiccup handling (below), its own crash-resume -- so one recording dropping, finishing, or being stopped never affects the others.
+Each recording is fully self-contained -- its own connection, its own reconnect-on-a-hiccup handling (below), its own crash-resume -- so one recording dropping, finishing, or being stopped never affects the others. This now covers a stream that *stalls* -- a connection that goes quiet without cleanly disconnecting (a pulled Ethernet cable, a dropped Wi-Fi adaptor) -- which used to leave a recording wedged: still shown as "recording" but no longer growing. Quill Radio detects the stall within about half a minute and either reconnects and continues into a "(part 2)" file or, if reconnection is off or the show's window has ended, stops and saves what it captured.
+
+Recording filenames use your computer's **current** time zone. If you change the computer's time zone (or it shifts for daylight saving) while Quill Radio is running, new recordings are named with the new local time straight away -- no restart needed.
 
 If you would rather cap it (a slower machine, a metered connection), set **Maximum simultaneous recordings** in Recording Settings to a number; **0** means unlimited, which is the default. When the cap is reached, a scheduled recording that would exceed it is held pending and retried while its window is still open, rather than being lost.
 
@@ -139,6 +185,8 @@ Quill Radio picks the file type for you from the stream's own format: an MP3 str
 ### Help (Alt+H)
 
 - **Command Palette...** (Ctrl+Shift+P) -- every Quill Radio command in one searchable list.
+- **Keyboard Shortcuts...** -- open the Keyboard Manager to view, search, and change Quill Radio's keyboard shortcuts (see "Global hotkeys and keyboard shortcuts" below).
+- **Global Hotkeys...** -- assign a system-wide key to Quill Radio's playback controls so they work while another program has focus (see below).
 - **Redeem Unlock Code...** -- enter a signed code for a pre-release capability. Verified entirely on your machine; nothing is transmitted; one code counts for QUILL, Quill Radio, and QUILL Cast together.
 - **Check for Updates...** -- compares your version with the newest release, downloads the right artifact for your flavor directly (the installer for an installed copy, the portable zip for a portable one) with spoken progress, then offers Install now or Open folder. Already up to date shows a dialog too, not just a spoken announcement. Quill Radio also runs this check quietly once a day when it launches -- silent unless it actually finds something, and Station > Preferences (Ctrl+,) turns it off if you'd rather check manually only.
 - **Get FFmpeg...** -- a safety net: FFmpeg ships inside Quill Radio, but if it ever goes missing this downloads the official build so recording works again.
@@ -189,9 +237,53 @@ A recording used to be lost the moment Quill Radio quit or crashed. It now remem
 
 **Resume** (Enter) restarts the recording for the remaining minutes only. **Skip** (Escape) leaves it as it is. A **Don't ask me again** checkbox remembers your choice -- always resume, or never ask -- changeable later in Preferences. Nothing happens when nothing was in progress, and a corrupt marker is discarded rather than driving a bogus resume.
 
+## Spotify (experimental)
+
+Quill Radio can play music straight from Spotify -- but this is an **experimental capability that is off by default and hidden until you deliberately turn it on**. It ships "dark" behind a feature flag, so on a normal install there is no sign of it: no Spotify menu items, no settings, nothing reaching Spotify's servers. Lighting it up takes four separate things, and it is honest to say up front that one of them is a paid **Spotify Premium** account -- Spotify only lets an app stream its audio for Premium subscribers.
+
+### What you need to enable it
+
+All four of these must be in place; missing any one means the Spotify items never appear or never play.
+
+| Requirement | Why it is needed |
+| --- | --- |
+| The Spotify feature, unlocked | Spotify is a locked, pre-release feature. Unlock it with a signed code via **Help > Redeem Unlock Code...** -- the same one-time, verified-on-your-machine unlock QUILL uses for other early features. One code counts for QUILL, Quill Radio, and QUILL Cast together. |
+| A Spotify Premium account | Spotify's Web Playback engine only streams audio to Premium subscribers. A free account can sign in and browse, but will not play. |
+| Your own Spotify Client ID | Quill Radio does not ship a Spotify app identity; you supply your own. Register an app in the Spotify Developer Dashboard, then set its redirect address to exactly `http://127.0.0.1:43217/callback`. There is no client secret to copy -- Quill Radio signs in with the modern Authorization Code with PKCE flow, which needs only the Client ID. |
+| Windows with the Edge WebView2 runtime | Spotify audio is copy-protected and can only be played by Spotify's own Web Playback engine, which runs inside a hidden Microsoft Edge WebView2 component. The WebView2 runtime is part of current Windows (it ships with Microsoft Edge), so it is normally already present. |
+
+Once the feature is unlocked and you are not in Safe Mode, two new items appear in the **Help** menu: **Connect to Spotify...** and **Browse Spotify...**
+
+### Connecting to Spotify
+
+Choose **Help > Connect to Spotify...** to open an accessible sign-in dialog. Enter your Client ID and start the sign-in: your web browser opens to Spotify's own approval page, you approve access, and Spotify sends you back to a tiny local address on your own machine (`127.0.0.1`) that Quill Radio is listening on for exactly that one moment. Quill Radio captures the result and stores your sign-in tokens in the **Windows credential vault** -- never in a plain file, never in `podcasts.json` or a log. Your Client ID is stored alongside them so the whole connection lives in one place and clears together.
+
+### Browsing and playing
+
+Choose **Help > Browse Spotify...** to open an accessible search box with a results list. Type what you are looking for, arrow to a result, and press **Enter** to play it. A Spotify item plays through the hidden Web Playback engine, which coexists with Quill Radio's normal mpv and Windows Media engines -- a Spotify selection is routed to it automatically, and everything you already know keeps working: the one transport control (Play/Stop), volume, the status-bar mini-player, the tray, and any system-wide Global Hotkeys you have assigned all drive Spotify playback exactly as they drive a normal station.
+
+### What Spotify playback cannot do
+
+- **No downloading or recording.** Spotify audio is copy-protected (DRM), and the Web Playback engine is the only sanctioned way to play it, so a Spotify station cannot be recorded or saved the way an ordinary stream can.
+- **Premium only.** Without Spotify Premium, playback will not start even after you sign in.
+- **Off in Safe Mode.** Like every network feature, Spotify is disabled when Quill Radio runs in Safe Mode.
+- **First-time network notice.** Because connecting reaches Spotify's servers, the first sign-in asks for a one-time network-access confirmation, the same as QUILL's other online features.
+
 ## Hardware media keys
 
 If your keyboard has media keys, Play/Pause and Stop control Quill Radio system-wide while it runs -- even from the tray. Keys another app already owns are left alone.
+
+## Global hotkeys and keyboard shortcuts
+
+Quill Radio's shortcuts are now yours to change, and its playback controls can reach across your whole desktop.
+
+**Keyboard Shortcuts (Help > Keyboard Shortcuts...)** opens the Keyboard Manager: a searchable, conflict-aware list of every Quill Radio command and the key assigned to it. Find a command, assign a new key (it warns you if the key is already in use, or is a risky one such as a plain letter or an arrow key), clear it, or restore the defaults. The keymap is **shared with QUILL and QUILL Cast** -- the same `%APPDATA%\Quill` data store described below -- so a shortcut you change here changes it in the editor too, and vice versa. One note: a few commands whose default is a two-key chord (the media transport keys) or uses a comma (Preferences on Ctrl+,) keep their built-in shortcut until you next launch Quill Radio; a plain single-key command such as the Command Palette takes effect immediately.
+
+**Global Hotkeys (Help > Global Hotkeys...)** lets you give a **system-wide** key to Quill Radio's transport actions -- Play/Pause, Stop, Mute, Volume Up, Volume Down, and Show/Hide to the tray -- so you can, for example, pause the radio without leaving the program you are working in. Only these safe playback and window commands can be assigned a global key; a global hotkey can never trigger anything that changes a document or a file. None are set by default. The first time you assign one, Quill Radio reminds you that a system-wide key may override the same key in another program; as with the media keys and the Ctrl+Alt+Shift+R show/hide chord, a key another app already owns is left alone. (Windows only.)
+
+## Quillins in Quill Radio
+
+Quill Radio can now run **Quillins** -- QUILL's small, sandboxed, permission-gated add-ons -- from its own **Quillins** menu, not just inside the editor. A Quillin says in its manifest which apps it is for (its `targets`), so only add-ons written for Quill Radio appear here. The bundled `radio-community-directory` sample shows the idea: it contributes an extra station directory that appears alongside RadioBrowser and the others when you Find Stations. Quillins are off in Safe Mode. (Third-party Quillins remain disabled in this release; the bundled ones are the foundation.)
 
 ## The system tray
 

@@ -8,6 +8,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 
@@ -31,7 +32,14 @@ class AdpDataset:
     @property
     def count(self) -> int | None:
         count = self.result.get("count")
-        return int(count) if isinstance(count, (int, float)) else None
+        if not isinstance(count, (int, float)):
+            return None
+        # A JSON ``1e999`` parses to ``float('inf')``; ``int(inf)`` raises
+        # OverflowError, and ``int(nan)`` raises ValueError. Treat a non-finite
+        # count as absent rather than letting it crash the caller.
+        if isinstance(count, float) and not math.isfinite(count):
+            return None
+        return int(count)
 
     @classmethod
     def from_dict(cls, data: object) -> AdpDataset | None:

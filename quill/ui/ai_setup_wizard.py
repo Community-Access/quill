@@ -122,6 +122,21 @@ class AISetupWizard:
     def close(self) -> None:
         self.dialog.Destroy()
 
+    def _alive(self) -> bool:
+        """True while the wizard's widgets still exist.
+
+        Model listing / key verification / model pulls run on background threads and
+        marshal their result back via ``wx.CallAfter``. If the user closed the wizard
+        before the worker finished, the dialog and its children (e.g. ``self._status``)
+        are freed C++ objects, and touching one raises ``RuntimeError`` (#1230). A
+        destroyed wx window is falsy, so late callbacks call this and bail out first.
+        """
+        dialog = getattr(self, "dialog", None)
+        try:
+            return bool(dialog)
+        except RuntimeError:
+            return False
+
     # -- helpers --------------------------------------------------------------
 
     def _prime_from_existing_config(self) -> None:
@@ -172,7 +187,14 @@ class AISetupWizard:
             self._added = []
 
     def _set_status(self, message: str) -> None:
-        self._status.SetLabel(message)
+        if not self._alive():
+            return
+        try:
+            self._status.SetLabel(message)
+        except RuntimeError:
+            # The status label was freed between the alive-check and now (a closing
+            # dialog can race an in-flight background callback). Nothing to update.
+            return
         if message:
             self._announce(message)
 
@@ -469,6 +491,8 @@ class AISetupWizard:
     def _on_verify_result(
         self, provider_id: str, name: str, key: str, ok: bool, detail: str, host: str = ""
     ) -> None:
+        if not self._alive():
+            return
         self._busy = False
         if not ok:
             # For on-device the detail is already friendly guidance; for cloud it's the
@@ -592,7 +616,18 @@ class AISetupWizard:
         self._set_status(f"Pulling {model}... this can take a while for larger models.")
 
         def on_progress(text: str) -> None:
-            wx.CallAfter(self._status.SetLabel, f"Pulling {model}: {text}")
+            # Label-only (no per-tick announcement — that would flood the screen
+            # reader during a download), but guarded so a tick that lands after the
+            # wizard is closed doesn't touch a freed status label (#1230).
+            def apply() -> None:
+                if not self._alive():
+                    return
+                try:
+                    self._status.SetLabel(f"Pulling {model}: {text}")
+                except RuntimeError:
+                    pass
+
+            wx.CallAfter(apply)
 
         def worker() -> None:
             ok, message = ob.pull_ollama_model(model, host=host, on_progress=on_progress)
@@ -601,6 +636,8 @@ class AISetupWizard:
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: model download.
 
     def _on_model_pulled(self, model: str, ok: bool, message: str) -> None:
+        if not self._alive():
+            return
         self._busy = False
         if not ok:
             self._set_status(f"Could not pull {model}: {message}")
@@ -633,6 +670,8 @@ class AISetupWizard:
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: model discovery.
 
     def _on_models_listed(self, models: list[str], error: str) -> None:
+        if not self._alive():
+            return
         self._busy = False
         if not models:
             self._set_status(error or f"No models were returned for {self._provider_name}.")
@@ -888,8 +927,30 @@ def _probe_provider(provider: str, api_key: str) -> tuple[bool, str]:
             model=default_model_for_provider(provider),
         )
         backend = ProviderChatBackend(settings=dataclasses.replace(settings), api_key=api_key)
-        reply = backend.respond("Reply with exactly one word: ok")
-        return (bool(reply and reply.strip()), "")
+        try:
+            reply = backend.respond("Reply with exactly one word: ok")
+            if reply and reply.strip():
+                return (True, "")
+        except Exception as chat_exc:  # noqa: BLE001 - probe error handled below
+            # A *valid* key can still fail this chat probe when the default probe model
+            # is unavailable to the account — e.g. Gemini returns HTTP 404 "model ... is
+            # no longer available to new users" (#1231). Don't reject a good key over one
+            # model: fall back to listing the account's models, which only needs the key.
+            # A bad key lists nothing, so this stays a real key check.
+            from quill.core.assistant_ai import list_assistant_models
+
+            models, list_error = list_assistant_models(settings, api_key)
+            if models:
+                return (True, "")
+            return (False, list_error or str(chat_exc))
+        # Chat succeeded but returned nothing usable: confirm via the model list before
+        # rejecting, so an empty completion doesn't masquerade as a bad key.
+        from quill.core.assistant_ai import list_assistant_models
+
+        models, _list_error = list_assistant_models(settings, api_key)
+        if models:
+            return (True, "")
+        return (False, "The provider returned no response to a test prompt.")
     except Exception as exc:  # noqa: BLE001 - report the reason, never crash the UI
         return (False, str(exc))
 

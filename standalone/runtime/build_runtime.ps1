@@ -22,19 +22,24 @@ $repoRoot = $PSScriptRoot
 $dist = Join-Path $repoRoot "dist\QuillVilleRuntime"
 
 # -- ffmpeg + libmpv to bundle (shared by every app that records/plays) -------
+# SECURITY: ffmpeg/ffprobe and libmpv-2.dll are copied verbatim into the shipped
+# runtime, so they must come from a vetted staging directory passed explicitly.
+# We deliberately DO NOT fall back to resolving ffmpeg from the builder's PATH
+# (Get-Command) or libmpv from the user-writable %APPDATA%\Quill\engine-packs\mpv:
+# either could be poisoned by a stale/local install or a malicious file and would
+# then be planted, unverified, into every app's runtime. Pass -FfmpegDir /
+# -LibmpvDir pointing at directories you control.
 if (-not $FfmpegDir) {
-    $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
-    if ($ffmpeg) { $FfmpegDir = Split-Path -Parent $ffmpeg.Source }
+    throw "ffmpeg not staged: pass -FfmpegDir pointing at a vetted directory containing ffmpeg.exe (PATH auto-discovery is refused for release builds)."
 }
-if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
-    throw "ffmpeg.exe not found. Pass -FfmpegDir."
+if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
+    throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'."
 }
 if (-not $LibmpvDir) {
-    $packDir = Join-Path $env:APPDATA "Quill\engine-packs\mpv"
-    if (Test-Path (Join-Path $packDir "libmpv-2.dll")) { $LibmpvDir = $packDir }
+    throw "libmpv not staged: pass -LibmpvDir pointing at a vetted directory containing libmpv-2.dll (%APPDATA% auto-discovery is refused for release builds)."
 }
-if (-not $LibmpvDir -or -not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
-    throw "libmpv-2.dll not found. Pass -LibmpvDir."
+if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
+    throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
 }
 
 # -- onedir build -------------------------------------------------------------
@@ -48,6 +53,24 @@ try {
 if (-not (Test-Path (Join-Path $dist "QuillVilleRuntime.exe"))) {
     throw "Runtime build did not produce QuillVilleRuntime.exe"
 }
+
+# -- prune dead weight PyInstaller can't drop via `excludes` -------------------
+# pywin32 ships an IDE (Pythonwin\) and a compiled help file (PyWin32.chm) that
+# collect_all bundles as data. Nothing in any QuillVille app opens either at
+# runtime, so strip them (~17 MB) after the build. Also drop *.pdb debug symbols
+# if any slipped in. Best-effort: absence is a no-op.
+$internal = Join-Path $dist "_internal"
+foreach ($dead in @("Pythonwin")) {
+    $p = Join-Path $internal $dead
+    if (Test-Path $p) { Remove-Item -Recurse -Force $p; Write-Host "pruned $dead" }
+}
+Get-ChildItem $internal -Recurse -Include *.chm, *.pdb -ErrorAction SilentlyContinue |
+    ForEach-Object { Remove-Item -Force $_.FullName -ErrorAction SilentlyContinue }
+# libx265 is the H.265 VIDEO encoder that ffmpeg's shared build links; these are
+# audio/text apps, so ~22 MB of video encoder is dead weight. (Kept as a
+# standalone DLL, so PyInstaller `excludes` can't drop it.)
+Get-ChildItem $internal -Filter "libx265*.dll" -ErrorAction SilentlyContinue |
+    ForEach-Object { Remove-Item -Force $_.FullName; Write-Host "pruned $($_.Name)" }
 
 # -- stage shared binaries into the runtime's tools\ --------------------------
 # Apps resolve these via QUILL_APP_ROOT, which (when frozen) is the runtime dir.

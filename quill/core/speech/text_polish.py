@@ -13,6 +13,8 @@ from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+
 __all__ = [
     "extract_text",
     "extract_sections",
@@ -70,8 +72,10 @@ _HTML_TAG_RE = re.compile(r"<[^>]+>")
 _MULTI_BLANK_RE = re.compile(r"\n{3,}")
 
 
-class UnsupportedFormatError(ValueError):
+class UnsupportedFormatError(CodedError):
     """Raised when a file extension has no extractor."""
+
+    code = "QUILL-SPEECH-POLISH-FORMAT"
 
 
 class _TextCollector(HTMLParser):

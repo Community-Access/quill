@@ -1,6 +1,6 @@
 # Quill Radio -- Product Requirements
 
-Version 2.0
+Version 2.2.0
 
 ## 1. Product statement
 
@@ -65,13 +65,20 @@ Out of scope by decision: QUILL's editor, AI, speech transcription, braille, and
 - A-7. View-menu visibility toggles (Show Station Details, Show Status Bar) persist across sessions and are honored by every surface that owns the affected control; a hidden control is never a focus stop.
 - A-8. A low-vision text-size control (View > Text Size) scales the main window's fonts (favorites tree, transport buttons, now-playing line, status bar) and persists; reordering and every list action remain fully keyboard-operable at every size.
 - A-9. Long-running background audio (playback, recording) keeps the machine awake so it does not stop unattended; the behavior is user-controllable and defaults on, and never inhibits display sleep (audio-only need).
+- A-10. The shared-runtime download is accessible wherever it appears. Any download of the QuillVille Runtime -- from an installer or from the app's own first launch -- presents a progress bar that reports correctly to NVDA, JAWS, and Narrator and announces progress as a percentage; a silent or screen-reader-invisible download is a defect.
 
 ## 5. Packaging requirements
 
-- P-1. PyInstaller onedir build with the app's own icon; Inno Setup installer with its own AppId installing to {autopf}\Quill Radio, per-user by default.
-- P-2. Everything bundled, nothing downloaded at install or runtime: the onedir build carries the whole quill package and data; ffmpeg installs to {app}\tools\ffmpeg and libmpv (the mpv playback engine, with its GPL license texts and source-offer note) to {app}\tools\mpv, both found via the wrapper exporting QUILL_APP_ROOT. A portable zip ships the same onedir build plus a `data\` folder that switches storage to travel with the app.
-- P-3. Uninstall never deletes `%APPDATA%\Quill` -- QUILL or QUILL Cast may still use it.
-- P-4. Release artifacts: `Quill-Radio-Setup-<version>.exe`, tagged `v<version>`, which Help > Check for Updates compares against and downloads.
+- P-1. Native launcher, not a stamped interpreter. The per-app entry-point exe (`QuillRadio.exe`) is a tiny, genuinely-compiled-from-C native launcher (`quill/native/launcher/*`), not a renamed/rcedit-stamped `pythonw.exe`. This closes the ACB-reported AV false positive: the old stamped-`pythonw.exe` pattern is the textbook signature for a repackaged/backdoored Python, and the honest fix is to stop producing that shape. The launcher is a process-spawn shim (resolve a Python runtime, `exec` `<python> -m quill.apps.radio`); it does not link `python313.dll`, so it is decoupled from Python's ABI and is signtool-ready when signing lands. The legacy stamped-`pythonw.exe` remains as a best-effort build fallback for one more release (build machines without MSVC/cmake) and as a runtime-resolution fallback for in-place upgrades. Design record: `docs/design/native-launcher-2026-07-24.md`.
+- P-2. Shared QuillVille Runtime, install-once-per-user. Every QuillVille app (main QUILL, Quill Radio, Quill Weather, QUILL Audio Studio) shares one Python engine -- the QuillVille Runtime -- installed once at `%LOCALAPPDATA%\QuillVille\Runtime\<major>\` and reused by all of them, so a second app starts instantly with nothing large to fetch. The native launcher's resolver (`quill/native/launcher/runtime_resolve.c`) prefers the shared runtime, then a private embedded runtime beside the launcher, then the legacy `pythonw.exe`; it never crashes and shows a product-specific error dialog if none resolve. The runtime is reference-counted at `%APPDATA%\Quill\runtime.state.json` (owned by `installer/shared-runtime.iss`): install-if-absent on setup, and removed on uninstall only when the last referencing app is gone. ffmpeg and libmpv (the mpv playback engine, with its GPL license texts and source-offer note) stage into the runtime's `tools\` and are found via `QUILL_APP_ROOT`.
+- P-3. Four distribution editions, one per download need. Two full and two light:
+  - *Full portable zip* (`Quill-Radio-Portable-<version>.zip`, approximately 311 MB): fully self-contained, no install, no runtime network use, runs from a USB stick. Carries a genuine unmodified embeddable Python plus bundled ffmpeg/mpv, and a `data\` folder that switches storage to travel with the app (`quill/core/storage_mode.py` recognizes `QuillRadio.exe` as portable evidence).
+  - *Companion edition* (`Quill-Radio-Companion-<version>.zip`, approximately 3 MB): the native launcher plus docs only, running on the shared runtime. On first launch, if the runtime is absent, it offers to download and install it once (approximately 230 MB) behind the accessible progress UI (A-10).
+  - *Full installer* (`Quill-Radio-Setup-Shared-<version>.exe`): installs the shared runtime (if absent) plus the app; Inno Setup, its own AppId, `{autopf}\Quill Radio`, per-user by default.
+  - *Thin ("Lite") installer*: a small installer that downloads the shared runtime only when it is not already present.
+- P-4. Runtime download is always accessible (A-10). Every fetch of the shared runtime -- whether triggered by an installer or by the app's own first launch -- surfaces a progress bar that reads correctly under NVDA, JAWS, and Narrator, announcing progress as a percentage.
+- P-5. Uninstall never deletes `%APPDATA%\Quill` -- QUILL, Quill Weather, or QUILL Cast may still use it; the shared runtime is likewise left in place while any other QuillVille app references it.
+- P-6. Release artifacts: `Quill-Radio-Portable-<version>.zip`, `Quill-Radio-Companion-<version>.zip`, `Quill-Radio-Setup-Shared-<version>.exe`, and the thin ("Lite") installer, tagged `v<version>`, which Help > Check for Updates compares against and downloads (the installer for an installed copy, the portable zip for a portable one).
 
 ## 6. Network requirements
 
@@ -84,6 +91,11 @@ macOS/Linux standalone builds (upstream QUILL covers macOS; the tray pattern doe
 
 ## 8. Since 1.0
 
+- **Distribution overhaul: the QuillVille Runtime, the native launcher, and light editions (2.2.0; `quill/native/launcher/*`, `quill/core/runtime_marker.py`, `quill/core/storage_mode.py`, `installer/shared-runtime.iss`, `installer/quill-radio.iss` + `quill-radio-shared.iss`, `scripts/build_native_launcher.py`, `standalone/radio/scripts/build_release.ps1`). The headline of how Quill Radio is delivered.**
+  - *Shared runtime, install-once-per-user.* All four shipping QuillVille apps share one Python engine at `%LOCALAPPDATA%\QuillVille\Runtime\3.13\`, installed once and reference-counted at `%APPDATA%\Quill\runtime.state.json`; a second app starts instantly and the runtime is removed only when the last referencing app is uninstalled. See P-2.
+  - *Native C launcher replaces the stamped `pythonw.exe`.* `QuillRadio.exe` is a tiny native process-spawn shim resolving the shared runtime (then a private embedded runtime, then legacy `pythonw.exe`) and `exec`-ing `-m quill.apps.radio`. Fixes the ACB-reported AV false positive by no longer producing the repackaged-Python shape; signtool-ready for when signing lands. See P-1.
+  - *Two new light editions.* A ~3 MB **Companion** zip (app + docs on the shared runtime, first-launch runtime fetch) and a thin **"Lite" installer** join the ~311 MB full portable zip and the full shared-runtime installer. See P-3.
+  - *Accessible runtime download (A-10).* The runtime fetch shows an NVDA/JAWS/Narrator-readable progress bar announcing percent, whether an installer or the app's own first launch triggers it. See P-4.
 - **2.2.0 (upstream `quill/core/radio/backup.py`, `ui/radio/backup_ui.py`, `apps/radio.py`, `ui/main_frame_radio.py`, `core/radio/radio_browser.py`, `core/radio/wxindex.py`, `core/radio/favorites.py`, `ui/window_manager.py`, `ui/window_menu.py`, `ui/dialog_contract.py`, `ui/app_shell.py`, `ui/tray_hotkey.py`). Everything since 2.1.2; 2.2.0 was never shipped as a separate build.**
   - *Modeless multi-window model (menu-bar-loss root fix).* The heavy surfaces -- Browse Stations (`BrowseTreeDialog`), Search Stations (`StationBrowserDialog`), Manage Favorites (`FavoritesManagerDialog`), Schedule Recording (`ScheduleRecordingDialog`), and the Weather Center (`WeatherCenterDialog`) -- convert from `wx.Dialog` to modeless `wx.Frame`s, each carrying the shared menu bar, fixing the reported "menu bar disappears" defect (a `wx.Dialog` cannot host a menu bar) and removing the modal lock-out of the main window. A pure `WindowRegistry` (`ui/window_manager.py`) holds open order + numbering + cyclic next/previous (unit-tested, wx-free); the wx `WindowManager` (`ui/window_menu.py`) installs a dynamic **&Window** menu (numbered 1-9 in open order), the Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 accelerators, and register-on-show / unregister-and-activate-previous on close, with "Entered ..."/"Exited ..." cues and primary-control focus via `dialog_contract.show_modeless_surface`. Each surface takes an optional `windows=` param: present (standalone Quill Radio) -> modeless frame; absent (embedded QUILL) -> the classic modal dialog, so one class serves both hosts. Design record: `docs/design/2026-07-20-radio-window-model.md`.
   - *Backup / restore (import & export).* `core/radio/backup.py` bundles the state files (favorites, history/settings, wake timer, recording schedule) and, on request, the recorded audio into a single SHA-manifested `.qrbackup` zip; `restore_backup` validates it, accepts only the known state filenames, is zip-slip-guarded, and reloads the running app. Station-menu UI in `ui/radio/backup_ui.py` (worker-threaded, native file dialogs). Directly serves R-3 device migration.
@@ -138,3 +150,108 @@ Weather remains available inside Quill Radio via the **Weather** menu when the
 Weather feature is enabled (View > Customize Features...), and that menu offers
 **Open the Quill Weather App** to hand off to the standalone watcher. The two are
 separate, independently-distributed apps that run side by side.
+
+## 10. Spotify integration (experimental, ships dark)
+
+Quill Radio (music) and QUILL Cast (podcasts) can play directly from Spotify. The
+capability is **complete in code but ships dark**: it is gated behind the
+`future.spotify` feature flag, which is `locked_off` in
+`quill/core/feature_catalog.py`. While locked off, its commands and Help-menu
+items are hidden and nothing reaches Spotify's servers, so a default build shows
+no sign of it. This section is the design of record and the honest statement of
+what is left before general availability. As with every radio feature (R-1), all
+of it lives in the shared `quill` package -- `quill/core/spotify/*` and
+`quill/ui/spotify/*` -- and nothing is vendored into this wrapper.
+
+### 10.1 Design
+
+- **Sign-in: OAuth 2.0 Authorization Code with PKCE, no client secret**
+  (`quill/core/spotify/auth.py`). A desktop app cannot keep a secret, so QUILL
+  generates a high-entropy `code_verifier`, sends only its SHA-256 challenge to
+  `accounts.spotify.com/authorize`, and proves possession of the verifier when it
+  redeems the code at `accounts.spotify.com/api/token`. A random `state` guards
+  against a cross-site redirect. The two token exchanges (code redemption and
+  refresh) funnel through the single reviewed egress site `auth._token_request`.
+- **Loopback redirect receiver** (`quill/core/spotify/auth_callback.py`). PKCE's
+  redirect lands in the user's browser at a loopback address, so QUILL runs a
+  one-shot local HTTP server that binds `http://127.0.0.1:43217/callback` *before*
+  the browser opens (so the port is held when Spotify redirects back), validates
+  the echoed `state`, reads the authorization `code`, and stops. It only receives
+  a connection from the local browser -- no outbound egress of its own. The fixed
+  port is what the user registers as the redirect URI on their Spotify app.
+- **Web API wrapper** (`quill/core/spotify/client.py`). Search, the signed-in
+  profile, saved shows/episodes/tracks, and playlists -- the Radio/Cast browse
+  surfaces -- all go through the single reviewed egress site `client._request`:
+  HTTPS-only to `api.spotify.com` over a verified TLS context, Bearer token in the
+  header (never the URL), with lazy, lock-guarded token refresh.
+- **Playback: a WebView Web Playback SDK engine coexisting with mpv/wx behind the
+  AudioEngine protocol** (`quill/ui/spotify/web_player.py`, `SpotifyWebEngine`).
+  Spotify Premium audio is DRM-protected and only Spotify's own Web Playback SDK
+  may play it, inside a browser. QUILL hosts that SDK in a hidden
+  `wx.html2.WebView` (Edge/WebView2 on Windows) and drives it through the same
+  method surface (`play`/`pause`/`stop`/`seek`/`set_volume`/`is_playing`/
+  `position_ms`/`length_ms`/`close`) the mpv and Windows Media engines expose, so
+  a controller treats a `spotify:` URI like any other source. The engine and its
+  page are cleanly split so the state machine is unit-tested with synthetic
+  messages -- no browser, no network, no account. There is deliberately **no**
+  cross-engine fallback for a `spotify:` URI: only this engine can play one.
+- **Engine routing** (`quill/ui/radio/player_controller.py`,
+  `quill/ui/podcasts/player_controller.py`). A `spotify:` station or
+  `spotify:episode:` is detected up front and routed to the Web Playback engine,
+  created lazily on first use; the normal cross-engine rescue never applies to it.
+  Playback snapshots from the SDK are reflected into the shared playback state, so
+  the status-bar mini-player, the tray, and the per-command Global Hotkeys behave
+  exactly as for a normal station or episode. Leaving Spotify closes the hidden
+  WebView and returns to the stream engines; shutdown tears the WebView down.
+- **Token vault and Client ID** (`quill/core/spotify/token_store.py`,
+  `session.py`). The access/refresh tokens and the user's Client ID live only in
+  the OS credential vault (the same unified store the AI keys use), never in a
+  plain file or log. `SpotifySession` hands the Web Playback engine a currently
+  valid access token, refreshing transparently a minute before expiry.
+- **Consent, feature flag, Safe Mode, and egress gating**
+  (`quill/core/spotify/consent.py`). Because connecting reaches Spotify's servers,
+  sign-in is gated on a one-time network-access consent flag *in addition to* the
+  `future.spotify` flag and Safe-Mode refusal. Every egress site is inventoried in
+  `quill/tools/network_egress_audit.py`: `accounts.spotify.com` and
+  `api.spotify.com` for sign-in and the Web API, plus the SDK's own in-WebView
+  traffic to `sdk.scdn.co`, `open.spotify.com`, and Spotify's DRM CDN, which the
+  AST egress scanner cannot see and which is therefore documented manually there.
+
+### 10.2 Enablement checklist
+
+Lighting Spotify up requires all four of the following. Missing any one means the
+Help-menu items never appear (first two conditions gate the menu directly) or
+playback never starts.
+
+| Requirement | Detail |
+| --- | --- |
+| Unlock `future.spotify` | Redeem a signed unlock code via **Help > Redeem Unlock Code...** (the existing offline, verified-on-machine unlock path; one code covers QUILL, Quill Radio, and QUILL Cast). While locked off the feature is fully hidden. |
+| Spotify Premium account | The Web Playback SDK only streams audio for Premium; the requested scopes (`streaming`, `user-read-email`, `user-read-private`) are Premium-only. A free account can browse but not play. |
+| User-supplied Spotify Client ID | Registered at the Spotify Developer Dashboard, with the redirect URI set to exactly `http://127.0.0.1:43217/callback`. No client secret -- PKCE. |
+| Windows with the Edge WebView2 runtime | The only sanctioned playback path is the WebView-hosted SDK; QUILL already warms WebView2 at startup. |
+
+Once unlocked and out of Safe Mode, the standalone app frames
+(`quill/apps/radio.py`, `quill/apps/podcasts.py`) add **Connect to Spotify...**
+and **Browse Spotify...** (Radio) / **Browse Spotify Podcasts...** (Cast) to the
+Help menu; the accessible dialogs are `quill/ui/spotify/connect_dialog.py` and
+`quill/ui/spotify/browse_dialog.py`.
+
+### 10.3 What remains before general availability
+
+The offline-testable core and the wx state machine are done and unit-tested, but
+the following cannot be exercised without a real Premium account and Client ID and
+are explicitly open:
+
+- **End-to-end verification with a real Premium account + Client ID.** The browser
+  OAuth round-trip, actual SDK audio playback, the in-WebView token-refresh
+  handshake, and Spotify Connect device transfer are not exercisable offline and
+  have not been run against live Spotify.
+- **A product decision on the Client ID model.** Whether to ship a public/bundled
+  Client ID or keep the current bring-your-own-Client-ID approach is unresolved.
+- **Wiring the RSS-match action to a button.** The best-effort "find a downloadable
+  public version of this Spotify episode via an RSS match" capability exists in the
+  core (`quill/core/spotify/rss_match.py`, `find_public_enclosure`), but it is not
+  yet surfaced as a menu item or button in QUILL Cast. It reuses the existing
+  reviewed podcast-directory and feed-reader egress sites (it adds no new egress),
+  is Safe-Mode-guarded, and only ever returns the publisher's own public
+  enclosure -- never Spotify audio.

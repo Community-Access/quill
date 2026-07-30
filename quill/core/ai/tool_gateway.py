@@ -38,6 +38,7 @@ from quill.core.ai.permissions import (
     PermissionResult,
     RiskLevel,
 )
+from quill.core.error_codes import CodedError
 
 __all__ = [
     "EditorHost",
@@ -52,8 +53,10 @@ __all__ = [
 Emit = Callable[[AgentEvent], None]
 
 
-class ToolError(RuntimeError):
+class ToolError(CodedError):
     """A tool could not run (denied, declined, or a host failure)."""
+
+    code = "QUILL-AI-TOOL-FAILED"
 
 
 class PermissionDeniedError(ToolError):

@@ -23,6 +23,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
+
 
 @dataclass(slots=True)
 class Chapter:
@@ -140,8 +142,10 @@ def read_mp3_chapters(path: Path) -> list[Chapter]:
     return chapters
 
 
-class ChapterEditError(ValueError):
+class ChapterEditError(CodedError):
     """A chapter edit (merge/split/retime) was not possible; message is speakable."""
+
+    code = "QUILL-SPEECH-CHAPTER-EDIT"
 
 
 def _renumber(chapters: list[Chapter]) -> list[Chapter]:

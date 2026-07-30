@@ -6,6 +6,7 @@ from __future__ import annotations
 import pytest
 
 import quill.core.podcasts.feed_reader as feed_reader
+from quill.core.podcasts import feed_auth
 from quill.core.podcasts.feed_reader import (
     FeedReaderError,
     _parse_duration,
@@ -129,9 +130,7 @@ class _FakeResponse:
 
 
 def test_fetch_and_parse_feed_happy_path(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(
-        feed_reader.urllib.request, "urlopen", lambda *a, **k: _FakeResponse(_SAMPLE_FEED)
-    )
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", lambda *a, **k: _FakeResponse(_SAMPLE_FEED))
     info = fetch_and_parse_feed("https://example.com/feed.xml")
     assert info.title == "Great Show"
     assert len(info.episodes) == 2
@@ -144,7 +143,7 @@ def test_fetch_feed_bytes_sends_basic_auth_header(monkeypatch: pytest.MonkeyPatc
         captured["headers"] = dict(request.headers)  # type: ignore[attr-defined]
         return _FakeResponse(_SAMPLE_FEED)
 
-    monkeypatch.setattr(feed_reader.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", fake_urlopen)
     feed_reader._fetch_feed_bytes("https://example.com/feed.xml", username="user", password="pw")
     assert "Authorization" in captured["headers"]  # type: ignore[operator]
 
@@ -153,7 +152,7 @@ def test_fetch_feed_bytes_raises_on_network_error(monkeypatch: pytest.MonkeyPatc
     def always_fail(*_a: object, **_k: object) -> None:
         raise OSError("connection refused")
 
-    monkeypatch.setattr(feed_reader.urllib.request, "urlopen", always_fail)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", always_fail)
     with pytest.raises(FeedReaderError):
         feed_reader._fetch_feed_bytes("https://example.com/feed.xml")
 
@@ -167,7 +166,7 @@ def test_fetch_feed_bytes_401_raises_feed_auth_error(monkeypatch) -> None:
             "https://feeds.example.com/p.rss", 401, "Unauthorized", {}, io.BytesIO(b"")
         )
 
-    monkeypatch.setattr(feed_reader.urllib.request, "urlopen", _raise_401)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _raise_401)
     with pytest.raises(feed_reader.FeedAuthError):
         feed_reader._fetch_feed_bytes("https://feeds.example.com/p.rss")
 
@@ -181,7 +180,7 @@ def test_fetch_feed_bytes_500_stays_generic_feed_reader_error(monkeypatch) -> No
             "https://feeds.example.com/p.rss", 500, "Server Error", {}, io.BytesIO(b"")
         )
 
-    monkeypatch.setattr(feed_reader.urllib.request, "urlopen", _raise_500)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _raise_500)
     with pytest.raises(feed_reader.FeedReaderError) as excinfo:
         feed_reader._fetch_feed_bytes("https://feeds.example.com/p.rss")
     assert not isinstance(excinfo.value, feed_reader.FeedAuthError)

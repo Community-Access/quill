@@ -26,6 +26,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+from quill.core.error_codes import CodedError
 from quill.core.tagging import VOID_HTML_TAGS
 
 _VOID_TAGS = frozenset(
@@ -63,8 +64,10 @@ _DEFAULT_ATTRS_BY_TAG: dict[str, tuple[tuple[str, str | None], ...]] = {
 _NUMBERING_RE = re.compile(r"\$+")
 
 
-class EmmetSyntaxError(ValueError):
+class EmmetSyntaxError(CodedError):
     """Raised when an abbreviation cannot be parsed."""
+
+    code = "QUILL-EMMET-SYNTAX"
 
 
 @dataclass

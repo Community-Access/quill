@@ -29,7 +29,20 @@ from typing import Any
 
 # The networks the P0 slice understands. "mock" is a fully local, deterministic
 # network used so the whole app runs and is testable without credentials.
-NETWORKS = ("mastodon", "bluesky", "github", "rss", "mock")
+NETWORKS = (
+    "mastodon",
+    "bluesky",
+    "github",
+    "rss",
+    "lemmy",
+    "pixelfed",
+    "gotosocial",
+    "firefish",
+    "telegram",
+    "opds",
+    "hackernews",
+    "mock",
+)
 
 # Post visibility, normalized across networks (PRD 6.2, 15.1). Adapters map
 # these onto each network's own vocabulary.
@@ -160,8 +173,10 @@ class Poll:
     @classmethod
     def from_dict(cls, d: dict) -> Poll:
         return cls(
-            options=[PollOption(o.get("title", ""), int(o.get("votes", 0) or 0))
-                     for o in d.get("options", [])],
+            options=[
+                PollOption(o.get("title", ""), int(o.get("votes", 0) or 0))
+                for o in d.get("options", [])
+            ],
             multiple=bool(d.get("multiple", False)),
             expires_at=d.get("expires_at"),
             voted=bool(d.get("voted", False)),

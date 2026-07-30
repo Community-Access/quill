@@ -27,6 +27,7 @@ import shutil
 import sys
 from pathlib import Path
 
+from quill.core.error_codes import CodedError
 from quill.core.paths import app_data_dir
 
 #: Basenames this module will ever treat as a legitimate git/gh executable.
@@ -41,8 +42,10 @@ _GIT_EXECUTABLE_BASENAMES = frozenset({
 })
 
 
-class GitBinaryError(RuntimeError):
+class GitBinaryError(CodedError):
     """Raised when a resolved or configured executable fails validation."""
+
+    code = "QUILL-GIT-BINARY-INVALID"
 
 
 def _vendor_dir() -> Path:

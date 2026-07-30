@@ -1,0 +1,21 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.dailystamp",
+  "name": "Daily Stamp",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "A Layer-1 sample that inserts today's date as a daily stamp. Loads in both the editor and Quill Beacon to demonstrate the multi-app targets field.",
+  "license": "MIT",
+  "categories": ["productivity"],
+  "targets": ["quill", "beacon"],
+  "contributes": {
+    "commands": [
+      {
+        "id": "ext.dailystamp.insert",
+        "title": "Insert Daily Stamp",
+        "description": "Insert today's date as a daily stamp (in a companion app, copies it to the clipboard).",
+        "run": { "snippet": "${date}" }
+      }
+    ]
+  }
+}

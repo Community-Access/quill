@@ -19,13 +19,49 @@ import json
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
+
 JOB_EXTENSION = ".quilljob"
 _FORMAT = "quill-audio-studio-job"
 _VERSION = 1
 
+# Extensions people commonly pick here by mistake, thinking this button adds a
+# document to narrate. Seeing one lets us steer them to the right journey
+# instead of leaking a decode error for a binary file (a .docx is a ZIP).
+_DOCUMENT_SUFFIXES = frozenset({
+    ".docx",
+    ".docm",
+    ".doc",
+    ".rtf",
+    ".odt",
+    ".md",
+    ".markdown",
+    ".html",
+    ".htm",
+    ".txt",
+    ".pdf",
+    ".epub",
+})
 
-class JobFileError(ValueError):
+_NARRATE_HINT = (
+    " To narrate a document, go back to the first page, choose “Narrate "
+    "documents into an audiobook,” and pick the folder that contains it. "
+    "This button only reopens a job file you saved earlier from a finished run."
+)
+
+
+class JobFileError(CodedError):
     """The file is not a readable Audio Studio job; message is speakable."""
+
+    code = "QUILL-SPEECH-JOBFILE-INVALID"
+
+
+def _not_a_job_message(path: Path) -> str:
+    """A speakable explanation for a file that is not a QUILL job file."""
+    base = "That is not a QUILL Audio Studio job file."
+    if path.suffix.lower() in _DOCUMENT_SUFFIXES:
+        return base + _NARRATE_HINT
+    return base
 
 
 def save_job(path: Path, request: Any) -> Path:
@@ -49,11 +85,19 @@ def load_job(path: Path, defaults: Any) -> Any:
     Raises :class:`JobFileError` when the file is not a QUILL job file at all.
     """
     try:
-        document = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, ValueError) as exc:
-        raise JobFileError(f"Could not read that job file: {exc}") from exc
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise JobFileError(f"Could not open that file: {exc}") from exc
+    # A job file is small UTF-8 JSON. A binary file (e.g. a .docx, which is a
+    # ZIP) fails to decode; a text file that is not our JSON fails to parse.
+    # Either way the file simply is not a job — say so, never leak the codec
+    # or parser detail, which is meaningless read aloud by a screen reader.
+    try:
+        document = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise JobFileError(_not_a_job_message(path)) from exc
     if not isinstance(document, dict) or document.get("format") != _FORMAT:
-        raise JobFileError("That file is not a QUILL Audio Studio job file.")
+        raise JobFileError(_not_a_job_message(path))
     body = document.get("request")
     if not isinstance(body, dict):
         raise JobFileError("That job file has no request in it.")

@@ -57,7 +57,13 @@ def run_check(
     if location is None:
         return HeadlessCheckResult(checked=False, reason="no location")
 
-    alerts = fetch_alerts(location.latitude, location.longitude)
+    alerts = list(fetch_alerts(location.latitude, location.longitude))
+    # Fold in any alerts contributed by enabled Quillin ``weather.alerts`` sources
+    # (a QuillinAppHost populates the registry; empty when none / in Safe Mode).
+    # The sources make no network call of their own, so this adds no egress.
+    from quill.core.weather import alert_source_registry
+
+    alerts.extend(alert_source_registry.alerts_from_sources())
     current_ids = {a.id for a in alerts if a.id}
 
     if not monitor.notified_ids_exist(data_dir):

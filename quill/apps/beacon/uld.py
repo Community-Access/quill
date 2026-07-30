@@ -157,8 +157,54 @@ def resolve(loc: Location, content: str | None = None) -> Resolution:
             "Using last known position; exact location unconfirmed.",
         )
 
-    # 6. Open containing resource; announce the exact location could not be confirmed.
+    # 6. Quillin-contributed resolvers (beacon.resolver): a fallback layer a
+    #    QuillinAppHost populates. Consulted only after the built-in locators
+    #    fail, and never allowed to silently replace an exact match (the built-in
+    #    layers above already returned for those). A contributed resolver returns
+    #    a resolution mapping; it makes no network call of its own.
+    contributed = _resolve_from_quillins(loc, content)
+    if contributed is not None:
+        return contributed
+
+    # 7. Open containing resource; announce the exact location could not be confirmed.
     return Resolution(False, 0.0, "none", {}, "Exact location not found. Nearest match available.")
+
+
+def _resolve_from_quillins(loc: Location, content: str | None) -> Resolution | None:
+    """Consult enabled ``beacon.resolver`` Quillins as a fallback locator layer.
+
+    Returns a :class:`Resolution` when a contributed resolver places the location,
+    else None. A contributed match always carries ``needs_review`` semantics via
+    its own confidence, honoring PRD 10.2 (never silently replace an exact
+    bookmark): the built-in exact layers already returned before we get here.
+    """
+    from quill.apps.beacon import resolver_registry
+
+    loc_payload: dict[str, Any] = {
+        "resource_id": loc.resource_id,
+        "type": loc.type,
+        "text_quote": dict(loc.text_quote),
+        "heading_path": list(loc.heading_path),
+        "display_summary": loc.display_summary,
+    }
+    resolution = resolver_registry.resolve_from_providers(
+        loc_payload, content or "", content_type=loc.type
+    )
+    if resolution is None:
+        return None
+    try:
+        confidence = float(resolution.get("confidence", 0.6))
+    except (TypeError, ValueError):
+        confidence = 0.6
+    position = resolution.get("position")
+    message = resolution.get("message")
+    return Resolution(
+        matched=True,
+        confidence=max(0.0, min(0.89, confidence)),
+        layer="quillin",
+        position=position if isinstance(position, dict) else {},
+        message=str(message) if isinstance(message, str) else "Matched by a Quillin resolver.",
+    )
 
 
 def _find_structural(loc: Location, content: str) -> dict[str, Any] | None:

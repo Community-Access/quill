@@ -108,9 +108,13 @@ def fetch_feed(url: str) -> Show:
     """Fetch a feed URL over the network and parse it. Isolated for testability."""
     import requests
 
-    resp = requests.get(url, timeout=20)
+    from quill.apps.beacon.net_guard import read_capped, validate_public_url
+
+    validate_public_url(url)
+    resp = requests.get(url, timeout=20, stream=True)
     resp.raise_for_status()
-    return parse_feed(resp.text, feed_url=url)
+    text = read_capped(resp).decode(resp.encoding or "utf-8", errors="replace")
+    return parse_feed(text, feed_url=url)
 
 
 def _first_enclosure(entry: dict) -> dict | None:
@@ -150,11 +154,17 @@ def fetch_chapters(url_or_json: str, resource_id: str = "") -> list[MediaChapter
     """Fetch and parse Podcasting 2.0 JSON chapters from a URL or literal JSON."""
     if url_or_json.strip().startswith("{"):
         return media.parse_podcasting2_chapters(url_or_json, resource_id)
+    import json as _json
+
     import requests
 
-    resp = requests.get(url_or_json, timeout=20)
+    from quill.apps.beacon.net_guard import read_capped, validate_public_url
+
+    validate_public_url(url_or_json)
+    resp = requests.get(url_or_json, timeout=20, stream=True)
     resp.raise_for_status()
-    return media.parse_podcasting2_chapters(resp.json(), resource_id)
+    payload = _json.loads(read_capped(resp).decode(resp.encoding or "utf-8", errors="replace"))
+    return media.parse_podcasting2_chapters(payload, resource_id)
 
 
 def subscribe(store, feed_url: str, *, show: Show | None = None) -> str:

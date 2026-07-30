@@ -55,6 +55,30 @@ CAP_SCHEDULE = "schedule"
 # ui.log routes api.log() calls to the Developer Console (QUILL_DEV_BUILD or
 # via Tools > Developer Console). No user-visible side-effect; no consent gate.
 CAP_UI_LOG = "ui.log"
+# podcast.feed.auth lets a Quillin contribute an Authorization header for a
+# matching feed host (Quill Cast), so a premium/authenticated podcast provider
+# can supply credentials the host attaches. Purely a host-mediated provider
+# contribution; the Quillin returns a header string and makes no network call.
+CAP_PODCAST_FEED_AUTH = "podcast.feed.auth"
+# radio.directory lets a Quillin contribute a station-directory provider (Quill
+# Radio): the host asks its handler for stations matching a search and folds them
+# into the Find Stations fan-out. Host-mediated; the handler returns station rows
+# (from its own storage/static data) and makes no network call of its own.
+CAP_RADIO_DIRECTORY = "radio.directory"
+# weather.alerts lets a Quillin contribute an alert source (Quill Weather): the
+# host asks its handler for extra active alerts and merges them into the alert
+# watch. Host-mediated; the handler returns alert rows and makes no network call.
+CAP_WEATHER_ALERTS = "weather.alerts"
+# studio.pipeline lets a Quillin contribute an audio-processing step (Audio
+# Studio): the host asks its handler for an ffmpeg filter fragment for a named
+# processing stage and appends it to the export/enhancement graph. Host-mediated;
+# the handler returns a filter string and makes no network call.
+CAP_STUDIO_PIPELINE = "studio.pipeline"
+# beacon.resolver lets a Quillin contribute a location resolver (Quill Beacon):
+# the host asks its handler to resolve a ULD against current content as a
+# fallback layer. Host-mediated; the handler returns a position and makes no
+# network call of its own.
+CAP_BEACON_RESOLVER = "beacon.resolver"
 
 CAPABILITIES: frozenset[str] = frozenset({
     CAP_EDITOR_READ,
@@ -78,6 +102,39 @@ CAPABILITIES: frozenset[str] = frozenset({
     CAP_DOCUMENT_EVENTS,
     CAP_SCHEDULE,
     CAP_UI_LOG,
+    CAP_PODCAST_FEED_AUTH,
+    CAP_RADIO_DIRECTORY,
+    CAP_WEATHER_ALERTS,
+    CAP_STUDIO_PIPELINE,
+    CAP_BEACON_RESOLVER,
+})
+
+# The set of application ids a manifest may declare in its ``targets`` field.
+# ``quill`` is the editor; the others are the standalone companion apps. Kept in
+# lock-step with the ``targets`` enum in ``quill/core/schemas/extension.json``
+# and with ``quill.core.app_launcher`` (where ``cast`` is the podcasts app).
+APP_IDS: frozenset[str] = frozenset({
+    "quill",
+    "radio",
+    "cast",
+    "weather",
+    "studio",
+    "beacon",
+})
+
+# The default ``targets`` for a manifest that omits the field: the editor only.
+# This keeps every pre-existing (targets-less) Quillin loading in the editor and
+# invisible to the companion apps unless it explicitly opts in.
+DEFAULT_TARGETS: tuple[str, ...] = ("quill",)
+
+# Capabilities that only make sense inside the full editor (they touch the live
+# document / editor buffer). A manifest declaring any of these must not target a
+# non-editor app -- there is no document there to act on (enforced in validation).
+EDITOR_ONLY_CAPABILITIES: frozenset[str] = frozenset({
+    CAP_EDITOR_READ,
+    CAP_EDITOR_WRITE,
+    CAP_DOCUMENT_DIRECTIVES,
+    CAP_DOCUMENT_EVENTS,
 })
 
 # Capabilities whose every use must additionally pass QUILL's per-action consent
@@ -350,6 +407,116 @@ class TranscriptionProviderContribution:
 
 
 @dataclass(frozen=True, slots=True)
+class FeedAuthProviderContribution:
+    """A podcast feed authentication provider declared by a Quillin (Quill Cast).
+
+    Declarative + host-mediated: the Quillin declares *which* feed hosts it can
+    supply credentials for (``match_hosts``, hostname / ``*.host`` patterns) and
+    the ``handler`` function the host calls to obtain an ``Authorization`` header
+    for a matching request. The Quillin makes no network call of its own; it
+    returns a header string (typically read from its own storage) which the host
+    attaches to the feed request. Requires the ``podcast.feed.auth`` capability
+    and a ``main`` module.
+
+    ``id`` is namespaced under ``ext.`` and must be unique across enabled
+    Quillins. ``match_hosts`` is a non-empty list of hostname patterns.
+    """
+
+    id: str
+    match_hosts: tuple[str, ...]
+    handler: str
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class DirectoryProviderContribution:
+    """A station-directory provider declared by a Quillin (Quill Radio).
+
+    Declarative + host-mediated: the Quillin declares a ``handler`` the host
+    calls with the current search query; the handler returns station rows
+    (``{"name", "url", "source"}``) read from its own storage or a bundled
+    static list, which the host folds into the Find Stations fan-out. The
+    Quillin makes no network call of its own. Requires the ``radio.directory``
+    capability and a ``main`` module.
+
+    ``id`` is namespaced under ``ext.`` and must be unique across enabled
+    Quillins. ``display_name`` is the Source badge shown for the provider's
+    stations.
+    """
+
+    id: str
+    display_name: str
+    handler: str
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class AlertSourceContribution:
+    """An extra weather-alert source declared by a Quillin (Quill Weather).
+
+    Declarative + host-mediated: the Quillin declares a ``handler`` the host
+    calls to obtain additional active alerts (``{"id", "event", ...}`` rows),
+    merged into the alert watch alongside the built-in NWS feed. The Quillin
+    makes no network call of its own -- it returns rows from its own storage or
+    a static list. Requires the ``weather.alerts`` capability and a ``main``
+    module.
+
+    ``id`` is namespaced under ``ext.`` and must be unique across enabled
+    Quillins. ``interval_seconds`` is the provider's suggested poll cadence
+    (60-86400); the host may use it to schedule refreshes.
+    """
+
+    id: str
+    handler: str
+    interval_seconds: int = 300
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class AudioPipelineStepContribution:
+    """An audio-processing step declared by a Quillin (Audio Studio).
+
+    Declarative + host-mediated: the Quillin declares a ``handler`` the host
+    calls for a named processing ``stage``; the handler returns an ffmpeg filter
+    fragment (e.g. ``"loudnorm"``) the host appends to the export/enhancement
+    filter graph. The Quillin makes no network call and touches no audio bytes
+    itself -- the host runs ffmpeg. Requires the ``studio.pipeline`` capability
+    and a ``main`` module.
+
+    ``id`` is namespaced under ``ext.`` and must be unique across enabled
+    Quillins. ``stage`` is the pipeline stage the step attaches to. ``display_name``
+    labels the step in the Studio processing chain.
+    """
+
+    id: str
+    stage: str
+    handler: str
+    display_name: str
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class LocationResolverContribution:
+    """A location (ULD) resolver declared by a Quillin (Quill Beacon).
+
+    Declarative + host-mediated: the Quillin declares a ``handler`` the host
+    calls as a fallback resolver layer when the built-in locators fail to place
+    a Universal Location Descriptor against current content. The handler returns
+    a resolution (position + confidence). The Quillin makes no network call of
+    its own. Requires the ``beacon.resolver`` capability and a ``main`` module.
+
+    ``id`` is namespaced under ``ext.`` and must be unique across enabled
+    Quillins. ``content_types`` optionally scopes the resolver to certain
+    resource kinds (e.g. ``["web", "epub"]``); empty means "any".
+    """
+
+    id: str
+    handler: str
+    content_types: tuple[str, ...] = ()
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
 class SnippetParam:
     """A single fill-in field prompted before a gallery snippet is inserted."""
 
@@ -405,6 +572,21 @@ class Contributions:
     # Host-mediated cloud transcription providers. Each is a
     # TranscriptionProviderContribution; requires the 'net' capability.
     transcription_providers: tuple[TranscriptionProviderContribution, ...] = ()
+    # Host-mediated podcast feed auth providers (Quill Cast). Each entry is a
+    # FeedAuthProviderContribution; requires the 'podcast.feed.auth' capability.
+    feed_auth_providers: tuple[FeedAuthProviderContribution, ...] = ()
+    # Host-mediated station-directory providers (Quill Radio). Each entry is a
+    # DirectoryProviderContribution; requires the 'radio.directory' capability.
+    directory_providers: tuple[DirectoryProviderContribution, ...] = ()
+    # Host-mediated weather alert sources (Quill Weather). Each entry is an
+    # AlertSourceContribution; requires the 'weather.alerts' capability.
+    alert_sources: tuple[AlertSourceContribution, ...] = ()
+    # Host-mediated audio-processing steps (Audio Studio). Each entry is an
+    # AudioPipelineStepContribution; requires the 'studio.pipeline' capability.
+    pipeline_steps: tuple[AudioPipelineStepContribution, ...] = ()
+    # Host-mediated location resolvers (Quill Beacon). Each entry is a
+    # LocationResolverContribution; requires the 'beacon.resolver' capability.
+    location_resolvers: tuple[LocationResolverContribution, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -443,6 +625,21 @@ class ExtensionManifest:
     # Restricts net capability to a declared allowlist of hostnames/IP-prefix strings.
     # When empty and net is declared, all outbound hosts are permitted (with consent).
     net_allowed_hosts: tuple[str, ...] = ()
+    # The apps this Quillin loads in (from APP_IDS). An empty tuple means the
+    # default (``DEFAULT_TARGETS`` -- the editor only). ``target_apps`` resolves
+    # the effective set including that default.
+    targets: tuple[str, ...] = ()
+
+    @property
+    def target_apps(self) -> tuple[str, ...]:
+        """The effective ``targets`` set, defaulting to the editor when omitted."""
+
+        return self.targets or DEFAULT_TARGETS
+
+    def targets_app(self, app_id: str) -> bool:
+        """True when this Quillin should load in the app identified by ``app_id``."""
+
+        return app_id in self.target_apps
 
     @property
     def is_layer_two(self) -> bool:

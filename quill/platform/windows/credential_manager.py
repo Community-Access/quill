@@ -45,7 +45,9 @@ if _IS_WINDOWS:
         ]
 
     _PCREDENTIALW = ctypes.POINTER(_CREDENTIALW)
-    _advapi32 = ctypes.windll.advapi32
+    # use_last_error=True so ctypes.get_last_error() returns the error captured
+    # immediately after the call rather than a possibly-stale GetLastError value.
+    _advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)
     _cred_free = _advapi32.CredFree
     _cred_free.argtypes = [ctypes.c_void_p]
     _cred_free.restype = None
@@ -107,10 +109,28 @@ def load_generic_credential(target_name: str) -> StoredCredential | None:
         return StoredCredential(
             target_name=str(credential.TargetName or target_name),
             user_name=str(credential.UserName or ""),
-            secret=blob.decode("utf-8"),
+            secret=_decode_credential_blob(blob),
         )
     finally:
         _cred_free(credential_ptr)
+
+
+def _decode_credential_blob(blob: bytes) -> str:
+    """Decode a credential blob without ever letting the raw secret escape.
+
+    A strict ``blob.decode("utf-8")`` raises ``UnicodeDecodeError`` on a
+    UTF-16LE blob (what Windows tools commonly write), and that exception's
+    ``.object`` attribute carries the raw secret bytes up the stack into logs
+    and crash bundles. Try UTF-8, then UTF-16LE, and finally fall back to a
+    lossy UTF-8 decode -- none of which raise, so the secret never rides an
+    exception.
+    """
+    for encoding in ("utf-8", "utf-16-le"):
+        try:
+            return blob.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return blob.decode("utf-8", errors="replace")
 
 
 def save_generic_credential(
@@ -137,7 +157,7 @@ def save_generic_credential(
     credential.UserName = user_name
     ok = _cred_write(ctypes.byref(credential), 0)
     if not ok:
-        raise OSError(ctypes.GetLastError(), "CredWriteW failed")
+        raise OSError(ctypes.get_last_error(), "CredWriteW failed")
 
 
 def delete_generic_credential(target_name: str) -> bool:

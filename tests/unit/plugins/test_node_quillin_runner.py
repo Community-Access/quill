@@ -9,6 +9,7 @@ used by external_engine._default_runner:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -141,8 +142,13 @@ def _error_runner(error_msg: str):
 
 
 def _fake_which(exe: str) -> str:
-    """Stub: pretend every executable resolves to itself so PATH checks pass."""
-    return exe
+    """Stub: resolve every executable to a drive-rooted absolute path.
+
+    external_engine now hands subprocess a fully-resolved absolute path and
+    rejects a bare/CWD-relative ``which`` result (anti-hijack hardening), so the
+    fake must return an absolute path like the real ``_resolve_which`` does.
+    """
+    return os.path.abspath(exe)
 
 
 def _run(
@@ -389,7 +395,7 @@ def test_run_uses_node_executable_in_command(tmp_path: Path) -> None:
     )
 
     assert captured_commands
-    assert captured_commands[0][0] == "node"
+    assert captured_commands[0][0] == os.path.abspath("node")
     assert captured_commands[0][1] == str(tmp_path / "extension.js")
 
 

@@ -1,0 +1,36 @@
+/*
+ * Per-product identity macros. The build system generates product.h from
+ * this template by substituting @PRODUCT_*@ placeholders. One executable is
+ * produced per product, with these values compiled in.
+ *
+ * The placeholders are filled by scripts/build_native_launcher.py from
+ * build/version.toml + the per-product metadata table inside the script.
+ */
+#ifndef QL_PRODUCT_H
+#define QL_PRODUCT_H
+
+/* Internal name. Used as the executable filename and for AppUserModelID. */
+#define PRODUCT_NAME         "@PRODUCT_NAME@"
+
+/* User-facing name (Start Menu, About dialog, error dialogs). */
+#define PRODUCT_DISPLAY_NAME "@PRODUCT_DISPLAY_NAME@"
+
+/* Dotted version (e.g. "2.2.0"). Matches the per-product version in
+ * quill/apps/<product>.py _VERSION and in the Inno installer. */
+#define PRODUCT_VERSION      "@PRODUCT_VERSION@"
+
+/* Python module to invoke: `python.exe -m <module>`. */
+#define PRODUCT_PYTHON_MODULE "@PRODUCT_PYTHON_MODULE@"
+
+/* GitHub repo for the in-app updater. */
+#define PRODUCT_REPO         "@PRODUCT_REPO@"
+
+/* AppUserModelID for Windows taskbar grouping. */
+#define PRODUCT_APP_ID       "@PRODUCT_APP_ID@"
+
+/* HTTPS URL of the QuillVille Runtime installer (a GitHub release asset). The
+ * self-healing launcher downloads + runs this when no runtime is found. The
+ * /releases/latest/download/ path always redirects to the newest asset. */
+#define PRODUCT_RUNTIME_URL  "@PRODUCT_RUNTIME_URL@"
+
+#endif /* QL_PRODUCT_H */

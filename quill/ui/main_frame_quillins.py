@@ -228,6 +228,15 @@ class QuillinsMenuMixin:
         """
         from quill.core.speech.quillin_providers import register_quillin_transcription_providers
 
+        # Safe Mode disables all Quillin contributions (invariant). The startup
+        # path gates this before calling, but the Quillins Manager's
+        # Enable/Disable/Reload/Remove/Install handlers and the wizard's reload
+        # callback all funnel through here too -- guard the single choke point so
+        # none of them can re-register contributions while Safe Mode is active.
+        if self._safe_mode:
+            self._announce("Quillins are disabled in Safe Mode.")
+            return
+
         # Stop any timers from a previous load before rebuilding the indices, so
         # a reload/disable never leaves an orphaned wx.Timer firing.
         for quillin_id in list(getattr(self, "_quillin_timers", {})):

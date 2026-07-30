@@ -30,6 +30,8 @@ from cryptography.hazmat.primitives.ciphers import (  # type: ignore[import-not-
     modes,
 )
 
+from quill.core.error_codes import CodedError
+
 _MAC_KEY_MAGIC = b"putty-private-key-file-mac-key"
 _EC_CURVES = {
     "ecdsa-sha2-nistp256": ec.SECP256R1(),
@@ -38,8 +40,10 @@ _EC_CURVES = {
 }
 
 
-class PuttyKeyError(ValueError):
+class PuttyKeyError(CodedError):
     """Raised when a ``.ppk`` file cannot be parsed or its MAC/passphrase fails."""
+
+    code = "QUILL-SSH-PPK-INVALID"
 
 
 def looks_like_ppk(text: str) -> bool:
@@ -87,7 +91,10 @@ def _parse_headers(text: str) -> tuple[dict[str, str], list[str]]:
         name = name.strip()
         value = value.strip()
         if name.endswith("-Lines"):
-            count = int(value)
+            try:
+                count = int(value)
+            except ValueError as exc:
+                raise PuttyKeyError(f"Invalid {name} count {value!r} in PPK file") from exc
             body = "".join(lines[index + 1 : index + 1 + count])
             headers[name] = body
             order.append(name)
@@ -132,14 +139,19 @@ def _derive_v3(headers: dict[str, str], passphrase: bytes) -> tuple[bytes, bytes
     flavour = headers.get("Key-Derivation", "Argon2id")
     if flavour != "Argon2id":
         raise PuttyKeyError(f"Unsupported PPK key derivation {flavour!r}")
-    salt = bytes.fromhex(headers["Argon2-Salt"])
-    out = Argon2id(
-        salt=salt,
-        length=80,
-        iterations=int(headers["Argon2-Passes"]),
-        lanes=int(headers["Argon2-Parallelism"]),
-        memory_cost=int(headers["Argon2-Memory"]),
-    ).derive(passphrase)
+    try:
+        salt = bytes.fromhex(headers["Argon2-Salt"])
+        out = Argon2id(
+            salt=salt,
+            length=80,
+            iterations=int(headers["Argon2-Passes"]),
+            lanes=int(headers["Argon2-Parallelism"]),
+            memory_cost=int(headers["Argon2-Memory"]),
+        ).derive(passphrase)
+    except (KeyError, ValueError) as exc:
+        # Missing Argon2-* header (KeyError) or a non-hex salt / non-integer
+        # parameter (ValueError) -- surface as a PuTTY key error, not a raw one.
+        raise PuttyKeyError(f"Malformed Argon2 parameters in PPK file: {exc}") from exc
     return out[:32], out[32:48], out[48:80]
 
 
@@ -149,12 +161,20 @@ def load_ppk(text: str, passphrase: str | None = None) -> object:
     version_key = next((name for name in headers if name.startswith("PuTTY-User-Key-File-")), None)
     if version_key is None:
         raise PuttyKeyError("Not a PuTTY private key file")
-    version = int(version_key.rsplit("-", 1)[1])
+    try:
+        version = int(version_key.rsplit("-", 1)[1])
+    except ValueError as exc:
+        raise PuttyKeyError(f"Unrecognised PPK version header {version_key!r}") from exc
     algorithm = headers[version_key].strip()
     encryption = headers.get("Encryption", "none").strip()
     comment = headers.get("Comment", "")
-    public = base64.b64decode(headers.get("Public-Lines", ""))
-    private_raw = base64.b64decode(headers.get("Private-Lines", ""))
+    try:
+        # base64.b64decode raises binascii.Error (a ValueError subclass) on a
+        # corrupt body -- keep it a PuttyKeyError so callers speak one message.
+        public = base64.b64decode(headers.get("Public-Lines", ""))
+        private_raw = base64.b64decode(headers.get("Private-Lines", ""))
+    except ValueError as exc:
+        raise PuttyKeyError("Malformed base64 in the PPK key body") from exc
     stored_mac = headers.get("Private-MAC", "").strip()
     passphrase_bytes = (passphrase or "").encode()
 
@@ -172,8 +192,12 @@ def load_ppk(text: str, passphrase: str | None = None) -> object:
         else:
             cipher_key, iv = _derive_v2(passphrase_bytes)
             mac_key = hashlib.sha1(_MAC_KEY_MAGIC + passphrase_bytes).digest()
-        decryptor = Cipher(algorithms.AES(cipher_key), modes.CBC(iv)).decryptor()
-        private = decryptor.update(private_raw) + decryptor.finalize()
+        try:
+            decryptor = Cipher(algorithms.AES(cipher_key), modes.CBC(iv)).decryptor()
+            private = decryptor.update(private_raw) + decryptor.finalize()
+        except ValueError as exc:
+            # e.g. ciphertext not a multiple of the AES block size.
+            raise PuttyKeyError("Could not decrypt the PPK key body") from exc
     else:
         raise PuttyKeyError(f"Unsupported PPK encryption {encryption!r}")
 

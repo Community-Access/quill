@@ -16,8 +16,9 @@ import html
 import re
 from pathlib import Path
 
-from quill.core.browser_preview import render_preview_body
+from quill.core.browser_preview import contains_math, render_preview_body
 from quill.core.document import Document
+from quill.core.error_codes import CodedError
 from quill.io.rtf import write_rtf_document
 from quill.io.text import _normalize_line_endings, write_text_document
 
@@ -60,8 +61,10 @@ EXPORT_ONLY_SUFFIXES: frozenset[str] = frozenset({
 })
 
 
-class UnsupportedSaveFormatError(ValueError):
+class UnsupportedSaveFormatError(CodedError):
     """Save targeted an extension QUILL cannot convert the editor text into."""
+
+    code = "QUILL-IO-SAVE-UNSUPPORTED"
 
     def __init__(self, suffix: str) -> None:
         super().__init__(
@@ -216,6 +219,15 @@ def markdown_to_plain_text(markdown: str, link_style: str = "text") -> str:
 def markdown_to_html(markdown: str, title: str) -> str:
     """Render QUILL Markdown-style markup as a standalone HTML document."""
     body = render_preview_body(markdown, "markdown")
+    # Only include the remote MathJax CDN when the document actually contains
+    # math, so exporting a plain document produces HTML with no third-party
+    # script/network dependency (privacy/egress).
+    mathjax = (
+        '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"'
+        " async></script>\n"
+        if contains_math(markdown)
+        else ""
+    )
     return (
         "<!doctype html>\n"
         '<html lang="en">\n'
@@ -223,8 +235,7 @@ def markdown_to_html(markdown: str, title: str) -> str:
         '<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{html.escape(title)}</title>\n"
-        '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"'
-        " async></script>\n"
+        f"{mathjax}"
         "</head>\n"
         f"<body>\n{body}\n</body>\n"
         "</html>\n"
@@ -297,7 +308,9 @@ def write_docx_document(
     if engine == "native":
         raise ValueError("The native Word writer needs python-docx, which is not installed.")
 
+    import os
     import tempfile
+    import uuid
 
     from quill.io.pandoc import convert_file_with_pandoc
 
@@ -308,9 +321,18 @@ def write_docx_document(
         # paragraph, exactly what markdown_to_rich produces on the native path),
         # so a bare "gfm" read — where a single newline is a soft wrap — would
         # join the user's lines into one long Word paragraph.
-        convert_file_with_pandoc(
-            source, target, from_format="gfm+hard_line_breaks", to_format="docx"
-        )
+        #
+        # Convert into a temp file in the TARGET's directory, then os.replace onto
+        # the target: pandoc writing straight to ``target`` would destroy the
+        # previous file if the conversion failed partway (non-atomic save).
+        tmp_out = target.with_name(f".{target.name}.{uuid.uuid4().hex}.tmp")
+        try:
+            convert_file_with_pandoc(
+                source, tmp_out, from_format="gfm+hard_line_breaks", to_format="docx"
+            )
+            os.replace(tmp_out, target)
+        finally:
+            tmp_out.unlink(missing_ok=True)
     document.mark_saved(target)
     return target
 

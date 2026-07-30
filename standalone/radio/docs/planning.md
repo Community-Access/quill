@@ -1,3 +1,5 @@
+# Quill Radio Planning Notes
+
 Yes. I would expand QUILL Radio beyond traditional broadcast directories, but treat these as **different provider classes**, because a station directory, police-scanner network, repeater database, and remotely controlled radio receiver work very differently.
 
 The most important rule is that **directory access and audio playback rights are separate**. A source may permit searching its metadata without permitting QUILL to resolve, embed, cache, or redistribute its streams.

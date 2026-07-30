@@ -36,11 +36,86 @@ _EGRESS_CALLEES = frozenset({
     # marker — it is the single point where QUILL hands off to the SDK's network
     # path — so the gateway still gets a recorded, reviewed entry below.
     "ElevenLabs",
+    # Private/authenticated podcast feeds fetch through this single wrapper
+    # (quill/core/podcasts/feed_auth.py) instead of a bare urlopen, so it builds
+    # its own opener (opener.open) and no plain ``urlopen`` name appears at the
+    # call site. Treat the wrapper as the reviewable egress marker so every
+    # private-feed fetch site is still inventoried below.
+    "urlopen_auth_safe",
 })
+
+# Module-qualified HTTP egress: a call like ``requests.get(...)`` or
+# ``httpx.post(...)``. Matched on the *module + method* pair (never the bare
+# attribute) so an ordinary ``some_dict.get(...)`` is not mistaken for a network
+# call. Covers the high-level HTTP clients that do their own socket work
+# internally, so no ``urlopen`` ever appears at the call site.
+_EGRESS_HTTP_MODULES = frozenset({"requests", "httpx", "urllib3"})
+_EGRESS_HTTP_METHODS = frozenset({
+    "get",
+    "post",
+    "head",
+    "put",
+    "delete",
+    "patch",
+    "request",
+    "Session",
+    "Client",
+})
+# A ``requests``/``httpx`` Session/Client kept on an attribute named ``session``
+# (the QuillSync/Beacon server-client pattern ``self.session.post(...)``). Matched
+# only when the immediate receiver attribute is literally ``session`` so a random
+# ``.get()`` cannot trip the gate.
+_EGRESS_SESSION_METHODS = frozenset({
+    "get",
+    "post",
+    "head",
+    "put",
+    "delete",
+    "patch",
+    "request",
+})
+
+
+def _is_qualified_egress(call: ast.Call) -> bool:
+    """Return True for a module-qualified or session-object HTTP egress call.
+
+    ``requests.get(...)`` / ``httpx.post(...)`` / ``urllib3.request(...)`` match on
+    the module + method pair; ``<obj>.session.post(...)`` matches the Session
+    pattern. Bare ``obj.get(...)`` never matches (no qualifying receiver).
+    """
+
+    func = call.func
+    if not isinstance(func, ast.Attribute):
+        return False
+    receiver = func.value
+    if (
+        isinstance(receiver, ast.Name)
+        and receiver.id in _EGRESS_HTTP_MODULES
+        and func.attr in _EGRESS_HTTP_METHODS
+    ):
+        return True
+    if (
+        isinstance(receiver, ast.Attribute)
+        and receiver.attr == "session"
+        and func.attr in _EGRESS_SESSION_METHODS
+    ):
+        return True
+    return False
+
 
 # Reviewed, allowed egress sites: "<relative path>::<enclosing function>" mapped
 # to the reason the call is not silent. Update this when adding a network call.
 _REVIEWED_EGRESS: dict[str, str] = {
+    "core/library/http.py::fetch_bytes": (
+        "Single egress site for the accessible book libraries (Part 4): keyword "
+        "search of Project Gutenberg via the free, no-key Gutendex API "
+        "(gutendex.com), OPDS catalogue browsing (Standard Ebooks / Feedbooks "
+        "public domain), and downloading a chosen book's plain-text / EPUB file "
+        "so it opens in QUILL's reader. Reached only by an explicit user action "
+        "(searching the Library or downloading a book); no key or credential is "
+        "ever sent. HTTPS-only over a verified TLS context with a bounded timeout "
+        "and a size cap. Disabled in Safe Mode via library.http.refuse_in_safe_mode."
+    ),
     "core/ai/onboarding.py::pull_ollama_model": (
         "Streams Ollama's own /api/pull endpoint to download a model, the same "
         "call the 'ollama pull' CLI command makes. Reached only from the AI "
@@ -110,15 +185,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "size. Disabled in Safe Mode via chapters.refuse_in_safe_mode."
     ),
     "core/adp/client.py::ask": (
-        "Single egress site for the pre-release ADP Assistant (locked_off; "
-        "reachable only via a signed unlock code): POSTs the user's typed or "
+        "Single egress site for the pre-release ADP Assistant (the typed "
+        "assistant is un-gated for testing; only hands-free ADP Voice Mode "
+        "stays locked behind a signed unlock code): POSTs the user's typed or "
         "explicitly routed question to the hosted ADP catalog service and "
         "returns the answer. Reached only when the user presses Ask (or has "
         "explicitly enabled hands-free question routing in ADP Settings). "
         "HTTPS enforced in code over a verified TLS context with a bounded "
-        "timeout; the per-app bearer key lives in the OS credential vault. "
-        "Voice never leaves the device (no /api/speak, no /api/transcribe). "
-        "Raises in Safe Mode."
+        "timeout; the per-app bearer key is either the user's override in the "
+        "OS credential vault or the key baked into the build. Voice never "
+        "leaves the device (no /api/speak, no /api/transcribe). Raises in Safe "
+        "Mode."
     ),
     "core/podcasts/acb_media_podcasts.py::_fetch_opml_bytes": (
         "Single egress site for the ACB Media podcast directory: fetches "
@@ -439,6 +516,58 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "connection; remote endpoints are HTTPS-enforced and HTTPS uses a "
         "verified TLS context."
     ),
+    "apps/beacon/feeds.py::fetch_feed": (
+        "Quill Radio/Beacon podcast subscribe + refresh: fetches one feed's raw "
+        "RSS/Atom bytes (parsed locally afterwards) via requests.get. Reached only "
+        "by an explicit user action -- Add by Feed URL, an iTunes search-result "
+        "subscribe, or a manual/scheduled refresh of a show the user already "
+        "subscribed to. Bounded timeout; no credential is sent."
+    ),
+    "apps/beacon/feeds.py::fetch_chapters": (
+        "Beacon podcast chapter navigation: fetches one episode's Podcasting 2.0 "
+        "JSON chapters document (parsed locally) via requests.get, only when the "
+        "URL is not already inline JSON. Reached only when the user opens the "
+        "Chapters view for an episode that advertises a chapters URL. Bounded "
+        "timeout; no credential is sent."
+    ),
+    "apps/beacon/health.py::default_fetcher": (
+        "Beacon link-health revalidation: an optional HTTP HEAD (requests.head, "
+        "follow-redirects) used to check whether a saved feed/link is still live. "
+        "Returned to callers only when the user has network checks on; the module "
+        "itself never imports requests, and revalidate() runs on an explicit "
+        "'check links' action. Bounded timeout; no body is downloaded."
+    ),
+    "apps/beacon/server_client.py::__init__": (
+        "Constructs the hosted QuillSync server client's requests.Session (the "
+        "reviewable handoff marker for the session-based push/pull/hints calls "
+        "below). No network call happens here; the Session is only exercised by "
+        "the sync actions, each an explicit user-initiated QuillSync operation "
+        "against the user's own account, authenticated with their device token."
+    ),
+    "apps/beacon/server_client.py::push": (
+        "Hosted QuillSync push: POSTs the user's local sync commits/objects to "
+        "their configured QuillSync server (self.session.post). Reached only from "
+        "an explicit Sync action on an account the user signed into; the device "
+        "bearer token travels in the Authorization header. Bounded timeout."
+    ),
+    "apps/beacon/server_client.py::pull": (
+        "Hosted QuillSync pull: POSTs the client's 'have' set and downloads the "
+        "server's newer objects (self.session.post). Reached only from an explicit "
+        "Sync action on the user's own signed-in account; device bearer token in "
+        "the Authorization header. Bounded timeout."
+    ),
+    "apps/beacon/server_client.py::hints": (
+        "Hosted QuillSync hints: GETs lightweight sync hints from the user's "
+        "QuillSync server (self.session.get) as part of an explicit Sync action. "
+        "Device bearer token in the Authorization header; bounded timeout."
+    ),
+    # server_client.py also has request_magic_link/verify_magic_link, whose HTTP
+    # verb is called on a locally-aliased ``s = session or requests`` name
+    # (``s.post`` / ``s.get``); an AST scan cannot resolve that alias, so those two
+    # sites are not discovered by the gate. They are the account sign-in exchange
+    # (magic-link request + verify), reached only when the user explicitly signs
+    # in to a QuillSync account, over the user-supplied server base URL, bounded
+    # timeout. Documented here for auditability alongside the discovered sites.
     "ui/main_frame_quillins_host.py::fetch": (
         "Quillin host 'net' capability bridge. A Quillin can only reach this "
         "method when its manifest declares the default-deny 'net' capability AND "
@@ -595,6 +724,30 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "trusting an auto-redirect-following opener or PyGithub's private Requester "
         "internals. HTTPS-enforced on both the initial URL and the redirect target."
     ),
+    "core/spotify/auth.py::_token_request": (
+        "Single egress site for Spotify's OAuth 2.0 Authorization-Code-with-PKCE "
+        "sign-in: POSTs a urlencoded form to accounts.spotify.com/api/token to "
+        "redeem the authorization code and to refresh the access token. Reached "
+        "only from an explicit user sign-in (Connect Spotify) and the lazy token "
+        "refresh that a subsequent explicit browse/play action triggers -- never "
+        "a silent background poll. Gated behind the future.spotify feature flag "
+        "(locked off), a one-time network-access consent, and Safe-Mode refusal "
+        "(auth.refuse_in_safe_mode). No client secret exists (PKCE); the injected "
+        "opener stays test-only and the default performs the real request over a "
+        "verified TLS context (HTTPS enforced in code) with a bounded timeout. "
+        "The code_verifier travels in the POST body, never a URL."
+    ),
+    "core/spotify/client.py::_request": (
+        "Single egress site for the Spotify Web API (search, the signed-in "
+        "profile, saved shows/episodes/tracks, and playlists -- the Radio/Cast "
+        "browse surfaces). Reached only from explicit user browse actions after "
+        "sign-in; same future.spotify flag + one-time consent + Safe-Mode gating "
+        "as the token exchange above. HTTPS-only (api.spotify.com) over a verified "
+        "TLS context with a bounded timeout; the access token travels in the "
+        "Authorization: Bearer header, never in the URL. The injected opener is "
+        "test-only; the lazy, lock-guarded token refresh goes through the already "
+        "reviewed core/spotify/auth.py::_token_request site."
+    ),
 }
 
 # ---------------------------------------------------------------------------
@@ -654,6 +807,33 @@ _REVIEWED_EGRESS: dict[str, str] = {
 # credential store only (Windows Credential Manager / macOS Keychain), never
 # logged. All PyGithub calls are HTTPS.
 
+# ---------------------------------------------------------------------------
+# Spotify Web Playback SDK egress (inside the WebView) — manually documented
+# ---------------------------------------------------------------------------
+# Playing Spotify Premium audio is only possible through Spotify's own Web
+# Playback SDK, which QUILL hosts in a hidden wx.html2.WebView (Edge/WebView2
+# on Windows -- quill/ui/spotify/web_player.py). Two network activities happen
+# INSIDE that WebView2 browser process, performed by the SDK / page JavaScript,
+# not by any urllib/requests call in quill/ source -- so the AST scanner above
+# cannot see them. They are documented here for auditability:
+#
+#   1. The page loads the SDK script from https://sdk.scdn.co/spotify-player.js
+#      and the SDK opens its own connections to open.spotify.com / *.scdn.co to
+#      stream the DRM-protected audio (Encrypted Media Extensions inside the
+#      browser engine). QUILL never sees, decodes, or stores that audio.
+#   2. window.quillSpotifyPlay(uri) issues one fetch() to
+#      https://api.spotify.com/v1/me/player/play?device_id=... (PUT, the user's
+#      Bearer token in the Authorization header, the chosen spotify: URI in the
+#      body) to point the SDK device at what to play.
+#
+# Gating: the whole feature is behind the future.spotify feature flag (locked
+# off), a one-time network-access consent (spotify_consent.json), Safe-Mode
+# refusal, and -- because the Web Playback SDK is Premium-only -- a Spotify
+# Premium account. The hidden WebView is created only after the user explicitly
+# connects Spotify and starts playback; nothing here runs in a default build.
+# The access token the page uses is fetched through the reviewed
+# core/spotify/auth.py::_token_request / client.py::_request sites above.
+#
 # ---------------------------------------------------------------------------
 # pip subprocess egress (on-demand engine installs) — manually documented
 # ---------------------------------------------------------------------------
@@ -836,7 +1016,9 @@ def _scan_egress() -> dict[str, EgressSite]:
         tree = ast.parse(source, filename=str(path))
         parents = build_parent_map(tree)
         for node in ast.walk(tree):
-            if isinstance(node, ast.Call) and _callee_name(node) in _EGRESS_CALLEES:
+            if isinstance(node, ast.Call) and (
+                _callee_name(node) in _EGRESS_CALLEES or _is_qualified_egress(node)
+            ):
                 rel = path.relative_to(_PACKAGE_ROOT).as_posix()
                 func_name = _enclosing_function_name(tree, node)
                 site = f"{rel}::{func_name}"

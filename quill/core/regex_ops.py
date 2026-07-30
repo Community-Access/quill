@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import re
 
+from quill.core.error_codes import CodedError
+
 __all__ = ["RegexError", "count_matches", "extract_matches"]
 
 
-class RegexError(ValueError):
+class RegexError(CodedError):
     """Raised when a regular expression cannot be compiled."""
+
+    code = "QUILL-REGEX-INVALID"
 
 
 def _compile(pattern: str, flags: int) -> re.Pattern[str]:

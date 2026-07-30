@@ -147,7 +147,10 @@ def _clamp_int(raw: object, fallback: int, minimum: int, maximum: int) -> int:
     if isinstance(raw, (int, float, str)):
         try:
             value = int(raw)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
+            # OverflowError: JSON ``1e999`` parses to ``float('inf')`` and
+            # ``int(inf)`` raises it -- a bad settings value must fall back, not
+            # crash startup.
             value = fallback
     else:
         value = fallback

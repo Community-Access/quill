@@ -65,6 +65,7 @@ from quill.ui.audio_studio.library_tree import (
     selected_key,
 )
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
 
 try:  # winsound is Windows-only; previews fall back to MCI/startfile elsewhere
@@ -215,7 +216,7 @@ def _await_playback(
     return False
 
 
-class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
+class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
     """The standalone QUILL Audio Studio window."""
 
     #: Voices > Download Optional Components shows only what the audio workflow
@@ -283,6 +284,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._sleep_eoc_timer: wx.Timer | None = None
         self._sleep_eoc_from_chapter = -1
         self._build_menu_bar()
+        self._register_adp_commands()  # palette/keybinding parity for Ask ADP
         self._build_main_panel()
         self._register_commands()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
@@ -987,6 +989,14 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             "Connect an AI provider for cloud voices, chapter titles, and translation",
         )
         menu_bar.Append(ai, "&AI")
+
+        # Pre-release top-level Audio Description Project menu, shared with QUILL,
+        # Radio, and Cast. Present by default (future.adp_assistant is on); the
+        # hands-free conversational mode (future.adp_voice_mode) stays locked
+        # until a signed unlock code is redeemed. Undocumented until launch.
+        adp_menu = self._build_adp_menu()
+        if adp_menu is not None:
+            menu_bar.Append(adp_menu, "A&udio Description Project")
 
         view_menu = wx.Menu()
         self._status_bar_item_id = wx.NewIdRef()
@@ -2674,7 +2684,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
 
 def main() -> int:
-    safe_mode = bool(os.environ.get("QUILL_SAFE_MODE")) or "--safe-mode" in sys.argv[1:]
+    from quill.stability.safe_mode import should_enable_safe_mode
+
+    safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
     from quill.core.i18n import init_locale
 
     init_locale()

@@ -12,17 +12,40 @@ Three journeys cover the whole workshop:
 
 ## Installing and running
 
+### The QuillVille Runtime: install Python once, use it everywhere
+
+Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio - now shares one Python runtime, called the **QuillVille Runtime**. It is installed once per user and reused by all of them. Install it a single time (with any Quill app), and every app you add afterward launches instantly, because the shared runtime is already there.
+
+The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled, so removing one app never leaves the others unable to start.
+
+You choose how much of that runtime to download when you get the Studio. Four editions are offered:
+
+- **Full portable** (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, about 675 MB) - fully self-contained. It runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus the bundled offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Best when you want everything in one folder with nothing to install.
+- **Companion edition** (`QUILL-Audio-Studio-Companion-<version>.zip`, about 2 to 3 MB) - feather-light. It contains only the app and its docs, and runs on the shared QuillVille Runtime. The first time you launch it, if the runtime is not already installed, it offers to download and install it (about 230 MB, once) with a fully accessible progress bar. After that, this app and every other QuillVille app start instantly. Best once you already run, or plan to run, more than one Quill app.
+- **Full installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) - installs the shared runtime, if it is not already present, plus the app. See "The installer" below.
+- **Thin installer** (the `-Lite` setup) - a tiny installer that downloads the shared runtime only if it is not already present, then installs the app.
+
+Whenever the runtime is downloaded - by an installer or by an app's own first launch - it shows a fully accessible progress bar that works with NVDA, JAWS, and Narrator, announcing progress as a percentage. See "Downloading the QuillVille Runtime" below.
+
 ### The installer
 
-Run `QUILL-Audio-Studio-Setup-1.0.0.exe`. It installs to its own folder with a Start Menu group (including a User Guide shortcut) and an uninstaller. Your data lives in the shared Quill store in your Windows profile (`%APPDATA%\Quill`), the same store QUILL, Quill Radio, and QUILL Cast use. Uninstalling never deletes that shared data.
+Run the full installer (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) or the thin `-Lite` installer. Either one makes sure the shared QuillVille Runtime is present (installing or downloading it only if it is not) and then installs the Studio to its own folder with a Start Menu group (including a User Guide shortcut) and an uninstaller. Your data lives in the shared Quill store in your Windows profile (`%APPDATA%\Quill`), the same store QUILL, Quill Radio, and QUILL Cast use. Uninstalling never deletes that shared data, and never removes the shared runtime while another Quill app still needs it.
 
 Windows SmartScreen may warn on first run because this release is not code-signed; choose "More info" then "Run anyway".
 
 ### The portable zip
 
-Extract the portable zip anywhere - even a USB stick - and run `QuillAudioStudio\QuillAudioStudio.exe`. The portable switch is a `data` folder next to the exe that contains a `storage-mode.json` marker file holding `{"mode": "portable"}`. When that folder and marker are present, all settings, voices, downloaded engines, and your book list live inside the app folder, so the whole studio travels with you. The portable zip ships this marker already in place; the installed copy ships no `data` folder and uses the shared `%APPDATA%\Quill` store instead.
+Extract the full portable zip (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`) anywhere - even a USB stick - and run `QuillAudioStudio\QuillAudioStudio.exe`. This edition needs no runtime download: it bundles its own genuine, unmodified copy of Python and the offline speech engines, so it runs with no installation and no internet. The portable switch is a `data` folder next to the exe that contains a `storage-mode.json` marker file holding `{"mode": "portable"}`. When that folder and marker are present, all settings, voices, downloaded engines, and your book list live inside the app folder, so the whole studio travels with you. The portable zip ships this marker already in place; the installed copy ships no `data` folder and uses the shared `%APPDATA%\Quill` store instead.
 
-Both flavors bundle ffmpeg and the mpv player engine in a `tools` folder next to the exe, so audiobook building and high-fidelity playback work out of the box.
+Both packaged flavors bundle ffmpeg and the mpv player engine in a `tools` folder next to the exe, so audiobook building and high-fidelity playback work out of the box.
+
+### Downloading the QuillVille Runtime
+
+When you run the Companion edition or the thin installer and the shared runtime is not yet on your machine, the Studio offers to download it - about 230 MB, one time. This download always shows a **fully accessible progress bar** that works with NVDA, JAWS, and Narrator, whether the download was triggered by the installer or by the app's own first launch. Progress is announced as a percentage, so you always know how far along it is and never face a silent wait. Once the runtime is installed, this app and every other QuillVille app start instantly, and you are never asked to download it again unless every Quill app has been removed.
+
+### A note on antivirus
+
+The Studio's launcher is now a genuine, tiny native program, and the bundled Python is the official unmodified build. Earlier versions used a renamed and modified copy of Python's `pythonw.exe` as the launcher, which some antivirus tools flagged as a false positive. That pattern is completely gone, so the Quill apps are far less likely to be flagged. If an antivirus tool ever does flag a Quill app, it is a false positive; the downloads come from the project's official releases.
 
 ### Running from source
 
@@ -322,6 +345,10 @@ Double-click the tray icon to bring the window back.
 ## The Command Palette
 
 **Help > Command Palette...** (Ctrl+Shift+P) lists every Studio command in one searchable list: the three journeys, Open Job File, Publish, the podcast feed, the ACX check, Sleep Timer, Mute Playback, Play Queue, the Speech Hub, Pronunciation Dictionaries, model and component downloads, AI setup, Preferences, and Check for Updates. Type a few letters, arrow to the command, press Enter.
+
+## Quillins
+
+Audio Studio can run **Quillins** -- QUILL's small, sandboxed, permission-gated add-ons -- from its own **Quillins** menu. A Quillin declares which apps it targets, so only add-ons written for Audio Studio appear here. The bundled `studio-normalizer` sample shows the idea: it contributes an extra step to the audio export pipeline (a loudness-normalization pass at the mastering stage). Quillins are off in Safe Mode, and third-party Quillins are disabled in this release -- the bundled ones are the foundation.
 
 ## Keyboard reference
 

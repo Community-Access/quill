@@ -15,13 +15,14 @@
 # with a silently broken bug reporter.
 
 param(
-    [string]$Python = "S:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "D:\QUILL\.venv\Scripts\python.exe",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "S:\token.txt",
+    [string]$TokenFile = "D:\token.txt",
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "S:\QUILL",
-    [switch]$SkipToken
+    [string]$QuillRepo = "D:\QUILL",
+    [switch]$SkipToken,
+    [switch]$SkipSharedRuntime
 )
 
 $ErrorActionPreference = "Stop"
@@ -45,12 +46,15 @@ if (-not $SkipToken) {
 }
 
 # -- ffmpeg to bundle ---------------------------------------------------------
+# SECURITY: ffmpeg is copied verbatim into the shipped runtime, so require an
+# explicit, vetted staging directory. We do NOT fall back to Get-Command (the
+# builder's PATH), which a stale or malicious local install could poison into a
+# planted, unverified binary inside the release.
 if (-not $FfmpegDir) {
-    $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
-    if ($ffmpeg) { $FfmpegDir = Split-Path -Parent $ffmpeg.Source }
+    throw "ffmpeg not staged: pass -FfmpegDir pointing at a vetted directory containing ffmpeg.exe; recording must ship bundled (PATH auto-discovery is refused for release builds)."
 }
-if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
-    throw "ffmpeg.exe not found. Pass -FfmpegDir; recording must ship bundled."
+if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
+    throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'."
 }
 
 # -- libmpv to bundle ----------------------------------------------------------
@@ -59,81 +63,68 @@ if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
 # Bundled under tools\mpv exactly like ffmpeg under tools\ffmpeg (found via
 # QUILL_APP_ROOT, the same pattern QUILL's Offline Edition uses); a release
 # without it silently guts the 1.1.0 headline features, so it is required.
+# SECURITY: libmpv is bundled verbatim, so require an explicit, vetted
+# -LibmpvDir. We do NOT fall back to the user-writable
+# %APPDATA%\Quill\engine-packs\mpv, which any process running as the user (or a
+# malicious download) could overwrite -- that DLL would then be planted,
+# unverified, into every shipped copy.
 if (-not $LibmpvDir) {
-    $packDir = Join-Path $env:APPDATA "Quill\engine-packs\mpv"
-    if (Test-Path (Join-Path $packDir "libmpv-2.dll")) { $LibmpvDir = $packDir }
+    throw "libmpv not staged: pass -LibmpvDir pointing at a vetted directory containing libmpv-2.dll; the mpv engine must ship bundled (%APPDATA% auto-discovery is refused for release builds)."
 }
-if (-not $LibmpvDir -or -not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
-    throw "libmpv-2.dll not found. Pass -LibmpvDir; the mpv engine must ship bundled."
+if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
+    throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
 }
 if (-not (Test-Path $Iscc)) {
     $fallback = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
     if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
 }
 
-# -- onedir build -------------------------------------------------------------
-Push-Location $repoRoot
-try {
-    & $Python -m PyInstaller quill-radio.spec --noconfirm --distpath dist --workpath build
-    if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed" }
-} finally {
-    Pop-Location
+# -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
+# The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
+# per-app installer (quill-radio.iss) installs into
+# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. ffmpeg/mpv go
+# here, not into the per-app $appDir\tools\, so the per-app install
+# stays tiny -- the C launcher + docs only. The portable zip below
+# still gets its own ffmpeg/mpv copy at $appDir\tools\ so the stick
+# is self-contained.
+$sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
+if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
+    Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
+} else {
+    Push-Location (Join-Path $repoRoot "..\runtime")
+    try {
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+        if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
+    } finally {
+        Pop-Location
+    }
 }
+
+# -- portable bundle (self-contained, genuine embeddable runtime) -------------
+# NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
+# and docs/design/native-launcher-2026-07-24.md: genuine unmodified
+# python.exe/pythonw.exe + the native C launcher (QuillRadio.exe) spawning
+# `pythonw.exe -m quill.apps.radio`, with ffmpeg/mpv staged into tools\.
 $appDir = Join-Path $repoRoot "dist\QuillRadio"
+& $Python (Join-Path $QuillRepo "standalone\studio\scripts\build_portable.py") `
+    --product radio `
+    --out $appDir `
+    --source-root $QuillRepo `
+    --ffmpeg-dir $FfmpegDir `
+    --mpv-dir $LibmpvDir `
+    --version $version
+if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 if (-not (Test-Path (Join-Path $appDir "QuillRadio.exe"))) {
-    throw "Onedir build did not produce QuillRadio.exe"
+    throw "Portable build did not produce the native QuillRadio.exe launcher."
+}
+if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
+    throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
 
-# -- stage the shared payload (both artifacts ship this) ----------------------
-$toolsDir = Join-Path $appDir "tools\ffmpeg"
-New-Item -ItemType Directory -Force $toolsDir | Out-Null
-Copy-Item (Join-Path $FfmpegDir "ffmpeg.exe") $toolsDir -Force
-if (Test-Path (Join-Path $FfmpegDir "ffprobe.exe")) {
-    Copy-Item (Join-Path $FfmpegDir "ffprobe.exe") $toolsDir -Force
-}
-$ffLicense = Join-Path (Split-Path -Parent $FfmpegDir) "LICENSE"
-if (Test-Path $ffLicense) { Copy-Item $ffLicense (Join-Path $toolsDir "FFMPEG-LICENSE.txt") -Force }
-$mpvDir = Join-Path $appDir "tools\mpv"
-New-Item -ItemType Directory -Force $mpvDir | Out-Null
-Copy-Item (Join-Path $LibmpvDir "libmpv-2.dll") $mpvDir -Force
-# GPL compliance: ship mpv's license texts and the source-offer note next
-# to the DLL (the engine pack carries them; QUILL's Offline Edition ships
-# the same set).
-Get-ChildItem $LibmpvDir -File | Where-Object { $_.Extension -eq ".txt" } | ForEach-Object {
-    Copy-Item $_.FullName $mpvDir -Force
-}
-$docsDir = Join-Path $appDir "docs"
-New-Item -ItemType Directory -Force $docsDir | Out-Null
-# .md + .html for every doc (Help > User Guide / Release Notes / Product
-# Requirements... prefers the pre-rendered .html; .md is the fallback source
-# if a build ever ships without render_docs.ps1 having run).
-Copy-Item (Join-Path $repoRoot "docs\userguide.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\userguide.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-2.0.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\prd.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\prd.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "README.md") (Join-Path $appDir "README-Quill-Radio.md") -Force
-
-# -- portable zip (adds the data\ folder = portable-mode evidence) ------------
-$dataDir = Join-Path $appDir "data"
-New-Item -ItemType Directory -Force $dataDir | Out-Null
-Set-Content (Join-Path $dataDir "README.txt") @"
-This folder makes Quill Radio portable: your favorites, history, and
-settings live here, right next to the app, so the whole thing travels
-on a stick. Delete this folder and the app uses the shared Quill data
-in your Windows profile instead.
-"@
-# The storage-mode marker is what actually routes data here (the folder
-# alone is only the portable-bundle evidence); QUILL portable ships the
-# same marker.
-Set-Content (Join-Path $dataDir "storage-mode.json") '{"mode": "portable"}'
 $zipPath = Join-Path $repoRoot "dist\Quill-Radio-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
+Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
-# The installed flavor must NOT carry the data folder (it would flip the
-# installed copy into portable mode), so remove it before the installer runs.
-Remove-Item $dataDir -Recurse -Force
 
 # -- installer ----------------------------------------------------------------
 & $Iscc "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"

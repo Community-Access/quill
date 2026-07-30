@@ -166,9 +166,94 @@ class GitHubTag:
     url: str = ""
 
 
+def _size_display(size_bytes: int) -> str:
+    """A compact human-readable byte size, e.g. ``"32 B"`` / ``"1.4 MB"``.
+
+    Shared by :class:`GitHubArtifact` and :class:`GitHubReleaseAsset` so the two
+    size columns read identically and the formatting lives in one place (kept
+    here in wx-free core rather than reaching into ``quill.ui`` for a helper).
+    """
+    size = float(max(0, size_bytes))
+    for unit in ("B", "KB", "MB", "GB"):
+        if size < 1024 or unit == "GB":
+            return f"{size:.0f} {unit}" if unit == "B" else f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} GB"
+
+
+@dataclass(frozen=True, slots=True)
+class GitHubReleaseAsset:
+    """One file attached to a release, carrying its lifetime download count.
+
+    ``download_count`` is a running total GitHub keeps for the asset -- an HTTP
+    request, not a unique person (there is no de-duplication), and with no date
+    breakdown (no GitHub API offers one). The auto-generated "Source code
+    (zip)" / "(tar.gz)" archives are **not** release assets -- GitHub serves
+    them from ``zipball_url`` / ``tarball_url``, they carry no download count,
+    and they never appear in a release's ``assets`` array -- so they are absent
+    here by construction.
+    """
+
+    name: str
+    download_count: int
+    size_bytes: int
+    browser_download_url: str = ""
+    updated_at: str = ""
+    content_type: str = ""
+
+    @property
+    def size_display(self) -> str:
+        return _size_display(self.size_bytes)
+
+
+def _map_release_asset(row: Any) -> GitHubReleaseAsset:
+    """Map one asset row to :class:`GitHubReleaseAsset`.
+
+    Accepts both a plain ``dict`` (the REST JSON shape, used by fixture tests)
+    and a PyGithub ``GitReleaseAsset`` object (attribute access), so the parse
+    logic is exercisable without PyGithub installed.
+    """
+
+    def field(key: str) -> Any:
+        if isinstance(row, dict):
+            return row.get(key)
+        return getattr(row, key, None)
+
+    updated = field("updated_at")
+    return GitHubReleaseAsset(
+        name=_safe_str(field("name")),
+        download_count=int(field("download_count") or 0),
+        size_bytes=int(field("size") or 0),
+        browser_download_url=_safe_str(field("browser_download_url")),
+        updated_at=updated if isinstance(updated, str) else _iso(updated),
+        content_type=_safe_str(field("content_type")),
+    )
+
+
+def parse_release_assets(raw_assets: Any) -> tuple[GitHubReleaseAsset, ...]:
+    """Build the asset tuple for a release, **most-downloaded first**.
+
+    The download count is the reason a caller drills into a release, so the row
+    they land on should already be the answer rather than something to hunt
+    for. Source archives are never in *raw_assets* (see
+    :class:`GitHubReleaseAsset`), so no exclusion step is needed here.
+    """
+    assets = [_map_release_asset(row) for row in (raw_assets or ())]
+    return tuple(sorted(assets, key=lambda a: a.download_count, reverse=True))
+
+
+def total_release_downloads(releases: list[GitHubRelease]) -> int:
+    """Total downloads across every asset of every release given.
+
+    The summary figure for the releases list's status line -- it grows as more
+    releases are pulled in with "View more".
+    """
+    return sum(r.total_downloads for r in releases)
+
+
 @dataclass(frozen=True, slots=True)
 class GitHubRelease:
-    """A published (or draft/prerelease) release."""
+    """A published (or draft/prerelease) release, with its downloadable assets."""
 
     tag: str
     name: str
@@ -177,6 +262,17 @@ class GitHubRelease:
     created_at: str = ""
     url: str = ""
     body: str = ""
+    assets: tuple[GitHubReleaseAsset, ...] = ()
+
+    @property
+    def total_downloads(self) -> int:
+        """Total downloads across every asset attached to this release."""
+        return sum(a.download_count for a in self.assets)
+
+    @property
+    def asset_count(self) -> int:
+        """How many downloadable files this release has (source archives excluded)."""
+        return len(self.assets)
 
 
 @dataclass(frozen=True, slots=True)
@@ -257,12 +353,7 @@ class GitHubArtifact:
 
     @property
     def size_display(self) -> str:
-        size = float(self.size_bytes)
-        for unit in ("B", "KB", "MB", "GB"):
-            if size < 1024 or unit == "GB":
-                return f"{size:.0f} {unit}" if unit == "B" else f"{size:.1f} {unit}"
-            size /= 1024
-        return f"{size:.1f} GB"
+        return _size_display(self.size_bytes)
 
 
 # ---------------------------------------------------------------------------
@@ -648,9 +739,31 @@ class GitHubItemsProvider:
                     created_at=_iso(getattr(row, "created_at", None)),
                     url=_safe_str(getattr(row, "html_url", "")),
                     body=_safe_str(getattr(row, "body", "")),
+                    assets=parse_release_assets(self._release_asset_rows(row)),
                 )
             )
         return out
+
+    @staticmethod
+    def _release_asset_rows(row: Any) -> list[Any]:
+        """Return a release's raw asset rows, preferring the inline ``assets``
+        the list endpoint already carries (no extra API call) and falling back
+        to ``get_assets()`` only when a PyGithub build exposes assets solely as
+        a lazy paginated list. Never raises -- a release whose assets can't be
+        read lists as having none rather than failing the whole releases load."""
+        inline = getattr(row, "assets", None)
+        if inline:
+            try:
+                return list(inline)
+            except TypeError:
+                pass
+        getter = getattr(row, "get_assets", None)
+        if callable(getter):
+            try:
+                return _take(getter(), 100)
+            except Exception:  # noqa: BLE001 - assets are a nicety, never fatal
+                return []
+        return []
 
     def fetch_workflow_runs(
         self,
@@ -1173,11 +1286,14 @@ __all__ = [
     "GitHubItemsProvider",
     "GitHubNotification",
     "GitHubRelease",
+    "GitHubReleaseAsset",
     "GitHubSecurityAlert",
     "GitHubTag",
     "GitHubWorkflow",
     "GitHubWorkflowJob",
     "GitHubWorkflowRun",
+    "parse_release_assets",
     "refuse_in_safe_mode",
     "require_pygithub",
+    "total_release_downloads",
 ]

@@ -12,14 +12,26 @@ from quill_social.model import (
 
 
 def _item(remote_id="rem1", account_id="a1", text="hello orbital math", **kw):
-    return SocialItem(network="mock", account_id=account_id, remote_id=remote_id,
-                      author_display="Ada", author_handle="@ada", text=text, **kw)
+    return SocialItem(
+        network="mock",
+        account_id=account_id,
+        remote_id=remote_id,
+        author_display="Ada",
+        author_handle="@ada",
+        text=text,
+        **kw,
+    )
 
 
 def test_account_roundtrip(store):
     ws = store.put_workspace(Workspace(name="Personal"))
-    a = Account(network="mastodon", handle="jeff", instance="mastodon.example",
-                workspace_id=ws.workspace_id, is_default=True)
+    a = Account(
+        network="mastodon",
+        handle="jeff",
+        instance="mastodon.example",
+        workspace_id=ws.workspace_id,
+        is_default=True,
+    )
     store.put_account(a)
     got = store.get_account(a.account_id)
     assert got.handle == "jeff"
@@ -94,8 +106,7 @@ def test_draft_roundtrip(store):
 
 
 def test_notes_confidential_flag_roundtrip(store):
-    n = Note(target_type="profile", target_id="@ada", text="met at conference",
-             confidential=True)
+    n = Note(target_type="profile", target_id="@ada", text="met at conference", confidential=True)
     store.put_note(n)
     got = store.notes_for("profile", "@ada")
     assert len(got) == 1
@@ -105,8 +116,7 @@ def test_notes_confidential_flag_roundtrip(store):
 def test_plans_due_and_state(store):
     d = Draft(text="x", targets=["a1"])
     store.put_draft(d)
-    p = PublicationPlan(draft_id=d.draft_id, account_id="a1", state="queued",
-                        scheduled_for=500)
+    p = PublicationPlan(draft_id=d.draft_id, account_id="a1", state="queued", scheduled_for=500)
     store.put_plan(p)
     assert len(store.due_plans(now=1000)) == 1
     assert store.due_plans(now=100) == []
@@ -130,8 +140,24 @@ def test_prune_keeps_bookmarked_and_drafts(store):
     assert store.get_draft(d.draft_id) is not None  # drafts never pruned
 
 
+def test_prune_scoped_to_account(store):
+    # Two feeds; only the targeted account's stale rows are pruned.
+    store.upsert_item(_item(remote_id="a-old", account_id="feedA"))
+    store.upsert_item(_item(remote_id="b-old", account_id="feedB"))
+    star = _item(remote_id="a-star", account_id="feedA")
+    star.flagged = True  # starred/kept: always protected
+    store.upsert_item(star)
+    store.conn.execute("UPDATE items SET fetched_at=0")
+    store.conn.commit()
+    removed = store.prune_items(keep_days=1, account_id="feedA")
+    assert removed == 1  # only a-old
+    remaining = {i.remote_id for i in store.list_items()}
+    assert remaining == {"b-old", "a-star"}  # other feed + starred survive
+
+
 def test_reading_position_roundtrip(store):
     from quill_social.model import ReadingPosition
+
     store.set_position(ReadingPosition(account_id="a1", feed="home", item_id="i5"))
     pos = store.get_position("a1", "home")
     assert pos.item_id == "i5"

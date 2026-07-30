@@ -18,7 +18,6 @@ import sys
 import time
 import zipfile
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -28,6 +27,7 @@ from quill.core.paths import app_data_dir, ensure_app_directories
 from quill.stability.redaction import (
     BundleRedactionStats,
     filter_recent_commands,
+    redact_text_for_bundle,
     redact_text_for_bundle_with_stats,
 )
 
@@ -174,7 +174,12 @@ def build_diagnostic_bundle(
             payload["redaction"] = {
                 label: stats.as_dict() for label, stats in redaction_stats.items()
             }
-        archive.writestr("metadata.json", json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+        # H-2: metadata.json also carries user-derived strings -- task names
+        # embed document paths/titles, and plugin/feature identifiers can leak
+        # local paths -- so the serialized payload is redacted with the same
+        # helper as every other text file before it enters the archive.
+        metadata_json = json.dumps(payload, indent=2, ensure_ascii=False)
+        archive.writestr("metadata.json", redact_text_for_bundle(metadata_json) + "\n")
         for label, body in redacted_texts.items():
             archive.writestr(label, body)
     if redaction_stats:
@@ -227,16 +232,31 @@ def _maybe_write_file(archive: zipfile.ZipFile, name: str, path: Path | None) ->
     archive.write(path, arcname=name)
 
 
+_SNAPSHOT_TASK_FIELDS = (
+    "operation_id",
+    "name",
+    "started_at",
+    "timeout_seconds",
+    "safe_to_cancel",
+    "safe_to_kill",
+    "submitted_at",
+    "result_summary",
+)
+
+
 def _snapshot_task(task: object) -> dict[str, Any]:
-    # ``is_dataclass`` returns True for both dataclass *classes* and
-    # dataclass *instances*; ``asdict`` rejects the class form. Filter
-    # to instances only so the type checker is happy and the runtime
-    # never tries to ``asdict()`` a class.
-    if is_dataclass(task) and not isinstance(task, type):
-        data = asdict(task)  # type: ignore[arg-type]
-    elif hasattr(task, "__dict__"):
+    # A ``QuillTask`` carries a live ``future`` (whose internal ``RLock`` cannot
+    # be pickled) and a ``cancellation_token`` wrapping a ``threading.Event``.
+    # ``asdict`` deep-copies *every* field before we could drop them, which
+    # raised ``TypeError: cannot pickle '_thread.RLock'`` whenever a task was in
+    # flight -- breaking Save Diagnostics deterministically. Build the snapshot
+    # field-by-field from the plain serialisable fields only, never touching the
+    # future or the token.
+    if any(hasattr(task, name) for name in _SNAPSHOT_TASK_FIELDS):
+        return {name: getattr(task, name, None) for name in _SNAPSHOT_TASK_FIELDS}
+    if hasattr(task, "__dict__"):
         data = dict(task.__dict__)
-    else:
-        data = {"repr": repr(task)}
-    data.pop("future", None)
-    return data
+        data.pop("future", None)
+        data.pop("cancellation_token", None)
+        return data
+    return {"repr": repr(task)}

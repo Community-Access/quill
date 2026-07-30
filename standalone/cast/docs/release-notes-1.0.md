@@ -2,6 +2,14 @@
 
 Your shows, on their own. QUILL Cast takes the podcast environment QUILL users already know and gives it a window, a menu bar, and a tray icon of its own -- for the days you want your queue without the manuscript.
 
+## Coming: Spotify podcasts (experimental)
+
+Groundwork has landed for playing podcasts hosted on Spotify inside QUILL Cast. It is **experimental and off by default** -- it ships hidden behind a feature flag, so you will not see it on a normal install, and turning it on takes a signed unlock code, a Spotify **Premium** account, and your own Spotify Client ID. Spotify audio is copy-protected, so a Spotify episode plays but cannot be downloaded, and many Spotify shows are exclusive with no public feed. The full story -- what you need, how to connect, and how to browse and play -- is in the new **"Spotify podcasts (experimental)"** section of the QUILL Cast User Guide.
+
+## What's new in 1.0.7
+
+- **Update in one click -- QUILL Cast installs it and restarts itself.** When an update is available, choose Download, then **Install and restart now**: QUILL Cast applies the update -- extracting the new portable files over your folder, or running the installer silently -- and relaunches on its own, keeping all your shows, downloads, and settings. No more closing the app, unzipping, and swapping folders by hand. This is the same one-click self-update shared across every Quill app.
+
 ## What's new in 1.0.6
 
 - **Private feeds -- your supporter subscriptions, finally first-class.** Patreon feeds, premium shows, members-only company feeds: any podcast protected by a username and password (HTTP Basic authentication) now subscribes like any other. Paste the feed address into Add by Feed URL as usual; if the feed asks for a sign-in, a small **Feed Credentials** dialog opens -- enter what your provider gave you and QUILL Cast retries and subscribes. Change or clear credentials any time from the show's context menu (**Feed Credentials...**), in the main library tree or the Podcast Manager alike.

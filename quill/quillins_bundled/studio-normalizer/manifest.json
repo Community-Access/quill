@@ -1,0 +1,24 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.studionormalizer",
+  "name": "Studio Normalizer",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Contributes a loudness-normalization step to the Audio Studio export pipeline, returning an ffmpeg filter fragment for the master stage. Sample of the studio.pipeline capability.",
+  "license": "MIT",
+  "categories": ["integration"],
+  "targets": ["studio"],
+  "capabilities": ["studio.pipeline", "storage"],
+  "main": "extension.py",
+  "contributes": {
+    "pipeline_steps": [
+      {
+        "id": "ext.studionormalizer.loudnorm",
+        "stage": "master",
+        "display_name": "Loudness Normalizer",
+        "handler": "loudnorm_filter",
+        "description": "Returns an ffmpeg loudnorm fragment for the master stage, so exported narration lands at a consistent loudness."
+      }
+    ]
+  }
+}

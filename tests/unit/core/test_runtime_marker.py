@@ -32,3 +32,46 @@ def test_needs_install_matches_exact_version(tmp_path: Path) -> None:
     assert m.needs_install(tmp_path, "3.13.1") is False
     # A different version keyed to the same folder -> needs install (upgrade).
     assert m.needs_install(tmp_path, "3.14.0") is True
+
+
+def test_installed_build_reads_the_build_field(tmp_path: Path) -> None:
+    assert m.installed_build(tmp_path) is None  # no marker
+    m.write_marker(tmp_path, python_version="3.13.1", build_id="2026-07-24")
+    assert m.installed_build(tmp_path) == "2026-07-24"
+
+
+def test_installed_build_none_when_build_predates_tracking(tmp_path: Path) -> None:
+    # A marker written before build tracking has an empty build field.
+    m.write_marker(tmp_path, python_version="3.13.1", build_id="")
+    assert m.installed_version(tmp_path) == "3.13.1"
+    assert m.installed_build(tmp_path) is None
+
+
+def test_needs_install_refreshes_a_stale_same_python_build(tmp_path: Path) -> None:
+    # #1217: same CPython, but the bundled app code/data is older than the
+    # payload -> must refresh (the version-only gate wrongly skipped this).
+    m.write_marker(tmp_path, python_version="3.13.1", build_id="2026-07-01")
+    assert m.needs_install(tmp_path, "3.13.1", required_build="2026-07-24") is True
+
+
+def test_needs_install_skips_when_build_is_current_or_newer(tmp_path: Path) -> None:
+    m.write_marker(tmp_path, python_version="3.13.1", build_id="2026-07-24")
+    # Same build -> skip.
+    assert m.needs_install(tmp_path, "3.13.1", required_build="2026-07-24") is False
+    # Installed is NEWER than the incoming payload (older sibling app) -> never
+    # downgrade the shared runtime.
+    assert m.needs_install(tmp_path, "3.13.1", required_build="2026-07-01") is False
+
+
+def test_needs_install_refreshes_when_installed_marker_predates_build_tracking(
+    tmp_path: Path,
+) -> None:
+    m.write_marker(tmp_path, python_version="3.13.1", build_id="")
+    assert m.needs_install(tmp_path, "3.13.1", required_build="2026-07-24") is True
+
+
+def test_needs_install_without_required_build_is_version_only(tmp_path: Path) -> None:
+    # Back-compat: callers that don't pass a build keep the old version-only gate.
+    m.write_marker(tmp_path, python_version="3.13.1", build_id="2026-07-24")
+    assert m.needs_install(tmp_path, "3.13.1") is False
+    assert m.needs_install(tmp_path, "3.14.0") is True

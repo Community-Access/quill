@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Changelog</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. Only the color is
+       changed; each token keeps its default weight/style. Placed last so it
+       wins the cascade over the styles.html() highlighting defaults above. */
+    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
+    code span.an, code span.co, code span.cv,
+    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
+    code span.at { color: #55631a; }                            /* was #7d9029 */
+    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
+    code span.ch, code span.sc, code span.st,
+    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
+    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
+    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="changelog">Changelog</h1>
+<p>All notable changes to Quill Radio are documented in this file.</p>
+<p>The format is based on <a
+href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
+this project adheres to <a
+href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<p>Quill Radio runs the same radio code as QUILL from the shared
+<code>quill</code> package, so features and fixes land in both at once;
+this repository carries only the wrapper, installer, icon, and docs.</p>
+<h2 id="220---2026-07-24">[2.2.0] - 2026-07-24</h2>
+<p>The headline of this release is how Quill Radio is delivered: a
+shared runtime installed once per user, two brand-new light downloads,
+an accessible runtime download, and a native launcher that no longer
+looks like repackaged Python to antivirus tools.</p>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>The QuillVille Runtime -- shared,
+install-once-per-user.</strong> Quill Radio, QUILL, Quill Weather, and
+QUILL Audio Studio now share one Python engine, the QuillVille Runtime,
+installed once and reused by every app. Install any one app and every
+app you add afterward starts instantly. The runtime is reference-counted
+and removed only when the last app that needs it is uninstalled.</li>
+<li><strong>Companion edition (new download), about 3 MB.</strong>
+<code>Quill-Radio-Companion-&lt;version&gt;.zip</code> contains only the
+app and its docs and runs on the shared runtime. On first launch, if the
+runtime is not already installed, Quill Radio offers to download and
+install it once (about 230 MB) with a fully accessible progress bar;
+after that, this and every other QuillVille app start instantly.</li>
+<li><strong>Thin ("Lite") installer (new download).</strong> A small
+installer that installs the app and downloads the shared runtime only if
+it is not already present.</li>
+<li><strong>Accessible runtime download everywhere.</strong> Whenever
+the shared runtime is downloaded -- by an installer or by the app's own
+first launch -- the progress bar reads correctly under NVDA, JAWS, and
+Narrator and announces progress as a percentage.</li>
+<li><strong>Backup and restore.</strong> Station &gt; Back Up Stations
+and Settings and Restore from Backup save favorites, settings, wake
+timer, recording schedule, and optionally recorded audio into a single
+<code>.qrbackup</code> file and bring it all back on a new machine.</li>
+<li><strong>View menu with a focusable status bar.</strong> Show Station
+Details, Show Status Bar, Sort Favorites, Expand/Collapse All Folders,
+and Text Size (Normal/Large/Larger). The status bar is arrow-navigable
+(F6), acts on Enter, and offers a per-cell context menu.</li>
+<li><strong>Global show/hide-to-tray hotkey (Ctrl+Alt+Shift+R).</strong>
+A system-wide chord toggles the main window to and from the tray from
+any app; playback and recording continue while hidden. Skipped silently
+if another app already owns the chord.</li>
+<li><strong>Now Playing window on Ctrl+T</strong> with a
+character-reviewable, copyable title and artist, plus per-favorite
+Station Details. Radio Browser genre browsing and clearer source labels.
+Keep-the-computer-awake while playing or recording. Schedule Recording
+duration as hours plus minutes. A Volume slider in the main-window Tab
+order.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><strong>Native launcher replaces the stamped
+<code>pythonw.exe</code>.</strong> <code>QuillRadio.exe</code> is now a
+tiny, genuinely-compiled native program that starts the app on a real,
+unmodified Python. The full portable zip
+(<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>, about 311 MB)
+remains fully self-contained with its own genuine Python and bundled
+ffmpeg and mpv. The full installer is now
+<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code> and installs
+the shared runtime (if absent) plus the app.</li>
+<li>The heavy surfaces (Browse Stations, Search Stations, Manage
+Favorites, Schedule Recording, Weather Center) are now modeless windows
+that each carry the full menu bar, fixing the reported "menu bar
+disappears" behavior and the modal lock-out of the main window. A Window
+menu and Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1-9 move between them.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Favorites keep the hand-arranged order you gave them when you move
+an item from a sorted view. Explicit Exit quits for real. Keyboard focus
+lands inside the window on launch so Alt reaches the menu bar. The
+transport button no longer claims Alt+S/Alt+P, so Ctrl+P is the reliable
+Stop/Play key. Add to Favorites resolves a TuneIn stream on demand.
+Remove All favorites with confirmation and rolling-backup recovery.</li>
+</ul>
+<h3 id="security">Security</h3>
+<ul>
+<li><strong>Friendlier to antivirus.</strong> Earlier versions used a
+renamed and modified copy of Python's <code>pythonw.exe</code> as the
+launcher, a pattern some antivirus tools flagged as a false positive.
+That pattern is completely gone: the launcher is a genuine native
+program and the bundled Python is the official unmodified build.
+Releases are not yet code-signed (SmartScreen may caution on first run);
+signing is planned.</li>
+</ul>
+<h2 id="212">[2.1.2]</h2>
+<h3 id="fixed-1">Fixed</h3>
+<ul>
+<li>One-click updating works again (the update installer no longer
+rejects a legitimately app-sized download as a "decompression
+bomb").</li>
+<li>Favorites keep their order across the upgrade: a pre-2.0.2 favorites
+file is read as Unsorted rather than snapped to A-Z.</li>
+<li>A shared Speech Hub crash on an older build is fixed and
+regression-locked.</li>
+</ul>
+<h2 id="211">[2.1.1]</h2>
+<h3 id="added-1">Added</h3>
+<ul>
+<li>NOAA Weather Radio from the authoritative WeatherIndex directory: a
+State-to-Station browse tree, SAME code / call sign / "County, ST"
+search routing, and Listen to your Local NOAA Weather Radio from your
+saved location. Works offline via a bundled snapshot of 1,035
+transmitters.</li>
+<li>Radio Reading Services: a Browse category and search blend for the
+audio information services that read print aloud for blind and
+print-disabled listeners; 20 vetted services bundled, refreshable on
+demand.</li>
+<li>iHeart browsing by genre and A-Z sub-directory in Browse
+Stations.</li>
+</ul>
+<h3 id="fixed-2">Fixed</h3>
+<ul>
+<li>The Source filter no longer hides a station carried by more than one
+directory.</li>
+</ul>
+<h2 id="210">[2.1.0]</h2>
+<h3 id="added-2">Added</h3>
+<ul>
+<li>A top-level Weather menu (National Weather Service, Open-Meteo,
+OpenStreetMap) reading current conditions, forecast, alerts, and an
+extended outlook as arrow-navigable, copyable text.</li>
+<li>Browse Stations as its own search-free window: one tree of every
+source (Favorites, Popular, Weather/NOAA, ACB Media, NFB Radio, SomaFM,
+TuneIn, Community M3U, Xiph/Icecast) with lazy loading.</li>
+<li>One-click updating: Download, then Install and restart now, keeping
+favorites, recordings, and settings.</li>
+<li>Reorder favorites from the keyboard (Alt+Shift+Up / Alt+Shift+Down)
+in manual order.</li>
+</ul>
+<h3 id="fixed-3">Fixed</h3>
+<ul>
+<li>Quill Radio no longer opens a second copy of itself. The Record
+button reads Stop Recording while recording. Volume changes are quiet
+with a screen reader. The Country and Tag lists stay put while
+arrowing.</li>
+</ul>
+<h2 id="202">[2.0.2]</h2>
+<h3 id="added-3">Added</h3>
+<ul>
+<li>Record as many stations at once as you want, with an optional
+Maximum simultaneous recordings cap; overlapping scheduled shows all
+record. Stop Recording and Stop All Recordings.</li>
+<li>Live Sound Enhancements preview, with every setting remembered per
+station as well as shared.</li>
+<li>OptiLab broadcast polish (Podcast Leveler, Stream Polish, Smooth
+Limiter), adapted with credit from OptiLab Core by dgl1984
+(Apache-2.0).</li>
+<li>Favorites sort order (Ascending, Descending, Unsorted) with
+per-folder overrides. M3U/M3U8 playlist import.</li>
+</ul>
+<h3 id="fixed-4">Fixed</h3>
+<ul>
+<li>Channel mode Left/Right now plays in one ear only.</li>
+</ul>
+<h2 id="201">[2.0.1]</h2>
+<h3 id="fixed-5">Fixed</h3>
+<ul>
+<li>A recording no longer stops after a minute on a transient hiccup;
+only a genuinely terminal failure (full disk, HTTP 404/410/451) stops a
+recording.</li>
+</ul>
+<h3 id="added-4">Added</h3>
+<ul>
+<li>A clear "Recording started" announcement. Review-and-copy What's
+Playing. Channel mode (Stereo, Mono, Left only, Right only). Adjust a
+recording's playback volume with Ctrl+Up / Ctrl+Down.</li>
+</ul>
+<h2 id="200">[2.0.0]</h2>
+<h3 id="added-5">Added</h3>
+<ul>
+<li>Recordings you can trust: a recording in progress survives a restart
+and Quill Radio asks before resuming; scheduled recordings fire reliably
+throughout their window; the Recordings list stops flickering and keeps
+your place; the recording pipeline hardens against dropped connections,
+dead streams, and a crashed host.</li>
+<li>iHeart and TuneIn join station search, blended into one results list
+with a Source facet and genre/country dropdowns.</li>
+<li>Schedule management: Edit, Duplicate, Enable/disable, 12-or-24-hour
+time entry, and per-entry time zones.</li>
+<li>What's Playing reads a stream server's own Icecast/SHOUTcast status
+page as a same-host last resort.</li>
+<li>Verbose logging and a settable log folder.</li>
+</ul>
+<h2 id="110">[1.1.0]</h2>
+<h3 id="added-6">Added</h3>
+<ul>
+<li>The mpv playback engine, used automatically, with the classic
+Windows Media engine one Preferences setting away.</li>
+<li>Every stream format in real-world use: MP3, AAC and HE-AAC (AAC+),
+Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8).</li>
+<li>A second sound card for the radio, live pause and rewind of the
+stream, and Volume Boost.</li>
+<li>Sound Enhancements as a full listening toolkit: three-band EQ,
+compressor, mono downmix, night mode, per-station memories.</li>
+<li>Alt+F4-to-tray, self-healing stream recovery from a station's
+website, JavaScript-player (Triton/StreamTheWorld) resolution, and paged
+station search (up to 200 results).</li>
+</ul>
+<h2 id="102">[1.0.2]</h2>
+<h3 id="added-7">Added</h3>
+<ul>
+<li>A real three-band equalizer and per-station Sound Enhancements. A
+second station directory (SomaFM). Automatic Check for Updates. A
+Preferences dialog. In-app documentation in the Help menu.</li>
+</ul>
+<h3 id="fixed-6">Fixed</h3>
+<ul>
+<li>Volume keys work from the Favorites tree, and volume stays put
+across play/pause.</li>
+</ul>
+<h2 id="100">[1.0.0]</h2>
+<p>First release: QUILL's internet radio as its own small,
+screen-reader-first Windows app -- a favorites tree with focus at
+launch, spoken feedback for every action, a system tray, recording with
+scheduling, sleep and wake-up timers, and a shared data store with QUILL
+(<code>%APPDATA%\Quill</code>).</p>
+</main>
+</body>
+</html>

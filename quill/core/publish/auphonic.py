@@ -26,6 +26,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill import __version__
+from quill.core.error_codes import CodedError
 
 API_BASE = "https://auphonic.com/api"
 #: Windows Credential Manager target for the user's Auphonic API token.
@@ -37,8 +38,10 @@ DONE_STATUS = 3
 ERROR_STATUS = 2
 
 
-class AuphonicError(RuntimeError):
+class AuphonicError(CodedError):
     """An Auphonic call failed; the message is speakable."""
+
+    code = "QUILL-PUBLISH-AUPHONIC-FAILED"
 
 
 class AuphonicCancelled(AuphonicError):

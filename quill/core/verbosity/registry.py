@@ -9,13 +9,16 @@ Pure and wx-free.
 
 from __future__ import annotations
 
+from quill.core.error_codes import CodedError
 from quill.core.verbosity.verbs import BUILTIN_VERBS, VerbSpec
 
 __all__ = ["DuplicateVerbError", "VerbRegistry", "default_registry"]
 
 
-class DuplicateVerbError(ValueError):
+class DuplicateVerbError(CodedError):
     """Raised when a verb id is registered twice."""
+
+    code = "QUILL-VERBOSITY-VERB-DUPLICATE"
 
     def __init__(self, verb_id: str) -> None:
         super().__init__(f"Verb '{verb_id}' is already registered")

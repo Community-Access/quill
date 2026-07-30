@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Audio Studio 1.0.0 - Release Notes</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. Only the color is
+       changed; each token keeps its default weight/style. Placed last so it
+       wins the cascade over the styles.html() highlighting defaults above. */
+    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
+    code span.an, code span.co, code span.cv,
+    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
+    code span.at { color: #55631a; }                            /* was #7d9029 */
+    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
+    code span.ch, code span.sc, code span.st,
+    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
+    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
+    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-audio-studio-100---release-notes">QUILL Audio Studio 1.0.0
+- Release Notes</h1>
+<p>Released 2026-07-18.</p>
+<p>Introducing QUILL Audio Studio: the QUILL editor's audiobook and
+audio production suite as its own standalone Windows and macOS desktop
+app - screen-reader-first, keyboard-first, and spoken end to end. It is
+for anyone who wants to turn writing into finished, chaptered,
+publishable audio without ever touching a waveform display - and then to
+sit back and listen to it.</p>
+<h2 id="new-the-quillville-runtime-and-lighter-downloads">New: the
+QuillVille Runtime and lighter downloads</h2>
+<p>QUILL Audio Studio now shares one Python runtime -- the
+<strong>QuillVille Runtime</strong> -- with every other QuillVille app
+(QUILL, Quill Radio, and Quill Weather). It is installed once per user
+and reused by all of them, so once any Quill app has installed it, every
+app you add afterward starts instantly. The runtime is
+reference-counted: it is removed only when the last app that needs it is
+uninstalled.</p>
+<p>That shared runtime unlocks two new feather-light ways to get the
+Studio, alongside the fully self-contained editions you already
+know:</p>
+<ul>
+<li><strong>Companion edition</strong> -- just the app and its docs
+(about 2 to 3 MB). The first time you launch it, if the runtime is not
+already on your machine, it offers to download and install it (about 230
+MB, once) with a fully accessible progress bar. After that, this app and
+every other QuillVille app start instantly.</li>
+<li><strong>Thin installer</strong> -- a tiny installer that downloads
+the shared runtime only if it is not already present.</li>
+</ul>
+<p>Every runtime download, whether triggered by an installer or by the
+app's own first launch, shows a fully accessible progress bar that works
+with NVDA, JAWS, and Narrator, announcing progress as a percentage. See
+"Editions and the QuillVille Runtime" below for the full list of
+downloads.</p>
+<p>The app's launcher is also now a genuine, tiny native program, and
+the bundled Python is the official unmodified build. Earlier versions
+used a renamed and modified copy of Python's <code>pythonw.exe</code> as
+the launcher, which some antivirus tools flagged as a false positive.
+That pattern is gone, so the Quill apps are far less likely to be
+flagged.</p>
+<h2 id="what-it-is">What it is</h2>
+<p>One small home window, three journeys:</p>
+<ul>
+<li><strong>Narrate Documents</strong> - a folder of Word, Markdown,
+HTML, or text files becomes speech audio or a single chaptered
+audiobook, read by any voice you choose - or by a whole cast.</li>
+<li><strong>Build From Recordings</strong> - a folder of recordings
+becomes one chaptered master, each file a chapter, with a review step
+before the merge.</li>
+<li><strong>Edit a Book</strong> - the Chapter Workbench opens any
+chaptered MP3 or M4B (or a chapterless recording, as one chapter ready
+to carve): a chapter-aware player, split-at-playhead chapter surgery,
+tags and cover, AI-proposed titles, an ACX compliance check, and
+publishing.</li>
+</ul>
+<h2 id="headline-features">Headline features</h2>
+<ul>
+<li><strong>A guided wizard that asks one thing at a time.</strong>
+Every step announced ("Step 2 of 7: What should I read?"),
+Back/Next/Skip to summary, validation in plain language, and a
+plain-sentence review before Start. The wizard remembers your last
+journey, your recent source folders, and your recent books.</li>
+<li><strong>Voices from every era.</strong> Windows SAPI 5, DECtalk,
+Piper and Kokoro (neural, fully offline), eSpeak-NG, and the macOS
+system voice; ElevenLabs and the OpenAI/Gemini/ElevenLabs multilingual
+cloud voices with your own API key. Engines, voices, and models download
+on demand from the Voices menu; every voice has a comparable
+preview.</li>
+<li><strong>A cast, not just a voice.</strong> Round-robin rotation,
+glob-based voice casting rules ("<em>interview</em> = the guest voice"),
+and translated editions in additional languages via your AI provider or
+local LibreTranslate.</li>
+<li><strong>Honest, resumable runs.</strong> Audition mode (first
+document only), dry run (proofread the exact spoken text), incremental
+rebuilds (only changed documents re-synthesize), spoken progress
+milestones at 25/50/75 percent, and <code>.quilljob</code> files that
+pin an entire run for one-keystroke repeats.</li>
+<li><strong>Chapter surgery by ear.</strong> Split at playhead, set
+start to playhead, merge, rename, restore; silence-based chapter
+proposals; AI title proposals (chapter openings transcribed locally,
+only text sent to your AI, everything reviewable); chapter list
+import/export in five formats; split a book back into per-chapter
+files.</li>
+<li><strong>Publishing without a browser.</strong> A local RSS podcast
+feed, a whole-folder show feed with accessible show notes, SFTP upload
+with credentials in the Windows Credential Manager, and Auphonic
+mastering in your own account - each an explicit, consented action with
+spoken progress and a real Cancel.</li>
+<li><strong>ACX compliance in plain words.</strong> Loudness, true peak,
+and noise floor measured against Audible's window, with a concrete
+recommendation per failing criterion - from the Book Tools menu for any
+file, or one button in the Workbench.</li>
+<li><strong>A library that organizes itself.</strong> Your books live in
+a tree on the home window - Favorites, In Progress, Recently Played, and
+Inbox, plus any folders you make - that fills in as you open books, with
+a keyboard-complete context menu (Open, Reveal in Folder, Favorite, Move
+to Folder, New Folder, Remove). Reveal in Folder shows the file in your
+OS file manager; Remove only drops it from the list.</li>
+<li><strong>A studio you can listen in.</strong> Resume where you left
+off on launch (opt-in), a Recently Played submenu, media keys that drive
+the active player from any window, per-book volume and mute (Ctrl+M)
+that each book remembers, a Sleep Timer that stops after the minutes you
+choose or at the end of the current chapter, and a Play Queue that opens
+the next book for you when one finishes.</li>
+<li><strong>A desk that stays out of the way.</strong> System tray with
+Resume-last-book, opt-in Alt+F4-to-tray, a close policy that only asks
+when real work would be lost, Ctrl+Shift+P command palette (the
+journeys, publishing, the ACX check, the Speech Hub, downloads, and the
+sleep timer, mute, and play-queue commands), and in-app update checks
+that download the right artifact for your flavor.</li>
+<li><strong>Safe Mode.</strong> <code>QUILL_SAFE_MODE=1</code> or
+<code>--safe-mode</code> disables AI, publishing, and downloads while
+everything local keeps working.</li>
+</ul>
+<h2 id="relationship-to-quill">Relationship to QUILL</h2>
+<p>The Studio runs the exact same Audio Studio code that ships inside
+the QUILL editor - vendored into this repository's self-contained
+<code>quillas</code> package - and shares QUILL's data store
+(<code>%APPDATA%\Quill</code>, or the portable <code>data</code>
+folder). Voices, downloaded engines, speech settings, your book list,
+and listening positions are one set of data across QUILL, QUILL Audio
+Studio, Quill Radio, and QUILL Cast. You do not need QUILL installed to
+use the Studio, and nothing you set up in one app is stranded in the
+other.</p>
+<h2 id="editions-and-the-quillville-runtime">Editions and the QuillVille
+Runtime</h2>
+<p>All QuillVille apps now share one Python runtime, the
+<strong>QuillVille Runtime</strong>, installed once per user and reused
+by every app. Install it a single time and every Quill app you add
+afterward starts instantly. It is reference-counted, so it is removed
+only when the last app that needs it is uninstalled. You can pick the
+edition that fits how you want to run the Studio:</p>
+<ul>
+<li><strong>Full portable</strong>
+(<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code>,
+about 675 MB) - fully self-contained: runs from a USB stick with no
+installation and no internet. It carries a genuine, unmodified copy of
+Python plus the bundled offline speech and text-to-speech engines
+(whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Extract
+anywhere and run <code>QuillAudioStudio.exe</code>; a <code>data</code>
+folder next to the exe holding a <code>storage-mode.json</code> marker
+(<code>{"mode": "portable"}</code>) is the switch that keeps everything
+on the stick.</li>
+<li><strong>Companion edition</strong>
+(<code>QUILL-Audio-Studio-Companion-&lt;version&gt;.zip</code>, about 2
+to 3 MB) - feather-light: just the app and its docs, running on the
+shared QuillVille Runtime. The first time you launch it, if the runtime
+is not already installed, it offers to download and install it (about
+230 MB, once) with a fully accessible progress bar. After that, this app
+and every other QuillVille app start instantly.</li>
+<li><strong>Full installer</strong>
+(<code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code>) -
+installs the shared runtime, if it is not already present, plus the app,
+with a Start Menu group, an uninstaller, and the shared data store.
+ffmpeg and the mpv player engine are bundled.</li>
+<li><strong>Thin installer</strong> (the <code>-Lite</code> setup) - a
+tiny installer that downloads the shared runtime only if it is not
+already present, then installs the app.</li>
+<li><strong>From source</strong> - <code>pip install -e ".[ui]"</code>
+and <code>python -m quillas</code> (Python 3.12+), or
+<code>run-quill-audio-studio.bat</code>.</li>
+</ul>
+<p>Every runtime download, whether triggered by an installer or by the
+app's own first launch, shows a fully accessible progress bar that works
+with NVDA, JAWS, and Narrator, and announces progress as a
+percentage.</p>
+<h2 id="known-limitations">Known limitations</h2>
+<ul>
+<li><strong>Windows-first; macOS supported.</strong> The macOS build
+narrates with the system voice (plus Piper, Kokoro, and eSpeak-NG) and
+plays previews through <code>afplay</code>. Windows-only pieces degrade
+gracefully elsewhere: SAPI 5 and DECtalk are Windows engines, and stored
+secrets (SFTP passwords, the Auphonic token, the ElevenLabs key) use the
+Windows Credential Manager - on other platforms those fields work
+per-session but are not persisted.</li>
+<li><strong>Releases are not code-signed.</strong> Windows SmartScreen
+warns on first run; choose "More info" then "Run anyway".</li>
+<li><strong>M4B books save as a new file.</strong> Chapter atoms cannot
+be rewritten in place; the Workbench's Save As performs a lossless
+re-mux instead. MP3 books do save in place (tags only).</li>
+<li><strong>Dev runs show a generic tray/window icon.</strong> The
+proper app icon is embedded in the packaged exe; running from source
+falls back to a stock system icon.</li>
+<li><strong>Cloud features need your own keys.</strong> Cloud
+translation voices without a configured key are skipped with a note
+rather than stopping the run; Auphonic and ElevenLabs require your own
+accounts.</li>
+<li><strong>ffmpeg does the heavy lifting.</strong> Compressed formats,
+book assembly, the ACX check, and silence detection all need it. Both
+packaged flavors bundle it; source checkouts can fetch it with Voices
+&gt; Get FFmpeg.</li>
+</ul>
+</main>
+</body>
+</html>

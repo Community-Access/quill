@@ -509,6 +509,41 @@ requirement, not a layer.
 - P-8. A safe-mode launcher (`run-quill-audio-studio-safe-mode.bat` /
   `--safe-mode`) must ship alongside the normal launcher.
 
+### 6.1 The QuillVille Runtime and shared-runtime editions
+
+- P-9. All QuillVille apps (QUILL, Quill Radio, Quill Weather, and QUILL
+  Audio Studio) must be able to share one Python runtime -- the QuillVille
+  Runtime -- installed once per user and reused by every app. Once any app has
+  installed the runtime, every other app must be able to start against it
+  without downloading Python again.
+- P-10. The QuillVille Runtime must be reference-counted: each installed app
+  that depends on it increments the count, uninstalling an app decrements it,
+  and the runtime is removed only when the last dependent app is uninstalled.
+  Uninstalling one app must never strand another.
+- P-11. The Studio must ship in four editions:
+  - Full portable (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, roughly
+    675 MB): fully self-contained, runs from a USB stick with no installation
+    and no internet, bundling a genuine, unmodified copy of Python plus the
+    offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG,
+    Piper, and neural Kokoro).
+  - Companion edition (`QUILL-Audio-Studio-Companion-<version>.zip`, roughly
+    2 to 3 MB): the app and its docs only, running on the shared QuillVille
+    Runtime. On first launch, if the runtime is absent, it must offer to
+    download and install it (about 230 MB, once) before running.
+  - Full installer (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`): installs
+    the shared runtime, if not already present, plus the app.
+  - Thin installer (the `-Lite` setup): a small installer that downloads the
+    shared runtime only if it is not already present, then installs the app.
+- P-12. Every QuillVille Runtime download -- whether triggered by an installer
+  or by an app's own first launch -- must show a fully accessible progress bar
+  that works with NVDA, JAWS, and Narrator, announcing progress as a
+  percentage. There must be no silent or screen-reader-invisible wait during a
+  runtime download.
+- P-13. The app launcher must be a genuine, tiny native executable, and any
+  bundled Python must be the official, unmodified build. The previous pattern
+  of shipping a renamed or modified copy of Python's `pythonw.exe` as the
+  launcher -- a frequent antivirus false-positive trigger -- must not be used.
+
 ## 7. Out of scope / non-goals
 
 - Document editing. This app narrates documents; writing them is QUILL's job.

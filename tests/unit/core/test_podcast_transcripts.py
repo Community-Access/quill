@@ -7,6 +7,7 @@ import json
 
 import pytest
 
+from quill.core.podcasts import feed_auth
 from quill.core.podcasts.transcripts import (
     TranscriptError,
     fetch_and_parse_transcript,
@@ -138,7 +139,7 @@ def test_fetch_transcript_bytes_sends_auth_header(monkeypatch) -> None:
         captured["auth"] = dict(request.headers).get("Authorization", "MISSING")
         return _Resp()
 
-    monkeypatch.setattr(transcripts.urllib.request, "urlopen", _fake_urlopen)
+    monkeypatch.setattr(feed_auth, "urlopen_auth_safe", _fake_urlopen)
     transcripts._fetch_transcript_bytes("https://h.example.com/t.vtt", auth_header="Basic xyz")
     assert captured["auth"] == "Basic xyz"
     transcripts._fetch_transcript_bytes("https://h.example.com/t.vtt")

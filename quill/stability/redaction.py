@@ -30,7 +30,10 @@ _SECRET_NAME_RE = re.compile(
     r"(?:api[_-]?key|token|secret|password|passphrase|auth(?:orization)?|"
     r"access[_-]?key|client[_-]?secret|cookie|session|signature|hmac|"
     r"ssh[_-]?key|private[_-]?key|bearer)"
-    r"\s*[=:]\s*"
+    # optional closing quote after a JSON-style key, the separator, and an
+    # optional opening quote before the value: matches name=value,
+    # name: value, "name": "value", and name="value" alike.
+    r"[\"']?\s*[=:]\s*[\"']?"
     # value (stop at whitespace, quote, or end)
     r"[^\s\"'\\]+"
     r")"
@@ -72,6 +75,32 @@ _JWT_RE = re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9
 _URL_USERINFO_RE = re.compile(r"(\bhttps?://)[^/\s@]+@")
 
 _MAX_LINE_BYTES = 4096
+
+# Flag names (normalized: leading dashes stripped, lower-cased) whose
+# *following* argv element carries a secret value and must be redacted --
+# e.g. ``--password hunter2`` / ``--api-key sk-…``. Used by
+# :func:`format_args_for_log` for the split-argv case that the per-arg
+# token regexes cannot catch.
+_SECRET_VALUE_FLAGS = frozenset({
+    "password",
+    "passwd",
+    "pass",
+    "passphrase",
+    "token",
+    "api-key",
+    "api_key",
+    "apikey",
+    "key",
+    "secret",
+    "client-secret",
+    "client_secret",
+    "auth",
+    "authorization",
+    "bearer",
+    "access-key",
+    "access_key",
+    "cookie",
+})
 
 
 def redact_source_tokens(text: str) -> str:
@@ -141,15 +170,24 @@ def format_args_for_log(args: Sequence[str]) -> str:
     # install location.
     exe_base = exe.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
     rest = list(args[1:])
-    # The macOS ``security`` CLI takes the secret as ``-w <secret>`` in
-    # separate argv elements (#60/#73). ``-w`` itself has no secret-shaped
-    # keyword, and a short/non-hex secret slips past redact_command_arg's
-    # token regexes and leaks into the log. Redact the value that follows
-    # ``-w`` before the generic per-arg pass so it can never appear.
-    if exe_base == "security":
-        for i, a in enumerate(rest):
-            if a == "-w" and i + 1 < len(rest):
-                rest[i + 1] = "[REDACTED]"
+    # A secret is frequently passed as a value in the argv element that
+    # *follows* a flag (``--password hunter2``, ``--token …``, ``-w …``
+    # for the macOS ``security`` CLI). The flag itself carries the
+    # secret-shaped keyword but the value does not, so it slips past
+    # redact_command_arg's per-arg token regexes. Redact the element after
+    # any secret-shaped flag -- for every executable, not just ``security``
+    # -- before the generic per-arg pass so the value can never appear.
+    for i, a in enumerate(rest):
+        if i + 1 >= len(rest):
+            break
+        # Only an actual flag (leading dash) redacts the element after it --
+        # a bare value that merely equals a keyword must not shift redaction
+        # onto its neighbour.
+        if not a.startswith("-"):
+            continue
+        flag = a.lstrip("-").lower()
+        if a == "-w" or flag in _SECRET_VALUE_FLAGS:
+            rest[i + 1] = "[REDACTED]"
     rest = [redact_command_arg(a) for a in rest]
     if not rest:
         return f"{exe_base} — 0 args"

@@ -35,10 +35,14 @@ def _host(*, close_action: str = "ask", exit_requested: bool = False) -> Any:
     return host
 
 
-def _event() -> tuple[Any, list[bool], list[bool]]:
+def _event(*, can_veto: bool = True) -> tuple[Any, list[bool], list[bool]]:
     skipped: list[bool] = []
     vetoed: list[bool] = []
-    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+    event = SimpleNamespace(
+        CanVeto=lambda: can_veto,
+        Skip=lambda: skipped.append(True),
+        Veto=lambda: vetoed.append(True),
+    )
     return event, skipped, vetoed
 
 
@@ -137,6 +141,27 @@ def test_exit_requested_bypasses_ask_and_minimize() -> None:
 
     assert host._exit_requested is False, "the one-shot flag is consumed"
     assert host._calls == ["shutdown"] and skipped == [True] and vetoed == []
+
+
+def test_forced_close_cannot_veto_runs_shutdown_and_skips() -> None:
+    # An OS log-off / shutdown cannot be vetoed. Honour it directly: run
+    # teardown + Skip so recorder cleanup happens and no stale resume marker is
+    # left -- never veto to minimize (the OS ignores it AND shutdown is skipped).
+    host = _host(close_action="minimize")
+    event, skipped, vetoed = _event(can_veto=False)
+
+    AppShellFrame.handle_app_close(
+        host,
+        event,
+        close_action="minimize",
+        protected=True,
+        confirm=lambda: "exit",
+        shutdown=lambda: _shutdown(host),
+    )
+
+    assert host._calls == ["shutdown"], "teardown runs even on a non-vetoable close"
+    assert skipped == [True] and vetoed == []
+    assert host._deferred == [], "no confirm deferred when we cannot veto"
 
 
 def test_run_close_confirm_cancel_keeps_open_and_resets_guard() -> None:

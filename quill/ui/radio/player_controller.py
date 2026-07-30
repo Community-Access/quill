@@ -36,14 +36,18 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import NamedTuple
+from typing import TYPE_CHECKING, NamedTuple
 
 import wx
 
 from quill.core.audio_enhance import EnhanceError, EnhanceRelay
 from quill.core.radio.models import RadioStation
+from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import WxMediaEngine
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine, mpv_output_device_available
+
+if TYPE_CHECKING:
+    from quill.ui.spotify.web_player import SpotifyWebEngine
 
 _log = logging.getLogger(__name__)
 
@@ -119,6 +123,7 @@ class RadioPlayerController:
         on_output_device_error: Callable[[str], None] | None = None,
         playback_engine: str = "auto",
         on_buffering: Callable[[], None] | None = None,
+        spotify_token_provider: Callable[[], str] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -175,6 +180,12 @@ class RadioPlayerController:
         #: Created lazily on the first play that opts into a device; kept
         #: for the process's lifetime like the wx engine.
         self._mpv_engine: MpvRadioEngine | None = None
+        #: Spotify Web Playback engine (DRM audio in a hidden WebView), created
+        #: lazily the first time a ``spotify:`` station plays. Needs a token
+        #: provider injected by the host (which reads the stored OAuth token);
+        #: without one, a Spotify station cannot play and selection falls back.
+        self._spotify_engine: SpotifyWebEngine | None = None
+        self._spotify_token_provider = spotify_token_provider
         self._engine = self._wx_engine
         #: Sound Enhancements (3-band EQ + compressor + mono + night mode):
         #: off by default, so normal playback never spawns the ffmpeg relay.
@@ -244,8 +255,54 @@ class RadioPlayerController:
         self._engine.set_volume(self._effective_volume())
         self._set_state(RadioPlayerState.CONNECTING, message="")
         url = self._resolve_playback_url(station)
+        # A spotify: URI can only play on the Spotify engine, so the
+        # cross-engine rescue (which retries on wx/mpv) never applies to it.
+        if self._is_spotify_station(station):
+            if not self._engine.load(url):
+                self._set_state(
+                    RadioPlayerState.ERROR,
+                    message=(
+                        "That Spotify item could not be played. "
+                        "Spotify Premium sign-in is required."
+                    ),
+                )
+            return
         if not self._engine.load(url) and not self._attempt_engine_fallback():
             self._set_state(RadioPlayerState.ERROR, message="That stream could not be opened.")
+
+    @staticmethod
+    def _is_spotify_station(station: RadioStation | None) -> bool:
+        """True when *station* plays a ``spotify:`` URI (Spotify-engine only)."""
+        return station is not None and is_spotify_uri(station.stream_url)
+
+    def _ensure_spotify_engine(self) -> SpotifyWebEngine | None:
+        """Lazily create the Spotify Web Playback engine, or None if the host
+        provided no token source (Spotify not signed in)."""
+        if self._spotify_engine is not None:
+            return self._spotify_engine
+        if self._spotify_token_provider is None:
+            return None
+        from quill.ui.spotify.web_player import SpotifyWebEngine
+
+        self._spotify_engine = SpotifyWebEngine(
+            self._parent,
+            token_provider=self._spotify_token_provider,
+            on_playback=self._on_spotify_playback,
+            on_error=self._on_error,
+        )
+        return self._spotify_engine
+
+    def _on_spotify_playback(self, snapshot: object) -> None:
+        """Reflect a Spotify SDK snapshot into the shared playback state so the
+        status-bar mini-player and tray track play/pause exactly as for a
+        stream (the station's own name is already the status label)."""
+        if self._engine is not self._spotify_engine:
+            return
+        is_playing = bool(getattr(snapshot, "is_playing", False))
+        if is_playing and self._state.state is not RadioPlayerState.PLAYING:
+            self._set_state(RadioPlayerState.PLAYING, message="")
+        elif not is_playing and self._state.state is RadioPlayerState.PLAYING:
+            self._set_state(RadioPlayerState.PAUSED, message="")
 
     def _select_engine(self) -> None:
         """Point ``self._engine`` at the backend the playback-engine
@@ -259,7 +316,27 @@ class RadioPlayerController:
         "wx" is the classic escape hatch; "mpv" insists (with a spoken
         fallback when absent). A chosen output device also pulls in mpv
         even under "wx"-less auto, since no other backend can route it.
+
+        A ``spotify:`` station is a special case handled first: it can only
+        play on the Spotify Web Playback engine, so it is selected outright
+        and the mpv/wx logic is skipped.
         """
+        # Spotify stations play only on the Spotify engine (DRM via the SDK).
+        if self._is_spotify_station(self._state.station):
+            spotify = self._ensure_spotify_engine()
+            if spotify is not None:
+                if self._engine is not spotify:
+                    self._engine.close()
+                    self._engine = spotify
+                return
+            # No token source (not signed in): fall through so load() fails
+            # with the Spotify-specific error rather than silently doing nothing.
+        # Leaving a Spotify station: close the Spotify engine before choosing
+        # a stream backend below (never leave it as the active engine).
+        elif self._spotify_engine is not None and self._engine is self._spotify_engine:
+            self._engine.close()
+            self._spotify_engine = None
+            self._engine = self._wx_engine
         mpv_present = mpv_output_device_available()
         if self._playback_engine == "wx":
             wanted_mpv = False
@@ -665,6 +742,14 @@ class RadioPlayerController:
             self._engine.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("radio engine close failed during shutdown")
+        # Close the Spotify WebView engine if it exists and was not the active
+        # engine (tears down the hidden WebView + its localhost page host).
+        if self._spotify_engine is not None and self._engine is not self._spotify_engine:
+            try:
+                self._spotify_engine.close()
+            except Exception:  # noqa: BLE001 - never block app close
+                _log.exception("Spotify engine close failed during shutdown")
+            self._spotify_engine = None
         # Some engines (mpv) keep a live handle after close() for reuse; on the
         # real exit path we must hard-terminate so audio never outlives the app,
         # independent of window-destroy ordering (#1195).

@@ -1,0 +1,23 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.radiocommunitydirectory",
+  "name": "Radio Community Directory",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Contributes a small community station directory to Quill Radio's Find Stations, returning demo stations from the Quillin's own static list. Sample of the radio.directory capability.",
+  "license": "MIT",
+  "categories": ["integration"],
+  "targets": ["radio"],
+  "capabilities": ["radio.directory", "storage"],
+  "main": "extension.py",
+  "contributes": {
+    "directory_providers": [
+      {
+        "id": "ext.radiocommunitydirectory.provider",
+        "display_name": "Community Directory",
+        "handler": "directory_search",
+        "description": "Returns a couple of demo community stations that match the search query, from this Quillin's static list (no network)."
+      }
+    ]
+  }
+}

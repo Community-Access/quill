@@ -15,17 +15,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol
 
-
-class OcrUnavailableError(RuntimeError):
-    pass
+from quill.core.error_codes import CodedError
 
 
-class OcrFailedError(RuntimeError):
-    pass
+class OcrUnavailableError(CodedError):
+    code = "QUILL-IO-OCR-UNAVAILABLE"
 
 
-class OcrCancelledError(RuntimeError):
-    pass
+class OcrFailedError(CodedError):
+    code = "QUILL-IO-OCR-FAILED"
+
+
+class OcrCancelledError(CodedError):
+    code = "QUILL-IO-OCR-CANCELLED"
 
 
 #: The single built-in OCR engine id (native ``Windows.Media.Ocr``).
