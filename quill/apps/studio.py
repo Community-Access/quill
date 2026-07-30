@@ -963,7 +963,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
 
         voices = wx.Menu()
         hub_id, models_id, components_id, ffmpeg_id = (wx.NewIdRef() for _ in range(4))
-        pronunciation_id, captions_id = (wx.NewIdRef() for _ in range(2))
+        pronunciation_id, captions_id, convert_id = (wx.NewIdRef() for _ in range(3))
         voices.Append(hub_id, "Speech &Hub (Voices and Engines)...")
         voices.Append(models_id, "&Manage Speech Models...")
         voices.Append(
@@ -975,6 +975,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             captions_id,
             "Generate &Captions (Offline)...",
             "Transcribe an audio or video file to .srt or .vtt captions on this machine",
+        )
+        voices.Append(
+            convert_id,
+            "Con&vert Audio...",
+            "Convert audio files between formats — offline, on this machine",
         )
         voices.AppendSeparator()
         voices.Append(components_id, "&Download Optional Components...")
@@ -1054,6 +1059,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             (models_id, self.open_speech_models),
             (pronunciation_id, self.open_pronunciation_dictionaries),
             (captions_id, self.generate_captions_offline),
+            (convert_id, self.convert_audio),
             (components_id, self.open_optional_components),
             (ffmpeg_id, self.download_ffmpeg_component),
             (ai_setup_id, self.open_ai_setup),
@@ -1173,6 +1179,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
                 self.open_pronunciation_dictionaries,
             ),
             ("studio.captions", "Generate Captions (Offline)...", self.generate_captions_offline),
+            ("studio.convert_audio", "Convert Audio...", self.convert_audio),
             (
                 "studio.components",
                 "Download Optional Components...",
@@ -1223,6 +1230,15 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         )
 
         run_translated_speech_export(self)
+
+    def convert_audio(self) -> None:
+        """Studio > Convert Audio...: convert audio files/folders between formats.
+
+        Fully local (bundled ffmpeg), off-thread and multi-worker, so it is
+        available in Safe Mode. See quill.core.audio.convert (#1255)."""
+        from quill.ui.audio_studio.convert_audio_dialog import run_audio_conversion
+
+        run_audio_conversion(self)
 
     def open_book_picker(self) -> None:
         """Edit a Book: straight to a file picker, then the Chapter Workbench."""
