@@ -420,6 +420,16 @@ def main() -> int:
         print(__version__)
         return 0
 
+    # Explorer "Convert with Quill" verb (#1255 §4.7): hand the selected file to
+    # the standalone Quill Converter app and exit, instead of opening the full
+    # editor. Done before the single-instance/UI bootstrap so a running QUILL is
+    # never disturbed -- the converter is its own single-instance app.
+    if str(getattr(parsed, "action", "") or "").strip().lower() == "convert" and parsed.paths:
+        from quill.core.app_launcher import launch_app
+
+        launch_app("converter", extra_args=tuple(parsed.paths))
+        return 0
+
     # #615: apply a pending data-location move (Preferences > General >
     # Data location) before anything resolves app_data_dir() for real, so
     # logs/settings/recovery land in the new location from this launch on.

@@ -17,6 +17,7 @@ class _FakeSettings:
     shell_verb_ocr_structured: bool = False
     shell_verb_open: bool = False
     shell_verb_read: bool = False
+    shell_verb_convert: bool = False
 
 
 def test_default_verbs_have_unique_ids_and_actions() -> None:
@@ -89,3 +90,29 @@ def test_ai_verb_requires_assistant() -> None:
         assistant_enabled=True,
     )
     assert [verb.action for verb in with_ai] == ["ocr-structured"]
+
+
+def test_convert_verb_present_and_targets_media() -> None:
+    verb = verb_for_action("convert")
+    assert verb is not None
+    assert verb.verb_id == "convert"
+    assert verb.settings_key == "shell_verb_convert"
+    # Applies to common audio + video containers, not to text/images.
+    assert verb.applies_to(".mp3") and verb.applies_to(".mp4")
+    assert not verb.applies_to(".txt")
+
+
+def test_convert_verb_media_matches_engine_extensions() -> None:
+    from quill.core.audio.convert import AUDIO_EXTENSIONS, VIDEO_EXTENSIONS
+    from quill.core.shell_verbs import MEDIA_EXTENSIONS
+
+    assert set(MEDIA_EXTENSIONS) == set(AUDIO_EXTENSIONS) | set(VIDEO_EXTENSIONS)
+
+
+def test_convert_verb_enabled_by_its_toggle() -> None:
+    active = enabled_verbs(
+        settings_values=_FakeSettings(shell_verb_convert=True),
+        master_enabled=True,
+        assistant_enabled=False,
+    )
+    assert [verb.action for verb in active] == ["convert"]

@@ -1768,6 +1768,14 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         feature_id="read_aloud",
         keywords=("read aloud", "speech", "context menu", "verb"),
     ),
+    SettingSpec(
+        "shell_verb_convert",
+        "Offer \u201cConvert with QUILL\u201d",
+        "integration",
+        "bool",
+        "Add a verb that opens an audio or video file in Quill Converter to change its format.",
+        keywords=("convert", "audio", "video", "context menu", "verb"),
+    ),
     # --- Multi-press -------------------------------------------------------
     SettingSpec(
         "multi_press_window_ms",
