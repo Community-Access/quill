@@ -253,6 +253,18 @@ The Windows installer now creates Start Menu entries for both apps, right next t
 
 These apps are new — tell us how they behave with your screen reader through Help > Report a Bug. Your reports are what graduated the braille fix; they will shape these apps the same way.
 
+## Convert Anything to Anything: The Universal Audio Converter
+
+Somewhere between "I recorded this in the wrong format" and "this podcast only downloads as an `.m4a` and my player wants MP3," almost everyone hits the wall of audio conversion — and the usual answer is a sketchy website that wants you to upload your file. 1.0.0 gives you a real one that runs entirely on your own machine.
+
+The **Universal Audio Converter** changes audio files between formats — MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, AAC, and more — and pulls the audio track out of video files (MP4, MKV, MOV, WebM…) along the way. It converts through the same bundled FFmpeg the Audio Studio already uses, so there is nothing new to install, nothing is uploaded, and it works in Safe Mode. It only ever offers formats your FFmpeg can actually encode, so a batch never dies half-way for a missing encoder, and every run ends with a spoken summary that **names the files that failed** instead of quietly reporting success.
+
+There is one converter behind five doors, so you meet it wherever you already are. Inside the editor it is **Audio Studio → Voices → Convert Audio…**. As its own program it is **Quill Converter**, a standalone tray app that carries the QuillVille menu like the rest of the family and has its own show/hide hotkey (Ctrl+Alt+Shift+C). For scripts and power users there is a headless **`quill convert`** command with a `--dry-run` planner and the whole option set on the command line. Right-click an audio or video file in **Windows Explorer** and — once you turn the verb on in Settings — **Convert with Quill** opens it ready to go. And **Convert from URL…** pastes in a link (YouTube and the many sites yt-dlp supports), downloads the audio, and drops it straight into the converter.
+
+Pick a **preset** — Podcast, Audiobook, MP3 320, Web Opus, Archival FLAC, Hearing-aid mono, and more — or open **Advanced** for the full studio: exact bit rate, sample rate, channels and bit depth; loudness-normalize to an audiobook or podcast target; gain, a rumble-removing high-pass, silence trimming, a speed change with no pitch shift, a compressor, a volume leveler, and fades. Queue a single file or point it at a whole folder; it mirrors the folder's structure, never overwrites an original unless you tell it to, and runs the batch across several workers while the window stays responsive and the tray shows progress.
+
+The one part that reaches the internet — Convert from URL — is honest about it: yt-dlp is **not** bundled, so the first time you use it QUILL asks once, shows a plain rights notice (only download what you have the right to use), installs the small component on demand, and stays off entirely in Safe Mode.
+
 ## Community Reports, Real Repairs
 
 Every bug report is a person encountering friction while trying to create, read, learn, or contribute. 1.0.0 treats those reports accordingly: not as loose tickets to close, but as invitations to make QUILL more trustworthy.

@@ -35,6 +35,7 @@ Current release line: **0.7.0**
 
 Highlights since 0.5.0 include:
 
+- Universal Audio Converter — convert audio (and extract audio from video) between formats with presets and an Advanced DSP catalog, offline through the bundled ffmpeg. Reach it from Audio Studio (**Voices → Convert Audio…**), the standalone **Quill Converter** app, the headless `quill convert` command, a right-click **"Convert with Quill"** entry in Explorer, or **Convert from URL…** (on-demand `yt-dlp`, consent-gated).
 - Insert menu with searchable Markdown/HTML insertion.
 - Word Prediction with `Ctrl+.` plus HTML/Markdown tag IntelliSense.
 - New snippet system with `Ctrl+Shift+Grave, S` insertion, trigger expansion, and starter packs.
