@@ -40,23 +40,26 @@ class _FakeEvent:
         self.skipped = True
 
 
-def _make_host(frame, markup: str):
+def _make_host(frame, markup: str, *, speak: bool = False):
     editor = wx.TextCtrl(frame, style=wx.TE_MULTILINE)
     editor.SetValue(markup)
     editor.SetInsertionPoint(0)
     spoken: list[str] = []
+    status_quiet: list[str] = []
     host = SimpleNamespace(
         editor=editor,
         settings=SimpleNamespace(
             reveal_codes_view="flowed",
             reveal_codes_verbosity="balanced",
             reveal_codes_visible=True,
+            reveal_codes_speak=speak,
         ),
         spoken=spoken,
+        status_quiet=status_quiet,
     )
     host._announce = lambda msg, **kw: spoken.append(msg)  # type: ignore[attr-defined]
     host._set_status = lambda msg: spoken.append(("status", msg))  # type: ignore[attr-defined]
-    host._set_status_quiet = lambda msg: None  # type: ignore[attr-defined]
+    host._set_status_quiet = lambda msg: status_quiet.append(msg)  # type: ignore[attr-defined]
     host._reveal_move_editor_caret = lambda off: editor.SetInsertionPoint(max(0, off))  # type: ignore[attr-defined]
     return host, editor, spoken
 
@@ -77,18 +80,41 @@ def test_plain_text_moves_are_silent_so_the_screen_reader_narrates(app) -> None:
     frame.Destroy()
 
 
-def test_right_arrow_steps_over_a_code_atomically_and_only_the_code_speaks(app) -> None:
+def test_right_arrow_onto_a_code_is_silent_by_default_and_mirrors_to_status(app) -> None:
+    # #1244: arrowing onto a code must not add a second voice — the screen reader
+    # narrates the flowed control itself. QUILL stays quiet and mirrors the rich
+    # phrase to the status bar so it is still available without double-speak.
     frame = wx.Frame(None)
     host, editor, spoken = _make_host(frame, "a**b**c")
     pane = RevealCodesPane(wx, frame, host)
     pane.rebuild()
     pane._caret = 0  # on 'a'
 
-    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> [Bold On]: QUILL speaks it
+    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> [Bold On]
+    assert spoken == []  # single voice: the screen reader, not QUILL
+    assert host.status_quiet  # phrase mirrored silently to the status bar
+    assert "bold on" in host.status_quiet[-1]
+    assert host.status_quiet[-1].startswith("Reveal Codes:")
+
+    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> 'b': text, still silent
+    assert spoken == []
+    frame.Destroy()
+
+
+def test_reveal_codes_speak_toggle_restores_the_spoken_phrase(app) -> None:
+    # #1245: users who prefer the verbose spoken examination can opt back in.
+    frame = wx.Frame(None)
+    host, editor, spoken = _make_host(frame, "a**b**c", speak=True)
+    pane = RevealCodesPane(wx, frame, host)
+    pane.rebuild()
+    pane._caret = 0  # on 'a'
+
+    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> [Bold On]
     assert "bold on" in spoken[-1]
     assert "Reveal Codes" not in spoken[-1]  # bare phrase, no repeated prefix
-    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> 'b': text, so QUILL is silent
-    assert spoken == [spoken[0]]  # nothing new was spoken for the character
+
+    pane._on_flow_key(_FakeEvent(wx.WXK_RIGHT))  # -> 'b': text is still silent
+    assert spoken == [spoken[0]]
     frame.Destroy()
 
 
