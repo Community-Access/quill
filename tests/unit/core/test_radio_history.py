@@ -72,6 +72,19 @@ def test_last_seen_round_trips_and_defaults_empty(tmp_path: Path) -> None:
     assert load_history(tmp_path).last_seen == "2026-07-17T10:00:00"
 
 
+def test_volume_percent_round_trips_and_defaults_unset(tmp_path: Path) -> None:
+    # #1263: the last global volume level, remembered across sessions.
+    assert load_history(tmp_path).volume_percent == -1  # never set
+    save_history(tmp_path, RadioHistory(volume_percent=35))
+    assert load_history(tmp_path).volume_percent == 35
+
+
+def test_volume_percent_out_of_range_is_treated_as_unset(tmp_path: Path) -> None:
+    # A corrupt/out-of-range level must not force a bogus volume on next launch.
+    save_history(tmp_path, RadioHistory(volume_percent=250))
+    assert load_history(tmp_path).volume_percent == -1
+
+
 def test_debug_mode_round_trips_and_defaults_off(tmp_path: Path) -> None:
     # quill-radio #5: the verbose-logging preference persists; absent = off.
     assert load_history(tmp_path).debug_mode is False

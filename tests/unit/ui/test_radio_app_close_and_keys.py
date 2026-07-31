@@ -406,12 +406,20 @@ def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) ->
     # override rebuilds the favorites tree and makes the screen reader
     # re-announce the station on every Volume Up/Down keystroke. It uses the
     # disk-only _persist_radio_favorites instead.
+    from quill.ui import main_frame_radio
     from quill.ui.main_frame_radio import RadioMixin
 
     calls: list[str] = []
+    monkeypatch.setattr(main_frame_radio, "app_data_dir", lambda: "unused")
+    monkeypatch.setattr(
+        main_frame_radio.radio_history,
+        "save_history",
+        lambda _dir, _hist: calls.append("save_history(disk only)"),
+    )
     favorite = SimpleNamespace(volume_percent=50)
     frame = SimpleNamespace(
         _radio_history_key="uuid-1",
+        _radio_history=SimpleNamespace(volume_percent=-1),
         _radio_favorites=SimpleNamespace(
             find=lambda _key: favorite,
             set_volume=lambda _key, vol: calls.append(f"set_volume={vol}"),
@@ -430,6 +438,32 @@ def test_volume_persist_does_not_reload_tree(monkeypatch: pytest.MonkeyPatch) ->
     assert "set_volume=60" in calls
     assert "persist_radio_favorites(disk only)" in calls
     assert "save_radio_favorites(RELOADS TREE)" not in calls
+    # #1263: the level is also remembered globally (disk-only history save) so a
+    # non-favorite station doesn't come back at full volume next launch.
+    assert frame._radio_history.volume_percent == 60
+    assert "save_history(disk only)" in calls
+
+
+def test_resolve_volume_falls_back_to_last_global_level() -> None:
+    # #1263: a non-favorite station plays at the last global volume the listener
+    # set, not the controller's 100% default. A favorite still wins with its own.
+    from quill.ui.main_frame_radio import RadioMixin
+
+    frame = SimpleNamespace(
+        _radio_history=SimpleNamespace(volume_percent=40),
+        _radio_favorites=SimpleNamespace(find=lambda _key: None),
+    )
+    station = SimpleNamespace(station_uuid="uuid-x", stream_url="s")
+    assert RadioMixin._radio_resolve_volume(frame, station) == 40  # type: ignore[arg-type]
+
+    # A favorite with its own remembered level takes precedence.
+    frame._radio_favorites = SimpleNamespace(find=lambda _key: SimpleNamespace(volume_percent=75))
+    assert RadioMixin._radio_resolve_volume(frame, station) == 75  # type: ignore[arg-type]
+
+    # Nothing ever set globally -> -1 tells the controller to leave volume alone.
+    frame._radio_history = SimpleNamespace(volume_percent=-1)
+    frame._radio_favorites = SimpleNamespace(find=lambda _key: None)
+    assert RadioMixin._radio_resolve_volume(frame, station) == -1  # type: ignore[arg-type]
 
 
 # ---------------------------------------------------------------------------
