@@ -6827,21 +6827,27 @@ If the cursor is at the very end of the document, it tells you so rather than gu
 
 QUILL keeps formatting codes **hidden** so your editing buffer stays clean, fast plain text. **Reveal Codes** lets you see and hear every one of them on demand — the beloved WordPerfect feature, rebuilt for a screen reader. Press **Alt+F3** (or tick **View → Reveal Codes**) to open a pane below the editor that shows your document as an ordered stream of bracketed codes and text: `[Bold On]`, `[Font: Arial]`, `[Size: 14]`, `[Center]`, `[Heading 2]`, `[Link: …]`, `[Tab]`, `[¶ Hard Return]`, `[No-Break Space]`, `[Smart Quote]`, and so on. The editor itself does not change — Reveal Codes is a window onto the hidden scaffolding, not a different way of editing.
 
-**Moving between the panes.** **F6** cycles through the regions — Editor → Reveal Codes (when shown) → Status Bar — and **Shift+F6** cycles back, exactly like switching windows. The two carets stay in sync: when you move in the Reveal Codes pane, the editor's cursor follows to the matching place, and when you move the editor cursor, the pane highlights the code or text you are on. So you can sit in the pane, arrow through the codes, and your place in the document tracks along.
+**Moving between the panes.** **F6** cycles through the regions — Editor → Reveal Codes (when shown) → Status Bar — and **Shift+F6** cycles back, exactly like switching windows. The two carets stay in sync **no matter how you move** — arrow keys, word jumps, Home/End, Page Up/Down, a mouse click, or a jump from Find: when you move in the editor above, the pane follows to the same spot, and when you move in the pane, the editor's cursor follows to the matching place. So you can sit in either one and your place in the document always tracks along.
 
-**Hearing the codes.** Each code is its own labelled, individually-announced item — your screen reader says "bold on", "tab", "centred", "font Arial" as a single unit, never spelled out letter by letter. Within the pane you can:
+**Navigating the codes — it feels like editing text.** In the default **Flowed** view the pane reads like your document with the hidden scaffolding made visible, and the caret moves the way it does in the editor:
 
-- **Arrow up and down** to move through every code and text run in order.
-- Jump **code to code** (skipping the plain text) to scan structure quickly.
-- Jump from an opening code such as `[Bold On]` to its matching `[Bold Off]`, and hear how far the formatting reaches ("bold on, 12 characters").
+- **Left/Right arrow** walk through the text one character at a time — but step *over* a whole code as a single unit. One press moves you across `[Bold On]` and your screen reader simply says "bold on"; it is never spelled out letter by letter.
+- **Ctrl+Left/Right** move by **word**, stopping at each code.
+- **Up/Down arrow** move by **line**, reading the new line just like the editor does.
+- **Home/End** go to the start and end of the line; **Ctrl+Home/End** to the top and bottom of the document.
+- Land on a code and hear it named as a unit — "bold on", "tab", "centred", "font Arial" — and an opening code also tells you how far its formatting reaches ("bold on, 12 characters").
+
+Because the pane speaks for itself as you arrow, **it no longer repeats "Reveal Codes" on every keypress** — the region is named once when you enter it, and after that you simply hear the character, word, line, or code you moved onto. This also makes **JAWS and NVDA behave the same here**: QUILL is the single voice during navigation, so the two screen readers no longer narrate the move differently.
+
+**Editing a run in place — press F2.** Move onto text that sits **between a pair of formatting codes** (for example the words inside `[Bold On] … [Bold Off]`) and press **F2**. The pane restricts you to just that region and lets you edit it freely; press **Enter** to apply your change back into the document or **Escape** to cancel. The surrounding codes are left exactly as they were. The whole region edits as one unit, so a run that contains a `[Tab]` or a nested code (bold text with an italic word inside it) comes along together — nested codes appear as their markup and are put straight back on Enter. Pressing F2 on plain, un-formatted text tells you there is no region to edit.
 
 **Two views and how chatty it is.** In **Settings → Editing** (or the View menu) choose:
 
-- **Structured** (default) — one item per code in an accessible list. The clearest mode for a screen reader: discrete, labelled, unambiguous.
-- **Flowed** — the codes rendered inline within the running text (`[Bold On]Hello[Bold Off]`), the closest match to the classic WordPerfect look and the most natural layout on a braille display.
+- **Flowed** (default) — the interactive surface described above: the codes rendered inline within the running text (`[Bold On]Hello[Bold Off]`), navigable character-by-character with F2 editing. The closest match to the classic WordPerfect look and the most natural layout on a braille display.
+- **Structured** — one item per code in an accessible list. A discrete, labelled, unambiguous alternative for scanning structure; your screen reader reads each item as you arrow through it. (Character, word, line, and F2 editing are features of the Flowed view.)
 - **Verbosity** — *quiet* (just the code name), *balanced* (adds an opening code's reach), or *detailed* (adds Unicode notes for invisibles).
 
-Reveal Codes is **hidden by default** and costs nothing until you open it. Your choices of view and verbosity are remembered between sessions.
+You can still jump **code to code** (skipping the plain text) and from an opening code to its matching close in either view. Reveal Codes is **hidden by default** and costs nothing until you open it. Your choices of view and verbosity are remembered between sessions.
 
 ### Read Aloud
 

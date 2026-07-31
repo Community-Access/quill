@@ -118,7 +118,7 @@ class Settings:
     # Reveal Codes pane (WordPerfect-style hidden-code inspector). Hidden by
     # default; Alt+F3 toggles it, F6 cycles focus into it.
     reveal_codes_visible: bool = False
-    reveal_codes_view: str = "structured"  # "structured" | "flowed"
+    reveal_codes_view: str = "flowed"  # "flowed" (interactive) | "structured"
     reveal_codes_verbosity: str = "balanced"  # "quiet" | "balanced" | "detailed"
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
@@ -674,9 +674,9 @@ class Settings:
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
         spellcheck_language = str(data.get("spellcheck_language", "en_US")).strip() or "en_US"
         reveal_codes_visible = bool(data.get("reveal_codes_visible", False))
-        reveal_codes_view = str(data.get("reveal_codes_view", "structured")).strip().lower()
+        reveal_codes_view = str(data.get("reveal_codes_view", "flowed")).strip().lower()
         if reveal_codes_view not in {"structured", "flowed"}:
-            reveal_codes_view = "structured"
+            reveal_codes_view = "flowed"
         reveal_codes_verbosity = str(data.get("reveal_codes_verbosity", "balanced")).strip().lower()
         if reveal_codes_verbosity not in {"quiet", "balanced", "detailed"}:
             reveal_codes_verbosity = "balanced"

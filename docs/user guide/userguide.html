@@ -28723,39 +28723,72 @@ way of editing.</p>
 <p><strong>Moving between the panes.</strong> <strong>F6</strong> cycles
 through the regions — Editor → Reveal Codes (when shown) → Status Bar —
 and <strong>Shift+F6</strong> cycles back, exactly like switching
-windows. The two carets stay in sync: when you move in the Reveal Codes
-pane, the editor’s cursor follows to the matching place, and when you
-move the editor cursor, the pane highlights the code or text you are on.
-So you can sit in the pane, arrow through the codes, and your place in
-the document tracks along.</p>
-<p><strong>Hearing the codes.</strong> Each code is its own labelled,
-individually-announced item — your screen reader says “bold on”, “tab”,
-“centred”, “font Arial” as a single unit, never spelled out letter by
-letter. Within the pane you can:</p>
+windows. The two carets stay in sync <strong>no matter how you
+move</strong> — arrow keys, word jumps, Home/End, Page Up/Down, a mouse
+click, or a jump from Find: when you move in the editor above, the pane
+follows to the same spot, and when you move in the pane, the editor’s
+cursor follows to the matching place. So you can sit in either one and
+your place in the document always tracks along.</p>
+<p><strong>Navigating the codes — it feels like editing text.</strong>
+In the default <strong>Flowed</strong> view the pane reads like your
+document with the hidden scaffolding made visible, and the caret moves
+the way it does in the editor:</p>
 <ul>
-<li><strong>Arrow up and down</strong> to move through every code and
-text run in order.</li>
-<li>Jump <strong>code to code</strong> (skipping the plain text) to scan
-structure quickly.</li>
-<li>Jump from an opening code such as <code>[Bold On]</code> to its
-matching <code>[Bold Off]</code>, and hear how far the formatting
-reaches (“bold on, 12 characters”).</li>
+<li><strong>Left/Right arrow</strong> walk through the text one
+character at a time — but step <em>over</em> a whole code as a single
+unit. One press moves you across <code>[Bold On]</code> and your screen
+reader simply says “bold on”; it is never spelled out letter by
+letter.</li>
+<li><strong>Ctrl+Left/Right</strong> move by <strong>word</strong>,
+stopping at each code.</li>
+<li><strong>Up/Down arrow</strong> move by <strong>line</strong>,
+reading the new line just like the editor does.</li>
+<li><strong>Home/End</strong> go to the start and end of the line;
+<strong>Ctrl+Home/End</strong> to the top and bottom of the
+document.</li>
+<li>Land on a code and hear it named as a unit — “bold on”, “tab”,
+“centred”, “font Arial” — and an opening code also tells you how far its
+formatting reaches (“bold on, 12 characters”).</li>
 </ul>
+<p>Because the pane speaks for itself as you arrow, <strong>it no longer
+repeats “Reveal Codes” on every keypress</strong> — the region is named
+once when you enter it, and after that you simply hear the character,
+word, line, or code you moved onto. This also makes <strong>JAWS and
+NVDA behave the same here</strong>: QUILL is the single voice during
+navigation, so the two screen readers no longer narrate the move
+differently.</p>
+<p><strong>Editing a run in place — press F2.</strong> Move onto text
+that sits <strong>between a pair of formatting codes</strong> (for
+example the words inside <code>[Bold On] … [Bold Off]</code>) and press
+<strong>F2</strong>. The pane restricts you to just that region and lets
+you edit it freely; press <strong>Enter</strong> to apply your change
+back into the document or <strong>Escape</strong> to cancel. The
+surrounding codes are left exactly as they were. The whole region edits
+as one unit, so a run that contains a <code>[Tab]</code> or a nested
+code (bold text with an italic word inside it) comes along together —
+nested codes appear as their markup and are put straight back on Enter.
+Pressing F2 on plain, un-formatted text tells you there is no region to
+edit.</p>
 <p><strong>Two views and how chatty it is.</strong> In <strong>Settings
 → Editing</strong> (or the View menu) choose:</p>
 <ul>
-<li><strong>Structured</strong> (default) — one item per code in an
-accessible list. The clearest mode for a screen reader: discrete,
-labelled, unambiguous.</li>
-<li><strong>Flowed</strong> — the codes rendered inline within the
-running text (<code>[Bold On]Hello[Bold Off]</code>), the closest match
-to the classic WordPerfect look and the most natural layout on a braille
-display.</li>
+<li><strong>Flowed</strong> (default) — the interactive surface
+described above: the codes rendered inline within the running text
+(<code>[Bold On]Hello[Bold Off]</code>), navigable
+character-by-character with F2 editing. The closest match to the classic
+WordPerfect look and the most natural layout on a braille display.</li>
+<li><strong>Structured</strong> — one item per code in an accessible
+list. A discrete, labelled, unambiguous alternative for scanning
+structure; your screen reader reads each item as you arrow through it.
+(Character, word, line, and F2 editing are features of the Flowed
+view.)</li>
 <li><strong>Verbosity</strong> — <em>quiet</em> (just the code name),
 <em>balanced</em> (adds an opening code’s reach), or <em>detailed</em>
 (adds Unicode notes for invisibles).</li>
 </ul>
-<p>Reveal Codes is <strong>hidden by default</strong> and costs nothing
+<p>You can still jump <strong>code to code</strong> (skipping the plain
+text) and from an opening code to its matching close in either view.
+Reveal Codes is <strong>hidden by default</strong> and costs nothing
 until you open it. Your choices of view and verbosity are remembered
 between sessions.</p>
 <h3 id="read-aloud">Read Aloud</h3>

@@ -279,6 +279,25 @@ def test_current_document_format_follows_the_mode() -> None:
     assert markup._document_format_status_text() == "Markdown"
 
 
+def test_switching_format_updates_what_the_status_cell_reports() -> None:
+    """Regression: on a fresh Untitled doc, picking Markdown from the status bar
+    must change the Format cell text. The pin set by set_document_format was read
+    through ``_current_tab``, which was never assigned and always resolved to None,
+    so the cell kept showing the auto-detected format (plain). ``_current_tab`` now
+    resolves to the active tab, so the pin is honoured end to end."""
+    frame = _frame("markup")
+    frame._request_menu_refresh = lambda: None
+    # Real _current_tab property delegating to the stubbed _active_tab.
+    assert frame._current_tab is not None
+    assert frame.current_document_format() == "plain"  # nothing pinned yet
+
+    frame.set_document_format("markdown")
+
+    assert frame._current_tab._language_profile_pinned is True
+    assert frame.current_document_format() == "markdown"
+    assert frame._document_format_status_text() == "Markdown"
+
+
 def test_retarget_records_pending_suffix_and_save_redirect(tmp_path: Path) -> None:
     frame = _frame("markup")
     tab = frame._active_tab()

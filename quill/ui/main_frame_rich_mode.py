@@ -480,12 +480,18 @@ class RichModeMixin:
         return choice
 
     def _pin_markup_kind_for_tab(self, tab: object, kind: str) -> None:
-        """Pin the tab's markup kind (the Document Language machinery's shape)."""
+        """Pin the tab's markup kind via the shared Document Language machinery.
 
-        class _PinnedProfile:
-            markup_kind = kind
+        Stores a real :class:`LanguageProfile` (not a bare stub) because the same
+        ``tab._language_profile`` slot is read by the language-profile consumers
+        (status bar Language cell, token classification, auto-indent), which
+        expect ``name``/``keywords``/``indent_unit``/``uses_tabs`` — a stub with
+        only ``markup_kind`` would crash them now that ``_current_tab`` resolves.
+        """
+        from quill.core.language_profile import LanguageProfile
 
-        tab._language_profile = _PinnedProfile()
+        label = {"markdown": "Markdown", "html": "HTML"}.get(kind, "Plain text")
+        tab._language_profile = LanguageProfile(name=label, extensions=(), markup_kind=kind)
         tab._language_profile_pinned = True
 
     def describe_caret_formatting_rich(self) -> str | None:

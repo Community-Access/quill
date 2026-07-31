@@ -354,6 +354,52 @@ anything that will not survive the conversion.</p>
 save proposes a filename with the correct extension — for example,
 <code>notes.md</code> becomes <code>notes.rtf</code> — so the file on
 disk always tells the truth about the format inside it.</p>
+<h3
+id="reveal-codes-see-hear-and-now-edit-the-hidden-scaffolding">Reveal
+Codes — see, hear, and now <em>edit</em> the hidden scaffolding</h3>
+<p>QUILL keeps formatting codes hidden so your editing buffer stays
+clean plain text. <strong>Reveal Codes</strong>
+(<strong>Alt+F3</strong>, or <strong>View → Reveal Codes</strong>) is
+the on-demand companion that makes every one of them visible and
+speakable — the beloved WordPerfect feature, rebuilt
+screen-reader-first. In 1.0.0 it grew up from a list you scan into a
+surface you <em>live in</em>.</p>
+<p><strong>It now feels like editing text.</strong> The default
+<strong>Flowed</strong> view reads like your document with the hidden
+scaffolding shown inline (<code>[Bold On]Hello[Bold Off]</code>), and
+the caret moves exactly the way it does in the editor:</p>
+<ul>
+<li><strong>Left/Right</strong> walk one character at a time through
+text — but step <em>over</em> a whole code as a single unit. One press
+crosses <code>[Bold On]</code> and you simply hear “bold on,” never
+spelled out.</li>
+<li><strong>Ctrl+Left/Right</strong> move by word;
+<strong>Up/Down</strong> move by line and read it;
+<strong>Home/End</strong> (and <strong>Ctrl+Home/End</strong>) go to the
+ends of the line and document.</li>
+</ul>
+<p><strong>It stopped talking over itself.</strong> Reveal Codes used to
+say “Reveal Codes” on <em>every</em> arrow press, and JAWS and NVDA
+narrated the same move differently because two voices were speaking at
+once. Now the pane is the single voice while you navigate: the region is
+named once when you enter it, and after that you hear only the
+character, word, line, or code you landed on — identically in JAWS and
+NVDA.</p>
+<p><strong>Edit a run in place with F2.</strong> Land on text that sits
+between a pair of codes — the words inside
+<code>[Bold On] … [Bold Off]</code> — and press <strong>F2</strong>. The
+pane restricts you to just that region for free editing;
+<strong>Enter</strong> applies your change back into the document,
+<strong>Escape</strong> cancels, and the surrounding codes are left
+untouched. The whole region comes along as a unit, so a run containing a
+<code>[Tab]</code> or a nested code (bold text with an italic word
+inside) edits together.</p>
+<p><strong>The two carets stay locked together, however you
+move</strong> — arrows, word jumps, Home/End, Page Up/Down, a mouse
+click, or a jump from Find. Move in the editor and the pane follows;
+move in the pane and the editor follows. A <strong>Structured</strong>
+list view (one labelled item per code) remains available for scanning,
+and your view and verbosity choices persist between sessions.</p>
 <h3 id="rich-editing-on-macos-ready-from-the-first-launch">Rich editing
 on macOS — ready from the first launch</h3>
 <p>Rich mode ships ready to use on the Mac. The macOS editor remains the
