@@ -139,14 +139,49 @@ def _maybe_dark(body: str, dark: bool) -> str:
     return f"{_PREVIEW_DARK_STYLE}{body}" if dark else body
 
 
-def render_preview_body(text: str, kind: str, dark: bool = False) -> str:
-    """Render just the body fragment (no <html> wrapper) for a preview surface."""
+def render_preview_body(
+    text: str, kind: str, dark: bool = False, *, source_map: bool = False
+) -> str:
+    """Render just the body fragment (no <html> wrapper) for a preview surface.
+
+    When ``source_map`` is True, block-level Markdown elements are stamped with a
+    ``data-src="<line>"`` attribute giving the 0-based source line the block
+    starts on. This lets the live side preview map a right-clicked (or Entered)
+    block back to a caret offset in the editor (#1257). It is off by default so
+    every other consumer — HTML export, clipboard, publish, vault — keeps
+    emitting clean markup with no editor-only attributes.
+    """
     text = _sanitize_preview_text(text)
     if kind == "markdown":
-        return _maybe_dark(_render_markdown(text), dark)
+        return _maybe_dark(_render_markdown(text, source_map=source_map), dark)
     if kind == "html":
         return _maybe_dark(_render_html(text), dark)
     return _maybe_dark(f"<pre>{html.escape(text)}</pre>", dark)
+
+
+def markup_offset_for_line(text: str, line_index: int) -> int:
+    """Return the character offset where 0-based *line_index* starts in *text*.
+
+    Uses ``str.splitlines(keepends=True)`` so the indexing matches the
+    ``splitlines()`` the Markdown renderer walks — the two stay in lock-step
+    across ``\\n``, ``\\r\\n``, and bare ``\\r`` terminators. An out-of-range
+    index clamps to the start (negative) or end (past the last line) of *text*.
+    """
+    if line_index <= 0:
+        return 0
+    offset = 0
+    line = 0
+    for segment in text.splitlines(keepends=True):
+        if line == line_index:
+            return offset
+        offset += len(segment)
+        line += 1
+    return len(text)
+
+
+def _src_attr(source_map: bool, line_index: int) -> str:
+    """The ``data-src`` attribute for a block, or empty when mapping is off."""
+    return f' data-src="{line_index}"' if source_map else ""
 
 
 def render_preview_html(title: str, text: str, kind: str, start_anchor: str | None = None) -> str:
@@ -365,9 +400,9 @@ def _is_table_separator(line: str) -> bool:
     return all(re.fullmatch(r":?-+:?", cell) is not None for cell in cells if cell != "")
 
 
-def _render_table(header: str, rows: list[str]) -> str:
+def _render_table(header: str, rows: list[str], src_attr: str = "") -> str:
     headers = _split_table_row(header)
-    parts = ["<table>", "<thead>", "<tr>"]
+    parts = [f"<table{src_attr}>", "<thead>", "<tr>"]
     parts += [f"<th>{_render_inline(cell)}</th>" for cell in headers]
     parts += ["</tr>", "</thead>", "<tbody>"]
     for row in rows:
@@ -476,20 +511,25 @@ def _div_style_from_attrs(raw: str) -> str:
     return "; ".join(decl)
 
 
-def _render_markdown(text: str) -> str:
+def _render_markdown(text: str, *, source_map: bool = False) -> str:
     lines = text.splitlines()
     blocks: list[str] = []
     paragraph: list[str] = []
+    paragraph_start = 0
     list_items: list[str] = []
     list_tag = ""
     list_start = 1
     code_lines: list[str] = []
+    code_start = 0
     in_code = False
 
     def flush_paragraph() -> None:
         nonlocal paragraph
         if paragraph:
-            blocks.append(f"<p>{_render_inline(' '.join(paragraph))}</p>")
+            blocks.append(
+                f"<p{_src_attr(source_map, paragraph_start)}>"
+                f"{_render_inline(' '.join(paragraph))}</p>"
+            )
             paragraph = []
 
     def flush_list() -> None:
@@ -528,7 +568,11 @@ def _render_markdown(text: str) -> str:
         stripped = line.rstrip()
         if in_code:
             if stripped.startswith("```"):
-                blocks.append("<pre><code>" + html.escape("\n".join(code_lines)) + "</code></pre>")
+                blocks.append(
+                    f"<pre{_src_attr(source_map, code_start)}><code>"
+                    + html.escape("\n".join(code_lines))
+                    + "</code></pre>"
+                )
                 in_code = False
                 code_lines = []
             else:
@@ -539,6 +583,7 @@ def _render_markdown(text: str) -> str:
             flush_paragraph()
             flush_list()
             in_code = True
+            code_start = index
             index += 1
             continue
         # GFM pipe table: a row containing "|" immediately followed by a
@@ -547,18 +592,21 @@ def _render_markdown(text: str) -> str:
         if "|" in stripped and index + 1 < total and _is_table_separator(lines[index + 1]):
             flush_paragraph()
             flush_list()
+            table_start = index
             header = stripped
             index += 2
             rows: list[str] = []
             while index < total and lines[index].strip() and "|" in lines[index]:
                 rows.append(lines[index])
                 index += 1
-            blocks.append(_render_table(header, rows))
+            blocks.append(_render_table(header, rows, _src_attr(source_map, table_start)))
             continue
         if _PAGEBREAK_CODE_RE.match(stripped):
             flush_paragraph()
             flush_list()
-            blocks.append('<div style="page-break-after: always"></div>')
+            blocks.append(
+                f'<div{_src_attr(source_map, index)} style="page-break-after: always"></div>'
+            )
             index += 1
             continue
         fence_open = _FENCE_OPEN_CODE_RE.match(stripped)
@@ -566,7 +614,8 @@ def _render_markdown(text: str) -> str:
             flush_paragraph()
             flush_list()
             style = _div_style_from_attrs(fence_open.group(1))
-            blocks.append(f'<div style="{style}">' if style else "<div>")
+            src = _src_attr(source_map, index)
+            blocks.append(f'<div{src} style="{style}">' if style else f"<div{src}>")
             index += 1
             continue
         if _FENCE_CLOSE_CODE_RE.match(stripped):
@@ -578,12 +627,13 @@ def _render_markdown(text: str) -> str:
         if _THEMATIC_BREAK_RE.match(stripped):
             flush_paragraph()
             flush_list()
-            blocks.append("<hr>")
+            blocks.append(f"<hr{_src_attr(source_map, index)}>")
             index += 1
             continue
         if re.match(r"^\s*>\s?", stripped):
             flush_paragraph()
             flush_list()
+            quote_start = index
             quote_lines: list[str] = []
             while index < total:
                 match = re.match(r"^\s*>\s?(.*)$", lines[index].rstrip())
@@ -591,7 +641,11 @@ def _render_markdown(text: str) -> str:
                     break
                 quote_lines.append(_render_inline(match.group(1)))
                 index += 1
-            blocks.append("<blockquote>" + "<br>".join(quote_lines) + "</blockquote>")
+            blocks.append(
+                f"<blockquote{_src_attr(source_map, quote_start)}>"
+                + "<br>".join(quote_lines)
+                + "</blockquote>"
+            )
             continue
         heading = re.match(r"^(#{1,6})\s+(.*)$", stripped)
         if heading:
@@ -600,7 +654,10 @@ def _render_markdown(text: str) -> str:
             level = len(heading.group(1))
             title = heading.group(2).strip()
             slug = _slugify(title)
-            blocks.append(f'<h{level} id="{slug}">{_render_inline(title)}</h{level}>')
+            blocks.append(
+                f'<h{level} id="{slug}"{_src_attr(source_map, index)}>'
+                f"{_render_inline(title)}</h{level}>"
+            )
             index += 1
             continue
         bullet = re.match(r"^(\s*)([-*+])\s+(.*)$", line)
@@ -613,7 +670,9 @@ def _render_markdown(text: str) -> str:
                     list_start = int(numbered.group(2))
             item_match = bullet or numbered
             assert item_match is not None  # one of the two matched
-            list_items.append(f"<li>{_render_inline(item_match.group(3))}</li>")
+            list_items.append(
+                f"<li{_src_attr(source_map, index)}>{_render_inline(item_match.group(3))}</li>"
+            )
             index += 1
             continue
         if not stripped:
@@ -626,11 +685,17 @@ def _render_markdown(text: str) -> str:
             continue
         if list_tag:
             flush_list()
+        if not paragraph:
+            paragraph_start = index
         paragraph.append(stripped)
         index += 1
 
     if in_code:
-        blocks.append("<pre><code>" + html.escape("\n".join(code_lines)) + "</code></pre>")
+        blocks.append(
+            f"<pre{_src_attr(source_map, code_start)}><code>"
+            + html.escape("\n".join(code_lines))
+            + "</code></pre>"
+        )
     flush_paragraph()
     flush_list()
     return "\n".join(blocks) if blocks else f"<p>{html.escape(text) or '&nbsp;'}</p>"
