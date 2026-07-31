@@ -19,7 +19,7 @@ from quill.core.app_launcher import APP_NAMES
 
 #: The order siblings are listed in the QuillVille menu (the current app is
 #: skipped via ``exclude``).
-QUILLVILLE_APP_ORDER: tuple[str, ...] = ("quill", "radio", "weather", "cast", "studio")
+QUILLVILLE_APP_ORDER: tuple[str, ...] = ("quill", "radio", "weather", "cast", "studio", "converter")
 
 #: Apps that have shipped a public release and may be offered as "Open ..."
 #: targets. Quill Cast and Audio Studio are built but not released yet, so they
