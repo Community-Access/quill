@@ -369,6 +369,7 @@ class Settings:
     shell_verb_ocr_structured: bool = False
     shell_verb_open: bool = True
     shell_verb_read: bool = False
+    shell_verb_convert: bool = False
     shell_file_types: str = "images_pdf"
     ocr_structured: bool = False
     ocr_capture_geometry: bool = False
@@ -954,6 +955,7 @@ class Settings:
         shell_verb_ocr_structured = bool(data.get("shell_verb_ocr_structured", False))
         shell_verb_open = bool(data.get("shell_verb_open", True))
         shell_verb_read = bool(data.get("shell_verb_read", False))
+        shell_verb_convert = bool(data.get("shell_verb_convert", False))
         shell_file_types = str(data.get("shell_file_types", "images_pdf")).strip().lower()
         if shell_file_types not in {"images", "images_pdf", "images_pdf_docs"}:
             shell_file_types = "images_pdf"
@@ -1411,6 +1413,7 @@ class Settings:
             shell_verb_ocr_structured=shell_verb_ocr_structured,
             shell_verb_open=shell_verb_open,
             shell_verb_read=shell_verb_read,
+            shell_verb_convert=shell_verb_convert,
             shell_file_types=shell_file_types,
             ocr_structured=ocr_structured,
             ocr_capture_geometry=ocr_capture_geometry,
