@@ -41,6 +41,7 @@ def _has_portable_evidence(anchor: Path) -> bool:
             "QuillWeather.exe",
             "QuillAudioStudio.exe",
             "QUILLCast.exe",
+            "QuillConverter.exe",
         )
     )
     has_data = (anchor / "data").is_dir()
