@@ -28949,6 +28949,76 @@ Workbench on a corpus chaptered MP3 from the edit journey, and drives
 the silence-proposal parameters dialog from the Workbench. A regression
 in focus order, modal-id wiring, or screen-reader announcements is
 caught by the robot overnight instead of by your ears after release.</p>
+<h3 id="the-universal-audio-converter">The Universal Audio
+Converter</h3>
+<p>Separate from the audiobook wizard, QUILL has a general-purpose
+<strong>audio converter</strong>: it changes audio files between formats
+— and pulls the audio track out of video files — entirely on your
+machine through the bundled ffmpeg, so it works in Safe Mode and never
+uploads anything. There is one converter engine behind five doors, so
+you can reach it however you already work:</p>
+<ul>
+<li><strong>Audio Studio → Voices → Convert Audio…</strong> — the dialog
+form.</li>
+<li><strong>Quill Converter</strong> — a standalone tray app, launched
+with <code>python -m quill.apps.converter</code> (or its own icon). It
+carries the QuillVille menu like the other family apps, minimizes to the
+tray, and has its own show/hide hotkey (Ctrl+Alt+Shift+C).</li>
+<li><strong><code>quill convert</code></strong> — a headless command for
+scripts:
+<code>quill convert *.wav --to mp3 --preset podcast --out ./done</code>.
+Add <code>--dry-run</code> to see the plan, <code>--list-presets</code>
+or <code>--list-formats</code> to introspect, and any of the Advanced
+options (<code>--bitrate</code>, <code>--sample-rate</code>,
+<code>--channels</code>, <code>--loudness</code>, <code>--gain</code>,
+<code>--high-pass</code>, <code>--trim-silence</code>,
+<code>--speed</code>, <code>--compress</code>, <code>--level</code>,
+<code>--fade-in</code>, <code>--fade-out</code>).</li>
+<li><strong>Windows Explorer</strong> — turn on <strong>Settings →
+Integration → Offer “Convert with QUILL”</strong> and right-clicking an
+audio or video file gains a <strong>Convert with Quill</strong> entry
+that opens the standalone converter with that file already queued.</li>
+<li><strong>Convert from URL…</strong> — paste a link (YouTube and the
+many sites yt-dlp supports) and QUILL downloads the best-audio stream,
+then hands it to the converter. This is the one part that uses the
+network: yt-dlp is <strong>not</strong> bundled, so the first time you
+use it QUILL asks once, shows a rights notice (“only download content
+you have the right to use”), and installs the small yt-dlp component on
+demand. It is unavailable in Safe Mode.</li>
+</ul>
+<p><strong>Building a batch.</strong> Add individual files or whole
+folders (a folder is scanned, and its tree is mirrored into the output
+folder), choose the output <strong>format</strong> — only the formats
+your ffmpeg can actually encode are offered, so a conversion never fails
+half-way for lack of an encoder — and pick a <strong>preset</strong>:
+<em>Just convert</em> (change container only), <em>MP3 128/192/320</em>,
+<em>Podcast</em>, <em>Audiobook</em>, <em>Voice memo</em>, <em>Web
+Opus</em>, <em>Archival FLAC</em>, or <em>Hearing-aid mono</em>. Choose
+an output folder (or let it default to a <code>Converted</code>
+sub-folder beside the source) and a conflict policy —
+<strong>auto-number</strong> (never overwrites an original),
+<strong>skip</strong>, or <strong>overwrite</strong>. The batch runs
+across several workers off the UI thread, so the window stays
+responsive; progress shows in the status bar and, when minimized, in the
+tray tooltip, and the final summary is spoken and always names any files
+that failed rather than reporting a silent success.</p>
+<p><strong>Advanced mode.</strong> An <strong>Advanced options</strong>
+panel (a checkbox that reveals more controls, or the
+<strong>Advanced…</strong> button in the standalone app) exposes the
+full processing catalog on top of the preset: exact <strong>bit
+rate</strong>, <strong>sample rate</strong>, <strong>channels</strong>
+(keep / mono / stereo), and <strong>bit depth</strong>;
+loudness-normalize to an <strong>audiobook</strong> (−20 LUFS, ACX) or
+<strong>podcast</strong> (−16 LUFS) target; <strong>gain</strong> in
+decibels; a <strong>high-pass</strong> filter to remove low-frequency
+rumble; <strong>trim silence</strong> from the ends;
+<strong>speed</strong> (a tempo change from 0.5× to 2× with no pitch
+shift); a <strong>compressor</strong> and a volume
+<strong>leveler</strong>; and <strong>fade in</strong> / <strong>fade
+out</strong> in seconds. Each control leaves the preset untouched until
+you change it, so Advanced only overrides what you deliberately set.
+Every effect is composed from the same tested filter builders QUILL uses
+elsewhere, so the results match the rest of the app.</p>
 <h3 id="the-chapter-workbench">The Chapter Workbench</h3>
 <p>The Workbench is where a finished audiobook gets fixed by ear. The
 chapter list reads each row in full (“3. The Long Road — starts 1:02:03,

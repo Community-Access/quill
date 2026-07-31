@@ -2485,6 +2485,43 @@ two near-identical surfaces share one accessible path.)
   surfaces — Auphonic post-processing, RSS podcast feeds, SFTP publishing, and
   MusicBrainz/Open Library metadata lookup.
 
+### 5.25g Universal Audio Converter (shipped, #1255)
+
+A general-purpose audio format converter — distinct from the audiobook/speech
+pipeline — that changes audio files between formats and extracts audio from
+video, entirely on-device through the bundled FFmpeg.
+
+- **One engine, five surfaces.** A single wx-free engine (`core/audio/convert.py`,
+  `presets.py`, `dsp.py`, `url_import.py`, `convert_cli.py`) is surfaced through:
+  the Audio Studio dialog (**Voices → Convert Audio…**,
+  `ui/audio_studio/convert_audio_dialog.py`); a standalone **Quill Converter** app
+  (`apps/converter.py`, an `AppShellFrame` registered in `core/app_launcher.py`);
+  a headless `quill convert` CLI; a Windows Explorer **"Convert with Quill"** shell
+  verb (`core/shell_verbs.py`, gated by `shell_verb_convert`, routed through
+  `--action convert` to the converter app); and **Convert from URL** (on-demand
+  `yt-dlp`, consent-gated, egress-audited).
+- **Formats & capability probe.** Output formats are filtered to what the resolved
+  FFmpeg can actually encode (`available_output_formats` parses `ffmpeg -encoders`);
+  WAV/AIFF/CAF are always available. Video inputs auto-extract their audio track.
+- **Presets.** `just_convert`, `mp3_128/192/320`, `podcast`, `audiobook`,
+  `voice_memo`, `web_opus`, `archival_flac`, `hearing_aid_mono`.
+- **Advanced DSP catalog (§6).** Bit rate (CBR) / sample rate / channels / bit
+  depth, plus loudness-normalize (audiobook −20 LUFS / podcast −16 LUFS), gain,
+  high-pass, trim silence, tempo (no pitch shift), compressor, leveler, and
+  fades — composed by `dsp.build_dsp_filters` from the same tested filter builders
+  used elsewhere (`audio_enhance`, `speech.loudness`, `speech.audio_edit`).
+- **Batch model.** Mixed file/folder queue with source-tree mirroring, a conflict
+  policy (auto-number / skip / overwrite), multi-worker off-thread execution with
+  tray-aware progress, and a spoken summary that names failures (never a silent
+  success). Temp-then-move writes; pure argv command building (`build_convert_command`).
+- **Safety.** Fully offline through bundled FFmpeg, so available in Safe Mode.
+  Only URL import touches the network: `yt-dlp` is never bundled, installs on
+  demand after an explicit consent + rights notice, is recorded in the
+  network-egress audit (`YoutubeDL` marker), and is refused in Safe Mode.
+- **Deferred:** the standalone app's PyInstaller build entry + launcher tile icon
+  (after the build refactor settles); the app runs today via
+  `python -m quill.apps.converter`.
+
 ### 5.25a Speech Experience Platform (planned before implementation)
 
 This section defines the next speech milestone as a complete user-facing platform, not a single settings dialog.

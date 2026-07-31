@@ -824,6 +824,52 @@ checkout or the portable build, <code>run-quill-radio.bat</code> and
 <p>These apps are new — tell us how they behave with your screen reader
 through Help &gt; Report a Bug. Your reports are what graduated the
 braille fix; they will shape these apps the same way.</p>
+<h2
+id="convert-anything-to-anything-the-universal-audio-converter">Convert
+Anything to Anything: The Universal Audio Converter</h2>
+<p>Somewhere between “I recorded this in the wrong format” and “this
+podcast only downloads as an <code>.m4a</code> and my player wants MP3,”
+almost everyone hits the wall of audio conversion — and the usual answer
+is a sketchy website that wants you to upload your file. 1.0.0 gives you
+a real one that runs entirely on your own machine.</p>
+<p>The <strong>Universal Audio Converter</strong> changes audio files
+between formats — MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, AAC, and more —
+and pulls the audio track out of video files (MP4, MKV, MOV, WebM…)
+along the way. It converts through the same bundled FFmpeg the Audio
+Studio already uses, so there is nothing new to install, nothing is
+uploaded, and it works in Safe Mode. It only ever offers formats your
+FFmpeg can actually encode, so a batch never dies half-way for a missing
+encoder, and every run ends with a spoken summary that <strong>names the
+files that failed</strong> instead of quietly reporting success.</p>
+<p>There is one converter behind five doors, so you meet it wherever you
+already are. Inside the editor it is <strong>Audio Studio → Voices →
+Convert Audio…</strong>. As its own program it is <strong>Quill
+Converter</strong>, a standalone tray app that carries the QuillVille
+menu like the rest of the family and has its own show/hide hotkey
+(Ctrl+Alt+Shift+C). For scripts and power users there is a headless
+<strong><code>quill convert</code></strong> command with a
+<code>--dry-run</code> planner and the whole option set on the command
+line. Right-click an audio or video file in <strong>Windows
+Explorer</strong> and — once you turn the verb on in Settings —
+<strong>Convert with Quill</strong> opens it ready to go. And
+<strong>Convert from URL…</strong> pastes in a link (YouTube and the
+many sites yt-dlp supports), downloads the audio, and drops it straight
+into the converter.</p>
+<p>Pick a <strong>preset</strong> — Podcast, Audiobook, MP3 320, Web
+Opus, Archival FLAC, Hearing-aid mono, and more — or open
+<strong>Advanced</strong> for the full studio: exact bit rate, sample
+rate, channels and bit depth; loudness-normalize to an audiobook or
+podcast target; gain, a rumble-removing high-pass, silence trimming, a
+speed change with no pitch shift, a compressor, a volume leveler, and
+fades. Queue a single file or point it at a whole folder; it mirrors the
+folder’s structure, never overwrites an original unless you tell it to,
+and runs the batch across several workers while the window stays
+responsive and the tray shows progress.</p>
+<p>The one part that reaches the internet — Convert from URL — is honest
+about it: yt-dlp is <strong>not</strong> bundled, so the first time you
+use it QUILL asks once, shows a plain rights notice (only download what
+you have the right to use), installs the small component on demand, and
+stays off entirely in Safe Mode.</p>
 <h2 id="community-reports-real-repairs">Community Reports, Real
 Repairs</h2>
 <p>Every bug report is a person encountering friction while trying to
