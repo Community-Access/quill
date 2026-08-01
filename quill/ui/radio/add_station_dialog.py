@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.radio.live365 import normalize_live365
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -114,6 +115,14 @@ class AddStationDialog:
         if not name or not url:
             self._status.SetLabel("A station name and a stream URL are both required.")
             return None
+        # A Live365 player/station link (or bare a##### id) isn't itself a
+        # playable stream; rewrite it to the canonical stream URL so it plays.
+        # Pure string transform -- no network. Non-Live365 URLs pass through.
+        normalized = normalize_live365(url)
+        if normalized != url:
+            url = normalized
+            self._url_ctrl.ChangeValue(url)
+            self._status.SetLabel("Recognized a Live365 link -- using its stream URL.")
         if not (url.startswith("http://") or url.startswith("https://")):
             self._status.SetLabel("The stream URL should start with http:// or https://")
             return None
