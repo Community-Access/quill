@@ -258,10 +258,10 @@ def test_macos_release_workflow_installs_the_feedback_extra() -> None:
     yml = (
         pathlib.Path(__file__).resolve().parents[2] / ".github" / "workflows" / "macos-release.yml"
     ).read_text("utf-8")
-    assert ".[ui,spellcheck,macos,feedback,github]" in yml, (
+    assert ".[ui,spellcheck,macos,feedback,github,office-text]" in yml, (
         "macos-release.yml build job must install the [feedback] extra (#11)"
     )
-    assert ".[ui,spellcheck,macos,dev,feedback,github]" in yml, (
+    assert ".[ui,spellcheck,macos,dev,feedback,github,office-text]" in yml, (
         "macos-release.yml test job must install the [feedback] extra (#11)"
     )
 
@@ -289,11 +289,53 @@ def test_macos_release_workflow_installs_the_github_extra() -> None:
     yml = (
         pathlib.Path(__file__).resolve().parents[2] / ".github" / "workflows" / "macos-release.yml"
     ).read_text("utf-8")
-    # Both the build and test install specs end in ",github]".
-    assert yml.count(",github]") >= 2, (
+    # Both the build and test install specs carry ",github".
+    assert yml.count(",github,") >= 2, (
         "macos-release.yml build and test jobs must both install the [github] "
         "extra so PyGithub is bundled into the .app"
     )
+
+
+def test_macos_bundle_includes_the_document_readers() -> None:
+    """#1279: Word, PDF, and spreadsheet readers are all imported function-locally
+    (``quill.io.docx_text``, ``quill.io.docx_reader``, ``quill.io.pdf``,
+    ``quill.io.structured``), so py2app cannot trace them. Without the explicit
+    includes the shipped ``.app`` reads Word documents through the bare raw-XML
+    floor -- the flat, structureless text users reported as a bug -- and cannot
+    read PDF text or an .xlsx at all."""
+    includes = _macos_bundle_includes()
+    for module in ("docx", "pdfplumber", "pypdf", "openpyxl"):
+        assert module in includes, (
+            f"{module} must be in setup_macos.py OPTIONS['includes'] so the macOS "
+            ".app can read Word/PDF/Excel documents (#1279); it is imported "
+            "function-locally so py2app's import tracer cannot find it."
+        )
+
+
+def test_macos_release_workflow_installs_the_office_text_extra() -> None:
+    """#1279: the ``[office-text]`` extra (pdfplumber, pypdf, openpyxl) must be
+    installed in the macOS build and test jobs, or there is nothing for py2app to
+    include and the .app ships without a PDF or spreadsheet reader."""
+    yml = (
+        pathlib.Path(__file__).resolve().parents[2] / ".github" / "workflows" / "macos-release.yml"
+    ).read_text("utf-8")
+    assert yml.count(",office-text]") >= 2, (
+        "macos-release.yml build and test jobs must both install the "
+        "[office-text] extra so the PDF/spreadsheet readers are bundled"
+    )
+
+
+def test_office_text_extra_declares_the_document_readers(project: dict) -> None:
+    """The lean bundled extra must keep exactly the readers the packaged apps need.
+    MarkItDown deliberately stays out of it: magika pulls onnxruntime + numpy and
+    its spreadsheet converters pull pandas (~150 MB installed), so it remains the
+    optional Help > Download Optional Components pack (#1279)."""
+    office_text = _names(project["optional-dependencies"]["office-text"])
+    assert {"pdfplumber", "pypdf", "openpyxl"} <= office_text
+    assert "markitdown" not in office_text
+    # Word reads through python-docx, which must stay a base dependency so every
+    # install -- packaged or pip -- has it without an extra.
+    assert "python-docx" in _names(project["dependencies"])
 
 
 def test_github_extra_is_bundled_in_the_windows_installer() -> None:
