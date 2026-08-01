@@ -12,6 +12,7 @@ from collections.abc import Callable
 
 from quill.core.radio.live365 import normalize_live365
 from quill.core.radio.models import RadioStation
+from quill.core.radio.youtube import canonical_youtube_url, is_youtube_url
 from quill.ui.dialog_contract import apply_modal_ids
 
 
@@ -25,12 +26,18 @@ class AddStationDialog:
         controller: object,
         prefill: RadioStation | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        youtube_consent_cb: Callable[[], bool] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._controller = controller
         self._announce = announce_cb or (lambda _m: None)
+        #: Asks the listener for the one-time YouTube consent (#1268) and
+        #: reports whether it was given. Injected because it persists a setting
+        #: and describes an on-demand install -- neither belongs in a dialog.
+        #: None means YouTube links are refused with a clean message.
+        self._youtube_consent = youtube_consent_cb
         self._result: RadioStation | None = None
 
         self.dialog = wx.Dialog(
@@ -126,12 +133,29 @@ class AddStationDialog:
         if not (url.startswith("http://") or url.startswith("https://")):
             self._status.SetLabel("The stream URL should start with http:// or https://")
             return None
+        source = ""
+        if is_youtube_url(url):
+            # #1268: a YouTube link is saved as its tidy page URL, not as a
+            # stream -- YouTube's media URLs expire within hours, so the durable
+            # page link is what a favorite must hold, and it is re-resolved every
+            # time the station plays or records. Playing one reaches YouTube via
+            # yt-dlp, so it needs the one-time consent first.
+            if self._youtube_consent is None or not self._youtube_consent():
+                self._status.SetLabel("YouTube links need the one-time yt-dlp consent to play.")
+                return None
+            url = canonical_youtube_url(url)
+            self._url_ctrl.ChangeValue(url)
+            source = "YouTube"
+            self._status.SetLabel(
+                "Recognized a YouTube link -- it will be tuned in through yt-dlp."
+            )
         tags = tuple(t.strip() for t in self._tags_ctrl.GetValue().split(",") if t.strip())
         return RadioStation(
             name=name,
             stream_url=url,
             homepage=self._homepage_ctrl.GetValue().strip(),
             tags=tags,
+            source=source,
         )
 
     def _on_test(self, _event: object) -> None:

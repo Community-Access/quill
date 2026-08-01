@@ -4182,6 +4182,49 @@ scoped to app-focused, matching every QUILL-key chord except the one
 existing OS-level `RegisterHotKey` precedent (sticky notes), which stays a
 narrow, Windows-only exception.
 
+**YouTube stations (`core/radio/youtube.py`, #1268).** A listener asked for
+YouTube -- including YouTube Live -- to be playable and recordable "just like
+any other radio stream." It is, with three constraints shaping the design.
+
+*A YouTube link is a web page.* `is_youtube_url` recognizes watch links,
+`youtu.be` shorteners, `/live/`, `/shorts/`, `/embed/`, YouTube Music, and a
+channel's live page (`/@handle/live`, `/channel/<id>/live`);
+`canonical_youtube_url` collapses a video to
+`https://www.youtube.com/watch?v=<id>`, dropping playlist, timestamp, and
+tracking parameters so a favorite stores a durable link. `resolve_youtube_stream`
+turns that page into a playable audio URL through yt-dlp
+(`extract_info(download=False)`, best audio-only format, falling back to a
+combined HLS manifest so live broadcasts still play).
+
+*The playable URL expires.* YouTube signs its media URLs and they die within
+hours, so the resolved URL is **never persisted**: the favorite holds the page
+link and the stream is re-resolved on every play (`RadioPlayerController`) and
+at the moment of capture (`recording.py::_resolve_capture_url`). That is what
+lets a recording scheduled days in advance still work -- resolving at schedule
+time would capture nothing.
+
+*Resolving is a network round trip.* It cannot run on the UI thread; a frozen
+window is unusable with a screen reader. `ui/radio/youtube_playback.py` runs the
+resolve on a worker thread, announces CONNECTING immediately, and applies the
+result via `wx.CallAfter`. Every play and stop bumps a token, so a resolve that
+lands after the listener stopped or switched stations is discarded rather than
+hijacking playback. The station keeps its page URL in `state.station` (favorites,
+the now-playing line, and the recorder all need the durable one); the short-lived
+URL lives only in `_playback_url_override`, which the one cross-engine rescue
+reuses instead of resolving twice.
+
+*Consent and posture.* yt-dlp is **never bundled** -- it reaches arbitrary media
+hosts and updates constantly -- so it installs on demand, exactly as the
+converter's URL import does (§4.6). The one-time consent + rights notice
+(`ui/radio/youtube_ui.py`, persisted as `RadioHistory.youtube_consented`) is
+taken when a YouTube link is **added**, not when it plays: a scheduled recording
+can fire while nobody is at the computer, and that must never be the first time
+QUILL reaches YouTube. Refused in Safe Mode at every layer (core resolve, host
+resolver, consent prompt). The single egress site is recorded in the
+network-egress audit. A private, removed, region-blocked, or not-yet-live video
+produces a speakable reason rather than a silent failure or an HTML page handed
+to the audio engine.
+
 **Live365 link normalization (`core/radio/live365.py`).** The link a listener
 has for a Live365 station is almost never its stream: it is the station page
 (`live365.com/station/<slug>-a25891`) or the web player

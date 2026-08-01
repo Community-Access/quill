@@ -111,6 +111,18 @@ def _is_qualified_egress(call: ast.Call) -> bool:
 # Reviewed, allowed egress sites: "<relative path>::<enclosing function>" mapped
 # to the reason the call is not silent. Update this when adding a network call.
 _REVIEWED_EGRESS: dict[str, str] = {
+    "core/radio/youtube.py::_default_resolver": (
+        "Quill Radio's YouTube stations (#1268): asks yt-dlp for the audio stream "
+        "URL behind a YouTube page the listener saved as a station, so the player "
+        "and the recorder can treat it like any other stream. download=False -- "
+        "nothing is written to disk here; the media itself is streamed by the "
+        "player, or captured by ffmpeg for a recording the listener asked for. "
+        "Reached only for a station the listener explicitly added after accepting "
+        "the one-time consent + rights notice (RadioHistory.youtube_consented), "
+        "and only once yt-dlp has been installed on demand (never bundled). "
+        "Re-resolved on every play because YouTube's stream addresses expire; the "
+        "resolved URL is never persisted. Refused when QUILL_SAFE_MODE=1."
+    ),
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "

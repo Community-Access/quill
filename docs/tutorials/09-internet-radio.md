@@ -40,7 +40,11 @@ Two more buttons in Browse Stations cover the rest:
   before **Save**. Live365 links are handled for you: paste a station
   page, a `player.live365.com` link, or even a bare station id like
   `a25891`, and QUILL rewrites it to that station's real stream address
-  and tells you it did.
+  and tells you it did. A **YouTube** link works too — a video
+  link, a `youtu.be` link, or a channel's live page — and becomes a
+  station you can play, favorite, and record like any other. The first
+  time, QUILL shows a one-time notice and installs the small yt-dlp
+  component it uses to find the audio (not available in Safe Mode).
 - **Find Streams from a Website...** — type a station's own website
   address. QUILL fetches that one page and lists every stream-shaped link
   it finds (an audio tag, a `.pls`/`.m3u` playlist, a Shoutcast/Icecast
