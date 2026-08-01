@@ -114,7 +114,7 @@ ssh = ["paramiko>=5.0.0"]
 # (see requirements.txt). A higher floor has no wheel and makes pip compile
 # llama.cpp from source. Install via requirements.txt (which carries the
 # --extra-index-url) or pass that index so the wheel resolves.
-ai = ["llama-cpp-python==0.3.32"]
+ai = ["llama-cpp-python==0.3.34"]
 dictation = ["SpeechRecognition>=3.17.0"]
 # Offline speech-to-text (#617). The whisper.cpp executable + GGML models are
 # managed out-of-band (AI > Speech > Manage Speech Models); this optional extra

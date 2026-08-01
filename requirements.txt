@@ -43,7 +43,7 @@ pyenchant>=3.3.0
 # llama.cpp from source via CMake, which fails or hangs). Bump only after
 # confirming the index actually publishes a wheel for the new version.
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python==0.3.32
+llama-cpp-python==0.3.34
 
 # Dictation / voice input (mic permission required).
 SpeechRecognition>=3.17.0
