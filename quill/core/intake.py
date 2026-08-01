@@ -8,6 +8,23 @@ from typing import Any
 from quill.core.document import Document
 from quill.core.marks import line_column_for_position
 
+#: Below this extraction score the PDF text is treated as low confidence.
+_LOW_CONFIDENCE_SCORE = 50
+
+#: Advice for a low-confidence extraction. Reported by the open announcement and
+#: the intake report; never written into the document text (#1279).
+LOW_CONFIDENCE_HINT = "low-confidence extraction -- OCR (File > Import > OCR) may read it better."
+
+#: Reported when a Word/PowerPoint/Excel/PDF read fell back to the built-in
+#: extractor because the optional "PDF and Office text extraction" pack is not
+#: installed. The fallback works, but MarkItDown reads these formats far better,
+#: and the pack is a one-click download -- so the pointer belongs where the user
+#: just felt the difference (#1279).
+EXTRACTION_PACK_HINT = (
+    "for better Word, PowerPoint, Excel, and PDF text, install PDF and Office "
+    "text extraction from Help > Download Optional Components."
+)
+
 
 def build_intake_summary(document: Document, cursor_position: int | None = None) -> str:
     metadata = document.source_metadata
@@ -22,6 +39,11 @@ def build_intake_summary(document: Document, cursor_position: int | None = None)
             parts.append(f"{page_count} pages")
         parts.append(f"extracted by {engine}")
         parts.append(f"quality {quality}/100")
+        # #1279: this warning used to be prepended to the document text itself.
+        # It belongs in the open announcement and the intake report, not in the
+        # first line of the user's file.
+        if quality < _LOW_CONFIDENCE_SCORE:
+            parts.append(LOW_CONFIDENCE_HINT.rstrip("."))
     elif source_kind in {"csv", "tsv", "xlsx", "xls"}:
         engine = str(metadata.get("engine", source_kind))
         parts.append(f"{engine} table extract")
@@ -30,6 +52,8 @@ def build_intake_summary(document: Document, cursor_position: int | None = None)
         parts.append(f"{engine} extract")
     if metadata.get("ocr_used"):
         parts.append("OCR used")
+    if metadata.get("extraction_pack_missing"):
+        parts.append(EXTRACTION_PACK_HINT.rstrip("."))
     return ". ".join(parts) + "."
 
 
@@ -47,7 +71,10 @@ def build_intake_report(document: Document) -> str:
     if "extracted_pages" in metadata:
         lines.append(f"Pages with text: {metadata.get('extracted_pages', 0)}")
     if "quality_score" in metadata:
-        lines.append(f"Quality score: {metadata.get('quality_score', 0)}/100")
+        quality = int(metadata.get("quality_score", 0) or 0)  # type: ignore[call-overload]
+        lines.append(f"Quality score: {quality}/100")
+        if quality < _LOW_CONFIDENCE_SCORE:
+            lines.append(f"Note: {LOW_CONFIDENCE_HINT}")
     if metadata.get("ocr_used"):
         lines.append("OCR: yes")
     else:
@@ -56,6 +83,8 @@ def build_intake_report(document: Document) -> str:
         lines.append("AI: yes")
     else:
         lines.append("AI: no")
+    if metadata.get("extraction_pack_missing"):
+        lines.append(f"Note: {EXTRACTION_PACK_HINT}")
     if metadata.get("sidecar_path"):
         lines.append(f"Sidecar: {metadata['sidecar_path']}")
     if metadata.get("page_scores"):

@@ -108,7 +108,30 @@ OPTIONS = {
     # install quill[github]") -- useless advice inside a packaged app. List it
     # explicitly and install the [github] extra in macos-release.yml so the
     # feature actually works in the DMG.
-    "includes": ["wx", "nacl", "github", "feedback_hub", "objc", "AppKit", "Foundation"],
+    # Document readers, all imported function-locally so the tracer misses them
+    # (#1279): `docx` (python-docx, a base dependency) is how Word files are read
+    # -- without it a Word document opens through the bare raw-XML floor, which is
+    # exactly the "why is my document one flat block of text" report that started
+    # this. pdfplumber/pdfminer/pypdf are the PDF text readers (quill/io/pdf.py has
+    # none without them) and openpyxl reads .xlsx sheets; the `office-text` extra
+    # installed by macos-release.yml puts them in the build environment. Each
+    # carries native code (lxml, pypdfium2) but needs no `packages` entry:
+    # build_macos.sh lifts any zipped package with a .so/.dylib out of the zip
+    # before signing.
+    "includes": [
+        "wx",
+        "nacl",
+        "github",
+        "feedback_hub",
+        "objc",
+        "AppKit",
+        "Foundation",
+        "docx",
+        "pdfplumber",
+        "pdfminer",
+        "pypdf",
+        "openpyxl",
+    ],
     "plist": {
         "CFBundleName": APP_DISPLAY_NAME,
         "CFBundleDisplayName": APP_DISPLAY_NAME,

@@ -37,7 +37,10 @@ Two more buttons in Browse Stations cover the rest:
 
 - **Add Custom Station...** — a name and any http/https stream URL, plus
   an optional homepage and tags. Press **Test** to play it right there
-  before **Save**.
+  before **Save**. Live365 links are handled for you: paste a station
+  page, a `player.live365.com` link, or even a bare station id like
+  `a25891`, and QUILL rewrites it to that station's real stream address
+  and tells you it did.
 - **Find Streams from a Website...** — type a station's own website
   address. QUILL fetches that one page and lists every stream-shaped link
   it finds (an audio tag, a `.pls`/`.m3u` playlist, a Shoutcast/Icecast
