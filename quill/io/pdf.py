@@ -183,35 +183,26 @@ def extract_pdf_outline(path: Path, *, password: str | None = None) -> list[tupl
 
 
 def format_pdf_document(path: Path | PdfExtractionResult) -> str:
+    """Return the PDF's extracted text -- the text only, with nothing prepended.
+
+    #1279: the extract used to open with a "# PDF Extract / Engine / Quality
+    score" banner, so every PDF the user opened began with text that is not in
+    their file (and the AI document-QA path fed that banner to the model). The
+    provenance lives in ``source_metadata`` instead, where the open announcement
+    (:func:`quill.core.intake.build_intake_summary`) and the Document Intake
+    Report (:func:`quill.core.intake.build_intake_report`) already report engine,
+    page counts, quality score, and the low-confidence/OCR hint.
+    """
     result = path if isinstance(path, PdfExtractionResult) else extract_pdf_text(path)
-    header = [
-        "# PDF Extract",
-        "",
-        f"Engine: {result.engine}",
-        f"Quality score: {result.quality_score}/100",
-    ]
-    if result.quality_score < 50:
-        header.append("Low-confidence extraction. MarkItDown or OCR may improve the result.")
-    header.append("")
     body = result.text.rstrip() + "\n"
     if isinstance(path, Path) and result.quality_score < 50:
         try:
             markitdown_text = convert_with_markitdown(path)
         except (ImportError, ValueError, RuntimeError):
-            return "\n".join(header) + body
+            return body
         if len(markitdown_text.strip()) > len(result.text.strip()):
-            return (
-                "\n".join([
-                    "# PDF Extract",
-                    "",
-                    "Engine: markitdown",
-                    "Quality score: 85/100",
-                    "",
-                ])
-                + markitdown_text.rstrip()
-                + "\n"
-            )
-    return "\n".join(header) + body
+            return markitdown_text.rstrip() + "\n"
+    return body
 
 
 def _extract_with_pdfplumber(path: Path, *, password: str | None = None) -> PdfExtractionResult:
