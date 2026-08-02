@@ -483,6 +483,7 @@ class MenuBuilderMixin:
         self._id_search_in_files = wx.NewIdRef()
         self._id_replace_in_files = wx.NewIdRef()
         self._id_insert_link = wx.NewIdRef()
+        self._id_insert_equation = wx.NewIdRef()
         self._id_insert_citation = wx.NewIdRef()
         self._id_snippet_gallery = wx.NewIdRef()
         self._id_follow_link = wx.NewIdRef()
@@ -1320,6 +1321,10 @@ class MenuBuilderMixin:
         insert_menu.Append(
             self._id_insert_link,
             self._menu_label(_("Insert &Link..."), "edit.insert_link"),
+        )
+        insert_menu.Append(
+            self._id_insert_equation,
+            self._menu_label(_("Insert &Equation..."), "edit.insert_equation"),
         )
         insert_menu.Append(
             self._id_insert_citation,
