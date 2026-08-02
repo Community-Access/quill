@@ -152,6 +152,25 @@ class Settings:
     #: On by default: a braille user was receiving none of these messages
     #: at all, so this is a bug fix rather than an opt-in feature.
     announcement_braille: bool = True
+    #: Braille rendering style: "speech" sends the spoken string (nobody
+    #: loses information by default), "compact" the short position-first
+    #: labels from #425 (p7/87 l14 c3 mod).
+    announcement_braille_style: str = "speech"
+    #: How long an identical braille message is suppressed. A flash
+    #: physically replaces what the reader is touching, so a repeated
+    #: now-playing title should not keep stealing the display.
+    announcement_braille_dedupe_seconds: float = 2.0
+    #: Hold an error on the display instead of flashing past it -- the one
+    #: message a reader most needs to catch.
+    announcement_braille_sticky_errors: bool = True
+    #: Earcons in the companion apps, which had none before the service.
+    announcement_sounds_in_apps: bool = True
+    #: Let a cue confirm an action while Quiet Mode keeps speech silent.
+    announcement_sound_instead_of_speech_when_quiet: bool = True
+    #: Keep the Spoken Echo / announcement history in every app.
+    announcement_echo_history: bool = True
+    #: Which severities interrupt speech: "errors", "warnings" or "never".
+    announcement_severity_interrupt: str = "errors"
     read_aloud_piper_model_dir: str = ""
     read_aloud_kokoro_voice: str = "af_heart"
     read_aloud_kokoro_speed: float = 1.0
@@ -765,6 +784,33 @@ class Settings:
         if announcement_backend not in {"auto", "prism", "status_only"}:
             announcement_backend = "auto"
         announcement_braille = bool(data.get("announcement_braille", True))
+        announcement_braille_style = (
+            str(data.get("announcement_braille_style", "speech")).strip().lower()
+        )
+        if announcement_braille_style not in {"speech", "compact"}:
+            announcement_braille_style = "speech"
+        try:
+            announcement_braille_dedupe_seconds = float(
+                data.get("announcement_braille_dedupe_seconds", 2.0)
+            )
+        except (TypeError, ValueError):
+            announcement_braille_dedupe_seconds = 2.0
+        announcement_braille_dedupe_seconds = max(
+            0.0, min(30.0, announcement_braille_dedupe_seconds)
+        )
+        announcement_braille_sticky_errors = bool(
+            data.get("announcement_braille_sticky_errors", True)
+        )
+        announcement_sounds_in_apps = bool(data.get("announcement_sounds_in_apps", True))
+        announcement_sound_instead_of_speech_when_quiet = bool(
+            data.get("announcement_sound_instead_of_speech_when_quiet", True)
+        )
+        announcement_echo_history = bool(data.get("announcement_echo_history", True))
+        announcement_severity_interrupt = (
+            str(data.get("announcement_severity_interrupt", "errors")).strip().lower()
+        )
+        if announcement_severity_interrupt not in {"errors", "warnings", "never"}:
+            announcement_severity_interrupt = "errors"
         announcement_trace_enabled = bool(data.get("announcement_trace_enabled", False))
         announcement_startup_tips_enabled = bool(
             data.get("announcement_startup_tips_enabled", False)
@@ -1322,6 +1368,13 @@ class Settings:
             read_aloud_piper_model=read_aloud_piper_model,
             announcement_backend=announcement_backend,
             announcement_braille=announcement_braille,
+            announcement_braille_style=announcement_braille_style,
+            announcement_braille_dedupe_seconds=announcement_braille_dedupe_seconds,
+            announcement_braille_sticky_errors=announcement_braille_sticky_errors,
+            announcement_sounds_in_apps=announcement_sounds_in_apps,
+            announcement_sound_instead_of_speech_when_quiet=announcement_sound_instead_of_speech_when_quiet,
+            announcement_echo_history=announcement_echo_history,
+            announcement_severity_interrupt=announcement_severity_interrupt,
             read_aloud_piper_model_dir=read_aloud_piper_model_dir,
             read_aloud_kokoro_voice=read_aloud_kokoro_voice,
             read_aloud_kokoro_speed=read_aloud_kokoro_speed,

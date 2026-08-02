@@ -31,6 +31,7 @@ from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
+from quill.ui.announce_shim import build_announcement
 from quill.ui.dialog_contract import (
     focus_primary_control,
     set_accessible_name,
@@ -88,9 +89,31 @@ class AppShellFrame(KeybindingParseMixin):
     # -- MainFrame-mixin host protocol ---------------------------------------
 
     def _announce(self, message: str, *, force: bool = False) -> None:
+        """Announce on every channel this app can reach (#1299).
+
+        One change here gives all six companion apps braille, earcons,
+        notification recording and the transcript at once -- Quill Radio,
+        Cast, Audio Studio, Converter, Weather and Podcasts all share this
+        shell, and every injected surface (Command Palette, Table Studio,
+        Reveal Codes) reaches it through the same _announce_fn.
+        """
         self._status_message = message
         self._set_status(message)
-        self._announcement_engine.announce(message, force_speech=force)
+        service = self._announce_service()
+        if service is None:
+            self._announcement_engine.announce(message, force_speech=force)
+            return
+        service.announce(build_announcement(message, force=force))
+
+    def _announce_service(self):
+        """The announcement service for this app, built on first use."""
+        service = getattr(self, "_announcement_service", None)
+        if service is None:
+            from quill.ui.announce_wiring import build_announcement_service
+
+            service = build_announcement_service(self)
+            self._announcement_service = service
+        return service
 
     def _set_status(self, message: str) -> None:
         bar = self.frame.GetStatusBar()
