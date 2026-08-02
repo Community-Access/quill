@@ -8740,6 +8740,25 @@ network-egress audit. A private, removed, region-blocked, or not-yet-live video
 produces a speakable reason rather than a silent failure or an HTML page handed
 to the audio engine.
 
+**What&#39;s Playing: copy and review (`ui/radio/now_playing_commands.py`, #1134,
+fixed #1282).** Two commands go beyond the spoken announcement: copy the track
+to the clipboard, and open a read-only, character-reviewable window with a Copy
+button. A listener reported both doing nothing while a station played, yet
+speaking correctly when stopped. Three faults, all fixed together: (1) a
+*missing* cached title was treated as &quot;nothing is playing&quot; -- the normal state
+for the first seconds of a station, for a stream whose ICY tap is refused, and
+for every station when track announcements are off; (2) the fallback was the
+asynchronous fetch-and-speak command, so the palette closed with nothing on
+screen, and its `on_failure` swallowed errors, leaving silence; (3)
+`AppShellFrame._copy_to_clipboard` returned `None` while
+`MainFrame._copy_to_clipboard` returns `bool`, and the shared mixin branches on
+that value, so in the standalone apps a successful copy announced failure. The
+contract now: with a station on, both commands resolve the title first
+(`_radio_fetch_track_title(on_resolved=...)`, which fires on the UI thread for
+success *and* failure) and then complete; a stream with no titles says so and
+the review window still opens naming the station; the copy confirmation names
+what it copied. Both hosts&#39; clipboard helpers return `bool`.
+
 **Live365 link normalization (`core/radio/live365.py`).** The link a listener
 has for a Live365 station is almost never its stream: it is the station page
 (`live365.com/station/&lt;slug&gt;-a25891`) or the web player

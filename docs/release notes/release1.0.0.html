@@ -2631,6 +2631,15 @@ carries formatting, by design).</p>
 <ul>
 <li>Podcast search now returns focus to the results list after you
 subscribe, so you can keep arrowing through shows.</li>
+<li><strong>Copy What's Playing and What's Playing - Review and Copy
+always answer you.</strong> With a station on, both commands could
+return to the main window having done nothing — no window, no copy,
+nothing spoken — because a track title that had not been read yet was
+treated as "nothing is playing", and the fallback fetch failed silently.
+Both now fetch the title when it is not known, then finish the job; a
+stream that carries no titles says so and still opens a window naming
+the station; and in Quill Radio a successful copy no longer reports
+failure.</li>
 <li><strong>Your documents open as your documents.</strong> A Word file
 no longer opens with <code># DOCX Extract</code> above its first line,
 and a PDF no longer opens with a four-line engine/quality banner.

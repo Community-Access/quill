@@ -669,16 +669,25 @@ class AppShellFrame(KeybindingParseMixin):
                 "on the online support form instead.",
             )
 
-    def _copy_to_clipboard(self, text: str) -> None:
-        """Best-effort copy; a clipboard we can't open is never fatal."""
+    def _copy_to_clipboard(self, text: str) -> bool:
+        """Best-effort copy; a clipboard we can't open is never fatal.
+
+        Returns True when the text reached the clipboard. #1282: this used to
+        return None while ``MainFrame._copy_to_clipboard`` returned a bool, and
+        the shared radio mixin branches on that value -- so in the standalone
+        apps a copy that actually worked announced "Could not copy to the
+        clipboard." Same contract in both hosts now.
+        """
         try:
             if wx.TheClipboard.Open():
                 try:
                     wx.TheClipboard.SetData(wx.TextDataObject(text))
                 finally:
                     wx.TheClipboard.Close()
+                return True
         except Exception:  # noqa: BLE001 - clipboard failures must not strand the user
             pass
+        return False
 
     def _report_app_bug_online(
         self,
