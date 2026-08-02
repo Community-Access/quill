@@ -1153,6 +1153,7 @@ And we've written down, honestly, **exactly what carries over between every form
 ### Fixes
 
 - Podcast search now returns focus to the results list after you subscribe, so you can keep arrowing through shows.
+- **Reveal Codes stops speaking every code twice.** Arrowing through the flowed pane produced two voices for one keystroke — your screen reader reading the line, and QUILL speaking its own phrase over it — and JAWS and NVDA disagreed about what you heard. Arrow navigation now mirrors the phrase silently to the status bar and lets the screen reader speak; explicit jumps still speak. **Reveal Codes: Speak Codes Aloud** restores the old behaviour for anyone who wants it.
 - **Your documents open as your documents.** A Word file no longer opens with `# DOCX Extract` above its first line, and a PDF no longer opens with a four-line engine/quality banner. Everything QUILL knows about how the file was read now lives in the Document Intake Report and the spoken open announcement, where it belongs.
 - **A JSON file that starts with a byte order mark opens** instead of crashing or falling back to unformatted text; `.xml`, `.toml`, `.yaml`, and `.ipynb` get the same fix, and they now keep their original line endings too.
 - Fixed crashes: typing into the accessible Word view, opening a Vault containing a non-UTF-8 file, launching Quill Radio on an early keystroke, and radio audio that could keep playing after the app exits.
