@@ -118,6 +118,10 @@ class RadioHistory:
     #: Volume Boost (mpv engine): amplify up to 50% past 100 for quiet
     #: streams. No effect on the wx.media engine, which caps at 100.
     volume_boost: bool = False
+    #: Last volume level (0-100) the listener set, remembered across sessions so
+    #: stations don't all come back at full blast on the next launch (#1263).
+    #: -1 means "never set" -- the controller keeps its own default.
+    volume_percent: int = -1
     #: Sound options (listener-level, so global rather than per-station):
     #: channel mode -- "stereo" (default), "mono" (both channels blended into
     #: one, for single-sided hearing or a single earbud where hard-panned
@@ -232,6 +236,11 @@ def load_history(data_dir: Path) -> RadioHistory:
         engine = str(raw.get("playback_engine", "auto"))
         history.playback_engine = engine if engine in ("auto", "wx", "mpv") else "auto"
         history.volume_boost = bool(raw.get("volume_boost", False))
+        try:
+            vol = int(raw.get("volume_percent", -1))
+        except (TypeError, ValueError):
+            vol = -1
+        history.volume_percent = vol if 0 <= vol <= 100 else -1
         # channel_mode replaces the legacy mono_enabled bool; migrate an old
         # store (mono_enabled: true -> "mono") so an upgrade keeps the setting.
         raw_channel = str(raw.get("channel_mode", "") or "")
@@ -325,6 +334,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "output_device": history.output_device,
             "playback_engine": history.playback_engine,
             "volume_boost": history.volume_boost,
+            "volume_percent": history.volume_percent,
             "favorites_sort": history.favorites_sort,
             "folder_sort_orders": history.folder_sort_orders,
             "channel_mode": history.channel_mode,
