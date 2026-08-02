@@ -6655,6 +6655,30 @@ For list toggling, press `Ctrl+Alt+7` to insert or strip a bullet list, or `Ctrl
 
 The status bar's `Section` cell reads `Section: Heading N (ordinal of total)` whenever the caret is on a heading in a Markdown or HTML document. The cell is hidden by default; turn it on via Preferences -> Status Bar. The cell is a no-op for plain-text documents and for carets on a non-heading line, and it inherits the same dead-widget guard as the other live-editor cells.
 
+### Announcements on a braille display
+
+Everything QUILL announces - "Saved", "Now playing: ...", "Weather updated",
+recording started and stopped - goes to a connected **braille display** as well
+as to speech, in QUILL, Quill Radio, and Quill Cast alike. It works through
+whichever screen reader you use: JAWS and NVDA both accept a flash message, and
+Narrator brailles the notifications QUILL already posts.
+
+Three things are deliberate:
+
+- **Braille never costs you speech.** If the display is unplugged mid-session, or
+  the reader rejects the message, the announcement is still spoken. A blank
+  display is a small problem; silence would be a much bigger one.
+- **Nothing is truncated.** A long message is sent whole so you can pan across it
+  - clipping it to the width of the display would quietly drop the end of a track
+  title, which is usually the part you wanted.
+- **The same message is not flashed twice in a row.** A braille flash replaces
+  whatever is under your fingers, so an identical message within a couple of
+  seconds (a stream re-reporting the same title, for instance) is skipped.
+
+Turn it off with **Show announcements in braille** in **Preferences >
+Accessibility** if you would rather keep the display on your document. Quiet Mode
+and Meeting Mode suppress braille exactly as they suppress speech.
+
 ### Equations and mathematics
 
 Writing maths is one of the least accessible things an editor normally asks of

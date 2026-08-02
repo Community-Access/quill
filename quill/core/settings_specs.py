@@ -915,6 +915,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     # --- Accessibility -----------------------------------------------------
     SettingSpec(
+        "announcement_braille",
+        "Show announcements in braille",
+        "accessibility",
+        "bool",
+        "Send status and informational announcements to a connected braille "
+        "display as well as speaking them.",
+        feature_id="core.accessibility",
+        keywords=("braille", "display", "announcement", "screen reader"),
+    ),
+    SettingSpec(
         "announcement_backend",
         "Announcement backend",
         "accessibility",

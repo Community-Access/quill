@@ -148,6 +148,10 @@ class Settings:
     read_aloud_piper_executable: str = ""
     read_aloud_piper_model: str = ""
     announcement_backend: str = "auto"
+    #: Mirror spoken announcements to a connected braille display (#1283).
+    #: On by default: a braille user was receiving none of these messages
+    #: at all, so this is a bug fix rather than an opt-in feature.
+    announcement_braille: bool = True
     read_aloud_piper_model_dir: str = ""
     read_aloud_kokoro_voice: str = "af_heart"
     read_aloud_kokoro_speed: float = 1.0
@@ -760,6 +764,7 @@ class Settings:
         ai_tts_speed = max(0.25, min(4.0, ai_tts_speed))
         if announcement_backend not in {"auto", "prism", "status_only"}:
             announcement_backend = "auto"
+        announcement_braille = bool(data.get("announcement_braille", True))
         announcement_trace_enabled = bool(data.get("announcement_trace_enabled", False))
         announcement_startup_tips_enabled = bool(
             data.get("announcement_startup_tips_enabled", False)
@@ -1316,6 +1321,7 @@ class Settings:
             read_aloud_piper_executable=read_aloud_piper_executable,
             read_aloud_piper_model=read_aloud_piper_model,
             announcement_backend=announcement_backend,
+            announcement_braille=announcement_braille,
             read_aloud_piper_model_dir=read_aloud_piper_model_dir,
             read_aloud_kokoro_voice=read_aloud_kokoro_voice,
             read_aloud_kokoro_speed=read_aloud_kokoro_speed,

@@ -4244,6 +4244,85 @@ success *and* failure) and then complete; a stream with no titles says so and
 the review window still opens naming the station; the copy confirmation names
 what it copied. Both hosts' clipboard helpers return `bool`.
 
+**The announcement service (`core/announce/`, #1290-#1297).** Nothing owned
+announcements. Speech lived in two of three shells, braille lived nowhere,
+earcons lived only in QUILL, and the verbosity system (Quiet Mode, Meeting Mode,
+profile suppression, repetition collapse, the announcement budget) was wired
+into `MainFrame` alone -- so six companion apps and Beacon could mute,
+brailleize or record nothing, and severity was a single `force_speech` boolean
+that made an error indistinguishable from a routine confirmation.
+
+`quill/core/announce` is the wx-free, strict-typed owner. An `Announcement` is a
+value (text, braille text, severity, channels, sound event, region, dedupe key);
+the `AnnouncementService` fans it out; a `Sink` per channel does the delivering.
+Sinks are **injected callables**, which is what keeps the package free of wx and
+ctypes while still driving real hardware in the shell, and lets every channel be
+tested with a two-line fake.
+
+Two service guarantees make it safe to depend on: **a failing sink is isolated**
+(an unplugged display must not cost the user their speech), and **the first
+failure per channel is recorded rather than repeated**, so a storm through a
+broken channel leaves one honest diagnostic instead of ten thousand log lines.
+
+The policy resolves settings + modes + severity into a per-channel decision.
+ROUTINE is polite and throttled; INFO is polite; WARNING interrupts and is
+recorded; ERROR interrupts, sticks on the display, and **is never suppressed by
+any mode, setting or throttle** -- a user must not be able to configure away the
+message that says something broke. The headline behaviour, impossible before:
+**Quiet and Meeting Mode drop speech only and keep braille**, which is exactly
+what a braille user in a meeting wants. Per-channel dedupe windows (braille
+shortest, because a flash physically replaces what the reader is touching) run
+off an injectable clock, and the #425 compact braille style (`p7/87 l14 c3 mod`)
+is available opt-in, falling back to the spoken text when there is no position
+to render.
+
+The sinks are adapters, not rewrites: `SpeechSink` wraps `AnnouncementEngine`
+unchanged (preserving the #966 no-double-talk rule and the #700 Prism
+context-lifetime rule), `BrailleSink` promotes the #1289 dispatch to a channel,
+`SoundSink` leads the message with its cue, `VisualSink` owns a message slot
+standing status cannot clobber, `NotificationSink` records only problems,
+and `EchoSink`/`HistorySink`/`TranscriptSink` feed review, the redacting
+history, and the headless capture the UIA suite asserts against. The channel
+probe reports availability, backend and reason for every channel -- including
+"no sink installed" -- serialisable straight into the support bundle.
+
+**Braille announcement routing (`platform/windows/braille_output.py`, #1283).**
+A braille user reported that spoken status messages never reach the display. The
+cause was categorical rather than incidental: **no QUILL announcement path had
+ever called a braille API.** Both bridges already supported it -- Prism's
+`Backend.braille()` behind a `supports_braille` capability bit, and
+accessible_output2's per-reader implementations (JAWS `BrailleString`, NVDA
+`nvdaController_brailleMessage`) -- and QUILL called only `speak()` on each.
+
+Braille routes at the same choke point as speech
+(`AnnouncementEngine.announce`), so QUILL, Quill Radio, and Quill Cast are fixed
+by one change with no per-call-site edits; the standalone apps construct the same
+engine through `AppShellFrame`. The dispatch lives in its own module with three
+invariants: (1) **braille never costs speech** -- every call is wrapped, a
+failure is recorded into `last_error` and never propagated, because a display
+unplugged mid-session must not silence the app; (2) **no truncation** -- both
+readers let the user pan a flash message, and clipping to display width would
+drop the tail of a track title, the exact information the command was asked for;
+(3) **consecutive-duplicate suppression (2s)** -- a flash replaces what the
+reader is touching, and the radio now-playing poller can repeat a title.
+
+`backend.braille()` deliberately, not `backend.output()`: `output()` couples
+speech and braille into one call, so one failure would kill both. On the
+accessible_output2 path the *concrete* output is used, never the `Auto` wrapper
+-- the shipped `Auto.output()` speaks twice and never brailles, so routing
+through it would double-speak and still leave the display blank; the live-reader
+probe therefore returns the concrete output alongside the speaker.
+
+`Settings.announcement_braille` (default **on** -- a bug fix, not an opt-in)
+exposes it in Preferences > Accessibility, and `diagnostics_environment()`
+reports whether braille was enabled and supported so a support bundle can say.
+The change also connects the verbosity system's `Channel.BRAILLE`, rendered by
+the engine and discarded at `AnnouncementOutcome` since it was built: the outcome
+now carries `braille`, and a suppressed announcement (Quiet/Meeting/throttled)
+brailles nothing, matching speech. Unit tests cannot prove a physical display lit
+up, so a manual pass with JAWS and NVDA on real hardware remains the acceptance
+step.
+
 **Insert Equation (`ui/main_frame_equations.py`, #1197).** Maths authoring is
 text-first by design: the author types LaTeX or pastes MathML into the shared
 accessible web form and QUILL supplies the delimiters (`$...$` inline, `$$` on

@@ -70,6 +70,11 @@ class AppShellFrame(KeybindingParseMixin):
         self._feature_locks = load_feature_locks()
         self._menu_id_refs: list[object] = []
         self._announcement_engine = AnnouncementEngine(self.settings.announcement_backend)
+        # #1283: the standalone apps braille their announcements too -- the bug
+        # was reported against Quill Radio, which lives on this shell.
+        self._announcement_engine.set_braille_enabled(
+            bool(getattr(self.settings, "announcement_braille", True))
+        )
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
         # Set by an explicit menu/tray "Exit" so the app's close handler quits for

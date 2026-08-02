@@ -17,7 +17,7 @@ def _disable_ao2_fallback(monkeypatch):
     """
     monkeypatch.setattr(
         "quill.platform.windows.prism_bridge._ao2_live_screen_reader",
-        lambda: (None, None),
+        lambda: (None, None, None),
     )
 
 
@@ -252,7 +252,7 @@ def test_falls_back_to_accessible_output2_when_prism_has_no_live_backend(monkeyp
     speaker = _FakeAO2Speaker()
     monkeypatch.setattr(
         "quill.platform.windows.prism_bridge._ao2_live_screen_reader",
-        lambda: (speaker, "JAWS"),
+        lambda: (speaker, "JAWS", speaker),
     )
 
     engine = AnnouncementEngine("auto")

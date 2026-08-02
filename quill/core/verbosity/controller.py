@@ -33,13 +33,24 @@ class AnnouncementOutcome:
 
     ``speech`` is the text the shell should actually speak ("" when suppressed);
     ``visual`` is always the full text for the status bar (the visual floor).
+    ``braille`` is the text for a connected braille display -- the engine has
+    rendered this channel since the verbosity system landed, but nothing
+    carried it out of here until #1283 connected a display to it.
     """
 
-    __slots__ = ("speech", "visual", "suppressed", "sound_event")
+    __slots__ = ("braille", "sound_event", "speech", "suppressed", "visual")
 
-    def __init__(self, speech: str, visual: str, suppressed: bool, sound_event: str | None) -> None:
+    def __init__(
+        self,
+        speech: str,
+        visual: str,
+        suppressed: bool,
+        sound_event: str | None,
+        braille: str = "",
+    ) -> None:
         self.speech = speech
         self.visual = visual
+        self.braille = braille
         self.suppressed = suppressed
         self.sound_event = sound_event
 
@@ -122,10 +133,18 @@ class VerbosityController:
             speech = ""
         if self._history_enabled and record:
             self.history.record_announcement(result)
+        # #1283: hand out the braille channel the engine already rendered. A
+        # legacy passthrough renders none of its own, so it falls back to the
+        # visual text -- which is what a braille reader should feel anyway.
+        # Suppressed means suppressed on every channel: Quiet Mode should not
+        # flash the display any more than it should speak.
+        suppressed = result.suppressed or throttled
+        braille = "" if suppressed else (getattr(result, "braille", "") or visual)
         return AnnouncementOutcome(
             speech=speech,
             visual=visual,
-            suppressed=result.suppressed or throttled,
+            braille=braille,
+            suppressed=suppressed,
             sound_event=result.sound_event,
         )
 

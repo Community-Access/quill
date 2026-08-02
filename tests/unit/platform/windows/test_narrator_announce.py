@@ -65,7 +65,7 @@ def test_prism_bridge_prefers_uia_notification_over_silence(monkeypatch) -> None
     )
     # Hermetic: the machine running the tests may have a real reader that
     # accessible_output2 can drive; this test is about the unbridged case.
-    monkeypatch.setattr(prism_bridge, "_ao2_live_screen_reader", lambda: (None, None))
+    monkeypatch.setattr(prism_bridge, "_ao2_live_screen_reader", lambda: (None, None, None))
     spoken: list[tuple[str, bool]] = []
     monkeypatch.setattr(
         narrator_announce,
