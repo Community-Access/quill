@@ -1014,6 +1014,20 @@ navigation, QUILL refreshes it only after you pause typing (not on every
 keystroke) and keeps your place on each refresh — landing back at the
 section you are editing, or at your previous scroll position — rather
 than jumping to the top.</p>
+<p><strong>Jump from the preview back to the editor.</strong> Reading
+the side preview and want to edit what you just heard? Open the context
+menu on a block — a heading, paragraph, list item, quote, table, or code
+block — with the <strong>Applications key</strong>,
+<strong>Shift+F10</strong>, or a right-click, and choose <strong>"Go to
+this location in the editor"</strong>. The editor caret moves to that
+block's source, focus follows, and QUILL announces where you landed.
+Pressing <strong>Enter</strong> on a block does the same thing when your
+screen reader passes the key through, but the context menu is the
+reliable path: in browse mode there is no way to ask "where is the
+virtual cursor?", while a context menu always targets the exact element
+you are on. The jump is offered when the preview matches your document
+verbatim; a preview that expands Vault links does not offer it, because
+the positions would no longer line up.</p>
 <p>Preference-style toggles that used to live here — theme/dark mode,
 system-tray mode, title-bar path style, dirty-title style, persistent
 undo, spell-check-as-you-type, and word-prediction-as-you-type — now
