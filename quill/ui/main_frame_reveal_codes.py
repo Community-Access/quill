@@ -29,6 +29,7 @@ class RevealCodesMixin:
             ("reveal.next_code", "Reveal Codes: Next Code", self.reveal_next_code),
             ("reveal.previous_code", "Reveal Codes: Previous Code", self.reveal_previous_code),
             ("reveal.go_to_pair", "Reveal Codes: Go to Matching Code", self.reveal_go_to_pair),
+            ("reveal.toggle_speak", "Reveal Codes: Speak Codes Aloud", self.reveal_toggle_speak),
         )
         for command_id, label, handler in specs:
             self.commands.register(command_id, label, handler, self._binding_for(command_id))
@@ -141,3 +142,26 @@ class RevealCodesMixin:
         pane = getattr(self, "_reveal_pane", None)
         if pane is not None and pane.panel.IsShown():
             pane.go_to_pair()
+
+    def reveal_toggle_speak(self) -> None:
+        """Toggle whether QUILL speaks the rich code phrase as you arrow (#1245).
+
+        Off (default) leaves the screen reader as the single voice on flowed
+        navigation — it narrates the line itself and QUILL mirrors the phrase to
+        the status bar silently, which stops the doubled/inconsistent speech
+        NVDA and JAWS produced (#1244). On restores the verbose spoken
+        examination for users who prefer it.
+        """
+        new_value = not bool(getattr(self.settings, "reveal_codes_speak", False))
+        self.settings.reveal_codes_speak = new_value
+        try:
+            from quill.core.settings import save_settings
+
+            save_settings(self.settings)
+        except Exception:  # noqa: BLE001 - persistence is best-effort
+            pass
+        self._announce(
+            "Reveal Codes will speak codes aloud."
+            if new_value
+            else "Reveal Codes codes are now silent; your screen reader reads the line."
+        )
