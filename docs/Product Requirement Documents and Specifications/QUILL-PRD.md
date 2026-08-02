@@ -4244,6 +4244,25 @@ success *and* failure) and then complete; a stream with no titles says so and
 the review window still opens naming the station; the copy confirmation names
 what it copied. Both hosts' clipboard helpers return `bool`.
 
+**Insert Equation (`ui/main_frame_equations.py`, #1197).** Maths authoring is
+text-first by design: the author types LaTeX or pastes MathML into the shared
+accessible web form and QUILL supplies the delimiters (`$...$` inline, `$$` on
+their own lines for a block). MathML is inserted verbatim -- it is a complete
+element and wrapping it would break it. A selected equation round-trips for
+editing: `split_existing_equation` strips `$`/`$$` and preselects the mode it
+found, so the shortcut doubles as "edit this equation" without retyping. The
+rationale is accessibility, not preference: a symbol palette is a mouse
+affordance, while text is keyboard-only, reviewable character by character, and
+already spoken by screen readers with maths support. Rendering needs nothing
+new -- `core/browser_preview.py` already loads MathJax for a document that
+contains maths, so preview and HTML export show the equation while the source
+stays plain text. The command lives on its own mixin (`EquationsMixin`) rather
+than in `main_frame.py`, and is registered with `Ctrl+Shift+E` under the
+`core.format` feature. Contributed by @salorajan; split out of PR #1197, whose
+other changes (environment-variable API keys, an ungated MathJax CDN include, a
+top-level installer script, a parallel manual) were reviewed separately and not
+taken.
+
 **Live365 link normalization (`core/radio/live365.py`).** The link a listener
 has for a Live365 station is almost never its stream: it is the station page
 (`live365.com/station/<slug>-a25891`) or the web player

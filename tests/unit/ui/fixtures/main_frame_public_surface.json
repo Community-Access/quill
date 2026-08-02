@@ -277,6 +277,7 @@
   "insert_braille_page_break",
   "insert_citation",
   "insert_emoji",
+  "insert_equation",
   "insert_file_content",
   "insert_html_tag",
   "insert_image",

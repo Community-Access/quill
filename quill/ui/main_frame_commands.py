@@ -1648,6 +1648,12 @@ class CommandRegistryMixin:
             self._binding_for("edit.insert_link"),
         )
         self.commands.register(
+            "edit.insert_equation",
+            "Insert Equation...",
+            self.insert_equation,
+            self._binding_for("edit.insert_equation"),
+        )
+        self.commands.register(
             "edit.insert_citation",
             "Insert Citation...",
             self.insert_citation,
@@ -2373,6 +2379,7 @@ class CommandRegistryMixin:
             "edit.say_selected": self._id_say_selected,
             "edit.read_all": self._id_read_all,
             "edit.insert_link": self._id_insert_link,
+            "edit.insert_equation": self._id_insert_equation,
             "edit.insert_citation": self._id_insert_citation,
             "power.open_snippet_gallery": self._id_snippet_gallery,
             "edit.follow_link": self._id_follow_link,

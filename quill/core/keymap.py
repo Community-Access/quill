@@ -264,6 +264,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.batch_conversion": "Ctrl+Shift+Grave, B",
     "edit.replace_all": "Ctrl+Shift+H",
     "edit.insert_link": "Ctrl+Alt+K",  # §edsharp-ok — authoring chord (x.md)
+    "edit.insert_equation": "Ctrl+Shift+E",  # #1197 — math authoring chord
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
     # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The

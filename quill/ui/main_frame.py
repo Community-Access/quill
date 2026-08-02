@@ -401,6 +401,7 @@ from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
 from quill.ui.main_frame_emoji_picker import EmojiPickerMixin
+from quill.ui.main_frame_equations import EquationsMixin
 from quill.ui.main_frame_format_codes import FormatCodesMixin
 from quill.ui.main_frame_gh_bridge import GhBridgeMixin
 from quill.ui.main_frame_git_sync import GitSyncMixin
@@ -803,6 +804,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 class MainFrame(
     AbbreviationsMixin,
+    EquationsMixin,
     AiActionsMixin,
     ReadingOrderMixin,
     EmojiPickerMixin,

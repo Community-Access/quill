@@ -948,6 +948,7 @@ class MenuBindingsMixin:
             id=self._id_close_other_documents,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.insert_link(), id=self._id_insert_link)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.insert_equation(), id=self._id_insert_equation)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.insert_citation(), id=self._id_insert_citation)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_snippet_gallery(), id=self._id_snippet_gallery
