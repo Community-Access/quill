@@ -1153,6 +1153,7 @@ And we've written down, honestly, **exactly what carries over between every form
 ### Fixes
 
 - Podcast search now returns focus to the results list after you subscribe, so you can keep arrowing through shows.
+- **Quill Radio remembers your volume between sessions, and Ctrl+Up/Down works from anywhere in the window.** A station that was not a favorite used to come back at full volume on every launch; the level you last set is now saved and restored. The volume keys also no longer depend on having the favorites tree focused.
 - **Your documents open as your documents.** A Word file no longer opens with `# DOCX Extract` above its first line, and a PDF no longer opens with a four-line engine/quality banner. Everything QUILL knows about how the file was read now lives in the Document Intake Report and the spoken open announcement, where it belongs.
 - **A JSON file that starts with a byte order mark opens** instead of crashing or falling back to unformatted text; `.xml`, `.toml`, `.yaml`, and `.ipynb` get the same fix, and they now keep their original line endings too.
 - Fixed crashes: typing into the accessible Word view, opening a Vault containing a non-UTF-8 file, launching Quill Radio on an early keystroke, and radio audio that could keep playing after the app exits.
