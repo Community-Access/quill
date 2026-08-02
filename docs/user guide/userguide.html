@@ -28249,6 +28249,35 @@ default; turn it on via Preferences -&gt; Status Bar. The cell is a
 no-op for plain-text documents and for carets on a non-heading line, and
 it inherits the same dead-widget guard as the other live-editor
 cells.</p>
+<h3 id="announcements-on-a-braille-display">Announcements on a braille
+display</h3>
+<p>Everything QUILL announces - "Saved", "Now playing: ...", "Weather
+updated", recording started and stopped - goes to a connected
+<strong>braille display</strong> as well as to speech, in QUILL, Quill
+Radio, and Quill Cast alike. It works through whichever screen reader
+you use: JAWS and NVDA both accept a flash message, and Narrator
+brailles the notifications QUILL already posts.</p>
+<p>Three things are deliberate:</p>
+<ul>
+<li><strong>Braille never costs you speech.</strong> If the display is
+unplugged mid-session, or the reader rejects the message, the
+announcement is still spoken. A blank display is a small problem;
+silence would be a much bigger one.</li>
+<li><strong>Nothing is truncated.</strong> A long message is sent whole
+so you can pan across it
+<ul>
+<li>clipping it to the width of the display would quietly drop the end
+of a track title, which is usually the part you wanted.</li>
+</ul></li>
+<li><strong>The same message is not flashed twice in a row.</strong> A
+braille flash replaces whatever is under your fingers, so an identical
+message within a couple of seconds (a stream re-reporting the same
+title, for instance) is skipped.</li>
+</ul>
+<p>Turn it off with <strong>Show announcements in braille</strong> in
+<strong>Preferences &gt; Accessibility</strong> if you would rather keep
+the display on your document. Quiet Mode and Meeting Mode suppress
+braille exactly as they suppress speech.</p>
 <h3 id="equations-and-mathematics">Equations and mathematics</h3>
 <p>Writing maths is one of the least accessible things an editor
 normally asks of you: the notation is visual, and most tools hand you a
