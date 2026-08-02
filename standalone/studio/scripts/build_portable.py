@@ -135,6 +135,21 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=False,
         stage_mpv=False,
     ),
+    "converter": Product(
+        key="converter",
+        module="quill.apps.converter",
+        exe="QuillConverter",
+        display="Quill Converter",
+        zip_name="Quill-Converter-Portable-{ver}.zip",
+        # Basic app: the whole job is FFmpeg format conversion, so ffmpeg is
+        # staged as a bundled binary (tools/ffmpeg), but no Python media stack,
+        # no speech engines, and no playback (mpv) are needed. yt-dlp (URL
+        # import) is never bundled -- it installs on demand into the user dir.
+        dep_groups=("ui", "feedback"),
+        stage_engines=False,
+        stage_ffmpeg=True,
+        stage_mpv=False,
+    ),
     "quill": Product(
         key="quill",
         module="quill",

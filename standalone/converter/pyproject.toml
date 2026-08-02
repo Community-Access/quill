@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-converter"
+version = "1.0.0"
+description = "Quill Converter -- accessible, screen-reader-first audio format converter as a standalone app"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+]
+# The whole app lives in the quill package (quill.apps.converter); this
+# project is the thin product wrapper: entry point, icon, installer.
+dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git@main"]
+
+[project.gui-scripts]
+quill-converter = "quill_converter:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_converter"]

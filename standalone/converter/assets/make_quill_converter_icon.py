@@ -1,4 +1,4 @@
-"""Generate ``quill-converter.ico`` — the Quill Converter tile icon.
+"""Generate ``quill-converter.ico`` -- the Quill Converter tile icon.
 
 The other standalone apps ship a hand-made brand icon; the converter's is drawn
 here so it is reproducible and reviewable in source. Run from this folder:
@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw
 
 _SIZE = 256
 _SCALE = 4  # supersample, then downscale for clean edges
-_BG = (124, 77, 255, 255)  # violet — distinct from the radio/cast/studio/weather tiles
+_BG = (124, 77, 255, 255)  # violet -- distinct from the radio/cast/studio/weather tiles
 _BG_DARK = (98, 54, 214, 255)
 _FG = (255, 255, 255, 255)
 
@@ -35,10 +35,14 @@ def _arrow(draw: ImageDraw.ImageDraw, y: int, *, pointing_right: bool, s: int) -
     head = 46 * s  # arrowhead half-height
     tip = 40 * s  # arrowhead length
     if pointing_right:
-        draw.rounded_rectangle((x0, y - shaft // 2, x1 - tip, y + shaft // 2), radius=shaft // 2, fill=_FG)
+        draw.rounded_rectangle(
+            (x0, y - shaft // 2, x1 - tip, y + shaft // 2), radius=shaft // 2, fill=_FG
+        )
         draw.polygon([(x1 - tip, y - head), (x1, y), (x1 - tip, y + head)], fill=_FG)
     else:
-        draw.rounded_rectangle((x0 + tip, y - shaft // 2, x1, y + shaft // 2), radius=shaft // 2, fill=_FG)
+        draw.rounded_rectangle(
+            (x0 + tip, y - shaft // 2, x1, y + shaft // 2), radius=shaft // 2, fill=_FG
+        )
         draw.polygon([(x0 + tip, y - head), (x0, y), (x0 + tip, y + head)], fill=_FG)
 
 
@@ -49,7 +53,7 @@ def render() -> Image.Image:
     # Tile background (subtle two-tone: darker lower half for depth).
     _rounded(draw, (12 * s, 12 * s, (_SIZE - 12) * s, (_SIZE - 12) * s), 48 * s, _BG_DARK)
     _rounded(draw, (12 * s, 12 * s, (_SIZE - 12) * s, (_SIZE - 40) * s), 48 * s, _BG)
-    # The convert glyph: top arrow → , bottom arrow ← .
+    # The convert glyph: top arrow -> , bottom arrow <- .
     _arrow(draw, 104 * s, pointing_right=True, s=s)
     _arrow(draw, 156 * s, pointing_right=False, s=s)
     return img.resize((_SIZE, _SIZE), Image.LANCZOS)

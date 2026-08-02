@@ -40,6 +40,40 @@ HTML_EXTENSIONS: tuple[str, ...] = (".html", ".htm", ".xhtml")
 #: Everything QUILL can open as a document, for the "Open in Quill" verb.
 OPENABLE_EXTENSIONS: tuple[str, ...] = TEXT_EXTENSIONS + MARKUP_EXTENSIONS + HTML_EXTENSIONS
 
+#: Audio + video containers the converter can take as input (the "Convert with
+#: Quill" verb). Kept in step with ``core.audio.convert`` AUDIO/VIDEO_EXTENSIONS;
+#: hardcoded here (like the image/pdf groups above) so this module stays free of
+#: heavier imports. ``tests/.../test_shell_verbs`` asserts the two agree.
+MEDIA_EXTENSIONS: tuple[str, ...] = (
+    ".mp3",
+    ".wav",
+    ".flac",
+    ".ogg",
+    ".oga",
+    ".opus",
+    ".m4a",
+    ".m4b",
+    ".aac",
+    ".wma",
+    ".aiff",
+    ".aif",
+    ".alac",
+    ".ape",
+    ".wv",
+    ".mka",
+    ".amr",
+    ".3gp",
+    ".caf",
+    ".mp4",
+    ".m4v",
+    ".mkv",
+    ".mov",
+    ".webm",
+    ".avi",
+    ".flv",
+    ".wmv",
+)
+
 
 @dataclass(frozen=True, slots=True)
 class ShellVerb:
@@ -112,6 +146,14 @@ _SHELL_VERBS: tuple[ShellVerb, ...] = (
         description="Open the file in Quill and start reading it aloud.",
         feature_id="read_aloud",
     ),
+    ShellVerb(
+        verb_id="convert",
+        label="Convert with Quill",
+        action="convert",
+        extensions=MEDIA_EXTENSIONS,
+        settings_key="shell_verb_convert",
+        description="Open the file in Quill Converter to change its audio format.",
+    ),
 )
 
 
@@ -173,6 +215,7 @@ __all__ = [
     "HTML_EXTENSIONS",
     "IMAGE_EXTENSIONS",
     "MARKUP_EXTENSIONS",
+    "MEDIA_EXTENSIONS",
     "OPENABLE_EXTENSIONS",
     "PDF_EXTENSIONS",
     "TEXT_EXTENSIONS",

@@ -210,7 +210,22 @@ MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
 # it raises GitHubDependencyError ("pip install quill[github]") -- advice a user
 # of the packaged app cannot act on. Keep it optional for library installs but
 # ship it in the built distribution.
-DEFAULT_BUNDLED_DEPENDENCY_GROUPS = ("ui", "spellcheck", "ocr", "speech", "feedback", "github")
+# "office-text" bundles pdfplumber + pypdf + openpyxl (~16 MB) so a packaged
+# install can read PDF text and .xlsx/.xls sheets out of the box (#1279). Before
+# this, neither worked until the user found Help > Download Optional Components;
+# Word opened on a bare paragraph dump. The full MarkItDown pack ("pdf-ocr") is
+# deliberately NOT bundled: magika pulls onnxruntime + numpy and its spreadsheet
+# converters pull pandas, ~150 MB installed for a better-but-not-required reader.
+# It stays a one-click download.
+DEFAULT_BUNDLED_DEPENDENCY_GROUPS = (
+    "ui",
+    "spellcheck",
+    "ocr",
+    "speech",
+    "feedback",
+    "github",
+    "office-text",
+)
 
 # Pinned rcedit release (electron/rcedit). Build-tool only -- never copied into
 # the portable bundle or the installer payload. Used to stamp the bundled
@@ -1626,18 +1641,17 @@ def bundle_embedded_python(
         check=True,
     )
 
-    # Offline Edition: pip-install the pure-Python optional packs (PDF/Office
-    # text extraction + MP3 chapter markers) straight into the bundled runtime's
-    # site-packages so their modules are importable via find_spec at run time with
-    # no on-demand download and no app-data engine-pack activation. The resolvers
-    # (is_pdf_ocr_available / is_mp3_available) check importability, so installing
-    # into site-packages (already on sys.path) makes both read as Bundled. Kept in
-    # sync with the pdf-ocr / mp3 extras in pyproject.toml.
+    # Offline Edition: pip-install the remaining pure-Python optional pack (MP3
+    # chapter markers) straight into the bundled runtime's site-packages so its
+    # modules are importable via find_spec at run time with no on-demand download
+    # and no app-data engine-pack activation. is_mp3_available checks
+    # importability, so installing into site-packages (already on sys.path) makes
+    # it read as Bundled. Kept in sync with the mp3 extra in pyproject.toml.
+    # PDF/Office text extraction is no longer listed here: since #1279 the pdf-ocr
+    # extra is in DEFAULT_BUNDLED_DEPENDENCY_GROUPS, so *every* build installs it
+    # above, not just the Offline Edition.
     if offline_edition:
         offline_pip_extras = [
-            "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
-            "pdfplumber>=0.11.9",
-            "pypdf>=6.11.0",
             "mutagen>=1.48.1",
         ]
         print(f"Installing offline-edition optional packs ({', '.join(offline_pip_extras)})...")

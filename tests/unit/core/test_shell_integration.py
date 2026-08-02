@@ -134,3 +134,26 @@ def test_build_shell_integration_plan_openwithprogids_uses_none_kind() -> None:
         for value in entry.values:
             assert value.kind == winreg.REG_NONE
             assert value.value == ""
+
+
+def test_convert_verb_registers_under_media_extensions() -> None:
+    from quill.core.shell_verbs import verb_for_action
+
+    convert = verb_for_action("convert")
+    assert convert is not None
+    plan = build_context_menu_plan([convert])
+    paths = {entry.path for entry in plan}
+    # A shell key + command exists for representative audio and video extensions.
+    for ext in (".mp3", ".flac", ".mp4", ".mkv"):
+        shell_key = rf"Software\Classes\SystemFileAssociations\{ext}\shell\Quill.convert"
+        assert shell_key in paths
+        assert rf"{shell_key}\command" in paths
+    # The command routes through the standard --action convert path.
+    commands = [v.value for entry in plan if entry.path.endswith(r"\command") for v in entry.values]
+    assert all("--action convert" in c for c in commands)
+
+
+def test_convert_verb_launcher_command_carries_action() -> None:
+    command = verb_launcher_command("convert")
+    assert "--action convert" in command
+    assert command.rstrip().endswith('"%1"')

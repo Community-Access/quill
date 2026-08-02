@@ -55,7 +55,7 @@ _ADD_WILDCARD = (
 class QuillConverterFrame(AppShellFrame):
     """A standalone converter window (queue + convert), tray-resident."""
 
-    def __init__(self, *, safe_mode: bool = False) -> None:
+    def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 460))
         from quill.ui.window_menu import WindowManager
 
@@ -66,7 +66,15 @@ class QuillConverterFrame(AppShellFrame):
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
         self._register_tray_hotkey("Ctrl+Alt+Shift+C")  # show/hide to the tray
-        self._refresh_statusbar()
+        # Seed from the command line (the Explorer "Convert with Quill" verb, or
+        # `python -m quill.apps.converter <files>`): queue each existing path.
+        for raw in initial_paths or []:
+            if raw.exists():
+                self._add_entry(raw, is_folder=raw.is_dir())
+        if self._entries:
+            self._reload()
+        else:
+            self._refresh_statusbar()
 
     # -- menu bar --------------------------------------------------------------
 
@@ -357,6 +365,8 @@ def _find_ffmpeg() -> str | None:
 def main() -> int:
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
     start_in_tray = "--tray" in sys.argv
+    # Positional args are files to queue (the Explorer verb passes the selection).
+    initial_paths = [Path(arg) for arg in sys.argv[1:] if not arg.startswith("-")]
     from quill.core.ipc import (
         enqueue_open_request,
         release_primary_instance,
@@ -372,7 +382,7 @@ def main() -> int:
 
     log_listener = configure_logging(app_data_dir() / "logs")
     app = wx.App()
-    frame = QuillConverterFrame(safe_mode=safe_mode)
+    frame = QuillConverterFrame(safe_mode=safe_mode, initial_paths=initial_paths)
     frame._log_listener = log_listener
     if start_in_tray:
         frame.toggle_window_to_tray()

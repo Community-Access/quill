@@ -29,6 +29,60 @@ def test_build_intake_summary_for_pdf() -> None:
     assert "quality 72/100" in summary
 
 
+def test_build_intake_summary_reports_low_confidence_instead_of_prepending_it() -> None:
+    # #1279: the low-confidence/OCR advice used to be written into the document
+    # text itself. It now travels with the open announcement.
+    document = Document(
+        path=Path("scan.pdf"),
+        source_metadata={
+            "source_kind": "pdf",
+            "engine": "pdfplumber",
+            "quality_score": 12,
+            "page_count": 2,
+        },
+    )
+    summary = build_intake_summary(document)
+    assert "low-confidence extraction" in summary
+    assert "OCR" in summary
+
+
+def test_build_intake_report_notes_low_confidence_extraction() -> None:
+    document = Document(
+        path=Path("scan.pdf"),
+        source_metadata={"source_kind": "pdf", "engine": "pdfplumber", "quality_score": 12},
+    )
+    report = build_intake_report(document)
+    assert "Quality score: 12/100" in report
+    assert "low-confidence extraction" in report
+
+
+def test_build_intake_surfaces_missing_extraction_pack() -> None:
+    # #1279: when the optional PDF/Office extraction pack is absent the read
+    # still succeeds on the built-in fallback, so the pointer to the one-click
+    # download rides along with the open announcement and the intake report.
+    document = Document(
+        path=Path("report.docx"),
+        source_metadata={
+            "source_kind": "docx",
+            "engine": "docx",
+            "quality_score": 100,
+            "extraction_pack_missing": True,
+        },
+    )
+    summary = build_intake_summary(document)
+    report = build_intake_report(document)
+    assert "Download Optional Components" in summary
+    assert "Download Optional Components" in report
+
+
+def test_build_intake_summary_omits_pack_hint_when_pack_is_present() -> None:
+    document = Document(
+        path=Path("report.docx"),
+        source_metadata={"source_kind": "docx", "engine": "markitdown", "quality_score": 90},
+    )
+    assert "Download Optional Components" not in build_intake_summary(document)
+
+
 def test_build_intake_summary_for_spreadsheet_mentions_table_extract() -> None:
     document = Document(
         path=Path("sample.xlsx"),

@@ -214,6 +214,7 @@ def test_arbitrary_quill_app_root_alone_does_not_redirect_data(
         "QuillRadio.exe",
         "QuillWeather.exe",
         "QuillAudioStudio.exe",
+        "QuillConverter.exe",
     ],
 )
 def test_per_product_portable_bundle_recognized(

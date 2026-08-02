@@ -13,7 +13,7 @@ def test_score_pdf_text_rewards_real_extraction() -> None:
     assert _score_pdf_text("Hello world" * 20, 2, 2) > _score_pdf_text("", 2, 0)
 
 
-def test_format_pdf_document_uses_extraction_metadata(monkeypatch, tmp_path: Path) -> None:
+def test_format_pdf_document_returns_text_without_a_banner(monkeypatch, tmp_path: Path) -> None:
     pdf_path = tmp_path / "sample.pdf"
     pdf_path.write_bytes(b"%PDF-1.4")
     monkeypatch.setattr(
@@ -30,9 +30,13 @@ def test_format_pdf_document_uses_extraction_metadata(monkeypatch, tmp_path: Pat
 
     formatted = format_pdf_document(pdf_path)
 
-    assert "Engine: pypdf" in formatted
-    assert "Quality score: 72/100" in formatted
-    assert "Extracted PDF text" in formatted
+    # #1279: the extract is the PDF's text and nothing else. Engine, quality
+    # score, and page counts live in source_metadata and are reported by the open
+    # announcement and the Document Intake Report instead of being prepended to
+    # the user's document.
+    assert formatted == "Extracted PDF text\n"
+    assert "# PDF Extract" not in formatted
+    assert "Engine:" not in formatted
 
 
 def test_pypdf_extraction_caps_pages_so_a_huge_pdf_cannot_materialize_every_page(

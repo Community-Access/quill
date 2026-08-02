@@ -26,3 +26,19 @@ def test_launch_arguments_parse_reset_profile() -> None:
     assert paths == []
     assert safe_mode is False
     assert reset_profile is True
+
+
+def test_convert_action_launches_converter_app(monkeypatch) -> None:
+    # The Explorer "Convert with Quill" verb runs `-m quill --action convert "%1"`;
+    # main() must hand the file to the standalone converter app and exit early,
+    # never bootstrapping the full editor.
+    import quill.__main__ as m
+
+    calls: list[tuple[str, tuple[str, ...]]] = []
+    monkeypatch.setattr(
+        "quill.core.app_launcher.launch_app",
+        lambda key, *, extra_args=(): calls.append((key, extra_args)) or True,
+    )
+    monkeypatch.setattr(m.sys, "argv", ["quill", "--action", "convert", "song.mp3"])
+    assert m.main() == 0
+    assert calls == [("converter", ("song.mp3",))]

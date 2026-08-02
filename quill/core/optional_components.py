@@ -809,17 +809,17 @@ def gather_optional_components() -> list[OptionalComponent]:
         ),
         OptionalComponent(
             "pdf_ocr",
-            "PDF and Office text extraction",
-            "Reads text out of PDFs and Office documents (Word/PowerPoint/Excel) "
-            "without Pandoc or LibreOffice installed -- MarkItDown for Office and "
-            "PDF, pdfplumber and pypdf as the PDF text floor. Scanned/image-only "
-            "PDFs still need OCR (File > Import > OCR) either way. Plain-text and "
-            "Markdown editing, and any format Pandoc already handles, work without it.",
+            "PDF and Office text extraction (MarkItDown, optional)",
+            "Adds MarkItDown, which reads Office documents and PDFs more faithfully "
+            "than the readers included with QUILL -- most useful for legacy "
+            ".doc/.ppt/.xls files and awkward layouts. Not needed for everyday "
+            "reading (Word, PDF, and spreadsheets already open without it), and "
+            "scanned PDFs still need OCR (File > Import > OCR) either way.",
             TOOL,
             _safe(_pdf_ocr_installed),
-            "~30 MB",
-            note="MarkItDown (MIT, microsoft/markitdown), pdfplumber (MIT), and pypdf "
-            "(BSD-3-Clause); fetched via pip from PyPI.",
+            "~150 MB installed",
+            note="MarkItDown (MIT), pdfplumber (MIT), pypdf (BSD-3-Clause); via pip. "
+            "Large: MarkItDown needs magika (an ONNX runtime, NumPy) and pandas.",
             priority=15,
         ),
         OptionalComponent(
