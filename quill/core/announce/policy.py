@@ -11,15 +11,13 @@ deterministic under test.
 
 The severity matrix it implements:
 
-===========  =====================  =========================  ===========  ==========================
-Severity     Speech                 Braille                    Sound        Visual
-===========  =====================  =========================  ===========  ==========================
-ROUTINE      polite, throttled      flash, deduped             soft cue     status
-INFO         polite                 flash                      cue          status
-WARNING      interrupts             flash                      cue          status + notification
-ERROR        interrupts, never      sticky                     error cue    status + notification
-             suppressed
-===========  =====================  =========================  ===========  ==========================
+* **ROUTINE** -- speech polite and throttled, braille flashed and deduped, a
+  soft cue, the status bar.
+* **INFO** -- speech polite, braille flashed, a cue, the status bar.
+* **WARNING** -- speech interrupts, braille flashed, a cue, status plus a
+  notification entry.
+* **ERROR** -- speech interrupts and is never suppressed, braille sticks rather
+  than flashing past, an error cue, status plus a notification entry.
 
 One behaviour deserves calling out because it is impossible today: **Quiet and
 Meeting Mode drop speech only and keep braille.** A braille user in a meeting
