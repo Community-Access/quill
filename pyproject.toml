@@ -59,7 +59,7 @@ ui = [
     # announcement fallback). Windows-only at runtime; harmless elsewhere.
     "comtypes>=1.4.16; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
-    "certifi>=2026.6.17",
+    "certifi>=2026.7.22",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
     # NVDA/JAWS/Narrator instead of speaking over them.
     "prismatoid>=0.17.3; sys_platform == 'win32'",
