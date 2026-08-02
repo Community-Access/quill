@@ -491,6 +491,7 @@ class AnnouncementEngine:
             "announcement_backend_error": self._state.last_error,
             "announcement_braille_enabled": self._braille_enabled,
             "announcement_braille_supported": self.braille_supported(),
+            "announcement_braille_active": self._braille_enabled and self.braille_supported(),
         }
 
 

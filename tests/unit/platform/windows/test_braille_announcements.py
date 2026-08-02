@@ -219,6 +219,10 @@ def test_diagnostics_report_whether_braille_is_live(monkeypatch) -> None:
 
     assert diagnostics["announcement_braille_enabled"] is True
     assert diagnostics["announcement_braille_supported"] is True
+    assert diagnostics["announcement_braille_active"] is True
+
+    engine.set_braille_enabled(False)
+    assert engine.diagnostics_environment()["announcement_braille_active"] is False
 
 
 # -- the verbosity braille channel ---------------------------------------------

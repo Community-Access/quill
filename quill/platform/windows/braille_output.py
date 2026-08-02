@@ -30,6 +30,12 @@ This module holds the dispatch so it can be tested on its own and so
    now-playing poller can re-announce an identical title, so an identical
    message inside a short window is skipped.
 
+The other two announcement paths have no braille API to call, and that is a
+limit rather than an omission: **Narrator** brailles the UIA notification QUILL
+already posts, so it improves without anything from here, and the **SAPI
+self-voice** path only runs when no screen reader is present -- there is no
+display driver to write to.
+
 Windows-shaped (the two bridges are Windows), but nothing here imports Windows
 APIs, so it stays importable and testable everywhere. wx-free.
 """
