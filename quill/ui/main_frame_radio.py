@@ -688,11 +688,16 @@ class RadioMixin:
             self._radio_history.record(station)
             radio_history.save_history(app_data_dir(), self._radio_history)
             return
-        if (
-            favorite is not None
-            and not state.muted
-            and state.volume_percent != favorite.volume_percent
-        ):
+        if state.muted:
+            return
+        # Remember the last volume globally so it survives to the next launch
+        # (#1263): without this a non-favorite station comes back at the 100%
+        # default every time. Disk-only; the tree shows no volume.
+        if state.volume_percent != self._radio_history.volume_percent:
+            self._radio_history.volume_percent = state.volume_percent
+            radio_history.save_history(app_data_dir(), self._radio_history)
+        # A favorite additionally remembers its own per-station volume.
+        if favorite is not None and state.volume_percent != favorite.volume_percent:
             self._radio_favorites.set_volume(key, state.volume_percent)
             # Disk-only (not _save_radio_favorites): the tree shows no volume,
             # and reloading it here re-announces the station on every Volume
@@ -1435,15 +1440,19 @@ class RadioMixin:
         )
 
     def _radio_resolve_volume(self, station: RadioStation) -> int:
-        """The memorized volume (0-100) for *station*, or -1 when it's not a
-        favorite or has none recorded yet -- called by RadioPlayerController
-        on every play_station. A -1 tells the controller to leave the
-        current volume alone rather than force a default."""
+        """The volume (0-100) to play *station* at -- called by
+        RadioPlayerController on every play_station.
+
+        A favorite with its own remembered level wins; otherwise we fall back to
+        the last volume the listener set globally, so a non-favorite station
+        plays at that level instead of snapping back to the 100% default on every
+        launch (#1263). -1 (nothing ever set) still tells the controller to leave
+        the current volume alone."""
         key = station.station_uuid or station.stream_url
         favorite = self._radio_favorites.find(key)
         if favorite is not None and favorite.volume_percent >= 0:
             return favorite.volume_percent
-        return -1
+        return self._radio_history.volume_percent
 
     # -- YouTube (#1268) ----------------------------------------------------
 

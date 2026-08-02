@@ -7876,6 +7876,8 @@ Once something is playing, three ways to control it without opening Browse Stati
 
 The Browse Stations dialog has its own **Radio volume** slider and a **Mute** button. This volume is entirely separate from your Windows system volume and from your screen reader's own speech volume — turning radio down (or muting it) never touches either of those.
 
+**Ctrl+Up** and **Ctrl+Down** change the volume from anywhere in the Quill Radio window — you no longer have to be on the favorites tree first (inside a text field they still move the cursor, as you would expect). The level you set is **remembered between sessions**, so a station does not come back at full volume the next time you launch. A favorite with its own remembered level still wins for that station.
+
 ### Recording a station
 
 Recording needs the **FFmpeg** optional component — the same one the Audio Studio uses for compressed audio exports. If it isn't installed yet, the recording commands are simply not there; install it from **Help > Download Optional Components** (the "Audio: export, playback & chapters" entry) and they appear.
