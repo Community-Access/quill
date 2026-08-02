@@ -11,6 +11,7 @@ wx.media backend.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
@@ -723,10 +724,22 @@ class RadioMixin:
             timer.Stop()
             self._radio_track_title = ""
 
-    def _radio_fetch_track_title(self, *, announce_result: bool = False) -> None:
+    def _radio_fetch_track_title(
+        self,
+        *,
+        announce_result: bool = False,
+        on_resolved: Callable[[], None] | None = None,
+    ) -> None:
         """Read the playing stream's current title off-thread; announce a
         change when the user opted in, or unconditionally for an explicit
-        What's Playing request."""
+        What's Playing request.
+
+        ``on_resolved`` (#1282) is called on the UI thread once the answer is
+        in -- title or no title, success or failure -- so a caller waiting to
+        copy or to open a window always gets its turn. Without it a failed
+        fetch ended in silence, which is exactly how "the command does
+        nothing" was reported.
+        """
         from quill.core.radio.icy import read_stream_title
 
         controller = getattr(self, "_radio_controller", None)
@@ -734,6 +747,8 @@ class RadioMixin:
         if station is None or self._safe_mode:
             if announce_result:
                 self._announce("Nothing is playing.")
+            if on_resolved is not None:
+                on_resolved()
             return
         url = station.stream_url
 
@@ -751,18 +766,31 @@ class RadioMixin:
                 # SHOUTcast status endpoint, off-thread. Only reached when both
                 # ICY and the player gave nothing, so HLS streams (which the
                 # player already titles) never make these extra requests.
-                self._radio_fetch_server_now_playing(url, announce_result)
+                self._radio_fetch_server_now_playing(url, announce_result, on_resolved)
                 return
-            self._wx.CallAfter(self._radio_apply_track_title, resolved, announce_result)
+            self._wx.CallAfter(
+                self._radio_apply_track_title, resolved, announce_result, on_resolved
+            )
 
         self._task_manager.submit(
             "radio-track-title",
             _fetch,
             on_success=_done,
-            on_failure=lambda *_a: None,
+            on_failure=lambda *_a: self._radio_title_fetch_failed(announce_result, on_resolved),
         )
 
-    def _radio_fetch_server_now_playing(self, url: str, announce_result: bool) -> None:
+    def _radio_title_fetch_failed(
+        self, announce_result: bool, on_resolved: Callable[[], None] | None
+    ) -> None:
+        """A title fetch that errored still owes the listener an answer (#1282)."""
+        self._wx.CallAfter(self._radio_apply_track_title, "", announce_result, on_resolved)
+
+    def _radio_fetch_server_now_playing(
+        self,
+        url: str,
+        announce_result: bool,
+        on_resolved: Callable[[], None] | None = None,
+    ) -> None:
         """Free #1111 fallback: read the current track from the station server's
         own status endpoint (Icecast/SHOUTcast) off-thread when ICY and the
         player exposed no title."""
@@ -773,13 +801,15 @@ class RadioMixin:
             return read_server_now_playing(url, safe_mode=self._safe_mode)
 
         def _done(_op: str, title: object) -> None:
-            self._wx.CallAfter(self._radio_apply_track_title, str(title or ""), announce_result)
+            self._wx.CallAfter(
+                self._radio_apply_track_title, str(title or ""), announce_result, on_resolved
+            )
 
         self._task_manager.submit(
             "radio-now-playing",
             _fetch,
             on_success=_done,
-            on_failure=lambda *_a: None,
+            on_failure=lambda *_a: self._radio_title_fetch_failed(announce_result, on_resolved),
         )
 
     def _radio_now_playing_phrase(self, title: str) -> str:
@@ -795,10 +825,21 @@ class RadioMixin:
         phrase = render_now_playing(title, template) if template else render_now_playing(title)
         return f"Now playing: {phrase}"
 
-    def _radio_apply_track_title(self, title: str, announce_result: bool) -> None:
+    def _radio_apply_track_title(
+        self,
+        title: str,
+        announce_result: bool,
+        on_resolved: Callable[[], None] | None = None,
+    ) -> None:
         changed = bool(title) and title != self._radio_track_title
         if title:
             self._radio_track_title = title
+        if on_resolved is not None:
+            # A waiting command (copy / review window) speaks for itself, so the
+            # generic announcement is skipped -- two messages for one keystroke is
+            # worse than none (#1282).
+            on_resolved()
+            return
         if announce_result:
             self._announce(
                 self._radio_now_playing_phrase(title)
@@ -829,33 +870,16 @@ class RadioMixin:
         return render_now_playing(title, template) if template else render_now_playing(title)
 
     def radio_copy_whats_playing(self) -> None:
-        """Copy the current now-playing text to the clipboard (#1134)."""
-        text = self._radio_now_playing_text()
-        if not text:
-            self._announce("Nothing is playing to copy. Try What's Playing first.")
-            return
-        if self._copy_to_clipboard(text):
-            self._announce("Copied.")
-        else:
-            self._announce("Could not copy to the clipboard.")
+        """Copy the current now-playing text to the clipboard (#1134, #1282)."""
+        from quill.ui.radio.now_playing_commands import copy_whats_playing
+
+        copy_whats_playing(self)
 
     def radio_whats_playing_details(self) -> None:
-        """Open a reviewable, copyable view of the current now-playing text so a
-        listener can note the spelling of a song or artist, or paste it into a
-        lyrics or store search (#1134)."""
-        text = self._radio_now_playing_text()
-        if not text:
-            self.radio_whats_playing()  # no cached title: fetch-and-speak fallback
-            return
-        from quill.ui.radio.now_playing_dialog import NowPlayingDialog
+        """Open the reviewable, copyable What's Playing window (#1134, #1282)."""
+        from quill.ui.radio.now_playing_commands import show_whats_playing_details
 
-        NowPlayingDialog(
-            self.frame,
-            text,
-            self._show_modal_dialog,
-            self._copy_to_clipboard,
-            self._announce,
-        ).show()
+        show_whats_playing_details(self)
 
     def radio_now_playing_full_details(self) -> None:
         """Everything known about what's playing right now -- the station's own

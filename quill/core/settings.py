@@ -120,6 +120,14 @@ class Settings:
     reveal_codes_visible: bool = False
     reveal_codes_view: str = "flowed"  # "flowed" (interactive) | "structured"
     reveal_codes_verbosity: str = "balanced"  # "quiet" | "balanced" | "detailed"
+    # When True, QUILL speaks the rich code phrase (e.g. "italic on, 15
+    # characters") as you arrow onto a code in the flowed pane. Off by default so
+    # the screen reader is the single voice — it narrates the flowed line itself,
+    # and QUILL mirrors the phrase to the status bar silently — which stops the
+    # doubled/te inconsistent speech NVDA and JAWS produced (#1244, #1245). Turn
+    # it on for the verbose spoken examination some users prefer. When off, the
+    # doubled/inconsistent speech NVDA and JAWS produced is gone.
+    reveal_codes_speak: bool = False
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -681,6 +689,7 @@ class Settings:
         reveal_codes_verbosity = str(data.get("reveal_codes_verbosity", "balanced")).strip().lower()
         if reveal_codes_verbosity not in {"quiet", "balanced", "detailed"}:
             reveal_codes_verbosity = "balanced"
+        reveal_codes_speak = bool(data.get("reveal_codes_speak", False))
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1286,6 +1295,7 @@ class Settings:
             reveal_codes_visible=reveal_codes_visible,
             reveal_codes_view=reveal_codes_view,
             reveal_codes_verbosity=reveal_codes_verbosity,
+            reveal_codes_speak=reveal_codes_speak,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,

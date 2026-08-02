@@ -125,6 +125,30 @@ class RevealCodesPane:
     def _verbosity(self) -> str:
         return getattr(self._host.settings, "reveal_codes_verbosity", "balanced")
 
+    def _speak_codes(self) -> bool:
+        return bool(getattr(self._host.settings, "reveal_codes_speak", False))
+
+    def _report_cell(self) -> None:
+        """Report the cell under the caret without double-speaking (#1244/#1245).
+
+        The flowed control is a real ``wx.TextCtrl``, so the screen reader
+        narrates the caret move itself (character, code bracket, or line) —
+        JAWS and NVDA each in their own style. We therefore mirror the rich
+        phrase (e.g. ``"italic on, 15 characters"``) to the status bar
+        *silently* by default, exactly as structured mode does, so there is a
+        single voice. Only when ``reveal_codes_speak`` is on do we also speak
+        it, for users who want the verbose spoken examination.
+        """
+        cells = self._flow_view.cells
+        if not cells:
+            return
+        phrase = announce_cell(self._tokens, cells, self._caret, self._verbosity())
+        if not phrase:
+            return
+        self._host._set_status_quiet(f"Reveal Codes: {phrase}")
+        if self._speak_codes():
+            self._announce(phrase)
+
     def _announce(self, phrase: str) -> None:
         """Speak a bare phrase through the host's single announcement channel.
 
@@ -230,6 +254,8 @@ class RevealCodesPane:
         pos = self._flow.GetInsertionPoint()
         self._caret = cell_at_flow_offset(cells, pos)
         self._drive_editor_from_caret()
+        # A mouse click is deliberate and does not trigger SR caret narration, so
+        # speak the landing cell for feedback (no double-speak to guard against).
         self._announce(announce_cell(self._tokens, cells, self._caret, self._verbosity()))
 
     def _on_flow_key(self, event: Any) -> None:
@@ -289,15 +315,14 @@ class RevealCodesPane:
         # We consume the key (no event.Skip) so the caret moves under our control,
         # then move both the flowed caret and the editor caret to the new cell.
         # The flowed control is a real text control, so the screen reader narrates
-        # the caret move itself for plain text — character, word, and line, at the
-        # right granularity. We therefore speak ONLY when the caret lands on a code,
-        # where the raw "[Bold On]" bracket text is not what we want heard; that is
-        # the single voice for codes and avoids the double-speak the SR + our own
-        # announcement produced on every character move.
+        # the caret move itself. On a code cell we mirror the rich phrase to the
+        # status bar (silently) and only speak it when reveal_codes_speak is on —
+        # otherwise the SR's own narration is the single voice, which is what
+        # stops the doubled/inconsistent speech NVDA and JAWS produced (#1244).
         self._place_flow_caret()
         self._drive_editor_from_caret()
         if cells[self._caret].is_code:
-            self._announce(announce_cell(self._tokens, cells, self._caret, self._verbosity()))
+            self._report_cell()
 
     # -- F2 region editing ------------------------------------------------ #
     def _begin_region_edit(self) -> None:
@@ -396,6 +421,9 @@ class RevealCodesPane:
                     break
             self._place_flow_caret()
             self._drive_editor_from_caret()
+            # next/previous/go-to-pair are explicit jump commands: always speak the
+            # landing code so the user gets confirmation (there is no reliable SR
+            # caret narration for a programmatic jump to double with).
             self._announce(announce_cell(self._tokens, cells, self._caret, self._verbosity()))
         else:
             self._list.SetSelection(token_index)

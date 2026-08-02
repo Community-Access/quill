@@ -6839,7 +6839,9 @@ QUILL keeps formatting codes **hidden** so your editing buffer stays clean, fast
 - **Home/End** go to the start and end of the line; **Ctrl+Home/End** to the top and bottom of the document.
 - Land on a code and hear it named as a unit — "bold on", "tab", "centred", "font Arial" — and an opening code also tells you how far its formatting reaches ("bold on, 12 characters").
 
-Because the pane speaks for itself as you arrow, **it no longer repeats "Reveal Codes" on every keypress** — the region is named once when you enter it, and after that you simply hear the character, word, line, or code you moved onto. This also makes **JAWS and NVDA behave the same here**: QUILL is the single voice during navigation, so the two screen readers no longer narrate the move differently.
+Because the pane is a live text control, **your screen reader is the single voice while you arrow through it** — the region is named once when you enter it, and after that you simply hear the character, word, line, or code your screen reader reads. QUILL used to speak its own phrase on top of that, which meant every code was announced twice under NVDA and JAWS and NVDA disagreed about what you heard; instead, the rich phrase (for example "italic on, 15 characters") is mirrored **silently to the status bar**, where you can review it whenever you want it. Explicit jumps — next or previous code, go to matching pair — and mouse clicks still speak, because there is no screen-reader caret narration to collide with there.
+
+If you preferred hearing QUILL's own phrase on every arrow press, turn on **Reveal Codes: Speak Codes Aloud** (in the command palette; off by default) and it comes straight back.
 
 **Editing a run in place — press F2.** Move onto text that sits **between a pair of formatting codes** (for example the words inside `[Bold On] … [Bold Off]`) and press **F2**. The pane restricts you to just that region and lets you edit it freely; press **Enter** to apply your change back into the document or **Escape** to cancel. The surrounding codes are left exactly as they were. The whole region edits as one unit, so a run that contains a `[Tab]` or a nested code (bold text with an italic word inside it) comes along together — nested codes appear as their markup and are put straight back on Enter. Pressing F2 on plain, un-formatted text tells you there is no region to edit.
 
@@ -7867,6 +7869,8 @@ Once something is playing, three ways to control it without opening Browse Stati
 - **Keyboard shortcuts.** With QUILL focused, **Ctrl+Shift+Grave** (the QUILL Key), then **N**, toggles play/pause; then **0** stops; then **9** mutes. Like every QUILL Key chord, these are remappable in **Preferences > Keyboard Shortcuts**.
 
 **What's playing.** QUILL reports the current track — artist and title — from the stream's own broadcast metadata, and can announce it automatically each time the song changes. When a stream sends no title of its own and the player has none to offer, QUILL now falls back to the station server's own now-playing information (its Icecast or Shoutcast status page, on the same host you're already streaming), so more stations tell you what's on.
+
+**Copying and reviewing what's playing.** Two commands go beyond the spoken announcement: **Copy What's Playing** puts the track on the clipboard, and **What's Playing - Review and Copy...** opens a small read-only window you can arrow through character by character (handy for the exact spelling of a song or artist) with a Copy button. Both work the moment a station is on: if the track title has not been read from the stream yet, QUILL says "Checking what's playing...", fetches it, and then finishes the job. If the stream carries no titles at all, it says so plainly, and the review window still opens showing the station name — so these commands always answer you.
 
 ### Volume
 
