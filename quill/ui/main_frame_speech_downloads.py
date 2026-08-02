@@ -954,11 +954,14 @@ class SpeechDownloadsMixin:
                     on_done(True)
                 return
         proceed = self._show_message_box(
-            "QUILL will download PDF and Office text extraction (about 30 MB): "
-            "MarkItDown, pdfplumber, and pypdf. This lets Import read text out "
-            "of Word, PowerPoint, Excel, and PDF documents natively. Scanned or "
-            "image-only PDFs still need File > Import > OCR either way. "
-            "Continue?",
+            "QUILL will download enhanced Office and PDF text extraction "
+            "(MarkItDown, pdfplumber, and pypdf). It reads legacy .doc/.ppt/.xls "
+            "files and awkward layouts more faithfully than the readers included "
+            "with QUILL, which already handle Word, PDF, and spreadsheets for "
+            "everyday reading. It is a large download -- about 150 MB installed, "
+            "because MarkItDown requires an ONNX runtime, NumPy, and pandas. "
+            "Scanned or image-only PDFs still need File > Import > OCR either "
+            "way. Continue?",
             "Download PDF and Office Text Extraction",
             wx.ICON_INFORMATION | wx.YES_NO,
         )
