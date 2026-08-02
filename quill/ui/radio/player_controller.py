@@ -34,7 +34,7 @@ from __future__ import annotations
 import logging
 import threading
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum, auto
 from typing import TYPE_CHECKING, NamedTuple
 
@@ -45,6 +45,7 @@ from quill.core.radio.models import RadioStation
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import WxMediaEngine
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine, mpv_output_device_available
+from quill.ui.radio.youtube_playback import begin_youtube_play, is_youtube_station
 
 if TYPE_CHECKING:
     from quill.ui.spotify.web_player import SpotifyWebEngine
@@ -124,6 +125,7 @@ class RadioPlayerController:
         playback_engine: str = "auto",
         on_buffering: Callable[[], None] | None = None,
         spotify_token_provider: Callable[[], str] | None = None,
+        resolve_youtube: Callable[[str], str] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -165,6 +167,23 @@ class RadioPlayerController:
         )
         #: Announces a mid-stream rebuffer (mpv engine) instead of dead air.
         self._on_buffering = on_buffering
+        #: Turns a YouTube page link into a playable stream URL (#1268).
+        #: Injected by the host because it needs the listener's one-time
+        #: consent and the on-demand yt-dlp install, neither of which belongs
+        #: in a playback controller. Called on a worker thread -- the resolve
+        #: is a network round trip -- so the UI never freezes on it. None
+        #: means YouTube support is unavailable and such a station reports a
+        #: clean error instead of loading a web page into the audio engine.
+        self._resolve_youtube = resolve_youtube
+        #: The short-lived URL the engine is actually loading when it differs
+        #: from the station's own (a resolved YouTube stream). Kept apart from
+        #: ``_state.station`` so favorites, the recorder, and the now-playing
+        #: line all keep the durable page URL, and so the one cross-engine
+        #: rescue reuses the resolved URL instead of resolving twice.
+        self._playback_url_override = ""
+        #: Bumped by every play/stop so a YouTube resolve that finishes after
+        #: the listener moved on is discarded instead of hijacking playback.
+        self._play_token = 0
         #: One cross-engine rescue per play attempt: a stream the current
         #: engine cannot open is retried once on the other engine before an
         #: error is declared (WMP cannot decode Ogg/Opus/HLS; a broken mpv
@@ -222,7 +241,21 @@ class RadioPlayerController:
         Replaces whatever this controller was playing; the ``before_play``
         hook additionally silences sibling media (the podcast player) so two
         streams never play over each other.
+
+        A YouTube station (#1268) needs a network resolve first, so it takes the
+        asynchronous path: state goes to CONNECTING immediately, the resolve runs
+        on a worker thread, and playback starts when it lands. Every other
+        station plays synchronously, exactly as before.
         """
+        self._play_token += 1
+        self._playback_url_override = ""
+        if is_youtube_station(station):
+            begin_youtube_play(self, station, token=self._play_token)
+            return
+        self._play_resolved_station(station)
+
+    def _play_resolved_station(self, station: RadioStation) -> None:
+        """Play *station* now -- its URL (or ``_playback_url_override``) is playable."""
         if self._before_play is not None:
             try:
                 self._before_play()
@@ -269,6 +302,18 @@ class RadioPlayerController:
             return
         if not self._engine.load(url) and not self._attempt_engine_fallback():
             self._set_state(RadioPlayerState.ERROR, message="That stream could not be opened.")
+
+    def current_playback_url(self) -> str:
+        """The URL actually being played -- resolved, if the station needed it.
+
+        The recorder wants this, not ``state.station.stream_url``: for a YouTube
+        station those differ, and handing ffmpeg the page URL would record an
+        HTML document. "" when nothing is playing.
+        """
+        station = self._state.station
+        if station is None:
+            return ""
+        return self._playback_url_override or station.stream_url
 
     @staticmethod
     def _is_spotify_station(station: RadioStation | None) -> bool:
@@ -435,6 +480,11 @@ class RadioPlayerController:
         process, no re-encode."""
         self._enhance_relay.stop()
         graph = self._current_filter_graph()
+        station = (
+            station
+            if not self._playback_url_override
+            else replace(station, stream_url=self._playback_url_override)
+        )
         if self._is_mpv_active():
             try:
                 self._mpv_engine.set_filter_graph(graph)  # type: ignore[union-attr]
@@ -684,6 +734,10 @@ class RadioPlayerController:
             self.play_station(self._state.station)
 
     def stop(self) -> None:
+        # A YouTube resolve still in flight must not start playing after the
+        # listener pressed Stop, so the token moves on and its result is dropped.
+        self._play_token += 1
+        self._playback_url_override = ""
         self._engine.close()
         self._enhance_relay.stop()
         self._set_state(RadioPlayerState.STOPPED, message="")

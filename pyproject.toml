@@ -196,14 +196,27 @@ pages = ["keynote-parser>=1.14.4.0"]
 # text floor. Was briefly a base dependency (#909 fixed a build that shipped
 # with neither this extra nor a base dependency, so a clean install had no
 # PDF/Office text extractor at all). Downloadable on demand via Help > Download
-# Optional Components (quill/core/pdf_ocr_install.py), which keeps the
-# minimal-install footprint small while still fixing #909's actual complaint --
-# every install can get PDF/Office extraction in one click, it just is not
-# forced on installs that never touch it.
+# Optional Components (quill/core/pdf_ocr_install.py). Shipped builds bundle the
+# lean `office-text` extra below instead of this one -- see the note there.
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
     "pdfplumber>=0.11.10",
     "pypdf>=6.14.2",
+]
+# The lean half of pdf-ocr, and the half that actually ships (#1279). MarkItDown
+# is the better reader, but its dependency chain is not lean: magika (its stream
+# sniffer) hard-requires onnxruntime + numpy, and its xlsx/xls converters require
+# pandas -- roughly 150 MB installed, which is not a reasonable tax on an
+# accessibility app's download when the formats can be read without it. These
+# three are ~16 MB installed and cover the real gaps in a packaged build: PDF text
+# (quill/io/pdf.py has no reader at all without pdfplumber/pypdf) and .xlsx/.xls
+# sheets (quill/io/structured.py::_format_spreadsheet needs openpyxl). Word reads
+# through python-docx, which is already a base dependency. MarkItDown stays a
+# one-click download for anyone who wants it (Help > Download Optional Components).
+office-text = [
+    "pdfplumber>=0.11.10",
+    "pypdf>=6.14.2",
+    "openpyxl>=3.1.5",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
 # xlsx, pdf, epub, md). quill-glow-core is the thin, stable service contract

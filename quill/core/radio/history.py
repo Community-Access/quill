@@ -38,6 +38,14 @@ class RadioHistory:
 
     stations: list[RadioStation] = field(default_factory=list)
     resume_on_launch: bool = False
+    #: Whether the listener has accepted the one-time YouTube consent + rights
+    #: notice (#1268). Playing or recording a YouTube link installs yt-dlp on
+    #: demand and reaches YouTube, so the notice is shown once -- when a YouTube
+    #: link is first added as a station -- and remembered here. Without it, a
+    #: scheduled recording that fires while nobody is watching would be the
+    #: first time QUILL ever touched YouTube, which is exactly the surprise the
+    #: consent exists to prevent.
+    youtube_consented: bool = False
     #: Speak "Now playing: ..." when the stream's track title changes.
     #: Off by default -- in QUILL it would interrupt writing; turning it on
     #: is one check item on the radio menus.
@@ -202,6 +210,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.show_status_bar = bool(raw.get("show_status_bar", True))
         history.ui_font_scale = min(2.0, max(1.0, _coerce_float(raw.get("ui_font_scale"), 1.0)))
         history.prevent_sleep = bool(raw.get("prevent_sleep", True))
+        history.youtube_consented = bool(raw.get("youtube_consented", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
         if "eq_bass_db" in raw or "eq_mid_db" in raw or "eq_treble_db" in raw:
@@ -311,6 +320,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "show_status_bar": history.show_status_bar,
             "ui_font_scale": history.ui_font_scale,
             "prevent_sleep": history.prevent_sleep,
+            "youtube_consented": history.youtube_consented,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
             "eq_bass_db": history.eq_bass_db,

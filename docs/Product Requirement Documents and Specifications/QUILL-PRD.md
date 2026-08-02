@@ -526,7 +526,7 @@ Post-conversion prompt rule (issue #262): when the target format is editable in 
 
 **Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Tables round-trip as real tables between Markdown, HTML, and Word: `docx_writer` detects consecutive GFM-table paragraphs (`_table_block_length`) and rebuilds a native `w:tbl` (`_emit_table`) with a bold, repeating `<w:tblHeader>` header row — so Markdown→Word and HTML→Word (via the hub) now produce editable Word tables, and Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF drops alignment and page breaks and writes tables as pipe-text; docx drops page breaks on read; inline formatting inside a Markdown-authored table cell flattens to plain text on the way to Word; Word-embedded images are not extracted.
 
-**Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first with the raw python-docx extract as last resort; the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
+**Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first, then the python-docx render (`quill/io/docx_text.py`: headings, lists, tables), with the raw `word/document.xml` walk as the last resort; the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
 
 ##### 5.3a.1.2 Batch Conversion wizard
 
@@ -4182,6 +4182,62 @@ scoped to app-focused, matching every QUILL-key chord except the one
 existing OS-level `RegisterHotKey` precedent (sticky notes), which stays a
 narrow, Windows-only exception.
 
+**YouTube stations (`core/radio/youtube.py`, #1268).** A listener asked for
+YouTube -- including YouTube Live -- to be playable and recordable "just like
+any other radio stream." It is, with three constraints shaping the design.
+
+*A YouTube link is a web page.* `is_youtube_url` recognizes watch links,
+`youtu.be` shorteners, `/live/`, `/shorts/`, `/embed/`, YouTube Music, and a
+channel's live page (`/@handle/live`, `/channel/<id>/live`);
+`canonical_youtube_url` collapses a video to
+`https://www.youtube.com/watch?v=<id>`, dropping playlist, timestamp, and
+tracking parameters so a favorite stores a durable link. `resolve_youtube_stream`
+turns that page into a playable audio URL through yt-dlp
+(`extract_info(download=False)`, best audio-only format, falling back to a
+combined HLS manifest so live broadcasts still play).
+
+*The playable URL expires.* YouTube signs its media URLs and they die within
+hours, so the resolved URL is **never persisted**: the favorite holds the page
+link and the stream is re-resolved on every play (`RadioPlayerController`) and
+at the moment of capture (`recording.py::_resolve_capture_url`). That is what
+lets a recording scheduled days in advance still work -- resolving at schedule
+time would capture nothing.
+
+*Resolving is a network round trip.* It cannot run on the UI thread; a frozen
+window is unusable with a screen reader. `ui/radio/youtube_playback.py` runs the
+resolve on a worker thread, announces CONNECTING immediately, and applies the
+result via `wx.CallAfter`. Every play and stop bumps a token, so a resolve that
+lands after the listener stopped or switched stations is discarded rather than
+hijacking playback. The station keeps its page URL in `state.station` (favorites,
+the now-playing line, and the recorder all need the durable one); the short-lived
+URL lives only in `_playback_url_override`, which the one cross-engine rescue
+reuses instead of resolving twice.
+
+*Consent and posture.* yt-dlp is **never bundled** -- it reaches arbitrary media
+hosts and updates constantly -- so it installs on demand, exactly as the
+converter's URL import does (§4.6). The one-time consent + rights notice
+(`ui/radio/youtube_ui.py`, persisted as `RadioHistory.youtube_consented`) is
+taken when a YouTube link is **added**, not when it plays: a scheduled recording
+can fire while nobody is at the computer, and that must never be the first time
+QUILL reaches YouTube. Refused in Safe Mode at every layer (core resolve, host
+resolver, consent prompt). The single egress site is recorded in the
+network-egress audit. A private, removed, region-blocked, or not-yet-live video
+produces a speakable reason rather than a silent failure or an HTML page handed
+to the audio engine.
+
+**Live365 link normalization (`core/radio/live365.py`).** The link a listener
+has for a Live365 station is almost never its stream: it is the station page
+(`live365.com/station/<slug>-a25891`) or the web player
+(`player.live365.com/a25891`), both HTML. Pasted into Add Custom Station those
+saved a station that could never play. `normalize_live365` rewrites any
+Live365 station/player link — or a bare `a#####` id — to the canonical
+`https://streaming.live365.com/<id>` stream, and the dialog reports that it
+did. It is deliberately a **pure string transform**: the station id is already
+present in every such link, so there is no network call, no scraping, and no
+use of Live365's auth-gated directory API — nothing to gate in Safe Mode and no
+new egress site. A bare station *slug* with no id would require that API and is
+therefore left untouched, as is every non-Live365 URL.
+
 **Persistence.** `core/radio/favorites.py` — atomic JSON via
 `core.storage.write_json_atomic`, the standard settings-surface pattern (no
 SQLite, unlike both FastPlay and ACB Link). Each favorite carries an unused
@@ -5599,7 +5655,7 @@ consent dialog.
 
 | Tier | Engine | Handles | Cost / privacy |
 |---|---|---|---|
-| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, ships with the `pages` extra) | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS, and PDFs with a text layer | Free, local, no upload |
+| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled; see "Reader chain and the document-text contract") | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS, and PDFs with a text layer | Free, local, no upload |
 | 2 | Local Tesseract OCR (`quill/io/tesseract_ocr.py`) | Images (PNG/JPG/TIFF/BMP/GIF/WebP) and image-based PDFs; CPU-only, no GPU | Free, local, no upload |
 | 3 | Datalab Chandra cloud OCR (`quill/core/datalab_ocr.py`) | The accuracy escalation: complex tables, forms, handwriting, math, dense layouts, poor scans; returns Markdown/HTML/JSON | Paid (BYOK, per page on the user's Datalab account), cloud, **consent-gated per upload** |
 
@@ -9633,6 +9689,16 @@ All app front-ends live in `quill/apps/` as small frames on the shared
   repo (`quille-beacon`, own SQLite store); converges to `quill/apps/beacon.py`
   on the shared shell once its data-integrity and security fixes land (staged;
   not before its Tier-1 fixes).
+- **Quill Converter** (`quill/apps/converter.py`) — the Universal Audio
+  Converter as its own app (§4.7). Shipping as a standalone product from 1.0.0:
+  `standalone/converter/` is the wrapper (launcher package, tile icon +
+  regenerable `assets/make_quill_converter_icon.py`, PyInstaller spec,
+  `pyproject.toml`), `build_portable.py` carries a `converter` product entry
+  (`QuillConverter.exe`, ffmpeg staged, no speech engines and no mpv — the
+  conversion work is entirely FFmpeg's), and `QuillConverter.exe` is in
+  `storage_mode`'s portable-evidence allowlist so a portable bundle keeps its
+  data next to the exe like every sibling. yt-dlp is never bundled: URL import
+  installs it on demand with consent.
 
 Each standalone app is a **thin wrapper repo** (launcher + PyInstaller spec +
 installer + docs) that pins `quill @ <tag>` and calls `quill.apps.<app>:main`.
@@ -12698,6 +12764,66 @@ invariants: the packages are named in exactly one place (the `pdf-ocr`
 extra), and the installer's own pinned requirements are kept in sync with
 that extra — evolving the regression coverage rather than deleting it
 outright when the fix's shape changed.
+
+### Reader chain and the document-text contract (#1279 / #1278, shipped 1.0.0)
+
+Two user reports on the same surface — "when I load a Word document it says
+`# DOCX Extract` at the top" (#1279) and a `JSONDecodeError: Unexpected UTF-8
+BOM` crash on opening a `.json` (#1278) — exposed three separate defects and
+one bad packaging decision.
+
+**No synthetic text in an opened document.** An extract's text is the
+document's own text. The fallback Word, ODT, PowerPoint, and spreadsheet
+extracts no longer prepend a `# <FORMAT> Extract` banner, and
+`format_pdf_document` no longer prepends `# PDF Extract` plus engine, quality
+score, and a low-confidence hint. All of that provenance already lives in
+`source_metadata` and is reported by `build_intake_summary` (the spoken/status
+line on open) and `build_intake_report` (**Document Intake Report**), which
+gained the low-confidence/OCR advice the PDF header used to carry. This
+extends EDS-21's earlier removal of the `# RTF Extract` placeholder to every
+remaining reader. `# Notebook` and `# SQLite Database: <name>` stay: those
+texts are wholly synthesized reports of a non-text source, not a document's
+own words. The AI document-QA path reads `format_pdf_document`, so it also
+stops feeding the banner to the model.
+
+**BOM-aware structured reads.** `read_structured_document`'s text branch now
+reads through `quill.io.text.read_text_document` instead of
+`path.read_text(encoding=...)`, so `.json`/`.xml`/`.toml`/`.yaml`/`.ipynb`
+inherit the contract plain text has had since #648/#649: a UTF-8 BOM is
+stripped from the editable text and remembered as `utf-8-sig` (a save re-adds
+it byte-for-byte), the original line ending survives, and the #867
+cp1252/latin-1 fallback applies. Before this, a BOM crashed the open (0.9.0)
+and, after #1228's guard, silently degraded the file to unformatted raw text.
+
+**Word reads through python-docx, not raw XML.** The root cause of #1279 was
+that a packaged install never had MarkItDown (an optional download), so every
+Word open fell to `_format_docx`'s hand-rolled `word/document.xml` walk — one
+flat line per paragraph, headings/lists/tables discarded. `python-docx` is a
+*base* dependency, so the fallback now renders through it
+(`quill/io/docx_text.py::read_docx_text`: heading levels, list styles and
+direct `w:numPr` numbering, tables as GFM) with the XML walk kept as the last
+resort (`read_docx_xml_text`). The read chain is therefore: MarkItDown when
+present → python-docx → raw XML.
+
+**Packaging: the lean half ships, the heavy half stays optional.** Bundling
+the whole `pdf-ocr` extra was measured, not assumed: MarkItDown hard-requires
+`magika`, which hard-requires `onnxruntime` and `numpy`, and its xlsx/xls
+converters require `pandas` — about **150 MB installed**, not the "~30 MB" the
+component dialog claimed. A new lean extra, `office-text` (`pdfplumber`,
+`pypdf`, `openpyxl`, ~16 MB), is bundled instead — in
+`DEFAULT_BUNDLED_DEPENDENCY_GROUPS` for Windows and in `setup_macos.py`'s
+`includes` plus `macos-release.yml`'s install specs for the `.app`, where the
+readers' function-local imports also defeated py2app's tracer (the macOS
+bundle had no `docx`, no PDF reader, and no `openpyxl` at all). Without
+`pdfplumber`/`pypdf` there is no PDF text reader; without `openpyxl` an
+`.xlsx` cannot open. MarkItDown remains a one-click download, relabeled with
+its true size and described as the enhancement it is ("most useful for legacy
+`.doc`/`.ppt`/`.xls` files and awkward layouts"), and a test asserts it is
+*not* in the bundled groups so a future re-add is deliberate. A read that
+lands on a reduced reader stamps `extraction_pack_missing` in
+`source_metadata`, which the intake summary and report turn into a one-line
+pointer at the download — suppressed when python-docx already read the file
+well, so it never nags about 150 MB for a document that came through fine.
 
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 

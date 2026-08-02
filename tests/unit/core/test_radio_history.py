@@ -348,3 +348,16 @@ def test_explicit_favorites_sort_is_honored(tmp_path) -> None:
     # A garbage stored value falls back to the A-Z default, not manual.
     _write_history(tmp_path, {"favorites_sort": "bogus"})
     assert load_history(tmp_path).favorites_sort == "az"
+
+
+def test_youtube_consent_defaults_off_and_round_trips(tmp_path) -> None:
+    # #1268: QUILL must never reach YouTube because a setting quietly defaulted
+    # on -- the consent is opt-in, and once given it is remembered so a
+    # scheduled recording can fire unattended.
+    history = load_history(tmp_path)
+    assert history.youtube_consented is False
+
+    history.youtube_consented = True
+    save_history(tmp_path, history)
+
+    assert load_history(tmp_path).youtube_consented is True

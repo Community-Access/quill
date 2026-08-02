@@ -806,6 +806,35 @@ dev = ["pytest>=8.2"]
     assert dependencies == ["alpha>=1.0", "wxPython>=4.2.2", "pyttsx3>=2.99", "pyenchant>=3.2"]
 
 
+def test_shipped_build_bundles_pdf_and_spreadsheet_readers() -> None:
+    # #1279: a packaged install must be able to read PDF text and .xlsx sheets out
+    # of the box -- without pdfplumber/pypdf quill/io/pdf.py has no reader at all,
+    # and without openpyxl _format_spreadsheet cannot open a workbook.
+    from scripts.build_windows_distribution import DEFAULT_BUNDLED_DEPENDENCY_GROUPS
+
+    assert "office-text" in DEFAULT_BUNDLED_DEPENDENCY_GROUPS
+    repo_root = Path(__file__).resolve().parents[3]
+    bundled = bundled_runtime_dependencies(repo_root / "pyproject.toml")
+    assert any(item.startswith("pdfplumber") for item in bundled)
+    assert any(item.startswith("pypdf") for item in bundled)
+    assert any(item.startswith("openpyxl") for item in bundled)
+    # Word reads through python-docx, which must stay a base dependency.
+    assert any(item.startswith("python-docx") for item in bundled)
+
+
+def test_shipped_build_does_not_bundle_the_markitdown_pack() -> None:
+    # #1279: markitdown pulls magika -> onnxruntime + numpy, and pandas for its
+    # spreadsheet converters (~150 MB installed). It stays a one-click download,
+    # so an accidental re-add of the pdf-ocr group fails here rather than in a
+    # release build nobody weighed.
+    from scripts.build_windows_distribution import DEFAULT_BUNDLED_DEPENDENCY_GROUPS
+
+    assert "pdf-ocr" not in DEFAULT_BUNDLED_DEPENDENCY_GROUPS
+    repo_root = Path(__file__).resolve().parents[3]
+    bundled = bundled_runtime_dependencies(repo_root / "pyproject.toml")
+    assert not any(item.startswith("markitdown") for item in bundled)
+
+
 def test_build_identity_reads_canonical_version_toml(tmp_path: Path) -> None:
     """Installer metadata must come from build/version.toml, not literals."""
     from scripts.build_windows_distribution import _build_identity

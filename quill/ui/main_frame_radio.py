@@ -92,6 +92,7 @@ class RadioMixin:
             playback_engine=self._radio_history.playback_engine,
             on_buffering=lambda: self._wx.CallAfter(self._announce, "Buffering..."),
             spotify_token_provider=self._spotify_session.access_token,
+            resolve_youtube=self._radio_resolve_youtube,
         )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
@@ -1429,6 +1430,20 @@ class RadioMixin:
             return favorite.volume_percent
         return self._radio_history.volume_percent
 
+    # -- YouTube (#1268) ----------------------------------------------------
+
+    def _radio_youtube_consent(self) -> bool:
+        """One-time consent before QUILL ever reaches YouTube (see youtube_ui)."""
+        from quill.ui.radio.youtube_ui import ask_youtube_consent
+
+        return ask_youtube_consent(self)
+
+    def _radio_resolve_youtube(self, page_url: str) -> str:
+        """Resolve a saved YouTube link to a playable stream (worker thread)."""
+        from quill.ui.radio.youtube_ui import resolve_youtube_for_host
+
+        return resolve_youtube_for_host(self, page_url)
+
     def _radio_enhance_context_favorite(self) -> FavoriteStation | None:
         """The favorite Sound Enhancements edits right now: the currently
         playing station, if it's a favorite -- None means edit the shared
@@ -1695,6 +1710,7 @@ class RadioMixin:
             controller=self._radio_controller,
             prefill=prefill,
             announce_cb=self._announce,
+            youtube_consent_cb=self._radio_youtube_consent,
         )
         station = dlg.show()
         if station is None:

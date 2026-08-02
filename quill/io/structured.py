@@ -18,12 +18,15 @@ from xml.etree.ElementTree import Element
 
 from quill.core.document import Document
 from quill.core.epub import load_epub_book, render_epub_book
+from quill.core.pdf_ocr_install import PACK_ASSISTED_SUFFIXES, extraction_pack_missing
 from quill.core.safe_archive import check_zip_safety, open_zip
 from quill.core.safe_xml import fromstring as safe_xml_fromstring
+from quill.io.docx_text import read_docx_text, read_docx_xml_text
 from quill.io.markitdown_bridge import convert_with_markitdown
 from quill.io.pages import read_pages_document
 from quill.io.pdf import extract_pdf_outline, extract_pdf_text, format_pdf_document
 from quill.io.rtf import read_rtf_document
+from quill.io.text import read_text_document
 
 # PERF-11: spreadsheet reads are bounded so a huge sheet cannot exhaust memory.
 # openpyxl's read-only mode streams rows lazily; these caps stop iteration early
@@ -54,8 +57,13 @@ def read_structured_document(
             if suffix == ".docm":
                 document.source_metadata["source_kind"] = "docm"
             return document
-        text = _format_docx(path)
-        metadata = {"source_kind": suffix.lstrip("."), "engine": "docx", "quality_score": 100}
+        # #1279: python-docx is a base dependency, so the fallback reads headings,
+        # lists, and tables rather than a flat paragraph dump; the hand-rolled XML
+        # walk stays as the last resort for a document python-docx cannot open.
+        rendered = read_docx_text(path)
+        engine = "python-docx" if rendered is not None else "docx"
+        text = rendered if rendered is not None else read_docx_xml_text(path)
+        metadata = {"source_kind": suffix.lstrip("."), "engine": engine, "quality_score": 100}
     elif suffix == ".doc":
         document = _read_via_markitdown(path, "doc", fallback_engine="doc")
         if document is not None:
@@ -98,9 +106,31 @@ def read_structured_document(
             return document
         text, metadata = _format_spreadsheet(path)
     else:
-        raw_text = path.read_text(encoding=encoding)
-        text, metadata = _format_structured_text(raw_text, suffix)
+        # #1278: read_text_document strips a UTF-8 BOM (remembering utf-8-sig so a
+        # save re-adds it), keeps the original line ending, and degrades to
+        # cp1252/latin-1. The old path.read_text left the BOM in the text, so a
+        # BOM-prefixed .json/.xml/.toml failed to parse (and crashed before #1228).
+        loaded = read_text_document(path, encoding=encoding)
+        text, metadata = _format_structured_text(loaded.text, suffix)
+        return Document(
+            text=text,
+            path=path,
+            modified=False,
+            encoding=loaded.encoding,
+            line_ending=loaded.line_ending,
+            source_metadata=metadata,
+        )
 
+    # #1279: a fallback read still succeeds, but MarkItDown reads these formats
+    # better -- flag it so the intake summary points at the one-click download.
+    # Not for a Word file python-docx already read well: that path is good enough
+    # that nagging about a 150 MB download would be noise, not help.
+    if (
+        suffix in PACK_ASSISTED_SUFFIXES
+        and metadata.get("engine") != "python-docx"
+        and extraction_pack_missing()
+    ):
+        metadata["extraction_pack_missing"] = True
     line_ending = "\r\n" if "\r\n" in text else "\n"
     return Document(
         text=text,
@@ -325,7 +355,9 @@ def _format_spreadsheet(path: Path) -> tuple[str, dict[str, object]]:
 
 
 def _read_workbook_as_text(path: Path, workbook: Any) -> Document:
-    lines = [f"# Spreadsheet Extract: {path.name}", ""]
+    # #1279: no "# Spreadsheet Extract: <name>" banner. The per-sheet headings stay:
+    # they are structure the workbook has, not text about the extract.
+    lines: list[str] = []
     for worksheet in workbook.worksheets:
         lines.append(f"## Sheet: {worksheet.title}")
         rows = []
@@ -553,35 +585,12 @@ def _format_sqlite(path: Path) -> str:
     return "\n".join(lines)
 
 
-def _format_docx(path: Path) -> str:
-    with open_zip(path) as archive:
-        xml_bytes = archive.read("word/document.xml")
-    root = safe_xml_fromstring(xml_bytes.decode("utf-8"))
-    namespace = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
-    paragraphs = []
-    for paragraph in root.findall(".//w:p", namespace):
-        parts = [
-            node.text or ""
-            for node in paragraph.findall(".//w:t", namespace)
-            if isinstance(node.text, str)
-        ]
-        text = "".join(parts).strip()
-        if text:
-            paragraphs.append(text)
-    lines = ["# DOCX Extract", ""]
-    if paragraphs:
-        lines.extend(paragraphs)
-    else:
-        lines.append("(no extractable text)")
-    return "\n".join(lines).rstrip() + "\n"
-
-
 def _format_odt(path: Path) -> str:
     with open_zip(path) as archive:
         content = archive.read("content.xml").decode("utf-8", errors="ignore")
     text = _strip_markup(content)
-    lines = ["# ODT Extract", "", text or "(no extractable text)"]
-    return "\n".join(lines).rstrip() + "\n"
+    # #1279: no synthetic banner -- see _format_docx.
+    return (text or "(no extractable text)").rstrip() + "\n"
 
 
 def _strip_markup(text: str) -> str:
@@ -609,9 +618,11 @@ def _format_pptx(path: Path) -> str:
             key=_pptx_slide_sort_key,
         )
         if not slide_paths:
-            return "# PPTX Extract\n\n(no extractable slides)\n"
+            return "(no extractable slides)\n"
         slide_rel_map = _load_pptx_slide_rel_map(archive)
-        lines = [f"# PPTX Extract: {path.name}", ""]
+        # #1279: no "# PPTX Extract: <name>" banner; the per-slide headings below
+        # are the deck's own structure and stay.
+        lines: list[str] = []
         for index, slide_path in enumerate(slide_paths, start=1):
             root = safe_xml_fromstring(archive.read(slide_path).decode("utf-8", errors="ignore"))
             title = _pptx_slide_title(root) or f"Slide {index}"

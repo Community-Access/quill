@@ -58,6 +58,22 @@ _PDF_OCR_REQUIREMENTS: tuple[str, ...] = (
 
 _INSTALL_TIMEOUT_S = 1800.0
 
+#: Formats MarkItDown reads far better than QUILL's built-in fallback extractors.
+#: Without the pack these still open -- via the raw OOXML/pdfminer floor -- but the
+#: result is poorer, which users read as a bug (#1279). ``quill.io.structured``
+#: stamps ``extraction_pack_missing`` on such a read so the open announcement and
+#: the intake report can point at the one-click download.
+PACK_ASSISTED_SUFFIXES: frozenset[str] = frozenset({
+    ".doc",
+    ".docm",
+    ".docx",
+    ".pdf",
+    ".ppt",
+    ".pptx",
+    ".xls",
+    ".xlsx",
+})
+
 
 class PdfOcrInstallError(CodedError):
     """Raised when the optional PDF/Office text-extraction download/install fails."""
@@ -101,6 +117,11 @@ def is_pdf_ocr_available() -> bool:
 def missing_pdf_ocr_modules() -> tuple[str, ...]:
     """Which of the pack's modules are not importable right now."""
     return tuple(name for name in _PDF_OCR_MODULES if importlib.util.find_spec(name) is None)
+
+
+def extraction_pack_missing() -> bool:
+    """True when a pack-assisted read has to fall back (the pack is not installed)."""
+    return bool(missing_pdf_ocr_modules())
 
 
 def install_pdf_ocr_support(
