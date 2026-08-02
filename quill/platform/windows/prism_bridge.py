@@ -456,6 +456,22 @@ class AnnouncementEngine:
         self._braille(message, self._runtime_backend, kind="prism")
         return None
 
+    def braille(self, message: str) -> str:
+        """Write *message* to the braille display only; "" or an error string.
+
+        The public entry point the announcement service's BrailleSink uses
+        (#1293). The engine still owns the bridge and its capability checks;
+        what moved out is the decision about *whether* to write, which is the
+        policy's now -- and that is what buys dedupe, sticky errors and the
+        compact style. ``announce()`` keeps its own inline braille for hosts
+        that have not adopted the service yet.
+        """
+        if self._runtime_backend is not None:
+            return braille_via_prism(self._runtime_backend, message)
+        if self._ao2_output is not None:
+            return braille_via_accessible_output2(self._ao2_output, message)
+        return ""
+
     def set_braille_enabled(self, enabled: bool) -> None:
         """Turn braille mirroring on or off (Settings.announcement_braille)."""
         self._braille_enabled = bool(enabled)

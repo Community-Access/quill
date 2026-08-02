@@ -221,7 +221,11 @@ class PodcastsAppFrame(
 
         # Expand favorites/views/folders but leave shows COLLAPSED, so the tree
         # is not a wall of episodes -- expand a show to reveal its episodes.
-        tree.Expand(root)
+        # wxMSW asserts on expanding a hidden root (TR_HIDE_ROOT), which took
+        # the whole app down before its window appeared -- and the call was a
+        # no-op regardless: a hidden root's children are the visible top level.
+        if not (tree.GetWindowStyle() & wx.TR_HIDE_ROOT):
+            tree.Expand(root)
         for fitem in folder_items.values():
             if fitem is not root:
                 tree.Expand(fitem)

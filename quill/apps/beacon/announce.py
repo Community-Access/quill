@@ -26,10 +26,18 @@ class Announcer:
         self.verbosity = v
 
     def say(self, message: str, level: Verbosity = "normal") -> None:
-        """Post ``message`` to the status bar if verbosity permits.
+        """Announce ``message`` if verbosity permits (#1300).
 
-        Falls back to the frame title if the frame has no status bar, so any
-        wx.Frame (including the player) can host an Announcer.
+        QuillBeacon had **no screen-reader speech at all**: this method set
+        the status bar and, failing that, the window title -- and screen
+        readers announce neither on their own. So "QuillBeacon ready",
+        result counts, filter changes and undo confirmations were silent.
+        The status bar still updates (the visual floor), and the message now
+        also goes to the announcement service, which speaks it, brailles it
+        and cues it.
+
+        The signature is unchanged on purpose: Beacon's ~40 call sites keep
+        working untouched.
         """
         if _VERBOSITY_ORDER[level] > _VERBOSITY_ORDER[self.verbosity]:
             return
@@ -38,6 +46,53 @@ class Announcer:
             self.frame.SetStatusText(message)
         else:
             self.frame.SetTitle(message)
+        self._speak(message, level)
+
+    def _speak(self, message: str, level: Verbosity) -> None:
+        """Hand the message to the announcement service; never raises.
+
+        Best-effort by design: an announcement failing must not break the
+        action the user just took, and Beacon ran without any speech at all
+        until now, so a silent fallback is no worse than the status quo.
+        """
+        try:
+            from quill.core.announce import Announcement, Severity
+
+            service = self._service()
+            if service is None:
+                return
+            severity = Severity.INFO if level == "normal" else Severity.ROUTINE
+            service.announce(Announcement(text=message, severity=severity))
+        except Exception:  # noqa: BLE001 - announcing must never break Beacon
+            return
+
+    def _service(self):
+        """Beacon's announcement service, built on first use."""
+        service = getattr(self, "_announcement_service", None)
+        if service is not None:
+            return service
+        host = getattr(self.frame, "_announcement_engine", None)
+        from quill.core.announce import AnnouncementService
+        from quill.core.announce.adapters import SpeechSink, VisualSink
+
+        service = AnnouncementService()
+        if host is None:
+            from quill.platform.windows.prism_bridge import AnnouncementEngine
+
+            host = AnnouncementEngine()
+            self.frame._announcement_engine = host
+        service.add_sink(SpeechSink(lambda text, force: host.announce(text, force_speech=force)))
+        braille = getattr(host, "braille", None)
+        if callable(braille):
+            from quill.core.announce.adapters import BrailleSink
+
+            host.set_braille_enabled(False)
+            service.add_sink(
+                BrailleSink(braille, supports_braille=getattr(host, "braille_supported", None))
+            )
+        service.add_sink(VisualSink(lambda text: None))
+        self._announcement_service = service
+        return service
 
     def announce_count(self, count: int, filtered: bool = False) -> None:
         word = "results" if count != 1 else "result"

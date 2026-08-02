@@ -68,6 +68,14 @@ class Sink(Protocol):
         """Report whether delivery would work right now."""
         ...
 
+    def can_deliver(self) -> bool:
+        """False when this channel cannot reach the user at the moment.
+
+        Distinct from raising: a display that is not connected has not
+        *failed*, it is simply absent, and the report should say so.
+        """
+        ...
+
 
 class BaseSink:
     """Convenience base: remembers the last error and answers a default probe."""
@@ -86,6 +94,10 @@ class BaseSink:
 
     def deliver(self, announcement: Announcement) -> None:  # pragma: no cover - abstract
         raise NotImplementedError
+
+    def can_deliver(self) -> bool:
+        """Deliverable unless a subclass knows otherwise."""
+        return True
 
     def probe(self) -> SinkStatus:
         return SinkStatus(channel=self.channel, available=True, last_error=self._last_error)

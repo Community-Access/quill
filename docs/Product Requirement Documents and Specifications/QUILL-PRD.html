@@ -8801,6 +8801,41 @@ history, and the headless capture the UIA suite asserts against. The channel
 probe reports availability, backend and reason for every channel -- including
 &quot;no sink installed&quot; -- serialisable straight into the support bundle.
 
+**Shell adoption of the announcement service (#1298-#1307).** Phase A built
+the channels; Phase B moved every shell onto them. `ui/announce_wiring.py` is
+the one factory: it reads the accessibility settings block into policy modes and
+installs whichever sinks the host can actually serve, duck-typed and optional, so
+a companion app without a notification store simply lacks that channel and the
+probe says so rather than pretending.
+
+`MainFrame._announce` keeps its verbosity gate -- suppression, repetition
+collapse and the budget still decide -- and hands the result to the service;
+**delivery moved, policy did not**, which is what makes the swap low-risk.
+`AppShellFrame._announce` does the same for all six companion apps at once.
+`Announcer.say` in QuillBeacon keeps its signature (~40 call sites untouched)
+while gaining speech, braille and cues -- Beacon previously had **no
+screen-reader speech at all**, writing the status bar or the window title, which
+no reader announces on its own.
+
+One hand-off deserves recording: the #1289 braille dispatch lives inside
+`AnnouncementEngine.announce`, so the factory disables it and installs a
+`BrailleSink` over the engine&#39;s new public `braille()`. Without that, every
+message would reach the display twice. `ui/announce_shim.py` translates the
+legacy `force` boolean into a severity (WARNING, not the never-suppressible
+ERROR), so hundreds of `_announce` call sites stay untouched.
+
+A sink can also answer `can_deliver()` -- &quot;no display connected&quot; is *skipped*,
+not *failed*, and the self-test report distinguishes them, because a channel
+that reports success while writing to nothing is the exact dishonesty the probe
+exists to prevent.
+
+Two commands ship in every shell: **Repeat Last Announcement** (#1304), reading
+the echo history or the visual message slot, and the **Announcement Self-Test**
+(#1305), which announces on every channel and renders the probe as prose --
+delivered, failed with a reason, or unavailable with a reason. Both ship unbound
+by default: the QUILL-key namespace has no free letter left, and taking one from
+an existing command would cost a binding people already use.
+
 **Braille announcement routing (`platform/windows/braille_output.py`, #1283).**
 A braille user reported that spoken status messages never reach the display. The
 cause was categorical rather than incidental: **no QUILL announcement path had

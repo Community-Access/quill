@@ -1648,6 +1648,18 @@ class CommandRegistryMixin:
             self._binding_for("edit.insert_link"),
         )
         self.commands.register(
+            "app.repeat_last_announcement",
+            "Repeat Last Announcement",
+            self.repeat_last_announcement,
+            self._binding_for("app.repeat_last_announcement"),
+        )
+        self.commands.register(
+            "app.announcement_self_test",
+            "Announcement Self-Test...",
+            self.run_announcement_self_test,
+            self._binding_for("app.announcement_self_test"),
+        )
+        self.commands.register(
             "edit.insert_equation",
             "Insert Equation...",
             self.insert_equation,

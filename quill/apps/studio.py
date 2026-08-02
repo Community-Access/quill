@@ -2413,7 +2413,13 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         self._refresh_status_bar_cells()
 
     def _set_status_quiet(self, message: str) -> None:
-        """Status bar text without a spoken announcement (per-progress updates)."""
+        """Status bar text without a spoken announcement (per-progress updates).
+
+        #1303: kept as the name every progress callback already uses, but
+        it is an announcement with the speech channel off now, not a bare
+        status write -- so a progress line reaches the message slot and the
+        transcript instead of being invisible to everything but the eye.
+        """
         self._status_message = message
         AppShellFrame._set_status(self, message)
         activity = getattr(self, "_activity_text", None)

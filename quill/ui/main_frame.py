@@ -32,6 +32,7 @@ from quill.core.a11y_regions import (
 )
 from quill.core.ai import Assistant
 from quill.core.ai.agent import allowed_tools
+from quill.core.announce import Channel as AnnounceChannel
 from quill.core.autoformat import EM_DASH, is_dash_merge, smart_quote_for
 from quill.core.autosave import autosave_document
 from quill.core.backups import backup_document, list_backups
@@ -370,6 +371,8 @@ from quill.stability.task_manager import TaskManager
 from quill.stability.ui_responsiveness import mark_wx_main_thread
 from quill.stability.wx_heartbeat import HeartbeatState, WxHeartbeatTimer, WxHeartbeatWatchdog
 from quill.ui.accessible_names import pin_macos_text_area_role
+from quill.ui.announce_commands import AnnounceCommandsMixin
+from quill.ui.announce_shim import build_announcement
 from quill.ui.context_help import ContextHelpMixin, warm_help_topics
 from quill.ui.csv_grid import CsvGridSurface
 from quill.ui.dialog_contract import (
@@ -803,6 +806,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    AnnounceCommandsMixin,
     AbbreviationsMixin,
     EquationsMixin,
     AiActionsMixin,
@@ -5499,6 +5503,14 @@ class MainFrame(
         self._set_status(message)
 
     def _announce(self, message: str, *, force: bool = False) -> None:
+        """Announce *message* on every channel the service can reach (#1298).
+
+        The verbosity gate below is unchanged and still decides suppression,
+        repetition collapse and the budget; what moved is delivery. Handing
+        the result to the service is what gives QUILL braille, earcons,
+        notification recording and the transcript from one call site instead
+        of four scattered ones.
+        """
         self._status_message = message
         self._record_spoken(message)
         self._refresh_statusbar()
@@ -5511,13 +5523,30 @@ class MainFrame(
             if suppressed:
                 return
             message = speech or message
-        engine = getattr(self, "_announcement_engine", None)
-        if engine is None:
+        service = self._announce_service()
+        if service is None:
             return
-        backend_error = engine.announce(message, force_speech=force)
+        report = service.announce(build_announcement(message, force=force))
+        backend_error = report.failed.get(AnnounceChannel.SPEECH, "")
         if backend_error and backend_error != self._announcement_error_reported:
             self._announcement_error_reported = backend_error
             self._record_notification(backend_error, "accessibility")
+
+    def _announce_service(self):
+        """The announcement service for this frame, built on first use.
+
+        Lazy because a test frame may never run __init__, and because the
+        service reads settings that are not final until the shell is up.
+        """
+        service = getattr(self, "_announcement_service", None)
+        if service is None:
+            if getattr(self, "_announcement_engine", None) is None:
+                return None
+            from quill.ui.announce_wiring import build_announcement_service
+
+            service = build_announcement_service(self)
+            self._announcement_service = service
+        return service
 
     def _record_spoken(self, message: object) -> None:
         """Add a spoken line to the Spoken Echo history (newest kept last).

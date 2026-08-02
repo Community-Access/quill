@@ -123,6 +123,12 @@
     ]
   },
   {
+    "id": "app.announcement_self_test",
+    "title": "Announcement Self-Test",
+    "body": "Announce a test phrase on every channel, then show a copyable report of which channels actually delivered it and which screen reader or display served each one. Use it when something is not reaching you: the report distinguishes 'braille failed' from 'no display is connected' and 'no screen reader is running', which is usually the difference between a bug and a five-second fix. The same information appears in Help > Diagnostics and in a support bundle.",
+    "user_guide_section": "accessibility"
+  },
+  {
     "id": "app.command_palette",
     "title": "Command Palette...",
     "body": "Open a searchable list of every QUILL command. Type part of a command name, arrow to the one you want, and press Enter to run it. This is the fastest way to reach any feature without hunting through menus.",
@@ -154,6 +160,12 @@
       "Ctrl+,"
     ],
     "user_guide_section": "getting-started"
+  },
+  {
+    "id": "app.repeat_last_announcement",
+    "title": "Repeat Last Announcement",
+    "body": "Say the most recent announcement again, on every channel you have turned on. Speech is gone the moment it finishes, so if you were reading something else when a status message passed, this brings it back instead of leaving you to guess. Works the same in QUILL, Quill Radio, Quill Cast, Audio Studio, Quill Converter, Quill Weather and QuillBeacon. Unbound by default; give it a shortcut in the Keymap Editor if you use it often.",
+    "user_guide_section": "accessibility"
   },
   {
     "id": "braille.back_translate",
@@ -804,6 +816,12 @@
     "user_guide_section": "files"
   },
   {
+    "id": "file.import_convert",
+    "title": "Import / Convert Document (OCR)",
+    "body": "Turn a hard-to-read document into editable text using free, local, no-upload services. Born-digital files (Word, PowerPoint, Excel, HTML, EPUB, and PDFs with a text layer) convert instantly with the built-in local converter; scanned PDFs and images are offered free on-device OCR. QUILL always asks before running OCR and never uploads your document.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
     "id": "file.manage_remote_sites",
     "title": "Manage Remote Sites",
     "body": "Manage your saved remote connections (SFTP and similar) that QUILL uses to open and save files on other machines.",
@@ -1025,6 +1043,15 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.blockquote",
+    "title": "Insert Block Quote",
+    "body": "Insert a block quote at the cursor, or turn the selected lines into one. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
+    "keystrokes": [
+      "Ctrl+Alt+Q"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.bold",
     "title": "Bold",
     "body": "Make the selected text bold, or turn bold on for what you type next. QUILL applies real formatting stored as hidden codes; the editor text stays clean.",
@@ -1139,6 +1166,15 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.horizontal_rule",
+    "title": "Insert Horizontal Rule",
+    "body": "Insert a horizontal rule (a divider line) at the cursor. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
+    "keystrokes": [
+      "Ctrl+Alt+H"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.increase_heading_level",
     "title": "Increase Heading Level",
     "body": "Make the current heading one level more important (for example Heading 1 becomes Heading 2).",
@@ -1202,41 +1238,11 @@
     "user_guide_section": "writing-and-editing"
   },
   {
-    "id": "tools.table_studio",
-    "title": "Table Studio (Experimental)",
-    "body": "Build a new table, or open a CSV, in a fully keyboard-accessible grid. Arrow keys move by cell; Left and Right speak the column as you cross a row. F2 or Enter edits a cell; Alt+arrows move a row or column; Ctrl+Insert adds a row; Delete clears a cell. Insert the finished table as Markdown or HTML, or save it out as CSV. Experimental: enable it in Preferences > Experimental.",
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.csv_studio",
-    "title": "Open CSV in Table Studio (Experimental)",
-    "body": "Open a CSV or TSV file straight into Table Studio's accessible grid (the delimiter is detected for you), navigate and edit it cell by cell, then insert it as a Markdown or HTML table or save it back out as CSV. Experimental: enable Table Studio in Preferences > Experimental.",
-    "user_guide_section": "tools"
-  },
-  {
     "id": "format.insert_table",
     "title": "Insert Table",
     "body": "Insert a table at the cursor. QUILL asks for the number of rows and columns and writes an accessible table in your document's format. A Markdown or HTML table saved to Word becomes a real, editable Word table with a repeating header row.",
     "keystrokes": [
       "Ctrl+Alt+T"
-    ],
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.blockquote",
-    "title": "Insert Block Quote",
-    "body": "Insert a block quote at the cursor, or turn the selected lines into one. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
-    "keystrokes": [
-      "Ctrl+Alt+Q"
-    ],
-    "user_guide_section": "writing-and-editing"
-  },
-  {
-    "id": "format.horizontal_rule",
-    "title": "Insert Horizontal Rule",
-    "body": "Insert a horizontal rule (a divider line) at the cursor. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
-    "keystrokes": [
-      "Ctrl+Alt+H"
     ],
     "user_guide_section": "writing-and-editing"
   },
@@ -1320,6 +1326,15 @@
     "title": "Sentence Case",
     "body": "Change the selected text to sentence case: capitalise the first letter of each sentence, lower-case the rest.",
     "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.switch_document_format",
+    "title": "Switch Document Format",
+    "body": "Open the Document Format switcher for the current document: move between Plain text, Markdown, HTML, and Rich Text (RTF) mid-session. The current format is checked and shown in the status bar; conversions warn before anything lossy.",
+    "keystrokes": [
+      "Ctrl+Shift+Grave, K"
+    ],
+    "user_guide_section": "format-menu"
   },
   {
     "id": "format.title_case",
@@ -2597,10 +2612,22 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.csv_studio",
+    "title": "Open CSV in Table Studio (Experimental)",
+    "body": "Open a CSV or TSV file straight into Table Studio's accessible grid (the delimiter is detected for you), navigate and edit it cell by cell, then insert it as a Markdown or HTML table or save it back out as CSV. Experimental: enable Table Studio in Preferences > Experimental.",
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.cycle_autosave_interval",
     "title": "Cycle Autosave Interval",
     "body": "Cycle the autosave interval through its preset values and announce the new setting.",
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.delete_ocr_temp",
+    "title": "Delete OCR Temporary Files",
+    "body": "Remove any leftover OCR job files from QUILL's data folder (for example after a crash mid-conversion) and hear exactly what was deleted. The local conversion tiers normally clean up after themselves automatically.",
+    "user_guide_section": "working-with-different-document-types"
   },
   {
     "id": "tools.describe_image",
@@ -2618,30 +2645,6 @@
     "keystrokes": [
       "Ctrl+Shift+Grave, D"
     ],
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.voice_status",
-    "title": "Speak Voice Status",
-    "body": "Say what voice is doing right now: whether QUILL is listening for the Hey QUILL wake word, is in conversation mode, or is capturing a command. A quick way to confirm the microphone state at any time.",
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.voice_wakeword",
-    "title": "Listen for Hey QUILL (Wake Word)",
-    "body": "Turn on always-listening: QUILL listens continuously, on your device, for the phrase 'Hey QUILL'. Say 'Hey QUILL' followed by a command (like 'Hey QUILL, save file') to run it hands-free, or just 'Hey QUILL' to start a command. The microphone stays on while this is enabled, so QUILL keeps its listening status visible and plays a periodic reminder. Run this command again, or say 'stop', to turn listening off. By default it turns itself off when QUILL closes; a setting lets you resume it automatically at startup. Off in Safe Mode.",
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.voice_conversation",
-    "title": "Voice Conversation Mode",
-    "body": "The hands-free version of Voice Command. Run it once and QUILL listens for a command, plays a warm audio cue for every step, gives you a brief moment to say 'cancel' before it acts, and then keeps listening for a short follow-up so you can chain commands without re-arming. Run it again (or say 'stop') to turn conversation mode off. Every command still comes from the same safe, on-device allowlist. Tune the pause, cancel, follow-up, and tick timings under Settings; the audio cues are the 'Conversation' events in the Sound Events dialog. Off in Safe Mode.",
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "tools.voice_command",
-    "title": "Voice Command (Offline)",
-    "body": "Push-to-talk voice commands: run this command to start listening, speak one command (like 'save file', 'word count', or 'next heading'), then run it again to stop and act. Recognition happens entirely on your device, and only a safe, non-destructive allowlist of commands can be invoked. Say 'cancel' or 'never mind' to abort. Enable it with the 'Voice commands (push-to-talk)' setting; it is always off in Safe Mode.",
     "user_guide_section": "tools"
   },
   {
@@ -2678,6 +2681,12 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.glow_audit_file",
+    "title": "GLOW Audit File",
+    "body": "Pick a structured document on disk (DOCX, PPTX, XLSX, PDF, EPUB, or Markdown) and run the shared GLOW engine over it. The audit runs in the background and opens as a readable report tab with a score, a grade, and every finding with its suggestion.",
+    "user_guide_section": "glow-workflows-inside-quill"
+  },
+  {
     "id": "tools.glow_audit_selection",
     "title": "GLOW Audit Selection",
     "body": "Run a GLOW accessibility audit on just the selected text.",
@@ -2690,64 +2699,28 @@
     "user_guide_section": "tools"
   },
   {
-    "id": "tools.glow_fix_selection",
-    "title": "GLOW Fix Selection",
-    "body": "Apply GLOW's accessibility fixes to the selected text, with a preview to accept or reject.",
-    "user_guide_section": "tools"
-  },
-  {
-    "id": "file.import_convert",
-    "title": "Import / Convert Document (OCR)",
-    "body": "Turn a hard-to-read document into editable text using free, local, no-upload services. Born-digital files (Word, PowerPoint, Excel, HTML, EPUB, and PDFs with a text layer) convert instantly with the built-in local converter; scanned PDFs and images are offered free on-device OCR. QUILL always asks before running OCR and never uploads your document.",
-    "user_guide_section": "working-with-different-document-types"
-  },
-  {
-    "id": "tools.install_local_ocr",
-    "title": "Install Local OCR Engine (Tesseract)",
-    "body": "Download the free local OCR engine (about 48 MB). QUILL fetches the official installer from its own verified release, checks it byte-for-byte, and opens it for you to complete. The engine runs entirely on this computer; documents are never uploaded.",
-    "user_guide_section": "working-with-different-document-types"
-  },
-  {
-    "id": "tools.ocr_services",
-    "title": "OCR and Conversion Services",
-    "body": "A plain-language overview of every document conversion service: the free local converter, the local OCR engine, and the optional Datalab cloud service - what each does, what it costs, what stays on your machine, and the current status of each.",
-    "user_guide_section": "working-with-different-document-types"
-  },
-  {
-    "id": "tools.review_last_ocr",
-    "title": "Review Last OCR Result",
-    "body": "Open an accessible review checklist for the most recent conversion: where it came from, which service produced it, its recognition confidence, and every low-confidence line flagged as 'Page N: [confidence] text' so you can walk exactly the trouble spots instead of re-proofreading everything.",
-    "user_guide_section": "working-with-different-document-types"
-  },
-  {
-    "id": "tools.ocr_service_settings",
-    "title": "OCR Service Settings",
-    "body": "Open the AI Hub Services tab: enable the optional Datalab Chandra cloud OCR service, store your API key securely in the credential vault, choose default mode and output, test the connection (no document is uploaded by the test), and copy a secret-free service summary for support.",
-    "user_guide_section": "working-with-different-document-types"
-  },
-  {
-    "id": "tools.delete_ocr_temp",
-    "title": "Delete OCR Temporary Files",
-    "body": "Remove any leftover OCR job files from QUILL's data folder (for example after a crash mid-conversion) and hear exactly what was deleted. The local conversion tiers normally clean up after themselves automatically.",
-    "user_guide_section": "working-with-different-document-types"
-  },
-  {
-    "id": "tools.glow_audit_file",
-    "title": "GLOW Audit File",
-    "body": "Pick a structured document on disk (DOCX, PPTX, XLSX, PDF, EPUB, or Markdown) and run the shared GLOW engine over it. The audit runs in the background and opens as a readable report tab with a score, a grade, and every finding with its suggestion.",
-    "user_guide_section": "glow-workflows-inside-quill"
-  },
-  {
     "id": "tools.glow_fix_file",
     "title": "GLOW Fix File",
     "body": "Pick a structured document on disk and let GLOW write a repaired copy next to it. The original file is never modified; QUILL confirms the output name first, reports how many fixes were applied, and opens the post-fix audit so you can verify the result.",
     "user_guide_section": "glow-workflows-inside-quill"
   },
   {
+    "id": "tools.glow_fix_selection",
+    "title": "GLOW Fix Selection",
+    "body": "Apply GLOW's accessibility fixes to the selected text, with a preview to accept or reject.",
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.import_keymap",
     "title": "Import Keymap...",
     "body": "Load keyboard shortcuts from a file, replacing your current keymap.",
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.install_local_ocr",
+    "title": "Install Local OCR Engine (Tesseract)",
+    "body": "Download the free local OCR engine (about 48 MB). QUILL fetches the official installer from its own verified release, checks it byte-for-byte, and opens it for you to complete. The engine runs entirely on this computer; documents are never uploaded.",
+    "user_guide_section": "working-with-different-document-types"
   },
   {
     "id": "tools.keymap_editor",
@@ -2808,6 +2781,18 @@
     "title": "OCR Screen Capture...",
     "body": "Capture part of the screen and read its text using optical character recognition.",
     "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.ocr_service_settings",
+    "title": "OCR Service Settings",
+    "body": "Open the AI Hub Services tab: enable the optional Datalab Chandra cloud OCR service, store your API key securely in the credential vault, choose default mode and output, test the connection (no document is uploaded by the test), and copy a secret-free service summary for support.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "tools.ocr_services",
+    "title": "OCR and Conversion Services",
+    "body": "A plain-language overview of every document conversion service: the free local converter, the local OCR engine, and the optional Datalab cloud service - what each does, what it costs, what stays on your machine, and the current status of each.",
+    "user_guide_section": "working-with-different-document-types"
   },
   {
     "id": "tools.open_keyboard_reference",
@@ -2945,6 +2930,12 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.review_last_ocr",
+    "title": "Review Last OCR Result",
+    "body": "Open an accessible review checklist for the most recent conversion: where it came from, which service produced it, its recognition confidence, and every low-confidence line flagged as 'Page N: [confidence] text' so you can walk exactly the trouble spots instead of re-proofreading everything.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
     "id": "tools.run_python",
     "title": "Run Python",
     "body": "Run the current document (or selection) as a Python script in a restricted sandbox and show the output.",
@@ -3026,6 +3017,12 @@
     "user_guide_section": "tools"
   },
   {
+    "id": "tools.table_studio",
+    "title": "Table Studio (Experimental)",
+    "body": "Build a new table, or open a CSV, in a fully keyboard-accessible grid. Arrow keys move by cell; Left and Right speak the column as you cross a row. F2 or Enter edits a cell; Alt+arrows move a row or column; Ctrl+Insert adds a row; Delete clears a cell. Insert the finished table as Markdown or HTML, or save it out as CSV. Experimental: enable it in Preferences > Experimental.",
+    "user_guide_section": "tools"
+  },
+  {
     "id": "tools.thesaurus",
     "title": "Thesaurus...",
     "body": "Look up synonyms for the word at the cursor and replace it with a choice from the list.",
@@ -3038,6 +3035,30 @@
     "id": "tools.undo_recommended_updates",
     "title": "Undo Recent Shortcut Change",
     "body": "Undo the most recent automatic shortcut change QUILL suggested and applied.",
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.voice_command",
+    "title": "Voice Command (Offline)",
+    "body": "Push-to-talk voice commands: run this command to start listening, speak one command (like 'save file', 'word count', or 'next heading'), then run it again to stop and act. Recognition happens entirely on your device, and only a safe, non-destructive allowlist of commands can be invoked. Say 'cancel' or 'never mind' to abort. Enable it with the 'Voice commands (push-to-talk)' setting; it is always off in Safe Mode.",
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.voice_conversation",
+    "title": "Voice Conversation Mode",
+    "body": "The hands-free version of Voice Command. Run it once and QUILL listens for a command, plays a warm audio cue for every step, gives you a brief moment to say 'cancel' before it acts, and then keeps listening for a short follow-up so you can chain commands without re-arming. Run it again (or say 'stop') to turn conversation mode off. Every command still comes from the same safe, on-device allowlist. Tune the pause, cancel, follow-up, and tick timings under Settings; the audio cues are the 'Conversation' events in the Sound Events dialog. Off in Safe Mode.",
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.voice_status",
+    "title": "Speak Voice Status",
+    "body": "Say what voice is doing right now: whether QUILL is listening for the Hey QUILL wake word, is in conversation mode, or is capturing a command. A quick way to confirm the microphone state at any time.",
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.voice_wakeword",
+    "title": "Listen for Hey QUILL (Wake Word)",
+    "body": "Turn on always-listening: QUILL listens continuously, on your device, for the phrase 'Hey QUILL'. Say 'Hey QUILL' followed by a command (like 'Hey QUILL, save file') to run it hands-free, or just 'Hey QUILL' to start a command. The microphone stays on while this is enabled, so QUILL keeps its listening status visible and plays a periodic reminder. Run this command again, or say 'stop', to turn listening off. By default it turns itself off when QUILL closes; a setting lets you resume it automatically at startup. Off in Safe Mode.",
     "user_guide_section": "tools"
   },
   {
@@ -3096,15 +3117,6 @@
       "Alt+Shift+E"
     ],
     "user_guide_section": "view-and-display"
-  },
-  {
-    "id": "format.switch_document_format",
-    "title": "Switch Document Format",
-    "body": "Open the Document Format switcher for the current document: move between Plain text, Markdown, HTML, and Rich Text (RTF) mid-session. The current format is checked and shown in the status bar; conversions warn before anything lossy.",
-    "keystrokes": [
-      "Ctrl+Shift+Grave, K"
-    ],
-    "user_guide_section": "format-menu"
   },
   {
     "id": "view.toggle_dark_mode",

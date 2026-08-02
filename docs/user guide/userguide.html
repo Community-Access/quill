@@ -28249,6 +28249,62 @@ default; turn it on via Preferences -&gt; Status Bar. The cell is a
 no-op for plain-text documents and for carets on a non-heading line, and
 it inherits the same dead-widget guard as the other live-editor
 cells.</p>
+<h3 id="the-four-announcement-channels">The four announcement
+channels</h3>
+<p>Everything QUILL tells you travels on four channels, and you choose
+which of them you want:</p>
+<ul>
+<li><strong>Speech</strong> — through your screen reader, or QUILL's own
+voice when no reader is running.</li>
+<li><strong>Braille</strong> — the same message on a connected display
+(see the section below).</li>
+<li><strong>Sound</strong> — short cues for things that happen
+repeatedly, so you can stop reading confirmations you already
+expect.</li>
+<li><strong>Status</strong> — the status bar, always, as the visual
+floor.</li>
+</ul>
+<p>The same service carries all four in <strong>QUILL, Quill Radio,
+Quill Cast, Audio Studio, Quill Converter, Quill Weather and
+QuillBeacon</strong>, so an announcement behaves the same wherever you
+are.</p>
+<p><strong>Two commands worth knowing</strong> (both in the command
+palette; give them shortcuts in the Keymap Editor if you use them
+often):</p>
+<ul>
+<li><strong>Repeat Last Announcement</strong> — speech is gone the
+moment it finishes. If you were reading something else when a message
+passed, this says it again.</li>
+<li><strong>Announcement Self-Test...</strong> — announces a test phrase
+on every channel, then shows a copyable report of which channels
+delivered it and which screen reader or display served each one. If
+something is not reaching you, this is the fastest way to find out
+whether the problem is QUILL, your screen reader, or a display that is
+not connected.</li>
+</ul>
+<p><strong>Settings</strong> (Preferences &gt; Accessibility, and
+searchable):</p>
+<ul>
+<li><strong>Show announcements in braille</strong> — on by default.</li>
+<li><strong>Braille announcement style</strong> — the same wording as
+speech, or the compact position-first form
+(<code>p7/87 l14 c3</code>).</li>
+<li><strong>Hold errors on the braille display</strong> — keeps an error
+under your fingers instead of letting the next message flash past
+it.</li>
+<li><strong>Sound cues in the companion apps</strong> — earcons in
+Radio, Cast, Audio Studio and the rest.</li>
+<li><strong>Confirm with a sound in Quiet Mode</strong> — hear that
+something worked without QUILL speaking.</li>
+<li><strong>Keep an announcement history</strong> — what Repeat Last
+Announcement replays.</li>
+<li><strong>Interrupt speech for</strong> — errors only, warnings and
+errors, or never.</li>
+</ul>
+<p><strong>Quiet Mode and braille.</strong> Quiet Mode and Meeting Mode
+silence <em>speech</em> and keep braille. In a meeting, that is usually
+exactly right: nothing is said out loud, and the message is still under
+your fingers.</p>
 <h3 id="announcements-on-a-braille-display">Announcements on a braille
 display</h3>
 <p>Everything QUILL announces - "Saved", "Now playing: ...", "Weather

@@ -106,6 +106,13 @@ class AnnouncementService:
             if not self._allows(decision, announcement, channel):
                 skipped.add(channel)
                 continue
+            # A channel that cannot reach the user right now (no display
+            # connected, no reader running) is skipped, not failed -- the
+            # difference matters in the self-test report.
+            can_deliver = getattr(sink, "can_deliver", None)
+            if callable(can_deliver) and not can_deliver():
+                skipped.add(channel)
+                continue
             try:
                 sink.deliver(self._shaped(announcement, decision, channel))
             except Exception as exc:  # noqa: BLE001 - one channel must never take the others
