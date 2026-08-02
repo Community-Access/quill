@@ -31,6 +31,7 @@ from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
+from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
 from quill.ui.dialog_contract import (
     focus_primary_control,
@@ -40,7 +41,7 @@ from quill.ui.dialog_contract import (
 from quill.ui.keybinding_parse import KeybindingParseMixin
 
 
-class AppShellFrame(KeybindingParseMixin):
+class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
     """Mixin: implements the MainFrame host protocol for standalone apps.
 
     Inheriting :class:`KeybindingParseMixin` gives the companion app frames the
@@ -104,6 +105,26 @@ class AppShellFrame(KeybindingParseMixin):
             self._announcement_engine.announce(message, force_speech=force)
             return
         service.announce(build_announcement(message, force=force))
+
+    def register_announcement_commands(self) -> None:
+        """Repeat Last Announcement and the Self-Test, in every app (#1304, #1305).
+
+        Registered on the shell rather than per app so a companion app
+        cannot ship without the two commands that answer "what did it
+        just say?" and "is any of this reaching me?"
+        """
+        self.commands.try_register(
+            "app.repeat_last_announcement",
+            "Repeat Last Announcement",
+            self.repeat_last_announcement,
+            feature_id="core.accessibility",
+        )
+        self.commands.try_register(
+            "app.announcement_self_test",
+            "Announcement Self-Test...",
+            self.run_announcement_self_test,
+            feature_id="core.accessibility",
+        )
 
     def _announce_service(self):
         """The announcement service for this app, built on first use."""

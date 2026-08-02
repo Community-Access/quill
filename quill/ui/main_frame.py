@@ -371,6 +371,7 @@ from quill.stability.task_manager import TaskManager
 from quill.stability.ui_responsiveness import mark_wx_main_thread
 from quill.stability.wx_heartbeat import HeartbeatState, WxHeartbeatTimer, WxHeartbeatWatchdog
 from quill.ui.accessible_names import pin_macos_text_area_role
+from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
 from quill.ui.context_help import ContextHelpMixin, warm_help_topics
 from quill.ui.csv_grid import CsvGridSurface
@@ -805,6 +806,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    AnnounceCommandsMixin,
     AbbreviationsMixin,
     EquationsMixin,
     AiActionsMixin,

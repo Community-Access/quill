@@ -110,8 +110,8 @@ class QuillExtensionApi:
         self._worker.call("open_buffer", [text, title])
 
     # -- ui -------------------------------------------------------------------
-    def announce(self, message: str) -> None:
-        self._worker.call("announce", [message])
+    def announce(self, message: str, severity: str = "info") -> None:
+        self._worker.call("announce", [message, severity])
 
     def prompt(self, title: str, label: str, default: str = "") -> str | None:
         """Ask the user for one line of text; return it, or ``None`` if cancelled."""

@@ -265,6 +265,12 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.replace_all": "Ctrl+Shift+H",
     "edit.insert_link": "Ctrl+Alt+K",  # §edsharp-ok — authoring chord (x.md)
     "edit.insert_equation": "Ctrl+Shift+E",  # #1197 — math authoring chord
+    # #1304: both ship unbound. The QUILL-key namespace has no free letter left,
+    # and taking one from an existing command would cost a binding people already
+    # use to buy one they have never had. Both are in the command palette and
+    # rebindable in the Keymap Editor, which is what the issue actually asks for.
+    "app.repeat_last_announcement": "",
+    "app.announcement_self_test": "",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
     # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The

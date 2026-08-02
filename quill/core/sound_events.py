@@ -64,6 +64,25 @@ class SoundEvent(StrEnum):
     CONVERSATION_THINKING_TICK = "conversation_thinking_tick"
     CONVERSATION_ERROR = "conversation_error"
 
+    # Companion-app cues (#1302). The apps had no earcons at all before the
+    # announcement service: every one of these is a state a listener
+    # otherwise had to infer from silence. Kept short and consonant with the
+    # Ink pack, and every one is disableable and pack-overridable.
+    RADIO_CONNECTING = "radio_connecting"
+    RADIO_PLAYING = "radio_playing"
+    RADIO_BUFFERING = "radio_buffering"
+    RADIO_STOPPED = "radio_stopped"
+    RADIO_STREAM_ERROR = "radio_stream_error"
+    RADIO_RECORDING_STARTED = "radio_recording_started"
+    RADIO_RECORDING_STOPPED = "radio_recording_stopped"
+    RADIO_FAVORITE_ADDED = "radio_favorite_added"
+    CAST_DOWNLOAD_STARTED = "cast_download_started"
+    CAST_DOWNLOAD_COMPLETE = "cast_download_complete"
+    CAST_EPISODE_FINISHED = "cast_episode_finished"
+    WEATHER_ALERT = "weather_alert"
+    BEACON_CAPTURED = "beacon_captured"
+    BEACON_SYNC_COMPLETE = "beacon_sync_complete"
+
     # Connectivity
     SSH_CONNECTED = "ssh_connected"
     SSH_DISCONNECTED = "ssh_disconnected"
