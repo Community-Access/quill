@@ -1228,6 +1228,10 @@ class MainFrame(
         self._compare_ignore_line_endings = True
         self._empty_workspace_active = False
         self._announcement_engine = AnnouncementEngine(self.settings.announcement_backend)
+        # #1283: mirror announcements to a braille display unless turned off.
+        self._announcement_engine.set_braille_enabled(
+            bool(getattr(self.settings, "announcement_braille", True))
+        )
         prewarm_tts_engine()
         self._announcement_error_reported = ""
         self._read_aloud = ReadAloudController()
