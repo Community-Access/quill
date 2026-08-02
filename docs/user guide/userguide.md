@@ -7868,6 +7868,8 @@ Once something is playing, three ways to control it without opening Browse Stati
 
 **What's playing.** QUILL reports the current track — artist and title — from the stream's own broadcast metadata, and can announce it automatically each time the song changes. When a stream sends no title of its own and the player has none to offer, QUILL now falls back to the station server's own now-playing information (its Icecast or Shoutcast status page, on the same host you're already streaming), so more stations tell you what's on.
 
+**Copying and reviewing what's playing.** Two commands go beyond the spoken announcement: **Copy What's Playing** puts the track on the clipboard, and **What's Playing - Review and Copy...** opens a small read-only window you can arrow through character by character (handy for the exact spelling of a song or artist) with a Copy button. Both work the moment a station is on: if the track title has not been read from the stream yet, QUILL says "Checking what's playing...", fetches it, and then finishes the job. If the stream carries no titles at all, it says so plainly, and the review window still opens showing the station name — so these commands always answer you.
+
 ### Volume
 
 The Browse Stations dialog has its own **Radio volume** slider and a **Mute** button. This volume is entirely separate from your Windows system volume and from your screen reader's own speech volume — turning radio down (or muting it) never touches either of those.

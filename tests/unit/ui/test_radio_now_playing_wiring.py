@@ -68,7 +68,9 @@ def test_copy_whats_playing_puts_clean_text_on_the_clipboard() -> None:
     frame._copy_to_clipboard = lambda text: copied.append(text) or True  # type: ignore[attr-defined]
     frame.radio_copy_whats_playing()
     assert copied == ["YOUR SONG by Elton John"]
-    assert frame._announced == ["Copied."]
+    # #1282: the confirmation names what went to the clipboard, so a listener
+    # knows the copy caught the track they meant and not a stale one.
+    assert frame._announced == ["Copied: YOUR SONG by Elton John"]
 
 
 def test_copy_whats_playing_when_nothing_is_playing() -> None:
@@ -78,4 +80,7 @@ def test_copy_whats_playing_when_nothing_is_playing() -> None:
     frame._copy_to_clipboard = lambda text: called.append(text) or True  # type: ignore[attr-defined]
     frame.radio_copy_whats_playing()
     assert called == []  # never touches the clipboard
-    assert frame._announced == ["Nothing is playing to copy. Try What's Playing first."]
+    # #1282: "try What's Playing first" is gone -- the command now fetches the
+    # title itself when a station is on, so the only remaining case is silence
+    # on the dial.
+    assert frame._announced == ["Nothing is playing."]
