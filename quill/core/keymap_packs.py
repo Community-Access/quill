@@ -34,6 +34,7 @@ _PACK_LABELS: dict[str, str] = {
     "notes.previous_inline_note": "Previous Inline Note",
     "notes.speak_inline_note": "Speak Inline Note",
     "edit.insert_link": "Insert Link",
+    "edit.insert_equation": "Insert Equation",
     "edit.redo": "Redo",
     "edit.replace": "Replace",
     "edit.replace_all": "Replace All",

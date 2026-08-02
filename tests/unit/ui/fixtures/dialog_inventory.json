@@ -319,6 +319,7 @@
   "quill/ui/main_frame_dictation_hotkeys.py::DictationHotkeysMixin.open_dictation_settings::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_docconvert.py::DocConvertMixin.import_convert_document::wx.FileDialog": "native",
   "quill/ui/main_frame_emoji_picker.py::EmojiPickerDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/main_frame_equations.py::EquationsMixin.insert_equation::show_web_form": "web",
   "quill/ui/main_frame_format_codes.py::FormatCodesMixin.open_font_dialog::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_gh_bridge.py::GhBridgeMixin._gh_bridge_confirm::wx.MessageDialog": "native",
   "quill/ui/main_frame_gh_bridge.py::GhBridgeMixin._gh_bridge_prompt_single::wx.TextEntryDialog": "native",

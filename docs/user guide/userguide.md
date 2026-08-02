@@ -6655,6 +6655,40 @@ For list toggling, press `Ctrl+Alt+7` to insert or strip a bullet list, or `Ctrl
 
 The status bar's `Section` cell reads `Section: Heading N (ordinal of total)` whenever the caret is on a heading in a Markdown or HTML document. The cell is hidden by default; turn it on via Preferences -> Status Bar. The cell is a no-op for plain-text documents and for carets on a non-heading line, and it inherits the same dead-widget guard as the other live-editor cells.
 
+### Equations and mathematics
+
+Writing maths is one of the least accessible things an editor normally asks of
+you: the notation is visual, and most tools hand you a mouse and a palette of
+symbols. **Insert -> Insert Equation...** (**Ctrl+Shift+E**) takes a different
+route — you type the equation as text, which is keyboard-only, reviewable
+character by character, and already understood by screen readers that speak
+maths.
+
+The dialog is the same accessible web form the other insert dialogs use, with
+two fields:
+
+- **Equation** — type **LaTeX** (`E = mc^2`, `\frac{-b \pm \sqrt{b^2-4ac}}{2a}`)
+  or paste **MathML** (`<math>...</math>`).
+- **Display mode** — **Inline** puts the equation inside the sentence; **Block**
+  puts it on its own line.
+
+QUILL adds the delimiters for you: `$...$` for inline, `$$` on their own lines
+for a block equation. MathML is inserted exactly as you typed it, because it
+already carries its own markup and must not be wrapped.
+
+**Editing an equation you already wrote.** Select it first — including its `$`
+or `$$` — and press Ctrl+Shift+E. The dialog opens with the delimiters stripped
+off, so the field holds just the maths, and the display mode you used is
+already chosen. Change it, choose Insert, and the whole thing is replaced.
+
+**Seeing and hearing the result.** An equation is ordinary text in your file, so
+nothing about your document becomes binary or opaque. The live preview and
+exported HTML render it properly (QUILL loads a maths renderer only for
+documents that actually contain maths), and because the source stays as text you
+can always arrow through the raw LaTeX to check it.
+
+*Insert Equation was contributed by @salorajan.*
+
 ### Citations and bibliographies
 
 For research writing, **Insert -> Insert Citation...** builds correctly formatted citations from details you type, so you do not have to wrestle with the punctuation and indentation rules by hand.
