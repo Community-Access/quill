@@ -1582,6 +1582,25 @@ class RadioAppFrame(
         if event.ControlDown() and event.ShiftDown() and not event.AltDown() and code == ord("E"):
             self._on_new_folder()
             return
+        # Ctrl+Up / Ctrl+Down adjust volume from anywhere (#1263). The Playback
+        # menu carries the same accelerator, but a bare Ctrl+arrow menu
+        # accelerator is unreliable on Win32 and a focused control (the favorites
+        # tree, a button) can swallow the chord before it fires. The frame char
+        # hook runs before the focused control, so this makes the volume keys
+        # work regardless of focus -- except inside a text field, where Ctrl+arrow
+        # must stay available for editing.
+        if (
+            event.ControlDown()
+            and not event.ShiftDown()
+            and not event.AltDown()
+            and code in (wx.WXK_UP, wx.WXK_DOWN)
+            and not isinstance(wx.Window.FindFocus(), (wx.TextCtrl, wx.ComboBox))
+        ):
+            if code == wx.WXK_UP:
+                self.radio_volume_up()
+            else:
+                self.radio_volume_down()
+            return
         event.Skip()
 
     def _on_volume_boost_menu(self) -> None:

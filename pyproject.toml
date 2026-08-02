@@ -31,7 +31,7 @@ dependencies = [
     "feedparser>=6.0.12",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
-    "platform_utils>=1.6.2",
+    "platform_utils>=1.6.3",
     # Windows has no system IANA timezone database, so stdlib zoneinfo needs
     # this package to resolve real zone names (publishing schedule dialog).
     "tzdata>=2026.3",
@@ -59,7 +59,7 @@ ui = [
     # announcement fallback). Windows-only at runtime; harmless elsewhere.
     "comtypes>=1.4.16; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
-    "certifi>=2026.6.17",
+    "certifi>=2026.7.22",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
     # NVDA/JAWS/Narrator instead of speaking over them.
     "prismatoid>=0.17.3; sys_platform == 'win32'",
@@ -93,7 +93,7 @@ spellcheck = ["pyenchant>=3.3.0"]
 # includes, since the imports are lazy and the tracer misses them) — nothing
 # for end users to install. This extra covers source/pip installs on a Mac.
 # The code path still degrades to converted rich if the bridge is ever absent.
-mac = ["pyobjc-framework-Cocoa>=10.3; sys_platform == 'darwin'"]
+mac = ["pyobjc-framework-Cocoa>=12.2.1; sys_platform == 'darwin'"]
 # Direct GitHub issue submission for Report a Bug (#210): feedback_hub provides
 # the accessible FeedbackDialog driven by quill/core/schemas/feedback.json and
 # files the issue via the GitHub API. Ships in every build (this is the only
@@ -125,7 +125,7 @@ speech = ["sounddevice>=0.5.5"]
 # fetches its CTranslate2 model repositories. Users opt in via AI > Speech >
 # Manage Speech Models > Speech Engine; the bundled whisper.cpp engine remains
 # the default and needs none of this.
-fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.22.0"]
+fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.25.1"]
 # Optional very-low-resource offline English engine: Vosk (Kaldi) (#669). Tiny
 # CPU-only models (~40 MB) for old/constrained machines. Models download from
 # alphacephei.com via Manage Speech Models; no GPU needed.
@@ -154,7 +154,7 @@ docx = ["python-docx>=1.1.0"]
 # Optional: the ElevenLabs AI Voice provider is inert unless this is installed and
 # an "ElevenLabs API key" credential is configured. All calls go through the
 # host-owned gateway quill/core/ai/elevenlabs_tts.py (the only importer of the SDK).
-elevenlabs = ["elevenlabs>=2.56.0"]
+elevenlabs = ["elevenlabs>=2.59.0"]
 # Native Windows OCR (OCR-1): thin pip wheels projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling these wheels makes
@@ -256,7 +256,7 @@ github = [
 # bridges to the same Safe Editor Tool Gateway + Permission Broker and emits the
 # same normalized events; none edits the buffer directly. The Native harness
 # always works without any of these.
-ai-copilot = ["github-copilot-sdk>=1.0"]  # PyPI package; imports as `copilot`
+ai-copilot = ["github-copilot-sdk>=1.0.8"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.110"]
 ai-openai = ["openai-agents>=0.18.3"]
 # Build-time only: compile the optional Table Studio native UIA provider

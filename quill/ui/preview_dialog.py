@@ -27,6 +27,7 @@ try:
         AccessibleHtmlDialog as _LibraryAccessibleHtmlDialog,
     )
     from wx_accessible_webview import (
+        AccessibleWebView,
         SidePreview,
     )
 
@@ -135,6 +136,140 @@ except ImportError:
             self._view.SetFocus()
 
 
+# Delegated listener injected into the live side preview so a block a
+# screen-reader user lands on can hand its source line back to Python (#1257).
+# It attaches once to the persistent ``#content`` element (which survives every
+# in-place ``innerHTML`` re-render), walks up from the event target to the
+# nearest ``[data-src]`` block, and posts the source line + a short label.
+#
+#   * contextmenu (right-click / Applications key / Shift+F10) is the reliable
+#     path under a screen reader's browse mode: it targets the element at the
+#     virtual cursor, and we ``preventDefault`` so Quill's own menu replaces the
+#     native WebView2 one. When there is no mapped block under the cursor we let
+#     the native menu through untouched.
+#   * Enter is offered as a convenience for keyboard users; browse mode may
+#     swallow it, so it is a bonus, not the contract.
+_SOURCE_NAV_JS = """
+(function(){
+  if (window.__quillSrcNav) { return; }
+  window.__quillSrcNav = 1;
+  var content = document.getElementById('content');
+  if (!content) { return; }
+  function nearest(node){
+    while (node && node !== content){
+      if (node.nodeType === 1 && node.hasAttribute && node.hasAttribute('data-src')){
+        return node;
+      }
+      node = node.parentNode;
+    }
+    return null;
+  }
+  function label(el){
+    var t = (el.textContent || '').replace(/\\s+/g, ' ').trim();
+    return t.length > 80 ? t.slice(0, 79) + '\\u2026' : t;
+  }
+  function post(el, trigger){
+    if (!(window.awv && window.awv.postMessage)) { return; }
+    window.awv.postMessage(JSON.stringify({
+      type: 'quill-goto-source',
+      trigger: trigger,
+      src: parseInt(el.getAttribute('data-src'), 10),
+      label: label(el)
+    }));
+  }
+  content.addEventListener('contextmenu', function(e){
+    var el = nearest(e.target);
+    if (el){ e.preventDefault(); post(el, 'context'); }
+  });
+  content.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter') { return; }
+    // Never hijack Enter on a real link/control -- let it activate normally.
+    if (e.target.closest && e.target.closest('a,button,input,textarea,select')) { return; }
+    var el = nearest(e.target);
+    if (el){ e.preventDefault(); post(el, 'enter'); }
+  });
+})();
+"""
+
+
+class SourceMappedSidePreview:
+    """A live side preview that can map a preview block back to the editor.
+
+    Behaves like the library's :class:`SidePreview` (``control`` / ``update`` /
+    ``focus``) but is built on :class:`AccessibleWebView` directly so it can use
+    the JS->Python bridge the plain ``SidePreview`` doesn't expose. Blocks the
+    renderer stamps with ``data-src`` become jump targets: right-clicking (or
+    pressing Enter on) one calls ``on_goto_source(payload)`` with the source
+    line and a short label, and Quill moves the editor caret there (#1257).
+
+    When the WebView library or backend is unavailable it degrades to a plain
+    :class:`SidePreview` with no source mapping — the pane still renders.
+    """
+
+    def __init__(
+        self,
+        parent: object,
+        *,
+        on_return=None,
+        on_goto_source=None,
+        title: str = "Preview",
+    ) -> None:
+        self._on_goto_source = on_goto_source
+        self._plain = None
+        self._view = None
+        if not _HAS_WEBVIEW_LIB:
+            self._plain = SidePreview(parent, title=title, on_return=on_return)
+            return
+        self._view = AccessibleWebView(
+            parent,
+            title=title,
+            live_region=False,
+            on_return=on_return,
+            on_message=self._handle_message,
+            open_links_externally=True,
+        )
+        if self._view.using_webview:
+            try:
+                import wx.html2 as webview
+
+                self._view.view.Bind(webview.EVT_WEBVIEW_LOADED, self._on_loaded)
+            except Exception:  # noqa: BLE001 - source mapping is best-effort
+                pass
+
+    @property
+    def control(self):
+        if self._plain is not None:
+            return self._plain.control
+        return self._view.control
+
+    def update(self, body_html: str) -> None:
+        if self._plain is not None:
+            self._plain.update(body_html)
+            return
+        self._view.set_content(body_html)
+
+    def focus(self) -> None:
+        if self._plain is not None:
+            self._plain.focus()
+            return
+        self._view.focus()
+
+    def _on_loaded(self, event: object) -> None:
+        # Let AccessibleWebView's own loaded handler still run (it flushes queued
+        # content); we only add the one-time source-nav listener on top.
+        try:
+            event.Skip()
+        except Exception:  # noqa: BLE001
+            pass
+        self._view.run_js(_SOURCE_NAV_JS)
+
+    def _handle_message(self, data: dict) -> None:
+        if data.get("type") != "quill-goto-source":
+            return
+        if self._on_goto_source is not None:
+            self._on_goto_source(data)
+
+
 def _build_accessible_dialog_body(
     body_html: str,
     *,
@@ -193,7 +328,12 @@ class HtmlMessageDialog:
         return self._dialog.show_modal()
 
 
-__all__ = ["HtmlMessageDialog", "SidePreview", "MarkdownPreviewDialog"]
+__all__ = [
+    "HtmlMessageDialog",
+    "SidePreview",
+    "SourceMappedSidePreview",
+    "MarkdownPreviewDialog",
+]
 
 
 class MarkdownPreviewDialog:
