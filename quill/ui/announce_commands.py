@@ -70,6 +70,43 @@ class AnnounceCommandsMixin:
                     return str(text)
         return str(getattr(self, "_status_message", "") or "")
 
+    def last_announcement(self) -> str:
+        """The message still inside its persistence window, else "" (#1303).
+
+        A standing-status refresh (word count, cursor position, buffering
+        state) writes over the status bar constantly. Reading the slot
+        rather than the bar is what stops a refresh landing a fraction of
+        a second later from erasing the only copy of a message.
+        """
+        service = self._announce_service()
+        if service is None:
+            return ""
+        for sink in getattr(service, "_sinks", []):  # noqa: SLF001 - documented seam
+            last = getattr(sink, "last_message", None)
+            if callable(last):
+                return str(last() or "")
+        return ""
+
+    def announce_visually(self, message: str) -> None:
+        """Show *message* without speaking it (#1303).
+
+        Replaces the per-app _set_status_quiet helpers: a visual-only
+        update is an ordinary announcement with the speech channel off,
+        so it still reaches the message slot, the transcript and (for a
+        braille reader who wants it) the display -- none of which a bare
+        status-bar write ever did.
+        """
+        service = self._announce_service()
+        if service is None:
+            self._set_status(message)
+            return
+        service.announce(
+            Announcement(
+                text=message,
+                channels=frozenset({Channel.VISUAL, Channel.TRANSCRIPT}),
+            )
+        )
+
     def run_announcement_self_test(self) -> None:
         """Announce a test phrase, then report which channels delivered (#1305)."""
         service = self._announce_service()

@@ -52,6 +52,13 @@ class SpeechSink(BaseSink):
             self.note_error(str(error))
             raise RuntimeError(error)
 
+    def can_deliver(self) -> bool:
+        """A status-only backend speaks nothing, so say so rather than lie."""
+        if self._backend_name is None:
+            return True
+        backend = self._backend_name()
+        return bool(backend) and backend.lower() not in {"status_only", "none"}
+
     def probe(self) -> SinkStatus:
         backend = self._backend_name() if self._backend_name is not None else ""
         available = bool(backend) and backend.lower() not in {"status_only", "none"}
@@ -103,6 +110,10 @@ class BrailleSink(BaseSink):
         if error:
             self.note_error(str(error))
             raise RuntimeError(error)
+
+    def can_deliver(self) -> bool:
+        """No display connected means nothing to write to (#1297)."""
+        return self._supports() if self._supports is not None else True
 
     def probe(self) -> SinkStatus:
         supported = self._supports() if self._supports is not None else True

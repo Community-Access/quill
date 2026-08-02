@@ -6655,6 +6655,51 @@ For list toggling, press `Ctrl+Alt+7` to insert or strip a bullet list, or `Ctrl
 
 The status bar's `Section` cell reads `Section: Heading N (ordinal of total)` whenever the caret is on a heading in a Markdown or HTML document. The cell is hidden by default; turn it on via Preferences -> Status Bar. The cell is a no-op for plain-text documents and for carets on a non-heading line, and it inherits the same dead-widget guard as the other live-editor cells.
 
+### The four announcement channels
+
+Everything QUILL tells you travels on four channels, and you choose which of
+them you want:
+
+- **Speech** — through your screen reader, or QUILL's own voice when no reader
+  is running.
+- **Braille** — the same message on a connected display (see the section below).
+- **Sound** — short cues for things that happen repeatedly, so you can stop
+  reading confirmations you already expect.
+- **Status** — the status bar, always, as the visual floor.
+
+The same service carries all four in **QUILL, Quill Radio, Quill Cast, Audio
+Studio, Quill Converter, Quill Weather and QuillBeacon**, so an announcement
+behaves the same wherever you are.
+
+**Two commands worth knowing** (both in the command palette; give them shortcuts
+in the Keymap Editor if you use them often):
+
+- **Repeat Last Announcement** — speech is gone the moment it finishes. If you
+  were reading something else when a message passed, this says it again.
+- **Announcement Self-Test...** — announces a test phrase on every channel, then
+  shows a copyable report of which channels delivered it and which screen reader
+  or display served each one. If something is not reaching you, this is the
+  fastest way to find out whether the problem is QUILL, your screen reader, or a
+  display that is not connected.
+
+**Settings** (Preferences > Accessibility, and searchable):
+
+- **Show announcements in braille** — on by default.
+- **Braille announcement style** — the same wording as speech, or the compact
+  position-first form (`p7/87 l14 c3`).
+- **Hold errors on the braille display** — keeps an error under your fingers
+  instead of letting the next message flash past it.
+- **Sound cues in the companion apps** — earcons in Radio, Cast, Audio Studio
+  and the rest.
+- **Confirm with a sound in Quiet Mode** — hear that something worked without
+  QUILL speaking.
+- **Keep an announcement history** — what Repeat Last Announcement replays.
+- **Interrupt speech for** — errors only, warnings and errors, or never.
+
+**Quiet Mode and braille.** Quiet Mode and Meeting Mode silence *speech* and
+keep braille. In a meeting, that is usually exactly right: nothing is said out
+loud, and the message is still under your fingers.
+
 ### Announcements on a braille display
 
 Everything QUILL announces - "Saved", "Now playing: ...", "Weather updated",
