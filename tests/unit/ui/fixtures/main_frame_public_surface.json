@@ -600,6 +600,7 @@
   "reveal_go_to_pair",
   "reveal_next_code",
   "reveal_previous_code",
+  "reveal_toggle_speak",
   "reverse_lines",
   "review_extraction_quality",
   "review_last_ocr_result",
