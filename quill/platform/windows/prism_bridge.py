@@ -9,6 +9,12 @@ from dataclasses import dataclass, replace
 from importlib import import_module
 from typing import Any
 
+from quill.platform.windows.braille_output import (
+    braille_via_accessible_output2,
+    braille_via_prism,
+    prism_supports_braille,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -267,6 +273,14 @@ class AnnouncementEngine:
         # acquire a live screen-reader backend (more reliable per-reader detection)
         # before we resort to the SAPI self-voice (#700).
         self._ao2_speaker: Any | None = None
+        #: The concrete accessible_output2 output for the live reader (#1283).
+        #: Braille goes here, never through the Auto wrapper -- Auto.output()
+        #: speaks twice and never brailles in the shipped version.
+        self._ao2_output: Any | None = None
+        #: Mirror announcements to a braille display as well as speech.
+        #: Set from Settings.announcement_braille; on by default, because a
+        #: braille user was simply not receiving these messages at all (#1283).
+        self._braille_enabled = True
         self._state = AnnouncementBackendState(
             requested_backend="auto",
             active_backend="status_only",
@@ -286,6 +300,7 @@ class AnnouncementEngine:
         backend_name = "Status Bar"
         last_error = ""
         ao2_speaker: Any | None = None
+        ao2_output: Any | None = None
 
         if requested in {"prism", "auto"}:
             if backend is not None:
@@ -295,7 +310,7 @@ class AnnouncementEngine:
                 # Prism could not acquire a live screen-reader backend. Try the
                 # accessible_output2 bridge (per-reader is_active() detection is
                 # more reliable) before giving up to the SAPI self-voice (#700).
-                ao2_speaker, ao2_name = _ao2_live_screen_reader()
+                ao2_speaker, ao2_name, ao2_output = _ao2_live_screen_reader()
                 if ao2_speaker is not None:
                     active_backend = "accessible_output2"
                     backend_name = ao2_name or "Screen reader"
@@ -309,6 +324,7 @@ class AnnouncementEngine:
         # a discarded Prism runtime can be collected.
         self._prism_context = context if active_backend == "prism" else None
         self._ao2_speaker = ao2_speaker if active_backend == "accessible_output2" else None
+        self._ao2_output = ao2_output if active_backend == "accessible_output2" else None
         self._state = AnnouncementBackendState(
             requested_backend=requested,
             active_backend=active_backend,
@@ -330,11 +346,14 @@ class AnnouncementEngine:
             # does not interrupt the reader's current utterance.
             try:
                 self._ao2_speaker.speak(message, interrupt=force_speech)
-                return None
             except Exception as exc:  # noqa: BLE001
                 error = f"accessible_output2 announcement failed: {exc}"
                 self._state = replace(self._state, last_error=error)
                 return error
+            # #1283: the same message to the braille display. After speech,
+            # and never in a way that can prevent it.
+            self._braille(message, self._ao2_output, kind="ao2")
+            return None
         if self._runtime_backend is None:
             # macOS: when VoiceOver is running, hand the announcement to it via
             # the accessibility API (the system voice the user already hears) and
@@ -427,14 +446,40 @@ class AnnouncementEngine:
         # voiced; routine status keeps the polite non-interrupting behaviour.
         try:
             speak(message, interrupt=force_speech)
-            return None
         except TypeError:
             speak(message)
-            return None
         except Exception as exc:  # noqa: BLE001
             error = f"Prism announcement failed: {exc}"
             self._state = replace(self._state, last_error=error)
             return error
+        # #1283: mirror to the braille display when the backend supports it.
+        self._braille(message, self._runtime_backend, kind="prism")
+        return None
+
+    def set_braille_enabled(self, enabled: bool) -> None:
+        """Turn braille mirroring on or off (Settings.announcement_braille)."""
+        self._braille_enabled = bool(enabled)
+
+    def braille_supported(self) -> bool:
+        """True when the active backend can write to a braille display."""
+        if self._runtime_backend is not None:
+            return prism_supports_braille(self._runtime_backend)
+        return self._ao2_output is not None and callable(getattr(self._ao2_output, "braille", None))
+
+    def _braille(self, message: str, target: Any | None, *, kind: str) -> None:
+        """Mirror *message* to the braille display; never raises (#1283).
+
+        A braille failure is recorded, not propagated: the user has already
+        heard the announcement, and losing speech because a display was
+        unplugged would be a far worse bug than a blank display."""
+        if not self._braille_enabled or target is None:
+            return
+        if kind == "prism":
+            error = braille_via_prism(target, message)
+        else:
+            error = braille_via_accessible_output2(target, message)
+        if error:
+            self._state = replace(self._state, last_error=error)
 
     def diagnostics_environment(self) -> dict[str, object]:
         return {
@@ -444,6 +489,8 @@ class AnnouncementEngine:
             "announcement_prism_available": self._state.prism_available,
             "announcement_prism_runtime_ready": self._state.prism_runtime_ready,
             "announcement_backend_error": self._state.last_error,
+            "announcement_braille_enabled": self._braille_enabled,
+            "announcement_braille_supported": self.braille_supported(),
         }
 
 
@@ -570,8 +617,12 @@ def _ao2_speaker_singleton() -> Any | None:
     return _ao2_auto
 
 
-def _ao2_live_screen_reader() -> tuple[Any | None, str | None]:
-    """Return ``(speaker, reader_name)`` when a screen reader is live, else (None, None).
+def _ao2_live_screen_reader() -> tuple[Any | None, str | None, Any | None]:
+    """Return ``(speaker, reader_name, output)`` for a live screen reader.
+
+    ``(None, None, None)`` when no reader is live. The third value is the
+    *concrete* output (JAWS, NVDA, ...) rather than the ``Auto`` wrapper,
+    because braille must be sent to the concrete one (#1283).
 
     SAPI5 is skipped: accessible_output2 always reports it active and it is our
     own self-voice fallback, not a screen reader — using it here would talk over
@@ -579,21 +630,21 @@ def _ao2_live_screen_reader() -> tuple[Any | None, str | None]:
     """
     speaker = _ao2_speaker_singleton()
     if speaker is None:
-        return None, None
+        return None, None, None
     try:
         outputs = list(getattr(speaker, "outputs", []))
     except Exception:  # noqa: BLE001
-        return None, None
+        return None, None, None
     for output in outputs:
         if type(output).__name__.lower() == "sapi5":
             continue
         try:
             if output.is_active():
                 name = getattr(output, "name", "") or type(output).__name__
-                return speaker, str(name)
+                return speaker, str(name), output
         except Exception:  # noqa: BLE001 - probe the next output
             continue
-    return None, None
+    return None, None, None
 
 
 def _reset_ao2_for_tests() -> None:
