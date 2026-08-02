@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.browser_preview import markup_offset_for_line
+
 
 class RevealCodesMixin:
     # Provided by MainFrame; declared for type-checkers.
@@ -98,6 +100,63 @@ class RevealCodesMixin:
                 show(max(0, markup_offset))
         except Exception:  # noqa: BLE001
             pass
+
+    # ------------------------------------------------------------------ #
+    # Live preview -> editor caret (#1257)
+    # ------------------------------------------------------------------ #
+    def _on_preview_goto_source(self, payload: Any) -> None:
+        """Move the editor caret to the block acted on in the live preview.
+
+        Fired from the side preview's JS bridge when a screen-reader user
+        right-clicks (``trigger="context"``) or presses Enter (``"enter"``) on a
+        block the renderer stamped with a source line. A right-click offers an
+        explicit menu item — matching the screen-reader convention that the
+        Applications key opens a menu rather than firing an action outright —
+        while Enter jumps straight there. Reuses :meth:`_reveal_move_editor_caret`
+        (the same editor caret sink Reveal Codes drives).
+        """
+        tab = self._active_tab()
+        if tab is None or getattr(tab, "editor", None) is None:
+            return
+        try:
+            line = int(payload.get("src"))
+        except (TypeError, ValueError):
+            return
+        label = str(payload.get("label") or "").strip()
+        if str(payload.get("trigger") or "") == "context":
+            self._popup_preview_goto_menu(tab, line, label)
+        else:
+            self._jump_editor_to_source_line(tab, line, label)
+
+    def _popup_preview_goto_menu(self, tab: Any, line: int, label: str) -> None:
+        control = getattr(tab.preview, "control", None) if tab.preview is not None else None
+        if control is None:
+            self._jump_editor_to_source_line(tab, line, label)
+            return
+        wx = self._wx
+        menu = wx.Menu()
+        item = menu.Append(wx.ID_ANY, "&Go to this location in the editor")
+        # Bind on the transient menu (not the control) so the handler is scoped
+        # to this popup's lifetime -- no per-popup binding leaks on the frame.
+        menu.Bind(
+            wx.EVT_MENU,
+            lambda _e: self._jump_editor_to_source_line(tab, line, label),
+            item,
+        )
+        try:
+            control.PopupMenu(menu)
+        finally:
+            menu.Destroy()
+
+    def _jump_editor_to_source_line(self, tab: Any, line: int, label: str) -> None:
+        editor = getattr(tab, "editor", None)
+        if editor is None:
+            return
+        offset = markup_offset_for_line(editor.GetValue(), line)
+        self._reveal_move_editor_caret(offset)
+        editor.SetFocus()
+        self._set_active_region("Editor")
+        self._announce(f"Editor moved to {label}" if label else "Editor moved to that location")
 
     def _reveal_on_idle(self, event: Any) -> None:
         event.Skip()

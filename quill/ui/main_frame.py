@@ -2307,9 +2307,13 @@ class MainFrame(
         if splitter is None or splitter.IsSplit():
             return
         if tab.preview is None:
-            from quill.ui.preview_dialog import SidePreview
+            from quill.ui.preview_dialog import SourceMappedSidePreview
 
-            tab.preview = SidePreview(splitter, on_return=self._focus_editor_from_preview)
+            tab.preview = SourceMappedSidePreview(
+                splitter,
+                on_return=self._focus_editor_from_preview,
+                on_goto_source=self._on_preview_goto_source,
+            )
         sash = max(splitter.GetClientSize().x // 2, 200)
         splitter.SplitVertically(tab.editor, tab.preview.control, sash)
         self._update_side_preview(tab)
@@ -14462,11 +14466,18 @@ class MainFrame(
         self._side_preview_timer = self._wx.CallLater(250, self._update_side_preview, tab)
 
     def _update_side_preview(self, tab) -> None:
-        text = tab.editor.GetValue()
-        kind = guess_preview_kind(tab.document.path, text)
-        text = self._vault_preview_text(text, kind, tab.document.path)
+        raw = tab.editor.GetValue()
+        kind = guess_preview_kind(tab.document.path, raw)
+        text = self._vault_preview_text(raw, kind, tab.document.path)
+        # Stamp editor source lines onto the preview blocks only when the
+        # rendered text is the editor's text verbatim (#1257). Vault expansion
+        # rewrites the markup, so its line offsets no longer point at the editor
+        # buffer — leaving source mapping off there avoids a jump landing wrong.
+        source_map = kind == "markdown" and text == raw
         try:
-            tab.preview.update(render_preview_body(text, kind, dark=self._preview_is_dark()))
+            tab.preview.update(
+                render_preview_body(text, kind, dark=self._preview_is_dark(), source_map=source_map)
+            )
         except Exception:
             # WebView2 can enter ERROR_INVALID_STATE (0x8007139f) after a forced
             # close or navigation error; JS/SetPage calls then raise. Discard the
