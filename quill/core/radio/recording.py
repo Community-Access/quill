@@ -470,6 +470,13 @@ class RadioRecorder:
         ffmpeg = find_ffmpeg()
         if ffmpeg is None:
             raise RecordingError(f"ffmpeg is not installed. {INSTALL_HINT}")
+        # #1268: a YouTube link is a web page, and its playable media URL expires
+        # within hours -- so it is resolved here, at the moment of capture, rather
+        # than stored. That is what lets a scheduled recording of a YouTube
+        # broadcast still work days after it was scheduled. The job keeps the
+        # durable page URL (identity, reconnects, the resume marker); only ffmpeg
+        # sees the short-lived one. A non-YouTube URL passes straight through.
+        capture_url = _resolve_capture_url(stream_url)
         dest_root = Path(settings.destination_root) if settings.destination_root else _default_dir()
         try:
             dest_root.mkdir(parents=True, exist_ok=True)
@@ -513,7 +520,7 @@ class RadioRecorder:
         # without decoding, so it is dropped. Re-encode formats keep their
         # format name as the extension and honor the filter.
         if settings.format == "copy":
-            extension = _forced_extension or _probe_capture_extension(stream_url)
+            extension = _forced_extension or _probe_capture_extension(capture_url)
             record_filter = ""
         else:
             extension = settings.format
@@ -540,7 +547,7 @@ class RadioRecorder:
         )
         args = build_record_command(
             ffmpeg,
-            stream_url,
+            capture_url,
             destination,
             format=settings.format,
             bitrate_kbps=settings.bitrate_kbps,
@@ -1011,6 +1018,27 @@ def _finalize_move(src: Path, dst: Path) -> Path:
                 exc,
             )
             return src
+
+
+def _resolve_capture_url(stream_url: str) -> str:
+    """The URL ffmpeg should capture: a YouTube page resolved to its stream (#1268).
+
+    Every other station URL is already playable and passes through untouched, so
+    this costs nothing for ordinary radio. A YouTube link is resolved through
+    yt-dlp here rather than at schedule time because its media URL expires within
+    hours -- a recording scheduled on Monday for Friday would otherwise capture
+    nothing. A resolve failure raises :class:`RecordingError` with the reason
+    (Safe Mode, yt-dlp missing, private/removed/not-live video) instead of
+    handing ffmpeg an HTML page to record.
+    """
+    from quill.core.radio.youtube import YouTubeError, is_youtube_url, resolve_youtube_stream
+
+    if not is_youtube_url(stream_url):
+        return stream_url
+    try:
+        return resolve_youtube_stream(stream_url).stream_url
+    except YouTubeError as exc:
+        raise RecordingError(str(exc)) from exc
 
 
 def _probe_capture_extension(stream_url: str) -> str:

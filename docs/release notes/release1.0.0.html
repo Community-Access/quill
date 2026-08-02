@@ -556,6 +556,26 @@ deliberately fetches and reads one page rather than opening a full
 interactive browser inside QUILL: station pages almost always list their
 stream as a plain link, and a screen-reader-native results list beats
 navigating an embedded browser for this particular job.</p>
+<p><strong>YouTube, treated like a station.</strong> A listener asked
+for this directly (#1268): let YouTube — including YouTube Live — behave
+like any other stream. It now does. Paste a YouTube link into
+<strong>Add Custom Station</strong> and you get a station: the same
+player, the same Favorites list, <strong>Record Now</strong>, and
+<strong>scheduled recordings</strong>. What is saved is the page link,
+not the stream, because YouTube's stream addresses expire within hours —
+QUILL finds the audio again every time the station plays or records,
+which is precisely what makes a recording you schedule today still work
+next week. The lookup runs through <strong>yt-dlp</strong>, which QUILL
+never bundles: it installs on demand (about 3 MB) after a one-time
+notice the first time you add a YouTube station, and that notice
+includes the plain reminder to record only what you have the right to
+record. You are asked when you add the station rather than when it
+plays, so a recording that fires at 3 a.m. while you are asleep is never
+the first time QUILL reaches YouTube. It is off entirely in Safe Mode.
+And because finding the stream is a network round trip, it happens off
+the interface thread: you hear "Connecting" straight away, the window
+never freezes, and if you press Stop or pick a different station
+mid-lookup, the one you chose last is the one that plays.</p>
 <p><strong>Live365 links just work.</strong> Live365 hosts thousands of
 stations, and the link a listener actually has in hand is almost never
 the stream — it's the station page or the web player, which is a web

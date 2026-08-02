@@ -31212,6 +31212,24 @@ and QUILL rewrites it to that station's real stream address and tells
 you it did ("Recognized a Live365 link — using its stream URL"). It is a
 straight text rewrite: no network lookup, nothing sent anywhere, and
 non-Live365 URLs are left exactly as you typed them.</li>
+<li><strong>YouTube stations.</strong> Paste a YouTube link — an
+ordinary video link, a <code>youtu.be</code> short link, or a channel's
+live page such as <code>youtube.com/@handle/live</code> — and Quill
+Radio treats it as a station: it plays in the same player, saves to
+Favorites, records with <strong>Record Now</strong>, and can be captured
+by a <strong>scheduled recording</strong>. The link is saved as its page
+address, not as a stream address, because YouTube's stream addresses
+expire after a few hours; QUILL finds the audio again each time the
+station plays or records. That lookup uses <strong>yt-dlp</strong>, a
+free component QUILL installs on demand (about 3 MB) the first time you
+add a YouTube station, after showing you a one-time notice — including
+the reminder to record only what you have the right to record. You are
+asked when you <em>add</em> the station rather than when it plays, so a
+scheduled recording that fires while you are away is never the first
+time QUILL reaches YouTube. YouTube stations are unavailable in Safe
+Mode. Finding the stream takes a moment, so you hear "Connecting" first;
+if the video is private, removed, blocked in your country, or not live
+yet, QUILL says so plainly.</li>
 <li><strong>Find Streams from a Website...</strong> takes a website
 address you type, fetches that one page, and lists every stream-shaped
 link it finds on it (an audio tag, a <code>.pls</code>/<code>.m3u</code>
