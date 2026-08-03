@@ -193,3 +193,17 @@ def test_conversation_context_ask_accumulates_turns(monkeypatch: pytest.MonkeyPa
     assert len(ctx.turns) == 2
     assert ctx.turns[0][1] == "Answer one."
     assert ctx.turns[1][1] == "Answer two."
+
+
+def test_qa_answer_carries_the_working_size() -> None:
+    # Error specificity: a truncated answer must be able to state HOW MUCH of
+    # the document it actually used, not just that it was cut.
+    a = QAAnswer(
+        question="q",
+        answer="a",
+        truncated=True,
+        used_chars=80_000,
+        total_chars=120_000,
+    )
+    assert a.used_chars == 80_000
+    assert a.total_chars == 120_000

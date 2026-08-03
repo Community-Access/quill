@@ -329,6 +329,57 @@ class DevToolsMixin:
         else:
             self._announce("Could not open clipboard.")
 
+    def report_editor_surface(self) -> None:
+        """Speak the editor surface and braille state in one keystroke.
+
+        The spoken sibling of Copy Diagnostic Summary: a braille or speech bug
+        report from someone who cannot screenshot becomes actionable when they
+        can say exactly which surface, class, emulation state and braille
+        bridge were live. Content-free -- nothing from the document is spoken.
+        """
+        parts: list[str] = [f"Editor surface {surface_kind(self.editor)}"]
+        wrapper = getattr(self.editor, "quill_richedit", None)
+        if wrapper is not None:
+            try:
+                from quill.ui.richedit_rtf_surface import (
+                    _SES_EMULATESYSEDIT,
+                    _window_class_name,
+                )
+
+                class_name = _window_class_name(wrapper.hwnd()) or "unknown"
+                emulation = "on" if wrapper.edit_style() & _SES_EMULATESYSEDIT else "off"
+                parts.append(f"Native class {class_name}")
+                parts.append(f"System edit emulation {emulation}")
+            except Exception:  # noqa: BLE001 - a diagnostic must degrade, never raise
+                parts.append("Native surface details unavailable")
+        settings = getattr(self, "settings", None)
+        if settings is not None:
+            fix = "on" if getattr(settings, "braille_editor_system_edit_fix", False) else "off"
+            border = "hidden" if getattr(settings, "braille_editor_hide_border", False) else "shown"
+            parts.append(f"Braille system edit fix {fix}")
+            parts.append(f"Editor border {border}")
+        engine = getattr(self, "_announcement_engine", None)
+        diagnostics = getattr(engine, "diagnostics_environment", None)
+        if callable(diagnostics):
+            try:
+                env = diagnostics()
+                backend = str(env.get("announcement_backend_name", "") or "none")
+                if env.get("announcement_braille_active"):
+                    braille_state = "active"
+                elif not env.get("announcement_braille_enabled", True):
+                    braille_state = "disabled in settings"
+                elif not env.get("announcement_braille_supported"):
+                    braille_state = "no display bridge"
+                else:
+                    braille_state = "inactive"
+                parts.append(f"Braille output {braille_state}")
+                parts.append(f"Announcement backend {backend}")
+            except Exception:  # noqa: BLE001 - a diagnostic must degrade, never raise
+                parts.append("Braille bridge state unavailable")
+        message = ". ".join(parts) + "."
+        self._announce(message)
+        self._set_status(message)
+
     def _editor_surface_diagnostic_summary(self) -> str:
         try:
             diagnostic_summary = getattr(self.editor, "accessibility_diagnostic_summary", None)

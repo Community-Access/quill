@@ -1803,7 +1803,7 @@ class RadioAppFrame(
             f"{count} station{plural} have their own Sound Enhancements. "
             "Reset all of them to the shared default?",
             "Reset All Stations' Sound Enhancements",
-            wx.ICON_QUESTION | wx.YES_NO,
+            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         )
         if answer != wx.YES:
             return

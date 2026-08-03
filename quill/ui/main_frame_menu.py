@@ -15,6 +15,19 @@ import sys
 from quill.core.i18n import _
 
 
+def _tray_slot_accel(n: int) -> str:
+    """Menu-mnemonic form of a copy-tray slot number.
+
+    ``&1``-``&9`` for the first nine, ``1&0`` for slot ten, plain ``11``/``12``
+    beyond that -- ``&10`` would collide with slot 1 on the "1" mnemonic.
+    """
+    if n <= 9:
+        return f"&{n}"
+    if n == 10:
+        return "1&0"
+    return str(n)
+
+
 class MenuBuilderMixin:
     def _prune_menu_separators(self, menu: object) -> None:
         """Remove dangling separators from a built menu (#15).
@@ -534,17 +547,24 @@ class MenuBuilderMixin:
         # open/clear dialog commands are recirculated from the manifest via the
         # helper (menus.md Phase 4 pattern).
         tray_menu = wx.Menu()
+        # Slot accelerators: &1-&9 for the first nine, 1&0 for slot ten (the
+        # standard recent-files convention), plain numbers for 11-12 -- "&10"
+        # would collide with slot 1 on the "1" mnemonic.
         for _n in range(1, 13):
             tray_menu.Append(
                 self._id_copy_tray_slots[_n - 1],
-                self._menu_label(_("Copy to Slot &{n}").format(n=_n), f"edit.copy_to_tray_{_n}"),
+                self._menu_label(
+                    _("Copy to Slot {n}").format(n=_tray_slot_accel(_n)),
+                    f"edit.copy_to_tray_{_n}",
+                ),
             )
         tray_menu.AppendSeparator()
         for _n in range(1, 13):
             tray_menu.Append(
                 self._id_paste_tray_slots[_n - 1],
                 self._menu_label(
-                    _("Paste from Slot &{n}").format(n=_n), f"edit.paste_from_tray_{_n}"
+                    _("Paste from Slot {n}").format(n=_tray_slot_accel(_n)),
+                    f"edit.paste_from_tray_{_n}",
                 ),
             )
         tray_menu.AppendSeparator()

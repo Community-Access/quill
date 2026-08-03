@@ -1,4 +1,4 @@
-"""Read/interact Mastodon models + parsers (Leasey Social parity), pure parts."""
+"""Read/interact Mastodon models + parsers, pure parts."""
 
 from __future__ import annotations
 

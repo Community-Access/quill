@@ -1130,6 +1130,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("sound", "volume", "audio", "earcon"),
     ),
     SettingSpec(
+        "sound_keepalive_enabled",
+        "Keep the sound device awake",
+        "accessibility",
+        "bool",
+        "Play a silent clip every 20 seconds so USB and Bluetooth audio devices "
+        "never power down and clip the start of the next sound. Turn this on if "
+        "the first moment of earcons or speech is cut off after a quiet pause.",
+        keywords=("sound", "keepalive", "usb", "bluetooth", "clipping", "audio"),
+    ),
+    SettingSpec(
         "sound_events_disabled",
         "Silenced sound events",
         "accessibility",

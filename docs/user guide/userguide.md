@@ -6,7 +6,7 @@
 
 Quill is a screen-reader-first writing and reading environment for Windows. It is designed to feel calm, predictable, deeply keyboard-friendly, and respectful of your focus. It is also ambitious. Quill is not only a place to write plain text. It is a place to open difficult documents, inspect structure, navigate long material, compare revisions, prepare content for Markdown or HTML, and work with accessibility and extraction issues without leaving the editor.
 
-This guide is aligned to Quill 0.7.0 Beta, built by Blind Information Technology Solutions (BITS) together with Community Access.
+This guide is aligned to QUILL 1.0.0, built by Blind Information Technology Solutions (BITS) together with Community Access.
 
 This guide is written as a companion, not a reference wall. Read it from the beginning if you are new to Quill. Dip into the sections that matter most if you already know what kind of work you want to do.
 
@@ -55,7 +55,7 @@ Quill is also in beta. Expect polish, depth, and real daily utility. Also expect
 - [Help, Learning, and Daily Confidence](#help-learning-and-daily-confidence)
   - [Context-Sensitive Help (F1)](#context-sensitive-help-f1)
   - [Personalising QUILL](#personalising-quill)
-  - [Recent Fixes in 0.7.0 Beta 2](#recent-fixes-in-070-beta-2)
+  - [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2)
 - [Translation and Community Localization](#translation-and-community-localization)
   - [How the Translation Pipeline Works](#how-the-translation-pipeline-works)
   - [Contributing Translations](#contributing-translations)
@@ -176,6 +176,10 @@ Default QUILL-key chords:
 
 `Ctrl+Shift+P` opens the Command Palette — a searchable list of every registered command. Type any part of a command name to filter. Press Enter to run it. This is the fastest way to reach any action without memorizing its key or menu path. Searching `guide`, `spell`, `compare`, or `glow` from the palette is a good first practice.
 
+Search matches more than the command name. Multi-word queries match in any order (`url open` and `open url` both find **Open From URL...**), a command's shortcut text is searchable (`ctrl+o` finds Open), and common intent words are understood as aliases — `settings` finds **Preferences...**, `quit` finds **Exit**. As you arrow through results, QUILL speaks each command's shortcut along with its name — the palette teaches the keystroke while it dispatches, so you graduate off the palette instead of depending on it.
+
+When a command cannot run right now, the palette says why, not just that it can't: a command disabled by a safety advisory reads and speaks as "(unavailable: Turned off by a safety update: ...)", and trying to run it repeats the reason. You should never have to guess why QUILL refused.
+
 ### Navigation anchors
 
 The status bar (`F6` to focus it) is a working surface, not decoration. Each cell announces meaningful information and most cells open a related dialog when you press Enter or click. `Shift+F6` moves focus back to the editor.
@@ -190,7 +194,7 @@ QUILL can open files through either the standard Windows file open dialog or a k
 
 The Simple File Open dialog has:
 
-- A **Path** field at the top showing the current folder. Type a path and press Enter to navigate (folders) or open (files). Use **Ctrl+L** to focus the path field from anywhere in the dialog.
+- A **Path** field at the top showing the current folder. Type a path and press Enter to navigate (folders) or open (files). Use **Ctrl+L** to focus the path field from anywhere in the dialog. Paste paths in whatever form you have them: File Explorer's "Copy as path" quotes, `%APPDATA%`-style environment variables, `file://` links, and `~` all work — QUILL cleans them up for you.
 - A **Filter** dropdown with the file types the dialog will show. The default, **Supported files**, includes plain text, Markdown, HTML, and Rich Text. Switch to **Plain text**, **Markdown**, **HTML**, or **Rich Text** to narrow further, or to **All files** to see everything.
 - A **Files** list of folders and files in the current directory. Folders are prefixed with `[dir]`. Use the **Up** button (or press Backspace in the list) to go to the parent folder.
 - A **Hidden** toggle to show or hide files whose names start with a dot or whose Windows hidden attribute is set. **Ctrl+H** toggles this from the path field or the file list (on macOS, use **Cmd+Shift+.** — the Finder convention — since Ctrl+H is the system Hide shortcut).
@@ -4367,8 +4371,8 @@ Core location commands:
 
 - **Go To Line...**
 - **Go To Page...**
-- **Back Location** (default: `Alt+Left` on Windows, `Cmd+[` on macOS — see [Recent Fixes](#recent-fixes-in-070-beta-2) for why the macOS chord changed in 0.7.0 Beta 2)
-- **Forward Location** (default: `Alt+Right` on Windows, `Cmd+]` on macOS — see [Recent Fixes](#recent-fixes-in-070-beta-2))
+- **Back Location** (default: `Alt+Left` on Windows, `Cmd+[` on macOS — see [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2) for why the macOS chord changed in 0.7.0 Beta 2)
+- **Forward Location** (default: `Alt+Right` on Windows, `Cmd+]` on macOS — see [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2))
 
 Structural movement commands:
 
@@ -4984,6 +4988,25 @@ save, so you can correct misspellings before the file is written. Review or skip
 the issues as usual; the save then proceeds with your corrections. This applies
 to **Save** and **Save As** for the document you are editing.
 
+#### Spell check as you type
+
+With **spell check as you type** on, finishing a word that the dictionary does
+not recognize plays a soft, distinct spelling sound (from the active sound pack;
+if the pack has no spelling sound, QUILL falls back to the system beep) and puts
+"Possible misspelling" with the word on the status line. A sound rather than
+speech is deliberate: it never interrupts what your screen reader is saying
+mid-sentence.
+
+The live alert also knows when to stay quiet. Words inside web addresses and
+email addresses, inside Markdown inline code (backticks), and inside fenced code
+blocks do not alert — those regions are wall-to-wall "misspellings" that a
+sighted user filters out visually, so QUILL filters them for you. The F7 review
+still covers the whole document; only the ambient alert is filtered.
+
+You can turn the spelling sound on or off independently in **Sound Events**
+(look for "Possible misspelling"), and the whole live mode with the
+spell-check-as-you-type toggle.
+
 #### Spell-check language
 
 **Tools → Spell Check Language...** chooses the language the spell checker validates
@@ -5554,14 +5577,54 @@ questions about your current document or a PDF/text file you choose.
   windows at any time.
 - Ask follow-up questions; the conversation accumulates a history of Q&A pairs.
 - The AI answers only from the document text (grounded responses only).
-- Documents longer than 80 000 characters are analysed at the first 80 000;
-  a notice is shown in the dialog.
+- Documents longer than 80 000 characters are analysed at the first 80 000 —
+  and the dialog says exactly how much was used ("the answer used the first
+  80,000 of its 120,000 characters"), spoken as well as shown, so you always
+  know how much of your document an answer covers. Status changes and errors
+  in this dialog are spoken too.
 - Answers include a source excerpt highlighting where in the document the
   answer comes from.
 - Copy or Insert inserts the answer text at the cursor.
 
 To analyse a PDF, click Browse File and select the file. The text is extracted
 automatically (no internet connection required for extraction).
+
+#### Reviewing AI changes, word by word
+
+Whenever an AI feature proposes to change your document, QUILL opens the
+**Review AI Changes** dialog rather than editing anything directly: a checklist
+of changes you can accept or reject individually, applied as a single undo
+step. Nothing touches the document until you say so.
+
+The review now works at **word level with sentence context**. Instead of
+hearing an entire changed line twice and hunting for the difference by ear,
+each change announces itself as what it is: "Changed 'quick' to 'rapid' at
+line 3." The details pane adds the sentence around each change — Sentence
+before and Sentence after — so you can judge a one-word edit the way a
+sighted reviewer judges highlighted text, and the full old and new lines
+remain below for complete review.
+
+When a change really is a rewrite — many scattered edits, or whole passages
+replaced — QUILL deliberately presents it as lines instead: hearing forty
+word pairs is worse than hearing the old and new lines whole. Spacing-only
+changes are also shown as lines, never spoken as word edits.
+
+#### Suggest Document Metadata — reviewed field by field
+
+**Suggest Document Metadata...** (in the command palette; bindable in the
+Keymap Editor) asks your configured AI to propose front matter for the current
+document: a title, a one-or-two-sentence summary, a handful of topic tags, and
+a category. The suggestions open in a review dialog where each one stands
+alone — you hear the field name, what the field currently holds, and the
+proposed value, then choose **Accept**, **Accept and Next**, **Skip**, or
+**Copy Value**.
+
+Two safeguards are built in. A field that already contains something always
+asks before being replaced, and the default answer is No — accepting an
+overwrite is a deliberate act. And nothing touches your document while you
+review: only **Apply Accepted** writes the fields you approved into the
+document's front matter, as one undo step. Close without applying and the
+document is exactly as it was.
 
 #### Agentic Document Tasks
 
@@ -5892,7 +5955,7 @@ Menu stability note: Quill now defers internal menu-state updates while native m
 
 > **0.7.0 Beta 2 (macOS):** the **Help** menu is now registered as
 > the macOS system Help menu, so the conventional `Cmd+?` shortcut
-> works. See [Recent Fixes](#recent-fixes-in-070-beta-2) for the full
+> works. See [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2) for the full
 > list.
 
 ### How to report a problem from inside Quill
@@ -6671,8 +6734,8 @@ The same service carries all four in **QUILL, Quill Radio, Quill Cast, Audio
 Studio, Quill Converter, Quill Weather and QuillBeacon**, so an announcement
 behaves the same wherever you are.
 
-**Two commands worth knowing** (both in the command palette; give them shortcuts
-in the Keymap Editor if you use them often):
+**Three commands worth knowing** (all in the command palette; give them
+shortcuts in the Keymap Editor if you use them often):
 
 - **Repeat Last Announcement** — speech is gone the moment it finishes. If you
   were reading something else when a message passed, this says it again.
@@ -6681,6 +6744,13 @@ in the Keymap Editor if you use them often):
   or display served each one. If something is not reaching you, this is the
   fastest way to find out whether the problem is QUILL, your screen reader, or a
   display that is not connected.
+- **Report Editor Surface** — speaks, in one keystroke, which editor surface is
+  active, its native window class, whether system-edit emulation (the braille
+  fix) is applied, whether the editor border is hidden, and whether braille
+  output is live and through which backend. Nothing from your document is
+  included. When reporting a braille or speech problem, run this first and
+  include what it says — it turns "braille looks wrong" into a report that can
+  be acted on immediately.
 
 **Settings** (Preferences > Accessibility, and searchable):
 
@@ -6708,7 +6778,7 @@ as to speech, in QUILL, Quill Radio, and Quill Cast alike. It works through
 whichever screen reader you use: JAWS and NVDA both accept a flash message, and
 Narrator brailles the notifications QUILL already posts.
 
-Three things are deliberate:
+Four things are deliberate:
 
 - **Braille never costs you speech.** If the display is unplugged mid-session, or
   the reader rejects the message, the announcement is still spoken. A blank
@@ -6719,6 +6789,11 @@ Three things are deliberate:
 - **The same message is not flashed twice in a row.** A braille flash replaces
   whatever is under your fingers, so an identical message within a couple of
   seconds (a stream re-reporting the same title, for instance) is skipped.
+- **A burst of different messages settles instead of flickering.** When several
+  messages land in quick succession (a status cascade, a fast poll), the first
+  is written immediately and the rest collapse to the newest one a moment
+  later, so the display is never a blur of half-readable flashes. Errors are
+  exempt: an error always writes through at once.
 
 Turn it off with **Show announcements in braille** in **Preferences >
 Accessibility** if you would rather keep the display on your document. Quiet Mode
@@ -7330,6 +7405,11 @@ Quill can play short, non-speech audio cues — earcons — at meaningful editin
 - **Indentation tones.** For code and other indented text, Quill can play a pitched tone as the caret crosses indent levels: the tone rises as you go deeper and falls as you come back out. Pick a musical scale (pentatonic, whole-tone, diatonic, or chromatic) under the **Indentation tones** setting, or leave it Off. Blank lines stay silent and hold the previous level.
 - **Compare cues.** When a sound pack is active, compare mode plays distinct cues for opening and closing a comparison, moving to the next or previous difference, and bumping against the first or last difference. See [Comparison](#comparison).
 - **Toggle everything.** **Toggle Sound Notifications** (in Reading & Dictation) turns all earcons on or off at once, and plays a short confirming "on" or "off" cue so you know which state you landed in.
+- **Every numbered slot has its own note.** The twelve Copy Tray slots and the ten quick-bookmark slots each play their own pitch on a shared musical scale when you copy, paste, set, or jump. Copy Tray slots are soft marimba-style taps; bookmarks are brighter chirps, so the family is obvious before the pitch lands. After a little use, "slot seven" stops being something you wait to hear spoken — it is a note you recognize, which is what makes numbered slots usable at speed.
+- **Progress you can hear without being interrupted.** Long downloads and installs play a short blip at every 5 percent, rising in pitch as they approach done — the 25, 50, and 75 percent marks carry a touch of harmony, and 100 percent resolves with a small two-note finish. A sound never talks over your screen reader the way a spoken percentage does; the spoken quarter-milestones remain as the coarse narration.
+- **Selection and boundary cues.** Starting a selection with F8 plays a rising two-note gate and completing it plays the mirror image; reaching the very top of the document gives a high ceiling tick, and the very end a low floor thud.
+- **Keep the sound device awake.** Some USB and Bluetooth audio devices power down after a few silent seconds and clip the start of the next sound. If the first moment of your earcons or speech gets cut off, turn on **Keep the sound device awake** (in Settings, search "keepalive"): QUILL plays a silent clip every 20 seconds so the device never sleeps. Off by default.
+- **Hear them all.** Run `python scripts/audition_ink_sounds.py` from a QUILL source checkout to audition the identity set family by family, or add `--all` for every sound in the pack.
 
 Earcon events in the bundled Ink pack include: `quill_key_pressed` (QUILL key prefix armed), `abbreviation_expanded`, `abbreviation_deleted`, `snippet_inserted`, `autocomplete_accepted`, `document_saved`, `document_created`, `search_found`, `search_not_found`, `search_wrapped`, `heading_jumped`, `table_entered`, `browse_mode_on`, `browse_mode_off`, `ai_thinking_started`, `ai_response_received`, `ai_error`, `transcription_started`, `transcription_stopped`, `ssh_connected`, `ssh_disconnected`, `error`, `warning`, `sound_on`, `sound_off`, and the five compare events. Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full QSP format and event reference are documented in the product requirements document, under "Sound notifications and QSP sound packs."
 
@@ -7504,6 +7584,55 @@ Some of these live in the View menu for quick toggling; the preference-style tog
 ## Trust, Recovery, Sessions, and Safety
 
 Quill is serious about recovery and user control.
+
+### If your screen reader stops, your work is already safe
+
+QUILL watches for the screen reader it detected at startup and notices if it
+disappears mid-session. One missed check is ignored — restarting JAWS or NVDA
+must never set off alarms — but when the reader is confirmed gone, QUILL
+immediately snapshots every open document to autosave, then explains what
+happened through whatever can still speak: another running screen reader, or
+QUILL's own built-in voice. The event is also recorded in Notifications, so if
+you heard nothing at the time, the explanation is waiting for you.
+
+QUILL does not shut down when this happens. Your documents, your unsaved work,
+and the application itself all keep running; restart your screen reader
+whenever you are ready, and QUILL announces when it sees the reader again.
+
+The rule behind this feature applies everywhere in QUILL: anything that closes
+or degrades the application without you asking must persist your work first.
+
+### The default answer to a destructive question is No
+
+Every confirmation in QUILL that would destroy something — delete a recording,
+clear all copy tray slots, remove a component, reset settings — now has **No**
+as its default button. Pressing Enter reflexively can never cost you data;
+choosing Yes is always a deliberate act (Tab or Alt+Y). An automated check in
+QUILL's build keeps it that way for every future dialog.
+
+### Errors that tell you what to do
+
+A sighted user can open the failing file or dialog and see the problem; without
+sight, the error message has to carry the whole diagnosis — and the next step.
+QUILL's errors are moving to that standard. Messages that carry a support code
+(the `[QUILL-...]` prefix) increasingly end with the concrete action: "Install
+Pandoc from Help > Download Optional Components to convert this format.",
+"Check the address, credentials, and connection under File > Manage Remote
+Sites.", "Check your AI provider and key in the AI Hub, or switch to a local
+model." The code itself is worth including when you report a problem — it
+identifies the exact failure branch with no back-and-forth.
+
+The same principle covers things QUILL declines or trims. The command palette
+says *why* a command is unavailable, and a menu item disabled by a safety
+advisory carries the same reason in its help text. AI features never quietly
+work from less than you gave them: if your document had to be trimmed to fit
+the model, Ask Quill and Document Q&A tell you exactly how much of it the
+answer used. And QUILL never quietly changes which AI engine answers you — if
+your configured provider was unreachable and the chat started on the
+on-device model instead, it says so the moment the chat opens; if a call
+fails and the other kind of engine could take it, QUILL offers the switch
+(never making it for you, and always saying when a switch would send your
+text to the cloud).
 
 ### The Experimental tab
 
@@ -8281,7 +8410,7 @@ The wizard walks you through six short pages (five if you do not enable AI writi
 > **0.7.0 Beta 2:** every wizard page now starts with a focusable
 > heading, and the preview block is rendered as a read-only document
 > so VoiceOver does not announce it as an editable text field. See
-> [Recent Fixes](#recent-fixes-in-070-beta-2) for the full list.
+> [Fixes in 0.7.0 Beta 2](#fixes-in-070-beta-2) for the full list.
 
 **Important:** The wizard is transactional. Your choices are held in memory until you press Finish. If you close or cancel the wizard, no settings are changed.
 
@@ -8294,7 +8423,7 @@ The wizard walks you through six short pages (five if you do not enable AI writi
 | Power User | All features on; suited to advanced writing and extraction |
 | Accessibility Focus | Screen-reader primary; maximises keyboard coverage and announcements |
 
-### Recent Fixes in 0.7.0 Beta 2
+### Fixes in 0.7.0 Beta 2
 
 The Beta 2 release includes a sweep of accessibility, macOS, and
 crash-resistance fixes. Where the fix is invisible to the user, the
@@ -8766,7 +8895,7 @@ The default grammar instruction is: review the text and list only the correction
 2. Optionally paste text into the input field. If blank, QUILL uses the current editor selection or full document.
 3. Press **Run with AI**. The result opens in the AI Response dialog.
 
-**Built-in prompts.** QUILL ships a set of ready-to-run prompts you can use immediately or use as starting points. They include editing and tone tools (Check Grammar, Fix Grammar, Improve Clarity, Make Concise, Active Voice, Formal Tone, Conversational Tone, **Paraphrase**), structure tools (Summarize, Convert to Bullet Points, **Generate FAQs**, **Step-by-Step Instructions**), writing tools (Continue from Here, **Draft a Speech**, **Summary Email**, **Social Media Post** — 280 characters or fewer), and research tools (Define This Term, Find Counterarguments). The named one-shot tools in **bold** were added for parity with Leasey Word's set of named ChatGPT tools. Every built-in can have its wording overridden or be disabled, but built-ins cannot be deleted.
+**Built-in prompts.** QUILL ships a set of ready-to-run prompts you can use immediately or use as starting points. They include editing and tone tools (Check Grammar, Fix Grammar, Improve Clarity, Make Concise, Active Voice, Formal Tone, Conversational Tone, **Paraphrase**), structure tools (Summarize, Convert to Bullet Points, **Generate FAQs**, **Step-by-Step Instructions**), writing tools (Continue from Here, **Draft a Speech**, **Summary Email**, **Social Media Post** — 280 characters or fewer), and research tools (Define This Term, Find Counterarguments). The named one-shot tools in **bold** were added to round out that set. Every built-in can have its wording overridden or be disabled, but built-ins cannot be deleted.
 
 **Managing prompts.**
 

@@ -1,6 +1,6 @@
 """Moon almanac -- phase, illumination, and moonrise/moonset, computed locally.
 
-Leasey's weather reports the moon alongside the sun; QUILL surfaced only
+A complete weather report covers the moon alongside the sun; QUILL surfaced only
 sunrise/sunset. This module fills that gap with pure, dependency-free
 astronomy so a moon almanac needs no extra network call or third-party
 package (matching the package's hand-rolled, unit-tested style -- see

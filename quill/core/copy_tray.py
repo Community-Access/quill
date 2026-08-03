@@ -1,4 +1,4 @@
-"""Nine-slot persistent copy tray for the Copy Tray feature."""
+"""Twelve-slot persistent copy tray for the Copy Tray feature."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ class CopyTray:
     # -- write --
 
     def copy_to(self, slot: int, text: str) -> None:
-        """Store *text* in *slot* (1-9)."""
+        """Store *text* in *slot* (1-12)."""
         self._check(slot)
         self._slots[slot - 1] = TraySlot(
             text=text,
@@ -83,7 +83,7 @@ class CopyTray:
     # -- read --
 
     def paste_from(self, slot: int) -> str:
-        """Return text in *slot* (1-9), or '' if empty."""
+        """Return text in *slot* (1-12), or '' if empty."""
         self._check(slot)
         return self._slots[slot - 1].text
 

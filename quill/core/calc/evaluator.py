@@ -2,7 +2,7 @@
 
 Evaluates arithmetic and scientific expressions -- ``4 + 12 / 2``,
 ``sqrt(264)``, ``sin(pi/6)``, ``5!``, ``2^10`` -- plus the natural-language forms
-Leasey's calculator accepts (``what is the square root of 264``, ``10 percent of
+users actually type (``what is the square root of 264``, ``10 percent of
 500``, ``15% of 240``). It parses the text to a Python AST and walks only an
 allowlist of node types, operators, functions, and constants; there is **no
 ``eval``**, no attribute access, no name lookup outside the allowlist, so text

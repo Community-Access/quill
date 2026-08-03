@@ -1416,7 +1416,7 @@ class AIHubDialog:
                 "settings (but not stored API keys)."
             ),
             _("Reset AI Settings"),
-            wx.YES_NO | wx.ICON_WARNING,
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
             self.dialog,
         )
         if result != wx.YES:

@@ -514,6 +514,9 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # Play a silent clip every 20 s so USB/Bluetooth audio devices never power
+    # down and clip the start of the next earcon. Off by default.
+    sound_keepalive_enabled: bool = False
     # Speak "Generating preview, please wait" when a voice preview's synthesis
     # is still running after the ~400ms cue delay (paired with the
     # voice_preview_generating earcon, configured independently via the
@@ -1141,6 +1144,7 @@ class Settings:
         abbreviation_expansion_sound = bool(data.get("abbreviation_expansion_sound", False))
         abbreviation_expansion_sound_file = str(data.get("abbreviation_expansion_sound_file", ""))
         sound_enabled = bool(data.get("sound_enabled", True))
+        sound_keepalive_enabled = bool(data.get("sound_keepalive_enabled", False))
         sound_pack_path = str(data.get("sound_pack_path", ""))
         try:
             sound_volume = int(data.get("sound_volume", 80))
@@ -1553,6 +1557,7 @@ class Settings:
             console_python_timeout=console_python_timeout,
             console_typescript_timeout=console_typescript_timeout,
             sound_enabled=sound_enabled,
+            sound_keepalive_enabled=sound_keepalive_enabled,
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,

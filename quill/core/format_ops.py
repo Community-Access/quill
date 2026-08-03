@@ -422,7 +422,7 @@ def sort_lines_numeric(text: str, descending: bool = False) -> str:
 
 
 def sort_lines_by_date(text: str, descending: bool = False, *, day_first: bool = False) -> str:
-    """Sort lines by the first date found in each line (Leasey Word parity).
+    """Sort lines by the first date found in each line.
 
     Recognizes the common date styles (see :func:`parse_first_date`) and infers
     d/m/y vs m/d/y for ambiguous numeric dates from ``day_first``. Lines with no

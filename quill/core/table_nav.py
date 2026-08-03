@@ -1,6 +1,6 @@
 """Cell-by-cell navigation over a pipe (Markdown-style) table in document text.
 
-Leasey Word lets a screen-reader user move around a Word table cell by cell,
+A screen-reader user needs to move around a table cell by cell,
 hearing each cell and its position, with "entering/out of table" cues and clear
 edges ("no more cells", "no more rows"). QUILL presents tables -- Markdown
 tables, and the linearized view of a real Word/HTML table -- as pipe rows in the

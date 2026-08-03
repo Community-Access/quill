@@ -4,6 +4,149 @@ All notable changes to QUILL Social are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project aims to follow
 semantic versioning once it reaches a stable release.
 
+## [Unreleased]
+
+QUILL Social became a feed reader as well as a social client, and grew an
+installer of its own.
+
+### Added — RSS, Atom and JSON Feed reading
+
+- A full **feed reader**, built on the same store, list, and announcer the
+  social timeline already used. New `adapters/rss.py` parses RSS 2.0, Atom,
+  RSS 1.0, and JSON Feed 1.0/1.1 with the standard library alone -- no new
+  dependency. Entries map to the same item model, so everything the app
+  already does (read state, bookmarks, search, folders, field-by-field
+  reading) works on articles unchanged.
+- **Subscriptions** with per-feed settings: title, refresh cadence, retention
+  in days (0 = keep forever), announce-new-articles, fetch-full-article, and
+  keyword rules. Subscribing is idempotent by URL; unsubscribing removes the
+  feed's cached items with it.
+- **Feed discovery**: paste a site address rather than a feed address and the
+  app reads the page's `<link rel="alternate">` tags, then probes the ten
+  usual feed paths, and offers what it found.
+- **Nested folders** for feeds, to any depth, with live unread counts spoken
+  in each tree node's own label (`News (12 unread)`) rather than shown only
+  in colour. Counts update in place, so marking a folder read never moves
+  your focus.
+- **Smart folders** are now reachable: a `Smart Folders` group in the
+  navigation tree plus New / Edit / Delete dialogs. Rules cover keyword,
+  author, unread-only, has-media, bookmarked-only, and a minimum engagement
+  threshold; an all-blank rule is refused rather than silently matching
+  everything.
+- **OPML import and export**, nested folders included, so a library moves in
+  and out of other readers intact.
+- **Per-feed keyword rules**, applied to new articles in list order,
+  first match wins: **hide** (never stored), **mark read** (stored already
+  read, and not counted as new), or **star** (stored flagged, and protected
+  from retention pruning).
+- **Full-article fetch** for feeds that only publish a summary: the article
+  page is fetched, narrowed to its `<article>` or `<main>` content, stripped
+  of navigation chrome, and used in place of the truncated body -- but only
+  when the result is genuinely longer. Capped at 20 articles per refresh so
+  a large backlog cannot stall a tick.
+- **Background auto-refresh** on the existing 30-second timer, running on its
+  own thread with its own database connection so the window never freezes.
+  Feeds are refreshed only when their own interval has elapsed, a feed set to
+  "Manual only" is never refreshed automatically, and a failure backs off that
+  one feed instead of aborting the batch. New articles are announced politely
+  ("N new article(s).") without stealing focus. Manual F5 now runs feeds
+  through the same path, so rules, full-text, and retention apply either way.
+- **Conditional polling**: feeds are fetched with `If-None-Match` and
+  `If-Modified-Since` and a 304 skips parsing entirely, with transparent
+  gzip/deflate handling. Feed fetches are HTTPS-only, TLS-verified, size-
+  capped, and reject DOCTYPE and ENTITY declarations.
+- **Articles render as accessible plain text**, never HTML and never a web
+  view: scripts, styles, and embedded frames are discarded outright, block
+  elements become line breaks, list items become "- ", links read as
+  `text (url)`, and images read as `[Image: alt]`.
+- **Reading-position memory**: reopening a feed or folder puts focus back on
+  the article you were last on, or on the first unread one.
+- **Mark all read**, scoped to the current view, with a real **undo**
+  (Ctrl+Z) that restores exactly the items that changed, and an announcement
+  that says how many.
+- Unread rows are shown in bold as a secondary low-vision cue; read state is
+  still spoken, never colour-only.
+
+### Added — Lemmy, and adapter groundwork for more
+
+- **Lemmy** joins the Add Account network list. Reading a community works
+  from the public instance with no credential at all; the Add Account dialog
+  says so, and says that posting and voting arrive later.
+- Mastodon-compatible servers -- Pixelfed, GoToSocial, Firefish, Sharkey,
+  Iceshrimp -- are now recognised and reuse the Mastodon adapter and its
+  browser sign-in flow. Pixelfed, GoToSocial, and Firefish appear in the Add
+  Account network list.
+- Per-network **guidance text** in the Add Account dialog explains, in plain
+  language, what each network is and what you need to connect to it.
+- Read-only adapters for **Hacker News**, **OPDS book catalogues**, and
+  **Telegram** channels are implemented and tested but not yet reachable:
+  there is no way to add an account for them, and Telegram's api-id/api-hash
+  sign-in is still to come. Groundwork only.
+
+### Added — Listen to your queue
+
+- **Listen**: continuous, hands-free read-aloud of the unread articles in the
+  current view, auto-advancing from one to the next -- your reading list as a
+  podcast. Between articles it speaks a short handoff ("Title, from Feed.").
+- Transport controls for listening: play/pause, next article, previous
+  article, and stop. Transport confirmations ("Paused", "Playing", "Stopped",
+  "End of the listen queue.") go through the screen-reader announcement
+  channel rather than the reading voice, so nothing is ever said twice at
+  once.
+- Narration uses Windows SAPI 5 and runs off the UI thread. If no speech
+  engine is available the app says so instead of failing.
+
+### Added — Find
+
+- **Find Text**, **Find Next** (F3), and **Find Previous** (Shift+F3) on the
+  Tools menu, with a Find dialog that has a real Direction radio group
+  (Forward / Backward).
+
+### Added — menus and dialogs
+
+- New **Feeds** menu: Add Feed... (Ctrl+Shift+N), New Folder..., Feed
+  settings... (Ctrl+Shift+P), Mark all read (Ctrl+Shift+K), Undo mark all
+  read (Ctrl+Z), New smart folder..., Edit smart folder..., Delete smart
+  folder, Import OPML..., Export OPML..., Unsubscribe from feed.
+- New **Listen** menu: Listen to this view (Ctrl+Shift+L), Play / Pause,
+  Next article, Previous article, Stop listening.
+- New dialogs -- Add Feed, New Folder, Feed settings, New/Edit Smart Folder,
+  Find Text -- each with every control labelled and named, keyboard-complete,
+  and no checkboxes inside a list. The Add Feed dialog's status line is
+  spoken as well as displayed, and focus moves to the results list when
+  feeds are found.
+
+### Added — packaging
+
+- A QUILL Social installer: per-user by default, x64, with **Full /
+  Compact / Custom** setup types, a fixed program component, and an optional
+  **Documentation** component that also gates the Start-menu User Guide
+  shortcut. An optional desktop icon, off by default. Upgrades wipe the
+  app's own internal tree first so a renamed module cannot leave a stale
+  copy behind, and uninstalling never deletes your data.
+- A release build script producing the staged app folder, a portable zip
+  with its own `data` folder, and the installer in one pass.
+- Rendered HTML documentation now uses a shared accessible template: a
+  language attribute, a descriptive page title taken from the document's own
+  heading, a skip link, and a `main` landmark.
+
+### Changed
+
+- One server was removed from the Add Account instance-preset list.
+- The item store gained scoped bulk read-state changes, so marking a view
+  read reports an accurate count and can be undone exactly; per-feed
+  retention pruning never touches bookmarked or flagged items.
+
+### Known issues
+
+- **Ctrl+F is claimed twice.** Tools > Find Text and Item > Favourite both
+  bind Ctrl+F. Use F3 and Shift+F3, or the Tools menu, to reach Find
+  reliably.
+- The new Feeds, Listen, and Find commands are menu-only: they are not in
+  the command center and are not remappable in Preferences.
+- The F1 help dialog and the User Guide have not been updated for any of the
+  above.
+
 ## [0.3.0] - 2026-07-19
 
 Made the full roadmap reachable from the app and wired live network sign-in.

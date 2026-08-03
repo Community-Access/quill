@@ -40,6 +40,71 @@ from quill.core.announce.adapters import (
 )
 
 
+class CoalescingBrailleWriter:
+    """Collapse a burst of *different* braille messages into fewer writes.
+
+    The dedupe layers only suppress an identical repeat; a burst of different
+    messages (a status cascade, a rapid poll) still flashes across the display
+    one on top of the next, faster than anyone can read cell one. A braille
+    flash replaces whatever the user's fingers were on, so a burst must
+    settle.
+
+    Design: the first message in a quiet period writes through immediately
+    (no added latency), which opens a short conflation window; messages
+    arriving inside the window replace each other and only the newest is
+    written when the window closes. A sustained burst therefore lands as one
+    write per window instead of one per message.
+
+    Sticky ERROR messages bypass this wrapper entirely (the sink's ``hold``
+    hook is handed the raw writer), so nothing urgent is ever conflated.
+
+    ``schedule(delay_ms, fn)`` must return a timer object with ``IsRunning()``;
+    by default it is ``wx.CallLater`` on the UI thread. Anywhere a timer
+    cannot exist (worker thread, headless test, no running app) every message
+    writes straight through -- the pre-coalescing behaviour.
+    """
+
+    WINDOW_MS = 150
+
+    def __init__(self, write: Any, schedule: Any = None) -> None:
+        self._write = write
+        self._schedule = schedule
+        self._pending: str = ""
+        self._timer: Any = None
+
+    def _default_schedule(self, delay_ms: int, fn: Any) -> Any:
+        import wx
+
+        if wx.GetApp() is None or not wx.IsMainThread():
+            return None
+        return wx.CallLater(delay_ms, fn)
+
+    def _arm(self) -> None:
+        schedule = self._schedule or self._default_schedule
+        try:
+            self._timer = schedule(self.WINDOW_MS, self._flush)
+        except Exception:  # noqa: BLE001 - no event loop: no window, write through
+            self._timer = None
+
+    def __call__(self, text: str) -> str:
+        timer = self._timer
+        if timer is not None and bool(getattr(timer, "IsRunning", lambda: False)()):
+            self._pending = text
+            return ""
+        result = str(self._write(text) or "")
+        self._arm()
+        return result
+
+    def _flush(self) -> None:
+        text = self._pending
+        self._pending = ""
+        if text:
+            # Errors are logged by the bridge itself; a deferred write has no
+            # caller left to hand them to.
+            self._write(text)
+            self._arm()
+
+
 def policy_modes_from_settings(settings: Any) -> PolicyModes:
     """Read the accessibility settings block into policy modes (#1301).
 
@@ -105,9 +170,11 @@ def _install_speech_and_braille(service: AnnouncementService, engine: Any, setti
     if callable(set_enabled):
         set_enabled(False)
     sticky = bool(getattr(settings, "announcement_braille_sticky_errors", True))
+    # Normal messages go through the burst coalescer; the sticky-error hold
+    # path keeps the raw writer so an ERROR is never delayed or conflated.
     service.add_sink(
         BrailleSink(
-            braille,
+            CoalescingBrailleWriter(braille),
             supports_braille=getattr(engine, "braille_supported", None),
             backend_name=lambda: str(getattr(engine.state(), "backend_name", "")),
             hold=braille if sticky else None,

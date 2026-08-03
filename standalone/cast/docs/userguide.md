@@ -12,14 +12,15 @@ Launch QUILL Cast from the Start Menu (or `quill-cast` from a terminal if you in
 - With shows: arrow to one and press **Enter** to play its next unplayed episode -- no detour through the Manager required. If every episode is already played, Enter plays the most recent one and says so.
 - Want QUILL Cast on the moment it opens? Check **Subscriptions > Resume Last Episode on Launch** once, and launching the app picks up exactly where you left off.
 
-Everything QUILL Cast announces goes through the same announcement engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA, Narrator) without stealing focus.
+Everything QUILL Cast announces goes through the same announcement engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA, Narrator) without stealing focus -- and writes to your braille display at the same time (see "Spoken and braille announcements" below).
 
 ## The main window
 
 Tab order: the now-playing line, the library tree, then five buttons.
 
 - **Now playing** (read-only text): what is playing; mirrored in the status bar and the Episode menu.
-- **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them, each with a live unplayed-episode count. Enter on a show plays its next episode; Enter on a pinned view opens the Podcast Manager to that view. Delete unsubscribes a show (with confirmation) or dissolves a folder (your shows step safely to the top level -- nothing is ever unsubscribed by deleting a folder). Shift+F10 opens the full context menu: Play/Stop, Add/Remove Favorites, Move to Folder, **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), Unsubscribe, New Folder, and Open Manager.
+- **Library** (tree): the same pinned views the Podcast Manager shows -- **Favorites**, **New Episodes**, **Continue Listening**, **Inbox** -- above your nested library folders and the shows filed in them, each with a live unplayed-episode count. Enter on a show plays its next episode; Enter on a pinned view opens the Podcast Manager to that view. Delete unsubscribes a show (with confirmation) or dissolves a folder (your shows step safely to the top level -- nothing is ever unsubscribed by deleting a folder). Shift+F10 opens the full context menu: Play/Stop, Add/Remove Favorites, Move to Folder, **Download All Episodes**, **Remove All Episodes**, **Feed Credentials...** (for private feeds -- see below), Unsubscribe, New Folder, and Open Manager. On a folder the context menu offers **Rename Folder...**, **Delete Folder...**, New Folder..., and Open Manager.
+- **Episodes without leaving the main page.** Every show in the tree can be expanded (Right Arrow) to reveal its episodes, newest first, right where the show sits -- no detour through the Manager to reach one particular episode. Shows start collapsed so the tree reads as a list of shows rather than a wall of episodes. **Enter on an episode plays that episode**; Enter on the show itself still plays the show's next unplayed episode.
 - Buttons: **Play** (becomes **Pause** while playing, **Resume** while paused -- one transport control that is never dead), **Stop**, **Add to Favorites** (becomes **Remove from Favorites** when the playing show is already a favorite), **Open Manager...**, **Add Podcast...**.
 
 ## The Podcast Manager
@@ -56,11 +57,18 @@ Some feeds -- Patreon supporter feeds, premium and members-only shows, private c
 
 ### Subscriptions (Alt+S)
 
-Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML..., New Folder... (creates a library folder without opening the Manager), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,) -- Resume Last Episode on Launch, automatic Check for Updates, and Announce dialog transitions (off by default -- turn on for more spoken detail around every dialog), Send to Tray (Ctrl+W), Exit.
+Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML..., New Folder... (creates a library folder without opening the Manager), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit.
+
+**Preferences...** (Ctrl+,) holds four checkboxes:
+
+- **Resume Last Episode on Launch** -- pick up where you left off the moment the app opens.
+- **Check for updates automatically on launch** -- the quiet once-a-day check.
+- **Announce dialog transitions** -- off by default; turn it on for more spoken detail around every dialog.
+- **Alt+F4 minimizes to the system tray** -- off by default. When on, Alt+F4 tucks the window away with playback still running instead of closing it, so the reflexive keyboard close stops ending your listening. The titlebar X and Exit are unaffected: a deliberate exit still exits.
 
 ### Episode (Alt+E)
 
-A live now-playing line, then Play/Pause (Ctrl+P), Stop, **Mute/Unmute**, Next Chapter, Previous Chapter, **Skip Forward**, **Skip Back**, Add Episode Note..., **Play Queue...** (the same reorderable queue the Manager offers, now one keystroke away), a **Recently Played** submenu (your last fifteen episodes, newest first, playable inline), Sleep Timer... (fade out and stop after a set time, restoring your volume), **Sound Enhancements...**, and **Skip Settings...**.
+A live now-playing line, then Play/Pause (Ctrl+P), **Stop** (Ctrl+.), **Mute/Unmute**, **Volume Up** (Ctrl+Up) and **Volume Down** (Ctrl+Down), Next Chapter, Previous Chapter, **Skip Forward** (Ctrl+Right), **Skip Back** (Ctrl+Left), Add Episode Note..., **Play Queue...** (the same reorderable queue the Manager offers, now one keystroke away), a **Recently Played** submenu (your last fifteen episodes, newest first, playable inline), Sleep Timer... (fade out and stop after a set time, restoring your volume), **Sound Enhancements...**, and **Skip Settings...**. The volume keys match Quill Radio's, so the two apps behave the same way.
 
 **Sound Enhancements...** applies live, on top of whatever is playing: a three-band equalizer (Bass, Mid, Treble sliders, -12 to +12 dB each) plus a "Quick preset" shortcut (Flat, Bass Boost, Voice Clarity, Podcast) that sets all three at once, a compressor ("Even Out Volume"), and **Smart Speed** (trims silence between words and sentences, distinct from the one-time leading/trailing silence trim Downloads can already do to the saved file -- Smart Speed is reversible and live, on any episode, any time). All of it needs FFmpeg (Help > Get FFmpeg...); if it's missing, playback continues unfiltered and QUILL Cast tells you why. Turning anything on or off, or scrubbing the seek bar while enhanced, briefly reconnects on Apply -- QUILL Cast restarts the filter at your exact position, so you never lose your place, and pausing/resuming works normally throughout. Every setting here is **per-podcast**: open it while an episode is playing to set that show's own sound, or with nothing playing to set the shared default every other show follows.
 
@@ -115,6 +123,24 @@ Choose **Help > Browse Spotify Podcasts...** to open an accessible search box wi
 - **A best-effort public-RSS match (idea, not yet a button).** Some shows publish the *same* episode both on Spotify and as an ordinary MP3 in their own public podcast feed. QUILL Cast has a core helper that can try to find that public enclosure -- downloading the **publisher's own public file**, never Spotify's audio -- for a Spotify episode that also exists on a normal feed. This is deliberately best-effort and, for now, is available in the underlying code but is not yet wired to a menu item or button.
 - **Premium only, and off in Safe Mode.** Without Spotify Premium, playback will not start even after you sign in; and like every network feature, Spotify is disabled when QUILL Cast runs in Safe Mode. The first sign-in asks for a one-time network-access confirmation, because connecting reaches Spotify's servers.
 
+## Spoken and braille announcements
+
+Every action in QUILL Cast announces its outcome, and that announcement goes out on two channels at once.
+
+**Speech** goes through your screen reader -- JAWS, NVDA, or Narrator -- without stealing focus, so a download finishing never interrupts what you were reading.
+
+**Braille** goes to your display at the same time. This is new: the standalone apps used to speak but never write, so a braille reader saw nothing of QUILL Cast's own confirmations, progress, and errors. Three details make it usable rather than noisy:
+
+- **A burst settles instead of flickering.** When several different messages arrive in quick succession -- a refresh cascade, a download reporting in -- the first is written instantly and the rest settle to whichever is newest, rather than each one shoving the last aside faster than cell one can be read.
+- **Errors are exempt.** An error is written through immediately, never merged into a burst, and can be held on the display instead of flashing past.
+- **Two braille styles.** Braille can carry exactly the wording that is spoken, or a compact position-first form. There is also a setting for how long an identical repeated message is suppressed.
+
+These are shared accessibility settings, so you set them once in QUILL (Preferences > Accessibility) and they apply to QUILL Cast, Quill Radio, and the rest of the family. Turning braille off there turns it off here.
+
+## Questions that could destroy something always start on No
+
+Every confirmation that would delete or discard something opens with **No** selected -- **Delete Folder**, **Delete Playlist**, **Remove All Episodes**, and **Delete Downloaded Files** among them. Pressing Enter reflexively while a question is still being read can never lose your data; choosing Yes takes one arrow key and a deliberate decision. An automated check in the build refuses any new destructive question that opens on Yes.
+
 ## Hardware media keys
 
 If your keyboard has media keys, Play/Pause, Stop, and Next/Previous Track (mapped to chapters) control QUILL Cast system-wide while it runs -- even from the tray. Keys another app already owns are left alone. Starting an episode also silences a playing radio stream and vice versa: nothing ever double-plays.
@@ -123,7 +149,9 @@ If your keyboard has media keys, Play/Pause, Stop, and Next/Previous Track (mapp
 
 **Keyboard Shortcuts (Help > Keyboard Shortcuts...)** opens the Keyboard Manager: a searchable, conflict-aware list of every QUILL Cast command and its assigned key, where you can reassign a key (with a warning for conflicts or risky keys), clear it, or restore the defaults. The keymap is **shared with QUILL and Quill Radio**, so a change here changes it everywhere in the family. A few commands whose default is a two-key chord or uses a comma (Preferences on Ctrl+,) keep their built-in shortcut until the next launch; plain single-key commands take effect immediately.
 
-**Global Hotkeys (Help > Global Hotkeys...)** lets you give a **system-wide** key to QUILL Cast's Play/Pause and Stop, so you can control an episode from any program. Only those safe playback commands can be bound this way; none are set by default; and the first assignment warns that a system-wide key may override the same key elsewhere. A key another app already owns is left alone. (Windows only.)
+**Global Hotkeys (Help > Global Hotkeys...)** lets you give a **system-wide** key to QUILL Cast's Play/Pause and Stop, so you can control an episode from any program, and to **Show/Hide QUILL Cast to the Tray**, which tucks the window away or brings it back from wherever you are. Only those safe commands can be bound this way; the first assignment warns that a system-wide key may override the same key elsewhere, and a key another app already owns is left alone. (Windows only.)
+
+Show/Hide QUILL Cast to the Tray starts on **Ctrl+Alt+Shift+Q**. That is the same chord QUILL itself uses for its own show/hide, and Windows gives a system-wide key to whichever app registers it first -- so if you run both, change one of them here.
 
 ## Quillins in QUILL Cast
 
@@ -147,9 +175,15 @@ QUILL Cast reads and writes the same data store as QUILL and Quill Radio (`%APPD
 | --- | --- |
 | Open Podcast Manager | Ctrl+M |
 | Play/Pause | Ctrl+P |
+| Stop | Ctrl+. |
+| Volume up / down | Ctrl+Up / Ctrl+Down |
+| Skip forward / back | Ctrl+Right / Ctrl+Left |
+| Command Palette | Ctrl+Shift+P |
 | Send to tray | Ctrl+W |
 | Preferences | Ctrl+, |
 | Play selected show's next episode | Enter (in the tree) |
+| Expand a show to see its episodes | Right Arrow (in the tree) |
+| Play the selected episode | Enter (on an episode in the tree) |
 | Unsubscribe / delete folder | Delete (in the tree) |
 | Tree context menu | Shift+F10 (in the tree) |
 | Subscriptions menu | Alt+S |

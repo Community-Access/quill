@@ -39,6 +39,23 @@ Per folder:
 - `run-quill-<product>.bat` — dev launcher (`python -m quill.apps.<app>`).
 - `docs/`, `assets/`, `CHANGELOG.md`, `README.md` — product docs and icon.
 
+## Where a change gets documented (the per-app rule)
+
+Every change is documented **with the product it belongs to**, at the time it
+ships — never batched, never only in QUILL's files:
+
+- A change to a companion app (Radio, Cast, Weather, Converter, Audio Studio,
+  Beacon, Social) is documented in **that app's** `CHANGELOG.md` and, when
+  user-visible, its `docs/` user guide / release notes / PRD.
+- A change to QUILL proper is documented in the repo-root `CHANGELOG.md`,
+  `docs/release notes/release<X>.md`, the user guide, and the PRD.
+- A **shared** change (announcement service, QuillVille menu, tray hotkeys,
+  self-update, dialog conventions) is documented in QUILL's files **and**
+  gets a matching entry in every affected app's changelog — an app's user must be
+  able to learn everything about their app from that app's own docs.
+- Dates come from git evidence, not memory. Regenerate `.html`/`.epub` twins
+  for any doc that has them.
+
 ## Building a standalone product
 
 From the quill repo root, with `S:\QUILL\.venv` active (editable `quill`

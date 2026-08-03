@@ -1,4 +1,4 @@
-"""The read/interact half of QUILL's Mastodon support (Leasey Social parity).
+"""The read/interact half of QUILL's Mastodon support.
 
 Beyond composing a post, this adds: looking up an account and its relationship
 (are you following them, do they follow you), following/unfollowing, seeing who

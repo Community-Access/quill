@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.abbreviations import AbbreviationLibrary, build_contributed_library
+from quill.core.error_codes import user_facing_message
 from quill.core.quillins import (
     ExtensionManifest,
     SnippetContext,
@@ -464,7 +465,7 @@ class QuillinsMenuMixin:
             host.load()
             host.invoke(command_id, context or {})
         except Exception as error:  # surface, never crash the editor
-            self._announce(f"Quillin error: {error}")
+            self._announce(f"Quillin error: {user_facing_message(error)}")
         finally:
             host.close()
 
@@ -545,7 +546,10 @@ class QuillinsMenuMixin:
             except Exception as error:  # never crash; report on the UI thread
                 call_after = getattr(wx, "CallAfter", None)
                 if callable(call_after):
-                    call_after(self._set_status, f"Quillin event error: {error}")
+                    call_after(
+                        self._set_status,
+                        f"Quillin event error: {user_facing_message(error)}",
+                    )
             finally:
                 host.close()
 
@@ -926,7 +930,7 @@ class QuillinsMenuMixin:
                 self._announce(f"Installed {ext_id}.")
             except Exception as exc:
                 show_message_box(
-                    f"Install failed: {exc}",
+                    f"Install failed: {user_facing_message(exc)}",
                     "Install Quillin",
                     wx.OK | wx.ICON_ERROR,
                     dialog,

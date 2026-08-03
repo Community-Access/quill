@@ -85,9 +85,55 @@ def rank_commands(
     return [item[4] for item in scored]
 
 
+#: Intent aliases for palette search: extra words a user might type for a
+#: command that appear in neither its title nor its id. Users search by what
+#: they mean ("settings", "quit", "theme"), not by QUILL's vocabulary. Keyed by
+#: command id; entries for ids that are not registered are simply unused.
+COMMAND_ALIASES: dict[str, str] = {
+    "file.new": "create blank fresh",
+    "file.open": "load browse",
+    "file.save": "write store keep",
+    "file.save_as": "duplicate save copy",
+    "file.restore_backup": "recover previous version undelete",
+    "file.print": "printer paper",
+    "file.open_url": "web address link internet",
+    "app.preferences": "settings options configure",
+    "app.exit": "quit leave shut down",
+    "app.announcement_self_test": "speech test braille test output check",
+    "app.report_editor_surface": "braille diagnostic surface class emulation",
+    "edit.undo": "revert back mistake",
+    "edit.redo": "again restore change",
+    "edit.replace_all": "search substitute swap",
+    "edit.copy_to_next_slot": "clipboard tray multi copy",
+    "view.toggle_dark_mode": "theme light night appearance",
+    "view.toggle_soft_wrap": "word wrap line wrap",
+    "view.send_to_tray": "minimize background hide",
+    "verbosity.where_am_i": "position location context orient",
+    "tools.copy_diagnostic_summary": "debug info support report",
+}
+
+
+def _searchable_text(command: Command) -> str:
+    binding = command.keybinding or ""
+    aliases = COMMAND_ALIASES.get(command.id, "")
+    return f"{command.title} {command.id} {binding} {aliases}".lower()
+
+
+def _multi_term_score(command: Command, query: str) -> int:
+    """Order-independent AND match: every whitespace-separated term must appear
+    somewhere in title + id + shortcut + aliases ("add url" finds "URL Add")."""
+    text = _searchable_text(command)
+    terms = query.split()
+    if all(term in text for term in terms):
+        return 700
+    return 0
+
+
 def _match_score(command: Command, query: str) -> int:
     if not query:
         return 1
+    if " " in query.strip():
+        return _multi_term_score(command, query.strip())
     title = command.title.lower()
     command_id = command.id.lower()
     if query == title or query == command_id:
@@ -100,6 +146,12 @@ def _match_score(command: Command, query: str) -> int:
         return 700
     if query in command_id:
         return 650
+    aliases = COMMAND_ALIASES.get(command.id, "")
+    if aliases and query in aliases:
+        return 620
+    binding = (command.keybinding or "").lower()
+    if binding and query in binding:
+        return 610
     title_subsequence = _subsequence_score(title, query)
     id_subsequence = _subsequence_score(command_id, query)
     return max(title_subsequence, id_subsequence)

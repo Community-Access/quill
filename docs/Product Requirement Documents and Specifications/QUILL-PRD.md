@@ -255,6 +255,56 @@ Quill explains what it did, how confident it is, and how to recover if extractio
 - **Portable mode clarity**: portable builds can store settings locally next to Quill.exe or in AppData, with a first-run choice and an independence command.
 - **Golden document corpus**: release testing includes a canonical corpus of PDFs, DOCX, XLSX, PPTX, EPUB, Markdown, HTML, and OCR samples with expected extraction and announcement snapshots.
 
+#### 5.1c-ES The error-specificity programme (phase 1 shipped 1.0.0)
+
+A sighted user opens the failing file or dialog and sees the problem; a blind user cannot, so every user-visible error must carry the whole diagnosis **and the next step**. The programme rule: a new user-visible error names the specific condition ("The [APIKey] section is missing", not "could not read the file") and, where a next action exists, says it. Three mechanisms shipped in phase 1:
+
+- **What-to-do sentences on coded errors.** `core/error_codes.py` gains a `USER_HINTS` catalogue (code -> next-step sentence: the menu path, the setting, the command), `CodedError.user_message()` (diagnosis + hint), and `user_facing_message(exc)` for any exception (never returns an empty string — a blank error is indistinguishable from a crash by ear). First adopters: the Document Q&A dialog and Ask Quill route their worker exceptions through it. The catalogue covers the highest-traffic families first (AI chat/Q&A/TTS/transcription, Pandoc and OCR unavailable, remote transports, SSH, component downloads, speech providers, Quillins, document conversion); every new user-visible error should either add its code to the catalogue or set `user_hint` on the class.
+- **"Say why it is unavailable."** The command registry gains a side-effect-free availability probe (`set_availability_probe`/`unavailable_reason`) — the spoken counterpart of the run gate. The palette displays and speaks the reason on the row and on a refused run ("Sync Notes (unavailable: Turned off by a safety update: ...)"), instead of a bare "(unavailable)". MainFrame's probe reads the same remote-lock state as the dispatch gate.
+- **"Never silently deliver less than was asked."** `Assistant.answer`/`answer_stream`/`write_for_document` record `last_context_note` — a user-facing sentence stating the working size whenever a request was trimmed to fit the model ("The answer used the first 6,000 of the document's 40,000 characters.") — and Ask Quill announces it after the response. `QAAnswer` carries `used_chars`/`total_chars` so Document Q&A states the working size, and that dialog now speaks its status changes (answer received, truncation, errors) rather than only painting a label.
+
+#### 5.1c-SR Screen-reader death watchdog (shipped 1.0.0)
+
+Detection was a one-shot startup probe; a reader dying mid-session was invisible to QUILL. `core/sr_watchdog.py` is a wx-free two-strikes state machine (30 s cadence, `MISSES_BEFORE_DEATH = 2` so a routine JAWS/NVDA restart never fires it; arms only after a reader has been seen, so self-voice/sighted sessions never trigger; probe errors count as misses but never raise). `ui/main_frame_sr_watchdog.py` applies the collapse rule — **flush first, then act**: on confirmed death every open tab is snapshotted through the existing autosave machinery (active editor synced first; one failing tab never stops the rest), then the event is announced through the engine's fallback chain and recorded in Notifications with severity warning. Recovery is announced too. The watchdog never closes QUILL. Generalised rule, recorded as product law: **any code path that closes or degrades the app without the user asking persists work first.**
+
+#### 5.1c-HD Hardening conventions (shipped 1.0.0)
+
+Four shared foundations from the hardening pass, each wx-free, strict-typed, and unit-tested; new code should reach for these instead of hand-rolling:
+
+- **`core/generation.py` `GenerationCounter`** — the named generation-token idiom for deferred announcements and background work (advance on schedule, `is_current` on completion). Browse-mode's prewarm is the first adopter; the remaining ~9 hand-rolled counters should migrate as they are touched.
+- **`core/swr.py`** — stale-while-revalidate: `structural_signature` (tuple compare, key-selectable identity fields) + `decide_refresh`, whose decision is constitutionally silent and selection-preserving (a background refresh never announces and never moves the user's position). Slow-enumerated lists (recent files, Quillins, stations, episodes, voice catalogues) adopt this as they are touched.
+- **`core/path_input.py` `clean_typed_path`** — every path field accepts Explorer "Copy as path" quotes, smart quotes, NBSPs, `file://` URLs, environment variables, and `~`. First adopter: the Simple File Open path field.
+- **`core/type_ahead.py`** — the type-ahead buffer for custom list surfaces with the field-proven timings: 800 ms open suppression, 1.2 s buffer timeout, last-character retry on a failed multi-character buffer, wrap-from-selection matching, and an explicit failure result the caller must speak ("No match for X").
+- **Destructive-default gate (GATE extension):** `tools/dialog_button_contract.py` now also fails the build for any Yes/No confirmation whose text reads as destructive (delete/remove/discard/overwrite/reset/...) without `wx.NO_DEFAULT`; 27 pre-existing sites across QUILL, Radio, Cast, and Beacon were fixed in the same pass. Dynamic message text is invisible to the AST audit, so the review rule stands: a destructive confirmation defaults to No.
+
+#### 5.1c-AU Audio identity (shipped 1.0.0)
+
+The competitive assessment's audio lesson, adopted whole (item 8): sounds get an identity, not just a presence, and everything rides the existing QSP pack system so packs stay swappable. Forty-eight new events, all synthesized in `scripts/gen_ink_sounds.py` (deterministic, regenerable) and mapped in the bundled Ink pack:
+
+- **Per-slot earcons.** `copy_slot_1..12` and `bookmark_slot_0..9` map slot number to a degree of a C-major pentatonic; copy-tray slots are marimba-voiced taps (noise attack + sine-with-octave body), bookmarks are triangle chirps gliding up into the slot note, so family reads from timbre and identity from pitch. Fired on copy-to-slot, paste-from-slot, first-empty copy, quick-bookmark set and jump.
+- **Progress ladder.** `progress_5..progress_100` (5-percent steps; pitch climbs one octave 320->640 Hz; 25/50/75 add a perfect fifth; 100 resolves with a second note) plus `progress_tick` for indeterminate. `core/sound_events.py` `progress_sound_event(percent)` maps a percent to its step id; the sound fires from `AIProgressDialog.set_progress` only when the step *changes*, so every consumer of the shared progress dialog gained audio progress at once, and it never interrupts speech (the spoken 25/50/75 milestones remain).
+- **Selection and boundaries.** `selection_started`/`selection_completed` are exact time-mirrors (a rising fourth and its reverse) on the F8 anchor commands; `document_top` (1318 Hz ceiling tick) and `document_bottom` (165 Hz floor thud) fire on the token-navigation boundaries.
+- **Soundcard keep-alive.** `keepalive` (two seconds of true silence) played every 20 s by an opt-in loop in the sound manager (`sound_keepalive_enabled`, default off, searchable spec) so USB/Bluetooth devices never power down and clip the first earcon after a pause. The loop thread exists only while enabled and stops on shutdown.
+- All 48 events are disableable per-event in Sound Events (labels auto-generated per family) and overridable by any QSP pack; `scripts/audition_ink_sounds.py` plays the set family by family for review.
+
+#### 5.1c-FA Field-by-field AI apply (shipped 1.0.0)
+
+The field counterpart of the word-level change review, taken from the competitive assessment's strongest generic pattern (finding 5e.38): structured LLM output is applied to user data **one reviewable item at a time, never as a bulk overwrite**. `core/ai/field_apply.py` holds the wx-free model — `FieldSuggestion`, `ApplySession` (pending/accepted/skipped, `accepted_values()`, wrap-around `next_pending`), and `guess_target_field` (normalized exact > prefix > substring scoring; a guess only preselects, the reviewer confirms). `ui/field_apply_dialog.py` presents each suggestion with the field, its current value, and the proposal (Accept / Accept and Next / Skip / Copy Value / Apply Accepted), warns with a No-defaulted confirmation before replacing a non-empty field, and never writes — the caller applies `accepted()` as one undo step. First consumer: **Suggest Document Metadata** (`ai.suggest_metadata`, palette command) — `core/ai/metadata_suggest.py` asks the configured provider for title/summary/tags/category with defensive JSON parsing (fence stripping, outermost-brace fallback, its own `QUILL-AI-METADATA-FAILED` coded error), and the mixin applies accepted fields into the document's front matter via the story front-matter codec, preserving list shape for tags and refusing to apply over a document that changed mid-request.
+
+#### 5.1c-ES2 Error specificity, phase 2 (shipped 1.0.0)
+
+Phase 1's mechanisms spread to the remaining high-traffic surfaces: all 29 user-visible error sites in the speech/component download flows, the three Quillin failure surfaces, and the remote-transport (SSH/FTP/S3/WebDAV) open/save errors now route through `user_facing_message`; the `USER_HINTS` catalogue grew eight entries (Whisper download 404/network/checksum, speech engine and ffmpeg installs, microphone capture, unsupported save format, AI metadata); a menu item disabled by a remote safety lock now carries the reason in its help string (the spoken counterpart of the palette's reason suffix); and the review rule is codified in CONTRIBUTING.md. **AI engine honesty joined the programme:** `make_default_backend` records `last_backend_note` whenever resolution falls back past a provider the user explicitly configured, Ask Quill announces it at open, and the connectivity-fallback hint now computes real availability on both sides (a stored cloud key counts as cloud-available), so a failed on-device model offers the configured cloud provider — always as an offer, never a switch, with the privacy consequence stated.
+
+#### 5.1c-WR Word-level AI change review (AI-7, upgraded 1.0.0)
+
+Every AI edit that touches the document routes through the accessible "Review AI Changes" dialog (`core/ai/diff_review.py` + `DiffReviewDialog`): an ordered checklist of hunks the user can accept or reject independently, applied as one text replacement (one undo step). Shipped 1.0.0, the model gained a **second-stage word diff with sentence context**, because line hunks are too coarse for prose — when the AI changes one word in a 90-character line, a line diff makes the user hear the whole line twice and spot the difference by ear.
+
+- Each "changed" hunk carries `word_changes`: tokens are words (internal apostrophes kept), whitespace runs, and punctuation runs (`SequenceMatcher(autojunk=False)` — autojunk silently degrades prose diffs); adjacent edits separated only by whitespace merge into one phrase ("quick brown" -> "rapid red" is one change, not two).
+- Every word change carries the **enclosing sentence from both sides** (terminator-bounded, line-break-bounded, whitespace-collapsed) — "changed 'quick' to 'rapid'" is meaningless alone; with the sentence it is reviewable by ear.
+- The hunk list row speaks the word-level summary ('Changed "quick" to "rapid" at line 3.'; 'Changed 2 phrases at line 7.'), and the detail pane leads with each change's verb phrase plus Sentence before / Sentence after, followed by the full removed/added lines, which stay reviewable exactly as before.
+- **Degradation is deliberate:** a hunk falls back to plain line presentation when it has more than 8 word edits or any single "phrase" exceeds 100 characters (a rewrite spoken as forty word pairs is worse than hearing the lines whole), and spacing-only edits are never spoken as word changes.
+- Pure model change: `DiffReviewDialog`, the agent editor host, and the tool gateway all read `describe()`/`detail_lines()`, so every consumer upgraded with no UI changes.
+
 ### 5.1f Profile safety and recovery
 
 Feature profiles must be safe, explainable, reversible, and recoverable.
@@ -1785,7 +1835,7 @@ QUILL ships **its own spell checking engine**, built on Hunspell dictionaries, d
 - **`Alt+F7`** (`tools.spell_check_word_at_cursor`) — **Spell Check Word, shipped 0.9.0 Beta 3.** Checks only the word at the caret (or the current selection), with no full-document scan. A correctly spelled word is announced and nothing else happens; a misspelling opens the same suggestions/Add to Dictionary/Ignore choices as the right-click spelling context menu (reusing `suggest_words`/`misspelling_at_position` from the spell-check core), in a lightweight `wx.SingleChoiceDialog` rather than the full Spelling Review dialog. The keyboard equivalent of pressing F7 on a focused word in Microsoft Office.
 - **`Ctrl+Shift+L`** (`tools.misspelling_list_ranked`) — **Ranked spelling, shipped 0.9.0 Beta 3, community feature request (Kurzweil 1000 parity).** Opens the same tree-navigator dialog as the existing document-order `tools.misspelling_list` (`Alt+Shift+L`), but ordered by `rank_misspellings_by_frequency()` (new, pure, in `core/spellcheck.py`): most-recurring word first, case-insensitive grouping, ties broken by first-occurrence position for a stable/reproducible order. Each entry's label includes its occurrence count (`_build_misspelling_navigator_nodes(..., show_counts=True)`). Rationale: a single OCR misread or repeated typo often accounts for the bulk of a long misspelling list, so fixing the most-frequent entry first clears the most ground fastest. Pure reordering — every occurrence still appears in the result, nothing is deduplicated or hidden.
 - **`Alt+Shift+F7`** (`tools.spell_check_ranked`) — **Ranked Spelling Review, shipped 0.9.0 Beta 3, same community request.** The other half of ranked spelling: the *full* guided F7 workflow (Change/Change All/Ignore/Ignore All/Add to Dictionary/Undo, `SpellingReviewDialog`/`ReviewSession`), not just a jump-to-occurrence list, walked in ranked order. `ReviewSession` gained a `ranked: bool` constructor flag; `_rescan()` (called after every action) re-applies `rank_misspellings_by_frequency()` and, in ranked mode, always resets to the freshly-ranked list's top entry rather than "next by position" — so as `Change All` clears the current top offender, the next-most-frequent word rises to the front automatically instead of the ranking going stale mid-session. `open_spell_check_dialog`/`spell_check_ranked` share one `_open_spelling_review(ranked=...)` implementation in `MainFrame`.
-- As-you-type checking is on by default. Misspellings are tracked in a sidecar model (not visual squiggles) and announced gently on word boundary if the user opts in.
+- As-you-type checking is on by default. Misspellings are tracked in a sidecar model (not visual squiggles) and announced gently on word boundary if the user opts in. **Shipped 1.0.0:** the live alert is an earcon (`SoundEvent.SPELLING_ALERT`, toggleable in Sound Events, system-bell fallback when the active pack lacks the sound) rather than speech, so it never interrupts the screen reader mid-sentence; and it is suppressed inside URLs, email addresses, Markdown inline code spans, and fenced code blocks (`core/spellcheck_live.py` `live_alert_suppressed` — those regions are wall-to-wall false positives that a sighted user filters visually, so the checker filters them for everyone).
 - Suggestions come from Hunspell plus an n-gram reranker trained on the user's writing for personalised top suggestions.
 - Personal dictionary persists per user; per-document dictionary persists in a sidecar file.
 - Multiple simultaneous dictionaries: e.g. English (UK) plus a technical jargon list plus the document's own dictionary, merged with priority.
@@ -1836,6 +1886,7 @@ This is a centrepiece of v0.2. See [section 7](#7-command-palette-deep-dive) for
   - `~` switch open document.
   - `=` open a setting.
 - Fuzzy matching with subsequence scoring, recency boost, and frequency boost (most-recently-used commands float to the top).
+- **Search shape (shipped 1.0.0):** multi-word queries are order-independent AND matches over title + id + shortcut + aliases (`url open` and `open url` both find *Open From URL...*); a curated intent-alias table (`core/palette.py` `COMMAND_ALIASES`) maps the words users actually think of (`settings`, `quit`, `theme`) to the commands they mean; and the shortcut text itself is searchable. Result navigation **speaks the command's shortcut with its title** — the palette teaches the keystroke while it dispatches, for screen-reader users exactly as the visual `Title [binding]` label does for sighted users.
 - Each row shows: command title, current keybinding, source (core or plugin), and a short hint.
 - Right-arrow on a command edits its keybinding inline (see [section 8](#8-keymap-and-keystroke-reassignment)).
 - Fully keyboard driven. Standard `wx.ListBox` underneath, with a `wx.SearchCtrl` on top. All accessible via stock screen-reader behaviour.
@@ -4320,6 +4371,27 @@ the echo history or the visual message slot, and the **Announcement Self-Test**
 delivered, failed with a reason, or unavailable with a reason. Both ship unbound
 by default: the QUILL-key namespace has no free letter left, and taking one from
 an existing command would cost a binding people already use.
+
+**Burst coalescing on the braille channel (shipped 1.0.0).** The dedupe layers
+only suppress an *identical* repeat inside the window; a burst of *different*
+messages still flashed across the display one on top of the next. The braille
+sink's writer is now wrapped in `CoalescingBrailleWriter`
+(`ui/announce_wiring.py`): the first message of a quiet period writes through
+immediately (zero added latency), which opens a 150 ms conflation window;
+messages landing inside the window replace each other and only the newest is
+written when it closes, re-arming while the burst continues. Sticky ERROR
+messages take the sink's `hold` path with the raw writer and are never
+conflated. Where no UI-thread timer can exist (worker thread, headless test),
+every message writes through -- the pre-coalescing behaviour.
+
+**Report Editor Surface (shipped 1.0.0, `app.report_editor_surface`).** The
+spoken sibling of Copy Diagnostic Summary, in MainFrame: one keystroke speaks
+the editor surface kind, native window class, live SES_EMULATESYSEDIT state,
+the two braille editor settings, and the braille bridge state
+(active / disabled in settings / no display bridge) with the active
+announcement backend. Content-free by construction. Exists because a braille
+bug report from someone who cannot screenshot is otherwise unactionable;
+palette-only and unbound by default, like the self-test.
 
 **Braille announcement routing (`platform/windows/braille_output.py`, #1283).**
 A braille user reported that spoken status messages never reach the display. The

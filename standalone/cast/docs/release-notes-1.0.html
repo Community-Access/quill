@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast 1.0 -- Release Notes</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -169,36 +173,9 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. Only the color is
-       changed; each token keeps its default weight/style. Placed last so it
-       wins the cascade over the styles.html() highlighting defaults above. */
-    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
-    code span.an, code span.co, code span.cv,
-    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
-    code span.at { color: #55631a; }                            /* was #7d9029 */
-    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
-    code span.ch, code span.sc, code span.st,
-    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
-    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
-    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-cast-10----release-notes">QUILL Cast 1.0 -- Release
 Notes</h1>
 <p>Your shows, on their own. QUILL Cast takes the podcast environment
@@ -217,6 +194,62 @@ be downloaded, and many Spotify shows are exclusive with no public feed.
 The full story -- what you need, how to connect, and how to browse and
 play -- is in the new <strong>"Spotify podcasts (experimental)"</strong>
 section of the QUILL Cast User Guide.</p>
+<h2 id="whats-new-since-107">What's new since 1.0.7</h2>
+<ul>
+<li><strong>QUILL Cast starts again.</strong> On some builds QUILL Cast
+closed before its window ever appeared -- no error, no window, nothing
+to report. The cause was a single instruction telling Windows to expand
+the top of the library tree. That tree deliberately hides its invisible
+"root" node so the first thing you arrow to is a real folder or show
+rather than a meaningless container, and Windows refuses to expand a
+hidden node -- so it stopped the app instead. The instruction was never
+doing anything useful in the first place (a hidden root's children
+already <em>are</em> the visible top level), so it is now skipped, and a
+test keeps it that way.</li>
+<li><strong>Your braille display gets everything, and stops
+flickering.</strong> Until now the standalone apps spoke but never wrote
+to braille: if you read by touch, QUILL Cast's confirmations, download
+progress, and errors simply were not there. Every announcement now
+reaches the display. And a burst of messages no longer flashes past
+faster than cell one can be read -- the first message of a quiet moment
+appears instantly, and anything arriving in the next fraction of a
+second settles to the newest rather than each one shoving the last
+aside. Errors are exempt: they always write through immediately, and can
+be held on the display instead of flashing by. You can choose whether
+braille carries the same wording as speech or a compact position-first
+form, and how long an identical repeated message is suppressed. These
+are shared accessibility settings, so they are set once in QUILL and
+apply here too.</li>
+<li><strong>Enter is now always the safe answer.</strong> Four
+confirmations -- <strong>Delete Folder</strong>, <strong>Delete
+Playlist</strong>, <strong>Remove All Episodes</strong>, and
+<strong>Delete Downloaded Files</strong> -- used to open with Yes
+already selected, so pressing Enter out of habit destroyed the thing
+before you had finished reading the question. All four now start on No.
+Yes is still one arrow key away, but it has to be a decision. A check in
+the build fails if a destructive question is ever given a Yes default
+again.</li>
+<li><strong>Quillins, in QUILL Cast.</strong> QUILL's small, sandboxed,
+permission-gated add-ons now run here too, from a
+<strong>Quillins</strong> menu of their own. An add-on says which apps
+it is written for, so you only ever see the ones meant for QUILL Cast.
+The bundled <code>cast-premium-auth</code> sample shows how one can
+supply the sign-in for a private, subscriber-only feed -- a companion to
+the built-in username and password support. Quillins are off in Safe
+Mode, and third-party ones stay disabled in this release.</li>
+<li><strong>Change any key, and reach the app from anywhere.</strong>
+<strong>Help &gt; Keyboard Shortcuts...</strong> opens the same
+searchable, conflict-aware Keyboard Manager QUILL uses, scoped to QUILL
+Cast's own commands. <strong>Help &gt; Global Hotkeys...</strong>
+assigns system-wide keys -- and now includes <strong>Show/Hide QUILL
+Cast to the Tray</strong>, so the window tucks away or comes back with
+one keystroke even when another program has focus. Its default is
+Ctrl+Alt+Shift+Q; whichever Quill app starts first claims a shared
+chord, so change it here if you run more than one at once.</li>
+<li><strong>Spotify podcasts, taking shape.</strong> Groundwork for
+playing Spotify-hosted shows has landed, hidden and off by default. See
+the section above for what it needs and what it cannot do.</li>
+</ul>
 <h2 id="whats-new-in-107">What's new in 1.0.7</h2>
 <ul>
 <li><strong>Update in one click -- QUILL Cast installs it and restarts
@@ -230,7 +263,7 @@ across every Quill app.</li>
 </ul>
 <h2 id="whats-new-in-106">What's new in 1.0.6</h2>
 <ul>
-<li><strong>Private feeds -- your supporter subscriptions, finally
+<li><p><strong>Private feeds -- your supporter subscriptions, finally
 first-class.</strong> Patreon feeds, premium shows, members-only company
 feeds: any podcast protected by a username and password (HTTP Basic
 authentication) now subscribes like any other. Paste the feed address
@@ -239,27 +272,64 @@ into Add by Feed URL as usual; if the feed asks for a sign-in, a small
 provider gave you and QUILL Cast retries and subscribes. Change or clear
 credentials any time from the show's context menu (<strong>Feed
 Credentials...</strong>), in the main library tree or the Podcast
-Manager alike.</li>
-<li><strong>Signed in everywhere that show goes -- and nowhere
+Manager alike.</p></li>
+<li><p><strong>Signed in everywhere that show goes -- and nowhere
 else.</strong> Once a show has credentials, refresh, episode downloads,
 streaming playback, transcripts, and chapters all authenticate
 automatically. One deliberate security rule: credentials only ever
 travel to the feed's own host. Audio served from a third-party content
 network gets no password attached -- yours is never broadcast beyond the
-publisher who issued it.</li>
-<li><strong>Stored like a secret, because it is one.</strong> Passwords
-live in Windows Credential Manager on an installed copy, or
+publisher who issued it.</p></li>
+<li><p><strong>Stored like a secret, because it is one.</strong>
+Passwords live in Windows Credential Manager on an installed copy, or
 DPAPI-encrypted inside the portable <code>data</code> folder on a stick
 -- never in <code>podcasts.json</code>, never in logs, and never in an
 exported OPML file, so sharing your subscription list stays safe. One
 portable caveat, documented in the User Guide: DPAPI is tied to your
 Windows account and machine, so a stick moved to a new PC keeps every
-subscription but asks for private-feed passwords once more.</li>
-<li><strong>Honest errors.</strong> A wrong or rotated password no
+subscription but asks for private-feed passwords once more.</p></li>
+<li><p><strong>Honest errors.</strong> A wrong or rotated password no
 longer hides behind "could not reach that feed" -- subscribing reopens
 the credentials prompt and says so, and a background refresh that fails
 to sign in announces exactly which show needs its credentials updated
-and where to do it.</li>
+and where to do it.</p></li>
+<li><p><strong>Subscribing to a second show no longer means finding the
+list again.</strong> In Add Podcast..., subscribing to a search result
+used to leave you standing on the Subscribe button with the results list
+somewhere behind you. Focus now lands back on the list, on the very row
+you just subscribed from, ready to arrow to the next show. It behaves
+the same whether the show subscribed, was already in your library, or
+failed. Adding by feed address is unchanged -- focus stays by the URL
+box, where you would want it.</p></li>
+<li><p><strong>Episodes, right there in the library tree.</strong> Every
+show on the main page can now be expanded to reveal its episodes in
+place, so you never have to open the Manager just to reach one
+particular episode. Shows start collapsed, so the tree stays a list of
+shows rather than a wall of episodes. Enter on an episode plays it;
+Enter on a show still plays that show's next unplayed episode, exactly
+as before.</p></li>
+<li><p><strong>Keys for the things you do most.</strong> The Episode
+menu gained real shortcuts: <strong>Stop</strong> on Ctrl+period,
+<strong>Skip Back</strong> and <strong>Skip Forward</strong> on
+Ctrl+Left and Ctrl+Right, and <strong>Volume Down</strong> and
+<strong>Volume Up</strong> on Ctrl+Down and Ctrl+Up -- the same volume
+keys Quill Radio uses, so the family behaves the same way. Play/Pause
+keeps Ctrl+P.</p></li>
+<li><p><strong>Alt+F4 can mean "get out of my way" instead of
+"quit".</strong> A new Preferences checkbox (off by default) makes
+Alt+F4 send QUILL Cast to the system tray with the episode still
+playing. The titlebar X and the Exit command keep whatever you chose for
+closing the window, so the reflexive keyboard close stops ending your
+listening while a deliberate exit still exits.</p></li>
+<li><p><strong>Fixed: a show with no episodes.</strong> Selecting a show
+in the Podcast Manager could show an empty episode list even when the
+show had plenty. Fixed.</p></li>
+<li><p><strong>Fixed: an update that hung.</strong> Installing an update
+could stall behind a stray console window that appeared out of nowhere
+and stole your focus. That window is gone.</p></li>
+<li><p><strong>The confirming button is always OK.</strong> Dialogs that
+used to confirm with Apply or Save now say OK, so the button that means
+"do it" is in the same place with the same name everywhere.</p></li>
 </ul>
 <h2 id="whats-new-in-105">What's new in 1.0.5</h2>
 <ul>
@@ -450,9 +520,14 @@ carries the wrapper, the installer, and these docs.</p>
 installation required.</p>
 <h2 id="known-limitations">Known limitations</h2>
 <ul>
-<li>Global hotkeys for transport are configured from full QUILL (Tools
-&gt; Global Hotkeys...), not from this app, in 1.0.</li>
+<li>Global hotkeys and keyboard shortcuts are now configured from QUILL
+Cast itself (Help &gt; Global Hotkeys... and Help &gt; Keyboard
+Shortcuts...); they no longer require opening full QUILL. The keymap is
+shared across the family, so a change here changes it everywhere.</li>
+<li>Accessibility settings that govern announcements -- braille on or
+off, braille style, the repeat window, sticky errors, interrupt severity
+-- are edited in QUILL's Preferences and honored here; QUILL Cast's own
+Preferences (Ctrl+,) covers only its four app-level switches.</li>
 </ul>
-</main>
 </body>
 </html>

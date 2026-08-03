@@ -107,3 +107,35 @@ def test_replace_creates_new_entry_when_absent() -> None:
     registry = CommandRegistry()
     registry.replace("test.new", "New", lambda: None, "Ctrl+N")
     assert registry.get("test.new") is not None
+
+
+# -- availability probe (error specificity: say WHY a command cannot run) ------
+
+
+def test_unavailable_reason_defaults_to_empty() -> None:
+    registry = CommandRegistry()
+    registry.register("test.cmd", "Test", lambda: None)
+    assert registry.unavailable_reason("test.cmd") == ""
+
+
+def test_unavailable_reason_reports_the_probe_sentence() -> None:
+    registry = CommandRegistry()
+    registry.register("test.cmd", "Test", lambda: None)
+    registry.set_availability_probe(
+        lambda cid: "Turned off by a safety update: bad release." if cid == "test.cmd" else ""
+    )
+    assert registry.unavailable_reason("test.cmd") == (
+        "Turned off by a safety update: bad release."
+    )
+
+
+def test_unavailable_reason_is_empty_for_unknown_commands_and_probe_errors() -> None:
+    registry = CommandRegistry()
+    registry.register("test.cmd", "Test", lambda: None)
+
+    def _boom(_cid: str) -> str:
+        raise RuntimeError("probe exploded")
+
+    registry.set_availability_probe(_boom)
+    assert registry.unavailable_reason("test.cmd") == ""
+    assert registry.unavailable_reason("test.missing") == ""

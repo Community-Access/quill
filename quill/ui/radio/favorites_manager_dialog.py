@@ -561,7 +561,7 @@ class FavoritesManagerDialog:
             "folder and line up at the top level of your favorites, in the "
             "same order. Nothing leaves your collection.",
             "Delete Folder",
-            wx.ICON_QUESTION | wx.YES_NO,
+            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
             self.dialog,
         )
         if answer != wx.YES:

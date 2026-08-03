@@ -95,12 +95,36 @@ class CommandPaletteDialog:
             self._announce_fn(msg)
 
     def _is_available(self, command: Command) -> bool:
+        if self._unavailable_reason(command):
+            return False
         if self._features is None:
             return True
         is_visible = getattr(self._features, "is_visible", None)
         if callable(is_visible):
             return bool(is_visible(command.feature_id))
         return True
+
+    def _unavailable_reason(self, command: Command) -> str:
+        """Why *command* cannot run right now, or "" (error specificity).
+
+        Asks the registry's availability probe so the palette can say the
+        reason -- "Turned off by a safety update: ..." -- instead of the
+        bare "(unavailable)" that leaves a screen-reader user guessing.
+        """
+        probe = getattr(self._registry, "unavailable_reason", None)
+        if not callable(probe):
+            return ""
+        try:
+            return str(probe(command.id) or "")
+        except Exception:  # noqa: BLE001 - a probe failure means "no reason known"
+            return ""
+
+    def _unavailable_suffix(self, command: Command) -> str:
+        """ " (unavailable: <reason>)", " (unavailable)", or ""."""
+        if self._is_available(command):
+            return ""
+        reason = self._unavailable_reason(command)
+        return f" (unavailable: {reason})" if reason else " (unavailable)"
 
     def show_modal_and_run(self) -> None:
         self.dialog.CentreOnParent()
@@ -156,9 +180,12 @@ class CommandPaletteDialog:
     def _announce_at(self, index: int) -> None:
         if 0 <= index < len(self._filtered_commands):
             command = self._filtered_commands[index]
-            available = self._is_available(command)
-            suffix = "" if available else " (unavailable)"
-            msg = f"{command.title}{suffix}"
+            suffix = self._unavailable_suffix(command)
+            # Speak the shortcut with the title so the palette teaches the
+            # keystroke while it dispatches -- the visual list already shows
+            # it, and screen-reader users must hear the same information.
+            binding_part = f", {command.keybinding}" if command.keybinding else ""
+            msg = f"{command.title}{binding_part}{suffix}"
             if self._announce_fn is not None:
                 self._announce_fn(msg)
             else:
@@ -175,9 +202,10 @@ class CommandPaletteDialog:
             self.results.SetSelection(0)
             top = self._filtered_commands[0]
             available_count = sum(1 for cmd in self._filtered_commands if self._is_available(cmd))
+            top_binding = f", {top.keybinding}" if top.keybinding else ""
             self._set_status(
                 f"{len(labels)} command(s), {available_count} available. "
-                f"Top match: {top.title}. "
+                f"Top match: {top.title}{top_binding}. "
                 "Down/Up to navigate, Enter to run."
             )
             return
@@ -189,9 +217,9 @@ class CommandPaletteDialog:
             return
         if selected < len(self._filtered_commands):
             command = self._filtered_commands[selected]
-            available = self._is_available(command)
-            suffix = "" if available else " (unavailable)"
-            self._set_status(f"Selected: {command.title}{suffix}")
+            suffix = self._unavailable_suffix(command)
+            binding_part = f", {command.keybinding}" if command.keybinding else ""
+            self._set_status(f"Selected: {command.title}{binding_part}{suffix}")
 
     def _run_selected(self) -> None:
         selected = self.results.GetSelection()
@@ -201,7 +229,9 @@ class CommandPaletteDialog:
             return
         command = self._filtered_commands[selected]
         if not self._is_available(command):
-            self._set_status(f"{command.title} is not available in the current context.")
+            reason = self._unavailable_reason(command)
+            detail = f" {reason}" if reason else ""
+            self._set_status(f"{command.title} is not available in the current context.{detail}")
             return
         self._last_run_id: str | None = command.id
         self._registry.run(command.id)

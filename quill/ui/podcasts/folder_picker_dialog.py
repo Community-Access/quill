@@ -301,7 +301,7 @@ class FolderPickerDialog:
             show_message_box(
                 f"Delete the folder {current}? Anything inside moves up to its parent.",
                 "Delete Folder",
-                wx.YES_NO | wx.ICON_QUESTION,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
                 self.dialog,
                 announce=self._announce,
             )

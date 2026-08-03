@@ -3,7 +3,7 @@
 Extracted from :mod:`quill.core.format_ops` (GATE-11) so the date-aware line
 sort has a small, reusable home. :func:`parse_first_date` finds the first
 recognizable date in a string and returns a sortable ``(year, month, day)``
-tuple, recognizing the common styles Leasey Word handles: numeric dates with
+tuple, recognizing the common styles real documents use: numeric dates with
 ``/ - .`` separators (ISO ``YYYY-MM-DD`` plus day/month-first forms) and English
 month-name dates (``Jan 5, 2020`` / ``5 January 2020``).
 """

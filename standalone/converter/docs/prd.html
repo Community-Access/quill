@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>prd</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-converter-product-requirements">Quill Converter – Product
+Requirements</h1>
+<p>Version 1.0</p>
+<h2 id="product-statement">1. Product statement</h2>
+<p>Quill Converter is the Universal Audio Converter shipped as its own
+small Windows app, for people who need to change an audio file’s format
+and do not want to load a writing environment – or hand their file to a
+website – to do it. It is screen-reader-first, keyboard-complete,
+offline, and deliberately single-purpose.</p>
+<h2 id="architecture-requirement-not-a-fork">2. Architecture
+requirement: not a fork</h2>
+<ul>
+<li>R-1. All feature code lives in the upstream <code>quill</code>
+package: the wx-free engine (<code>quill.core.audio.convert</code>,
+<code>.presets</code>, <code>.dsp</code>, <code>.url_import</code>), the
+shared dialog and orchestration
+(<code>quill.ui.audio_studio.convert_audio_dialog</code>), and the app
+frame (<code>quill.apps.converter</code>). This folder is the product
+wrapper only – entry point, tile icon, build and installer
+plumbing.</li>
+<li>R-2. <strong>One converter, surfaced several ways.</strong> The
+standalone app, QUILL’s Audio Studio menu item, the Explorer verb, and
+the headless <code>quill convert</code> command are all doors onto the
+same engine and the same dialog. A behaviour fixed once is fixed
+everywhere; no surface reimplements a feature.</li>
+<li>R-3. Data is shared, not copied: settings, keymap, unlock state and
+logs live in the same store QUILL uses, so a preference set in one app
+holds in the others.</li>
+<li>R-4. The app frame is hosted on the shared
+<code>AppShellFrame</code>, which supplies announcements, the status
+bar, the accessible modal-dialog path, the tray, the QuillVille menu,
+and the per-app update check. The app supplies only its own menus, its
+own panel, and a background-task runner that meets the shared progress
+contract.</li>
+</ul>
+<h2 id="users">3. Users</h2>
+<ul>
+<li>A screen reader user with a file in the wrong format and a player
+that will not take it – the primary case.</li>
+<li>A podcaster or audiobook producer batching a folder into a delivery
+format at a loudness target.</li>
+<li>Someone converting a video’s audio track out to MP3.</li>
+<li>A power user or script author who wants the same conversion without
+a window (<code>quill convert</code>).</li>
+</ul>
+<h2 id="functional-surface">4. Functional surface</h2>
+<p>In scope for 1.0:</p>
+<ul>
+<li><strong>Queue.</strong> A mixed file and folder queue. Folders are
+scanned for known audio and video extensions and the output mirrors the
+source tree. Duplicates are ignored. Delete or a Remove button takes a
+row out.</li>
+<li><strong>Getting files in.</strong> Add Files (multi-select picker),
+Add Folder, positional command-line paths, the Windows Explorer
+<strong>Convert with Quill</strong> verb (off by default, opt-in per
+user), and Convert from URL. Drag and drop is out of scope; every route
+must be keyboard-reachable.</li>
+<li><strong>Output.</strong> MP3, M4A, M4B, Opus, OGG, FLAC, WAV, AAC,
+AIFF, ALAC, WMA, CAF – filtered at startup to the formats the resolved
+FFmpeg can genuinely encode. WAV, AIFF and CAF are always offered; with
+no FFmpeg at all, WAV only.</li>
+<li><strong>Presets.</strong> Ten built-in one-click recipes, each
+announced with a plain-language description of what it is good for. The
+chosen output format always overrides the preset’s own.</li>
+<li><strong>Destination and conflicts.</strong> Default destination is a
+<code>Converted</code> folder beside the source. The main window never
+overwrites (auto-numbering instead); the Advanced dialog exposes Rename
+/ Skip / Overwrite.</li>
+<li><strong>Advanced.</strong> The full Convert Audio dialog:
+include-sub-folders, conflict policy, and a revealable panel for bit
+rate, sample rate, channels, bit depth, loudness normalization
+(audiobook and podcast targets), gain, tempo, fade in, fade out,
+high-pass, silence trim, compressor and leveler. Every control defaults
+to a neutral “leave the preset alone” value.</li>
+<li><strong>Convert from URL.</strong> Prompt, one-time consent with a
+rights notice, on-demand yt-dlp install, background download with
+progress, then the Convert Audio dialog seeded with the downloaded
+file.</li>
+<li><strong>Running a batch.</strong> Off the UI thread, multi-worker,
+with progress reported through the shared task callback so the status
+bar, the tray tooltip and the spoken milestones update together. The run
+ends with a summary that names failures rather than reporting a blanket
+success.</li>
+<li><strong>Tray.</strong> Tray icon with Show / Open / Exit,
+minimize-to-tray on Ctrl+W, and a system-wide show/hide chord
+(Ctrl+Alt+Shift+C) claimed best-effort.</li>
+<li><strong>Family.</strong> The shared QuillVille menu, listing the
+released sibling apps.</li>
+<li><strong>Help.</strong> Check for Updates against this app’s own
+release assets, and About.</li>
+</ul>
+<p>Out of scope, by decision:</p>
+<ul>
+<li>Video output of any kind. Video files are inputs only, and only
+their audio track is taken.</li>
+<li>Tagging, cover art, chapter editing, splitting, joining, and
+recording. Those are Audio Studio and QUILL Cast territory.</li>
+<li>Saving user-defined presets in 1.0. Advanced settings apply to the
+run in front of you.</li>
+<li>Transcription, translation, and text-to-speech. Different
+products.</li>
+<li>Any cloud or upload path. Conversion is local, always.</li>
+</ul>
+<h2 id="accessibility-contract">5. Accessibility contract</h2>
+<ul>
+<li>A-1. Focus lands on the <strong>Files to convert</strong> list at
+launch. A bare-frame focus dead zone is a defect.</li>
+<li>A-2. Every interactive control carries an accessible name, set
+explicitly where the visible label is a separate static text. Labels are
+created before the control they describe, so reading order matches tab
+order.</li>
+<li>A-3. Every action announces its outcome through the shared
+announcement service – speech through the user’s screen reader plus the
+braille display – and the status bar always carries the same text as the
+visual floor. A silent state change is a defect.</li>
+<li>A-4. Nothing is conveyed by colour alone; queue rows and progress
+are words.</li>
+<li>A-5. Full keyboard operation. Delete removes a queue row; access
+keys reach every button and field; the tray is reachable from the
+keyboard.</li>
+<li>A-6. All modal dialogs go through the shared accessible modal path
+with a real affirmative/cancel pair and Escape that works. The Convert
+Audio dialog’s affirmative is labelled <strong>Convert</strong>.</li>
+<li>A-7. A progressive reveal (the Advanced panel) moves focus to the
+first revealed control, so the change is announced rather than being a
+silent resize.</li>
+<li>A-8. Long work never owns the window: batches run off the UI thread
+and stay reviewable from the tray tooltip while minimized.</li>
+</ul>
+<h2 id="privacy-and-network-requirements">6. Privacy and network
+requirements</h2>
+<ul>
+<li>N-1. Conversion is entirely local. Nothing is uploaded, ever.</li>
+<li>N-2. Exactly two outbound paths exist: <strong>Check for
+Updates</strong> (this app’s own releases) and <strong>Convert from
+URL</strong>. Both are user-initiated.</li>
+<li>N-3. yt-dlp is never bundled. It is installed only after an explicit
+one-time consent that states what it does, roughly how large it is,
+where it comes from, and that the user must only download what they have
+the right to use. No account or credential of the user’s is sent to the
+site.</li>
+<li>N-4. Convert from URL is refused in Safe Mode.</li>
+</ul>
+<h2 id="packaging-requirements">7. Packaging requirements</h2>
+<ul>
+<li>P-1. The released launcher is the native QuillVille launcher,
+spawning <code>pythonw.exe -m quill.apps.converter</code>, built by the
+shared portable builder with the app’s own tile icon.</li>
+<li>P-2. FFmpeg ships with the app; nothing is downloaded at install
+time.</li>
+<li>P-3. Portable mode: a <code>data</code> folder beside the program
+makes settings, logs and keymap travel with the bundle instead of
+touching the host machine.</li>
+<li>P-4. Uninstalling never deletes the shared
+<code>%APPDATA%\Quill</code> store – another family app may still be
+using it.</li>
+<li>P-5. Single instance, via the shared IPC slot. Launching a second
+copy does not open a second window.</li>
+<li>P-6. The update check resolves this app’s own release asset, so
+every QuillVille app updates independently of the others.</li>
+</ul>
+<h2 id="non-goals">8. Non-goals</h2>
+<p>macOS and Linux standalone builds (the tray pattern this app leans on
+does not exist there in the same form), background or automatic
+conversion, watched folders, telemetry of any kind, and any feature that
+would require uploading a user’s audio anywhere.</p>
+<p>See <code>CHANGELOG.md</code> for the versioned history and
+<code>docs/userguide.md</code> for the user-facing documentation.</p>
+</body>
+</html>

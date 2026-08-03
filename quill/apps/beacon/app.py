@@ -1164,7 +1164,7 @@ class BeaconFrame(wx.Frame):
             show_message_box(
                 f"Permanently delete {len(bs)} item(s)? This can be undone with Ctrl+Z.",
                 "Delete",
-                wx.YES_NO | wx.ICON_WARNING,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
                 self,
             )
             != wx.YES

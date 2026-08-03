@@ -1,4 +1,4 @@
-"""Cell-by-cell navigation over a pipe table in document text (Leasey Word parity)."""
+"""Cell-by-cell navigation over a pipe table in document text."""
 
 from __future__ import annotations
 

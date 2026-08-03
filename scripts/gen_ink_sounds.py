@@ -243,6 +243,19 @@ def generate_all() -> None:
         vol=0.55,
     )
 
+    # -- spelling_alert: single muted low blip (ambient, never alarming) -----
+    # Fired on every completed misspelled word during spell-check-as-you-type,
+    # so it must be quiet, short, and nothing like error/warning: one soft low
+    # triangle tap with a fast decay.
+    def spelling_env(i: int, n: int) -> float:
+        return exp_decay(i, 14) * edge(i, n, 2)
+
+    write_wav(
+        "spelling.wav",
+        _tone(330, 55, tri_at, spelling_env),
+        vol=0.40,
+    )
+
     # -- document_saved: very soft low tick with 2nd harmonic (settled) ------
     def save_env(i: int, n: int) -> float:
         return exp_decay(i, 30) * edge(i, n, 3)
@@ -492,6 +505,105 @@ def generate_all() -> None:
                 parts.append(_silence(gap_ms))
             parts.append(_bell(freq, note_ms))
         return _concat(*parts)
+
+    # ------------------------------------------------------------------
+    # Audio identity: per-slot earcons, the
+    # 5-percent progress ladder, selection and document-boundary cues, and
+    # the soundcard keep-alive. Slot identity rides a C-major pentatonic so
+    # every numbered slot is a note you learn; families differ by timbre.
+    # ------------------------------------------------------------------
+
+    def _pentatonic(degree: int, base: float = 261.63) -> float:
+        """Frequency of pentatonic scale degree N (C D E G A, octave-wrapped)."""
+        offsets = (0, 2, 4, 7, 9)
+        octave, position = divmod(degree, len(offsets))
+        return base * (2.0 ** (octave + offsets[position] / 12.0))
+
+    # -- copy_slot_1..12: soft marimba tap at the slot's own pitch -----------
+    # A tiny noise attack + a warm sine-with-octave body, short enough to
+    # never delay the spoken confirmation that follows it.
+    def marimba_env(i: int, n: int) -> float:
+        return exp_decay(i, 26) * edge(i, n, 2)
+
+    for slot in range(1, 13):
+        freq = _pentatonic(slot - 1)
+        write_wav(
+            f"copy_slot_{slot}.wav",
+            _concat(
+                _noise(3, _click_env),
+                _mix(
+                    _tone(freq, 85, sine_at, marimba_env),
+                    _tone(freq * 2, 85, sine_at, lambda i, n: marimba_env(i, n) * 0.35),
+                ),
+            ),
+            vol=0.55,
+        )
+
+    # -- bookmark_slot_0..9: bright triangle chirp at the slot's pitch -------
+    # Same scale, different voice: a quick upward glide into the slot note so
+    # bookmarks never blur into copy-tray taps.
+    for slot in range(10):
+        freq = _pentatonic(slot)
+        write_wav(
+            f"bookmark_slot_{slot}.wav",
+            _sweep(freq * 0.84, freq, 70, tri_at, _swell_env(3, 12, 0.35, 22)),
+            vol=0.5,
+        )
+
+    # -- progress_5..progress_100: a rising blip ladder ----------------------
+    # Pitch climbs one octave across the run (320 Hz at 5%, 640 Hz at 100%).
+    # Quarter marks (25/50/75) add a soft perfect fifth so the landmarks
+    # stand out; 100% resolves with a tiny two-note "done".
+    def blip_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(2), ms(8), 0.4, ms(14))
+
+    for pct in range(5, 101, 5):
+        freq = 320.0 * (2.0 ** (pct / 100.0))
+        layers = [_tone(freq, 42, sine_at, blip_env)]
+        if pct in (25, 50, 75):
+            layers.append(_tone(freq * 1.5, 42, sine_at, lambda i, n: blip_env(i, n) * 0.3))
+        blip = _mix(*layers)
+        if pct == 100:
+            blip = _concat(blip, _silence(14), _tone(freq * 1.25, 60, sine_at, blip_env))
+        write_wav(f"progress_{pct}.wav", blip, vol=0.42)
+
+    # -- progress_tick: the indeterminate heartbeat --------------------------
+    write_wav("progress_tick.wav", _tone(500, 26, sine_at, _click_env), vol=0.3)
+
+    # -- selection_started / selection_completed: a mirrored gate ------------
+    # Two quick triangle notes rising a fourth to open the selection; the
+    # exact reverse closes it. Shorter and lighter than the SSH connect pair
+    # so the families never collide.
+    selection_open = _concat(
+        _tone(523, 40, tri_at, _swell_env(2, 8, 0.35, 14)),
+        _silence(8),
+        _tone(698, 55, tri_at, _swell_env(2, 10, 0.35, 18)),
+    )
+    write_wav("selection_started.wav", selection_open, vol=0.5)
+    write_wav("selection_completed.wav", list(reversed(selection_open)), vol=0.5)
+
+    # -- document_top / document_bottom: ceiling tick, floor thud ------------
+    def ceiling_env(i: int, n: int) -> float:
+        return exp_decay(i, 10) * edge(i, n, 2)
+
+    write_wav("document_top.wav", _tone(1318, 45, sine_at, ceiling_env), vol=0.45)
+
+    def floor_env(i: int, n: int) -> float:
+        return exp_decay(i, 22) * edge(i, n, 3)
+
+    write_wav(
+        "document_bottom.wav",
+        _mix(
+            _tone(165, 70, sine_at, floor_env),
+            _tone(330, 70, sine_at, lambda i, n: floor_env(i, n) * 0.25),
+        ),
+        vol=0.5,
+    )
+
+    # -- keepalive: two seconds of true silence ------------------------------
+    # Played on a timer (opt-in) purely to keep USB/Bluetooth audio devices
+    # from powering down and clipping the start of the next real earcon.
+    write_wav("keepalive.wav", _silence(2000), vol=0.0)
 
     # on: C-E-G rising — a warm "hello".
     write_wav("conversation_on.wav", _bell_seq([523, 659, 784], 150), vol=0.55)

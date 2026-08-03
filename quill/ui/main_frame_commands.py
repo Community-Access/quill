@@ -1660,6 +1660,18 @@ class CommandRegistryMixin:
             self._binding_for("app.announcement_self_test"),
         )
         self.commands.register(
+            "app.report_editor_surface",
+            "Report Editor Surface",
+            self.report_editor_surface,
+            self._binding_for("app.report_editor_surface"),
+        )
+        self.commands.register(
+            "ai.suggest_metadata",
+            "Suggest Document Metadata...",
+            self.suggest_document_metadata,
+            self._binding_for("ai.suggest_metadata"),
+        )
+        self.commands.register(
             "edit.insert_equation",
             "Insert Equation...",
             self.insert_equation,
@@ -2089,8 +2101,8 @@ class CommandRegistryMixin:
             self._binding_for("format.insert_table"),
         )
         # Format-aware structured inserts with direct Ctrl+Alt authoring chords
-        # (Ctrl+Alt+T table, Ctrl+Alt+Q quote, Ctrl+Alt+H rule) mirroring Leasey
-        # Word; still rebindable in the Keymap Editor.
+        # (Ctrl+Alt+T table, Ctrl+Alt+Q quote, Ctrl+Alt+H rule);
+        # still rebindable in the Keymap Editor.
         self.commands.register(
             "format.blockquote",
             "Insert Block Quote",

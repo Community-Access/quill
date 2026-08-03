@@ -1,4 +1,4 @@
-"""Table cell navigation commands (Leasey Word parity).
+"""Table cell navigation commands.
 
 Thin wx wiring over the pure ``quill.core.table_nav``: read the caret and the
 document text, find the table around the caret, move to the target cell, and

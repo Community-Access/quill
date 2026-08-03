@@ -110,6 +110,27 @@ _OPERATION_PROMPTS: dict[str, str] = {
 }
 
 
+#: Set by :func:`make_default_backend` when resolution fell back past a
+#: provider the user explicitly configured; read via :func:`last_backend_note`.
+#: The rule (error specificity, PRD 5.1c-ES): never silently give the user a
+#: different engine than the one they chose — the UI announces this note.
+_LAST_BACKEND_NOTE = ""
+
+
+def last_backend_note() -> str:
+    """The user-facing sentence for the last silent backend fallback, or ""."""
+    return _LAST_BACKEND_NOTE
+
+
+def _note_backend_fallback(provider: str) -> None:
+    global _LAST_BACKEND_NOTE
+    name = provider.strip() or "your configured AI provider"
+    _LAST_BACKEND_NOTE = (
+        f"{name} was not available, so Quill is using the on-device model "
+        "instead. Check your provider and key in the AI settings to restore it."
+    )
+
+
 def make_default_backend() -> AIBackend:
     """Pick the best available backend for this platform.
 
@@ -117,9 +138,15 @@ def make_default_backend() -> AIBackend:
     actually responds: a saved connection that is not "off" and reports itself
     available routes generation to ``ProviderChatBackend``. Otherwise generation
     falls back to the bundled on-device model: macOS with Apple Intelligence ->
-    Foundation Models; everywhere else -> llama.cpp CPU.
+    Foundation Models; everywhere else -> llama.cpp CPU. A fallback past a
+    provider the user explicitly configured is recorded via
+    :func:`last_backend_note` so the UI can say so instead of quietly answering
+    with a different engine.
     """
     import sys
+
+    global _LAST_BACKEND_NOTE
+    _LAST_BACKEND_NOTE = ""
 
     # Honor an explicitly configured provider first (AI-13). The presence of the
     # connection file marks a deliberate user choice; an unconfigured install has
@@ -138,8 +165,10 @@ def make_default_backend() -> AIBackend:
                 backend = ProviderChatBackend(settings)
                 if backend.is_available()[0]:
                     return backend
+                _note_backend_fallback(settings.provider)
     except Exception as exc:  # noqa: BLE001 - any failure falls back to the local model
         logger.warning("Configured AI provider probe failed; falling back to local model: %s", exc)
+        _note_backend_fallback("")
 
     # Check the simple chat settings (ai_chat_default_provider / ai_chat_default_model).
     # This path is set by the inline setup strip in AskQuillChatDialog.
@@ -158,7 +187,9 @@ def make_default_backend() -> AIBackend:
 
             _backend = SimpleChatBackend(_provider, _model)
             if _backend.is_available()[0]:
+                _LAST_BACKEND_NOTE = ""
                 return _backend
+            _note_backend_fallback(_provider)
     except Exception as exc:  # noqa: BLE001
         logger.warning("Simple chat settings backend probe failed: %s", exc)
 
@@ -178,11 +209,23 @@ def make_default_backend() -> AIBackend:
 
 class Assistant:
     def __init__(self, backend: AIBackend | None = None) -> None:
+        #: When default resolution fell back past a configured provider, the
+        #: sentence the UI must speak (never silently swap engines).
+        self.backend_note = ""
         if backend is None:
             backend = make_default_backend()
+            self.backend_note = last_backend_note()
         self.backend = backend
         self._style_preamble = ""
         self._instructions_preamble = ""
+        #: After answer()/answer_stream()/write_for_document(): a user-facing
+        #: sentence describing any silent trimming that shaped the request
+        #: ("The answer used the first N of the document's M characters."),
+        #: or "". The UI announces it so the user is never quietly given an
+        #: answer over less context than they believe was sent (error
+        #: specificity: never silently deliver less than was asked).
+        self.last_context_note = ""
+        self._last_fit_budget = 0
 
     def set_style_preamble(self, preamble: str) -> None:
         """Condition generation on the user's writing style (empty to disable)."""
@@ -240,12 +283,15 @@ class Assistant:
         last_error: Exception | None = None
         for budget in _CONTEXT_BUDGETS:
             try:
-                return self.backend.respond(self._wrap(build_prompt(budget)))
+                result = self.backend.respond(self._wrap(build_prompt(budget)))
+                self._last_fit_budget = budget
+                return result
             except ContextWindowExceeded as exc:
                 last_error = exc
                 continue
         if last_error is not None:
             raise last_error
+        self._last_fit_budget = 0
         return self.backend.respond(self._wrap(build_prompt(0)))
 
     def _clamp_message(self, message: str) -> str:
@@ -265,12 +311,44 @@ class Assistant:
             return ""
         return f"\n\nThe current document:\n{document_text[:budget]}"
 
+    def _record_context_note(self, original_message: str, document_text: str) -> None:
+        """Describe any trimming the last request applied, for the UI to speak.
+
+        A sighted user might notice a shortened prompt; a blind user cannot,
+        so silently answering over a fraction of the document reads exactly
+        like answering over all of it. The note states the working size.
+        """
+        notes: list[str] = []
+        message = (original_message or "").strip()
+        if len(message) > _MAX_MESSAGE_CHARS:
+            notes.append(
+                f"Your message was shortened to the first {_MAX_MESSAGE_CHARS:,} "
+                f"of its {len(message):,} characters to fit the model."
+            )
+        document = (document_text or "").strip()
+        budget = self._last_fit_budget
+        if document and len(document) > budget:
+            if budget <= 0:
+                notes.append(
+                    f"The document ({len(document):,} characters) did not fit the "
+                    "model, so the answer does not use it."
+                )
+            else:
+                notes.append(
+                    f"The answer used the first {budget:,} of the document's "
+                    f"{len(document):,} characters."
+                )
+        self.last_context_note = " ".join(notes)
+
     def answer(self, user_message: str, document_text: str = "") -> str:
         """A full chat answer (uses the document as context, trimmed to fit)."""
+        original_message = user_message
         user_message = self._clamp_message(user_message)
-        return self._respond_fitting(
+        result = self._respond_fitting(
             lambda budget: f"{user_message}{self._document_context(document_text, budget)}"
         )
+        self._record_context_note(original_message, document_text)
+        return result
 
     def answer_stream(
         self,
@@ -287,6 +365,7 @@ class Assistant:
         exactly like :meth:`answer`.
         """
         emit = on_delta or (lambda _fragment: None)
+        original_message = user_message
         user_message = self._clamp_message(user_message)
 
         def build(budget: int) -> str:
@@ -295,18 +374,25 @@ class Assistant:
         last_error: Exception | None = None
         for budget in _CONTEXT_BUDGETS:
             try:
-                return self.backend.respond_stream(self._wrap(build(budget)), emit)
+                result = self.backend.respond_stream(self._wrap(build(budget)), emit)
+                self._last_fit_budget = budget
+                self._record_context_note(original_message, document_text)
+                return result
             except ContextWindowExceeded as exc:
                 last_error = exc
                 continue
         if last_error is not None:
             raise last_error
-        return self.backend.respond_stream(self._wrap(build(0)), emit)
+        self._last_fit_budget = 0
+        result = self.backend.respond_stream(self._wrap(build(0)), emit)
+        self._record_context_note(original_message, document_text)
+        return result
 
     def write_for_document(self, user_message: str, document_text: str = "") -> str:
         """Generate substantial content to insert; returns only the text."""
+        original_message = user_message
         user_message = self._clamp_message(user_message)
-        return self._respond_fitting(
+        result = self._respond_fitting(
             lambda budget: (
                 "Write a complete, well-structured piece for the user's document — use "
                 "multiple paragraphs and headings where appropriate, not just a title or "
@@ -315,6 +401,8 @@ class Assistant:
                 f"{self._document_context(document_text, budget)}"
             )
         )
+        self._record_context_note(original_message, document_text)
+        return result
 
     def rewrite_selection(self, user_message: str, selection_text: str) -> str:
         """Apply an instruction to the selected text; returns only the result.

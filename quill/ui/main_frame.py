@@ -94,6 +94,7 @@ from quill.core.dictation import (
     DictationController,
 )
 from quill.core.document import Document
+from quill.core.error_codes import user_facing_message
 from quill.core.external_change import (
     ExternalChangeWatcher,
     FileSnapshot,
@@ -434,6 +435,7 @@ from quill.ui.main_frame_menu_editor import (
     MenuEditorMixin,
     _normalize_menu_label,
 )
+from quill.ui.main_frame_metadata_ai import MetadataAiMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
@@ -457,6 +459,7 @@ from quill.ui.main_frame_speech import SpeechCommandsMixin
 from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
 from quill.ui.main_frame_speech_voice import VoiceInteractionMixin
 from quill.ui.main_frame_spellcheck import SpellcheckCommandsMixin
+from quill.ui.main_frame_sr_watchdog import SrWatchdogMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
@@ -807,6 +810,8 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 class MainFrame(
     AnnounceCommandsMixin,
+    SrWatchdogMixin,
+    MetadataAiMixin,
     AbbreviationsMixin,
     EquationsMixin,
     AiActionsMixin,
@@ -1152,7 +1157,9 @@ class MainFrame(
         self._browse_prewarm_request_force = False
         self._browse_prewarm_large_document_threshold = 20_000
         self._browse_prewarm_delay_ms = 250
-        self._browse_cache_build_generation = 0
+        from quill.core.generation import GenerationCounter
+
+        self._browse_cache_generation = GenerationCounter()
         self._browse_cache_build_thread: threading.Thread | None = None
         self._quill_key_mode_active = False
         self._quill_key_prefix_pending = False
@@ -1287,6 +1294,9 @@ class MainFrame(
         # Kill switch: block remotely-locked commands at the single dispatch
         # chokepoint, so keybindings and the palette obey uniformly.
         self.commands.set_run_gate(self._command_allowed_by_locks)
+        # Error specificity: the palette asks this probe *why* a command is
+        # unavailable so it can display and speak the reason, not just refuse.
+        self.commands.set_availability_probe(self._command_unavailable_reason)
         # The repeat-count arming command must never multiply itself when a count
         # is already pending (it would otherwise prompt once per pending count).
         self.commands.register_non_repeatable("edit.repeat_command")
@@ -1535,6 +1545,13 @@ class MainFrame(
         threading.Thread(  # GATE-40-OK: one-shot screen-reader probe; posts result via CallAfter.
             target=_sr_detect_worker, daemon=True, name="sr-detect"
         ).start()
+        # The probe above answers "which reader is running NOW"; the watchdog
+        # keeps answering it every 30 s so a reader dying mid-session flushes
+        # unsaved work and is explained instead of passing silently.
+        try:
+            self._start_sr_watchdog()
+        except Exception:
+            self._report_startup_task_failure("screen reader watchdog")
         if _profile:
             _times.append(("screen-reader detection (dispatch)", time.perf_counter() - _t))
         # A first-run / onboarding step must NEVER take down the whole app on
@@ -2482,7 +2499,7 @@ class MainFrame(
 
     def _maybe_announce_table_transition(self) -> None:
         """Say "Entering table" / "Out of table" when ordinary navigation crosses
-        a table boundary (Leasey Word parity). A cheap current-line check avoids
+        a table boundary. A cheap current-line check avoids
         parsing the whole document except when the caret sits on a pipe row."""
         editor = getattr(self, "editor", None)
         if editor is None:
@@ -3243,7 +3260,7 @@ class MainFrame(
             "Keeping your version will overwrite the disk changes when you save.\n"
             "Opening in a new tab lets you compare both versions side by side.",
             "File Changed on Disk",
-            wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION,
+            wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_QUESTION,
         ) as dlg:
             set_labels = getattr(dlg, "SetYesNoCancelLabels", None)
             if callable(set_labels):
@@ -5435,6 +5452,23 @@ class MainFrame(
         self._announce(f"This feature is turned off by a safety update. {reason}")
         return False
 
+    def _command_unavailable_reason(self, command_id: str) -> str:
+        """Side-effect-free probe: why *command_id* cannot run, or "".
+
+        The spoken counterpart of :meth:`_command_allowed_by_locks` for
+        surfaces that want to explain unavailability *before* dispatch (the
+        palette). Same lock source, no announcement side effects.
+        """
+        locks = getattr(self, "_feature_locks", None)
+        if locks is None:
+            return ""
+        command = self.commands.get(command_id)
+        feature_id = command.feature_id if command is not None else "core.app"
+        if not locks.is_locked(feature_id):
+            return ""
+        reason = locks.reason(feature_id) or "a QUILL safety advisory"
+        return f"Turned off by a safety update: {reason}"
+
     def _apply_feature_lock_menu_state(self) -> None:
         """Grey out menu items whose command's feature is remotely locked.
 
@@ -5455,6 +5489,15 @@ class MainFrame(
                 item = menu_bar.FindItemById(menu_id)
                 if item is not None:
                     item.Enable(False)
+                    # Error specificity: a greyed item is invisible to a screen
+                    # reader's "why". The help string (spoken by readers that
+                    # voice menu help, shown in the status bar) carries the
+                    # reason, matching what the palette and dispatch gate say.
+                    reason = locks.reason(feature_id) or "a QUILL safety advisory"
+                    try:
+                        item.SetHelp(f"Turned off by a safety update: {reason}")
+                    except Exception:  # noqa: BLE001 - help text is best-effort
+                        pass
 
     def _apply_feature_advisories(self, manifest: object, current_version: str) -> None:
         """Apply signed remote feature advisories from a fetched update manifest.
@@ -7303,6 +7346,7 @@ class MainFrame(
 
     def start_selection(self) -> None:
         self._selection_anchor = self.editor.GetInsertionPoint()
+        post_sound(SoundEvent.SELECTION_STARTED)
         text = self.editor.GetValue()
         line, col = line_column_for_position(text, self._selection_anchor)
         self._set_status(f"Selection started at line {line}, column {col}.")
@@ -7317,6 +7361,7 @@ class MainFrame(
         self.editor.SetSelection(start, end)
         if start != end:
             self._last_selection = (start, end)
+            post_sound(SoundEvent.SELECTION_COMPLETED)
         self._selection_anchor = None
         text = self.editor.GetValue()
         s_line, s_col = line_column_for_position(text, start)
@@ -8375,7 +8420,7 @@ class MainFrame(
             self._run_remote_download(site, remote_path, local_path)
         except Exception as exc:  # noqa: BLE001 - transport errors are surfaced
             self._show_message_box(
-                f"Could not download from {site.name}: {exc}",
+                f"Could not download from {site.name}: {user_facing_message(exc)}",
                 "Open from Remote",
                 self._wx.ICON_ERROR | self._wx.OK,
             )
@@ -8443,7 +8488,7 @@ class MainFrame(
             self._run_remote_upload(site, local_path, remote_path, password)
         except Exception as exc:  # noqa: BLE001
             self._show_message_box(
-                f"Could not save to {site.name}: {exc}",
+                f"Could not save to {site.name}: {user_facing_message(exc)}",
                 "Save to Remote",
                 self._wx.ICON_ERROR | self._wx.OK,
             )
@@ -10549,6 +10594,7 @@ class MainFrame(
         cursor = self.editor.GetInsertionPoint()
         pos, token = next_token_position(text, cursor + 1)
         if not token:
+            post_sound(SoundEvent.DOCUMENT_BOTTOM)
             self._announce("End of document")
             return
         tab = getattr(self, "_current_tab", None)
@@ -10565,6 +10611,7 @@ class MainFrame(
         cursor = self.editor.GetInsertionPoint()
         pos, token = prev_token_position(text, cursor)
         if not token:
+            post_sound(SoundEvent.DOCUMENT_TOP)
             self._announce("Beginning of document")
             return
         tab = getattr(self, "_current_tab", None)
@@ -11601,6 +11648,7 @@ class MainFrame(
         self._bookmarks = set_bookmark(self._bookmarks, name, position)
         self._capture_bookmark_anchor(name, position)
         self._save_active_bookmarks()
+        post_sound(f"bookmark_slot_{slot}")
         self._set_status(f"Quick bookmark {slot} set")
 
     def go_to_quick_bookmark(self, slot: int) -> None:
@@ -11612,6 +11660,7 @@ class MainFrame(
             return
         self._move_point(target)
         self.editor.SetFocus()
+        post_sound(f"bookmark_slot_{slot}")
         self._set_status(f"Jumped to quick bookmark {slot}")
 
     # -- accessible code folding (x.md PRD) ---------------------------------- #
@@ -13563,7 +13612,7 @@ class MainFrame(
                 response = self._show_message_box(
                     f"Delete watch profile '{current.name}'?",
                     "Delete Watch Profile",
-                    wx.ICON_QUESTION | wx.YES_NO,
+                    wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
                 )
                 if response != wx.YES:
                     return
@@ -17951,7 +18000,7 @@ class MainFrame(
             confirm = self._show_message_box(
                 f'Delete snippet "{snippet.name}"?',
                 "Delete Snippet",
-                wx.YES_NO | wx.ICON_WARNING,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
             )
             if confirm != wx.YES:
                 self._set_status("Snippet delete cancelled")
@@ -18728,7 +18777,7 @@ class MainFrame(
             confirm = self._show_message_box(
                 f"Delete custom profile {name}?",
                 "Delete Custom Profile",
-                wx.YES_NO | wx.ICON_WARNING,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
             )
             if confirm != wx.YES:
                 return
@@ -18891,7 +18940,7 @@ class MainFrame(
             self.frame,
             "Reset Quill to the Essential profile?",
             "Reset Feature Profile",
-            wx.YES_NO | wx.ICON_QUESTION,
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
         ) as dialog:
             if self._show_modal_dialog(dialog, "Reset Feature Profile") != wx.ID_YES:
                 return

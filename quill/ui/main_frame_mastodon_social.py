@@ -1,5 +1,5 @@
 """Mastodon read/interact commands: view a profile (follow/unfollow + who you
-are to each other) and add a user to one of your lists (Leasey Social parity).
+are to each other) and add a user to one of your lists.
 
 Thin wx wiring over :mod:`quill.core.mastodon.social`. Network fetches run on the
 task manager; the follow/unfollow toggle runs under a busy cursor from the

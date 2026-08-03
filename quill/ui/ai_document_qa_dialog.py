@@ -238,7 +238,11 @@ class AIDocumentQADialog:
                 answer = self._context.ask(question, self._connection, self._api_key)
                 _wx.CallAfter(self._on_answer_done, question, answer)
             except Exception as exc:  # noqa: BLE001
-                _wx.CallAfter(self._on_answer_error, str(exc))
+                # user_facing_message: diagnosis plus the what-to-do hint for
+                # the error code, not just the raw exception text.
+                from quill.core.error_codes import user_facing_message
+
+                _wx.CallAfter(self._on_answer_error, user_facing_message(exc))
 
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
 
@@ -259,8 +263,17 @@ class AIDocumentQADialog:
             self._excerpt_label.SetLabel(f"Source: {answer.source_excerpt}")
         else:
             self._excerpt_label.SetLabel("")
-        truncation = " (document was truncated at 80,000 chars)" if answer.truncated else ""
-        self._status_label.SetLabel(f"Answer received{truncation}.")
+        if answer.truncated and answer.total_chars:
+            # State the working size, not just the fact of truncation: the
+            # user must know how much of their document the answer covers.
+            status = (
+                "Answer received. The document is large, so the answer used the "
+                f"first {answer.used_chars:,} of its {answer.total_chars:,} characters."
+            )
+        else:
+            status = "Answer received."
+        self._status_label.SetLabel(status)
+        self._announce_status(status)
         self._copy_btn.Enable(True)
         if self._on_insert is not None:
             self._insert_btn.Enable(True)
@@ -273,8 +286,18 @@ class AIDocumentQADialog:
         if not dialog_alive(self.dialog):
             return  # dialog closed before the AI answered (#1067)
         self._status_label.SetLabel(f"Error: {message}")
+        self._announce_status(f"Error: {message}")
         self._working = False
         self._ask_btn.Enable(True)
+
+    def _announce_status(self, message: str) -> None:
+        """Speak a status change; the label alone is invisible to a screen reader."""
+        try:
+            from quill.platform.sr_announce import announce
+
+            announce(message)
+        except Exception:  # noqa: BLE001 - status speech is best-effort
+            pass
 
     def _on_history_select(self, event: object) -> None:
         row = self._history.GetFirstSelected()

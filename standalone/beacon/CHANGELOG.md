@@ -2,6 +2,47 @@
 
 ## Unreleased
 
+- QuillBeacon now speaks (#1283, #1300). Every announcement went to the
+  status bar (or, failing that, the window title) and nowhere else, and
+  screen readers announce neither on their own -- so "QuillBeacon ready",
+  result counts, filter changes and undo confirmations were silent.
+  Announcements now also go through the shared announcement service, which
+  speaks them through your screen reader and writes them to a connected
+  braille display. The status bar still updates as the visual floor, and
+  every existing announcement call site gained speech without changing.
+- Destructive confirmations default to No: permanently deleting selected
+  items, deleting a smart collection, and removing an attachment all open
+  their Yes/No prompt with No preselected, so a stray Enter or Space
+  cannot destroy anything.
+- Every dialog answers Escape and Enter (WCAG 2.1.2). Twenty dialogs plus
+  the command palette were built without the shared modal-id contract, so
+  Escape and Enter were not mapped to their own Cancel/OK/Close buttons --
+  a keyboard trap. All of them now wire the contract, using only ids that
+  a real button backs.
+- The built-in media player runs on the family's shared audio layer, so it
+  inherits the default wx.media backend plus the opt-in libmpv backend
+  (gapless playback, exact seeking, output-device routing). With no
+  backend available at all it announces "media backend unavailable"
+  instead of failing.
+- Outbound-URL safety for anything the user (or an imported OPML file)
+  supplies: feed fetches and link-health checks now refuse non-http(s)
+  schemes and hosts that resolve to private, loopback, or link-local
+  addresses, and cap the response body, so a pasted URL cannot be used to
+  reach the local network or stream unbounded data into memory.
+- Location resolution gained a final fallback layer (PRD 10.2): after the
+  built-in native / structural / text-quote / fuzzy / positional locators
+  all fail, an extension-contributed `beacon.resolver` may place the
+  location, always at a needs-review confidence so it can never silently
+  replace an exact bookmark. A sample resolver extension ships with QUILL.
+  This is groundwork: QuillBeacon does not host extensions yet, so the
+  layer has nothing to consult on a stock install.
+- Packaging: a QuillBeacon build shell (onedir spec, release script,
+  portable bundle, Inno Setup installer) and, in the installer, Full /
+  Compact / Custom setup types with a fixed program component and an
+  optional Documentation (User Guide) component. Upgrades wipe the app's
+  own internal tree before re-laying files so a renamed module can never
+  leave a stale copy behind. The bundle was slimmed alongside the sibling
+  apps.
 - Capture routing rules (PRD 14.5, 44.11): an ordered keyword -> folder list
   files new web bookmarks automatically. First matching rule wins; each
   keyword can be used by only one rule. Applied at every web capture surface

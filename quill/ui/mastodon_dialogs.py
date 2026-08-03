@@ -143,7 +143,7 @@ class MastodonComposeDialog:
         self._text.Bind(wx.EVT_TEXT, lambda _e: self._update_count())
         self._account_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh_character_limit())
         post_button.Bind(wx.EVT_BUTTON, self._on_post)
-        # F7 runs the spelling review from anywhere in the dialog (Leasey parity).
+        # F7 runs the spelling review from anywhere in the dialog.
         spell_accel_id = wx.NewIdRef()
         self.dialog.Bind(wx.EVT_MENU, self._on_spell_check, id=spell_accel_id)
         self.dialog.SetAcceleratorTable(
@@ -190,7 +190,7 @@ class MastodonComposeDialog:
     def _on_spell_check(self, _event: object) -> None:
         """F7 / Check Spelling: run the shared spelling review over the post text
         now. The review speaks the misspelled word first, then spells it, and
-        cancels pending speech so it never over-talks (Leasey Social parity)."""
+        cancels pending speech so it never over-talks."""
         if self._spell_review is None:
             self._announce("Spell check is not available here.")
             return

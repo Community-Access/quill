@@ -79,6 +79,45 @@ def test_palette_usage_roundtrip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     assert loaded == usage
 
 
+def test_rank_commands_multi_term_matches_in_any_order() -> None:
+    commands = [
+        _command("file.open_url", "Open From URL..."),
+        _command("file.open", "Open File"),
+        _command("edit.find", "Find"),
+    ]
+
+    assert [item.id for item in rank_commands(commands, "url open", {})] == ["file.open_url"]
+    assert [item.id for item in rank_commands(commands, "open url", {})] == ["file.open_url"]
+
+
+def test_rank_commands_matches_intent_aliases() -> None:
+    commands = [
+        _command("app.preferences", "Preferences..."),
+        _command("file.open", "Open File"),
+    ]
+
+    ranked = rank_commands(commands, "settings", {})
+
+    assert [item.id for item in ranked] == ["app.preferences"]
+
+
+def test_rank_commands_matches_keybinding_text() -> None:
+    commands = [
+        Command(
+            id="file.open",
+            title="Open",
+            keybinding="Ctrl+O",
+            handler=lambda: None,
+            feature_id="core.file",
+        ),
+        _command("edit.find", "Find"),
+    ]
+
+    ranked = rank_commands(commands, "ctrl+o", {})
+
+    assert [item.id for item in ranked] == ["file.open"]
+
+
 def test_rank_commands_id_prefix_limits_to_command_ids() -> None:
     commands = [
         _command("file.open", "Open File"),

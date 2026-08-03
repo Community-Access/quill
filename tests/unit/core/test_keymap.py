@@ -687,8 +687,8 @@ def test_build_keymap_for_pack_off_darwin_is_verbatim(monkeypatch) -> None:
     assert keymap["file.open"] == "Ctrl+P"
 
 
-def test_leasey_word_authoring_chords_are_the_defaults() -> None:
-    # Leasey Word "Authoring" chord set (x.md), user-authorized. Locks in parity.
+def test_authoring_chords_are_the_defaults() -> None:
+    # The "Authoring" chord set (x.md), user-authorized. Locks in the defaults.
     from quill.core.keymap import DEFAULT_KEYMAP
 
     assert DEFAULT_KEYMAP["edit.insert_link"] == "Ctrl+Alt+K"
