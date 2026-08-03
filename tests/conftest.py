@@ -83,3 +83,17 @@ def isolated_profile(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     monkeypatch.setenv("USERPROFILE", str(home))
     monkeypatch.setenv("HOME", str(home))
     return home
+
+
+@pytest.fixture(autouse=True)
+def clear_env_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Clear environment API keys to prevent local env variables from contaminating tests."""
+    for key in [
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "CLAUDE_API_KEY",
+        "OPENROUTER_API_KEY",
+    ]:
+        monkeypatch.delenv(key, raising=False)

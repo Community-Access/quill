@@ -50,7 +50,7 @@ def consolidate_provider_keys() -> list[str]:
             and active != "off"
             and not _aai._cs_load(_aai.provider_credential_target(active))
         ):
-            global_value = (_aai.load_assistant_api_key() or "").strip()
+            global_value = (_aai._load_legacy_assistant_api_key_from_storage() or "").strip()
             if global_value:
                 _aai._cs_save(_aai.provider_credential_target(active), global_value)
                 if active not in migrated:

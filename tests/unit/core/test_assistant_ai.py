@@ -9,19 +9,6 @@ import quill.core.ai.providers as providers
 import quill.core.assistant_ai as assistant_ai
 
 
-@pytest.fixture(autouse=True)
-def clear_env_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
-    for key in [
-        "GEMINI_API_KEY",
-        "GOOGLE_API_KEY",
-        "OPENAI_API_KEY",
-        "ANTHROPIC_API_KEY",
-        "CLAUDE_API_KEY",
-        "OPENROUTER_API_KEY",
-    ]:
-        monkeypatch.delenv(key, raising=False)
-
-
 def test_assistant_connection_settings_round_trip(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

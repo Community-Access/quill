@@ -2,26 +2,11 @@
 
 from __future__ import annotations
 
-import pytest
-
 import quill.core.assistant_ai as aai
 from quill.core import ai_chat
 from quill.core.ai.admin_policy import AdminPolicy
 from quill.core.ai.key_migration import consolidate_provider_keys
 from quill.core.ai.providers import ALL_PROVIDERS, allowed_providers
-
-
-@pytest.fixture(autouse=True)
-def clear_env_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
-    for key in [
-        "GEMINI_API_KEY",
-        "GOOGLE_API_KEY",
-        "OPENAI_API_KEY",
-        "ANTHROPIC_API_KEY",
-        "CLAUDE_API_KEY",
-        "OPENROUTER_API_KEY",
-    ]:
-        monkeypatch.delenv(key, raising=False)
 
 
 class FakeStore:
@@ -119,7 +104,7 @@ def test_migration_moves_global_active_key(monkeypatch) -> None:  # type: ignore
     monkeypatch.setattr(
         aai, "load_assistant_connection_settings", lambda: type("S", (), {"provider": "claude"})()
     )
-    monkeypatch.setattr(aai, "load_assistant_api_key", lambda: "sk-ant-global")
+    monkeypatch.setattr(aai, "_load_legacy_assistant_api_key_from_storage", lambda: "sk-ant-global")
 
     migrated = consolidate_provider_keys()
 

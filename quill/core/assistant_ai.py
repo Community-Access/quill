@@ -688,7 +688,12 @@ def _load_api_key_from_environment(provider: str) -> str:
     return ""
 
 
-def load_assistant_api_key() -> str:
+def _load_legacy_assistant_api_key_from_storage() -> str:
+    """Load the legacy global API key from credential manager or DPAPI file only.
+
+    Used during key migration to ensure we do not migrate dynamic environment
+    variable fallbacks into persistent storage.
+    """
     credential_secret = _load_api_key_from_credential_manager()
     if credential_secret:
         return credential_secret
@@ -715,6 +720,14 @@ def load_assistant_api_key() -> str:
             if path.exists():
                 path.unlink()
         return decrypted
+
+    return ""
+
+
+def load_assistant_api_key() -> str:
+    key = _load_legacy_assistant_api_key_from_storage()
+    if key:
+        return key
 
     # Fallback to environment variables
     try:
