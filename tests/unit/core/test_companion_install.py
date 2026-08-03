@@ -103,3 +103,59 @@ def test_can_offer_download_requires_frozen(monkeypatch) -> None:
 
 def test_release_page_url_points_at_the_quill_repo() -> None:
     assert ci.release_page_url() == "https://github.com/Community-Access/quill/releases"
+
+
+def test_audio_studio_assets_resolve_despite_inconsistent_build_names() -> None:
+    """Studio's build scripts name its two artifacts inconsistently.
+
+    Portable is "QUILL-Audio-Studio-Portable-Lean-*" but the installer is
+    "Quill-AudioStudio-Setup-*" (no hyphen inside "AudioStudio"). The prefix
+    was "Quill-Studio", which matches NEITHER -- Studio's assets would have
+    been unresolvable the moment it shipped.
+    """
+    releases = [
+        {
+            "assets": [
+                {
+                    "name": "QUILL-Audio-Studio-Portable-Lean-2.2.0.zip",
+                    "browser_download_url": "https://example.test/portable.zip",
+                },
+                {
+                    "name": "Quill-AudioStudio-Setup-2.2.0.exe",
+                    "browser_download_url": "https://example.test/setup.exe",
+                },
+            ]
+        }
+    ]
+
+    portable = ci.resolve_companion_asset("studio", releases, portable=True)
+    installer = ci.resolve_companion_asset("studio", releases, portable=False)
+
+    assert portable is not None and portable.filename.endswith(".zip")
+    assert installer is not None and installer.filename.endswith(".exe")
+
+
+def test_quill_does_not_steal_a_companions_asset() -> None:
+    """QUILL's prefix is a prefix of every companion's, so a plain startswith
+    let "install QUILL" resolve Quill-Radio's zip. Longest prefix wins."""
+    releases = [
+        {
+            "assets": [
+                {
+                    "name": "Quill-Radio-Portable-2.2.0.zip",
+                    "browser_download_url": "https://example.test/radio.zip",
+                },
+                {
+                    "name": "Quill-Portable-1.0.0.zip",
+                    "browser_download_url": "https://example.test/quill.zip",
+                },
+            ]
+        }
+    ]
+
+    got = ci.resolve_companion_asset("quill", releases, portable=True)
+    assert got is not None
+    assert got.filename == "Quill-Portable-1.0.0.zip", "QUILL took a sibling's asset"
+
+    radio = ci.resolve_companion_asset("radio", releases, portable=True)
+    assert radio is not None and radio.filename == "Quill-Radio-Portable-2.2.0.zip"

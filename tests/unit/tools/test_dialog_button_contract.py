@@ -253,3 +253,51 @@ def confirm(self):
 def test_repository_has_no_destructive_yes_defaults(repo_violations: list) -> None:
     offenders = [v for v in repo_violations if v.kind == "destructive_default"]
     assert not offenders, "\n".join(str(v) for v in offenders)
+
+
+def test_product_name_eraser_is_not_read_as_the_verb_erase() -> None:
+    # "Quill Eraser" is a product name; an open-ended eras\w* stem flagged two
+    # harmless Eraser prompts as destructive. Inflections, not stems.
+    source = """
+def confirm(self):
+    dlg = wx.MessageDialog(
+        self.frame,
+        "No text is selected. Check the entire document instead?",
+        "Quill Eraser",
+        wx.YES_NO,
+    )
+"""
+    assert _destructive_violations(source) == []
+
+
+def test_verb_inflections_are_still_caught() -> None:
+    # The gap that let a Forget-API-key prompt through: "removes" did not match
+    # a \bremove\b anchor.
+    for phrase in (
+        "This removes it from your computer.",
+        "Unsubscribe from this show?",
+        "Forget the stored API key?",
+        "This overwrites the current database.",
+    ):
+        source = f"""
+def confirm(self):
+    dlg = wx.MessageDialog(self.frame, "{phrase}", "Confirm", wx.YES_NO)
+"""
+        assert _destructive_violations(source) != [], phrase
+
+
+def test_the_exempt_pragma_is_found_anywhere_inside_a_multiline_call() -> None:
+    # The reason for an exemption belongs beside the style argument it
+    # explains, which is many lines below the call's first line.
+    source = """
+def confirm(self):
+    with wx.MessageDialog(
+        self.frame,
+        "'notes.txt' was deleted by another program. What would you like to do?",
+        "File Deleted from Disk",
+        # dialog_button_contract: exempt -- Yes is relabelled "Keep Text".
+        wx.YES_NO | wx.CANCEL,
+    ) as dlg:
+        pass
+"""
+    assert _destructive_violations(source) == []

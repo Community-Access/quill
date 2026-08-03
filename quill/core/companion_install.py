@@ -37,7 +37,12 @@ ASSET_PREFIX: dict[str, str] = {
     "radio": "Quill-Radio",
     "weather": "Quill-Weather",
     "cast": "Quill-Cast",
-    "studio": "Quill-Studio",
+    # Audio Studio's two artifacts are named inconsistently by its own build
+    # scripts -- "QUILL-Audio-Studio-Portable-Lean-*.zip" but
+    # "Quill-AudioStudio-Setup-*.exe" (no hyphen inside "AudioStudio") -- so the
+    # prefix stops at the last segment they share. "Quill-Studio" matched
+    # NEITHER, which would have made Studio unresolvable the moment it ships.
+    "studio": "Quill-Audio",
 }
 
 
@@ -80,6 +85,15 @@ def resolve_companion_asset(
         return None
     needle, ext = _kind_markers(portable)
     prefix_low = prefix.lower()
+    # QUILL's own prefix ("QUILL") is a prefix of every companion's
+    # ("Quill-Radio", ...), so a plain startswith would let "install QUILL"
+    # resolve Quill-Radio's zip. Claim an asset only when no OTHER app's
+    # prefix matches it more specifically -- longest prefix wins.
+    rival_prefixes = [
+        other.lower()
+        for key, other in ASSET_PREFIX.items()
+        if key != app_key and len(other) > len(prefix)
+    ]
     for release in releases_json:
         if not isinstance(release, dict) or release.get("draft"):
             continue
@@ -89,6 +103,8 @@ def resolve_companion_asset(
             name = str(asset.get("name") or "")
             url = str(asset.get("browser_download_url") or "")
             low = name.lower()
+            if any(low.startswith(rival) for rival in rival_prefixes):
+                continue  # belongs to a sibling app whose prefix is more specific
             if (
                 url.lower().startswith("https://")
                 and low.startswith(prefix_low)

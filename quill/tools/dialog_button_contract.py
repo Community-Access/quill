@@ -116,6 +116,26 @@ def _pragma_for_call(source: str, node: ast.Call) -> bool:
     return _source_has_noqa(source, line)
 
 
+def _pragma_anywhere_in_call(source: str, node: ast.Call) -> bool:
+    """True when the opt-out appears anywhere inside the call's own span.
+
+    A confirmation dialog is written across many lines (parent, message,
+    title, style), and the reason for an exemption belongs next to the style
+    argument it explains -- which is nowhere near the call's first line. So
+    the destructive-default audit scans the whole statement rather than the
+    three-line window ``_source_has_noqa`` uses for one-line calls.
+    """
+    start = getattr(node, "lineno", None)
+    end = getattr(node, "end_lineno", None) or start
+    if start is None:
+        return False
+    lines = source.splitlines()
+    for index in range(start - 1, min(end, len(lines))):
+        if 0 <= index < len(lines) and _PRAGMA_RE.search(lines[index]):
+            return True
+    return False
+
+
 #: Standard wx id -> the CreateButtonSizer flag that synthesizes its button.
 _ID_TO_FLAG = {
     "ID_OK": "OK",
@@ -364,9 +384,17 @@ def _audit_module(module: str, source: str, tree: ast.Module) -> list[Violation]
 #: Message text that marks a Yes/No confirmation as destructive: acting on it
 #: discards or destroys something. Deliberately conservative -- generic
 #: phrasing ("Save changes?") must keep its affirmative default.
+#: Inflections, not bare words -- "removes it from your computer" must match as
+#: surely as "Remove" (an early version anchored on \bremove\b and missed a
+#: Forget-API-key prompt that said "removes"). But deliberately NOT open-ended
+#: stems: ``eras\w*`` would match the product name "Quill Eraser" and flag two
+#: harmless prompts, so each verb lists its real inflections instead.
 _DESTRUCTIVE_TEXT = re.compile(
-    r"\b(delete|remove|discard|overwrite|clear all|uninstall|reset|erase|"
-    r"cannot be undone|permanently|will be lost|replace it)\b",
+    r"\b(delete[sd]?|deleting|remove[sd]?|removing|removal|"
+    r"discard(s|ed|ing)?|overwrite[sd]?|overwriting|uninstall(s|ed|ing)?|"
+    r"reset(s|ting)?|erase[sd]?|erasing|unsubscribe[sd]?|unsubscribing|"
+    r"unlink(s|ed|ing)?|revoke[sd]?|revoking|forget(s|ting)?|forgot|"
+    r"clear all|cannot be undone|permanently|will be lost|replace it)\b",
     re.IGNORECASE,
 )
 
@@ -422,7 +450,7 @@ def _find_destructive_default_violations(
             continue
         if "NO_DEFAULT" in names or "CANCEL_DEFAULT" in names:
             continue
-        if _call_has_audit_pragma(source, node):
+        if _call_has_audit_pragma(source, node) or _pragma_anywhere_in_call(source, node):
             continue
         text = " ".join(
             constant.value
