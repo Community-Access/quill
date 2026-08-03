@@ -68,9 +68,16 @@ class MastodonSocialMixin:
             try:
                 who = social.lookup_account(account.instance_url, token, handle)
                 rel = social.relationship(account.instance_url, token, who.id)
-                return (who, rel)
             except social.MastodonError as exc:
                 return exc
+            # Recent posts are a bonus, not the point of the dialog: a private
+            # account or an instance that refuses the endpoint must still open a
+            # profile, so this failure is swallowed and the list is simply absent.
+            try:
+                posts = social.account_statuses(account.instance_url, token, who.id)
+            except social.MastodonError:
+                posts = []
+            return (who, rel, posts)
 
         def _done(_op: str, result: object) -> None:
             self._wx.CallAfter(self._open_profile_dialog, account, token, result)
@@ -84,7 +91,7 @@ class MastodonSocialMixin:
         if isinstance(result, Exception):
             self._announce_result(f"Could not open the profile: {result}")
             return
-        who, rel = result  # type: ignore[misc]
+        who, rel, posts = result  # type: ignore[misc]
 
         def _toggle(follow: bool) -> object:
             try:
@@ -99,6 +106,7 @@ class MastodonSocialMixin:
             account=who,
             relationship=rel,
             on_toggle_follow=_toggle,
+            statuses=posts,
             announce=self._announce_result,
         ).show()
 

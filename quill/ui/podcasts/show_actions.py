@@ -344,7 +344,7 @@ def unsubscribe_show_prompt(
     answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
         f"Unsubscribe from {show.title}?",
         "Unsubscribe",
-        wx.ICON_QUESTION | wx.YES_NO,
+        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
     )
     if answer != wx.YES:

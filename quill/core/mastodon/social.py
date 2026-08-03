@@ -4,21 +4,68 @@ Beyond composing a post, this adds: looking up an account and its relationship
 (are you following them, do they follow you), following/unfollowing, seeing who
 favourited or boosted a post, the accounts named in a post (author, booster,
 favouriter, mentions), your lists and their members, adding an account to a
-list, and reading your filters.
+list, reading your filters, and reading an account's recent posts.
 
 Pure model code (no ``wx``). Every network call funnels through the reviewed
 egress site in :mod:`quill.core.mastodon.client`; the JSON->dataclass parsers
 here are pure and unit-tested. Mastodon requires that you follow an account
 before it can be added to a list, so :func:`add_to_list` surfaces that as a
 clear, catchable error.
+
+**Every human-authored string the API returns is HTML**, not text: a status's
+``content`` is a rendered ``<p>`` tree, an account's ``note`` (its bio) is the
+same, and display names carry HTML entities and decorative emoji. Announced
+verbatim a bio reads as its tags and a decorated name reads as a list of
+character names. So the parsers here are the single seam where API JSON becomes
+text QUILL will show or speak, and they run everything through
+:mod:`quill.core.speech_text` on the way: HTML is flattened, a run of leading
+@mentions is condensed to a count, and emoji are stripped. Nothing downstream
+has to know the API speaks HTML.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import UTC, datetime
 
 from quill.core.mastodon import client
 from quill.core.mastodon.client import MastodonError
+from quill.core.speech_text import (
+    condense_leading_mentions,
+    first_sentence,
+    format_relative_time,
+    html_to_speech_text,
+    strip_decorative_unicode,
+)
+
+
+def speakable_name(markup: str) -> str:
+    """One short API field (a display name, a content warning) as spoken text.
+
+    Flattens HTML/entities and drops decorative emoji. No mention condensing: a
+    name is not a reply, and an @ inside one is part of the name.
+    """
+    return strip_decorative_unicode(html_to_speech_text(markup))
+
+
+def speakable_body(markup: str) -> str:
+    """A post body as spoken text: no HTML, no mention pile-up, no emoji."""
+    return strip_decorative_unicode(condense_leading_mentions(html_to_speech_text(markup)))
+
+
+def parse_timestamp(value: str) -> datetime | None:
+    """Parse an API ISO-8601 timestamp (``...Z``), or ``None`` if unparseable.
+
+    A malformed or missing timestamp must never break a list row, so this
+    returns ``None`` rather than raising and callers simply omit the time.
+    """
+    text = (value or "").strip()
+    if not text:
+        return None
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,10 +75,17 @@ class Account:
     id: str
     acct: str  # "user" or "user@remote.host"
     display_name: str
+    #: The account's bio, already flattened from HTML to spoken text. Empty when
+    #: the account has none (or when the field was not requested).
+    note: str = ""
 
     @property
     def label(self) -> str:
-        """A screen-reader-friendly name: display name and @handle."""
+        """A screen-reader-friendly name: display name and @handle.
+
+        Falls back to the handle alone when the display name is empty -- which
+        now includes a name that was *entirely* emoji and stripped to nothing.
+        """
         name = self.display_name.strip()
         return f"{name} (@{self.acct})" if name else f"@{self.acct}"
 
@@ -66,6 +120,46 @@ class MastodonList:
 
 
 @dataclass(frozen=True, slots=True)
+class Status:
+    """One post, already reduced to text that is safe to show or speak.
+
+    ``text`` and ``content_warning`` never contain HTML: they were flattened at
+    parse time (see the module docstring). A boost is unwrapped, so ``author``
+    is the person who wrote the post and ``boosted_by`` is whoever shared it.
+    """
+
+    id: str
+    author: Account | None
+    text: str
+    content_warning: str
+    created_at: str  # raw ISO-8601, as returned; use relative_time() to speak it
+    url: str
+    boosted_by: Account | None = None
+
+    def relative_time(self, now: datetime | None = None) -> str:
+        """When this was posted, in words ("3 minutes ago"), or ``""``."""
+        moment = parse_timestamp(self.created_at)
+        if moment is None:
+            return ""
+        return format_relative_time(moment, now or datetime.now(UTC))
+
+    def summary(self, now: datetime | None = None) -> str:
+        """One list-row line: when it was posted, then its first sentence.
+
+        A content warning replaces the body: hiding the post is the entire point
+        of the warning, and a summary is exactly where it must be honoured.
+        """
+        if self.content_warning:
+            head = f"Content warning: {self.content_warning}"
+        else:
+            head = first_sentence(self.text) or "(no text)"
+        if self.boosted_by is not None:
+            head = f"Boosted: {head}"
+        when = self.relative_time(now)
+        return f"{when}: {head}" if when else head
+
+
+@dataclass(frozen=True, slots=True)
 class MastodonFilter:
     """One of the user's content filters."""
 
@@ -78,12 +172,41 @@ class MastodonFilter:
 
 
 def account_from_json(data: object) -> Account | None:
+    """Parse an Account, flattening its HTML-bearing fields to spoken text.
+
+    ``display_name`` arrives HTML-escaped and frequently decorated; ``note`` (the
+    bio) is a full HTML fragment. Both are cleaned here so no caller can leak
+    markup into an announcement.
+    """
     if not isinstance(data, dict) or not data.get("id"):
         return None
     return Account(
         id=str(data.get("id")),
         acct=str(data.get("acct") or data.get("username") or ""),
-        display_name=str(data.get("display_name") or ""),
+        display_name=speakable_name(str(data.get("display_name") or "")),
+        note=speakable_body(str(data.get("note") or "")),
+    )
+
+
+def status_from_json(data: object) -> Status | None:
+    """Parse a Status, flattening its HTML ``content`` to spoken text.
+
+    A boost (``reblog``) is unwrapped so the text, author and link describe the
+    original post rather than the empty wrapper the API returns.
+    """
+    if not isinstance(data, dict) or not data.get("id"):
+        return None
+    reblog = data.get("reblog")
+    boosted = isinstance(reblog, dict) and bool(reblog.get("id"))
+    source: dict[str, object] = reblog if boosted and isinstance(reblog, dict) else data
+    return Status(
+        id=str(data.get("id")),
+        author=account_from_json(source.get("account")),
+        text=speakable_body(str(source.get("content") or "")),
+        content_warning=speakable_name(str(source.get("spoiler_text") or "")),
+        created_at=str(data.get("created_at") or ""),
+        url=str(source.get("url") or source.get("uri") or ""),
+        boosted_by=account_from_json(data.get("account")) if boosted else None,
     )
 
 
@@ -198,6 +321,18 @@ def favourited_by(instance_url: str, token: str, status_id: str) -> list[Account
 def reblogged_by(instance_url: str, token: str, status_id: str) -> list[Account]:
     base = client.normalize_instance_url(instance_url)
     return _accounts(base, f"/api/v1/statuses/{status_id}/reblogged_by", token)
+
+
+def account_statuses(
+    instance_url: str, token: str, account_id: str, *, limit: int = 20
+) -> list[Status]:
+    """The account's most recent posts, as text (never HTML). Boosts included."""
+    base = client.normalize_instance_url(instance_url)
+    count = max(1, min(int(limit), 40))
+    rows = client.http_json_list(
+        "GET", f"{base}/api/v1/accounts/{account_id}/statuses?limit={count}", token=token
+    )
+    return [status for row in rows if (status := status_from_json(row)) is not None]
 
 
 def get_lists(instance_url: str, token: str) -> list[MastodonList]:

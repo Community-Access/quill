@@ -1178,7 +1178,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             show_message_box(
                 f"Unsubscribe from {show.title}?",
                 "Unsubscribe",
-                wx.YES_NO | wx.ICON_QUESTION,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
                 self.dialog,
                 announce=self._announce,
             )

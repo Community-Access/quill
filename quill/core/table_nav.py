@@ -11,6 +11,12 @@ each move lands.
 Pure and wx-free: the UI layer reads the caret offset, calls in here, moves the
 caret to the returned offset, and speaks the returned announcement. A separator
 row (``| --- | --- |``) is structural and never a navigable row.
+
+Cell text may contain escaped pipes (``\\|``) and backslashes (``\\\\``), the GFM
+convention the Word importers emit when a cell's own text contains a pipe. Only
+*unescaped* pipes divide cells, and the escapes are undone before a cell is
+announced -- otherwise a single "|" typed into a Word table cell would fabricate
+an extra column and misalign every row beneath it.
 """
 
 from __future__ import annotations
@@ -56,8 +62,40 @@ class TableGrid:
         return None
 
 
+def _bar_positions(line: str) -> list[int]:
+    """Indexes of the cell-dividing (unescaped) pipes in ``line``.
+
+    A backslash consumes the character after it, so ``\\|`` is cell text and
+    ``\\\\`` is a literal backslash -- neither divides a cell.
+    """
+    positions: list[int] = []
+    index = 0
+    while index < len(line):
+        if line[index] == "\\":
+            index += 2  # the escaped character, whatever it is, is not a divider
+            continue
+        if line[index] == "|":
+            positions.append(index)
+        index += 1
+    return positions
+
+
+def _unescape(text: str) -> str:
+    """Undo the ``\\|`` / ``\\\\`` escapes so a cell is announced as authored."""
+    out: list[str] = []
+    index = 0
+    while index < len(text):
+        if text[index] == "\\" and index + 1 < len(text) and text[index + 1] in "\\|":
+            out.append(text[index + 1])
+            index += 2
+            continue
+        out.append(text[index])
+        index += 1
+    return "".join(out)
+
+
 def _is_table_row(line: str) -> bool:
-    return "|" in line and not _looks_blank(line)
+    return bool(_bar_positions(line)) and not _looks_blank(line)
 
 
 def _looks_blank(line: str) -> bool:
@@ -68,22 +106,26 @@ def _split_cells(line: str, line_start: int) -> list[tuple[str, int]]:
     """Split one pipe row into ``(cell_text, text_offset)`` pairs. The offset is
     the absolute position of the first non-space character of the cell's text
     (where the caret should land), falling back to the cell's start when empty."""
+    bars = _bar_positions(line)
+    if not bars:
+        return []
     # Drop one leading and one trailing pipe so "| a | b |" yields two cells.
-    body = line
-    lead = 0
-    if body.lstrip().startswith("|"):
-        lead = body.index("|") + 1
-        body = body[lead:]
-    if body.rstrip().endswith("|"):
-        body = body[: body.rstrip().rindex("|")]
+    start = 0
+    end = len(line)
+    if not line[: bars[0]].strip():
+        start = bars[0] + 1
+        bars = bars[1:]
+    if bars and not line[bars[-1] + 1 :].strip():
+        end = bars[-1]
+        bars = bars[:-1]
     cells: list[tuple[str, int]] = []
-    pos = line_start + lead
-    for piece in body.split("|"):
+    pos = start
+    for stop in [*bars, end]:
+        piece = line[pos:stop]
         text = piece.strip()
         # Offset of the trimmed text within this piece (or the piece start).
-        inner = pos + (piece.index(text) if text and text in piece else 0)
-        cells.append((text, inner))
-        pos += len(piece) + 1  # + 1 for the consumed "|"
+        cells.append((_unescape(text), line_start + pos + piece.index(text)))
+        pos = stop + 1  # + 1 for the consumed "|"
     return cells
 
 
@@ -168,12 +210,24 @@ class Move:
     announcement: str
 
 
+def describe_position(grid: TableGrid, row: int, col: int) -> str:
+    """The cell's place in the grid, spoken: "Row 2 of 4, column 3 of 5".
+
+    Every landing announcement leads with this, so a screen-reader user always
+    hears where they are as well as what is there.
+    """
+    return f"Row {row + 1} of {grid.row_count}, column {col + 1} of {grid.col_count}"
+
+
+def is_last_cell(grid: TableGrid, row: int, col: int) -> bool:
+    """True when ``(row, col)`` is the final cell of the final row."""
+    last_row = grid.row_count - 1
+    return row == last_row and col == len(grid.rows[last_row]) - 1
+
+
 def _say_cell(grid: TableGrid, cell: Cell) -> str:
     value = cell.text or "blank"
-    return (
-        f"Row {cell.row + 1} of {grid.row_count}, "
-        f"column {cell.col + 1} of {grid.col_count}: {value}"
-    )
+    return f"{describe_position(grid, cell.row, cell.col)}: {value}"
 
 
 def move(grid: TableGrid, offset: int, action: str) -> Move:
@@ -189,6 +243,10 @@ def move(grid: TableGrid, offset: int, action: str) -> Move:
         target = grid.cell(row + d_row, col + d_col)
         if target is None:
             edge = "No more rows" if d_row else "No more cells"
+            # Distinguish "this row ends here" from "the table ends here": both
+            # block the move, but only one means there is nothing further at all.
+            if is_last_cell(grid, row, col):
+                edge = f"{edge}, end of table"
             return Move(None, edge)
         return Move(target.offset, _say_cell(grid, target))
     if action == "row_start":

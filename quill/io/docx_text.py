@@ -139,10 +139,22 @@ def read_docx_xml_text(path: Path) -> str:
     return "\n".join(paragraphs).rstrip() + "\n"
 
 
+def _cell_text(cell: Any) -> str:
+    """One table cell flattened to a line and escaped for a Markdown table.
+
+    A cell whose own text contains "|" would otherwise split into two columns,
+    making the rendered table ragged and throwing off cell-by-cell table
+    navigation ("column 2 of 4" in a three-column table). Escape as GFM does --
+    the same escaping ``docx_reader`` applies -- so the pipe stays cell text.
+    """
+    text = " ".join((cell.text or "").split())
+    return text.replace("\\", "\\\\").replace("|", "\\|")
+
+
 def _render_table(table: Any) -> list[str]:
     rows: list[list[str]] = []
     for row in table.rows:
-        cells = [" ".join((cell.text or "").split()) for cell in row.cells]
+        cells = [_cell_text(cell) for cell in row.cells]
         if any(cell for cell in cells):
             rows.append(cells)
     if not rows:

@@ -129,3 +129,11 @@ def test_cyrillic_rtf_decoded_with_ansicpg(tmp_path: Path) -> None:
     from quill.io.rtf import _detect_rtf_encoding
 
     assert _detect_rtf_encoding(rtf_file) == "cp1251"
+
+
+def test_literal_backslash_and_braces_survive_the_round_trip() -> None:
+    # RTF's three literal escapes are text, not control symbols. The reader used
+    # to discard them, so a backslash or brace vanished -- which silently ate the
+    # "\|" escape an imported Word table cell relies on.
+    source = r"a \| b and C:\tmp and {braces}"
+    assert rtf_to_markdown(markdown_to_rtf(source)).rstrip("\n") == source
