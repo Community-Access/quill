@@ -9,6 +9,19 @@ import quill.core.ai.providers as providers
 import quill.core.assistant_ai as assistant_ai
 
 
+@pytest.fixture(autouse=True)
+def clear_env_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in [
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "CLAUDE_API_KEY",
+        "OPENROUTER_API_KEY",
+    ]:
+        monkeypatch.delenv(key, raising=False)
+
+
 def test_assistant_connection_settings_round_trip(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -853,3 +866,33 @@ def test_build_chat_headers_openai_does_not_get_anthropic_beta() -> None:
         "openai", "https://api.openai.com", "key123", cache_system_prompt=True
     )
     assert "anthropic-beta" not in headers
+
+
+def test_environment_api_key_fallback(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    _fake_credential_store(monkeypatch)
+
+    # 1. With empty credential store, environment variables are loaded
+    monkeypatch.setenv("GEMINI_API_KEY", "env-gemini-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai-key")
+
+    assert assistant_ai.load_provider_api_key("gemini") == "env-gemini-key"
+    assert assistant_ai.load_provider_api_key("openai") == "env-openai-key"
+
+    settings = assistant_ai.AssistantConnectionSettings(provider="gemini", model="gemini-1.5-flash")
+    assistant_ai.save_assistant_connection_settings(settings)
+    assert assistant_ai.load_assistant_api_key() == "env-gemini-key"
+
+    # 2. Store key in credential store: it must be preferred over environment
+    assistant_ai.save_provider_api_key("openai", "store-openai-key")
+    assert assistant_ai.load_provider_api_key("openai") == "store-openai-key"
+
+    # For load_assistant_api_key active provider fallback
+    settings_openai = assistant_ai.AssistantConnectionSettings(provider="openai", model="gpt-4o")
+    assistant_ai.save_assistant_connection_settings(settings_openai)
+
+    # Store legacy key
+    monkeypatch.setattr(
+        assistant_ai, "_load_api_key_from_credential_manager", lambda: "store-active-key"
+    )
+    assert assistant_ai.load_assistant_api_key() == "store-active-key"

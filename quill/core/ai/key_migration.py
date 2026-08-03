@@ -37,7 +37,7 @@ def consolidate_provider_keys() -> list[str]:
     migrated: list[str] = []
     try:
         for provider, legacy_target in _LEGACY_PROVIDER_TARGETS.items():
-            if _aai.load_provider_api_key(provider):
+            if _aai._cs_load(_aai.provider_credential_target(provider)):
                 continue
             legacy_value = (_aai._cs_load(legacy_target) or "").strip()
             if legacy_value:
@@ -45,7 +45,11 @@ def consolidate_provider_keys() -> list[str]:
                 migrated.append(provider)
 
         active = _aai.load_assistant_connection_settings().provider.strip().lower()
-        if active and active != "off" and not _aai.load_provider_api_key(active):
+        if (
+            active
+            and active != "off"
+            and not _aai._cs_load(_aai.provider_credential_target(active))
+        ):
             global_value = (_aai.load_assistant_api_key() or "").strip()
             if global_value:
                 _aai._cs_save(_aai.provider_credential_target(active), global_value)

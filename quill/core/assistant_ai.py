@@ -661,34 +661,72 @@ def save_assistant_connection_settings(settings: AssistantConnectionSettings) ->
     write_json_atomic(assistant_connection_path(), payload)
 
 
+def _load_api_key_from_environment(provider: str) -> str:
+    """Load API key from environment variables as a fallback."""
+    norm = provider.strip().lower()
+    if norm in ("gemini", "google"):
+        env_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if env_key:
+            return env_key
+    elif norm == "openai":
+        env_key = os.environ.get("OPENAI_API_KEY")
+        if env_key:
+            return env_key
+    elif norm in ("claude", "anthropic"):
+        env_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+        if env_key:
+            return env_key
+    elif norm == "openrouter":
+        env_key = os.environ.get("OPENROUTER_API_KEY")
+        if env_key:
+            return env_key
+
+    # Fallback to f"{PROVIDER.upper()}_API_KEY"
+    env_key = os.environ.get(f"{norm.upper()}_API_KEY")
+    if env_key:
+        return env_key
+    return ""
+
+
 def load_assistant_api_key() -> str:
     credential_secret = _load_api_key_from_credential_manager()
     if credential_secret:
         return credential_secret
 
+    decrypted = ""
     raw = read_json(assistant_secret_path(), default={})
-    if not isinstance(raw, dict):
-        return ""
-    encrypted = str(raw.get("protected_secret", "")).strip()
-    if not encrypted:
-        return ""
+    if isinstance(raw, dict):
+        encrypted = str(raw.get("protected_secret", "")).strip()
+        if encrypted:
+            try:
+                decrypted = unprotect_secret(encrypted)
+            except Exception:  # noqa: BLE001 - any decrypt failure means "cannot unlock"
+                # L-5: surface the portable-install symptom at the source so the
+                # "unauthorized" error from the provider is no longer the only
+                # signal. Callers should branch on
+                # ``assistant_secret_unlock_failed()`` and show the user a
+                # "key is encrypted for a different Windows user" message
+                # before they try the network call.
+                pass
+
+    if decrypted:
+        if _save_api_key_with_credential_manager(decrypted):
+            path = assistant_secret_path()
+            if path.exists():
+                path.unlink()
+        return decrypted
+
+    # Fallback to environment variables
     try:
-        decrypted = unprotect_secret(encrypted)
-    except Exception:  # noqa: BLE001 - any decrypt failure means "cannot unlock"
-        # L-5: surface the portable-install symptom at the source so the
-        # "unauthorized" error from the provider is no longer the only
-        # signal. Callers should branch on
-        # ``assistant_secret_unlock_failed()`` and show the user a
-        # "key is encrypted for a different Windows user" message
-        # before they try the network call.
-        return ""
-    if not decrypted:
-        return ""
-    if _save_api_key_with_credential_manager(decrypted):
-        path = assistant_secret_path()
-        if path.exists():
-            path.unlink()
-    return decrypted
+        provider = load_assistant_connection_settings().provider
+    except Exception:
+        provider = ""
+    if provider:
+        env_key = _load_api_key_from_environment(provider)
+        if env_key:
+            return env_key
+
+    return ""
 
 
 def save_assistant_api_key(api_key: str) -> None:
@@ -751,7 +789,10 @@ def provider_credential_target(provider: str) -> str:
 
 def load_provider_api_key(provider: str) -> str:
     """Return the stored key for *provider*, or "" if none."""
-    return _cs_load(provider_credential_target(provider)) or ""
+    key = _cs_load(provider_credential_target(provider))
+    if key:
+        return key
+    return _load_api_key_from_environment(provider)
 
 
 def load_keyed_provider_api_key(provider: str) -> str:
