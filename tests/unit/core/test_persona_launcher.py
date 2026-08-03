@@ -27,7 +27,7 @@ def test_build_launch_argv_frozen_runs_executable_directly(
 def test_write_launch_shortcut_creates_some_launchable_file(tmp_path: Path) -> None:
     path = write_launch_shortcut("Novel Writing", tmp_path)
     assert path.exists()
-    # .lnk/.bat on Windows (real shortcut, or a .bat fallback without pywin32);
+    # .lnk/.bat on Windows (real shortcut, or a .bat fallback without comtypes);
     # .command on macOS (Finder runs it in Terminal -- see write_launch_shortcut).
     assert path.suffix in (".lnk", ".bat", ".command")
     assert "Novel Writing" in path.stem
@@ -35,10 +35,10 @@ def test_write_launch_shortcut_creates_some_launchable_file(tmp_path: Path) -> N
 
 @pytest.mark.skipif(
     sys.platform != "win32",
-    reason="pywin32/.lnk fallback path is Windows-only; write_launch_shortcut "
-    "returns a .command file on macOS without ever importing win32com",
+    reason="comtypes/.lnk fallback path is Windows-only; write_launch_shortcut "
+    "returns a .command file on macOS without ever importing comtypes",
 )
-def test_write_launch_shortcut_falls_back_to_bat_without_pywin32(
+def test_write_launch_shortcut_falls_back_to_bat_without_comtypes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     import builtins
@@ -46,8 +46,8 @@ def test_write_launch_shortcut_falls_back_to_bat_without_pywin32(
     real_import = builtins.__import__
 
     def _blocked_import(name, *args, **kwargs):
-        if name == "win32com.client":
-            raise ImportError("simulated: pywin32 not installed")
+        if name == "comtypes.client":
+            raise ImportError("simulated: comtypes not installed")
         return real_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", _blocked_import)
