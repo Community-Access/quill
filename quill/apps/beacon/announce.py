@@ -15,6 +15,13 @@ Verbosity = Literal["minimal", "normal", "verbose"]
 _VERBOSITY_ORDER = {"minimal": 0, "normal": 1, "verbose": 2}
 
 
+def _post_sound(event: str) -> None:
+    """Play an earcon; silent (never fatal) where there is no sound stack."""
+    from quill.ui.companion_cues import post_cue
+
+    post_cue(event)
+
+
 class Announcer:
     """Status-bar announcer with configurable verbosity (PRD 18.4, 29.2)."""
 
@@ -25,7 +32,7 @@ class Announcer:
     def set_verbosity(self, v: Verbosity) -> None:
         self.verbosity = v
 
-    def say(self, message: str, level: Verbosity = "normal") -> None:
+    def say(self, message: str, level: Verbosity = "normal", *, sound: str = "") -> None:
         """Announce ``message`` if verbosity permits (#1300).
 
         QuillBeacon had **no screen-reader speech at all**: this method set
@@ -36,8 +43,11 @@ class Announcer:
         also goes to the announcement service, which speaks it, brailles it
         and cues it.
 
-        The signature is unchanged on purpose: Beacon's ~40 call sites keep
-        working untouched.
+        The two positional parameters are unchanged on purpose: Beacon's ~40
+        call sites keep working untouched. ``sound`` is keyword-only and names
+        a :class:`~quill.core.sound_events.SoundEvent` to lead with, for the
+        two moments Beacon has an earcon for -- an item captured and a sync
+        finishing (#1302).
         """
         if _VERBOSITY_ORDER[level] > _VERBOSITY_ORDER[self.verbosity]:
             return
@@ -46,9 +56,9 @@ class Announcer:
             self.frame.SetStatusText(message)
         else:
             self.frame.SetTitle(message)
-        self._speak(message, level)
+        self._speak(message, level, sound)
 
-    def _speak(self, message: str, level: Verbosity) -> None:
+    def _speak(self, message: str, level: Verbosity, sound: str = "") -> None:
         """Hand the message to the announcement service; never raises.
 
         Best-effort by design: an announcement failing must not break the
@@ -62,7 +72,7 @@ class Announcer:
             if service is None:
                 return
             severity = Severity.INFO if level == "normal" else Severity.ROUTINE
-            service.announce(Announcement(text=message, severity=severity))
+            service.announce(Announcement(text=message, severity=severity, sound_event=sound))
         except Exception:  # noqa: BLE001 - announcing must never break Beacon
             return
 
@@ -73,9 +83,16 @@ class Announcer:
             return service
         host = getattr(self.frame, "_announcement_engine", None)
         from quill.core.announce import AnnouncementService
-        from quill.core.announce.adapters import SpeechSink, VisualSink
+        from quill.core.announce.adapters import SoundSink, SpeechSink, VisualSink
 
         service = AnnouncementService()
+        # The earcon sink leads, exactly as ``announce_wiring`` orders it for
+        # the other apps: a cue arriving after the words is an echo, not a
+        # confirmation. Beacon builds its own service (it is not an
+        # AppShellFrame), so without this its two cues had nowhere to land
+        # (#1302). ``post_sound`` honours settings.sound_events_disabled
+        # through the player itself and no-ops when there is no sound stack.
+        service.add_sink(SoundSink(_post_sound))
         if host is None:
             from quill.platform.windows.prism_bridge import AnnouncementEngine
 

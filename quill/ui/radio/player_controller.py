@@ -42,8 +42,10 @@ import wx
 
 from quill.core.audio_enhance import EnhanceError, EnhanceRelay
 from quill.core.radio.models import RadioStation
+from quill.core.sound_events import SoundEvent
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import WxMediaEngine
+from quill.ui.companion_cues import post_cue
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine, mpv_output_device_available
 from quill.ui.radio.youtube_playback import begin_youtube_play, is_youtube_station
 
@@ -105,6 +107,20 @@ class RadioPlaybackState:
         if self.state is RadioPlayerState.ERROR:
             return f"Radio: could not play {label} - {self.message}"
         return "Radio"
+
+
+#: The earcon each playback state gets (#1302). This is the only place that
+#: knows a stream reached the air: connecting, playing, stopping and failing
+#: are states the app changes through without saying a word (the status bar
+#: text updates and nothing is spoken), so a listener had to infer them from
+#: silence. PAUSED is deliberately absent -- pausing is a keypress that already
+#: announces itself, and a cue there would just double up.
+_STATE_SOUNDS: dict[RadioPlayerState, str] = {
+    RadioPlayerState.CONNECTING: SoundEvent.RADIO_CONNECTING,
+    RadioPlayerState.PLAYING: SoundEvent.RADIO_PLAYING,
+    RadioPlayerState.STOPPED: SoundEvent.RADIO_STOPPED,
+    RadioPlayerState.ERROR: SoundEvent.RADIO_STREAM_ERROR,
+}
 
 
 class RadioPlayerController:
@@ -850,6 +866,13 @@ class RadioPlayerController:
         station: RadioStation | None | Ellipsis = ...,  # type: ignore[valid-type]
         message: str = "",
     ) -> None:
+        # Only a real transition cues (#1302). The retry paths re-enter the
+        # state they are already in -- the cross-engine rescue sets CONNECTING
+        # a second time, a stalled stream re-announces itself -- so comparing
+        # against the state being replaced is what stops one flaky stream from
+        # firing the same earcon ten times in a row.
+        if state is not self._state.state and state in _STATE_SOUNDS:
+            post_cue(_STATE_SOUNDS[state])
         if station is not ...:
             self._state.station = station
         self._state.state = state

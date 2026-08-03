@@ -33,6 +33,7 @@ from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
+from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import (
     focus_primary_control,
     set_accessible_name,
@@ -77,6 +78,18 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
         self._announcement_engine.set_braille_enabled(
             bool(getattr(self.settings, "announcement_braille", True))
         )
+        # The two accessibility commands every shell is supposed to carry.
+        # register_announcement_commands() shipped with no caller, so for six
+        # companion apps "Repeat Last Announcement" and the Self-Test existed
+        # only as dead code -- exactly the "is any of this reaching me?"
+        # answer a screen-reader user needs when something goes quiet. Both
+        # use try_register, so an app that registers its own copy still wins.
+        self.register_announcement_commands()
+        # Earcons need a loaded sound pack; only MainFrame ever started one, so
+        # every companion app's SoundSink was inert until now (#1302). Safe
+        # Mode stays silent here exactly as it does in QUILL.
+        if not safe_mode:
+            init_app_sound(self.settings)
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
         # Set by an explicit menu/tray "Exit" so the app's close handler quits for
@@ -89,7 +102,7 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
 
     # -- MainFrame-mixin host protocol ---------------------------------------
 
-    def _announce(self, message: str, *, force: bool = False) -> None:
+    def _announce(self, message: str, *, force: bool = False, sound: str = "") -> None:
         """Announce on every channel this app can reach (#1299).
 
         One change here gives all six companion apps braille, earcons,
@@ -97,6 +110,14 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
         Cast, Audio Studio, Converter, Weather and Podcasts all share this
         shell, and every injected surface (Command Palette, Table Studio,
         Reveal Codes) reaches it through the same _announce_fn.
+
+        ``sound`` names a :class:`~quill.core.sound_events.SoundEvent` to lead
+        with. It defaults to "" because most announcements are prose, but the
+        sound channel is useless without it: the companion-app cue ids shipped
+        in the catalogue while every announcement here was built with an empty
+        event, so ``SoundSink`` returned early and the apps were silent. A cue
+        also arrives *before* the words, which is what makes it a confirmation
+        rather than an echo.
         """
         self._status_message = message
         self._set_status(message)
@@ -104,7 +125,7 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
         if service is None:
             self._announcement_engine.announce(message, force_speech=force)
             return
-        service.announce(build_announcement(message, force=force))
+        service.announce(build_announcement(message, force=force, sound_event=sound))
 
     def register_announcement_commands(self) -> None:
         """Repeat Last Announcement and the Self-Test, in every app (#1304, #1305).

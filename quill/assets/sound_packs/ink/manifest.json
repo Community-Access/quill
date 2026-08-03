@@ -96,6 +96,20 @@
   "selection_completed": "selection_completed.wav",
   "document_top": "document_top.wav",
   "document_bottom": "document_bottom.wav",
-  "keepalive": "keepalive.wav"
+  "keepalive": "keepalive.wav",
+  "radio_connecting": "radio_connecting.wav",
+  "radio_playing": "radio_playing.wav",
+  "radio_buffering": "radio_buffering.wav",
+  "radio_stopped": "radio_stopped.wav",
+  "radio_stream_error": "radio_stream_error.wav",
+  "radio_recording_started": "radio_recording_started.wav",
+  "radio_recording_stopped": "radio_recording_stopped.wav",
+  "radio_favorite_added": "radio_favorite_added.wav",
+  "cast_download_started": "cast_download_started.wav",
+  "cast_download_complete": "cast_download_complete.wav",
+  "cast_episode_finished": "cast_episode_finished.wav",
+  "weather_alert": "weather_alert.wav",
+  "beacon_captured": "beacon_captured.wav",
+  "beacon_sync_complete": "beacon_sync_complete.wav"
  }
 }

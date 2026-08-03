@@ -25,6 +25,9 @@ from quill.core.podcasts.subscriptions import (
     merge_episodes,
     save_library,
 )
+from quill.core.sound_events import SoundEvent
+from quill.ui.companion_cues import post_cue
+from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.player_controller import PodcastPlaybackState, PodcastPlayerController
 
 if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
@@ -80,6 +83,17 @@ class PodcastsMixin:
             reconnect_max_attempts=settings.reconnect_max_attempts,
             reconnect_wait_seconds=settings.reconnect_wait_seconds,
         )
+        # The background new-episode check, under the shared ambient-monitor
+        # policy (cadence / audible tick / interrupt speech). Off unless the
+        # user turned podcast_check_enabled on, so this costs one object.
+        self._podcast_check_monitor = PodcastCheckMonitor(
+            self.frame,
+            settings_provider=lambda: getattr(self, "settings", None),
+            library_provider=lambda: self._podcast_library,
+            refresh_show=self.refresh_podcast_feed,
+            safe_mode=self._safe_mode,
+        )
+        self._podcast_check_monitor.apply()
 
     def _podcast_download_root(self) -> Path:
         override = self._podcast_library.settings.download_root
@@ -202,6 +216,11 @@ class PodcastsMixin:
             return
         episode.played = True
         episode.position_ms = 0
+        # The end of an episode is a state QUILL Cast changed through in
+        # silence: the next episode simply started, or nothing did (#1302).
+        # Fired from the player's own once-per-episode finish callback, so it
+        # cannot repeat for an episode already marked played.
+        post_cue(SoundEvent.CAST_EPISODE_FINISHED)
         settings = self._podcast_library.effective_settings(show)
         retention.apply_delete_after_play(episode, settings)
         self._save_podcast_library()
@@ -236,10 +255,34 @@ class PodcastsMixin:
 
     def _apply_podcast_download_status(self, item: DownloadItem) -> None:
         self._refresh_statusbar()
+        self._podcast_cue_download_started(item)
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.on_download_status_changed(item)
 
+    def _podcast_cue_download_started(self, item: DownloadItem) -> None:
+        """Earcon the moment downloading actually begins (#1302).
+
+        This callback also carries every progress chunk of every item, so it
+        must never cue per call. The queue going from idle to busy is the state
+        worth hearing: a forty-episode batch says "downloading" once, and the
+        cue is armed again only after the queue has drained.
+        """
+        queue = getattr(self, "_podcast_download_queue", None)
+        active = int(queue.active_count()) if queue is not None else 0
+        if active < 1:
+            self._podcast_download_cued = False
+            return
+        if str(getattr(item, "status", "")) != "downloading":
+            return
+        if getattr(self, "_podcast_download_cued", False):
+            return
+        self._podcast_download_cued = True
+        post_cue(SoundEvent.CAST_DOWNLOAD_STARTED)
+
     def _apply_podcast_download_completed(self, item: DownloadItem) -> None:
+        # The queue calls this exactly once per finished download, so one
+        # episode landing on disk makes exactly one sound (#1302).
+        post_cue(SoundEvent.CAST_DOWNLOAD_COMPLETE)
         show = self._podcast_library.find_show(item.show_id)
         if show is not None:
             episode = show.find_episode(item.episode_guid)
@@ -717,7 +760,13 @@ class PodcastsMixin:
             if self._podcast_manager_dialog is not None:
                 self._podcast_manager_dialog.refresh_tree()
             if new_count:
-                self._announce(f"{new_count} new episode(s) for {show.title}")
+                # "Let results interrupt speech" is the third leg of the shared
+                # monitor policy: force=True raises the announcement to WARNING,
+                # which is the severity that cuts across current speech.
+                self._announce(
+                    f"{new_count} new episode(s) for {show.title}",
+                    force=self._podcast_check_monitor.interrupt_speech,
+                )
             self._maybe_backfill_always_sync(show)
 
         from quill.ui.podcasts.show_actions import announce_if_feed_auth_failure

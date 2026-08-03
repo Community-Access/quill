@@ -624,6 +624,120 @@ def generate_all() -> None:
     # error: low fall — "something's off" (calm, not alarming).
     write_wav("conversation_error.wav", _bell_seq([392, 294], 150), vol=0.5)
 
+    # ------------------------------------------------------------------
+    # Companion-app cues. These fourteen ids shipped in the catalogue with
+    # no sounds and no call sites, so Radio, Cast, Weather and Beacon were
+    # silent. Each family gets its own voice, so you know WHICH app spoke
+    # before you parse WHAT it said: Radio is warm sine (broadcast), Cast is
+    # bell-like (an episode is a discrete thing), Weather is a deliberate
+    # alert, Beacon is a single capture blip.
+    # ------------------------------------------------------------------
+
+    def radio_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(4), ms(14), 0.42, ms(22))
+
+    # connecting: a rising fifth — reaching out, not yet arrived.
+    write_wav(
+        "radio_connecting.wav",
+        _concat(
+            _tone(392, 55, sine_at, radio_env),
+            _silence(10),
+            _tone(587, 65, sine_at, radio_env),
+        ),
+        vol=0.55,
+    )
+    # playing: that fifth resolving up to the octave — arrival.
+    radio_playing = _concat(
+        _tone(587, 50, sine_at, radio_env),
+        _silence(8),
+        _mix(
+            _tone(784, 90, sine_at, radio_env),
+            _tone(1568, 90, sine_at, lambda i, n: radio_env(i, n) * 0.2),
+        ),
+    )
+    write_wav("radio_playing.wav", radio_playing, vol=0.55)
+    # stopped: the exact time-reverse of playing — unmistakably its opposite.
+    write_wav("radio_stopped.wav", list(reversed(radio_playing)), vol=0.55)
+    # buffering: two soft equal pulses — waiting, going nowhere yet.
+    buffer_pulse = _tone(440, 45, sine_at, lambda i, n: exp_decay(i, 16) * edge(i, n, 3))
+    write_wav("radio_buffering.wav", _concat(buffer_pulse, _silence(70), buffer_pulse), vol=0.40)
+    # stream error: a falling minor third with a breath of noise — audibly in
+    # the radio family (so you know it is the stream), clearly negative, and
+    # not the harsh generic error buzz.
+    write_wav(
+        "radio_stream_error.wav",
+        _concat(
+            _noise(5, _click_env),
+            _mix(
+                _tone(466, 70, sine_at, radio_env),
+                _tone(466, 70, sqr_at, lambda i, n: radio_env(i, n) * 0.12),
+            ),
+            _silence(8),
+            _tone(370, 95, sine_at, radio_env),
+        ),
+        vol=0.55,
+    )
+    # recording started / stopped: a firm low-to-high pair and its mirror,
+    # deliberately lower and rounder than transcription's rec_start/rec_stop
+    # so "the radio is recording" never sounds like "dictation is listening".
+    radio_rec = _concat(
+        _tone(294, 70, sine_at, radio_env),
+        _silence(10),
+        _tone(440, 95, sine_at, radio_env),
+    )
+    write_wav("radio_recording_started.wav", radio_rec, vol=0.6)
+    write_wav("radio_recording_stopped.wav", list(reversed(radio_rec)), vol=0.6)
+    # favorite added: a bright quick lift — a small delight.
+    write_wav(
+        "radio_favorite_added.wav",
+        _concat(
+            _tone(880, 40, tri_at, _swell_env(2, 8, 0.35, 14)),
+            _tone(1320, 55, tri_at, _swell_env(2, 10, 0.35, 20)),
+        ),
+        vol=0.5,
+    )
+
+    # Cast: bell-voiced. Started and complete are inversions of each other.
+    write_wav("cast_download_started.wav", _bell_seq([523, 659], 120), vol=0.5)
+    write_wav("cast_download_complete.wav", _bell_seq([659, 523], 120), vol=0.5)
+    # episode finished: a longer, lower resolve — the end of a listen.
+    write_wav("cast_episode_finished.wav", _bell_seq([523, 392], 200), vol=0.45)
+
+    # Weather: a real alert. Two urgent tones then a held third — musical
+    # rather than a klaxon, but this fires for genuine warnings, so it is the
+    # one cue in the pack that must never be easy to ignore.
+    weather_env = _swell_env(3, 10, 0.55, 20)
+    write_wav(
+        "weather_alert.wav",
+        _concat(
+            _tone(880, 90, sine_at, weather_env),
+            _silence(50),
+            _tone(880, 90, sine_at, weather_env),
+            _silence(50),
+            _mix(
+                _tone(1046, 200, sine_at, _swell_env(4, 20, 0.5, 60)),
+                _tone(698, 200, sine_at, lambda i, n: _swell_env(4, 20, 0.5, 60)(i, n) * 0.35),
+            ),
+        ),
+        vol=0.7,
+    )
+
+    # Beacon: a capture is an instant, so its cue is one.
+    write_wav(
+        "beacon_captured.wav",
+        _concat(_noise(4, _click_env), _tone(988, 45, tri_at, _swell_env(2, 8, 0.3, 16))),
+        vol=0.5,
+    )
+    write_wav(
+        "beacon_sync_complete.wav",
+        _concat(
+            _tone(659, 45, tri_at, _swell_env(2, 8, 0.3, 14)),
+            _silence(8),
+            _tone(988, 70, tri_at, _swell_env(2, 10, 0.35, 24)),
+        ),
+        vol=0.5,
+    )
+
     print("Done.")
 
 

@@ -61,6 +61,21 @@ _EARCON_ORDER: list[str] = [
     # Connectivity
     "ssh_connected",
     "ssh_disconnected",
+    # Companion apps (Quill Radio, QUILL Cast, Quill Weather, QuillBeacon)
+    "radio_connecting",
+    "radio_playing",
+    "radio_buffering",
+    "radio_stopped",
+    "radio_stream_error",
+    "radio_recording_started",
+    "radio_recording_stopped",
+    "radio_favorite_added",
+    "cast_download_started",
+    "cast_download_complete",
+    "cast_episode_finished",
+    "weather_alert",
+    "beacon_captured",
+    "beacon_sync_complete",
     # Selection and document boundaries
     "selection_started",
     "selection_completed",
@@ -167,7 +182,31 @@ _IDENTITY_LABELS: dict[str, str] = (
     }
 )
 
-_ALL_LABELS: dict[str, str] = {**_EARCON_LABELS, **_INDENT_LABELS, **_IDENTITY_LABELS}
+# Companion-app cues. Each family has its own voice so you know which app
+# spoke before you parse what it said.
+_COMPANION_LABELS: dict[str, str] = {
+    "radio_connecting": "Radio: connecting to a station",
+    "radio_playing": "Radio: playing",
+    "radio_buffering": "Radio: buffering",
+    "radio_stopped": "Radio: stopped",
+    "radio_stream_error": "Radio: stream problem",
+    "radio_recording_started": "Radio: recording started",
+    "radio_recording_stopped": "Radio: recording stopped",
+    "radio_favorite_added": "Radio: station added to favorites",
+    "cast_download_started": "Cast: episode download started",
+    "cast_download_complete": "Cast: episode download complete",
+    "cast_episode_finished": "Cast: episode finished playing",
+    "weather_alert": "Weather: new alert for your area",
+    "beacon_captured": "Beacon: item captured",
+    "beacon_sync_complete": "Beacon: sync complete",
+}
+
+_ALL_LABELS: dict[str, str] = {
+    **_EARCON_LABELS,
+    **_INDENT_LABELS,
+    **_IDENTITY_LABELS,
+    **_COMPANION_LABELS,
+}
 
 
 class SoundEventsDialog(wx.Dialog):

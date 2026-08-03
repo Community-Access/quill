@@ -18,6 +18,7 @@ from typing import Any
 from quill.core.radio import wxindex
 from quill.core.radio.models import RadioStation
 from quill.core.radio.wxindex_models import to_radio_station
+from quill.core.sound_events import SoundEvent
 
 _SAFE_MODE_WEATHER = (
     "Weather is a network service and is turned off in Safe Mode. "
@@ -46,7 +47,9 @@ class WeatherMixin:
     _safe_mode: bool
     _task_manager: Any
 
-    def _announce(self, message: str, *, force: bool = False) -> None: ...  # provided by host
+    def _announce(  # provided by host
+        self, message: str, *, force: bool = False, sound: str = ""
+    ) -> None: ...
     def _show_message_box(self, message: str, caption: str, style: int) -> int:
         return 0
 
@@ -588,8 +591,15 @@ class WeatherMixin:
                 # for N places" line is spoken once, when the last baseline lands.
                 self._weather_monitor_baseline_counts[location.label] = len(result)
             else:
+                # The earcon rides the alert announcement, and only when
+                # ``apply_poll`` says an alert id is genuinely new (#1302):
+                # every poll produces an update, but ``new_alerts`` is empty
+                # for an alert this window already told the user about, and
+                # the baseline round above never cues at all.
+                cue = ""
                 if update.new_alerts:
                     self._play_weather_alert_sound()
+                    cue = SoundEvent.WEATHER_ALERT
                     top = update.new_alerts[0]
                     self._show_weather_toast(
                         f"Weather alert: {top.event}",
@@ -597,7 +607,7 @@ class WeatherMixin:
                     )
                 message = monitor.update_announcement(update, location.label)
                 if message:
-                    self._announce(message, force=monitor.should_force_speech(update))
+                    self._announce(message, force=monitor.should_force_speech(update), sound=cue)
         finally:
             self._weather_monitor_round_pending -= 1
             if self._weather_monitor_round_pending <= 0:
@@ -628,8 +638,12 @@ class WeatherMixin:
         # 1) The sound cue (honoring the user's enable + custom-file choice, so
         #    the test reflects what they have actually configured).
         self._play_weather_alert_sound()
-        # 2) Spoken, forced so it interrupts like a real urgent alert would.
-        self._announce(f"Test weather alert. {headline}", force=True)
+        # 2) Spoken, forced so it interrupts like a real urgent alert would,
+        #    led by the same earcon a real new alert posts (#1302) -- the
+        #    point of the preview is that it sounds exactly like the real thing.
+        self._announce(
+            f"Test weather alert. {headline}", force=True, sound=SoundEvent.WEATHER_ALERT
+        )
         # 3) A system-tray toast, marked as a test.
         self._show_weather_toast(
             "[TEST] Weather alert", "This is a test of Quill Weather alerts. No action is needed."

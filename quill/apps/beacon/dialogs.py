@@ -2388,7 +2388,7 @@ class SyncHistoryDialog(wx.Dialog):
                 f"Restore the library to the snapshot {name}? This overwrites the "
                 "current database with the pre-sync copy. The commit log is kept.",
                 "Roll Back",
-                wx.YES_NO | wx.ICON_WARNING,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
                 self,
             )
             != wx.YES
