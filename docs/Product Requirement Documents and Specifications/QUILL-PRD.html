@@ -16511,6 +16511,141 @@ QUILL Key leader-chord space is fully claimed by existing commands (see
 §25.13’s chord table). Reachable via <strong>Tools &gt; Local
 Git</strong> and the Command Palette; freely assignable in Preferences
 &gt; Keyboard Shortcuts.</p>
+<h3 id="a-git-worktrees-1.0.0">§25.14a Git Worktrees (1.0.0)</h3>
+<p><strong>Why worktrees are an accessibility feature, not a power-user
+feature.</strong> Checking out a branch in place rewrites every file in
+the working folder while keeping every path and every filename
+identical. A sighted user sees the editor’s contents change and infers
+what happened; a screen-reader user receives no cue at all — the
+paragraph under the review cursor silently becomes a paragraph from
+another branch, in a document that still claims to be the document they
+opened. That is the same class of uncued context switch QUILL rejects
+everywhere else (dialog entry/exit cues, region announcements, “Entered
+… dialog”). A worktree removes the ambiguity structurally: each branch
+has its own folder, so the open document never mutates, and changing
+context becomes <em>open a different file</em> — a user-initiated,
+announced action — rather than <em>this file is now a different
+file</em>. Worktrees therefore complete the Local Git story (§25.14)
+rather than extending it sideways.</p>
+<p><strong>Model.</strong> A repository has exactly one
+<strong>main</strong> worktree (the repository folder itself) and zero
+or more <strong>linked</strong> worktrees. Each worktree holds at most
+one branch, and a branch may be checked out in at most one worktree —
+git’s own constraint, surfaced as a QUILL refusal rather than a git
+error. A worktree may additionally be <strong>bare</strong> (no working
+copy), <strong>detached</strong> (on a commit, not a branch),
+<strong>locked</strong> (exempt from prune/remove, with an optional
+reason), or <strong>prunable</strong> (its folder is gone from disk).
+<code>WorktreeEntry.describe()</code> renders exactly this state as one
+spoken sentence, which is what the list dialog uses as its row text;
+four narrow columns would be four arrow-key journeys per row.</p>
+<p><strong>Commands (Tools &gt; Local Git):</strong></p>
+<ul>
+<li><strong>Worktrees…</strong> (<code>localgit.worktrees</code>) — the
+list dialog. Announces the count on open; each row is a
+<code>describe()</code> sentence; actions are <strong>New
+Worktree…</strong>, <strong>Open in QUILL</strong>,
+<strong>Remove…</strong>, <strong>Lock</strong>/<strong>Unlock</strong>,
+<strong>Prune</strong>, <strong>Close</strong>. Every action announces
+its outcome, rereads the list, restores a sensible selection (the
+previous row after a removal, the new row after a creation) and returns
+focus to the list.</li>
+<li><strong>New Worktree…</strong> (<code>localgit.new_worktree</code>)
+— the create form on its own, for users who know they want a new
+worktree and do not need the list first.</li>
+</ul>
+<p><strong>Engine operations</strong>
+(<code>quill/core/git_worktree.py</code>, wx-free, injected
+<code>Runner</code> exactly as §25.14): <code>list_worktrees</code>
+(parses <code>git worktree list --porcelain</code>: blank-line-separated
+records, keys
+<code>worktree</code>/<code>HEAD</code>/<code>branch</code>/
+<code>bare</code>/<code>detached</code>/<code>locked</code>/<code>prunable</code>),
+<code>add_worktree</code> (both
+<code>add &lt;path&gt; &lt;branch&gt;</code> and
+<code>add -b &lt;new&gt; &lt;path&gt; [&lt;from-ref&gt;]</code>),
+<code>remove_worktree</code> (with an explicit <code>force</code> the
+user must opt into), <code>prune_worktrees</code>
+(<code>prune --verbose</code>, reporting which records were removed),
+<code>move_worktree</code>, <code>lock_worktree</code> (optional
+<code>--reason</code>) and <code>unlock_worktree</code>.</p>
+<p><strong>Error contract.</strong> Every operation returns a
+<code>WorktreeResult</code> carrying <code>ok</code>, a finished
+user-facing <code>message</code>, the parsed data, and
+<code>detail</code> (git’s own output, kept for logs and support triage
+and never announced). Raw stderr is never surfaced to the user. Refusals
+are pre-flighted where a better sentence is possible — a target path
+that is non-empty, is a file, or lies inside the repository; a branch
+already checked out in another worktree (QUILL names the folder that
+holds it) — and git’s own refusals are translated where they are
+recognisable (“already checked out”, “a branch named X already exists”,
+“invalid reference”, “contains modified or untracked files”, “is a main
+working tree”, “is locked”). The single exception class,
+<code>WorktreeError</code> (<code>QUILL-GIT-WORKTREE-NO-GIT</code>),
+covers only “git did not run at all” and carries its what-to-do sentence
+in <code>USER_HINTS</code> per GATE-EC.</p>
+<p><strong>Destructive-action contract.</strong> Removing a worktree
+deletes a folder, so it always confirms with <code>wx.NO_DEFAULT</code>
+(the dialog-button-contract gate enforces this). When git refuses
+because the worktree holds uncommitted work, QUILL surfaces that refusal
+and asks a <strong>second, separate</strong> question before retrying
+with <code>--force</code>; it never adds <code>--force</code> on the
+user’s behalf. The main worktree can be neither removed nor locked from
+the dialog.</p>
+<p><strong>Open in QUILL.</strong> QUILL’s file surface opens documents,
+not folders, so “open this worktree” resolves the current document’s
+path relative to its own worktree root and opens the counterpart inside
+the chosen worktree. When no counterpart exists (a file new on this
+branch, or nothing open), QUILL says so and offers a file picker already
+rooted at the worktree folder rather than a dead end.</p>
+<p><strong>Path input.</strong> The folder field routes through
+<code>quill.core.path_input.clean_typed_path</code>, so quoted Explorer
+paths, <code>%VAR%</code> paths, <code>file://</code> URLs,
+<code>~</code>, smart quotes and non-breaking spaces all work.</p>
+<p><strong>Testing.</strong>
+<code>tests/unit/core/test_git_worktree.py</code> drives everything
+through a fake runner — porcelain parsing (multiple worktrees, detached
+HEAD, bare, locked, prunable), the exact argv of every command, and
+every refusal path — with no real git and no repository on disk; the
+<em>engine’s</em> behaviour against real git is already covered by
+§25.14’s suite. <code>tests/unit/ui/test_main_frame_worktrees.py</code>
+covers the mixin’s gating, sequencing, and the two-confirmation
+remove.</p>
+<p><strong>Implementation files:</strong></p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/core/git_worktree.py</code></td>
+<td>The wx-free worktree engine: porcelain parsing,
+add/remove/prune/move/lock/unlock, refusal sentences</td>
+</tr>
+<tr>
+<td><code>quill/ui/git_worktree_dialogs.py</code></td>
+<td><code>WorktreesDialog</code> (the spoken list) and
+<code>NewWorktreeDialog</code> (the create form)</td>
+</tr>
+<tr>
+<td><code>quill/ui/main_frame_worktrees.py</code></td>
+<td><code>WorktreesMixin</code> — the two command handlers,
+confirmations, Open in QUILL, and command-palette registration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Feature flag.</strong> None, matching §25.14; gated only by
+Safe Mode and by <code>git</code> being available.</p>
+<p><strong>Keybindings.</strong> None by default, for §25.14’s reason;
+both commands are in the menu and the Command Palette and are freely
+assignable.</p>
 <h3
 id="github-tier-2-organizations-releases-workflow-dispatch-notifications-security-alerts-0.9.0-beta-3">§25.15
 GitHub Tier 2: Organizations, Releases, Workflow Dispatch,

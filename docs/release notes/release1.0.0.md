@@ -679,6 +679,28 @@ The new local git experience also includes:
 - **Who Wrote This Line...** — make git blame useful by speaking the result for the current line.
 - **Start Bisect...** and **End Bisect** — turn `git bisect` into a plain conversation asking whether the current version is good or bad.
 
+### Worktrees: a folder for each branch, so nothing changes while you are reading it
+
+Here is a problem that almost never gets named, because most people never notice it.
+
+When you switch to another branch the ordinary way, git rewrites every file in the folder. The names stay the same. The paths stay the same. The contents become something else. If you can see the screen, the text changes in front of you and you know instantly what happened. If you are reading with a screen reader, nothing tells you anything. The paragraph under your review cursor is now a paragraph from a different branch, sitting in a file that still calls itself the file you opened. You keep reading, and the words no longer belong to the thing you thought you were reading.
+
+A worktree is the fix, and it is a structural one rather than a warning message. A worktree is simply a second folder attached to the same repository, with a different branch checked out inside it. One history, one set of branches, two folders. Your main folder stays on main; a second folder holds the feature you are working on. Nothing under your cursor ever changes, because the two never share a file. Switching context becomes "open a different file" — something you choose to do, and hear yourself doing — instead of "this file is now a different file", which is something that happens to you without a sound.
+
+That is why QUILL supports worktrees properly instead of leaving them to the command line.
+
+**Tools > Local Git > Worktrees...** shows you what you have. QUILL announces the count as the dialog opens, and every row is a whole sentence you hear once and understand — "Main worktree at S:\code\quill, on branch main", or "Linked worktree at D:\usb\quill-spike, on branch spike, locked: on a USB drive" — rather than four narrow columns you would have to arrow across. After anything you do, QUILL says what happened, rereads the list, and puts you back on it.
+
+**New Worktree...** asks where the folder should go and which branch it should hold, or lets you create a brand-new branch right there with an optional starting point. The folder field takes whatever you actually paste — a path copied from File Explorer with the quotes still attached, an %APPDATA% path, a file:// link. And QUILL checks before it runs git, so a mistake is a sentence you hear rather than an error you have to decode: the folder already has files in it, the folder is inside the repository itself, or that branch is already open in another worktree — and in that last case QUILL tells you exactly which folder has it, so you can go open that one instead.
+
+**Open in QUILL** does the obvious thing: it opens the same document you are reading, from the worktree you picked. If that file does not exist on that branch, QUILL says so and offers you a file picker already pointed at the right folder, instead of leaving you at a dead end.
+
+**Remove...** deletes a worktree's folder. The branch itself stays — you are removing the folder, not the work. The confirmation defaults to No, so pressing Enter out of habit never costs you anything. And if git refuses because the worktree still holds uncommitted changes, QUILL passes that refusal on in plain language and asks a second, separate question before discarding anything. It will not quietly force the removal on your behalf.
+
+**Lock** and **Unlock** protect a worktree that lives on a USB drive or a network share, which git would otherwise mistake for a folder that has vanished; you can record a reason and hear it later in the list. **Prune** clears out records for folders that really are gone, and tells you which ones it tidied — or simply says nothing needed doing.
+
+Throughout, git's own raw error output is never read at you. Every message is a finished sentence written to be spoken.
+
 These commands do not contact GitHub or any network service. They operate entirely through local git and work with any repository you point QUILL toward.
 
 We tested them against real repositories performing real operations: divergent branches producing a real merge conflict, and an interactive rebase that encountered a conflict partway through and then had to continue. Subprocess orchestration earns trust by surviving the actual workflow, not by looking correct on paper.

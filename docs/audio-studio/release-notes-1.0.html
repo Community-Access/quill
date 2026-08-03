@@ -185,6 +185,13 @@ app - screen-reader-first, keyboard-first, and spoken end to end. It is
 for anyone who wants to turn writing into finished, chaptered,
 publishable audio without ever touching a waveform display - and then to
 sit back and listen to it.</p>
+<blockquote>
+<p>These are the notes for the first release. Everything that has landed
+since - the shared QuillVille Runtime and the lighter downloads it makes
+possible, the arrow-navigable status bar, the audio converter, and
+announcements in braille - is in the 2.2.0 notes,
+<code>release-notes-2.2.md</code>.</p>
+</blockquote>
 <h2 id="what-it-is">What it is</h2>
 <p>One small home window, three journeys:</p>
 <ul>
@@ -261,29 +268,23 @@ everything local keeps working.</li>
 </ul>
 <h2 id="relationship-to-quill">Relationship to QUILL</h2>
 <p>The Studio runs the exact same Audio Studio code that ships inside
-the QUILL editor - vendored into this repository's self-contained
-<code>quillas</code> package - and shares QUILL's data store
-(<code>%APPDATA%\Quill</code>, or the portable <code>data</code>
-folder). Voices, downloaded engines, speech settings, your book list,
-and listening positions are one set of data across QUILL, QUILL Audio
-Studio, Quill Radio, and QUILL Cast. You do not need QUILL installed to
-use the Studio, and nothing you set up in one app is stranded in the
-other.</p>
-<h2 id="builds">Builds</h2>
-<ul>
-<li><strong>Installer</strong>
-(<code>QUILL-Audio-Studio-Setup-1.0.0.exe</code>) - Start Menu group,
-uninstaller, shared data store. ffmpeg and the mpv player engine are
-bundled.</li>
-<li><strong>Portable zip</strong> - extract anywhere and run
-<code>QuillAudioStudio.exe</code>; a <code>data</code> folder next to
-the exe holding a <code>storage-mode.json</code> marker
-(<code>{"mode": "portable"}</code>) is the switch that keeps everything
-on the stick.</li>
-<li><strong>From source</strong> - <code>pip install -e ".[ui]"</code>
-and <code>python -m quillas</code> (Python 3.12+), or
-<code>run-quill-audio-studio.bat</code>.</li>
-</ul>
+the QUILL editor - carried here as a self-contained copy - and shares
+QUILL's data store (<code>%APPDATA%\Quill</code>, or the portable
+<code>data</code> folder). Voices, downloaded engines, speech settings,
+your book list, and listening positions are one set of data across
+QUILL, QUILL Audio Studio, Quill Radio, and QUILL Cast. You do not need
+QUILL installed to use the Studio, and nothing you set up in one app is
+stranded in the other.</p>
+<h2 id="editions">Editions</h2>
+<p>Two downloads shipped with this release: an installer that puts the
+Studio in its own folder with a Start Menu group and an uninstaller, and
+a portable zip you extract anywhere - a USB stick included - where a
+<code>data</code> folder next to the program keeps every setting, voice,
+and book position inside the app folder so the whole studio travels with
+you. Both bundle ffmpeg and the mpv player engine. You can also run it
+from a source checkout.</p>
+<p>The lighter, shared-runtime editions arrived after this release; see
+the 2.2.0 notes.</p>
 <h2 id="known-limitations">Known limitations</h2>
 <ul>
 <li><strong>Windows-first; macOS supported.</strong> The macOS build

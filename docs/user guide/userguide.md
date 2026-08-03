@@ -6509,6 +6509,19 @@ Quill is excellent for large documents because it supports:
 
 When you combine this with marks and compare sessions, long-form review starts to feel much less fragile.
 
+#### Moving through a table cell by cell
+
+Tables are the one structure that plain caret movement handles badly: arrowing along a line tells you the characters but never the shape. Quill gives tables their own movement keys, and every landing says where you are before it says what is there.
+
+- **Ctrl+Alt+Right** and **Ctrl+Alt+Left** move one cell along the row.
+- **Ctrl+Alt+Down** and **Ctrl+Alt+Up** move one cell down or up the column.
+- **Alt+Home** and **Alt+End** jump to the first or last cell of the current row.
+- **Ctrl+Alt+Home** and **Ctrl+Alt+End** jump to the first or last cell of the whole table.
+
+Each move speaks the cell's position and contents together — *"Row 2 of 6, column 3 of 5: Portland"* — so you always know how far in you are without counting. An empty cell is announced as *"blank"* rather than by silence. When a move has nowhere to go, Quill says so instead of moving: *"No more cells"* at the end of a row, *"No more rows"* at the end of a column, and *"No more cells, end of table"* (or *"No more rows, end of table"*) when you are on the very last cell — the difference between "this row stops here" and "the table stops here". Ordinary caret movement in and out of a table still announces **"Entering table"** and **"Out of table"**, and the keys are harmless outside a table: Quill just reports "Not in a table".
+
+This works on Markdown tables you write yourself **and on tables Quill imports from Word**. A `.docx` table is brought in as a real table laid out as Markdown rows, so the same keys, the same position announcements, and the same edges apply to a table you opened from Word as to one you typed. A cell whose own text contains a `|` character stays one cell — it does not split the row or throw the column count off.
+
 ### Code-aware editing
 
 When you open a source file, Quill loads a **language profile** based on the file extension. Recognised languages are HTML, Markdown, CSS, Python, JavaScript, TypeScript, C, C++, C#, PHP, Go, Rust, Kotlin, Shell, YAML, JSON, TOML, and SQL, with a plain-text fallback for everything else. The profile tells Quill how that language is tokenised so movement and announcements make sense for code.
@@ -7408,10 +7421,23 @@ Quill can play short, non-speech audio cues — earcons — at meaningful editin
 - **Every numbered slot has its own note.** The twelve Copy Tray slots and the ten quick-bookmark slots each play their own pitch on a shared musical scale when you copy, paste, set, or jump. Copy Tray slots are soft marimba-style taps; bookmarks are brighter chirps, so the family is obvious before the pitch lands. After a little use, "slot seven" stops being something you wait to hear spoken — it is a note you recognize, which is what makes numbered slots usable at speed.
 - **Progress you can hear without being interrupted.** Long downloads and installs play a short blip at every 5 percent, rising in pitch as they approach done — the 25, 50, and 75 percent marks carry a touch of harmony, and 100 percent resolves with a small two-note finish. A sound never talks over your screen reader the way a spoken percentage does; the spoken quarter-milestones remain as the coarse narration.
 - **Selection and boundary cues.** Starting a selection with F8 plays a rising two-note gate and completing it plays the mirror image; reaching the very top of the document gives a high ceiling tick, and the very end a low floor thud.
+- **The companion apps have their own voice.** Quill Radio, QUILL Cast, Quill Weather and QuillBeacon now cue the moments you used to have to guess at from silence. Radio marks connecting, the stream actually starting, a mid-stream stall, stopping, a stream that failed, a recording beginning and being saved, and a station added to Favourites — so you know a station is coming rather than dead, and you can tell "still buffering" from "gone". Cast marks downloads beginning, each episode landing on disk, and an episode reaching its end. Weather plays its alert cue only when an alert is genuinely new — never on a routine check, and never again for one it has already told you about. Beacon marks an item captured and a sync finishing. Each of the fourteen is a **Sound Event** you can turn off individually, and each fires on a real change of state: a stream that stalls ten times in a row makes one sound, not ten, and a forty-episode download batch says "downloading" once.
 - **Keep the sound device awake.** Some USB and Bluetooth audio devices power down after a few silent seconds and clip the start of the next sound. If the first moment of your earcons or speech gets cut off, turn on **Keep the sound device awake** (in Settings, search "keepalive"): QUILL plays a silent clip every 20 seconds so the device never sleeps. Off by default.
 - **Hear them all.** Run `python scripts/audition_ink_sounds.py` from a QUILL source checkout to audition the identity set family by family, or add `--all` for every sound in the pack.
 
 Earcon events in the bundled Ink pack include: `quill_key_pressed` (QUILL key prefix armed), `abbreviation_expanded`, `abbreviation_deleted`, `snippet_inserted`, `autocomplete_accepted`, `document_saved`, `document_created`, `search_found`, `search_not_found`, `search_wrapped`, `heading_jumped`, `table_entered`, `browse_mode_on`, `browse_mode_off`, `ai_thinking_started`, `ai_response_received`, `ai_error`, `transcription_started`, `transcription_stopped`, `ssh_connected`, `ssh_disconnected`, `error`, `warning`, `sound_on`, `sound_off`, and the five compare events. Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full QSP format and event reference are documented in the product requirements document, under "Sound notifications and QSP sound packs."
+
+### Background checks: how often, how loud, how urgent
+
+Quill quietly watches a few things for you: a watched folder, the weather, your podcast feeds, and (if you use it) your GitHub account. Every one of those now offers the **same three controls**, so once you have set up one of them you already know how the others work. Find them in **Preferences → Settings** and search for the monitor's name, or for "tick", "interrupt", or "check".
+
+- **How often it checks.** The poll interval. Watched folders are measured in seconds, because a file you just dropped in should be noticed while you are still standing in the folder. Feed and account checks are measured in minutes, because nothing good comes of asking a server the same question every five seconds. Quill will not accept a zero-second interval — an interval of zero is a program that never stops checking, not a program that checks constantly — so a value of 0 or a negative number is quietly raised to the monitor's minimum.
+- **Whether the check itself makes a sound.** Turn on **Play a sound on each check** and you get a short tick every time that monitor looks. This is not a notification that something happened; it is proof the watcher is alive. With it on, silence means "it stopped", not "nothing new". It is off by default for every monitor, because a metronome you did not ask for is worse than silence — turn it on for the one or two watchers you actually want to feel running.
+- **Whether a result interrupts speech.** Turn on **Let results interrupt speech** and that monitor's announcements cut across whatever is currently being spoken. Leave it off (the default) and they wait their turn, so a new-episode notice never chops a sentence in half while you are reading. This is a preference, not a property of the message: some people want the weather to interrupt and podcasts to wait, and some want the opposite. Genuine errors always interrupt regardless — no setting can silence the message that says something broke.
+
+Quill describes the combination back to you as one plain sentence rather than making you assemble it from three checkboxes: *"Checks every 15 minutes, ticks audibly, does not interrupt speech."*
+
+One monitor is new: **Check podcast feeds in the background**. Until now, podcast feeds were only read when you asked for a refresh. Turn this on and Quill checks your subscriptions on your chosen cadence and tells you what arrived. It is off by default, it only reads the feeds (nothing is downloaded unless your show settings already say to), and it never runs in Safe Mode.
 
 ### Startup speech is opt-in, not automatic
 
@@ -7786,6 +7812,20 @@ You can add several accounts, give each its own nickname, **set a default**, or 
 
 **Proofread posts before sending.** In **Mastodon Accounts...**, select an account and tick **Spell-check posts before sending** to turn on per-account proofreading (off by default). When it is on, pressing **Post** for that account first opens the Spelling Review (F7) on the post text so you can fix misspellings, and the post is sent only after you finish or skip the review. The setting is per account, so you can enable it for some accounts and not others; existing accounts are unaffected until you turn it on.
 
+### Reading a Mastodon profile aloud
+
+Open **Tools → Share → View Mastodon Profile...**, type a handle such as `@name@server`, and Quill shows the account's name, your relationship in both directions, a Follow or Unfollow button, the account's **Bio**, and its **Recent posts**.
+
+Everything you hear there has been reshaped for listening first. Mastodon sends bios and posts as web markup, not as plain text, so a screen reader that is handed them untouched reads the markup out loud. Quill converts them to plain text before anything is displayed or spoken, so you hear the words and never the tags. In a link, you hear the part your server chose to show and not the long hidden tail.
+
+Three more changes exist only because this text is spoken rather than skimmed:
+
+- **A pile of mentions is counted, not recited.** A reply that starts by addressing several people is read as `@alice and 2 more` followed by the message. You still learn who was addressed and how many, but you reach the first real word straight away instead of hearing four usernames spelled out. A reply that names only one person is left exactly as written.
+- **Decorative characters are removed from names and posts.** An emoji is announced by its full name — "grinning face with smiling eyes" — every single time the name appears, in every list row. Quill strips emoji and similar decoration while keeping accented letters, other alphabets, quotation marks, dashes, and currency signs, which are part of real words. If a display name was nothing but decoration, Quill falls back to the plain handle.
+- **Each post is one line: when, then its first sentence.** A post is summarised as something like `3 minutes ago: Actually, that is wrong.` The time is spoken in plain words rather than as a timestamp you would have to subtract in your head, and the summary stops at the first sentence so arrowing down the list gives you one post per key press. A post with a content warning shows the warning instead of the text, which is what a content warning is for.
+
+If the account is private, or your server does not share its posts, the profile still opens — the Recent posts list is simply absent.
+
 **Post language and per-instance length (#922).** The compose window has a **Post language** picker next to the visibility choice. The default, "Default (instance)", sends no language field so your instance files the post under your account's default language; pick a language such as English or Italian to send its ISO 639-1 code, which keeps a post written in one language from being mis-shelved under another. The live character counter now reflects the selected account's real per-instance limit rather than the classic ceiling: Quill queries the instance once per session and reuses the result, so an instance that allows more (for example one with a 9999-character limit) shows the correct count and does not block a longer post.
 
 ## Working with Different Document Types
@@ -7848,6 +7888,15 @@ How a conversion flows:
 **Opening a password-protected PDF.** When you open an encrypted (password-protected) PDF, QUILL asks for its password and reads the document — you no longer need to decrypt it in another tool first. Type the password and the PDF opens; enter the wrong one and QUILL tells you and lets you try again; press **Cancel** to stop opening it. **The password is used only to unlock that one file for reading — QUILL never stores, logs, or remembers it**, so if you close and reopen the file, it asks again. PDFs that are technically "encrypted" but open with an empty password (permissions-only locks) continue to open with no prompt.
 
 **A PDF's bookmarks come across.** If a PDF carries an embedded outline — the chapters and sections you would see in Adobe Reader's bookmarks pane — QUILL imports those entries into its own **Bookmarks Manager** (Ctrl+Shift+G) when you open the file, the same way it already surfaces Word and EPUB structure. Each imported bookmark jumps to exactly where **Go To Page** for that page would land. The import happens once, the first time you open the PDF: if you later rename or delete some of those bookmarks, reopening the file will not bring them back or create duplicates, and a PDF with no outline simply opens as before.
+**The text a PDF gives back is repaired before you read it.** A PDF does not store sentences — it stores where each letter was printed. What comes out of it is therefore a picture of the page rather than the words the author typed, and read aloud that picture can be rough going. QUILL now repairs four specific things as it opens the file, page by page:
+
+- **Words broken across lines are put back together.** Print layout splits long words with a hyphen at the end of a line, so "inter-" on one line and "national" on the next used to be read as two words, and searching for "international" found nothing. QUILL rejoins them. A hyphen that belongs to the word is kept: **Anglo-Saxon** and **2018-2019** are left exactly as written.
+- **Paragraphs are put back together.** Every printed line arrives as its own line of text, so speech stopped at the edge of the page instead of at the end of the sentence, and "read the next paragraph" moved you one printed line. QUILL rejoins lines that were only broken because the page ran out of room. Blank lines, list items, headings, short deliberate lines, and finished sentences keep their breaks, so lists stay lists and paragraphs stay separate.
+- **Letter-spaced headings are collapsed.** A designer's spaced-out title comes through as "C H A P T E R  O N E", which is spelled out one letter at a time by a screen reader and never matches a search. It becomes "CHAPTER ONE". Ordinary text is left alone — a line such as "A B testing" is not a heading and is not touched.
+- **Invisible ligature characters are restored.** The joined "fi", "fl", and "ff" shapes a typesetter uses are often stored as characters that have no meaning outside the document's own font, so a screen reader reads *nothing* where they were: "office" is announced as "o ce". QUILL turns them back into their letters, and removes any leftover meaningless character rather than leaving speech to stumble over it.
+
+These repairs are deliberately cautious: when a case could go either way, QUILL leaves the text as it found it, and a PDF whose text is already clean comes through unchanged. Page boundaries are never crossed, so **Go To Page** and the page count stay exact.
+
 3. **On-device OCR rescues the scan.** The local Tesseract engine recognizes each page on your computer (CPU-only, works offline), keeps page boundaries as searchable `<!-- Page N -->` markers, and announces progress ("Recognizing page 3 of 12..."). When recognition confidence is low, QUILL tells you plainly so you know to review the result — honesty over false confidence.
 
 **Installing the OCR engine.** The engine is a free, one-time ~48 MB download: **Tools > Reading & Dictation > Install Local OCR Engine (Tesseract)...**. QUILL fetches the official installer from its own verified release, checks it byte-for-byte, and opens it for you to complete — never a silent install. If Tesseract is already on this computer (or installed with Homebrew on a Mac), QUILL simply finds and uses it.
@@ -8061,7 +8110,64 @@ GitHub remote access is controlled by the feature flag `core.github_remote`. If 
 - **Who Wrote This Line...** runs `git blame` on wherever your cursor is in the current file and tells you who last touched that line, when, and the commit's summary.
 - **Start Bisect... / End Bisect** guides you through a `git bisect` session as a plain question-and-answer loop: QUILL checks out a commit and asks "Is this version good or bad?" — answer, and it narrows the search until it announces exactly which commit introduced the problem.
 
-None of these commands have a default keyboard shortcut — every letter on the QUILL Key leader chord is already claimed by another command — but all ten are in the Command Palette and in the **Tools > Local Git** menu, and you can assign your own shortcut to any of them in **Preferences > Keyboard Shortcuts**.
+None of these commands have a default keyboard shortcut — every letter on the QUILL Key leader chord is already claimed by another command — but all twelve are in the Command Palette and in the **Tools > Local Git** menu, and you can assign your own shortcut to any of them in **Preferences > Keyboard Shortcuts**.
+
+### Worktrees: one folder per branch, so your open document never changes underneath you
+
+**What a worktree is.** Normally a git repository is one folder, and it holds one branch at a time. Moving to another branch means checking that branch out *in place*: every file in the folder is rewritten to match the new branch, while keeping the same names and the same paths.
+
+A **worktree** is a second folder attached to the same repository, with a different branch checked out in it. The two folders share one history, one set of branches, and one set of stashes — but each has its own working copy of the files. You end up with, say, `quill` on `main` and `quill-feature-x` on `feature/x`, side by side.
+
+**Why this matters more if you use a screen reader.** When you switch branches in place, the document you have open in QUILL is silently replaced by a different document with the same name. A sighted user sees the text on screen change and knows immediately what happened. If you are reading with a screen reader, nothing announces it: the paragraph under your review cursor is now a paragraph from another branch, in a file that still calls itself the file you opened. That is exactly the kind of uncued context switch QUILL works hard to avoid everywhere else.
+
+With a worktree, nothing under your cursor ever changes. Switching context becomes *"open a different file"* — something you do, and hear — instead of *"this file is now a different file"* — something that happens to you. That is the whole accessibility argument for worktrees, and it is why QUILL supports them properly rather than leaving them to the command line.
+
+#### Seeing what you have
+
+**Tools > Local Git > Worktrees...** opens the list. QUILL announces how many worktrees the repository has as the dialog opens, and each row reads as a complete sentence rather than a set of columns you have to arrow across:
+
+- *"Main worktree at S:\code\quill, on branch main"*
+- *"Linked worktree at S:\code\quill-feature-x, on branch feature/x"*
+- *"Linked worktree at D:\usb\quill-spike, on branch spike, locked: on a USB drive"*
+- *"Linked worktree at S:\code\quill-old, on branch old, missing from disk, ready to prune"*
+
+A worktree that is not on a branch at all reads as *"not on a branch, at commit 3f9a21c"*. After any action, QUILL speaks the outcome, rereads the list, and puts focus back on it, so you never have to hunt for where you were.
+
+#### Creating one
+
+Press **New Worktree...** from the list (or run **Local Git: New Worktree...** from the Command Palette to skip the list entirely). The form asks for four things:
+
+- **Folder for the new worktree** — where the new folder should be. Type or paste it, or press **Browse...**. The field accepts whatever you actually paste: a path copied from File Explorer with the quotes still on, an `%APPDATA%`-style environment path, a `file://` link, or a leading `~`.
+- **Branch to check out** — a list of your local branches. Branches that are already checked out in another worktree are left out, because git will not allow two of them.
+- **Create a new branch instead** — tick this to make a brand-new branch right here rather than checking out an existing one.
+- **New branch name** and **Start the new branch from** — used only when the checkbox is ticked. Leave the starting point blank to branch from where you are now, or name a branch, tag, or commit to start from something else.
+
+QUILL checks everything before it runs git, and speaks the reason if something is wrong: a folder that already has files in it, a folder inside the repository itself (git will not allow that), a branch you did not choose, or a new-branch name you did not type.
+
+#### Opening one
+
+Select a worktree and press **Open in QUILL** (or just press Enter on the row). QUILL opens documents rather than folders, so "open this worktree" means "open the same file, from over there": QUILL works out where your current document sits relative to its own worktree, and opens the matching file in the worktree you chose. If that file does not exist there — because it is new on your branch, or because nothing was open — QUILL says so and gives you a file picker already pointed at the worktree's folder.
+
+#### Removing, locking, and tidying up
+
+- **Remove...** deletes a worktree's folder from your disk. The branch itself stays in the repository — you are removing the folder, not the work. QUILL always confirms first, with **No** as the default button, so pressing Enter out of habit never destroys anything.
+- **If the worktree still has uncommitted changes, git refuses**, and QUILL passes that refusal on in plain language instead of quietly forcing it. Only then does it ask a second, separate question: discard those changes and remove it anyway? Two deliberate confirmations, never one.
+- **Lock** marks a worktree as "leave this alone", with an optional reason you will hear later in the list. This is worth doing for a worktree on a USB drive or a network share, which would otherwise look to git like a folder that has vanished. The same button reads **Unlock** when the selected worktree is already locked.
+- **Prune** forgets the record of any worktree whose folder is genuinely gone from disk, and tells you which ones it tidied up — or says *"Nothing to tidy up: every worktree is still on disk."* when there is nothing to do.
+- The **main** worktree — the repository folder itself — can never be removed or locked from this dialog; those buttons are unavailable while it is selected.
+
+#### Safety notes worth knowing
+
+- **A branch can only be checked out in one worktree at a time.** This is git's rule, not QUILL's. If you pick a branch that is already open somewhere else, QUILL tells you exactly which folder has it so you can open that folder instead.
+- **A worktree cannot live inside the repository it belongs to.** Put it beside the repository folder, not within it.
+- **Removing a worktree with uncommitted changes is refused** unless you confirm twice, as above.
+- **Worktrees need `git`**, like everything else under Tools > Local Git, and they are disabled in Safe Mode.
+
+#### Keystrokes
+
+Neither command has a default shortcut, for the same reason the other Local Git commands do not — the leader-chord letters are all taken. Both are in **Tools > Local Git** and in the Command Palette (**Local Git: Worktrees...** and **Local Git: New Worktree...**), and you can assign any shortcut you like to either in **Preferences > Keyboard Shortcuts**.
+
+Inside the Worktrees dialog: **Tab** and **Shift+Tab** move between the list and the buttons, **Up** and **Down** arrow move through the worktrees, **Enter** or **Space** on a row is the same as **Open in QUILL**, each button has its own access key (**Alt+N** New Worktree, **Alt+O** Open in QUILL, **Alt+R** Remove, **Alt+L** Lock or Unlock, **Alt+P** Prune), and **Escape** closes the dialog. Inside **New Worktree**: **Alt+F** the folder field, **Alt+B** Browse, **Alt+C** the branch chooser, **Alt+N** the "create a new branch" checkbox, **Alt+A** the new branch name, **Alt+R** the starting point, **Enter** creates the worktree, and **Escape** cancels.
 
 #### Downloading git and the GitHub CLI
 

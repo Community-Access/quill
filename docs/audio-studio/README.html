@@ -242,127 +242,114 @@
 </head>
 <body>
 <h1 id="quill-audio-studio">QUILL Audio Studio</h1>
-<p>Accessible, screen-reader-first audiobook and audio production as a
-standalone Windows and macOS desktop app - the QUILL editor's Audio
-Studio, extracted into its own self-contained product.</p>
-<p>Turn a folder of documents into a chaptered audiobook read by any
-voice (or a whole cast), stitch a folder of recordings into one
-chaptered master, and fix a finished book entirely by ear in the Chapter
-Workbench - then check it against ACX and publish it as a podcast feed,
-over SFTP, or through Auphonic. Every surface is keyboard-first and
-announced through your screen reader.</p>
-<h2 id="features">Features</h2>
+<p>Accessible, screen-reader-first audio production as a standalone
+Windows app, from the QUILL project.</p>
+<p>QUILL Audio Studio is not a fork. The whole application lives in the
+<a href="https://github.com/Community-Access/quill">quill</a> package
+(<code>quill.apps.studio</code>) and runs the exact same audio feature
+code QUILL itself uses: the same waveform editing, chapter markers, TTS
+narration, loudness checks, and publishing. This folder holds only what
+exists because QUILL is not in the picture: the product wrapper (entry
+point), the installer, and this app's own documentation. Everything
+shared stays upstream, so QUILL Audio Studio tracks QUILL
+automatically.</p>
+<h2 id="what-it-does">What it does</h2>
 <ul>
-<li><strong>Three journeys</strong> in one guided wizard: Narrate
-Documents (.docx/.md/.html/.txt to speech audio or an M4B/MP3
-audiobook), Build From Recordings (a folder of audio to one chaptered
-master), and Edit a Book (the Chapter Workbench).</li>
-<li><strong>Voice engines</strong>: Windows SAPI 5, DECtalk, Piper and
-Kokoro (neural, fully offline), eSpeak-NG, macOS <code>say</code>;
-ElevenLabs plus OpenAI/Gemini/ElevenLabs multilingual cloud voices with
-your own API key. Engines and models download on demand; every voice
-previews with the same comparable phrase.</li>
-<li><strong>Casting and translation</strong>: round-robin voice
-rotation, glob-based casting rules per chapter, and translated editions
-via a configured AI provider or local LibreTranslate.</li>
-<li><strong>Production honesty</strong>: audition mode, dry runs,
-incremental rebuilds, ACX loudness normalization, fades and tempo,
-spoken opening/closing credits, spoken progress milestones, and portable
-<code>.quilljob</code> recipe files.</li>
-<li><strong>Chapter Workbench</strong>: chapter-aware player (resume
-positions, 0.75x-2x pitch-preserved speed, "Where am I?"),
-split-at-playhead surgery, silence-based chapter proposals, AI-proposed
-chapter titles (local transcription, text-only to your AI, always
-reviewable), tags and cover, chapter list import/export (Audacity, CUE,
-timestamps, Podcasting 2.0 JSON, CSV), split into per-chapter
-files.</li>
-<li><strong>Publishing</strong>: local RSS feed, whole-folder show feed
-with accessible show notes, SFTP upload (credentials in the Windows
-Credential Manager, strict host keys), and Auphonic mastering - each
-explicit, consented, cancellable, and announced.</li>
-<li><strong>Listening layer</strong>: the home window's Your-books
-library is a tree (Favorites, In Progress, Recently Played, Inbox, plus
-your own folders) that fills in as you open books; resume-on-launch, a
-Recently Played list, media keys, per-book volume and mute (Ctrl+M), a
-sleep timer (including stop-at-end-of-chapter), and a play queue that
-opens the next book for you.</li>
-<li><strong>App comforts</strong>: system tray with Resume-last-book,
-opt-in Alt+F4-to-tray, Ctrl+Shift+P command palette, in-app update
-checks, Safe Mode.</li>
+<li>Edit spoken-word audio (audiobooks, podcasts, narration)
+keyboard-first, with a screen reader in mind at every step.</li>
+<li>Add and navigate chapter markers; export chaptered MP3/M4B
+audiobooks.</li>
+<li>Narrate text with neural text-to-speech (Kokoro / Piper), fetched on
+demand.</li>
+<li>Run an ACX-style loudness/quality check so an audiobook meets the
+retailer's spec before you submit it.</li>
+<li>Convert and export common formats via bundled FFmpeg (MP3, M4A/M4B,
+OGG, Opus, FLAC), including a batch converter with presets, advanced
+DSP, and audio import from a link.</li>
+<li>Transcribe audio or video to <code>.srt</code> / <code>.vtt</code>
+captions offline.</li>
+<li>Speak, braille, cue and display every announcement through the
+shared announcement service, with an arrow-navigable status bar (F6)
+that keeps a long run reviewable from the tray.</li>
+<li>Live in the system tray; share settings and voices with QUILL, Quill
+Radio, and QUILL Cast (one data store in
+<code>%APPDATA%\Quill</code>).</li>
+<li>Check for its own updates from Help &gt; Check for Updates.</li>
 </ul>
-<h2 id="quick-start">Quick start</h2>
-<p>From source (Python 3.12+):</p>
+<h2 id="install">Install</h2>
+<p>Audio Studio is built at 2.2.0 -- the shared QuillVille family
+version -- but has <strong>not been publicly released yet</strong>, so
+there is no download page for it. When it ships it will be published,
+like every QuillVille app, from the <a
+href="https://github.com/Community-Access/quill">quill</a> Releases
+page, where each app recognizes its own downloads:</p>
+<ul>
+<li><strong><code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code></strong>
+-- the system install: its own directory, Start Menu entry, uninstaller.
+Choose per-user or per-machine at install time. Installs the shared
+QuillVille Runtime if it is not already present, plus the app. Uses the
+shared Quill data in your Windows profile.</li>
+<li><strong><code>QUILL-Audio-Studio-Lite-Setup-&lt;version&gt;.exe</code></strong>
+-- the thin installer: downloads the shared runtime only if it is
+missing, then installs the app.</li>
+<li><strong><code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code></strong>
+-- extract anywhere (a USB stick included) and run
+<code>QuillAudioStudio\QuillAudioStudio.exe</code>. Fully
+self-contained: a genuine, unmodified CPython plus the offline speech
+engines, ffmpeg, and mpv. The bundled <code>data</code> folder keeps
+your settings inside the app folder, so the whole thing travels --
+exactly like QUILL portable.</li>
+<li><strong><code>QUILL-Audio-Studio-Companion-&lt;version&gt;.zip</code></strong>
+-- the feather-light edition (a few MB): the app and its docs only,
+running on the shared QuillVille Runtime, which it offers to download
+once on first launch.</li>
+</ul>
+<p>FFmpeg is bundled. The neural TTS engine and any transcription engine
+are fetched on demand through QUILL's shared, SHA-verified component
+system (the assets-v1 mirrors); to ship a fully-offline Studio with TTS
+bundled, see the note in <code>quill-audio-studio.spec</code>.</p>
+<p>Help &gt; Check for Updates knows which flavor you run, resolves
+Audio Studio's own artifact from the shared releases page, and can
+install it and restart the app for you in one step.</p>
+<h3 id="a-note-on-the-smartscreen-warning-unsigned-builds">A note on the
+SmartScreen warning (unsigned builds)</h3>
+<p>These releases are not yet code-signed, so Windows SmartScreen may
+warn the first time you run the installer or the portable exe. Choose
+<strong>More info</strong>, then <strong>Run anyway</strong>. The builds
+are produced directly from this repository's source by the maintainers;
+code signing is planned, and the warning will disappear once releases
+are signed.</p>
+<h2 id="run-from-source">Run from source</h2>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pip install <span class="op">-</span>e <span class="st">&quot;.[ui]&quot;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quillas</span></code></pre></div>
-<p>Or just run <code>run-quill-audio-studio.bat</code>, which finds a
-suitable environment (this repo's <code>.venv</code>, a sibling
-<code>S:\QUILL\.venv</code>, or <code>python</code> on PATH).
-<code>run-quill-audio-studio-safe-mode.bat</code> launches with AI,
-publishing, and downloads disabled.</p>
-<p>Optional extras:</p>
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pip install <span class="st">&quot;.[ui]&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">apps</span><span class="op">.</span><span class="fu">studio</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># or, for quick dev testing against a local QUILL checkout:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\run-quill-audio-studio<span class="op">.</span><span class="fu">bat</span></span></code></pre></div>
+<h2 id="build-a-release">Build a release</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One command, both artifacts (staged portable folder -&gt; portable zip + installer).</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Needs: the quill package in the Python env, Inno Setup 6.3+, an ffmpeg.exe to</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># bundle, and the issues-only feedback token file (the build FAILS without it</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># rather than shipping a broken Report a Bug).</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>TokenFile S<span class="op">:</span>\token<span class="op">.</span><span class="fu">txt</span> <span class="op">-</span>FfmpegDir C<span class="op">:</span>\path\to\ffmpeg\bin</span></code></pre></div>
+<p>The portable bundle is a genuine, unmodified CPython embeddable
+runtime with a small native launcher -- not a PyInstaller onedir, and
+not a renamed <code>pythonw.exe</code>, the pattern antivirus tools used
+to flag. One staged folder feeds both the portable zip and the
+installer. It pulls the entire <code>quill</code> package -- code and
+data -- and excludes the heavy speech/science stacks, which are fetched
+on demand.</p>
+<h2 id="documentation">Documentation</h2>
 <ul>
-<li><code>pip install -e ".[ui,kokoro]"</code> - the Kokoro neural TTS
-runtime (models download on demand in-app).</li>
-<li><code>pip install -e ".[ui,ssh]"</code> - SFTP publishing
-(paramiko).</li>
-<li><code>pip install -e ".[ui,dev]"</code> - pytest and ruff for
-development.</li>
-</ul>
-<p>End-user documentation lives in <code>docs/userguide.md</code> (also
-opened in-app via Help &gt; User Guide).</p>
-<h2 id="repo-layout">Repo layout</h2>
-<ul>
-<li><code>quillas/</code> - the application package: the complete Audio
-Studio dependency closure vendored from the QUILL monorepo (with
-<code>quill.*</code> imports rewritten to <code>quillas.*</code>), plus
-the standalone app shell. <code>quillas/apps/studio.py</code> is the app
-frame and entry point; <code>quillas/ui/audio_studio/</code> is the
-wizard, Chapter Workbench, player, and publish surfaces.</li>
-<li><code>scripts/vendor_from_quill.py</code> - re-syncs the vendored
-closure from <code>S:/QUILL</code> (copies seed packages/modules,
-rewrites imports, chases the import graph). Re-runnable; never touches
-hand-written files.</li>
-<li><code>scripts/vendor_tests.py</code> - vendors the matching test
-suite the same way.</li>
-<li><code>tests/</code> - the vendored unit tests plus the audio corpus;
-run with <code>pytest -q</code>.</li>
-<li><code>launcher.py</code> and <code>quill-audio-studio.spec</code> -
-the PyInstaller entry script (portable-mode detection, bundled-tools
-anchoring) and onedir build spec.</li>
-<li><code>installer/quill-audio-studio.iss</code> - the Inno Setup
-script for the installer; <code>scripts/build_release.ps1</code> stages
-ffmpeg/libmpv/docs into <code>dist/QuillAudioStudio</code> and drives
-both the installer and the portable zip.</li>
-<li><code>assets/</code> - the app icon.</li>
-</ul>
-<h2 id="building-releases">Building releases</h2>
-<p><code>scripts/build_release.ps1</code> builds the PyInstaller onedir
-bundle, stages the bundled tools and rendered docs, then produces the
-installer (via ISCC on <code>installer/quill-audio-studio.iss</code>)
-and the portable zip. The installed copy uses the shared
-<code>%APPDATA%\Quill</code> store; the portable zip ships a
-<code>data</code> folder next to the exe that keeps everything
-self-contained.</p>
-<h2 id="relationship-to-quill-quill-radio-and-quill-cast">Relationship
-to QUILL, Quill Radio, and QUILL Cast</h2>
-<ul>
-<li><strong>QUILL</strong> (<code>Community-Access/quill</code>) is the
-upstream: the Studio's wizard, Workbench, batch pipeline, and publish
-code are the same code QUILL ships, vendored here so this repo builds
-and runs without the monorepo. <code>scripts/vendor_from_quill.py</code>
-keeps the copy honest.</li>
-<li><strong>Quill Radio</strong> and <strong>QUILL Cast</strong> are
-sibling standalone apps built on the same <code>AppShellFrame</code>
-shell (tray, palette, updates, bug reporting). Unlike them - thin
-wrappers that depend on the <code>quill</code> package - this repo is
-self-contained.</li>
-<li>All four apps share one data store (<code>%APPDATA%\Quill</code>, or
-the portable <code>data</code> folder): settings, voices, downloaded
-engines, and your book library are configured once and available
-everywhere.</li>
+<li><a href="userguide.md">User Guide</a></li>
+<li><a href="release-notes-2.2.md">Release Notes 2.2</a> -- the current
+build</li>
+<li><a href="release-notes-1.0.md">Release Notes 1.0</a> -- the first
+release</li>
+<li><a href="CHANGELOG.md">Changelog</a></li>
+<li><a href="prd.md">Product Requirements</a></li>
 </ul>
 <h2 id="license">License</h2>
-<p>MIT - see <code>LICENSE</code>.</p>
+<p>MIT, same as QUILL.</p>
 </body>
 </html>

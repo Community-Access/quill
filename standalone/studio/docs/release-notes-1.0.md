@@ -4,18 +4,7 @@ Released 2026-07-18.
 
 Introducing QUILL Audio Studio: the QUILL editor's audiobook and audio production suite as its own standalone Windows and macOS desktop app - screen-reader-first, keyboard-first, and spoken end to end. It is for anyone who wants to turn writing into finished, chaptered, publishable audio without ever touching a waveform display - and then to sit back and listen to it.
 
-## New: the QuillVille Runtime and lighter downloads
-
-QUILL Audio Studio now shares one Python runtime -- the **QuillVille Runtime** -- with every other QuillVille app (QUILL, Quill Radio, and Quill Weather). It is installed once per user and reused by all of them, so once any Quill app has installed it, every app you add afterward starts instantly. The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled.
-
-That shared runtime unlocks two new feather-light ways to get the Studio, alongside the fully self-contained editions you already know:
-
-- **Companion edition** -- just the app and its docs (about 2 to 3 MB). The first time you launch it, if the runtime is not already on your machine, it offers to download and install it (about 230 MB, once) with a fully accessible progress bar. After that, this app and every other QuillVille app start instantly.
-- **Thin installer** -- a tiny installer that downloads the shared runtime only if it is not already present.
-
-Every runtime download, whether triggered by an installer or by the app's own first launch, shows a fully accessible progress bar that works with NVDA, JAWS, and Narrator, announcing progress as a percentage. See "Editions and the QuillVille Runtime" below for the full list of downloads.
-
-The app's launcher is also now a genuine, tiny native program, and the bundled Python is the official unmodified build. Earlier versions used a renamed and modified copy of Python's `pythonw.exe` as the launcher, which some antivirus tools flagged as a false positive. That pattern is gone, so the Quill apps are far less likely to be flagged.
+> These are the notes for the first release. Everything that has landed since - the shared QuillVille Runtime and the lighter downloads it makes possible, the arrow-navigable status bar, the audio converter, and announcements in braille - is in the 2.2.0 notes, `release-notes-2.2.md`.
 
 ## What it is
 
@@ -41,19 +30,13 @@ One small home window, three journeys:
 
 ## Relationship to QUILL
 
-The Studio runs the exact same Audio Studio code that ships inside the QUILL editor - vendored into this repository's self-contained `quillas` package - and shares QUILL's data store (`%APPDATA%\Quill`, or the portable `data` folder). Voices, downloaded engines, speech settings, your book list, and listening positions are one set of data across QUILL, QUILL Audio Studio, Quill Radio, and QUILL Cast. You do not need QUILL installed to use the Studio, and nothing you set up in one app is stranded in the other.
+The Studio runs the exact same Audio Studio code that ships inside the QUILL editor - carried here as a self-contained copy - and shares QUILL's data store (`%APPDATA%\Quill`, or the portable `data` folder). Voices, downloaded engines, speech settings, your book list, and listening positions are one set of data across QUILL, QUILL Audio Studio, Quill Radio, and QUILL Cast. You do not need QUILL installed to use the Studio, and nothing you set up in one app is stranded in the other.
 
-## Editions and the QuillVille Runtime
+## Editions
 
-All QuillVille apps now share one Python runtime, the **QuillVille Runtime**, installed once per user and reused by every app. Install it a single time and every Quill app you add afterward starts instantly. It is reference-counted, so it is removed only when the last app that needs it is uninstalled. You can pick the edition that fits how you want to run the Studio:
+Two downloads shipped with this release: an installer that puts the Studio in its own folder with a Start Menu group and an uninstaller, and a portable zip you extract anywhere - a USB stick included - where a `data` folder next to the program keeps every setting, voice, and book position inside the app folder so the whole studio travels with you. Both bundle ffmpeg and the mpv player engine. You can also run it from a source checkout.
 
-- **Full portable** (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, about 675 MB) - fully self-contained: runs from a USB stick with no installation and no internet. It carries a genuine, unmodified copy of Python plus the bundled offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Extract anywhere and run `QuillAudioStudio.exe`; a `data` folder next to the exe holding a `storage-mode.json` marker (`{"mode": "portable"}`) is the switch that keeps everything on the stick.
-- **Companion edition** (`QUILL-Audio-Studio-Companion-<version>.zip`, about 2 to 3 MB) - feather-light: just the app and its docs, running on the shared QuillVille Runtime. The first time you launch it, if the runtime is not already installed, it offers to download and install it (about 230 MB, once) with a fully accessible progress bar. After that, this app and every other QuillVille app start instantly.
-- **Full installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) - installs the shared runtime, if it is not already present, plus the app, with a Start Menu group, an uninstaller, and the shared data store. ffmpeg and the mpv player engine are bundled.
-- **Thin installer** (the `-Lite` setup) - a tiny installer that downloads the shared runtime only if it is not already present, then installs the app.
-- **From source** - `pip install -e ".[ui]"` and `python -m quillas` (Python 3.12+), or `run-quill-audio-studio.bat`.
-
-Every runtime download, whether triggered by an installer or by the app's own first launch, shows a fully accessible progress bar that works with NVDA, JAWS, and Narrator, and announces progress as a percentage.
+The lighter, shared-runtime editions arrived after this release; see the 2.2.0 notes.
 
 ## Known limitations
 

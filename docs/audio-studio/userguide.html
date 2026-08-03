@@ -178,7 +178,11 @@
 <body>
 <h1 id="quill-audio-studio-user-guide">QUILL Audio Studio User
 Guide</h1>
-<p>Version 1.0.0</p>
+<p>Version 2.2.0</p>
+<p>(There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared
+Quill family version number when it moved onto the shared runtime, so it
+went straight from 1.0.0 to 2.2.0. See the release notes for the full
+story.)</p>
 <p>QUILL Audio Studio is audiobook and audio production the way a screen
 reader user would design it: a small home window whose book list has
 focus the instant it opens, a wizard that asks one question at a time
@@ -200,34 +204,104 @@ Chapter Workbench: listen, fix chapters by ear, edit tags, run the ACX
 check, publish.</li>
 </ul>
 <h2 id="installing-and-running">Installing and running</h2>
+<h3
+id="the-quillville-runtime-install-python-once-use-it-everywhere">The
+QuillVille Runtime: install Python once, use it everywhere</h3>
+<p>Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL
+Audio Studio - now shares one Python runtime, called the
+<strong>QuillVille Runtime</strong>. It is installed once per user and
+reused by all of them. Install it a single time (with any Quill app),
+and every app you add afterward launches instantly, because the shared
+runtime is already there.</p>
+<p>The runtime is reference-counted: it is removed only when the last
+app that needs it is uninstalled, so removing one app never leaves the
+others unable to start.</p>
+<p>You choose how much of that runtime to download when you get the
+Studio. Four editions are offered:</p>
+<ul>
+<li><strong>Full portable</strong>
+(<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code>,
+about 675 MB) - fully self-contained. It runs from a USB stick with no
+installation and no internet, carrying a genuine, unmodified copy of
+Python plus the bundled offline speech and text-to-speech engines
+(whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Best when
+you want everything in one folder with nothing to install.</li>
+<li><strong>Companion edition</strong>
+(<code>QUILL-Audio-Studio-Companion-&lt;version&gt;.zip</code>, about 2
+to 3 MB) - feather-light. It contains only the app and its docs, and
+runs on the shared QuillVille Runtime. The first time you launch it, if
+the runtime is not already installed, it offers to download and install
+it (about 230 MB, once) with a fully accessible progress bar. After
+that, this app and every other QuillVille app start instantly. Best once
+you already run, or plan to run, more than one Quill app.</li>
+<li><strong>Full installer</strong>
+(<code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code>) -
+installs the shared runtime, if it is not already present, plus the app.
+See "The installer" below.</li>
+<li><strong>Thin installer</strong> (the <code>-Lite</code> setup) - a
+tiny installer that downloads the shared runtime only if it is not
+already present, then installs the app.</li>
+</ul>
+<p>Whenever the runtime is downloaded - by an installer or by an app's
+own first launch - it shows a fully accessible progress bar that works
+with NVDA, JAWS, and Narrator, announcing progress as a percentage. See
+"Downloading the QuillVille Runtime" below.</p>
 <h3 id="the-installer">The installer</h3>
-<p>Run <code>QUILL-Audio-Studio-Setup-1.0.0.exe</code>. It installs to
-its own folder with a Start Menu group (including a User Guide shortcut)
-and an uninstaller. Your data lives in the shared Quill store in your
-Windows profile (<code>%APPDATA%\Quill</code>), the same store QUILL,
-Quill Radio, and QUILL Cast use. Uninstalling never deletes that shared
-data.</p>
+<p>Run the full installer
+(<code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code>) or
+the thin <code>-Lite</code> installer. Either one makes sure the shared
+QuillVille Runtime is present (installing or downloading it only if it
+is not) and then installs the Studio to its own folder with a Start Menu
+group (including a User Guide shortcut) and an uninstaller. Your data
+lives in the shared Quill store in your Windows profile
+(<code>%APPDATA%\Quill</code>), the same store QUILL, Quill Radio, and
+QUILL Cast use. Uninstalling never deletes that shared data, and never
+removes the shared runtime while another Quill app still needs it.</p>
 <p>Windows SmartScreen may warn on first run because this release is not
 code-signed; choose "More info" then "Run anyway".</p>
 <h3 id="the-portable-zip">The portable zip</h3>
-<p>Extract the portable zip anywhere - even a USB stick - and run
-<code>QuillAudioStudio\QuillAudioStudio.exe</code>. The portable switch
-is a <code>data</code> folder next to the exe that contains a
-<code>storage-mode.json</code> marker file holding
-<code>{"mode": "portable"}</code>. When that folder and marker are
-present, all settings, voices, downloaded engines, and your book list
-live inside the app folder, so the whole studio travels with you. The
-portable zip ships this marker already in place; the installed copy
+<p>Extract the full portable zip
+(<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code>)
+anywhere - even a USB stick - and run
+<code>QuillAudioStudio\QuillAudioStudio.exe</code>. This edition needs
+no runtime download: it bundles its own genuine, unmodified copy of
+Python and the offline speech engines, so it runs with no installation
+and no internet. The portable switch is a <code>data</code> folder next
+to the exe that contains a <code>storage-mode.json</code> marker file
+holding <code>{"mode": "portable"}</code>. When that folder and marker
+are present, all settings, voices, downloaded engines, and your book
+list live inside the app folder, so the whole studio travels with you.
+The portable zip ships this marker already in place; the installed copy
 ships no <code>data</code> folder and uses the shared
 <code>%APPDATA%\Quill</code> store instead.</p>
-<p>Both flavors bundle ffmpeg and the mpv player engine in a
+<p>Both packaged flavors bundle ffmpeg and the mpv player engine in a
 <code>tools</code> folder next to the exe, so audiobook building and
 high-fidelity playback work out of the box.</p>
+<h3 id="downloading-the-quillville-runtime">Downloading the QuillVille
+Runtime</h3>
+<p>When you run the Companion edition or the thin installer and the
+shared runtime is not yet on your machine, the Studio offers to download
+it - about 230 MB, one time. This download always shows a <strong>fully
+accessible progress bar</strong> that works with NVDA, JAWS, and
+Narrator, whether the download was triggered by the installer or by the
+app's own first launch. Progress is announced as a percentage, so you
+always know how far along it is and never face a silent wait. Once the
+runtime is installed, this app and every other QuillVille app start
+instantly, and you are never asked to download it again unless every
+Quill app has been removed.</p>
+<h3 id="a-note-on-antivirus">A note on antivirus</h3>
+<p>The Studio's launcher is now a genuine, tiny native program, and the
+bundled Python is the official unmodified build. Earlier versions used a
+renamed and modified copy of Python's <code>pythonw.exe</code> as the
+launcher, which some antivirus tools flagged as a false positive. That
+pattern is completely gone, so the Quill apps are far less likely to be
+flagged. If an antivirus tool ever does flag a Quill app, it is a false
+positive; the downloads come from the project's official releases.</p>
 <h3 id="running-from-source">Running from source</h3>
 <p>From a checkout of the repository:</p>
 <ul>
 <li><code>pip install -e ".[ui]"</code> then
-<code>python -m quillas</code>, or</li>
+<code>python -m quill.apps.studio</code>, or</li>
 <li>run <code>run-quill-audio-studio.bat</code>, which finds a Python
 environment for you (this repo's <code>.venv</code>, then a sibling
 QUILL checkout's <code>.venv</code>, then whatever <code>python</code>
@@ -250,11 +324,33 @@ Documents...</strong>, <strong>Build From Recordings...</strong>,
 the Chapter Workbench. A book whose file has been moved or renamed is
 marked "(missing)".</li>
 </ul>
+<h3 id="the-status-bar">The status bar</h3>
 <p>The status bar reads "Ready - N books in your library" when idle.
 During a long run it carries per-file progress, and by default the
 Studio also speaks the 25, 50, and 75 percent milestones so you can
 follow an overnight narration from another window (turn this off in
 Preferences).</p>
+<p>You can read the bar rather than wait for it to speak. Press
+<strong>F6</strong> to move focus into it, then <strong>Left</strong>
+and <strong>Right</strong> to move between its cells:</p>
+<ul>
+<li><strong>Activity</strong> - what the Studio is doing right now.</li>
+<li><strong>Progress</strong> - a live narration or build run: the
+percentage, how many files are done, and the current step.</li>
+<li><strong>Sleep timer</strong> - the timer's state, when one is
+set.</li>
+<li><strong>Your books</strong> - how many books are in your
+library.</li>
+<li><strong>Time</strong> - the current time.</li>
+</ul>
+<p>Press <strong>Enter</strong> to act on the cell you are on, use the
+context menu (Application key, or Shift+F10) for what that cell offers,
+and press <strong>Escape</strong> or F6 again to leave the bar and
+return to the window. <strong>View &gt; Show Status Bar</strong> hides
+or shows it, and the Studio remembers your choice.</p>
+<p>The Progress text is also written into the system-tray tooltip, so a
+long run is still reviewable when the window is minimized to the
+tray.</p>
 <h3 id="the-library-tree">The library tree</h3>
 <p>The library fills in as you work: every book you open in the Chapter
 Workbench joins it, and you can shape it yourself with Favorites and
@@ -382,7 +478,11 @@ an anti-clipping trailing pad per section.</li>
 <h3 id="output-and-diagnostics">Output and diagnostics</h3>
 <ul>
 <li><strong>Output format</strong> - MP3 (with chapter markers), M4B
-audiobook (native chapters), or WAV.</li>
+audiobook (native chapters), or WAV. MP3 lands next to the document it
+came from; WAV, which produces much larger files, goes into an
+<strong>Audio Output</strong> subfolder beside the document instead, and
+a recursive run through nested folders gives each subfolder its
+own.</li>
 <li><strong>If an audio file already exists</strong> - Skip (a cheap
 resume), Overwrite, or Rename (keep both).</li>
 <li><strong>Normalize loudness to audiobook (ACX) level</strong> -
@@ -439,7 +539,12 @@ file...</strong> pins this exact run to a portable
 <code>.quilljob</code> (see "Job files"). Press <strong>Start</strong>
 and the run begins in the background: per-file progress in the status
 bar, spoken milestones at 25, 50, and 75 percent, and the finished book
-lands in Your books.</p>
+lands in Your books. <strong>Cancel</strong> (or Escape) stops a run
+cleanly - the file being synthesized right now finishes first, so you
+are never left with a half-written audio file, and nothing new is
+started after it. The diagnostics log records the same chunk-by-chunk
+detail the progress dialog shows, so reading the log after a run tells
+you as much as watching it did.</p>
 <h2 id="journey-2-build-from-recordings">Journey 2: Build From
 Recordings</h2>
 <p>Four steps: Start, Where are the recordings?, Tell me about the book,
@@ -624,6 +729,54 @@ the real voice; if that synthesis is taking a moment, you hear
 If neither a sample nor an installed engine is available, the status
 line says "Download this voice to hear a preview." Starting a new
 preview always stops the previous one; previews never overlap.</p>
+<h3 id="generate-captions-from-audio-or-video">Generate captions from
+audio or video</h3>
+<p><strong>Voices &gt; Generate Captions (Offline)...</strong>
+transcribes an audio or video file into a <code>.srt</code> or
+<code>.vtt</code> caption file entirely on your own machine - nothing is
+uploaded. Point it at a recording, a finished chapter, or a video, and
+it writes captions alongside. It uses the same speech-recognition models
+as the Studio's other transcription work, so if none is installed yet it
+offers to fetch one first (see "Downloading voices, engines, and
+components").</p>
+<h3 id="convert-audio-between-formats">Convert audio between
+formats</h3>
+<p><strong>Voices &gt; Convert Audio...</strong> changes audio files
+between formats and pulls the audio track out of video files. It uses
+the ffmpeg the Studio already bundles, so there is nothing extra to
+install, nothing leaves your machine, and it works in Safe Mode.</p>
+<ul>
+<li><strong>Build a queue.</strong> Add individual files, whole folders,
+or both. Delete removes the row you are on, and each row says in words
+what will happen to it.</li>
+<li><strong>Pick a format and a preset.</strong> Output formats include
+MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, and AAC; sources can be MP3, WAV,
+FLAC, Ogg, Opus, M4A/M4B, AAC, WMA, AIFF, and more, plus MP4, MKV, MOV,
+WebM, AVI and other video containers. The list only ever offers formats
+your ffmpeg can genuinely encode, so a long batch cannot fail half way
+for a missing encoder. Ten presets cover the usual jobs: Just convert
+(no processing), MP3 at 320, 192 or 128 kbps, Podcast, Audiobook (M4B),
+Voice memo, Web voice (Opus), Archival (FLAC, lossless), and Hearing-aid
+mono.</li>
+<li><strong>Choose what happens to existing files</strong> - Rename
+(auto-number, never overwrites), Skip, or Overwrite.</li>
+<li><strong>Advanced processing</strong>, all off or neutral unless you
+ask for it: loudness normalization to audiobook (ACX, -20 LUFS) or
+podcast and streaming level (-16 LUFS), gain, a high-pass filter,
+silence trimming, pitch-preserving tempo, a compressor, a night-mode
+leveler, fade in and fade out, and a safety limiter.</li>
+</ul>
+<p>The run happens in the background with several files at once, so the
+window stays responsive, and <strong>Cancel</strong> works. Progress
+appears in the status bar's Progress cell and the tray tooltip, and the
+spoken summary at the end <strong>names any files that failed</strong>
+rather than reporting success for all of them.</p>
+<p><strong>Voices &gt; Convert from URL...</strong> takes a link -
+YouTube and the many other sites the downloader supports - fetches its
+audio, and hands it to the converter. The downloader is not bundled: the
+first time you use this, the Studio explains what it is about to install
+and asks, and it reminds you that you are responsible for having the
+right to the audio you download. Unavailable in Safe Mode.</p>
 <h3 id="downloading-voices-engines-and-components">Downloading voices,
 engines, and components</h3>
 <p>Everything heavy downloads on demand, with progress and a working
@@ -797,20 +950,71 @@ the wizard.</li>
 open your most recent book in the Chapter Workbench.</li>
 </ul>
 <p>Double-click the tray icon to bring the window back.</p>
+<h2 id="announcements-how-the-studio-tells-you-things">Announcements:
+how the Studio tells you things</h2>
+<p>Everything the Studio announces - "Ready", a run milestone, a
+finished conversion, a warning - goes out on four channels at once, so
+you hear or feel it in whichever way you actually work:</p>
+<ul>
+<li><strong>Speech</strong>, through your screen reader.</li>
+<li><strong>Braille</strong>, on your display. This works with JAWS and
+NVDA and is on by default. Three rules keep it useful: braille never
+costs you speech (an unplugged display or a reader that refuses the
+message means the Studio still speaks and simply does not braille -
+never silence); nothing is truncated, so the end of a message is never
+clipped off; and the display is not stolen twice by the same message,
+since a flash message replaces whatever is under your fingers. An
+identical message inside two seconds is skipped, and a burst of
+different messages settles to the newest rather than each shoving the
+last aside - except errors, which always come through immediately.</li>
+<li><strong>Sound</strong>, for the short cues that confirm an
+action.</li>
+<li><strong>The status line</strong>, which you can read at your own
+pace with F6 (see "The status bar").</li>
+</ul>
+<p>Announcements are also recorded as they happen, so a message that
+went past while you were reading something else is not simply gone.</p>
+<p>These settings are shared with QUILL rather than repeated in the
+Studio's own Preferences, so set them once in QUILL's Preferences
+(Accessibility) and they apply here too: whether to show announcements
+in braille, the braille style (the full spoken wording, or a compact
+position-first form), how long an identical braille message is held
+back, whether an error stays on the display instead of flashing past,
+whether the companion apps play sound cues, whether a cue stands in for
+speech while Quiet Mode is on, and which severities interrupt
+speech.</p>
 <h2 id="checking-for-updates">Checking for updates</h2>
 <p><strong>Help &gt; Check for Updates...</strong> compares your version
-with the newest release on GitHub, downloads the right artifact for your
-flavor (installer for an installed copy, portable zip for a portable
-one) with spoken progress, then offers to install. The automatic startup
-check (on by default, throttled to once a day) is silent unless it
-actually finds something.</p>
+with the newest Quill release, works out which download matches the
+flavor you run (the installer for an installed copy, the portable zip
+for a portable one), and fetches it with spoken progress. Then choose
+<strong>Install and restart now</strong> and the Studio does the rest
+itself: it applies the update - unpacking the new portable files over
+your folder, or running the installer quietly - and relaunches, keeping
+every setting, voice, and saved listening position. There is nothing to
+unzip and no folder to swap by hand.</p>
+<p>All the Quill apps are published from one place, and each one
+recognizes its own download, so an update to Quill Radio is never
+offered to the Studio and each app updates on its own schedule. The
+automatic startup check (on by default, throttled to once a day) is
+silent unless it actually finds something.</p>
 <h2 id="the-command-palette">The Command Palette</h2>
 <p><strong>Help &gt; Command Palette...</strong> (Ctrl+Shift+P) lists
 every Studio command in one searchable list: the three journeys, Open
 Job File, Publish, the podcast feed, the ACX check, Sleep Timer, Mute
-Playback, Play Queue, the Speech Hub, Pronunciation Dictionaries, model
-and component downloads, AI setup, Preferences, and Check for Updates.
-Type a few letters, arrow to the command, press Enter.</p>
+Playback, Play Queue, the Speech Hub, Pronunciation Dictionaries,
+Generate Captions, Convert Audio, Convert from URL, model and component
+downloads, AI setup, Preferences, and Check for Updates. Type a few
+letters, arrow to the command, press Enter.</p>
+<h2 id="quillins">Quillins</h2>
+<p><strong>Quillins</strong> are QUILL's small, sandboxed,
+permission-gated add-ons. They run in QUILL, Quill Radio, and QUILL Cast
+today; <strong>Audio Studio does not offer a Quillins menu yet.</strong>
+The groundwork is in place - an add-on can declare that it contributes
+an extra step to the Studio's audio processing, such as a loudness pass
+at the mastering stage, and a sample add-on demonstrates exactly that -
+but the Studio does not load add-ons in this version. When it does, they
+will be off in Safe Mode like everywhere else.</p>
 <h2 id="keyboard-reference">Keyboard reference</h2>
 <table>
 <thead>
@@ -835,6 +1039,10 @@ Type a few letters, arrow to the command, press Enter.</p>
 <tr>
 <td>Command Palette</td>
 <td>Ctrl+Shift+P</td>
+</tr>
+<tr>
+<td>Move focus to the status bar (and back out)</td>
+<td>F6</td>
 </tr>
 <tr>
 <td>Open selected book (in Your books)</td>
@@ -924,6 +1132,14 @@ Credential Manager).</li>
 <p>Only the handful of window-behavior preferences above are app-local.
 Uninstalling the Studio never deletes the shared data.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
+<p>Two Help items are worth knowing before anything else goes wrong.
+<strong>Help &gt; View Log...</strong> opens the Studio's own log, so
+you can read what happened during a run instead of guessing.
+<strong>Help &gt; Save Diagnostics...</strong> writes a small, redacted
+zip - the log plus what the Studio can tell about your machine and
+settings, with anything private scrubbed - which is exactly what to
+attach to a bug report. <strong>Help &gt; Report a Bug...</strong> files
+one for you, already tagged with this app's name and version.</p>
 <ul>
 <li><strong>"The ACX check measures loudness with FFmpeg, which looks
 missing."</strong> Choose <strong>Voices &gt; Get FFmpeg...</strong> The
