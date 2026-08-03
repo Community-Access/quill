@@ -2311,6 +2311,7 @@ class CommandRegistryMixin:
         self._register_github_extras_commands()
         self._register_gh_bridge_commands()
         self._register_local_git_commands()
+        self._register_worktree_commands()
         self._register_dictation_hotkey_commands()
         self._register_emoji_picker_commands()
         self._register_radio_commands()

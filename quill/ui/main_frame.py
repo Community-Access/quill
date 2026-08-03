@@ -470,6 +470,7 @@ from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
+from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.sound_manager import post_sound
 from quill.ui.word_view import WordDocumentSurface
@@ -855,6 +856,7 @@ class MainFrame(
     VaultMixin,
     GitSyncMixin,
     LocalGitMixin,
+    WorktreesMixin,
     GlowFileMixin,
     DocConvertMixin,
     DictationHotkeysMixin,
@@ -1267,6 +1269,12 @@ class MainFrame(
                 event,
                 item,
             ),
+            # The ambient-monitor policy triple: the watch folder honours the
+            # user's poll interval, and ticks audibly when they asked for a
+            # sign of life (a check that makes no sound is indistinguishable
+            # from a watcher that has died).
+            settings=self.settings,
+            on_tick=post_sound,
         )
         self._watch_queue_monitor: object | None = None
         self._watch_queue_listbox: object | None = None
@@ -3228,6 +3236,11 @@ class MainFrame(
                 "Your text is still open in the editor and has not been lost.\n"
                 "What would you like to do?",
                 "File Deleted from Disk",
+                # dialog_button_contract: exempt -- not a destructive prompt.
+                # The buttons are relabelled Keep Text / Save As... / Close Tab,
+                # so Yes IS the safe answer (keep the user's text). Defaulting
+                # to No here would push the reflexive Enter toward a file
+                # dialog instead of preserving what is already open.
                 wx.YES_NO | wx.CANCEL | wx.ICON_WARNING,
             ) as dlg:
                 set_labels = getattr(dlg, "SetYesNoCancelLabels", None)
@@ -5545,14 +5558,14 @@ class MainFrame(
         """Surface the soft BRF save warning (#235): status + announcement."""
         self._set_status(message)
 
-    def _announce(self, message: str, *, force: bool = False) -> None:
+    def _announce(self, message: str, *, force: bool = False, sound: str = "") -> None:
         """Announce *message* on every channel the service can reach (#1298).
 
         The verbosity gate below is unchanged and still decides suppression,
         repetition collapse and the budget; what moved is delivery. Handing
         the result to the service is what gives QUILL braille, earcons,
         notification recording and the transcript from one call site instead
-        of four scattered ones.
+        of four scattered ones. ``sound`` is a SoundEvent id to lead with (#1302).
         """
         self._status_message = message
         self._record_spoken(message)
@@ -5569,7 +5582,7 @@ class MainFrame(
         service = self._announce_service()
         if service is None:
             return
-        report = service.announce(build_announcement(message, force=force))
+        report = service.announce(build_announcement(message, force=force, sound_event=sound))
         backend_error = report.failed.get(AnnounceChannel.SPEECH, "")
         if backend_error and backend_error != self._announcement_error_reported:
             self._announcement_error_reported = backend_error
@@ -15985,7 +15998,7 @@ class MainFrame(
             f"{credential_store_name()} and the encrypted fallback file. You "
             "will need to re-enter the key to use cloud providers again.",
             "Forget API Key",
-            wx.YES_NO | wx.ICON_WARNING,
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
         )
         if result != wx.YES:
             self._set_status("Forget API key cancelled. The stored key was kept.")

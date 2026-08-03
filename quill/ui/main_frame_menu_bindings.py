@@ -394,6 +394,16 @@ class MenuBindingsMixin:
             id=self._id_localgit_rebase_abort,
         )
         self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_worktrees(),
+            id=self._id_localgit_worktrees,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_new_worktree(),
+            id=self._id_localgit_new_worktree,
+        )
+        self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_story_studio(), id=self._id_open_story_studio
         )
         self.frame.Bind(

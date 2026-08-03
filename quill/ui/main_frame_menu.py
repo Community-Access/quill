@@ -1738,6 +1738,8 @@ class MenuBuilderMixin:
         self._id_localgit_resolve_conflicts = wx.NewIdRef()
         self._id_localgit_interactive_rebase = wx.NewIdRef()
         self._id_localgit_rebase_abort = wx.NewIdRef()
+        self._id_localgit_worktrees = wx.NewIdRef()
+        self._id_localgit_new_worktree = wx.NewIdRef()
         tools_menu = wx.Menu()
         tools_menu.Append(
             self._id_palette,
@@ -1960,6 +1962,15 @@ class MenuBuilderMixin:
         local_git_menu.Append(
             self._id_localgit_rebase_abort,
             self._menu_label(_("A&bort Rebase"), "localgit.rebase_abort"),
+        )
+        local_git_menu.AppendSeparator()
+        local_git_menu.Append(
+            self._id_localgit_worktrees,
+            self._menu_label(_("Wor&ktrees..."), "localgit.worktrees"),
+        )
+        local_git_menu.Append(
+            self._id_localgit_new_worktree,
+            self._menu_label(_("&New Worktree..."), "localgit.new_worktree"),
         )
         tools_menu.AppendSubMenu(local_git_menu, _("&Local Git"))
         tools_menu.AppendSeparator()

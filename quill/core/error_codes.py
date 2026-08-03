@@ -101,6 +101,10 @@ USER_HINTS: dict[str, str] = {
     "QUILL-IO-SAVE-UNSUPPORTED": (
         "Use File > Save As and choose one of the offered formats for this document."
     ),
+    "QUILL-GIT-WORKTREE-NO-GIT": (
+        "Install git from Help > Download Optional Components, then open "
+        "Tools > Local Git > Worktrees... again."
+    ),
 }
 
 
