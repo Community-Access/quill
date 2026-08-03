@@ -622,7 +622,7 @@ class ManagerPhase4Mixin:
         confirm = show_message_box(
             f'Delete the playlist "{playlist.name}"? Its episodes stay in your library either way.',
             "Delete Playlist",
-            wx.YES_NO | wx.ICON_QUESTION,
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
             self.dialog,
             announce=self._announce,
         )

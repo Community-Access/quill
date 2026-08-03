@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -169,36 +173,9 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. Only the color is
-       changed; each token keeps its default weight/style. Placed last so it
-       wins the cascade over the styles.html() highlighting defaults above. */
-    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
-    code span.an, code span.co, code span.cv,
-    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
-    code span.at { color: #55631a; }                            /* was #7d9029 */
-    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
-    code span.ch, code span.sc, code span.st,
-    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
-    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
-    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-radio-user-guide">Quill Radio User Guide</h1>
 <p>Version 2.2.0</p>
 <p>Quill Radio is internet radio the way a screen reader user would
@@ -324,6 +301,20 @@ playing.</li>
 <p>Everything Quill Radio announces goes through the same announcement
 engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA,
 Narrator) without stealing focus.</p>
+<p>Those announcements also go to a connected <strong>braille
+display</strong>, not just to speech -- what's playing, a finished
+directory refresh, a recording starting. Nothing is shortened, so a long
+track title is there in full for you to pan through, and the same
+message repeated within a couple of seconds does not flash the display
+twice (a flash message replaces whatever is under your fingers, so
+repeats are worse than useless). If a burst of different messages
+arrives at once, the first is written immediately and the rest settle to
+the newest, rather than each shoving the last aside faster than cell one
+can be read; errors always write through straight away. Braille never
+costs you speech: an unplugged display, or a screen reader that will not
+take the message, simply means it was spoken and not brailled -- never
+silence. Turn it off with <strong>Show announcements in braille</strong>
+in Preferences, under Accessibility.</p>
 <h2 id="the-main-window">The main window</h2>
 <p>Tab order: the now-playing line, the favorites tree, then four
 buttons.</p>
@@ -420,11 +411,11 @@ search it), <strong>Weather / NOAA</strong>, <strong>ACB Media</strong>,
 Icecast Directory</strong>. Expand a branch and its stations load on the
 spot; <strong>Enter</strong> plays the highlighted station, and
 <strong>Shift+F10</strong> (or right-click) opens Play/Stop, Add/Remove
-Favorite, Copy stream link, Open website, and Refresh. (TuneIn stations
-work out their stream only when played, so <strong>Add to
-Favorites</strong> on a TuneIn station resolves it on demand before
-saving -- it works there now just like every other source.) Two branches
-deserve their own words:
+Favorite, Copy stream link, Open website, <strong>Report Bad
+Station...</strong>, and Refresh. (TuneIn stations work out their stream
+only when played, so <strong>Add to Favorites</strong> on a TuneIn
+station resolves it on demand before saving -- it works there now just
+like every other source.) Two branches deserve their own words:
 <ul>
 <li><strong>Weather / NOAA</strong> is the real NOAA Weather Radio
 directory, state by state. Open the branch and you get the states (each
@@ -506,7 +497,41 @@ directory, off the UI thread, announcing how many services it found. The
 bundled list stays as the fallback, and the command is off in Safe
 Mode.</li>
 <li><strong>Add Custom Station...</strong> -- paste any stream URL and
-name it yourself.</li>
+name it yourself. Three kinds of link get extra help here:
+<ul>
+<li><strong>A YouTube link becomes a station.</strong> Paste an ordinary
+video link, a <code>youtu.be</code> short link, or a channel's live page
+(<code>youtube.com/@handle/live</code>) and Quill Radio treats it
+exactly like a radio station: it plays through the same player, sits in
+your favorites, records with <strong>Record Now</strong>, and can be
+captured by a <strong>scheduled recording</strong>. What gets saved is
+the <em>page</em> address, never a stream address -- YouTube's stream
+addresses expire after a few hours, so Quill Radio looks the audio up
+fresh every time the station plays or records. That is what lets a
+recording you schedule today still work next week. It needs a small
+helper called <code>yt-dlp</code>, which is deliberately
+<strong>not</strong> bundled: the first time you add a YouTube station,
+Quill Radio explains what it is, asks your permission, and installs it
+(about 3 MB). It asks <em>then</em>, not later, so a scheduled recording
+firing while you are asleep is never the first time the app reaches
+YouTube. Because looking the audio up takes a moment, it happens in the
+background: you hear "Connecting" straight away and the window never
+freezes. A video that is private, removed, blocked in your region, or
+not live yet says so in plain words. YouTube stations are unavailable in
+Safe Mode.</li>
+<li><strong>A Live365 link is fixed for you.</strong> The Live365 link
+most people have is the station page
+(<code>live365.com/station/...</code>) or the web player
+(<code>player.live365.com/a25891</code>) -- both are web pages, and
+pasting one used to save a station that could never play, with nothing
+to explain why. Quill Radio now recognizes a Live365 station page,
+player link, or even a bare station id and rewrites it to that station's
+real stream address, telling you in the dialog that it did. Nothing is
+fetched or sent anywhere -- it is purely a matter of rewriting the text
+-- and a link that is not Live365 is used exactly as you typed it.</li>
+<li><strong>Any other stream URL</strong> is saved as you typed it, as
+always.</li>
+</ul></li>
 <li><strong>When a station won't play, Quill Radio tries to fix it for
 you.</strong> Some stations are listed in the directory but their stream
 address is dead -- often because the real stream is behind a player on
@@ -553,6 +578,15 @@ stations are already in your favorites, Quill Radio tells you how many
 and asks whether to skip those duplicates or import everything. Station
 names come from the playlist's own <code>#EXTINF</code> lines; a bare
 URL is named after its host.</li>
+<li><strong>Export Favorites to Playlist...</strong> -- the other
+direction: write your stations out to an M3U playlist file. Use it to
+hand your stations to any other media player, share your list with
+someone, or keep a plain-text copy you can read outside Quill Radio.
+Each station is written with the name you see (your custom name if you
+gave it one) and its stream address, so importing the file back brings
+the same stations in. M3U is a flat format with no notion of folders, so
+folder structure is not carried across -- exactly as importing one
+discards it.</li>
 <li><strong>Back Up Stations and Settings...</strong> and
 <strong>Restore from Backup...</strong> -- save your favorites,
 settings, wake timer, and recording schedule (and, if you choose, your
@@ -571,6 +605,12 @@ nested by your folders, playable inline.</li>
 directory, playable inline.</li>
 <li><strong>Resume Last Station on Launch</strong> (check item) -- the
 appliance switch.</li>
+<li><strong>Start Quill Radio with Windows</strong> (check item) -- have
+Quill Radio open by itself when you sign in. It adds (or removes) an
+entry just for your own account, so it needs no administrator rights and
+touches nothing for anyone else who uses the computer. Pair it with
+<strong>Resume Last Station on Launch</strong> and the radio is simply
+on when you sit down. (Windows only.)</li>
 <li><strong>Preferences...</strong> (Ctrl+,) -- Resume Last Station on
 Launch, automatic Check for Updates, Announce dialog transitions (off by
 default -- turn on for more spoken detail around every dialog), When
@@ -626,10 +666,26 @@ tells you what is on.</li>
 reads Play when idle and Stop while connecting or playing, exactly like
 the panel button.</li>
 <li><strong>Mute/Unmute</strong> (Ctrl+M), <strong>Volume Up</strong>
-(Ctrl+Up), <strong>Volume Down</strong> (Ctrl+Down). Each favorite
-remembers the volume you set while it plays and gets it back the next
-time it starts -- stations are mastered wildly differently, and you
-should only have to fix that once per station.</li>
+(Ctrl+Up), <strong>Volume Down</strong> (Ctrl+Down). Ctrl+Up and
+Ctrl+Down work from <strong>anywhere in the window</strong> -- the
+favorites tree, a button, the status bar -- with one sensible exception:
+inside a text box, Ctrl+arrow still moves and edits text, as it should.
+Two things are remembered. Each <strong>favorite</strong> remembers the
+volume you set while it plays and gets it back the next time it starts,
+because stations are mastered wildly differently and you should only
+have to fix that once per station. And the <strong>last level you
+set</strong> is remembered across sessions for everything else, so a
+station that is not a favorite comes back where you left it rather than
+at full volume the next time you launch. (A favorite's own remembered
+level always wins over the general one.)</li>
+<li><strong>Output Device...</strong> (Ctrl+Shift+D) -- pick which sound
+card or headset the radio plays through, in one keystroke, without
+opening Preferences. Choose a device and the station moves to it
+immediately; the choice is remembered, and it is the same setting as
+<strong>Radio output device</strong> in Preferences, so the two always
+agree. Your screen reader and Quill Radio's own announcements stay on
+the system default device. Needs the mpv playback engine (the
+default).</li>
 <li><strong>Volume Boost</strong> (Ctrl+Shift+B, check item) --
 amplifies up to 50% past full volume for stations that just broadcast
 quiet. Your 0-100 volume scale, per-station volume memories, and mute
@@ -682,8 +738,14 @@ stream's exact original text. Leave it blank to restore the
 default.</li>
 <li><strong>Copy What's Playing</strong> (Command Palette) -- copies the
 current title and artist straight to the clipboard without opening the
-Now Playing window (which Ctrl+T opens, above). Press What's Playing
-first so there's a title to copy.</li>
+Now Playing window (which Ctrl+T opens, above). You no longer have to
+press What's Playing first: if a station is on and no title has arrived
+yet, Quill Radio says "Checking what's playing...", fetches it, and then
+copies it. Both this and the Ctrl+T window always tell you
+<em>something</em> -- a stream that sends no titles at all says so and
+still opens a window naming the station, and a lookup that fails is
+reported rather than passing in silence. The confirmation names what it
+copied, so you know it worked without pasting to check.</li>
 <li><strong>Announce Track Titles</strong> (check item) -- when on,
 title changes are announced as they happen. Off by default.</li>
 <li><strong>Sleep Timer...</strong> -- fade out and stop after a set
@@ -843,17 +905,27 @@ choose <strong>Add Schedule</strong> again.</p>
 <li><strong>Recordings...</strong> -- everything you have recorded,
 live. See "The Recordings list" below.</li>
 <li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
-WAV, or <strong>Raw stream</strong> -- see below), bitrate, destination
-folder, filename pattern, a maximum-length safety cap, <strong>Maximum
-simultaneous recordings</strong> (0 = unlimited, the default -- see
-"Recording several stations at once" below), the <strong>If the
-connection drops</strong> section (reconnect on/off, how many attempts,
-and how many seconds between them), and <strong>Apply Sound Enhancements
-to recordings</strong> -- off by default, so recordings stay an
-unfiltered archival copy even with Sound Enhancements on for live
-listening; turn it on to record the filtered (EQ/compressor) audio
-instead, for every recording method (Record Now, Record Station, and
-scheduled recordings alike).</li>
+WAV, or <strong>Raw stream</strong> -- see below), bitrate,
+<strong>destination folder</strong> (recordings land in
+<strong>Music\Quill Radio Recordings</strong> under your user folder
+unless you point them somewhere else -- somewhere you can actually find
+them, not a buried application folder), an optional <strong>Temporary
+folder (while recording)</strong> (set one and a recording is written
+there and moved to your destination the moment it finishes, so a
+half-written file never appears among your finished recordings and a
+fast scratch disk can absorb the writing; leave it blank to record
+straight to the destination, and if the move ever fails the finished
+file is left safely in the temporary folder rather than lost), filename
+pattern, a maximum-length safety cap, <strong>Maximum simultaneous
+recordings</strong> (0 = unlimited, the default -- see "Recording
+several stations at once" below), the <strong>If the connection
+drops</strong> section (reconnect on/off, how many attempts, and how
+many seconds between them), and <strong>Apply Sound Enhancements to
+recordings</strong> -- off by default, so recordings stay an unfiltered
+archival copy even with Sound Enhancements on for live listening; turn
+it on to record the filtered (EQ/compressor) audio instead, for every
+recording method (Record Now, Record Station, and scheduled recordings
+alike).</li>
 </ul>
 <h3 id="recording-several-stations-at-once">Recording several stations
 at once</h3>
@@ -873,6 +945,17 @@ still shown as "recording" but no longer growing. Quill Radio detects
 the stall within about half a minute and either reconnects and continues
 into a "(part 2)" file or, if reconnection is off or the show's window
 has ended, stops and saves what it captured.</p>
+<p>There is now a second check behind that one, and it does not depend
+on the connection reporting anything at all: Quill Radio simply watches
+whether the recording <strong>file is still growing</strong>. A
+recording that is capturing audio always grows. If the file has not
+gained a single byte across four checks in a row -- about a minute --
+the stream is not recording, whatever it claims, and Quill Radio treats
+it exactly like a dropped connection: it reconnects and continues, or
+stops and saves what it has. It is deliberately patient, so a slow
+network or a station's own momentary rebuffering is never mistaken for a
+dead one, and it is never applied to a recording you have just asked to
+stop (that one is <em>meant</em> to stop growing).</p>
 <p>Recording filenames use your computer's <strong>current</strong> time
 zone. If you change the computer's time zone (or it shifts for daylight
 saving) while Quill Radio is running, new recordings are named with the
@@ -929,6 +1012,17 @@ order you built with Move Up/Down.</li>
 <li><strong>Expand All Folders</strong> / <strong>Collapse All
 Folders</strong> -- open or close every folder in the favorites tree at
 once.</li>
+<li><strong>Customize Features...</strong> -- turn whole areas of Quill
+Radio off if you never use them. The list shows each switchable area
+with a short description of what it covers -- the
+<strong>Recording</strong> menu (recording, scheduling, and the
+recordings list) and the <strong>Weather</strong> menu -- and unchecking
+one leaves out that whole menu, and every command under it, the next
+time you open the app. Nothing is deleted and nothing is lost; tick it
+again and it comes back. Everything is switched on to begin with, and a
+feature added in a future version arrives switched on too, so you only
+ever have to turn <em>off</em> what you do not want. Handy if you want a
+plain radio and nothing else to arrow past.</li>
 <li><strong>Text Size</strong> -- Normal, Large, or Larger. Scales the
 text on the main window (the favorites list, the buttons, the
 now-playing line, and the status bar) up for easier reading. Remembered
@@ -968,6 +1062,14 @@ your browser.</li>
 app (no GitHub account needed), stamped "Quill Radio" with this app's
 own version so we know exactly what you were running; falls back to the
 online support form if anything goes wrong.</li>
+<li><strong>Repeat Last Announcement</strong> and <strong>Announcement
+Self-Test...</strong> (Command Palette) -- speech disappears the moment
+it finishes, so Repeat Last Announcement says the last thing Quill Radio
+told you all over again. The Self-Test announces a test phrase and then
+reports which channels actually delivered it -- speech, braille, sound
+-- and which screen-reader connection served each. It is the quickest
+way to tell "braille is not working" apart from "no braille display is
+connected", which otherwise look identical.</li>
 <li><strong>About Quill Radio</strong> -- version, sync statement,
 project address.</li>
 </ul>
@@ -1052,8 +1154,20 @@ hiccups during a recording</h3>
 <p>ffmpeg first rides out short gaps itself (the reconnect settings in
 Recording Settings). If the connection truly dies, Quill Radio waits and
 resumes into a numbered <strong>part file</strong>, announcing each
-attempt. Two things keep that tidy:</p>
+attempt. Then, when the recording finally finishes, <strong>Quill Radio
+stitches the pieces back into one file</strong> -- so a show that
+dropped twice leaves you with one recording under the name you expected,
+not three files to find and play in order. You are told which happened:
+"Joined 3 parts into one recording", or, if they could not be joined,
+"Kept 3 separate parts" and the reason. Three things keep that tidy:</p>
 <ul>
+<li>The parts are stitched back together when the recording ends. The
+join is a straight copy -- nothing is re-encoded, so no quality is lost
+and even a three-hour capture takes seconds -- and it is done carefully:
+the joined recording is written, checked, and only then put in place,
+and the part files are removed only once that has verifiably worked. If
+anything at all goes wrong, every part is left exactly where it is and
+Quill Radio says so. A failed join never costs you the recording.</li>
 <li>A continuation records only the <em>remaining</em> time to the
 original scheduled end, not a fresh full duration -- a 60-minute show
 that drops at minute 50 records a ~10 minute continuation, not another
@@ -1369,6 +1483,10 @@ other's File/Weather menu and tray.</p>
 <td>Ctrl+Shift+B</td>
 </tr>
 <tr>
+<td>Output Device</td>
+<td>Ctrl+Shift+D</td>
+</tr>
+<tr>
 <td>Rewind / Forward 30 seconds</td>
 <td>Ctrl+Shift+Left / Ctrl+Shift+Right</td>
 </tr>
@@ -1457,17 +1575,31 @@ from QUILL's keymap, so nothing here collides with editor shortcuts.</p>
 <li><strong>A station will not play.</strong> Streams move. If the
 station came from the directory, Quill Radio automatically fetches its
 current address and retries once; if it still fails, search for it again
-in Browse Stations, or re-add it as a custom station. (Format problems
-are largely history as of 1.1.0: the two engines together play MP3,
-AAC/HE-AAC, Ogg Vorbis, Opus, FLAC, and HLS, and a stream one engine
-can't open is retried on the other automatically.)</li>
+in Browse Stations, or re-add it as a custom station. If a station is
+simply dead, tell us: <strong>Report Bad Station...</strong> on that
+station's context menu in Browse Stations or Search Stations opens a bug
+report already filled in with the station's name, stream, source, and
+country, so you do not have to write any of it out. It carries the
+station's details only -- never your name, email, or any file paths.
+(Directories hide stations their own checker believes are dead, so a
+station that plays for the directory but not for you is one only you can
+flag.) (Format problems are largely history as of 1.1.0: the two engines
+together play MP3, AAC/HE-AAC, Ogg Vorbis, Opus, FLAC, and HLS, and a
+stream one engine can't open is retried on the other
+automatically.)</li>
 <li><strong>No sound but the app says playing.</strong> Check Mute
 (Ctrl+M), the per-station volume (Ctrl+Up), and the Windows volume mixer
 entry for Quill Radio.</li>
 <li><strong>A recording stopped early.</strong> Check Record &gt;
 Recordings... -- a dropped connection continues into "(part 2)" files
-when reconnect is on. The maximum-length cap in Recording Settings also
-ends recordings deliberately.</li>
+when reconnect is on, and those parts are joined back into one recording
+when it finishes. The maximum-length cap in Recording Settings also ends
+recordings deliberately.</li>
+<li><strong>I still have "(part 2)" files.</strong> That means the join
+was refused or failed, and Quill Radio will have said why when the
+recording ended -- most often because a part is missing, or the parts
+are not all the same format. Your audio is safe: every part is exactly
+as it was recorded, and they play in numbered order.</li>
 <li><strong>The wake-up timer did not fire.</strong> Quill Radio (or
 QUILL) must be running at the set time -- the tray counts, a closed app
 does not. It also never retro-fires: opening the app hours after the set
@@ -1485,6 +1617,5 @@ back to Automatic; these features live in the mpv engine.</li>
 the old behavior. Please report what you heard either way (Help &gt;
 Report a Bug...).</li>
 </ul>
-</main>
 </body>
 </html>

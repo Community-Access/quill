@@ -33,7 +33,6 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import cast
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
@@ -50,6 +49,9 @@ from quill.core.radio.recording_commands import (
     raw_capture_extension,
     uniquify,
 )
+from quill.core.radio.recording_join import describe_join, join_recording_parts
+from quill.core.radio.recording_liveness import wait_for_exit
+from quill.core.radio.recording_winjob import assign_kill_on_close_job, close_job_handle
 from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg, find_ffprobe
 from quill.stability.redaction import format_args_for_log, redact_source_tokens
 
@@ -317,11 +319,16 @@ class RadioRecorder:
         *,
         on_state_changed: Callable[[bool, Path | None, str], None] | None = None,
         on_reconnect: Callable[[int, int], None] | None = None,
+        on_parts_joined: Callable[[str], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed or (lambda _recording, _dest, _job_id: None)
         #: (attempt, max_attempts) -- fired on a background thread each time a
         #: dropped recording is about to be resumed into a continuation file.
         self._on_reconnect = on_reconnect or (lambda _attempt, _maximum: None)
+        #: One ready-to-speak sentence, fired on a background thread once a
+        #: recording that dropped and resumed has finished and its parts have
+        #: been joined -- or honestly reported as still separate.
+        self._on_parts_joined = on_parts_joined or (lambda _note: None)
         #: Guards membership of the jobs dict; per-job fields are only mutated
         #: under it (or, for a job's own stderr tail, by that job's single drain
         #: thread, read back under the lock in _monitor).
@@ -339,6 +346,11 @@ class RadioRecorder:
         #: concurrent same-name recordings never resolve to the same path in the
         #: window before either file exists.
         self._reserved: set[Path] = set()
+        #: Every file one recording has produced, keyed by job id: the base
+        #: recording plus any continuation parts a reconnect wrote. Appended as
+        #: each part finishes and consumed once, at finalize, to join them back
+        #: into a single recording (recording_join).
+        self._parts: dict[str, list[Path]] = {}
 
     # -- read API ---------------------------------------------------------------
 
@@ -583,7 +595,7 @@ class RadioRecorder:
         # kills the child), so a crashed host can no longer strand a bare
         # ffmpeg writing to the temp dir. Best-effort: a failure degrades to
         # the pre-job behavior, never blocks the recording.
-        win_job = _assign_kill_on_close_job(process)
+        win_job = assign_kill_on_close_job(process)
         job_id = _job_id or uuid.uuid4().hex
         started_at = _started_at if (is_continuation and _started_at is not None) else now
         # R4/13.1: the absolute end is preserved across reconnects so a
@@ -626,7 +638,7 @@ class RadioRecorder:
             except OSError:
                 pass
             if win_job is not None:
-                _close_job_handle(win_job)
+                close_job_handle(win_job)
             self._release_reserved(reserved_here)
             raise RecordingLimitError(cap_message)
         self._on_state_changed(True, destination, job_id)
@@ -690,7 +702,18 @@ class RadioRecorder:
                 pass
 
     def _monitor(self, job: RecordingJob) -> None:
-        job.process.wait()
+        # Second liveness signal, alongside ffmpeg's -rw_timeout and the
+        # process-exit watch this call replaces: if the output file stops
+        # growing for a sustained run of checks, the stream has stalled even
+        # though ffmpeg is still alive. wait_for_exit then stops it, so the
+        # ordinary drop handling below (reconnect, or finalize the partial)
+        # runs exactly as it does for a stream that dropped outright.
+        wait_for_exit(
+            job.process,
+            job.destination,
+            is_stopped=lambda: job.user_stopped,
+            label=job.station_name,
+        )
         with self._lock:
             # Drop this job from the active set (only if it is still the one
             # registered under its id -- a reconnect that already replaced it
@@ -718,7 +741,7 @@ class RadioRecorder:
             win_job = job.win_job
             job.win_job = None
         if win_job is not None:
-            _close_job_handle(win_job)
+            close_job_handle(win_job)
         # Move the finished file from the temp dir to its home (#5). Done for
         # both a clean stop and a failed/partial recording, so a partial is
         # never stranded in temp -- it lands where the user looks for it, then
@@ -735,20 +758,47 @@ class RadioRecorder:
             format_args_for_log([str(landed)]),
         )
         self._on_state_changed(False, landed, job.job_id)
-        if failed and not fatal:
-            self._maybe_reconnect(job)
+        with self._lock:
+            self._parts.setdefault(job.job_id, []).append(landed)
+        # Finalize is "no further continuation will start" -- so it is decided
+        # by the reconnect attempt, not guessed at beforehand. Only then are the
+        # parts of a dropped-and-resumed recording stitched back together.
+        resumed = self._maybe_reconnect(job) if (failed and not fatal) else False
+        if not resumed:
+            self._join_parts(job)
 
-    def _maybe_reconnect(self, job: RecordingJob) -> None:
+    def _join_parts(self, job: RecordingJob) -> None:
+        """Stitch a dropped-and-resumed recording's parts into one file.
+
+        Runs once per recording, from the monitor thread of its final part. A
+        recording that never dropped has a single part and is a no-op. A join
+        that cannot be done, or fails, leaves every part exactly where it is --
+        a failed join must never cost the user their recording -- and either
+        outcome is announced honestly.
+        """
+        with self._lock:
+            parts = self._parts.pop(job.job_id, [])
+        if len(parts) < 2:
+            return
+        note = describe_join(join_recording_parts(parts))
+        if note:
+            self._on_parts_joined(note)
+
+    def _maybe_reconnect(self, job: RecordingJob) -> bool:
         """*job* died without being asked to stop: wait, then resume into a
         continuation file (reusing the same job id), up to the attempt budget.
 
         R4/13.1: a continuation records only the *remaining* time to the
         original scheduled end (``job.scheduled_end``), never a fresh full
         duration -- a 60-minute show that drops at minute 50 records a ~10
-        minute continuation, not another 60."""
+        minute continuation, not another 60.
+
+        Returns whether a continuation actually started. ``False`` means this
+        recording is over, which is the recorder's cue to finalize -- and so to
+        join whatever parts it produced."""
         settings = job.settings
         if not settings.reconnect_enabled:
-            return
+            return False
         attempt = job.reconnect_attempt + 1
         scheduled_end = job.scheduled_end
         # R4/13.1: remaining minutes to the absolute end, floored at 1 so a
@@ -765,14 +815,14 @@ class RadioRecorder:
                 "Radio recording of %s dropped past its scheduled end; not reconnecting.",
                 job.station_name,
             )
-            return
+            return False
         if attempt > max(0, settings.reconnect_max_attempts):
             logger.warning(
                 "Radio recording of %s gave up after %d reconnect attempt(s).",
                 job.station_name,
                 attempt - 1,
             )
-            return
+            return False
         self._on_reconnect(attempt, settings.reconnect_max_attempts)
         logger.info(
             "Radio recording of %s dropped; reconnect attempt %d/%d in %ds (remaining %d min).",
@@ -788,15 +838,19 @@ class RadioRecorder:
         # user_stopped and a continuation would start anyway.
         with self._lock:
             if job.user_stopped:
-                return
+                return False
             self._reconnect_pending[job.job_id] = job
         stop_signal = threading.Event()
         stop_signal.wait(max(1, settings.reconnect_wait_seconds))
         with self._lock:
             self._reconnect_pending.pop(job.job_id, None)
             existing = self._jobs.get(job.job_id)
-            if job.user_stopped or (existing is not None and existing.process.poll() is None):
-                return
+            if job.user_stopped:
+                return False
+            if existing is not None and existing.process.poll() is None:
+                # Another path already resumed this recording; that continuation
+                # owns the finalize (and so the join), not this one.
+                return True
         # Recompute the remaining time *after* the wait: the value computed
         # before the sleep is stale by up to reconnect_wait_seconds, so using it
         # would overshoot the scheduled end. Give up if the show ended meanwhile.
@@ -808,7 +862,7 @@ class RadioRecorder:
                     "reconnect wait; not reconnecting.",
                     job.station_name,
                 )
-                return
+                return False
         try:
             self.start(
                 station_name=job.station_name,
@@ -826,7 +880,8 @@ class RadioRecorder:
         except RecordingError as error:
             logger.warning("Reconnect attempt %d could not start: %s", attempt, error)
             job.reconnect_attempt = attempt
-            self._maybe_reconnect(job)
+            return self._maybe_reconnect(job)
+        return True
 
     def stop(self, job_id: str | None = None) -> None:
         """Ask a recording to finish cleanly; a no-op if it is not running.
@@ -895,100 +950,6 @@ def _await_stop(process: subprocess.Popen[bytes]) -> None:
             process.terminate()
         except OSError:
             pass
-
-
-def _assign_kill_on_close_job(process: subprocess.Popen[bytes]) -> object | None:
-    """Put *process* in a Windows job object that kills it when the host dies
-    (R4/13.5), so a crashed/killed QUILL can no longer strand a bare ffmpeg
-    writing to the temp dir.
-
-    Best-effort: returns the job handle (an int) on success, or ``None``
-    off-Windows or if anything goes wrong (job creation, assignment, or the
-    kill-on-close flag). A ``None`` return degrades to the pre-job behavior --
-    the recording still works, it just is not tied to the host's lifetime."""
-    if os.name != "nt":
-        return None
-    try:
-        import ctypes
-        from ctypes import wintypes
-
-        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
-
-        class _IO_COUNTERS(ctypes.Structure):
-            _fields_ = [
-                ("ReadOperationCount", ctypes.c_ulonglong),
-                ("WriteOperationCount", ctypes.c_ulonglong),
-                ("OtherOperationCount", ctypes.c_ulonglong),
-                ("ReadTransferCount", ctypes.c_ulonglong),
-                ("WriteTransferCount", ctypes.c_ulonglong),
-                ("OtherTransferCount", ctypes.c_ulonglong),
-            ]
-
-        class _BASIC_LIMITS(ctypes.Structure):
-            _fields_ = [
-                ("PerProcessUserTimeLimit", ctypes.c_int64),
-                ("PerJobUserTimeLimit", ctypes.c_int64),
-                ("LimitFlags", wintypes.DWORD),
-                ("MinimumWorkingSetSize", ctypes.c_size_t),
-                ("MaximumWorkingSetSize", ctypes.c_size_t),
-                ("ActiveProcessLimit", wintypes.DWORD),
-                ("Affinity", ctypes.c_size_t),
-                ("PriorityClass", wintypes.DWORD),
-                ("SchedulingClass", wintypes.DWORD),
-            ]
-
-        class _EXTENDED_LIMITS(ctypes.Structure):
-            _fields_ = [
-                ("BasicLimitInformation", _BASIC_LIMITS),
-                ("IoInfo", _IO_COUNTERS),
-                ("ProcessMemoryLimit", ctypes.c_size_t),
-                ("JobMemoryLimit", ctypes.c_size_t),
-                ("PeakProcessMemoryUsed", ctypes.c_size_t),
-                ("PeakJobMemoryUsed", ctypes.c_size_t),
-            ]
-
-        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000
-        JobObjectExtendedLimitInformation = 9
-        job: object = kernel32.CreateJobObjectW(None, None)
-        if not job:
-            return None
-        info = _EXTENDED_LIMITS()
-        info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
-        if not kernel32.SetInformationJobObject(
-            job,
-            JobObjectExtendedLimitInformation,
-            ctypes.byref(info),
-            ctypes.sizeof(info),
-        ):
-            kernel32.CloseHandle(job)
-            return None
-        # subprocess.Popen keeps the process handle on Windows as _handle (int).
-        # AssignProcessToJobObject needs that handle; the child must inherit it
-        # (CREATE_NO_WINDOW does not block inheritance of the handle Popen keeps).
-        proc_handle = getattr(process, "_handle", None)
-        if not proc_handle or not kernel32.AssignProcessToJobObject(job, proc_handle):
-            kernel32.CloseHandle(job)
-            return None
-        return job
-    except Exception:  # noqa: BLE001 - best-effort; never break a recording
-        logger.debug("Could not bind radio recording to a kill-on-close job.", exc_info=True)
-        return None
-
-
-def _close_job_handle(job: object) -> None:
-    """Close a job handle returned by :func:`_assign_kill_on_close_job`.
-
-    Safe to call only after the child has exited (the recorder does so from
-    ``_monitor`` once ``process.wait()`` returns), so closing the handle
-    cannot kill a still-running recording."""
-    if not job:
-        return
-    try:
-        import ctypes
-
-        ctypes.windll.kernel32.CloseHandle(cast("int", job))  # type: ignore[attr-defined]
-    except Exception:  # noqa: BLE001 - best-effort cleanup
-        pass
 
 
 def _finalize_move(src: Path, dst: Path) -> Path:

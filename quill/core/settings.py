@@ -5,6 +5,11 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
+from quill.core.monitor_policy import (
+    MONITOR_GITHUB,
+    MONITOR_PODCASTS,
+    clamp_interval_minutes,
+)
 from quill.core.paths import app_data_dir
 from quill.core.settings_normalizers import (
     STATUS_BAR_ITEMS,
@@ -370,6 +375,24 @@ class Settings:
     watch_folder_process_existing: bool = False
     watch_folder_auto_start: bool = False
     watch_folder_poll_interval_seconds: int = 5
+    # Ambient-monitor policy triple (see quill/core/monitor_policy.py). Every
+    # background watcher exposes the same three controls: how often it checks,
+    # whether the check itself is audible, and whether a result interrupts
+    # speech. Both flags default off for every monitor -- an unrequested tick is
+    # noise, and an unrequested interruption talks over the screen reader.
+    watch_folder_audible_tick: bool = False
+    watch_folder_interrupt_speech: bool = False
+    weather_monitor_audible_tick: bool = False
+    weather_monitor_interrupt_speech: bool = False
+    # The podcast new-episode check had no cadence at all before this: feeds
+    # refreshed only when asked. It stays opt-in, and off it costs nothing.
+    podcast_check_enabled: bool = False
+    podcast_check_interval_minutes: int = 60
+    podcast_check_audible_tick: bool = False
+    podcast_check_interrupt_speech: bool = False
+    github_poll_interval_minutes: int = 15
+    github_poll_audible_tick: bool = False
+    github_poll_interrupt_speech: bool = False
     # #262: Pandoc Import / Export batch conversion defaults. The wizard
     # reads these as starting values; the user can override per batch.
     import_export_recursive: bool = True
@@ -514,6 +537,9 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # Play a silent clip every 20 s so USB/Bluetooth audio devices never power
+    # down and clip the start of the next earcon. Off by default.
+    sound_keepalive_enabled: bool = False
     # Speak "Generating preview, please wait" when a voice preview's synthesis
     # is still running after the ~400ms cue delay (paired with the
     # voice_preview_generating earcon, configured independently via the
@@ -969,6 +995,24 @@ class Settings:
             watch_folder_poll_interval_seconds = 2
         if watch_folder_poll_interval_seconds > 300:
             watch_folder_poll_interval_seconds = 300
+        # Ambient-monitor policy triple. Intervals clamp through the shared
+        # per-monitor table so a hand-edited settings file can never persist a
+        # zero-second (continuous) poll; both flags default off.
+        watch_folder_audible_tick = bool(data.get("watch_folder_audible_tick", False))
+        watch_folder_interrupt_speech = bool(data.get("watch_folder_interrupt_speech", False))
+        weather_monitor_audible_tick = bool(data.get("weather_monitor_audible_tick", False))
+        weather_monitor_interrupt_speech = bool(data.get("weather_monitor_interrupt_speech", False))
+        podcast_check_enabled = bool(data.get("podcast_check_enabled", False))
+        podcast_check_interval_minutes = clamp_interval_minutes(
+            MONITOR_PODCASTS, data.get("podcast_check_interval_minutes", 60)
+        )
+        podcast_check_audible_tick = bool(data.get("podcast_check_audible_tick", False))
+        podcast_check_interrupt_speech = bool(data.get("podcast_check_interrupt_speech", False))
+        github_poll_interval_minutes = clamp_interval_minutes(
+            MONITOR_GITHUB, data.get("github_poll_interval_minutes", 15)
+        )
+        github_poll_audible_tick = bool(data.get("github_poll_audible_tick", False))
+        github_poll_interrupt_speech = bool(data.get("github_poll_interrupt_speech", False))
         voice_commands_enabled = bool(data.get("voice_commands_enabled", False))
         voice_conversation_enabled = bool(data.get("voice_conversation_enabled", False))
 
@@ -1141,6 +1185,7 @@ class Settings:
         abbreviation_expansion_sound = bool(data.get("abbreviation_expansion_sound", False))
         abbreviation_expansion_sound_file = str(data.get("abbreviation_expansion_sound_file", ""))
         sound_enabled = bool(data.get("sound_enabled", True))
+        sound_keepalive_enabled = bool(data.get("sound_keepalive_enabled", False))
         sound_pack_path = str(data.get("sound_pack_path", ""))
         try:
             sound_volume = int(data.get("sound_volume", 80))
@@ -1464,6 +1509,17 @@ class Settings:
             watch_folder_process_existing=watch_folder_process_existing,
             watch_folder_auto_start=watch_folder_auto_start,
             watch_folder_poll_interval_seconds=watch_folder_poll_interval_seconds,
+            watch_folder_audible_tick=watch_folder_audible_tick,
+            watch_folder_interrupt_speech=watch_folder_interrupt_speech,
+            weather_monitor_audible_tick=weather_monitor_audible_tick,
+            weather_monitor_interrupt_speech=weather_monitor_interrupt_speech,
+            podcast_check_enabled=podcast_check_enabled,
+            podcast_check_interval_minutes=podcast_check_interval_minutes,
+            podcast_check_audible_tick=podcast_check_audible_tick,
+            podcast_check_interrupt_speech=podcast_check_interrupt_speech,
+            github_poll_interval_minutes=github_poll_interval_minutes,
+            github_poll_audible_tick=github_poll_audible_tick,
+            github_poll_interrupt_speech=github_poll_interrupt_speech,
             import_export_recursive=import_export_recursive,
             import_export_overwrite=import_export_overwrite,
             import_export_output_layout=import_export_output_layout,
@@ -1553,6 +1609,7 @@ class Settings:
             console_python_timeout=console_python_timeout,
             console_typescript_timeout=console_typescript_timeout,
             sound_enabled=sound_enabled,
+            sound_keepalive_enabled=sound_keepalive_enabled,
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,

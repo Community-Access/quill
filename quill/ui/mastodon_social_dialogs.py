@@ -1,17 +1,21 @@
 """Read/interact Mastodon dialogs: the profile view (follow/unfollow + who you
-are to each other + who favourited a post) and the add-to-list picker.
+are to each other + the bio + recent posts + who favourited a post) and the
+add-to-list picker.
 
 Thin wx over the wx-free :mod:`quill.core.mastodon.social`. Stock accessible
 controls; every modal goes through ``dialog_contract`` (``show_modal_dialog`` +
 ``apply_modal_ids``). The dialogs never touch the network themselves -- the host
 fetches on the task manager and hands in the results.
+
+The bio and the post summaries arrive as **text**, already flattened from the
+API's HTML by ``quill.core.mastodon.social``; nothing here re-parses markup.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from quill.core.mastodon.social import Account, MastodonList, Relationship
+from quill.core.mastodon.social import Account, MastodonList, Relationship, Status
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 
 
@@ -33,6 +37,7 @@ class MastodonProfileDialog:
         on_toggle_follow: Any,
         favouriters: list[Account] | None = None,
         boosters: list[Account] | None = None,
+        statuses: list[Status] | None = None,
         announce: Any = None,
     ) -> None:
         import wx
@@ -59,10 +64,34 @@ class MastodonProfileDialog:
         set_accessible_name(self._relationship_text, "Your relationship")
         root.Add(self._relationship_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
+        # The bio goes in a read-only multiline text control rather than a label
+        # so it can be arrowed through line by line and copied; a StaticText is
+        # announced once, all at once, and cannot be reviewed.
+        if account.note:
+            root.Add(wx.StaticText(self.dialog, label="&Bio:"), 0, wx.LEFT, 12)
+            bio = wx.TextCtrl(
+                self.dialog,
+                value=account.note,
+                style=wx.TE_MULTILINE | wx.TE_READONLY,
+            )
+            bio.SetName("Bio")
+            set_accessible_name(bio, f"Bio of {account.label}")
+            root.Add(bio, 1, wx.EXPAND | wx.ALL, 12)
+
         self._follow_btn = wx.Button(self.dialog, label=self._follow_label())
         set_accessible_name(self._follow_btn, self._follow_label())
         self._follow_btn.Bind(wx.EVT_BUTTON, self._on_follow)
         root.Add(self._follow_btn, 0, wx.LEFT | wx.BOTTOM, 12)
+
+        # Recent posts: one row per post, each already reduced to "when: first
+        # sentence" so a listener can arrow the list and hear one post per key
+        # press instead of a whole timeline per row.
+        if statuses:
+            root.Add(wx.StaticText(self.dialog, label="Recent &posts:"), 0, wx.LEFT, 12)
+            posts = wx.ListBox(self.dialog, choices=[s.summary() for s in statuses])
+            posts.SetName("Recent posts")
+            set_accessible_name(posts, f"Recent posts, {len(statuses)} items")
+            root.Add(posts, 1, wx.EXPAND | wx.ALL, 12)
 
         for heading, people in (("Favourited by", favouriters), ("Boosted by", boosters)):
             if not people:

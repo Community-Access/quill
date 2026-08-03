@@ -20,6 +20,7 @@ import wx
 
 from quill.core.copy_tray import CopyTray
 from quill.core.multi_press import MultiPressDispatcher
+from quill.ui.sound_manager import post_sound
 
 
 class _TraySearchDialog:
@@ -153,6 +154,9 @@ class CopyTrayMixin:
             return
         text = self.editor.GetValue()[start:end]
         self._tray().copy_to(n, text)
+        # The slot's own note (audio identity): slot seven is a pitch you
+        # learn, so confirmations become instant at speed.
+        post_sound(f"copy_slot_{n}")
         slot = self._tray().slot(n)
         label = f" ({slot.label})" if slot.label else ""
         self._set_status_quiet(f"Copied to slot {n}{label}: {slot.preview(50)}")
@@ -172,6 +176,7 @@ class CopyTrayMixin:
             return
         text = self.editor.GetValue()[start:end]
         self._tray().copy_to(n, text)
+        post_sound(f"copy_slot_{n}")
         slot = self._tray().slot(n)
         label = f" ({slot.label})" if slot.label else ""
         self._set_status_quiet(f"Copied to slot {n}{label} (first empty): {slot.preview(50)}")
@@ -217,6 +222,7 @@ class CopyTrayMixin:
         if not text:
             self._announce(f"Slot {n} is empty")
             return
+        post_sound(f"copy_slot_{n}")
         start, end = self.editor.GetSelection()
         current = self.editor.GetValue()
         if start != end:
@@ -264,6 +270,8 @@ class CopyTrayMixin:
 
     def _update_paste_tray_labels(self) -> None:
         """Refresh 'Paste from Slot N' menu items to show slot label + preview."""
+        from quill.ui.main_frame_menu import _tray_slot_accel
+
         bar = getattr(self.frame, "GetMenuBar", lambda: None)()
         if bar is None:
             return
@@ -276,13 +284,13 @@ class CopyTrayMixin:
             if item is None:
                 continue
             slot = tray.slot(n)
+            accel = _tray_slot_accel(n)
             if slot.is_empty():
-                label = f"&{n} (empty)" if n <= 9 else f"{n} (empty)"
+                label = f"{accel} (empty)"
             else:
                 label_part = f" ({slot.label})" if slot.label else ""
                 pinned_part = " [pinned]" if slot.pinned else ""
                 preview = slot.preview(40)
-                accel = f"&{n}" if n <= 9 else str(n)
                 label = f"{accel}{label_part}{pinned_part} — {preview}"
             item.SetItemLabel(label)
 

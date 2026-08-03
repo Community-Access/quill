@@ -16,6 +16,7 @@ from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.radio import reading_services
 from quill.core.radio.radio_browser import RadioBrowserError
+from quill.core.sound_events import SoundEvent
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
@@ -877,7 +878,10 @@ class RadioAppFrame(
             self._announce(f"Removed {station.display_name} from favorites")
         else:
             self._radio_favorites.add(station)
-            self._announce(f"Added {station.display_name} to favorites")
+            self._announce(
+                f"Added {station.display_name} to favorites",
+                sound=SoundEvent.RADIO_FAVORITE_ADDED,
+            )
         self._save_radio_favorites()
         self._reload_favorites_tree()
         self._refresh_favorite_toggle()
@@ -1803,7 +1807,7 @@ class RadioAppFrame(
             f"{count} station{plural} have their own Sound Enhancements. "
             "Reset all of them to the shared default?",
             "Reset All Stations' Sound Enhancements",
-            wx.ICON_QUESTION | wx.YES_NO,
+            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         )
         if answer != wx.YES:
             return

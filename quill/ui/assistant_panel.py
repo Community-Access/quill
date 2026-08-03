@@ -114,6 +114,11 @@ class AskQuillChatDialog:
 
         _base_announce = announce or (lambda _m: None)
         self._announce = lambda message: _base_announce(speak_legacy_text(message))
+        # Never silently swap engines: if default backend resolution fell back
+        # past a provider the user configured, say so when the chat opens.
+        backend_note = str(getattr(assistant, "backend_note", "") or "")
+        if backend_note:
+            wx.CallAfter(self._announce, backend_note)
         self._last_response = ""
         self._first_done = False
         self._session = None
@@ -641,12 +646,14 @@ class AskQuillChatDialog:
         self._stream_last = 0.0
 
         def worker() -> None:
+            from quill.core.error_codes import user_facing_message
+
             if self._conversation is not None:
                 try:
                     answer, edited, error = self._conversation(message, document, selection)
                     result = ("conversation", answer or "", "edited" if edited else "", error or "")
                 except Exception as exc:  # noqa: BLE001
-                    result = ("error", "", "", str(exc))
+                    result = ("error", "", "", user_facing_message(exc))
                     self._pending_fallback_hint = self._fallback_hint(exc)
                 self._wx.CallAfter(self._apply, *result)
                 return
@@ -672,8 +679,11 @@ class AskQuillChatDialog:
 
                     text = self._assistant.answer_stream(message, document, on_delta)
                     result = ("answer", text, "", "")
+                # Error specificity: if the request was silently trimmed to fit
+                # the model, carry the working-size note so _apply can speak it.
+                self._pending_context_note = getattr(self._assistant, "last_context_note", "")
             except Exception as exc:  # noqa: BLE001
-                result = ("error", "", "", str(exc))
+                result = ("error", "", "", user_facing_message(exc))
                 self._pending_fallback_hint = self._fallback_hint(exc)
             self._wx.CallAfter(self._apply, *result)
 
@@ -742,17 +752,37 @@ class AskQuillChatDialog:
 
             kind = fallback.classify_exception(exc)
             provider = str(getattr(load_settings(), "ai_chat_default_provider", "") or "")
+            # Real availability on both sides (previously cloud_available was
+            # hardcoded False, so a failed local model never offered the
+            # configured cloud provider): a cloud provider counts as available
+            # when a key for it is actually stored.
+            cloud_provider_name = ""
+            try:
+                from quill.core.ai.onboarding import configured_cloud_providers
+
+                configured = configured_cloud_providers()
+                if configured:
+                    cloud_provider_name = configured[0][1]
+            except Exception:  # noqa: BLE001 - availability probe is best-effort
+                configured = []
             plan = fallback.plan_fallback(
                 primary_provider=provider or "cloud",
                 failure_kind=kind,
                 local_available=existing_model() is not None,
-                cloud_available=False,  # only the offline (cloud->local) direction here
-                cloud_provider=provider,
+                cloud_available=bool(configured),
+                cloud_provider=cloud_provider_name or provider,
             )
             if plan.offer and plan.to_provider == "local":
                 return (
                     "The AI service could not be reached. You have an on-device model "
                     "available — open AI settings to switch to it and keep working offline."
+                )
+            if plan.offer and plan.requires_consent:
+                name = cloud_provider_name or "a configured cloud provider"
+                return (
+                    f"The on-device model is unavailable. You have {name} configured — "
+                    "open AI settings to switch to it. That sends your text to the "
+                    "cloud, so nothing switches until you choose it."
                 )
         except Exception:  # noqa: BLE001 - a fallback hint must never mask the real error
             pass
@@ -765,6 +795,13 @@ class AskQuillChatDialog:
         self._pending_fallback_hint = ""
         if error and fallback_hint:
             self._wx.CallAfter(self._announce, fallback_hint)
+        # Never silently answer over less context than the user believes was
+        # sent: if the request was trimmed to fit the model, say so, after the
+        # response announcement (hence posted).
+        context_note = getattr(self, "_pending_context_note", "")
+        self._pending_context_note = ""
+        if not error and context_note:
+            self._wx.CallAfter(self._announce, context_note)
         if action == "conversation":
             # The gateway already performed (and the user already reviewed) any
             # edit; here we just surface the assistant's answer. ``tool`` carries

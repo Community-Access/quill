@@ -1,5 +1,5 @@
 """Weather monitoring -- the decision logic behind Weather Guardian's US alert
-watch (QUILL Weather PRD 5.2). Leasey's "Automatic Weather Reporting" announces
+watch (QUILL Weather PRD 5.2). Automatic weather reporting announces
 when the weather changes for a monitored place; this is QUILL's alert-focused
 first slice: poll one US location's active watches/warnings/advisories on a
 timer and speak the ones that are newly issued (and note when they all clear).

@@ -1425,7 +1425,7 @@ class SmartCollectionsDialog(wx.Dialog):
         confirm = show_message_box(
             f"Delete the smart collection '{ss.name}'? The bookmarks it matched are not affected.",
             "Smart Collections",
-            style=wx.ICON_QUESTION | wx.YES_NO,
+            style=wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         )
         if confirm != wx.YES:
             return
@@ -1819,7 +1819,9 @@ class AttachmentsDialog(wx.Dialog):
             )
             return
         confirm = show_message_box(
-            f"Remove '{att.name or att.kind}'?", "Attachments", style=wx.ICON_QUESTION | wx.YES_NO
+            f"Remove '{att.name or att.kind}'?",
+            "Attachments",
+            style=wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         )
         if confirm != wx.YES:
             return
@@ -2386,7 +2388,7 @@ class SyncHistoryDialog(wx.Dialog):
                 f"Restore the library to the snapshot {name}? This overwrites the "
                 "current database with the pre-sync copy. The commit log is kept.",
                 "Roll Back",
-                wx.YES_NO | wx.ICON_WARNING,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
                 self,
             )
             != wx.YES

@@ -35,7 +35,7 @@ class TestBuiltins:
             lib.remove("builtin-check-grammar")
 
     def test_named_one_shot_writing_presets_ship_out_of_box(self, tmp_path: Path) -> None:
-        # Leasey Word parity: the named one-shot tools that were missing now ship
+        # The named one-shot tools that were missing now ship
         # as built-in prompts.
         lib = _make_lib(tmp_path)
         names = {p.name for p in lib.all()}

@@ -58,6 +58,8 @@ from quill.apps.beacon.model import (
 )
 from quill.apps.beacon.sync_ui import SyncController
 from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacons
+from quill.core.sound_events import SoundEvent
+from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
 
 _TITLE = "QuillBeacon"
@@ -99,6 +101,7 @@ class BeaconFrame(wx.Frame):
         self.data_dir = _data_dir()
         self.store = db.BeaconStore(self.data_dir / "beacons.db")
         self.a11y = a11y_mod.load(self.data_dir)
+        init_app_sound()  # a SoundSink needs a loaded pack behind it (#1302)
         self.announcer = Announcer(self, verbosity=self.a11y.verbosity)
         self.undo = UndoManager(announcer=self.announcer.say)
         self.sync = SyncController(self.store, self.data_dir)
@@ -142,7 +145,8 @@ class BeaconFrame(wx.Frame):
         """A browser extension captured something: refresh and announce."""
         # Called from the bridge's HTTP thread; marshal onto the UI thread.
         wx.CallAfter(self._refresh_results)
-        wx.CallAfter(self.announcer.say, f"Captured: {beacon.title}", "normal")
+        cue = SoundEvent.BEACON_CAPTURED
+        wx.CallAfter(self.announcer.say, f"Captured: {beacon.title}", "normal", sound=cue)
 
     def _on_capture_bridge_info(self, _e) -> None:
         """Show the bridge URL and token so the user can paste into extensions."""
@@ -987,10 +991,12 @@ class BeaconFrame(wx.Frame):
             self.store.put_beacon(beacon, resource=res)
             self._refresh_sidebar()
             self._refresh_results()
+            cue = SoundEvent.BEACON_CAPTURED
             if routed:
-                self.announcer.say(f"Bookmark added to Inbox and filed in {routed}")
+                self.announcer.say(f"Bookmark added to Inbox and filed in {routed}", sound=cue)
             else:
-                self.announcer.say(f"Bookmark added to {'Inbox' if beacon.in_inbox else 'library'}")
+                where = "Inbox" if beacon.in_inbox else "library"
+                self.announcer.say(f"Bookmark added to {where}", sound=cue)
             if r["open"]:
                 self._open_beacon(beacon)
         dlg.Destroy()
@@ -1164,7 +1170,7 @@ class BeaconFrame(wx.Frame):
             show_message_box(
                 f"Permanently delete {len(bs)} item(s)? This can be undone with Ctrl+Z.",
                 "Delete",
-                wx.YES_NO | wx.ICON_WARNING,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
                 self,
             )
             != wx.YES
@@ -1663,7 +1669,7 @@ class BeaconFrame(wx.Frame):
         if conflicts:
             msg += f" {len(conflicts)} conflict(s) need review in Sync History."
         self._refresh_results()
-        self.announcer.say(msg)
+        self.announcer.say(msg, sound=SoundEvent.BEACON_SYNC_COMPLETE)
 
     # -- auto-sync timer (PRD 45.10; off by default) -------------------------
 
@@ -1706,7 +1712,7 @@ class BeaconFrame(wx.Frame):
         msg = f"Auto-synced. Pushed {res.get('pushed', 0)}, pulled {res.get('pulled', 0)}."
         if conflicts:
             msg += f" {len(conflicts)} conflict(s) need review."
-        self.announcer.say(msg, "minimal")
+        self.announcer.say(msg, "minimal", sound=SoundEvent.BEACON_SYNC_COMPLETE)
 
     def _on_auto_sync(self, _e) -> None:
         """Choose an automatic sync interval (off by default)."""

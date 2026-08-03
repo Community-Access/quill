@@ -442,7 +442,7 @@ class RecordingsManagerDialog:
             f"Delete the recording {entry.name}?\n\nThis removes the file "
             f"({entry.size_display}) from your recordings folder permanently.",
             "Remove Recording",
-            wx.ICON_QUESTION | wx.YES_NO,
+            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
             self.dialog,
         )
         if answer != wx.YES:

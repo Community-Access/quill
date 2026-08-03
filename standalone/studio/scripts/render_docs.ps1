@@ -16,13 +16,17 @@ if (-not $pandoc) {
     throw "Pandoc is required to render docs. Install with: winget install --id JohnMacFarlane.Pandoc -e"
 }
 
-# Shared accessible HTML template (adds <html lang="en">, a descriptive
-# <title>, a skip link, and a <main> landmark) lives in the top-level repo at
-# docs/pandoc. Fall back to Pandoc's default template if it is unavailable.
+# Accessible HTML template (adds <html lang="en">, a descriptive <title>, a
+# skip link, and a <main> landmark). Prefer the shared one in the top-level
+# repo at docs/pandoc when it is present; otherwise use the copy kept beside
+# this script, so the rendered docs never silently lose their landmarks.
+# Pandoc's own default is the last resort.
 $templatePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\..\docs\pandoc\quill-accessible.html5"))
+$localTemplate = Join-Path $PSScriptRoot "quill-accessible.html5"
 $htmlTemplateArgs = @()
 if (Test-Path $templatePath) { $htmlTemplateArgs = @("--template", $templatePath) }
-else { Write-Warning "Accessible pandoc template not found at $templatePath; using pandoc default." }
+elseif (Test-Path $localTemplate) { $htmlTemplateArgs = @("--template", $localTemplate) }
+else { Write-Warning "Accessible pandoc template not found; using pandoc default." }
 
 Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
     $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")

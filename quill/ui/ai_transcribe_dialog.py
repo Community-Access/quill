@@ -410,6 +410,18 @@ class AIProgressDialog:
                 self._gauge.SetValue(max(0, min(100, int(percent))))
 
         self._wx.CallAfter(_apply)
+        # Progress as audio (audio identity): a short rising blip at every
+        # 5-percent step. A sound never interrupts what the screen reader is
+        # saying the way a spoken percentage does; the spoken 25/50/75
+        # milestones below stay as the coarse narration.
+        if percent >= 0:
+            from quill.core.sound_events import progress_sound_event
+            from quill.ui.sound_manager import post_sound
+
+            step_event = progress_sound_event(int(percent))
+            if step_event and step_event != getattr(self, "_last_progress_step", ""):
+                self._last_progress_step = step_event
+                post_sound(step_event)
         # When minimized, the dialog is hidden, so mirror progress to the status bar.
         if self._minimized and self._status_fn is not None and message is not None:
             pct = f" ({max(0, min(100, int(percent)))}%)" if percent >= 0 else ""

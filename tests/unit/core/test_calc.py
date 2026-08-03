@@ -39,7 +39,7 @@ def test_scientific_functions_and_constants() -> None:
     assert evaluate("e") == pytest.approx(math.e)
 
 
-# -- evaluator: natural language (Leasey parity) ------------------------------
+# -- evaluator: natural language ----------------------------------------------
 
 
 def test_natural_language_forms() -> None:

@@ -33,6 +33,12 @@ class CommandRegistry:
         #: remote feature kill switch apply uniformly to keybindings and the
         #: command palette, which both route through :meth:`run`.
         self._run_gate: Callable[[str], bool] | None = None
+        #: Optional probe answering "why can this command not run right now?"
+        #: with a user-facing sentence, or "" when it can. Unlike the run gate
+        #: (which blocks at dispatch and speaks), the probe is side-effect-free
+        #: so surfaces like the palette can *display and speak the reason*
+        #: before the user ever tries to run the command.
+        self._availability_probe: Callable[[str], str] | None = None
 
     def register(
         self,
@@ -119,6 +125,24 @@ class CommandRegistry:
     def set_run_gate(self, gate: Callable[[str], bool] | None) -> None:
         """Install (or clear) the dispatch gate consulted by :meth:`run`."""
         self._run_gate = gate
+
+    def set_availability_probe(self, probe: Callable[[str], str] | None) -> None:
+        """Install (or clear) the side-effect-free unavailability-reason probe."""
+        self._availability_probe = probe
+
+    def unavailable_reason(self, command_id: str) -> str:
+        """Why *command_id* cannot run right now, as a user-facing sentence.
+
+        Returns "" when the command is runnable, unknown, or no probe is
+        installed. Never raises: an availability question must not itself
+        become an error.
+        """
+        if self._availability_probe is None or command_id not in self._commands:
+            return ""
+        try:
+            return str(self._availability_probe(command_id) or "")
+        except Exception:  # noqa: BLE001 - a probe failure means "no reason known"
+            return ""
 
     def run(self, command_id: str) -> None:
         command = self._commands.get(command_id)

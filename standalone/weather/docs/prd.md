@@ -7,7 +7,8 @@ This is the complete, authoritative product-requirements document for the QUILL 
 Much of this roadmap is now shipped. As of 2.2.0 the following are **delivered**:
 
 - **Weather Center** with current conditions, the NWS period forecast, the extended daily outlook, active alerts, and air quality (2.1.0), plus, new in 2.2.0, the **Hourly forecast** pane (§ "Hourly Conditions"), a locally-computed **moon almanac** (phase, illumination, moonrise, moonset), and a **two-clock time summary** (`render.time_summary`) that speaks the local time **at the searched location**, the local time **where the reviewer is**, and **when the reading was checked** — collapsing to a single clock, with "the same time zone", when both share a UTC offset.
-- **Weather Guardian (§5.2)** — background monitoring of one US location's alerts that **speaks newly-issued watches/warnings** (forced/interrupting speech for Urgent-and-above), announces all-clear, shows a system-tray toast, keeps running while minimized to the tray, and auto-resumes on launch. A **severe-weather mode** tightens the poll (down to the NWS 30-second courtesy floor, default 60 s) while an alert is active and relaxes afterward — the free-API approximation of push latency. **Pause/Resume** snoozes it without turning it off.
+- **Weather Guardian (§5.2)** — background monitoring of US alerts that **speaks newly-issued watches/warnings** (forced/interrupting speech for Urgent-and-above), announces all-clear, shows a system-tray toast, keeps running while minimized to the tray, and auto-resumes on launch. A **severe-weather mode** tightens the poll (down to the NWS 30-second courtesy floor, default 60 s) while an alert is active and relaxes afterward — the free-API approximation of push latency. **Pause/Resume** snoozes it without turning it off. Since 2.2.0 the watch covers **every saved location at once** by default (§"Standalone Quill Weather app" item 8), one monitor state per place, with a single combined baseline summary; per-location *selection* UI is still to come.
+- **Announcement delivery on multiple channels** — announcements travel through the shared announcement service, reaching speech, a connected **braille display** (with burst coalescing and sticky errors), and the status line's message slot, with each channel isolated from the others' failures. The shared **Repeat Last Announcement** and **Announcement Self-Test** commands exist in the shell but are **not yet surfaced** in Quill Weather (§"Standalone Quill Weather app" item 9).
 - **Runs while the app is closed** — the standalone **Quill Weather** tray app (`apps/weather.py`) runs the watch as its own process; **Start Quill Weather with Windows** (per-user Run key + start-in-tray) watches from login; and an **OS-scheduled background check** (`platform/windows/scheduled_task.py` + `core/weather/headless_check.py`) runs a short-lived `quill-weather --check-once` with **no persistent process**, toasting new alerts.
 - **An alert sounder** — a bundled chime with settings to disable it, choose a custom `.wav` (with Play preview), and set the repeat count (1–10) — plus a **Test Alert** that previews the whole experience (text, sound, tray, dialog), marked as a test.
 
@@ -2518,21 +2519,41 @@ from the shared weather feature set above.
    (IPC slot `weather`), distinct from QUILL, Quill Radio, and Quill Cast, so
    all can run at once without blocking each other.
 2. **Persistent, low-footprint watch.** No audio, AI, transcription, braille, or
-   speech-synthesis stacks are bundled -- a much smaller download than Quill
-   Radio. Keeps the alert watch running while minimized to the tray, resumes on
-   launch, and offers a run-at-login option and an OS-scheduled background check
-   (no persistent process required).
-3. **Independent distribution and updates.** Its own installer, portable build,
-   and update feed. It carries the **same version number as Quill Radio** (2.2.0,
+   speech-synthesis *stacks* are bundled -- a much smaller download than Quill
+   Radio. (Announcements still reach speech and a braille display, via the user's
+   screen reader; see item 9. Nothing about that requires bundling an engine.)
+   The build MUST also exclude the libraries the app never runs at runtime that a
+   broad packaging rule would otherwise force in -- the i18n build tool, the PDF
+   stack, data-science, imaging, and video libraries -- which took the portable
+   ZIP from about 176 MB to 79 MB and the installer from about 123 MB to 52 MB
+   with no loss of function. Keeps the alert watch running while minimized to the
+   tray, resumes on launch, and offers a run-at-login option and an OS-scheduled
+   background check (no persistent process required).
+3. **Independent distribution and updates.** Its own installer and portable
+   build. Update checking uses the **one shared Quill release feed**, from which
+   each app resolves **only its own release asset** (`Quill-Weather-Setup-*.exe`
+   for an installed build, `Quill-Weather-Portable-*.zip` for a portable one) and
+   its own app tag's version, so a Quill Radio release can never be offered as a
+   Quill Weather update and no app needs a separate repository. It carries the
+   **same version number as Quill Radio** (2.2.0,
    shared weather code, released together) but a Quill Weather release can go out
    without a Quill Radio release and vice versa. Quill Weather also participates
    in the shared **QuillVille Runtime** distribution model, with a full portable
    edition, a lightweight companion edition, a full (shared-runtime) installer,
    and a thin installer -- detailed in "Distribution model" below.
-4. **Sibling interoperability.** Quill Weather can launch Quill Radio and QUILL
-   (File menu and tray) and is reachable the same way from them; Quill Radio's
-   Weather menu offers "Open the Quill Weather App". On one machine the apps
-   share a data store.
+4. **Sibling interoperability, through the shared QuillVille menu.** Quill
+   Weather carries the family's top-level **QuillVille** menu -- the same menu,
+   in the same place, in every QuillVille app -- listing "Open QUILL" and "Open
+   Quill Radio", each launching a sibling in its own window; the tray menu offers
+   the same list, and Quill Radio's Weather menu offers "Open the Quill Weather
+   App" in return. Only released apps are listed. The QuillVille menu is
+   deliberately the *family-navigation* menu rather than a functional one, which
+   is what a brand name should label; functional menus keep descriptive names.
+   Opening a sibling that is **not installed** must not dead-end: on a build that
+   can add one, the app offers to download and install it, runs the verified
+   download off the UI thread, and opens it on success, falling back to the web
+   release page on failure and to an honest "not installed" message when running
+   from source. On one machine the apps share a data store.
 5. **Feature customization.** Switchable areas (Alert Monitoring, NOAA Weather
    Radio) via Options > Customize Features..., using the shared
    `core/app_features` model and dialog; a disabled area's menu is omitted.
@@ -2551,6 +2572,41 @@ from the shared weather feature set above.
    `quill/ui/app_shell.py` (`_register_tray_hotkey`, `toggle_window_to_tray`)
    with a shared wx-free chord parser in `quill/ui/tray_hotkey.py`, wired for
    Quill Weather in `quill/apps/weather.py`.
+8. **Multi-location alert monitoring, on by default.** Weather Guardian MUST
+   watch every saved location unless an explicit watch list narrows it, so a
+   dedicated weather watcher covers home, work, and family out of the box rather
+   than the primary location alone. The monitor config carries a location-id list
+   resolved as: explicit list, else the legacy single location field, else the
+   primary location; loading a pre-multi-location config migrates the single id
+   into a one-item list and keeps the legacy field in sync for older readers.
+   Each tick is a **round** -- one fetch per watched place, one monitor state per
+   place, a round-pending counter so N places arm exactly one next timer rather
+   than N overlapping ones, per-location sound/toast/announcement, and a unioned
+   save of notified alert ids so the OS-scheduled background check never
+   re-toasts an alert the window already spoke. The baseline round speaks **one**
+   combined summary ("3 places: Tucson, Boston, and Reno. All clear right now."),
+   collapsing to the natural single-place wording for one location; start, stop,
+   and status wording say either the place name or "N places". A fine-grained
+   per-location selection dialog is a follow-up and warrants its own
+   screen-reader validation before it ships.
+9. **Announcements on every channel the app can reach.** Quill Weather MUST
+   deliver each announcement through the shared announcement service rather than
+   straight to speech: speech, a connected **braille display**, the status
+   line's message slot, and the accessibility test capture. A failing channel
+   MUST be isolated -- a display unplugged mid-sentence or a screen reader that
+   went away costs that channel only, never the message. Braille MUST be written
+   through the screen-reader bridge (the app bundles no braille stack of its
+   own), MUST coalesce a burst of differing messages into one write per short
+   window so a display is not flashed faster than it can be read, and MUST hold
+   an error rather than let the next routine message wipe it. The governing
+   preferences (braille on/off, braille style, dedupe window, sticky errors,
+   sound cues in apps) are shared settings edited in QUILL and honored here,
+   since the family shares one settings store per machine. Quill Weather does
+   **not** currently surface the shared **Repeat Last Announcement** and
+   **Announcement Self-Test** commands: it ships no command palette or keymap
+   editor, so the shell's command registration is not called. Exposing both --
+   the self-test in particular, which distinguishes "braille is broken" from "no
+   display is connected" -- is an open requirement.
 
 ### Distribution model: editions and the QuillVille Runtime
 

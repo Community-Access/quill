@@ -332,3 +332,46 @@ def test_resolve_bundled_reference_and_custom_path(tmp_path: Path) -> None:
     real.write_text("x", encoding="utf-8")
     assert resolve_sound_pack_path(str(real)) == real
     assert resolve_sound_pack_path(str(tmp_path / "missing.qsp")) is None
+
+
+# -- audio identity families ---------------------------------------------------
+
+
+def test_progress_sound_event_maps_five_percent_steps() -> None:
+    from quill.core.sound_events import progress_sound_event
+
+    assert progress_sound_event(0) == ""
+    assert progress_sound_event(4) == ""
+    assert progress_sound_event(5) == "progress_5"
+    assert progress_sound_event(47) == "progress_45"
+    assert progress_sound_event(100) == "progress_100"
+    assert progress_sound_event(250) == "progress_100"
+    assert progress_sound_event(-3) == ""
+
+
+def test_ink_pack_maps_every_identity_event_to_a_real_file() -> None:
+    import json
+    from pathlib import Path
+
+    from quill.core.sound_events import SoundEvent
+
+    pack_dir = Path("quill/assets/sound_packs/ink")
+    events = json.loads((pack_dir / "manifest.json").read_text(encoding="utf-8"))["events"]
+    identity = (
+        [f"copy_slot_{n}" for n in range(1, 13)]
+        + [f"bookmark_slot_{n}" for n in range(10)]
+        + [f"progress_{pct}" for pct in range(5, 101, 5)]
+        + [
+            "progress_tick",
+            "selection_started",
+            "selection_completed",
+            "document_top",
+            "document_bottom",
+            "keepalive",
+        ]
+    )
+    known = {str(event) for event in SoundEvent}
+    for event_id in identity:
+        assert event_id in known, f"{event_id} missing from SoundEvent"
+        assert event_id in events, f"{event_id} missing from the Ink manifest"
+        assert (pack_dir / events[event_id]).exists(), f"{events[event_id]} not generated"

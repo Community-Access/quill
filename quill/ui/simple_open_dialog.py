@@ -284,7 +284,12 @@ class SimpleOpenDialog:
         self._set_status("")
 
     def _on_path_enter(self, _event: wx.Event) -> None:
-        text = self._path_ctrl.GetValue().strip()
+        from quill.core.path_input import clean_typed_path
+
+        # Accept what real users actually paste: Explorer's "Copy as path"
+        # quotes, %VAR% environment paths, file:// URLs, smart quotes, NBSPs.
+        # A blind user cannot see the stray quote that makes a path "wrong".
+        text = clean_typed_path(self._path_ctrl.GetValue())
         if not text:
             return
         candidate = Path(text).expanduser()

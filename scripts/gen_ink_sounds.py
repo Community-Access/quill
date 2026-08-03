@@ -243,6 +243,19 @@ def generate_all() -> None:
         vol=0.55,
     )
 
+    # -- spelling_alert: single muted low blip (ambient, never alarming) -----
+    # Fired on every completed misspelled word during spell-check-as-you-type,
+    # so it must be quiet, short, and nothing like error/warning: one soft low
+    # triangle tap with a fast decay.
+    def spelling_env(i: int, n: int) -> float:
+        return exp_decay(i, 14) * edge(i, n, 2)
+
+    write_wav(
+        "spelling.wav",
+        _tone(330, 55, tri_at, spelling_env),
+        vol=0.40,
+    )
+
     # -- document_saved: very soft low tick with 2nd harmonic (settled) ------
     def save_env(i: int, n: int) -> float:
         return exp_decay(i, 30) * edge(i, n, 3)
@@ -493,6 +506,105 @@ def generate_all() -> None:
             parts.append(_bell(freq, note_ms))
         return _concat(*parts)
 
+    # ------------------------------------------------------------------
+    # Audio identity: per-slot earcons, the
+    # 5-percent progress ladder, selection and document-boundary cues, and
+    # the soundcard keep-alive. Slot identity rides a C-major pentatonic so
+    # every numbered slot is a note you learn; families differ by timbre.
+    # ------------------------------------------------------------------
+
+    def _pentatonic(degree: int, base: float = 261.63) -> float:
+        """Frequency of pentatonic scale degree N (C D E G A, octave-wrapped)."""
+        offsets = (0, 2, 4, 7, 9)
+        octave, position = divmod(degree, len(offsets))
+        return base * (2.0 ** (octave + offsets[position] / 12.0))
+
+    # -- copy_slot_1..12: soft marimba tap at the slot's own pitch -----------
+    # A tiny noise attack + a warm sine-with-octave body, short enough to
+    # never delay the spoken confirmation that follows it.
+    def marimba_env(i: int, n: int) -> float:
+        return exp_decay(i, 26) * edge(i, n, 2)
+
+    for slot in range(1, 13):
+        freq = _pentatonic(slot - 1)
+        write_wav(
+            f"copy_slot_{slot}.wav",
+            _concat(
+                _noise(3, _click_env),
+                _mix(
+                    _tone(freq, 85, sine_at, marimba_env),
+                    _tone(freq * 2, 85, sine_at, lambda i, n: marimba_env(i, n) * 0.35),
+                ),
+            ),
+            vol=0.55,
+        )
+
+    # -- bookmark_slot_0..9: bright triangle chirp at the slot's pitch -------
+    # Same scale, different voice: a quick upward glide into the slot note so
+    # bookmarks never blur into copy-tray taps.
+    for slot in range(10):
+        freq = _pentatonic(slot)
+        write_wav(
+            f"bookmark_slot_{slot}.wav",
+            _sweep(freq * 0.84, freq, 70, tri_at, _swell_env(3, 12, 0.35, 22)),
+            vol=0.5,
+        )
+
+    # -- progress_5..progress_100: a rising blip ladder ----------------------
+    # Pitch climbs one octave across the run (320 Hz at 5%, 640 Hz at 100%).
+    # Quarter marks (25/50/75) add a soft perfect fifth so the landmarks
+    # stand out; 100% resolves with a tiny two-note "done".
+    def blip_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(2), ms(8), 0.4, ms(14))
+
+    for pct in range(5, 101, 5):
+        freq = 320.0 * (2.0 ** (pct / 100.0))
+        layers = [_tone(freq, 42, sine_at, blip_env)]
+        if pct in (25, 50, 75):
+            layers.append(_tone(freq * 1.5, 42, sine_at, lambda i, n: blip_env(i, n) * 0.3))
+        blip = _mix(*layers)
+        if pct == 100:
+            blip = _concat(blip, _silence(14), _tone(freq * 1.25, 60, sine_at, blip_env))
+        write_wav(f"progress_{pct}.wav", blip, vol=0.42)
+
+    # -- progress_tick: the indeterminate heartbeat --------------------------
+    write_wav("progress_tick.wav", _tone(500, 26, sine_at, _click_env), vol=0.3)
+
+    # -- selection_started / selection_completed: a mirrored gate ------------
+    # Two quick triangle notes rising a fourth to open the selection; the
+    # exact reverse closes it. Shorter and lighter than the SSH connect pair
+    # so the families never collide.
+    selection_open = _concat(
+        _tone(523, 40, tri_at, _swell_env(2, 8, 0.35, 14)),
+        _silence(8),
+        _tone(698, 55, tri_at, _swell_env(2, 10, 0.35, 18)),
+    )
+    write_wav("selection_started.wav", selection_open, vol=0.5)
+    write_wav("selection_completed.wav", list(reversed(selection_open)), vol=0.5)
+
+    # -- document_top / document_bottom: ceiling tick, floor thud ------------
+    def ceiling_env(i: int, n: int) -> float:
+        return exp_decay(i, 10) * edge(i, n, 2)
+
+    write_wav("document_top.wav", _tone(1318, 45, sine_at, ceiling_env), vol=0.45)
+
+    def floor_env(i: int, n: int) -> float:
+        return exp_decay(i, 22) * edge(i, n, 3)
+
+    write_wav(
+        "document_bottom.wav",
+        _mix(
+            _tone(165, 70, sine_at, floor_env),
+            _tone(330, 70, sine_at, lambda i, n: floor_env(i, n) * 0.25),
+        ),
+        vol=0.5,
+    )
+
+    # -- keepalive: two seconds of true silence ------------------------------
+    # Played on a timer (opt-in) purely to keep USB/Bluetooth audio devices
+    # from powering down and clipping the start of the next real earcon.
+    write_wav("keepalive.wav", _silence(2000), vol=0.0)
+
     # on: C-E-G rising — a warm "hello".
     write_wav("conversation_on.wav", _bell_seq([523, 659, 784], 150), vol=0.55)
     # off: falling — settle "goodbye".
@@ -511,6 +623,120 @@ def generate_all() -> None:
     write_wav("conversation_thinking_tick.wav", _bell(330, 150), vol=0.28)
     # error: low fall — "something's off" (calm, not alarming).
     write_wav("conversation_error.wav", _bell_seq([392, 294], 150), vol=0.5)
+
+    # ------------------------------------------------------------------
+    # Companion-app cues. These fourteen ids shipped in the catalogue with
+    # no sounds and no call sites, so Radio, Cast, Weather and Beacon were
+    # silent. Each family gets its own voice, so you know WHICH app spoke
+    # before you parse WHAT it said: Radio is warm sine (broadcast), Cast is
+    # bell-like (an episode is a discrete thing), Weather is a deliberate
+    # alert, Beacon is a single capture blip.
+    # ------------------------------------------------------------------
+
+    def radio_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(4), ms(14), 0.42, ms(22))
+
+    # connecting: a rising fifth — reaching out, not yet arrived.
+    write_wav(
+        "radio_connecting.wav",
+        _concat(
+            _tone(392, 55, sine_at, radio_env),
+            _silence(10),
+            _tone(587, 65, sine_at, radio_env),
+        ),
+        vol=0.55,
+    )
+    # playing: that fifth resolving up to the octave — arrival.
+    radio_playing = _concat(
+        _tone(587, 50, sine_at, radio_env),
+        _silence(8),
+        _mix(
+            _tone(784, 90, sine_at, radio_env),
+            _tone(1568, 90, sine_at, lambda i, n: radio_env(i, n) * 0.2),
+        ),
+    )
+    write_wav("radio_playing.wav", radio_playing, vol=0.55)
+    # stopped: the exact time-reverse of playing — unmistakably its opposite.
+    write_wav("radio_stopped.wav", list(reversed(radio_playing)), vol=0.55)
+    # buffering: two soft equal pulses — waiting, going nowhere yet.
+    buffer_pulse = _tone(440, 45, sine_at, lambda i, n: exp_decay(i, 16) * edge(i, n, 3))
+    write_wav("radio_buffering.wav", _concat(buffer_pulse, _silence(70), buffer_pulse), vol=0.40)
+    # stream error: a falling minor third with a breath of noise — audibly in
+    # the radio family (so you know it is the stream), clearly negative, and
+    # not the harsh generic error buzz.
+    write_wav(
+        "radio_stream_error.wav",
+        _concat(
+            _noise(5, _click_env),
+            _mix(
+                _tone(466, 70, sine_at, radio_env),
+                _tone(466, 70, sqr_at, lambda i, n: radio_env(i, n) * 0.12),
+            ),
+            _silence(8),
+            _tone(370, 95, sine_at, radio_env),
+        ),
+        vol=0.55,
+    )
+    # recording started / stopped: a firm low-to-high pair and its mirror,
+    # deliberately lower and rounder than transcription's rec_start/rec_stop
+    # so "the radio is recording" never sounds like "dictation is listening".
+    radio_rec = _concat(
+        _tone(294, 70, sine_at, radio_env),
+        _silence(10),
+        _tone(440, 95, sine_at, radio_env),
+    )
+    write_wav("radio_recording_started.wav", radio_rec, vol=0.6)
+    write_wav("radio_recording_stopped.wav", list(reversed(radio_rec)), vol=0.6)
+    # favorite added: a bright quick lift — a small delight.
+    write_wav(
+        "radio_favorite_added.wav",
+        _concat(
+            _tone(880, 40, tri_at, _swell_env(2, 8, 0.35, 14)),
+            _tone(1320, 55, tri_at, _swell_env(2, 10, 0.35, 20)),
+        ),
+        vol=0.5,
+    )
+
+    # Cast: bell-voiced. Started and complete are inversions of each other.
+    write_wav("cast_download_started.wav", _bell_seq([523, 659], 120), vol=0.5)
+    write_wav("cast_download_complete.wav", _bell_seq([659, 523], 120), vol=0.5)
+    # episode finished: a longer, lower resolve — the end of a listen.
+    write_wav("cast_episode_finished.wav", _bell_seq([523, 392], 200), vol=0.45)
+
+    # Weather: a real alert. Two urgent tones then a held third — musical
+    # rather than a klaxon, but this fires for genuine warnings, so it is the
+    # one cue in the pack that must never be easy to ignore.
+    weather_env = _swell_env(3, 10, 0.55, 20)
+    write_wav(
+        "weather_alert.wav",
+        _concat(
+            _tone(880, 90, sine_at, weather_env),
+            _silence(50),
+            _tone(880, 90, sine_at, weather_env),
+            _silence(50),
+            _mix(
+                _tone(1046, 200, sine_at, _swell_env(4, 20, 0.5, 60)),
+                _tone(698, 200, sine_at, lambda i, n: _swell_env(4, 20, 0.5, 60)(i, n) * 0.35),
+            ),
+        ),
+        vol=0.7,
+    )
+
+    # Beacon: a capture is an instant, so its cue is one.
+    write_wav(
+        "beacon_captured.wav",
+        _concat(_noise(4, _click_env), _tone(988, 45, tri_at, _swell_env(2, 8, 0.3, 16))),
+        vol=0.5,
+    )
+    write_wav(
+        "beacon_sync_complete.wav",
+        _concat(
+            _tone(659, 45, tri_at, _swell_env(2, 8, 0.3, 14)),
+            _silence(8),
+            _tone(988, 70, tri_at, _swell_env(2, 10, 0.35, 24)),
+        ),
+        vol=0.5,
+    )
 
     print("Done.")
 

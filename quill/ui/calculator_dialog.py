@@ -4,8 +4,7 @@ statistics over selected numbers, CSV, and tables (Tools > Calculator).
 Two things in one accessible window:
 
 * **Calculate** a scientific/natural-language expression (``sqrt(264)``, ``10
-  percent of 500``, ``2^10 + 5!``) -- the pocket-calculator half, matching and
-  extending Leasey's calculator.
+  percent of 500``, ``2^10 + 5!``) -- the pocket-calculator half.
 * **Data operations** over whatever numbers are in the input box -- sum,
   average, min, max, median, and more -- either over **all numbers**, **down
   each column**, or **across each row** of a pasted CSV or table. This is the

@@ -63,7 +63,7 @@ class WeatherSettings:
     show_moon: bool = True
     show_uv_index: bool = True
     show_air_quality: bool = True
-    #: Show the current local time at the searched location (Leasey parity).
+    #: Show the current local time at the searched location.
     show_local_time: bool = True
 
     # -- alerts (PRD 13.3) --

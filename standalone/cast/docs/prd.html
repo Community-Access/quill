@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast -- Product Requirements</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -169,36 +173,9 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. Only the color is
-       changed; each token keeps its default weight/style. Placed last so it
-       wins the cascade over the styles.html() highlighting defaults above. */
-    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
-    code span.an, code span.co, code span.cv,
-    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
-    code span.at { color: #55631a; }                            /* was #7d9029 */
-    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
-    code span.ch, code span.sc, code span.st,
-    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
-    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
-    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-cast----product-requirements">QUILL Cast -- Product
 Requirements</h1>
 <p>Version 1.0</p>
@@ -266,11 +243,29 @@ folder by construction).</li>
 normalize loudness, and <strong>auto-reconnect on a dropped
 connection</strong> (configurable attempts/wait, mirroring Quill Radio's
 recording reconnect).</li>
-<li>System tray presence with podcast controls.</li>
-<li>Announcement-engine speech through the user's screen reader.</li>
+<li>System tray presence with podcast controls, plus an opt-in
+preference that makes Alt+F4 minimize to the tray instead of closing
+(the titlebar X and Exit keep the configured close behavior).</li>
+<li>Announcement-engine speech through the user's screen reader,
+<strong>and braille output to the user's display</strong> through the
+same screen-reader bridge, governed by the shared announcement service
+(§4).</li>
+<li><strong>Quillins host</strong>: a top-level Quillins menu running
+app-targeted, sandboxed, permission-gated extensions, including the
+bundled <code>cast-premium-auth</code> sample. Off in Safe Mode;
+third-party Quillins remain disabled.</li>
+<li><strong>Keyboard Shortcuts...</strong> (the shared Keymap Editor,
+scoped to this app's commands) and <strong>Global Hotkeys...</strong>
+(system-wide keys for Play/Pause, Stop, and Show/Hide QUILL Cast to the
+Tray).</li>
+<li><strong>Spotify podcasts (experimental)</strong>, shipped dark
+behind <code>future.spotify</code>: requires a signed unlock code,
+Spotify Premium, a user-supplied Client ID, and WebView2. Play-only --
+Spotify audio is DRM-protected and cannot be downloaded. Off in Safe
+Mode.</li>
 <li>Help: Get FFmpeg (recovery download if the bundled copy goes
-missing), Open in Quill, Redeem Unlock Code (shared unlock store), basic
-Check for Updates against this repo's releases, About.</li>
+missing), Open in Quill, Redeem Unlock Code (shared unlock store), Check
+for Updates against this repo's releases, About.</li>
 <li>Unlock-gated Audio Description Project menu (top-level) when
 <code>future.adp_assistant</code> is unlocked.</li>
 </ul>
@@ -279,9 +274,12 @@ Check for Updates against this repo's releases, About.</li>
 <li>Speech transcription engines (whisper.cpp / Faster Whisper / Vosk).
 Feed transcripts are plain downloads and remain fully functional;
 generating a transcript from audio is full-QUILL territory.</li>
-<li>QUILL's editor, AI assistants, braille, neural TTS voice stacks
-(Kokoro/Piper), Pandoc conversions, Quillins. The installer excludes
-their payloads outright.</li>
+<li>QUILL's editor, AI assistants, braille translation stacks (liblouis
+tables, BRF authoring), neural TTS voice stacks (Kokoro/Piper), Pandoc
+conversions. The installer excludes their payloads outright. Braille
+<em>announcements</em> are in scope and are not part of those payloads:
+they are written through the screen reader's own bridge, which requires
+no translation stack here.</li>
 <li>"Send Show Notes to Editor" copies to the clipboard instead
 (documented standalone difference).</li>
 <li>QUILL's update extras (signed manifest feed, portable zip swaps,
@@ -300,6 +298,19 @@ ids, focus placement, region announcements).</li>
 engine; silent state changes are defects.</li>
 <li>A-5. Full keyboard operation, including Play Queue reordering; the
 tray menu is reachable with keyboard alone.</li>
+<li>A-6. Announcements are delivered by the shared announcement service,
+not by a per-app path, so a channel added upstream reaches this app
+automatically. Speech and braille are both required channels; a braille
+burst is coalesced (first message immediate, newest-wins inside the
+conflation window) and ERROR-severity messages bypass coalescing
+entirely and may be held on the display. Braille style, the repeat
+window, sticky errors, and interrupt severity are shared accessibility
+settings, edited in QUILL and honored here.</li>
+<li>A-7. Every Yes/No confirmation whose outcome destroys or discards
+something defaults to No -- Delete Folder, Delete Playlist, Remove All
+Episodes, Delete Downloaded Files. Enter must always be the safe answer.
+Enforced upstream by an automated build check over the shared dialog
+surfaces.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -321,23 +332,34 @@ renames upstream never leave stale imports.</li>
 </ul>
 <h2 id="6-update-requirements">6. Update requirements</h2>
 <ul>
-<li>U-1. Help &gt; Check for Updates queries this repository's GitHub
-releases (newest stable vs running version), downloads the installer
-in-app with spoken 25/50/75 percent milestones, and offers Install now /
-Open folder. No background checks in 1.0.</li>
+<li>U-1. Help &gt; Check for Updates queries the shared repository's
+GitHub releases for this app's own asset (newest stable vs running
+version), downloads it in-app with spoken 25/50/75 percent milestones,
+and offers Install now / Open folder. A manual check that finds nothing
+newer shows a dialog, not only a spoken announcement.</li>
 <li>U-2. Release artifacts are named
 <code>QUILL-Cast-Setup-&lt;version&gt;.exe</code> and tagged
-<code>v&lt;version&gt;</code> so the check can compare.</li>
+<code>v&lt;version&gt;</code> so the check can compare. Each app carries
+its own asset prefix so every QuillVille app updates independently from
+the shared repository.</li>
+<li>U-3. A throttled silent check runs once a day on launch, quiet
+unless a real update exists; Preferences (Ctrl+,) turns it off.</li>
+<li>U-4. <strong>Install and restart now</strong>: QUILL Cast applies an
+update itself -- extracting portable files over the existing folder, or
+running the installer silently -- and relaunches, preserving shows,
+downloads, and settings. Shared with the rest of the family.</li>
 </ul>
 <h2 id="7-non-goals">7. Non-goals</h2>
 <p>macOS/Linux standalone builds (upstream QUILL covers macOS; the
-tray-icon pattern does not exist there), auto-updating in place,
-telemetry of any kind. A full DSP effects rack (reverb, tempo/pitch,
-spatial audio) -- Sound Enhancements (§9) is a small, purpose-built
-three-band EQ, compressor, and Smart Speed, not a general effects rack.
-For private feeds: no OAuth/token/cookie auth schemes, no per-episode
-credentials, no cross-machine credential sync -- one username/password
-per show, HTTP Basic only.</p>
+tray-icon pattern does not exist there), silent or unattended background
+updating (an update is always offered and accepted before it is applied
+-- see U-4), telemetry of any kind. Downloading Spotify audio, which is
+DRM-protected and play-only by design. A full DSP effects rack (reverb,
+tempo/pitch, spatial audio) -- Sound Enhancements (§9) is a small,
+purpose-built three-band EQ, compressor, and Smart Speed, not a general
+effects rack. For private feeds: no OAuth/token/cookie auth schemes, no
+per-episode credentials, no cross-machine credential sync -- one
+username/password per show, HTTP Basic only.</p>
 <h2 id="8-security-requirements">8. Security requirements</h2>
 <ul>
 <li>S-1. Feed passwords are stored only in a platform secret store:
@@ -358,7 +380,7 @@ prompts.</li>
 </ul>
 <h2 id="9-since-10">9. Since 1.0</h2>
 <ul>
-<li><strong>Sound Enhancements</strong> (Episode &gt; Sound
+<li><p><strong>Sound Enhancements</strong> (Episode &gt; Sound
 Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12
 to +12 dB), a compressor, and Smart Speed (live silence trimming between
 words/sentences), applied via an ffmpeg filter graph relayed to the
@@ -369,38 +391,69 @@ while enhanced (an ffmpeg <code>-ss</code> restart is how scrubbing
 works, since a running relay can't be seeked within; duration comes from
 an independent <code>ffprobe</code> call). Every setting is per-podcast:
 a shared default plus a per-show override, resolved at play time -- the
-same mechanism playback speed already used.</li>
-<li><strong>Quieter dialogs and a real "up to date" answer</strong>:
+same mechanism playback speed already used.</p></li>
+<li><p><strong>Quieter dialogs and a real "up to date" answer</strong>:
 dialog-transition announcements are now off by default (Preferences),
 and a manual Check for Updates that finds nothing newer shows a dialog
-instead of only announcing it.</li>
-<li><strong>In-app documentation</strong>: Help &gt; User Guide /
+instead of only announcing it.</p></li>
+<li><p><strong>In-app documentation</strong>: Help &gt; User Guide /
 Release Notes / Product Requirements open the bundled docs in your
-browser.</li>
-<li><strong>Skip Forward/Back and auto-skip intro/outro</strong>:
+browser.</p></li>
+<li><p><strong>Skip Forward/Back and auto-skip intro/outro</strong>:
 configurable per-podcast skip distances (30s forward/15s back by
 default) plus per-podcast auto-skip-intro (applies only on a fresh
 start, never a resume) and auto-skip-outro (ends the episode early
 through the same code path a natural finish uses, so
 auto-advance/delete-after-play still fire). New context-aware Skip
-Settings... dialog, same shape as Sound Enhancements.</li>
-<li><strong>Playlists</strong>: saved, named episode lists distinct from
-the transient Play Queue and the fixed pinned views. Smart Playlists
-re-resolve live from rules (shows, episode status, recency, duration,
-sort); manual Playlists are a curated, ordered, self-healing list built
-via each episode's own "Add to Playlist..." context-menu item.</li>
-<li><strong>Private feeds (username and password)</strong>: HTTP Basic
-authentication for protected feeds, end to end. Add by Feed URL detects
-a protected feed and opens a Feed Credentials prompt; <strong>Feed
-Credentials...</strong> on every show's context menu changes or clears
-them later. Credentials cover refresh, downloads, streaming,
-transcripts, and chapters, gated by the same-host rule (S-2); passwords
-live in the platform secret store (S-1) and never in OPML exports or
-logs (S-3). Documented portable caveat: DPAPI binding means a stick
-moved to another PC/account keeps subscriptions but asks for
-private-feed passwords once more.</li>
+Settings... dialog, same shape as Sound Enhancements.</p></li>
+<li><p><strong>Playlists</strong>: saved, named episode lists distinct
+from the transient Play Queue and the fixed pinned views. Smart
+Playlists re-resolve live from rules (shows, episode status, recency,
+duration, sort); manual Playlists are a curated, ordered, self-healing
+list built via each episode's own "Add to Playlist..." context-menu
+item.</p></li>
+<li><p><strong>Private feeds (username and password)</strong>: HTTP
+Basic authentication for protected feeds, end to end. Add by Feed URL
+detects a protected feed and opens a Feed Credentials prompt;
+<strong>Feed Credentials...</strong> on every show's context menu
+changes or clears them later. Credentials cover refresh, downloads,
+streaming, transcripts, and chapters, gated by the same-host rule (S-2);
+passwords live in the platform secret store (S-1) and never in OPML
+exports or logs (S-3). Documented portable caveat: DPAPI binding means a
+stick moved to another PC/account keeps subscriptions but asks for
+private-feed passwords once more.</p></li>
+<li><p><strong>Library tree episodes in place</strong>: shows in the
+main-page tree expand to reveal their episodes (collapsed by default so
+the tree stays a list of shows), with Enter on an episode playing that
+episode and Enter on the show still playing its next unplayed
+one.</p></li>
+<li><p><strong>Playback keyboard shortcuts</strong>: Stop (Ctrl+.), Skip
+Back/Forward (Ctrl+Left/Right), Volume Down/Up (Ctrl+Down/Up), matching
+Quill Radio's convention.</p></li>
+<li><p><strong>Focus return after subscribing</strong>: the Add Podcast
+search path returns focus to the results list and re-selects the
+subscribed row on success, already-subscribed, and error alike; the
+Add-by-Feed-URL path deliberately leaves focus by the URL box.</p></li>
+<li><p><strong>Alt+F4 to tray</strong>, opt-in, intercepted at the char
+hook before Windows converts it to a close; distinct from the configured
+close action so deliberate exits still exit.</p></li>
+<li><p><strong>Announcement service adoption</strong>: speech and
+braille both delivered through the shared service, with burst
+coalescing, sticky errors, compact braille style, and the shared
+accessibility settings (A-6).</p></li>
+<li><p><strong>Destructive defaults</strong>: the podcast confirmation
+surfaces default to No (A-7).</p></li>
+<li><p><strong>Quillins app host</strong> and the <strong>Keyboard
+Shortcuts / Global Hotkeys</strong> managers, both scoped to this app's
+own command registry.</p></li>
+<li><p><strong>Spotify (experimental, dark)</strong>: unlock-gated,
+Premium-only, user-supplied Client ID, WebView2-hosted playback;
+play-only.</p></li>
+<li><p><strong>Startup fix</strong>: the library tree no longer asks
+Windows to expand its hidden root node, which aborted the app before its
+window appeared. Guarded on the tree style, with a regression test
+asserting the guard stays adjacent to the call.</p></li>
 </ul>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
-</main>
 </body>
 </html>

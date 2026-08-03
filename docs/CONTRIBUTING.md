@@ -79,6 +79,14 @@ updates and `platform.windows.sr_announce.announce`.
 
 1. Create a feature branch from `main`.
 2. Keep changes focused and small enough to review.
+   - **Error-specificity review rule:** a new user-visible error must name the
+     specific condition ("The [APIKey] section is missing from Access.ini",
+     not "could not read the file") and, where a next action exists, say it
+     (a menu path, a setting, a command). Coded errors get their what-to-do
+     sentence from `USER_HINTS` in `quill/core/error_codes.py` (or a class
+     `user_hint`); surfaces display exceptions through `user_facing_message`.
+     A blind user cannot open the failing file to see what went wrong — the
+     message must carry the whole diagnosis and the next step.
 3. Follow the current module boundaries:
    - `quill/core`: no `wx` imports
    - `quill/ui`: UI behavior and dialogs
@@ -221,6 +229,8 @@ Before tagging a release:
 2. `pytest -q`
 3. `python scripts/check_docs_artifacts.py`
 4. Windows packaging workflow readiness (`.github/workflows/windows-release.yml`)
+
+Documentation follows the per-app rule (see `standalone/README.md`): a change to a companion app (Radio, Cast, Weather, Converter, Audio Studio, Beacon, Social) is documented in that app's own `standalone/<app>/CHANGELOG.md` and `docs/` files; a change to QUILL proper is documented in the repo-root files below; a shared change (announcement service, QuillVille menu, tray hotkeys, updater, dialog conventions) is documented in QUILL's files and mirrored into every affected app's changelog, so an app's user can learn everything about their app from that app's own docs.
 
 Release notes are prepared in a release notes file with the version as a part of its naming convention ('release0.7.0.md'). The file is then converted to epub and html file formats for distribution by Pandoc. `CHANGELOG.md` carries the same content in abbreviated form. All three files should be
 updated and committed before tagging.

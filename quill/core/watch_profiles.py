@@ -18,11 +18,12 @@ import logging
 import threading
 import time
 import uuid
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+from .monitor_policy import MONITOR_WATCH_FOLDER, MonitorPolicy
 from .watch_queue import WatchQueue
 
 logger = logging.getLogger(__name__)
@@ -315,8 +316,25 @@ class WatchManager:
     exactly-once claiming across overlapping profiles.
     """
 
-    def __init__(self, queue: WatchQueue) -> None:
+    def __init__(
+        self,
+        queue: WatchQueue,
+        *,
+        policy: MonitorPolicy | None = None,
+        on_tick: Callable[[str], None] | None = None,
+    ) -> None:
+        """``policy`` carries the shared ambient-monitor triple (see
+        :mod:`quill.core.monitor_policy`). Its interval is the app-wide default
+        cadence: a profile still at the built-in default follows it, while a
+        profile the user deliberately tuned keeps its own. ``on_tick`` receives
+        the earcon id for one check when the policy asks for an audible tick --
+        the shell supplies the player, so this module stays wx-free.
+        """
         self._queue = queue
+        self._policy = policy or MonitorPolicy(
+            monitor=MONITOR_WATCH_FOLDER, poll_interval_seconds=_DEFAULT_POLL_SECONDS
+        )
+        self._on_tick = on_tick
         self._lock = threading.Lock()
         self._threads: dict[str, threading.Thread] = {}
         self._stop_events: dict[str, threading.Event] = {}
@@ -328,6 +346,28 @@ class WatchManager:
     def is_running(self) -> bool:
         with self._lock:
             return self._running
+
+    @property
+    def policy(self) -> MonitorPolicy:
+        """The ambient-monitor policy these pollers run under."""
+        return self._policy
+
+    def poll_seconds_for(self, profile: WatchProfile) -> float:
+        """The cadence *profile* actually polls at, under the current policy."""
+        interval = int(profile.poll_interval_seconds)
+        if interval == _DEFAULT_POLL_SECONDS:
+            interval = self._policy.poll_interval_seconds
+        return float(max(_MIN_POLL_SECONDS, min(_MAX_POLL_SECONDS, interval)))
+
+    def _tick(self) -> None:
+        """Post the heartbeat earcon for one check, when the user asked for it."""
+        event = self._policy.tick_sound_event
+        if not event or self._on_tick is None:
+            return
+        try:
+            self._on_tick(event)
+        except Exception:  # noqa: BLE001 - a silent earcon must never stop a poller
+            logger.exception("Watch monitor tick failed")
 
     def active_profile_ids(self) -> set[str]:
         with self._lock:
@@ -418,13 +458,14 @@ class WatchManager:
         while not stop_event.is_set():
             try:
                 if profile_is_active(profile):
+                    self._tick()
                     for path in iter_matching_files(profile):
                         self._queue.enqueue(path, profile.profile_id, profile.action_id)
                 self._clear_error(profile.profile_id)
             except Exception as error:  # isolated failure: log and keep polling
                 logger.exception("Watch scan failed for profile %s", profile.profile_id)
                 self._record_error(profile.profile_id, error)
-            stop_event.wait(float(profile.poll_interval_seconds))
+            stop_event.wait(self.poll_seconds_for(profile))
 
 
 __all__ = [

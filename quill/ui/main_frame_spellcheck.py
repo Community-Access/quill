@@ -37,6 +37,7 @@ from quill.core.spellcheck import (
 from quill.core.spellcheck import (
     previous_misspelling as find_previous_misspelling,
 )
+from quill.core.spellcheck_live import live_alert_suppressed
 from quill.platform.sr_announce import (
     announce,
 )
@@ -686,8 +687,12 @@ class SpellcheckCommandsMixin:
             return
         dictionary = self._spell_dictionary()
         cursor = self.editor.GetInsertionPoint()
-        item = find_next_misspelling(self.editor.GetValue(), cursor - 1, dictionary)
+        text = self.editor.GetValue()
+        item = find_next_misspelling(text, cursor - 1, dictionary)
         if item is None or item.start != cursor:
+            self._last_live_misspelling_feedback = None
+            return
+        if live_alert_suppressed(text, item.start, item.end):
             self._last_live_misspelling_feedback = None
             return
         key = (item.word.lower(), item.start, item.end)
@@ -699,10 +704,24 @@ class SpellcheckCommandsMixin:
             return
         self._last_live_misspelling_feedback = key
         self._last_live_misspelling_feedback_at = now
+        self._play_spelling_alert()
+        self._set_status(f'Possible misspelling: "{item.word}"')
+
+    def _play_spelling_alert(self) -> None:
+        # Prefer the pack earcon; fall back to the system bell only when the
+        # sound system is off or the active pack has no spelling_alert sound,
+        # so the alert is never silently lost.
+        from quill.core.sound_events import SoundEvent
+        from quill.ui import sound_manager
+
+        if sound_manager.is_active() and str(SoundEvent.SPELLING_ALERT) in (
+            sound_manager.get_loaded_events()
+        ):
+            sound_manager.post_sound(SoundEvent.SPELLING_ALERT)
+            return
         bell = getattr(self._wx, "Bell", None)
         if callable(bell):
             bell()
-        self._set_status(f'Possible misspelling: "{item.word}"')
 
     def _spell_dictionary(self) -> set[str]:
         # Cache the combined dictionary keyed by (document path, project root).

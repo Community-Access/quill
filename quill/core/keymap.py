@@ -345,13 +345,13 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.toggle_numbered_list": "Ctrl+Alt+N",  # §edsharp-ok — authoring chord (x.md)
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
     "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
-    # Format-aware structured inserts: direct authoring chords mirroring Leasey
-    # Word (x.md), user-authorized; allow-listed in menu_lint, rebindable via editor.
+    # Format-aware structured inserts: direct authoring chords (x.md),
+    # user-authorized; allow-listed in menu_lint, rebindable via editor.
     "format.insert_table": "Ctrl+Alt+T",  # §edsharp-ok — authorized authoring chord (x.md)
     "format.blockquote": "Ctrl+Alt+Q",  # §edsharp-ok — authorized authoring chord (x.md)
     "format.horizontal_rule": "Ctrl+Alt+H",  # §edsharp-ok — authorized authoring chord (x.md)
     "power.insert_image": "Ctrl+Alt+I",  # §edsharp-ok — authoring chord (x.md)
-    # Table cell navigation (Leasey Word parity): move cell by cell inside a
+    # Table cell navigation: move cell by cell inside a
     # pipe/Markdown table, hearing each cell + its position. Context-sensitive --
     # harmless outside a table. §edsharp-ok authoring/navigation chords.
     "table.next_cell": "Ctrl+Alt+Right",  # §edsharp-ok — table cell navigation

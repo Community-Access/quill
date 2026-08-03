@@ -53,11 +53,21 @@ Left-double-click the icon to bring the window back.
 ## Weather Monitoring (Weather Guardian)
 
 **Weather menu > Start Weather Monitoring** (Ctrl+Shift+M) watches your saved
-location's official alerts and speaks each new one as it is issued, with a system
+locations' official alerts and speaks each new one as it is issued, with a system
 -tray notification and the alert sounder. **Pause Alert Checks** snoozes it
 without turning it off. See **Settings** for the alert sounder controls (on/off,
 your own sound file with a Play button, and how many times it repeats), and
 **Weather menu > Test Alert** to preview the whole experience.
+
+**Every place you have saved is watched, not just one.** You do not have to
+choose or configure anything: if you have added home, work, and your daughter's
+town, all three are covered. Each place is checked on the same schedule, and each
+new alert names its place when it is spoken and in its tray notification, so you
+always know where as well as what. When monitoring starts you hear one combined
+summary rather than a line per place -- for example, "3 places: Tucson, Boston,
+and Reno. All clear right now." The status line and the main window say either
+the one place's name or "for 3 places". (Picking exactly which of your saved
+places to watch is coming; today the watch covers all of them.)
 
 ## Customizing features
 
@@ -77,13 +87,54 @@ source whose alerts are merged into the ones Weather Monitoring already watches.
 Quillins are off in Safe Mode, and third-party Quillins are disabled in this
 release -- the bundled ones are the foundation.
 
+## How Quill Weather talks to you
+
+Everything Quill Weather tells you -- a new warning, the all-clear, "monitoring
+on for 3 places", a setting you just saved -- goes out on more than one channel
+at the same time, so you receive it the way you actually read.
+
+- **Speech.** Your screen reader speaks it. Urgent messages interrupt whatever
+  is being read; routine confirmations wait their turn.
+- **Braille.** The same message is written to a connected braille display. If
+  you keep speech turned down and read by touch, you no longer miss Quill
+  Weather's messages -- earlier versions spoke only. Two things keep the display
+  readable: when several different messages arrive in a rush they settle into a
+  single write rather than flashing past faster than your fingers can follow
+  (the first one still appears immediately, so nothing feels slow), and an error
+  message is held on the display instead of being wiped by the next routine
+  update. Braille is written through your screen reader, so it works wherever
+  NVDA or JAWS is driving your display.
+- **The status line** at the bottom of the window keeps the last message, so you
+  can go back and read it with your review cursor.
+
+If one channel fails -- a display unplugged mid-sentence, a screen reader that
+went away -- only that channel is affected; the message still reaches you the
+other ways.
+
+These preferences are shared with QUILL, because the apps use one settings store
+on a machine: **Preferences > Accessibility** in QUILL controls whether
+announcements are brailled at all, the braille wording style, how long an
+identical repeat is suppressed before it may take the display again, whether
+errors stay on the display, and whether the companion apps play sound cues.
+Change them once in QUILL and Quill Weather follows.
+
 ## Reaching the other apps
 
 Quill Weather, Quill Radio, and QUILL are separate apps that can open each other.
-**File > Open Quill Radio** and **File > Open QUILL** (also in the tray menu)
-launch a sibling in its own window; if it is already running, it simply comes to
-the front. On the same machine all three share one data store, so a location you
-saved in one is there in the others.
+The top-level **QuillVille** menu lists the others -- **Open QUILL** and **Open
+Quill Radio** -- and each opens in its own window; if it is already running, it
+simply comes to the front. Every QuillVille app carries the same menu in the same
+place, so getting from one to another is the same three keystrokes everywhere.
+The tray menu offers the same list.
+
+If the app you pick is not installed yet, Quill Weather does not just tell you
+so. It asks whether you would like to download and install it, and if you say
+yes it fetches and verifies it in the background and opens it when it is ready.
+If the download cannot be reached, it offers the web release page instead.
+Nothing is downloaded without your yes.
+
+On the same machine all three apps share one data store, so a location you saved
+in one is there in the others.
 
 ## Editions and the QuillVille Runtime
 
@@ -129,8 +180,10 @@ is gone, so the Quill apps are far less likely to be flagged.
 ## Updating
 
 **Help > Check for Updates** knows whether you run the installer or the portable
-build and downloads the matching one. Quill Weather updates on its own schedule,
-separate from Quill Radio. Because the QuillVille Runtime is shared, an app
+build and downloads the matching one. All the Quill apps publish to one release
+feed, and each looks only at its own downloads there, so a Quill Radio release is
+never offered to you as a Quill Weather update. Quill Weather updates on its own
+schedule, separate from Quill Radio. Because the QuillVille Runtime is shared, an app
 update is usually just the small app itself; the large runtime is downloaded
 only when a new one is required, and again with a fully accessible progress bar.
 
@@ -268,12 +321,18 @@ Weather Now (and the Weather Center) show three more things:
 ### Weather monitoring (Weather Guardian)
 
 **Weather menu > Start Weather Monitoring** (or **Ctrl+Shift+M**) watches your
-saved location's official watches, warnings, and advisories and **speaks each new
+saved locations' official watches, warnings, and advisories and **speaks each new
 one the moment it is issued** -- with interrupting speech for the most serious
 events (tornado, flash flood) -- and tells you when they all clear. It also drops
 a notification in the system tray for each new alert, so you can see it there.
 
-- It keeps working while Quill Radio is **minimized to the tray**, and it starts
+- **Every saved location is watched at once**, with no setup: home, work, and
+  family are all covered. Each alert names its place when it is spoken and in its
+  tray notification. Starting the watch speaks a single combined summary across
+  the places ("3 places: Tucson, Boston, and Reno. All clear right now."), and
+  turning it off or reading the status line says either the one place's name or
+  "for 3 places". Choosing a subset of your saved places is a later addition.
+- It keeps working while the app is **minimized to the tray**, and it starts
   again automatically the next time you launch (choose **Stop Weather Monitoring**
   to turn it off for good).
 - While a warning is active it checks much more often (as fast as once a minute)
@@ -333,8 +392,10 @@ for a dedicated NOAA Weather Radio receiver with alert tones.
 
 ### What's coming later
 
-This release shows weather as **text** and streams NOAA Weather Radio audio.
-Later phases of Quill Weather add spoken weather with its own voices and
-interruption rules, and background alert monitoring that keeps watch while the
-window is closed. See the Product Requirements document (Help > Product Requirements) for the full roadmap.
+This release shows weather as **text**, watches your saved places for alerts in
+the background, and streams NOAA Weather Radio audio. Later phases add spoken
+weather with its own voices and interruption rules per feed and per alert,
+continuously generated weather channels, and choosing exactly which of your saved
+places the alert watch covers. See the Product Requirements document
+(Help > Product Requirements) for the full roadmap.
 

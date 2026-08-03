@@ -873,7 +873,7 @@ class PowerToolsActionsMixin:
         answer = self._show_message_box(
             f"Delete {path.name} from disk? This cannot be undone.",
             "Delete File",
-            wx.YES_NO | wx.ICON_WARNING,
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
         )
         if answer != wx.ID_YES:
             return
@@ -1488,8 +1488,8 @@ class PowerToolsActionsMixin:
     def _date_sort_day_first(self) -> bool:
         """Infer d/m/y vs m/d/y for ambiguous numeric dates from the user's region.
 
-        Reuse the spell-check language as the region signal (Leasey infers the same
-        way from the Windows region): US English is the main month-first (m/d/y)
+        Reuse the spell-check language as the region signal (the same signal the
+        Windows region setting carries): US English is the main month-first (m/d/y)
         locale, so treat every other locale as day-first (d/m/y)."""
         language = str(getattr(self.settings, "spellcheck_language", "en_US"))
         return not language.lower().replace("-", "_").startswith("en_us")

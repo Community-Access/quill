@@ -11,15 +11,23 @@ from __future__ import annotations
 
 import ast
 
+import pytest
+
 from quill.tools.dialog_button_contract import (
     _audit_module,
     find_violations,
 )
 
 
-def test_no_dialog_escape_button_traps_in_source() -> None:
+@pytest.fixture(scope="module")
+def repo_violations() -> list:
+    """One repo-wide scan shared by both repository gate tests (it is slow)."""
+    return find_violations()
+
+
+def test_no_dialog_escape_button_traps_in_source(repo_violations: list) -> None:
     """Every custom dialog's Escape id must be backed by a button or handler."""
-    violations = find_violations()
+    violations = [v for v in repo_violations if v.kind != "destructive_default"]
     assert not violations, (
         "Dialog(s) declare an Escape id with neither a matching button nor a "
         "WXK_ESCAPE handler, so Escape cannot close them (keyboard trap, "
@@ -182,3 +190,114 @@ class RawDialog:
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_NO)
 """
     assert sorted(_violations(source)) == sorted(["RawDialog:ID_OK", "RawDialog:ID_NO"])
+
+
+# -- destructive Yes/No confirmations must default to No (NO_DEFAULT gate) -----
+
+
+def _destructive_violations(source: str) -> list[str]:
+    from quill.tools.dialog_button_contract import _find_destructive_default_violations
+
+    tree = ast.parse(source)
+    return [v.scope for v in _find_destructive_default_violations("synthetic.py", source, tree)]
+
+
+def test_destructive_yes_no_without_no_default_is_flagged() -> None:
+    source = """
+def confirm(self):
+    dlg = wx.MessageDialog(
+        self.frame,
+        "Delete the recording? This cannot be undone.",
+        "Delete Recording",
+        wx.YES_NO | wx.ICON_WARNING,
+    )
+"""
+    assert _destructive_violations(source) != []
+
+
+def test_destructive_yes_no_with_no_default_passes() -> None:
+    source = """
+def confirm(self):
+    dlg = wx.MessageDialog(
+        self.frame,
+        "Delete the recording? This cannot be undone.",
+        "Delete Recording",
+        wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
+    )
+"""
+    assert _destructive_violations(source) == []
+
+
+def test_non_destructive_yes_no_keeps_its_affirmative_default() -> None:
+    # "Save changes?" should default to Yes; the gate must not flag it.
+    source = """
+def confirm(self):
+    dlg = wx.MessageDialog(self.frame, "Save changes before closing?", "Save", wx.YES_NO)
+"""
+    assert _destructive_violations(source) == []
+
+
+def test_destructive_gate_respects_the_exempt_pragma() -> None:
+    source = """
+def confirm(self):
+    dlg = wx.MessageDialog(  # dialog_button_contract: exempt
+        self.frame,
+        "Delete everything?",
+        "Delete",
+        wx.YES_NO,
+    )
+"""
+    assert _destructive_violations(source) == []
+
+
+def test_repository_has_no_destructive_yes_defaults(repo_violations: list) -> None:
+    offenders = [v for v in repo_violations if v.kind == "destructive_default"]
+    assert not offenders, "\n".join(str(v) for v in offenders)
+
+
+def test_product_name_eraser_is_not_read_as_the_verb_erase() -> None:
+    # "Quill Eraser" is a product name; an open-ended eras\w* stem flagged two
+    # harmless Eraser prompts as destructive. Inflections, not stems.
+    source = """
+def confirm(self):
+    dlg = wx.MessageDialog(
+        self.frame,
+        "No text is selected. Check the entire document instead?",
+        "Quill Eraser",
+        wx.YES_NO,
+    )
+"""
+    assert _destructive_violations(source) == []
+
+
+def test_verb_inflections_are_still_caught() -> None:
+    # The gap that let a Forget-API-key prompt through: "removes" did not match
+    # a \bremove\b anchor.
+    for phrase in (
+        "This removes it from your computer.",
+        "Unsubscribe from this show?",
+        "Forget the stored API key?",
+        "This overwrites the current database.",
+    ):
+        source = f"""
+def confirm(self):
+    dlg = wx.MessageDialog(self.frame, "{phrase}", "Confirm", wx.YES_NO)
+"""
+        assert _destructive_violations(source) != [], phrase
+
+
+def test_the_exempt_pragma_is_found_anywhere_inside_a_multiline_call() -> None:
+    # The reason for an exemption belongs beside the style argument it
+    # explains, which is many lines below the call's first line.
+    source = """
+def confirm(self):
+    with wx.MessageDialog(
+        self.frame,
+        "'notes.txt' was deleted by another program. What would you like to do?",
+        "File Deleted from Disk",
+        # dialog_button_contract: exempt -- Yes is relabelled "Keep Text".
+        wx.YES_NO | wx.CANCEL,
+    ) as dlg:
+        pass
+"""
+    assert _destructive_violations(source) == []

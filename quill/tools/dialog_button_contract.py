@@ -116,6 +116,26 @@ def _pragma_for_call(source: str, node: ast.Call) -> bool:
     return _source_has_noqa(source, line)
 
 
+def _pragma_anywhere_in_call(source: str, node: ast.Call) -> bool:
+    """True when the opt-out appears anywhere inside the call's own span.
+
+    A confirmation dialog is written across many lines (parent, message,
+    title, style), and the reason for an exemption belongs next to the style
+    argument it explains -- which is nowhere near the call's first line. So
+    the destructive-default audit scans the whole statement rather than the
+    three-line window ``_source_has_noqa`` uses for one-line calls.
+    """
+    start = getattr(node, "lineno", None)
+    end = getattr(node, "end_lineno", None) or start
+    if start is None:
+        return False
+    lines = source.splitlines()
+    for index in range(start - 1, min(end, len(lines))):
+        if 0 <= index < len(lines) and _PRAGMA_RE.search(lines[index]):
+            return True
+    return False
+
+
 #: Standard wx id -> the CreateButtonSizer flag that synthesizes its button.
 _ID_TO_FLAG = {
     "ID_OK": "OK",
@@ -152,6 +172,14 @@ class Violation:
     kind: str = "escape_id"
 
     def __str__(self) -> str:
+        if self.kind == "destructive_default":
+            return (
+                f"{self.module}::{self.scope}: destructive Yes/No confirmation "
+                f"without wx.NO_DEFAULT. A blind user pressing Enter reflexively "
+                f"must not lose data: the default button on a destructive "
+                f"confirmation is No. Add wx.NO_DEFAULT to the style (or the "
+                f"'# dialog_button_contract: exempt' pragma with a reason)."
+            )
         if self.kind == "affirmative_id":
             return (
                 f"{self.module}::{self.scope}: apply_modal_ids affirmative_id="
@@ -353,14 +381,99 @@ def _audit_module(module: str, source: str, tree: ast.Module) -> list[Violation]
     return violations
 
 
+#: Message text that marks a Yes/No confirmation as destructive: acting on it
+#: discards or destroys something. Deliberately conservative -- generic
+#: phrasing ("Save changes?") must keep its affirmative default.
+#: Inflections, not bare words -- "removes it from your computer" must match as
+#: surely as "Remove" (an early version anchored on \bremove\b and missed a
+#: Forget-API-key prompt that said "removes"). But deliberately NOT open-ended
+#: stems: ``eras\w*`` would match the product name "Quill Eraser" and flag two
+#: harmless prompts, so each verb lists its real inflections instead.
+_DESTRUCTIVE_TEXT = re.compile(
+    r"\b(delete[sd]?|deleting|remove[sd]?|removing|removal|"
+    r"discard(s|ed|ing)?|overwrite[sd]?|overwriting|uninstall(s|ed|ing)?|"
+    r"reset(s|ting)?|erase[sd]?|erasing|unsubscribe[sd]?|unsubscribing|"
+    r"unlink(s|ed|ing)?|revoke[sd]?|revoking|forget(s|ting)?|forgot|"
+    r"clear all|cannot be undone|permanently|will be lost|replace it)\b",
+    re.IGNORECASE,
+)
+
+#: Call names that build a stock Yes/No confirmation.
+_CONFIRM_CALL_NAMES = {
+    "MessageDialog",
+    "MessageBox",
+    "_show_message_box",
+    "show_message_box",
+}
+
+
+def _confirm_call_name(node: ast.Call) -> str | None:
+    func = node.func
+    if isinstance(func, ast.Attribute):
+        return func.attr
+    if isinstance(func, ast.Name):
+        return func.id
+    return None
+
+
+def _all_names_in_call(node: ast.Call) -> set[str]:
+    names: set[str] = set()
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Attribute):
+            names.add(sub.attr)
+        elif isinstance(sub, ast.Name):
+            names.add(sub.id)
+    return names
+
+
+def _find_destructive_default_violations(
+    module: str, source: str, tree: ast.Module
+) -> list[Violation]:
+    """Flag destructive Yes/No confirmations whose default button is Yes.
+
+    The rule (accessibility hardening item): a blind user
+    pressing Enter reflexively on a "Delete X?" prompt must not lose data, so
+    every Yes/No confirmation whose message reads as destructive must carry
+    ``wx.NO_DEFAULT`` (or ``CANCEL_DEFAULT``). Text is matched across every
+    string literal in the call so multi-line messages are seen; dynamic
+    message text is invisible to this audit, which is why the spoken rule in
+    the PRD still applies at review time.
+    """
+    violations: list[Violation] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if _confirm_call_name(node) not in _CONFIRM_CALL_NAMES:
+            continue
+        names = _all_names_in_call(node)
+        if "YES_NO" not in names:
+            continue
+        if "NO_DEFAULT" in names or "CANCEL_DEFAULT" in names:
+            continue
+        if _call_has_audit_pragma(source, node) or _pragma_anywhere_in_call(source, node):
+            continue
+        text = " ".join(
+            constant.value
+            for constant in ast.walk(node)
+            if isinstance(constant, ast.Constant) and isinstance(constant.value, str)
+        )
+        if not _DESTRUCTIVE_TEXT.search(text):
+            continue
+        violations.append(
+            Violation(module, f"line {node.lineno}", "NO_DEFAULT", kind="destructive_default")
+        )
+    return violations
+
+
 def find_violations(package_root: Path = _PACKAGE_ROOT) -> list[Violation]:
-    """Scan the package for hardened_custom dialogs with unbacked escape ids."""
+    """Scan the package for unbacked escape ids and destructive Yes-defaults."""
     violations: list[Violation] = []
     for path in sorted(package_root.rglob("*.py")):
         rel = path.relative_to(_REPO_ROOT).as_posix()
         source = path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(path))
         violations.extend(_audit_module(rel, source, tree))
+        violations.extend(_find_destructive_default_violations(rel, source, tree))
     return violations
 
 

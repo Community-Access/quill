@@ -2,10 +2,10 @@
 
 ``build_launch_argv`` is pure and platform-agnostic -- the thing under test.
 ``write_launch_shortcut`` is the one function that touches disk/COM, and it
-degrades gracefully: a genuine Windows ``.lnk`` when ``pywin32`` is available,
-a plain ``.bat`` launcher otherwise. Either way a persona is reachable without
-QUILL already running, which is the actual requirement -- the file format is
-an implementation detail.
+degrades gracefully: a genuine Windows ``.lnk`` when ``comtypes`` and COM are
+available, a plain ``.bat`` launcher otherwise. Either way a persona is
+reachable without QUILL already running, which is the actual requirement --
+the file format is an implementation detail.
 """
 
 from __future__ import annotations
@@ -58,27 +58,32 @@ def write_launch_shortcut(persona_name: str, target_dir: Path) -> Path:
     """Write a launcher for *persona_name* into *target_dir*, returning its path.
 
     On macOS a double-clickable ``.command`` shell script (Finder runs it in
-    Terminal). On Windows, tries a real ``.lnk`` (via ``pywin32``'s
-    ``WScript.Shell`` COM object, the standard way to build one); any failure
-    -- not on Windows, ``pywin32`` missing, COM unavailable -- falls back to a
-    ``.bat`` file that runs the exact same command. Never raises: a persona is
-    always left with *some* double-clickable launcher.
+    Terminal). On Windows, tries a real ``.lnk`` (via the ``WScript.Shell`` COM
+    object, the standard way to build one); any failure -- not on Windows,
+    ``comtypes`` missing, COM unavailable -- falls back to a ``.bat`` file that
+    runs the exact same command. Never raises: a persona is always left with
+    *some* double-clickable launcher.
     """
     target_dir.mkdir(parents=True, exist_ok=True)
     if sys.platform == "darwin":
         return _write_command_shortcut(persona_name, target_dir)
     try:
-        import win32com.client  # type: ignore[import-untyped]
+        import comtypes.client  # type: ignore[import-untyped]
 
         argv = build_launch_argv(persona_name)
         safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in persona_name).strip()
         lnk_path = target_dir / f"QUILL - {safe_name}.lnk"
-        shell = win32com.client.Dispatch("WScript.Shell")
+        # ``dynamic=True`` keeps this on late-bound IDispatch, so comtypes never
+        # generates a wrapper module for the WScript.Shell type library. That
+        # means no generated-code cache to write (no need for the
+        # ``comtypes_setup`` gen_dir redirect here) and nothing a frozen or
+        # compiled build could fail to import at runtime.
+        shell = comtypes.client.CreateObject("WScript.Shell", dynamic=True)
         shortcut = shell.CreateShortCut(str(lnk_path))
         shortcut.TargetPath = argv[0]
         shortcut.Arguments = " ".join(f'"{part}"' for part in argv[1:])
         shortcut.Description = f"Launch QUILL with the {persona_name} persona"
         shortcut.Save()
         return lnk_path
-    except Exception:  # noqa: BLE001 - any COM/pywin32 failure falls back to .bat
+    except Exception:  # noqa: BLE001 - any COM/comtypes failure falls back to .bat
         return _write_bat_shortcut(persona_name, target_dir)

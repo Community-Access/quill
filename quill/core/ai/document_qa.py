@@ -45,6 +45,11 @@ class QAAnswer:
     answer: str
     source_excerpt: str = ""
     truncated: bool = False
+    #: When truncated: how much of the document the answer actually used, so
+    #: the UI can state the working size instead of a bare "was truncated"
+    #: (error specificity: never silently deliver less than was asked).
+    used_chars: int = 0
+    total_chars: int = 0
 
 
 def ask_document(
@@ -100,6 +105,8 @@ def ask_document(
         answer=answer_text,
         source_excerpt=excerpt,
         truncated=truncated,
+        used_chars=len(doc_for_prompt),
+        total_chars=len(document_text),
     )
 
 
@@ -188,6 +195,8 @@ class ConversationContext:
             answer=answer_text,
             source_excerpt=_find_source_excerpt(answer_text, self.document_text),
             truncated=truncated,
+            used_chars=len(prompt_doc),
+            total_chars=len(self.document_text),
         )
 
     def clear_history(self) -> None:

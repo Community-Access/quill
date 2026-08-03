@@ -29,3 +29,24 @@ def test_search_tray_slots_passes_announce_fn() -> None:
 
 def test_open_copy_tray_passes_announce_cb() -> None:
     assert "announce_cb=self._announce" in SOURCE
+
+
+def test_tray_slot_accelerators_cover_all_twelve_slots() -> None:
+    # &1-&9, then the recent-files convention 1&0 for slot ten; 11-12 have no
+    # mnemonic ("&10" would collide with slot 1 on "1").
+    from quill.ui.main_frame_menu import _tray_slot_accel
+
+    assert [_tray_slot_accel(n) for n in range(1, 13)] == [
+        "&1",
+        "&2",
+        "&3",
+        "&4",
+        "&5",
+        "&6",
+        "&7",
+        "&8",
+        "&9",
+        "1&0",
+        "11",
+        "12",
+    ]

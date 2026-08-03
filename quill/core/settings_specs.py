@@ -1130,6 +1130,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("sound", "volume", "audio", "earcon"),
     ),
     SettingSpec(
+        "sound_keepalive_enabled",
+        "Keep the sound device awake",
+        "accessibility",
+        "bool",
+        "Play a silent clip every 20 seconds so USB and Bluetooth audio devices "
+        "never power down and clip the start of the next sound. Turn this on if "
+        "the first moment of earcons or speech is cut off after a quiet pause.",
+        keywords=("sound", "keepalive", "usb", "bluetooth", "clipping", "audio"),
+    ),
+    SettingSpec(
         "sound_events_disabled",
         "Silenced sound events",
         "accessibility",
@@ -1263,6 +1273,95 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         maximum=2000,
         feature_id="core.accessibility",
         keywords=("throttle", "announcements", "timing"),
+    ),
+    # --- Background monitors (the shared policy triple) ---------------------
+    # Every background watcher exposes the same three controls: how often it
+    # checks, whether the check itself is audible, and whether a result
+    # interrupts speech. See quill/core/monitor_policy.py. The watched-folder
+    # trio lives in the Watch Folders group beside its siblings; the rest live
+    # here, because until now none of them had a home at all.
+    SettingSpec(
+        "weather_monitor_audible_tick",
+        "Weather check: play a sound on each check",
+        "accessibility",
+        "bool",
+        "Play a short tick every time weather monitoring checks for alerts, so "
+        "you can hear that the watch is still running.",
+        keywords=("weather", "monitor", "tick", "sound", "earcon", "check"),
+    ),
+    SettingSpec(
+        "weather_monitor_interrupt_speech",
+        "Weather check: let results interrupt speech",
+        "accessibility",
+        "bool",
+        "Announce weather changes immediately, cutting across whatever is being "
+        "spoken. Off means they wait their turn. Severe alerts always interrupt.",
+        keywords=("weather", "monitor", "interrupt", "speech", "announce"),
+    ),
+    SettingSpec(
+        "podcast_check_enabled",
+        "Check podcast feeds in the background",
+        "accessibility",
+        "bool",
+        "Look for new episodes on a timer instead of only when you ask. Off by "
+        "default; nothing is downloaded, only the feeds are read.",
+        keywords=("podcast", "feed", "check", "background", "new episodes"),
+    ),
+    SettingSpec(
+        "podcast_check_interval_minutes",
+        "Podcast check: how often (minutes)",
+        "accessibility",
+        "int",
+        "How often podcast feeds are checked for new episodes (5 to 1440 minutes).",
+        minimum=5,
+        maximum=1440,
+        keywords=("podcast", "feed", "interval", "minutes", "poll", "check"),
+    ),
+    SettingSpec(
+        "podcast_check_audible_tick",
+        "Podcast check: play a sound on each check",
+        "accessibility",
+        "bool",
+        "Play a short tick every time podcast feeds are checked, so silence "
+        "means the check stopped rather than found nothing.",
+        keywords=("podcast", "tick", "sound", "earcon", "check", "monitor"),
+    ),
+    SettingSpec(
+        "podcast_check_interrupt_speech",
+        "Podcast check: let results interrupt speech",
+        "accessibility",
+        "bool",
+        "Announce new episodes immediately, cutting across whatever is being "
+        "spoken. Off means the notice waits its turn.",
+        keywords=("podcast", "interrupt", "speech", "announce", "new episodes"),
+    ),
+    SettingSpec(
+        "github_poll_interval_minutes",
+        "GitHub check: how often (minutes)",
+        "accessibility",
+        "int",
+        "How often GitHub is checked for notifications and updates (5 to 1440 minutes).",
+        minimum=5,
+        maximum=1440,
+        keywords=("github", "interval", "minutes", "poll", "check", "notifications"),
+    ),
+    SettingSpec(
+        "github_poll_audible_tick",
+        "GitHub check: play a sound on each check",
+        "accessibility",
+        "bool",
+        "Play a short tick every time GitHub is checked, so you can hear that "
+        "the check is still running.",
+        keywords=("github", "tick", "sound", "earcon", "check", "monitor"),
+    ),
+    SettingSpec(
+        "github_poll_interrupt_speech",
+        "GitHub check: let results interrupt speech",
+        "accessibility",
+        "bool",
+        "Announce GitHub results immediately, cutting across whatever is being "
+        "spoken. Off means they wait their turn.",
+        keywords=("github", "interrupt", "speech", "announce", "notifications"),
     ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
@@ -1759,6 +1858,26 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         minimum=2,
         maximum=300,
         keywords=("watch", "poll", "interval", "seconds"),
+    ),
+    SettingSpec(
+        "watch_folder_audible_tick",
+        "Watch folder: play a sound on each check",
+        "watch",
+        "bool",
+        "Play a short tick every time the watched folder is checked, so "
+        "silence means the watcher stopped rather than found nothing.",
+        feature_id="core.watch",
+        keywords=("watch", "tick", "sound", "earcon", "monitor"),
+    ),
+    SettingSpec(
+        "watch_folder_interrupt_speech",
+        "Watch folder: let results interrupt speech",
+        "watch",
+        "bool",
+        "Announce a newly opened file immediately, cutting across whatever is "
+        "being spoken. Off means the notice waits its turn.",
+        feature_id="core.watch",
+        keywords=("watch", "interrupt", "speech", "announce"),
     ),
     # --- Updates -----------------------------------------------------------
     SettingSpec(

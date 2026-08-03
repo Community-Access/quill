@@ -64,7 +64,7 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "format.heading_4",
     "format.heading_5",
     "format.heading_6",
-    # Format-aware structured inserts / authoring chords mirroring Leasey Word
+    # Format-aware structured inserts / authoring chords
     # (x.md "Authoring"), user-authorized as in-app Ctrl+Alt chords. None
     # collides with a default NVDA/JAWS command.
     "format.toggle_bullet_list",  # Ctrl+Alt+B
@@ -74,7 +74,7 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "format.horizontal_rule",  # Ctrl+Alt+H
     "edit.insert_link",  # Ctrl+Alt+K
     "power.insert_image",  # Ctrl+Alt+I
-    # Table cell navigation (Leasey Word parity): Ctrl+Alt+arrow/Home/End move
+    # Table cell navigation: Ctrl+Alt+arrow/Home/End move
     # cell by cell; context-sensitive and harmless outside a table.
     "table.next_cell",  # Ctrl+Alt+Right
     "table.previous_cell",  # Ctrl+Alt+Left

@@ -276,7 +276,7 @@ def show_optional_components_picker(
                 f"Remove {comp.name}? This deletes QUILL's downloaded copy and turns "
                 "its features back off. You can download it again any time.",
                 "Remove Component",
-                wx.ICON_QUESTION | wx.YES_NO,
+                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
                 dialog,
             )
             != wx.YES

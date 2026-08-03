@@ -14,6 +14,7 @@ from quill.core.spellcheck import (
     previous_misspelling,
     suggest_words,
 )
+from quill.core.spellcheck_live import live_alert_suppressed
 
 
 @pytest.fixture(autouse=True)
@@ -248,3 +249,49 @@ def test_set_active_language_updates_and_resets(monkeypatch: pytest.MonkeyPatch)
 def test_language_display_name_falls_back_to_tag() -> None:
     assert spellcheck.language_display_name("es_ES") == "Spanish (Spain)"
     assert spellcheck.language_display_name("xx_XX") == "xx_XX"
+
+
+# -- live_alert_suppressed: spell-check-as-you-type false-positive filter ------
+
+
+def test_live_alert_suppressed_inside_url() -> None:
+    text = "See https://exmaple.com/pgae for details"
+    start = text.index("pgae")
+    assert live_alert_suppressed(text, start, start + 4) is True
+
+
+def test_live_alert_suppressed_inside_email() -> None:
+    text = "Mail jeff@exmaple.com today"
+    start = text.index("exmaple")
+    assert live_alert_suppressed(text, start, start + 7) is True
+
+
+def test_live_alert_suppressed_inside_inline_code_span() -> None:
+    text = "Run `mispeledcmd` to start"
+    start = text.index("mispeledcmd")
+    assert live_alert_suppressed(text, start, start + 11) is True
+
+
+def test_live_alert_suppressed_inside_fenced_code_block() -> None:
+    text = "Intro line\n```\nmispeled_token = 1\n```\nAfter"
+    start = text.index("mispeled_token")
+    assert live_alert_suppressed(text, start, start + 14) is True
+
+
+def test_live_alert_not_suppressed_after_closed_fence() -> None:
+    text = "```\ncode\n```\nThis word is mispeled here"
+    start = text.index("mispeled")
+    assert live_alert_suppressed(text, start, start + 8) is False
+
+
+def test_live_alert_not_suppressed_for_ordinary_prose() -> None:
+    text = "This word is mispeled in plain prose"
+    start = text.index("mispeled")
+    assert live_alert_suppressed(text, start, start + 8) is False
+
+
+def test_live_alert_not_suppressed_for_word_next_to_url() -> None:
+    # The word after the URL on the same line must still alert.
+    text = "See https://example.com then procede"
+    start = text.index("procede")
+    assert live_alert_suppressed(text, start, start + 7) is False

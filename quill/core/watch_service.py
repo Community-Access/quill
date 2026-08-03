@@ -15,6 +15,7 @@ import logging
 from collections.abc import Callable
 from pathlib import Path
 
+from .monitor_policy import MONITOR_WATCH_FOLDER, MonitorPolicy, resolve_monitor_policy
 from .watch_actions import WatchActionRegistry, default_registry
 from .watch_profile_store import WatchProfileStore
 from .watch_profiles import WatchManager, WatchProfile
@@ -44,8 +45,18 @@ class WatchService:
         on_ai: Callable[[Path, object], object] | None = None,
         queue_listener: Callable[[str, QueueItem | None], None] | None = None,
         registry: WatchActionRegistry | None = None,
+        settings: object | None = None,
+        policy: MonitorPolicy | None = None,
+        on_tick: Callable[[str], None] | None = None,
     ) -> None:
+        """``settings`` (or an explicit ``policy``) supplies the shared
+        ambient-monitor triple for watched folders: cadence, audible tick, and
+        whether a result interrupts speech. ``on_tick`` is the shell's earcon
+        player; without one the tick is silently skipped, which is why the
+        default construction behaves exactly as it did before.
+        """
         self._data_dir = Path(data_dir)
+        self._policy = policy or resolve_monitor_policy(settings, MONITOR_WATCH_FOLDER)
         self._feature_enabled = feature_enabled
         self._watch_dir = self._data_dir / "watch"
         self._watch_dir.mkdir(parents=True, exist_ok=True)
@@ -62,7 +73,7 @@ class WatchService:
             on_run_macro=on_run_macro,
             on_ai=on_ai,  # type: ignore[arg-type]
         )
-        self.manager = WatchManager(self.queue)
+        self.manager = WatchManager(self.queue, policy=self._policy, on_tick=on_tick)
         self.worker = WatchWorker(
             queue=self.queue,
             registry=self.registry,
@@ -75,6 +86,16 @@ class WatchService:
     @property
     def is_running(self) -> bool:
         return self._running
+
+    @property
+    def policy(self) -> MonitorPolicy:
+        """The ambient-monitor policy for watched folders.
+
+        The shell reads ``policy.force_speech`` when it announces what the
+        queue found, so "let results interrupt speech" means the same thing
+        here as it does for every other monitor.
+        """
+        return self._policy
 
     def is_feature_enabled(self) -> bool:
         if self._feature_enabled is None:

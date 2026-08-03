@@ -375,7 +375,7 @@ class SiteManagerDialog:
             self.dialog,
             f'Delete the saved site "{current.name}"?',
             "Delete Site",
-            wx.YES_NO | wx.ICON_QUESTION,
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
         ) as confirm:
             if confirm.ShowModal() != wx.ID_YES:
                 return

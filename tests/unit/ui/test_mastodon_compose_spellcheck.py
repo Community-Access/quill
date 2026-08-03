@@ -1,5 +1,5 @@
 """The compose dialog runs the shared spelling review on demand (F7 / button),
-not only the per-account check-before-post (Leasey Social parity)."""
+not only the per-account check-before-post."""
 
 from __future__ import annotations
 

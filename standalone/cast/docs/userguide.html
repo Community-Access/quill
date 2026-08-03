@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast User Guide</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -169,36 +173,9 @@
       vertical-align: middle;
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. Only the color is
-       changed; each token keeps its default weight/style. Placed last so it
-       wins the cascade over the styles.html() highlighting defaults above. */
-    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
-    code span.an, code span.co, code span.cv,
-    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
-    code span.at { color: #55631a; }                            /* was #7d9029 */
-    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
-    code span.ch, code span.sc, code span.st,
-    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
-    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
-    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-cast-user-guide">QUILL Cast User Guide</h1>
 <p>Version 1.0</p>
 <p>QUILL Cast is podcasts the way a screen reader user would design
@@ -225,7 +202,8 @@ picks up exactly where you left off.</li>
 </ul>
 <p>Everything QUILL Cast announces goes through the same announcement
 engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA,
-Narrator) without stealing focus.</p>
+Narrator) without stealing focus -- and writes to your braille display
+at the same time (see "Spoken and braille announcements" below).</p>
 <h2 id="the-main-window">The main window</h2>
 <p>Tab order: the now-playing line, the library tree, then five
 buttons.</p>
@@ -244,7 +222,16 @@ is ever unsubscribed by deleting a folder). Shift+F10 opens the full
 context menu: Play/Stop, Add/Remove Favorites, Move to Folder,
 <strong>Download All Episodes</strong>, <strong>Remove All
 Episodes</strong>, <strong>Feed Credentials...</strong> (for private
-feeds -- see below), Unsubscribe, New Folder, and Open Manager.</li>
+feeds -- see below), Unsubscribe, New Folder, and Open Manager. On a
+folder the context menu offers <strong>Rename Folder...</strong>,
+<strong>Delete Folder...</strong>, New Folder..., and Open Manager.</li>
+<li><strong>Episodes without leaving the main page.</strong> Every show
+in the tree can be expanded (Right Arrow) to reveal its episodes, newest
+first, right where the show sits -- no detour through the Manager to
+reach one particular episode. Shows start collapsed so the tree reads as
+a list of shows rather than a wall of episodes. <strong>Enter on an
+episode plays that episode</strong>; Enter on the show itself still
+plays the show's next unplayed episode.</li>
 <li>Buttons: <strong>Play</strong> (becomes <strong>Pause</strong> while
 playing, <strong>Resume</strong> while paused -- one transport control
 that is never dead), <strong>Stop</strong>, <strong>Add to
@@ -359,20 +346,36 @@ Export OPML..., New Folder... (creates a library folder without opening
 the Manager), Add Local Podcast..., Scan Watched Folders, Subscribe to
 ACB Media Podcasts, Podcast Settings..., <strong>Resume Last Episode on
 Launch</strong> (check item -- the appliance switch),
-<strong>Preferences...</strong> (Ctrl+,) -- Resume Last Episode on
-Launch, automatic Check for Updates, and Announce dialog transitions
-(off by default -- turn on for more spoken detail around every dialog),
-Send to Tray (Ctrl+W), Exit.</p>
+<strong>Preferences...</strong> (Ctrl+,), Send to Tray (Ctrl+W),
+Exit.</p>
+<p><strong>Preferences...</strong> (Ctrl+,) holds four checkboxes:</p>
+<ul>
+<li><strong>Resume Last Episode on Launch</strong> -- pick up where you
+left off the moment the app opens.</li>
+<li><strong>Check for updates automatically on launch</strong> -- the
+quiet once-a-day check.</li>
+<li><strong>Announce dialog transitions</strong> -- off by default; turn
+it on for more spoken detail around every dialog.</li>
+<li><strong>Alt+F4 minimizes to the system tray</strong> -- off by
+default. When on, Alt+F4 tucks the window away with playback still
+running instead of closing it, so the reflexive keyboard close stops
+ending your listening. The titlebar X and Exit are unaffected: a
+deliberate exit still exits.</li>
+</ul>
 <h3 id="episode-alte">Episode (Alt+E)</h3>
-<p>A live now-playing line, then Play/Pause (Ctrl+P), Stop,
-<strong>Mute/Unmute</strong>, Next Chapter, Previous Chapter,
-<strong>Skip Forward</strong>, <strong>Skip Back</strong>, Add Episode
-Note..., <strong>Play Queue...</strong> (the same reorderable queue the
-Manager offers, now one keystroke away), a <strong>Recently
-Played</strong> submenu (your last fifteen episodes, newest first,
-playable inline), Sleep Timer... (fade out and stop after a set time,
-restoring your volume), <strong>Sound Enhancements...</strong>, and
-<strong>Skip Settings...</strong>.</p>
+<p>A live now-playing line, then Play/Pause (Ctrl+P),
+<strong>Stop</strong> (Ctrl+.), <strong>Mute/Unmute</strong>,
+<strong>Volume Up</strong> (Ctrl+Up) and <strong>Volume Down</strong>
+(Ctrl+Down), Next Chapter, Previous Chapter, <strong>Skip
+Forward</strong> (Ctrl+Right), <strong>Skip Back</strong> (Ctrl+Left),
+Add Episode Note..., <strong>Play Queue...</strong> (the same
+reorderable queue the Manager offers, now one keystroke away), a
+<strong>Recently Played</strong> submenu (your last fifteen episodes,
+newest first, playable inline), Sleep Timer... (fade out and stop after
+a set time, restoring your volume), <strong>Sound
+Enhancements...</strong>, and <strong>Skip Settings...</strong>. The
+volume keys match Quill Radio's, so the two apps behave the same
+way.</p>
 <p><strong>Sound Enhancements...</strong> applies live, on top of
 whatever is playing: a three-band equalizer (Bass, Mid, Treble sliders,
 -12 to +12 dB each) plus a "Quick preset" shortcut (Flat, Bass Boost,
@@ -536,6 +539,45 @@ network feature, Spotify is disabled when QUILL Cast runs in Safe Mode.
 The first sign-in asks for a one-time network-access confirmation,
 because connecting reaches Spotify's servers.</li>
 </ul>
+<h2 id="spoken-and-braille-announcements">Spoken and braille
+announcements</h2>
+<p>Every action in QUILL Cast announces its outcome, and that
+announcement goes out on two channels at once.</p>
+<p><strong>Speech</strong> goes through your screen reader -- JAWS,
+NVDA, or Narrator -- without stealing focus, so a download finishing
+never interrupts what you were reading.</p>
+<p><strong>Braille</strong> goes to your display at the same time. This
+is new: the standalone apps used to speak but never write, so a braille
+reader saw nothing of QUILL Cast's own confirmations, progress, and
+errors. Three details make it usable rather than noisy:</p>
+<ul>
+<li><strong>A burst settles instead of flickering.</strong> When several
+different messages arrive in quick succession -- a refresh cascade, a
+download reporting in -- the first is written instantly and the rest
+settle to whichever is newest, rather than each one shoving the last
+aside faster than cell one can be read.</li>
+<li><strong>Errors are exempt.</strong> An error is written through
+immediately, never merged into a burst, and can be held on the display
+instead of flashing past.</li>
+<li><strong>Two braille styles.</strong> Braille can carry exactly the
+wording that is spoken, or a compact position-first form. There is also
+a setting for how long an identical repeated message is suppressed.</li>
+</ul>
+<p>These are shared accessibility settings, so you set them once in
+QUILL (Preferences &gt; Accessibility) and they apply to QUILL Cast,
+Quill Radio, and the rest of the family. Turning braille off there turns
+it off here.</p>
+<h2
+id="questions-that-could-destroy-something-always-start-on-no">Questions
+that could destroy something always start on No</h2>
+<p>Every confirmation that would delete or discard something opens with
+<strong>No</strong> selected -- <strong>Delete Folder</strong>,
+<strong>Delete Playlist</strong>, <strong>Remove All Episodes</strong>,
+and <strong>Delete Downloaded Files</strong> among them. Pressing Enter
+reflexively while a question is still being read can never lose your
+data; choosing Yes takes one arrow key and a deliberate decision. An
+automated check in the build refuses any new destructive question that
+opens on Yes.</p>
 <h2 id="hardware-media-keys">Hardware media keys</h2>
 <p>If your keyboard has media keys, Play/Pause, Stop, and Next/Previous
 Track (mapped to chapters) control QUILL Cast system-wide while it runs
@@ -555,11 +597,17 @@ few commands whose default is a two-key chord or uses a comma
 launch; plain single-key commands take effect immediately.</p>
 <p><strong>Global Hotkeys (Help &gt; Global Hotkeys...)</strong> lets
 you give a <strong>system-wide</strong> key to QUILL Cast's Play/Pause
-and Stop, so you can control an episode from any program. Only those
-safe playback commands can be bound this way; none are set by default;
-and the first assignment warns that a system-wide key may override the
-same key elsewhere. A key another app already owns is left alone.
-(Windows only.)</p>
+and Stop, so you can control an episode from any program, and to
+<strong>Show/Hide QUILL Cast to the Tray</strong>, which tucks the
+window away or brings it back from wherever you are. Only those safe
+commands can be bound this way; the first assignment warns that a
+system-wide key may override the same key elsewhere, and a key another
+app already owns is left alone. (Windows only.)</p>
+<p>Show/Hide QUILL Cast to the Tray starts on
+<strong>Ctrl+Alt+Shift+Q</strong>. That is the same chord QUILL itself
+uses for its own show/hide, and Windows gives a system-wide key to
+whichever app registers it first -- so if you run both, change one of
+them here.</p>
 <h2 id="quillins-in-quill-cast">Quillins in QUILL Cast</h2>
 <p>QUILL Cast can now run <strong>Quillins</strong> -- QUILL's small,
 sandboxed, permission-gated add-ons -- from its own
@@ -609,6 +657,22 @@ deletes the shared store.</p>
 <td>Ctrl+P</td>
 </tr>
 <tr>
+<td>Stop</td>
+<td>Ctrl+.</td>
+</tr>
+<tr>
+<td>Volume up / down</td>
+<td>Ctrl+Up / Ctrl+Down</td>
+</tr>
+<tr>
+<td>Skip forward / back</td>
+<td>Ctrl+Right / Ctrl+Left</td>
+</tr>
+<tr>
+<td>Command Palette</td>
+<td>Ctrl+Shift+P</td>
+</tr>
+<tr>
 <td>Send to tray</td>
 <td>Ctrl+W</td>
 </tr>
@@ -619,6 +683,14 @@ deletes the shared store.</p>
 <tr>
 <td>Play selected show's next episode</td>
 <td>Enter (in the tree)</td>
+</tr>
+<tr>
+<td>Expand a show to see its episodes</td>
+<td>Right Arrow (in the tree)</td>
+</tr>
+<tr>
+<td>Play the selected episode</td>
+<td>Enter (on an episode in the tree)</td>
 </tr>
 <tr>
 <td>Unsubscribe / delete folder</td>
@@ -676,6 +748,5 @@ episode.</strong> It only fires at app startup, and only if the episode
 is still in your library (an unsubscribed show or a removed download
 won't resume).</li>
 </ul>
-</main>
 </body>
 </html>

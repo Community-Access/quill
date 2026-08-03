@@ -124,7 +124,7 @@ def delete_folder_prompt(
         "Your shows are completely safe: they simply step out of the folder "
         "and land at the top level of your library. Nothing is unsubscribed.",
         "Delete Folder",
-        wx.ICON_QUESTION | wx.YES_NO,
+        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
     )
     if answer != wx.YES:
@@ -344,7 +344,7 @@ def unsubscribe_show_prompt(
     answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
         f"Unsubscribe from {show.title}?",
         "Unsubscribe",
-        wx.ICON_QUESTION | wx.YES_NO,
+        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
     )
     if answer != wx.YES:
@@ -355,7 +355,7 @@ def unsubscribe_show_prompt(
             wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
                 f"Also delete the {len(downloaded)} downloaded episode file(s)?",
                 "Delete Downloaded Files",
-                wx.ICON_QUESTION | wx.YES_NO,
+                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
                 parent,
             )
             == wx.YES
@@ -427,7 +427,7 @@ def remove_all_episodes_prompt(
         f"Remove all {len(show.episodes)} episode(s) of {show.title}? The show "
         "stays subscribed -- a future feed refresh can bring episodes back.",
         "Remove All Episodes",
-        wx.ICON_QUESTION | wx.YES_NO,
+        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
     )
     if answer != wx.YES:
@@ -438,7 +438,7 @@ def remove_all_episodes_prompt(
             wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
                 f"Also delete the {len(downloaded)} downloaded episode file(s)?",
                 "Delete Downloaded Files",
-                wx.ICON_QUESTION | wx.YES_NO,
+                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
                 parent,
             )
             == wx.YES

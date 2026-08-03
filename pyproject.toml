@@ -41,6 +41,12 @@ dependencies = [
     # and PuTTY private-key parsing (core/ssh/putty_key.py). Hard-imported by the
     # beacon sync module, so it is a base dependency, not an optional extra.
     "cryptography>=44.0.0",
+    # Windows COM. Not a UI concern despite living in the [ui] extra until now:
+    # quill/core/persona_launcher.py builds persona .lnk shortcuts through
+    # WScript.Shell, and quill/platform/windows (sapi5, narrator_announce,
+    # comtypes_setup) is imported from quill/core/read_aloud.py. Core-layer use
+    # means this belongs in the base dependency set, Windows-gated.
+    "comtypes>=1.4.16; sys_platform == 'win32'",
     # NOTE: huggingface_hub is deliberately NOT a base dependency. QUILL's default
     # speech models (whisper.cpp, Faster Whisper) and Piper voices download from
     # QUILL's own SHA-verified assets-v1 release, not Hugging Face, so a clean
@@ -55,9 +61,15 @@ ui = [
     # Accessible wx.html2.WebView surfaces (chat, preview, dialogs) — extracted
     # from Quill and published so any wxPython app can reuse it.
     "wx-accessible-webview>=0.2.0",
-    # Windows SAPI 5 text-to-speech (Read Aloud system voice + self-voicing
-    # announcement fallback). Windows-only at runtime; harmless elsewhere.
-    "comtypes>=1.4.16; sys_platform == 'win32'",
+    # pywin32: previously undeclared -- it reached shipping builds only as a
+    # transitive dependency, while build_windows_distribution.py prunes its
+    # unused extras (~21 MB) as though it were intentional. Two live call
+    # sites: quill/platform/windows/screen_capture.py (win32gui, for the
+    # active-window capture behind AI image description) and
+    # quill/_vendor/autoupdate/autoupdate.py (win32api.ShellExecute, to hand
+    # off to the update bootstrapper). Both are UI-reachable only, so it sits
+    # in this extra rather than in the base set.
+    "pywin32>=306; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
     "certifi>=2026.7.22",
     # Prism screen-reader speech bridge (Windows) — routes announcements to

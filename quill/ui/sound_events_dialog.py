@@ -24,6 +24,7 @@ _EARCON_ORDER: list[str] = [
     "snippet_inserted",
     "autocomplete_accepted",
     "word_corrected",
+    "spelling_alert",
     # Document lifecycle
     "document_created",
     "document_saved",
@@ -60,6 +61,34 @@ _EARCON_ORDER: list[str] = [
     # Connectivity
     "ssh_connected",
     "ssh_disconnected",
+    # Companion apps (Quill Radio, QUILL Cast, Quill Weather, QuillBeacon)
+    "radio_connecting",
+    "radio_playing",
+    "radio_buffering",
+    "radio_stopped",
+    "radio_stream_error",
+    "radio_recording_started",
+    "radio_recording_stopped",
+    "radio_favorite_added",
+    "cast_download_started",
+    "cast_download_complete",
+    "cast_episode_finished",
+    "weather_alert",
+    "beacon_captured",
+    "beacon_sync_complete",
+    # Selection and document boundaries
+    "selection_started",
+    "selection_completed",
+    "document_top",
+    "document_bottom",
+    # Progress ladder (5-percent steps) and the indeterminate tick
+    *[f"progress_{pct}" for pct in range(5, 101, 5)],
+    "progress_tick",
+    # Per-slot earcons: copy tray 1-12 and quick bookmarks 0-9
+    *[f"copy_slot_{n}" for n in range(1, 13)],
+    *[f"bookmark_slot_{n}" for n in range(10)],
+    # Infrastructure
+    "keepalive",
     # System
     "error",
     "warning",
@@ -90,6 +119,7 @@ _EARCON_LABELS: dict[str, str] = {
     "snippet_inserted": "Snippet inserted",
     "autocomplete_accepted": "Autocomplete accepted",
     "word_corrected": "Word auto-corrected",
+    "spelling_alert": "Possible misspelling (spell check as you type)",
     "document_created": "Document created",
     "document_saved": "Document saved",
     "document_closed": "Document closed",
@@ -135,7 +165,48 @@ _INDENT_LABELS: dict[str, str] = {
     f"indent_level_{level}_up": f"Indentation level {level} — going deeper" for level in range(8)
 } | {f"indent_level_{level}_down": f"Indentation level {level} — dedenting" for level in range(8)}
 
-_ALL_LABELS: dict[str, str] = {**_EARCON_LABELS, **_INDENT_LABELS}
+# Auto-generate labels for the slot, progress, boundary, and keep-alive
+# families (audio identity): 12 copy-tray slots, 10 quick-bookmark slots,
+# the 5-percent progress ladder, and the selection/document cues.
+_IDENTITY_LABELS: dict[str, str] = (
+    {f"copy_slot_{n}": f"Copy tray slot {n}" for n in range(1, 13)}
+    | {f"bookmark_slot_{n}": f"Quick bookmark slot {n}" for n in range(10)}
+    | {f"progress_{pct}": f"Progress reached {pct} percent" for pct in range(5, 101, 5)}
+    | {
+        "progress_tick": "Progress heartbeat (indeterminate)",
+        "selection_started": "Selection started (F8 anchor set)",
+        "selection_completed": "Selection completed",
+        "document_top": "Reached the top of the document",
+        "document_bottom": "Reached the end of the document",
+        "keepalive": "Soundcard keep-alive (silent)",
+    }
+)
+
+# Companion-app cues. Each family has its own voice so you know which app
+# spoke before you parse what it said.
+_COMPANION_LABELS: dict[str, str] = {
+    "radio_connecting": "Radio: connecting to a station",
+    "radio_playing": "Radio: playing",
+    "radio_buffering": "Radio: buffering",
+    "radio_stopped": "Radio: stopped",
+    "radio_stream_error": "Radio: stream problem",
+    "radio_recording_started": "Radio: recording started",
+    "radio_recording_stopped": "Radio: recording stopped",
+    "radio_favorite_added": "Radio: station added to favorites",
+    "cast_download_started": "Cast: episode download started",
+    "cast_download_complete": "Cast: episode download complete",
+    "cast_episode_finished": "Cast: episode finished playing",
+    "weather_alert": "Weather: new alert for your area",
+    "beacon_captured": "Beacon: item captured",
+    "beacon_sync_complete": "Beacon: sync complete",
+}
+
+_ALL_LABELS: dict[str, str] = {
+    **_EARCON_LABELS,
+    **_INDENT_LABELS,
+    **_IDENTITY_LABELS,
+    **_COMPANION_LABELS,
+}
 
 
 class SoundEventsDialog(wx.Dialog):

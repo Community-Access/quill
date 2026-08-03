@@ -90,7 +90,7 @@ class AccessibilityAnnouncer:
         """Read the sentence(s) around the misspelling aloud on demand (Ctrl+R).
 
         Speaks the full surrounding context verbatim regardless of verbosity so a
-        user can hear the misspelling in situ (Leasey Word's in-dialog Ctrl+R).
+        user can hear the misspelling in situ (the in-dialog Ctrl+R).
         Any pending spell-aloud is cancelled first so the two do not overlap.
         """
         self._cancel_pending_spell()

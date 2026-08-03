@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>rust-assessment</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="rewriting-quill-in-rust-honest-assessment-and-staged-plan">Rewriting
+QUILL in Rust: honest assessment and staged plan</h1>
+<p>Date: 2026-08-02 Status: analysis / decision document. Nothing here
+is committed work.</p>
+<h2 id="verdict-first">1. Verdict first</h2>
+<p>A full Rust rewrite of QUILL would be a <strong>large negative-value
+project</strong>, and the “save space” motivation is the weakest of the
+possible justifications for it. The binary-size problem is not caused by
+Python, and the thing a rewrite would put at risk – native screen-reader
+behavior – is the entire product.</p>
+<p>A <strong>targeted</strong> use of Rust, on the other hand, is
+genuinely valuable and low risk: compiled sidecar modules for the
+handful of CPU-bound paths, and possibly a Rust rewrite of one small
+standalone app as a controlled experiment.</p>
+<p>Short version: do not rewrite the app. Do adopt Rust in specific
+places.</p>
+<h2 id="what-save-space-actually-means-here-with-numbers">2. What “save
+space” actually means here, with numbers</h2>
+<p>Measured 2026-08-02 in this tree.</p>
+<p>Source size:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Lines of Python</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>quill/ui</td>
+<td>136,337</td>
+</tr>
+<tr>
+<td>quill/core</td>
+<td>134,853</td>
+</tr>
+<tr>
+<td>quill/apps</td>
+<td>19,204</td>
+</tr>
+<tr>
+<td>quill/tools</td>
+<td>8,982</td>
+</tr>
+<tr>
+<td>quill/io</td>
+<td>8,785</td>
+</tr>
+<tr>
+<td>quill/platform</td>
+<td>4,920</td>
+</tr>
+<tr>
+<td>quill/stability</td>
+<td>2,019</td>
+</tr>
+<tr>
+<td>Total (1,165 files)</td>
+<td>319,702</td>
+</tr>
+</tbody>
+</table>
+<p>Ship size (dist/):</p>
+<ul>
+<li>QuillVille-Runtime-Setup.exe – 233 MB (the shared runtime)</li>
+<li>Quill-for-All-Lite-Setup-1.0.0.exe – 2.3 MB</li>
+<li>QUILL-Audio-Studio-Lite-Setup-2.2.0.exe – 2.1 MB</li>
+</ul>
+<p>Two things follow from that.</p>
+<p><strong>First, the shared-runtime work already solved the duplication
+problem.</strong> The per-app installers are ~2 MB. The family of apps
+(QUILL, Audio Studio, Radio, Cast) no longer each carry their own Python
+and wx. The remaining question is only what is inside the 233 MB
+runtime.</p>
+<p><strong>Second, most of the 233 MB is not Python code, and Rust does
+not remove it.</strong> Roughly, in order of weight: wxWidgets (the
+installed <code>wx</code> package alone is ~62 MB), then the
+native/vendored payloads (ffmpeg, liblouis, spell dictionaries, sound
+packs, and whatever speech assets are still bundled rather than pulled
+from assets-v1), then C-extension wheels (Pillow, cryptography, numpy
+where present), and only then the CPython runtime plus stdlib plus
+QUILL’s own bytecode. QUILL’s 320k lines of Python compile to well under
+20 MB of <code>.pyc</code>.</p>
+<p>So a perfect, flawless Rust rewrite plausibly recovers:</p>
+<ul>
+<li>CPython runtime + stdlib: ~35-50 MB</li>
+<li>pure-Python dependency tree: ~20-40 MB</li>
+<li>QUILL’s own bytecode: ~15 MB, replaced by maybe 20-40 MB of Rust
+binary (Rust binaries are not small once you link a GUI toolkit, audio,
+TLS, and regex)</li>
+</ul>
+<p>and does <strong>not</strong> recover: the GUI toolkit (you still
+ship one), ffmpeg, liblouis, dictionaries, models, sound packs,
+icons.</p>
+<p>Realistic net: <strong>maybe 60-90 MB off a 233 MB runtime, for a
+multi-year rewrite.</strong> The same 60-90 MB is available for a few
+weeks of payload work (see section 6). That is the honest arithmetic,
+and it is decisive on its own.</p>
+<h2
+id="the-real-blocker-accessibility-and-we-already-have-the-evidence">3.
+The real blocker: accessibility, and we already have the evidence</h2>
+<p>QUILL is not a text editor that happens to be accessible. It is an
+accessibility product. Its differentiator is that JAWS and NVDA behave
+<em>correctly</em> in it – caret tracking, say-line on arrow,
+indentation announcements, selection reporting, table navigation, browse
+mode where appropriate, focus and modal contracts.</p>
+<p>That behavior does not come from our code. It comes from wxWidgets
+wrapping <strong>real Win32 controls</strong> (RICHEDIT50W,
+SysListView32, SysTreeView32, standard dialogs) that JAWS and NVDA have
+had two decades of per-control heuristics, scripts, and workarounds
+tuned against. We inherit that for free.</p>
+<p>Every serious Rust GUI option gives that up:</p>
+<ul>
+<li><strong>egui, iced, Slint, Xilem, Dioxus-desktop</strong> –
+canvas-drawn. No native controls at all. Accessibility comes from
+AccessKit, which is real, well-engineered, and improving, but it exposes
+a synthesized UIA tree. NVDA support is decent. JAWS support is partial
+and inconsistent, and JAWS is the larger share of our paying, employed
+users.</li>
+<li><strong>Tauri / WebView2</strong> – accessibility is web
+accessibility, which is mature, but it is a completely different
+interaction model: browse mode, virtual cursor, a different caret story,
+different keyboard conventions. It is not “the same app in Rust”, it is
+a web app in a window. It also does not save space in any meaningful way
+(WebView2 runtime, plus we would still ship everything else).</li>
+<li><strong>Rust + windows-rs driving real Win32 controls
+directly</strong> – this is the only option that preserves the
+accessibility we have. It also means writing our own widget layer,
+layout engine, and dialog framework from scratch. That is wxWidgets. We
+would be reimplementing wxWidgets in Rust, badly, for years.</li>
+</ul>
+<p>And we have already run this experiment, at small scale, and lost.
+The Scintilla/STC editor surface – a non-native, custom-drawn text
+control – was NVDA-only. Three separate JAWS bridge attempts failed
+against a live JAWS and were removed on 2026-07-03 (see the post-mortem
+in edit.md). Issue #813 was finally fixed by going <em>more</em> native,
+not less: <code>SES_EMULATESYSEDIT</code> plus a borderless editor.</p>
+<p>The lesson generalizes exactly: <strong>when we move off native
+Windows controls, JAWS stops working, and we cannot bridge our way
+back.</strong> A canvas-drawn Rust UI is that same bet, taken across the
+entire application at once, with no fallback and no way to revert
+incrementally.</p>
+<p>That single paragraph is, in my honest opinion, the end of the
+argument for a UI rewrite. Everything else below is secondary.</p>
+<h2 id="the-other-costs-briefly">4. The other costs, briefly</h2>
+<ul>
+<li><strong>Ecosystem.</strong> wxPython, prismatoid,
+accessible_output2, comtypes, pyenchant, python-docx, feedparser,
+paramiko, pymupdf, PyNaCl, llama-cpp-python, faster-whisper, the AI
+provider SDKs, pyobjc for the macOS rich-text bridge. Rust has good
+equivalents for maybe half, weak ones for a quarter, and nothing for the
+accessibility bridges – which are the ones that matter most.</li>
+<li><strong>Velocity.</strong> QUILL is currently shipping features
+weekly (Radio 2.1, Audio Studio, podcasts, the Vault, competitive-parity
+work). A rewrite means a hard feature freeze for 18+ months while
+producing something users experience as <em>worse</em>. This is the
+textbook second-system trap, and rewrites of this shape have killed
+better-funded products.</li>
+<li><strong>Bug re-litigation.</strong> 320k lines encode hundreds of
+small screen-reader workarounds discovered the hard way, most of them
+undocumented because they are one-liners. A rewrite rediscovers all of
+them, in production, on users.</li>
+<li><strong>Quillins.</strong> The extension model is Python and Node. A
+Rust host does not remove the need to embed a Python interpreter for
+bundled Quillins – so we would ship CPython anyway, and lose most of the
+claimed space saving.</li>
+</ul>
+<h2 id="where-rust-genuinely-pays-starting-now">5. Where Rust genuinely
+pays, starting now</h2>
+<p>These are real, incremental, reversible, and worth doing regardless
+of any rewrite decision. Build them as <code>PyO3</code> +
+<code>maturin</code> extension modules or as standalone sidecar
+executables. No UI involvement, no accessibility risk.</p>
+<p>Ranked by value-to-effort:</p>
+<ol type="1">
+<li><strong>Audio DSP for Audio Studio.</strong> Peak/waveform
+generation, silence detection, normalization scanning, chapter-boundary
+detection. Currently the slowest visible operations on long files. Rust
+gives 10-50x and removes the numpy dependency from that path.</li>
+<li><strong>Vault / full-text search and indexing.</strong> As the
+Accessible Vault grows, link graph construction, backlink resolution,
+and incremental full-text search are exactly what Rust is good at (see
+<code>tantivy</code>). A Python implementation will be the thing that
+makes a large vault feel slow.</li>
+<li><strong>Large-file editor backend.</strong> Rope/piece-table for the
+document buffer, line indexing, and diff. Keeps the wx control as the
+<em>view</em> – no accessibility exposure changes – while removing the
+Python-side cost of very large documents. This is the highest-value one
+for the core product, and it is invisible to screen readers by
+construction.</li>
+<li><strong>The UIA table provider.</strong> Already native C++ and
+already a maintenance problem (build broke, issue #823). Rust +
+<code>windows-rs</code> is a strictly better home for that code than
+hand-rolled C++, with the same COM surface.</li>
+<li><strong>Braille translation glue and BRF pipeline.</strong>
+Deterministic, hot, pure transformation. Good candidate, low risk.</li>
+<li><strong>Watch folder / file scanning.</strong> <code>notify</code>
+is better than what we can do in Python, and this path currently costs
+threads.</li>
+</ol>
+<p>Each of these is a self-contained PR. Each can be reverted by
+deleting one module and restoring the Python path behind it. That is the
+correct way to introduce a second language into a shipping product.</p>
+<h2 id="the-space-work-that-actually-pays-and-is-not-rust">6. The space
+work that actually pays, and is not Rust</h2>
+<p>If the goal is genuinely “make the download smaller”, these dominate
+a rewrite by an order of magnitude of effort-to-megabyte:</p>
+<ol type="1">
+<li><strong>Finish assets-v1 unbundling.</strong> Anything model-shaped,
+dictionary-shaped, or voice-shaped that is still in the runtime should
+be on-demand. This is already a known program with known mechanics.</li>
+<li><strong>Audit the 233 MB runtime, item by item.</strong> Nobody has
+published a per-directory breakdown of what is actually in it. That
+report is a day of work and will almost certainly find 30-60 MB of
+things nobody intended to ship (test suites inside wheels, unused
+locales, duplicate DLLs, <code>.pyi</code> stubs,
+<code>__pycache__</code>, unstripped debug symbols, sample data).</li>
+<li><strong>Trim wx.</strong> wxPython ships locale catalogs and unused
+libraries. A PyInstaller/Inno exclusion pass is cheap.</li>
+<li><strong>Nuitka – unproven, and weaker than it first looks.</strong>
+Correction to an earlier draft of this document: Nuitka is
+<em>documented</em> as Inkwell’s intended source-protection strategy
+(<code>S:\INKWELL\docs\LICENSING.md</code>), not demonstrated working.
+QUILL has no Nuitka build script, config, or log in any repo, and
+<code>docs/planning/roadmap.md:234</code> already declares
+freeze/compile packaging (PyInstaller / Nuitka) <strong>out of
+scope</strong> – embedded CPython + Inno Setup is the shipping model. An
+attempt on QUILL reportedly failed. Independent of whether the failure
+is fixable, the space case is weak: Quillins are Python and Node
+extensions, so a compiled QUILL still ships a live CPython for the
+extension host. Nuitka would trade ~15 MB of our bytecode for a larger
+native binary, and buy startup time and IP protection rather than
+megabytes. Treat it as a startup-latency and licensing tool, not a
+footprint tool. See section 6a for the likely failure causes.</li>
+<li><strong>ffmpeg.</strong> Ship the smallest viable build, once,
+shared across Radio, Cast, and Audio Studio. Full ffmpeg is enormous and
+we use a fraction of it.</li>
+</ol>
+<p>Expected recovery from 1-5: comparable to the theoretical
+Rust-rewrite saving, at roughly 1% of the cost and 0% of the
+accessibility risk.</p>
+<p><strong>External benchmark.</strong> A comparable Windows
+screen-reader-first product built the same way – one shared embedded
+CPython plus satellite apps – ships a <strong>119 MB runtime (2,638
+files, CPython 3.12.8)</strong>. Ours is 233 MB. Part of that gap is
+legitimate (we bundle ffmpeg, liblouis, braille tables, sound packs and
+dictionaries that a smaller product either omits or installs
+separately), but a ~114 MB delta against a directly comparable build is
+strong evidence that the runtime audit will find real slack.</p>
+<p>That same comparison confirms section 2’s argument from the other
+direction: the product in question balloons to roughly 2 GB installed
+from a 322 MB installer, because ~20 of its 24 apps each carry a
+duplicate ~50 MB PyInstaller bundle with identical wxPython, CPython and
+OpenSSL. That is the exact failure mode the QuillVille shared-runtime
+work already eliminated. The packaging battle was won at the
+distribution layer, not the language layer – which is precisely why the
+language layer is the wrong place to fight it again.</p>
+<h2 id="a.-why-the-nuitka-attempt-probably-failed">6a. Why the Nuitka
+attempt probably failed</h2>
+<p><strong>Probe result (2026-08-02): <code>quill/core</code> compiles
+cleanly.</strong> A scoped run –
+<code>--module quill\core --include-package=quill.core</code>, with
+<code>--nofollow-import-to</code> for wx, pytest and the heavy
+optionals, <code>--disable-ccache</code>, Nuitka 4.1.2 on CPython
+3.13.14 with MSVC 14.3 – produced <code>core.cp313-win_amd64.pyd</code>,
+exit 0. The compilation report records <strong>638 modules compiled, 0
+missing modules, 0 warnings</strong>, linking 642 C object files. Note
+that <code>comtypes</code> was <em>not</em> excluded from that run.</p>
+<p>That is a strong, concrete result: the entire pure-domain layer (637
+files, 134,853 lines) is Nuitka-clean today. Whatever failed, it is not
+the core. Suspicion moves decisively to the wxPython/UI layer, the
+<code>python -m quill</code> entry point, or the full-application link
+step.</p>
+<p>No log, script, or config from the original attempt survives anywhere
+under <code>S:\</code>, so the ranking below remains prediction for the
+layers not yet probed – with causes 1, 3 and 6 now measured and cleared
+<em>for the core layer only</em>:</p>
+<ol type="1">
+<li><strong>comtypes generates COM wrappers at runtime</strong> – partly
+mitigated already. <code>comtypes.client</code> <em>writes</em>
+generated wrapper modules on first use, and a compiled build has no
+writable, importable <code>comtypes.gen</code>. QUILL already handles
+the writability half:
+<code>quill/platform/windows/comtypes_setup.py</code> redirects
+<code>gen_dir</code> to a per-user data folder and falls back to
+<code>gen_dir = None</code> (in-memory codegen, no disk write). That is
+a good design and it removes the usual frozen-build failure. What it
+does <em>not</em> fix is static analysis: the generated modules do not
+exist at compile time, so Nuitka cannot see them, and anything that
+imports from <code>comtypes.gen</code> by name will fail. Downgraded
+from “top suspect” to “likely, but survivable”.</li>
+<li><strong>The link step ran out of resources.</strong> 1,165 modules
+and 319,702 lines is a very large Nuitka job: hours of compile, many GB
+of RAM, and thousands of object files hitting the MSVC linker.
+<code>LNK1102</code>, an out-of-memory kill, or an apparent hang are all
+normal at this size and read as “it failed” without a clear error.</li>
+<li><strong>Dynamic imports are invisible to static analysis.</strong>
+Quillins, optional components, lazy engine loading, provider registries,
+and <code>importlib</code> by name are the architecture. Nuitka compiles
+what it can see; everything else needs explicit
+<code>--include-module</code> / <code>--include-package</code>, and the
+failure shows up at runtime as import errors, not at compile time.</li>
+<li><strong>wxPython standalone.</strong> The <code>wx</code> plugin
+exists, but wx 4.2.5 plus <code>wx.html2</code> (WebView2),
+<code>wx.stc</code>, and the accessibility layer is a heavy standalone
+case; typical symptom is a clean compile and a runtime failure on
+missing DLLs or data files.</li>
+<li><strong>Screen-reader bridges load DLLs by relative path.</strong>
+prismatoid and accessible_output2 (via libloader) resolve native
+libraries relative to their package directory, which does not survive
+compilation without <code>--include-data-dir</code>.</li>
+<li><strong>Guarded optional imports still get analyzed.</strong>
+llama-cpp-python, paramiko, pyenchant, faster-whisper and friends are
+<code>try/except ImportError</code> at runtime but are still followed at
+compile time unless excluded with
+<code>--nofollow-import-to</code>.</li>
+</ol>
+<p>Also worth verifying before budgeting:
+<code>S:\INKWELL\docs\LICENSING.md:62</code> states that Nuitka
+Commercial is required for <code>--onefile</code>. My understanding is
+that <code>--onefile</code> ships in the open-source build and
+Commercial adds source/constant protection features. That line should be
+checked against current Nuitka licensing before it drives a
+purchase.</p>
+<p>Next step now that the core probe is green: repeat it one layer out –
+<code>quill/io</code>, then <code>quill/platform</code>, then a
+<code>--standalone</code> build of the real
+<code>quill/__main__.py</code> entry point with the wx plugin enabled.
+Always pass <code>--report=</code> and tee stdout/stderr to a file; the
+report’s missing-module list is what turns “it seemed to fail” into a
+specific cause. The UI-layer probe is the one that matters, and it is
+also the one most likely to take hours and stress the linker, so run it
+detached.</p>
+<h2 id="future-state-read-3-5-years">7. Future-state read (3-5
+years)</h2>
+<p>Being honest about what could change my answer:</p>
+<ul>
+<li><strong>AccessKit reaching first-class JAWS support</strong> is the
+single variable to watch. If Vispero ships real, tested support for
+AccessKit-provided UIA trees – not “it technically exposes a tree”, but
+say-line, caret tracking, and browse mode behaving correctly – then
+canvas-drawn toolkits become viable for <em>new</em> accessible apps.
+Track AccessKit releases and JAWS release notes. Even then, it does not
+justify rewriting QUILL; it would justify choosing Rust for something
+greenfield.</li>
+<li><strong>wxWidgets stagnating or wxPython falling behind Python
+releases</strong> would be a real forcing function. It has not happened;
+wxPython 4.2.5 is current and we are on 3.12/3.13. Watch it, do not
+pre-empt it.</li>
+<li><strong>Windows itself deprecating the classic common
+controls</strong> would break the bet. There is no sign of it, and
+Microsoft’s own accessibility posture makes it unlikely this
+decade.</li>
+<li><strong>Python packaging improving</strong> (free-threading, better
+bundling, smaller runtimes) cuts the other way and shrinks the rewrite’s
+remaining upside.</li>
+</ul>
+<p>My honest expectation: in five years, the correct architecture for
+QUILL is still “native Windows controls for anything a screen reader
+touches, with compiled hot paths behind them.” The language of the hot
+paths is the part that should change. The language of the UI should
+not.</p>
+<h2 id="if-you-want-to-test-the-rust-thesis-anyway">8. If you want to
+test the Rust thesis anyway</h2>
+<p>Do not test it on QUILL. Test it on <strong>quill-radio</strong>.</p>
+<p>Rationale:</p>
+<ul>
+<li>It is a separate repo and a separate product, so failure costs
+nothing.</li>
+<li>Its real UI surface is small: lists, a tree, buttons, a search
+field, a few dialogs. It is mostly lists. That is the <em>best</em> case
+for AccessKit.</li>
+<li>Its vendored Python line count (282,928 across 1,032 files) is
+misleading – almost all of it is vendored QUILL. The genuinely
+radio-specific code is a small fraction, which is what a rewrite would
+actually have to reproduce.</li>
+<li>Download size is most visible to users on the small standalone apps,
+so the win, if it exists, shows up where it is most appreciated.</li>
+<li>It has a live, engaged user base that will report screen-reader
+breakage quickly and specifically.</li>
+</ul>
+<p>Proposed experiment, time-boxed to two weeks, with a hard kill
+gate:</p>
+<ul>
+<li>Week 1: Rust + <code>egui</code>/AccessKit (or Slint) spike –
+station list, favorites tree, search field, play/stop, volume. No
+streaming engine, no persistence.</li>
+<li>Week 2: <strong>Live screen-reader validation</strong> on JAWS 2026
+and NVDA 2026.x. The gate is not “it announces something”. The gate is:
+arrow through the station list and hear each station once, cleanly, with
+no double-speaking, no focus loss, and correct position-in-list
+reporting; Tab order announced correctly; the search field behaving like
+an edit field.</li>
+<li>Kill gate: if JAWS fails any of those, stop. Write the result up,
+keep the spike as a reference, and close the question for another
+year.</li>
+</ul>
+<p>Cost: two weeks. Value: converts a permanently open architectural
+question into a documented, evidence-based answer – which is exactly
+what the STC/JAWS post-mortem did, and that turned out to be one of the
+most useful documents in the repo.</p>
+<h2 id="recommendation">9. Recommendation</h2>
+<ol type="1">
+<li><strong>No</strong> to rewriting QUILL, Audio Studio, Cast, or the
+shared runtime in Rust.</li>
+<li><strong>Yes</strong> to Rust for compiled hot paths, starting with
+Audio Studio DSP and Vault indexing. One PR each, PyO3, behind a Python
+fallback.</li>
+<li><strong>Yes</strong> to the runtime-size audit and the assets-v1
+finish – that is the actual answer to “save space”, and it is weeks not
+years.</li>
+<li><strong>Optionally yes</strong> to the two-week quill-radio spike,
+purely as an experiment with a hard accessibility kill gate, if the
+curiosity is worth two weeks.</li>
+<li><strong>Track</strong> AccessKit + JAWS interop. Revisit this
+document if that changes.</li>
+</ol>
+<p>The instinct behind the question is a good one – the runtime is too
+big and Python is not free. The fix is payload discipline plus a few
+compiled modules, not a new language for the UI. The accessibility
+surface is the one asset we cannot rebuild, and it is precisely the
+asset a rewrite would spend first.</p>
+</body>
+</html>

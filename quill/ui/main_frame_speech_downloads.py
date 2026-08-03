@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.error_codes import user_facing_message
+
 
 class SpeechDownloadsMixin:
     # -- model manager ---------------------------------------------------- #
@@ -74,7 +76,7 @@ class SpeechDownloadsMixin:
         try:
             save_hf_token(value)
         except Exception as exc:  # noqa: BLE001 - surface a clean message
-            self._set_status(f"Could not save token: {exc}")
+            self._set_status(f"Could not save token: {user_facing_message(exc)}")
             return
         message = "Hugging Face token saved." if value else "Hugging Face token cleared."
         self._announce(message)
@@ -152,8 +154,12 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "ffmpeg download cancelled.")
                     wx.CallAfter(self._announce, "ffmpeg download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not install ffmpeg: {exc}")
-                    wx.CallAfter(self._announce, f"Could not install ffmpeg. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Could not install ffmpeg: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Could not install ffmpeg. {user_facing_message(exc)}"
+                    )
                 return
             wx.CallAfter(progress.close)
             done = "ffmpeg installed. You can now transcribe more audio and video formats."
@@ -593,7 +599,9 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Offline speech setup cancelled.")
                     wx.CallAfter(self._announce, "Offline speech setup cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Offline speech setup failed: {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Offline speech setup failed: {user_facing_message(exc)}"
+                    )
                     wx.CallAfter(
                         self._offer_component_bug_report,
                         engine_id,
@@ -734,10 +742,13 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Download cancelled.")
                     wx.CallAfter(self._announce, "Download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not finish the download: {exc}")
+                    wx.CallAfter(
+                        self._set_status,
+                        f"Could not finish the download: {user_facing_message(exc)}",
+                    )
                     detail = str(exc)
                     if not isinstance(exc, EngineInstallError | FFmpegInstallError):
-                        detail = f"Unexpected error: {exc}"
+                        detail = f"Unexpected error: {user_facing_message(exc)}"
                     wx.CallAfter(
                         self._offer_component_bug_report,
                         "audio_extras",
@@ -1073,8 +1084,12 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Pandoc download cancelled.")
                     wx.CallAfter(self._announce, "Pandoc download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not install Pandoc: {exc}")
-                    wx.CallAfter(self._announce, f"Pandoc could not be installed. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Could not install Pandoc: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Pandoc could not be installed. {user_facing_message(exc)}"
+                    )
                 if on_done is not None:
                     wx.CallAfter(on_done, False)
                 return
@@ -1161,8 +1176,14 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Speech engine download cancelled.")
                     wx.CallAfter(self._announce, "Speech engine download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not install the speech engine: {exc}")
-                    wx.CallAfter(self._announce, f"Could not install the speech engine. {exc}")
+                    wx.CallAfter(
+                        self._set_status,
+                        f"Could not install the speech engine: {user_facing_message(exc)}",
+                    )
+                    wx.CallAfter(
+                        self._announce,
+                        f"Could not install the speech engine. {user_facing_message(exc)}",
+                    )
                 return
             wx.CallAfter(progress.close)
             done = "Offline speech engine installed. Dictation and transcription are ready."
@@ -1244,8 +1265,14 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Faster Whisper installation cancelled.")
                     wx.CallAfter(self._announce, "Faster Whisper installation cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not install Faster Whisper: {exc}")
-                    wx.CallAfter(self._announce, f"Could not install Faster Whisper. {exc}")
+                    wx.CallAfter(
+                        self._set_status,
+                        f"Could not install Faster Whisper: {user_facing_message(exc)}",
+                    )
+                    wx.CallAfter(
+                        self._announce,
+                        f"Could not install Faster Whisper. {user_facing_message(exc)}",
+                    )
                 return
             done = (
                 "Faster Whisper is ready. Click OK to open Manage Speech Models "
@@ -1330,8 +1357,12 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Vosk installation cancelled.")
                     wx.CallAfter(self._announce, "Vosk installation cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not install Vosk: {exc}")
-                    wx.CallAfter(self._announce, f"Could not install Vosk. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Could not install Vosk: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Could not install Vosk. {user_facing_message(exc)}"
+                    )
                 return
             done = (
                 "Vosk is ready. Click OK to open Manage Speech Models and download a model for it."
@@ -1405,8 +1436,10 @@ class SpeechDownloadsMixin:
                 save_settings(self.settings)
             except Exception as exc:  # noqa: BLE001
                 wx.CallAfter(progress.close)
-                wx.CallAfter(self._set_status, f"DECtalk download failed: {exc}")
-                wx.CallAfter(self._announce, f"DECtalk download failed. {exc}")
+                wx.CallAfter(
+                    self._set_status, f"DECtalk download failed: {user_facing_message(exc)}"
+                )
+                wx.CallAfter(self._announce, f"DECtalk download failed. {user_facing_message(exc)}")
                 return
             done = "DECtalk is ready. Click OK to open Manage Voices and choose a voice."
             wx.CallAfter(self._set_status, "DECtalk ready.")
@@ -1494,8 +1527,12 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Piper download cancelled.")
                     wx.CallAfter(self._announce, "Piper download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Piper download failed: {exc}")
-                    wx.CallAfter(self._announce, f"Piper download failed. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Piper download failed: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Piper download failed. {user_facing_message(exc)}"
+                    )
                 return
             done = "Piper is ready. Click OK to open Manage Voices and download a voice model."
             wx.CallAfter(self._set_status, "Piper ready.")
@@ -1580,8 +1617,12 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Node.js download cancelled.")
                     wx.CallAfter(self._announce, "Node.js download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Node.js download failed: {exc}")
-                    wx.CallAfter(self._announce, f"Node.js download failed. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Node.js download failed: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Node.js download failed. {user_facing_message(exc)}"
+                    )
                 return
             wx.CallAfter(self._set_status, "Node.js is ready.")
             wx.CallAfter(self._announce, "Node.js is ready.")
@@ -1673,8 +1714,12 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "eSpeak-NG download cancelled.")
                     wx.CallAfter(self._announce, "eSpeak-NG download cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"eSpeak-NG download failed: {exc}")
-                    wx.CallAfter(self._announce, f"eSpeak-NG download failed. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"eSpeak-NG download failed: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"eSpeak-NG download failed. {user_facing_message(exc)}"
+                    )
                 return
             done = "eSpeak-NG is ready. Click OK to open Manage Voices and choose an accent."
             wx.CallAfter(self._set_status, "eSpeak-NG ready.")
@@ -1841,8 +1886,13 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, "Kokoro ONNX installation cancelled.")
                     wx.CallAfter(self._announce, "Kokoro ONNX installation cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not install Kokoro ONNX: {exc}")
-                    wx.CallAfter(self._announce, f"Could not install Kokoro ONNX. {exc}")
+                    wx.CallAfter(
+                        self._set_status,
+                        f"Could not install Kokoro ONNX: {user_facing_message(exc)}",
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Could not install Kokoro ONNX. {user_facing_message(exc)}"
+                    )
                 return
             done = "Kokoro ONNX is ready. Click OK to open Manage Voices and choose a Kokoro voice."
             wx.CallAfter(self._set_status, "Kokoro ONNX installed.")
@@ -1859,14 +1909,14 @@ class SpeechDownloadsMixin:
             f"Remove the '{model_id}' speech model from this computer? "
             "You can download it again later from Manage Speech Models.",
             "Remove Speech Model",
-            wx.ICON_QUESTION | wx.YES_NO,
+            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         )
         if confirm != wx.YES:
             return
         try:
             provider.remove_model(model_id)  # type: ignore[attr-defined]
         except Exception as exc:  # noqa: BLE001 - surface a clean message
-            self._set_status(f"Could not remove model: {exc}")
+            self._set_status(f"Could not remove model: {user_facing_message(exc)}")
             return
         self._announce(f"Removed the {model_id} speech model.")
 
@@ -1966,13 +2016,21 @@ class SpeechDownloadsMixin:
                     wx.CallAfter(self._set_status, f"Download of {model_id} cancelled.")
                     wx.CallAfter(self._announce, f"Download of the {model_id} model cancelled.")
                 else:
-                    wx.CallAfter(self._set_status, f"Could not download model: {exc}")
-                    wx.CallAfter(self._announce, f"Could not download the model. {exc}")
+                    wx.CallAfter(
+                        self._set_status, f"Could not download model: {user_facing_message(exc)}"
+                    )
+                    wx.CallAfter(
+                        self._announce, f"Could not download the model. {user_facing_message(exc)}"
+                    )
                 return
             except Exception as exc:  # noqa: BLE001 - surface a clean message
                 wx.CallAfter(progress.close)
-                wx.CallAfter(self._set_status, f"Could not download model: {exc}")
-                wx.CallAfter(self._announce, f"Could not download the model. {exc}")
+                wx.CallAfter(
+                    self._set_status, f"Could not download model: {user_facing_message(exc)}"
+                )
+                wx.CallAfter(
+                    self._announce, f"Could not download the model. {user_facing_message(exc)}"
+                )
                 return
             wx.CallAfter(self._set_status, f"Downloaded the {model_id} speech model.")
             wx.CallAfter(self._announce, f"Downloaded the {model_id} speech model.")

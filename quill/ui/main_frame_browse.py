@@ -195,8 +195,7 @@ class BrowseModeMixin:
                 for name, position in self._bookmarks.items()
                 if isinstance(position, int)
             }
-            self._browse_cache_build_generation += 1
-            generation = self._browse_cache_build_generation
+            generation = self._browse_cache_generation.advance()
 
             old_cancel = getattr(self, "_browse_cache_cancel_event", None)
             if old_cancel is not None:
@@ -232,7 +231,7 @@ class BrowseModeMixin:
         markup_kind_snapshot: str,
         cache: dict[str, object],
     ) -> None:
-        if generation != self._browse_cache_build_generation:
+        if not self._browse_cache_generation.is_current(generation):
             return
         if self.editor.GetValue() != text_snapshot:
             return

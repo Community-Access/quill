@@ -211,13 +211,14 @@ def test_palette_arrow_keys_move_from_search_to_results() -> None:
     dialog._on_char_hook(down)  # noqa: SLF001
     assert dialog.results.GetSelection() == 1
     assert dialog.results.focused is True
-    # _announce_at() sets status.label to command.title (no "Selected:" prefix)
-    assert dialog.status.label == "Replace"
+    # _announce_at() speaks title plus shortcut, so screen-reader users hear
+    # the keystroke the visual list label already shows.
+    assert dialog.status.label == "Replace, Ctrl+H"
 
     up = _Event(dialog._wx.WXK_UP)  # noqa: SLF001
     dialog._on_char_hook(up)  # noqa: SLF001
     assert dialog.results.GetSelection() == 0
-    assert dialog.status.label == "Find"
+    assert dialog.status.label == "Find, Ctrl+F"
 
 
 def test_palette_escape_closes_buttonless_dialog() -> None:
@@ -234,3 +235,27 @@ def test_palette_escape_closes_buttonless_dialog() -> None:
 
     assert escape.skipped is False
     assert dialog.dialog.ended_with == dialog._wx.ID_CANCEL  # noqa: SLF001
+
+
+def test_palette_speaks_why_a_command_is_unavailable() -> None:
+    # Error specificity: a locked command's row and refusal both carry the
+    # reason sentence from the registry's availability probe, not a bare
+    # "(unavailable)".
+    _install_fake_wx()
+    registry = CommandRegistry()
+    registry.register("edit.find", "Find", lambda: None, "Ctrl+F")
+    registry.register("net.sync", "Sync Notes", lambda: None)
+    registry.set_availability_probe(
+        lambda cid: "Turned off by a safety update: sync bug." if cid == "net.sync" else ""
+    )
+    dialog = CommandPaletteDialog(parent=object(), command_registry=registry)
+
+    dialog.search.SetValue("sync")
+    dialog._on_search_changed(None)  # noqa: SLF001
+    assert dialog._filtered_commands[0].id == "net.sync"  # noqa: SLF001
+    dialog._announce_at(0)  # noqa: SLF001
+    assert "unavailable: Turned off by a safety update: sync bug." in dialog.status.label
+
+    dialog.results.SetSelection(0)
+    dialog._run_selected()  # noqa: SLF001
+    assert "Turned off by a safety update: sync bug." in dialog.status.label

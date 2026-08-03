@@ -1,6 +1,7 @@
 # QUILL Audio Studio -- Product Requirements
 
-Version 1.0.0
+Version 2.2.0 (the shared QuillVille family version; there is no Audio Studio
+2.0 or 2.1 -- see CHANGELOG.md)
 
 ## 1. Product overview and mission
 
@@ -28,24 +29,26 @@ preferences, voice preview, background-task host, and an installer.
 
 ## 2. Relationship to QUILL
 
-QUILL Audio Studio lives in its own self-contained repository (S:\QUILL-AS).
-Unlike Quill Radio and QUILL Cast (thin wrappers over an installed QUILL), it
-vendors its dependency closure from QUILL into the `quillas` package so it
-builds and runs without the monorepo.
+QUILL Audio Studio is built from the QUILL repository itself. The whole
+application lives in the `quill` package (`quill.apps.studio`); this directory
+is the product wrapper only -- entry point, installer, assets, and these docs.
+Superseded: the Studio was originally assembled in a separate repository
+(S:\QUILL-AS) that vendored its dependency closure into a `quillas` package and
+re-synced by hand. That vendoring was retired on 2026-07-20 when the app was
+reverse-vendored into `quill.apps.studio`; requirements REL-1 and REL-2 below
+record the rule that replaced it.
 
-- REL-1. All Audio Studio feature code must be vendored from the upstream
-  QUILL repository by `scripts/vendor_from_quill.py`, which copies a seed set
-  (core/speech, core/publish, core/schemas, ui/audio_studio, stability,
-  platform, assets, and named ui/core modules) and then chases imports via AST
-  until the closure is complete, rewriting `quill.*` imports to `quillas.*`.
-- REL-2. Vendored files must never be hand-edited; re-running the vendor
-  script overwrites them. Only the declared hand-written files
-  (`quillas/__init__.py`, `quillas/__main__.py`, `quillas/apps/studio.py` and
-  other app-shell modules outside the vendor set) may diverge.
+- REL-1. All Audio Studio feature code must live in the shared `quill`
+  package, not in a copy. The product wrapper may contain only the entry
+  point, packaging, assets, and documentation; a feature added here instead of
+  upstream is a defect.
+- REL-2. There must be no vendored or hand-synced duplicate of QUILL's audio
+  code. A build of this product is a build of the current `quill` package, so
+  the standalone Studio and QUILL's built-in Audio Studio cannot drift.
 - REL-3. Behavior parity with QUILL's built-in Audio Studio (QUILL PRD
   sections 5.25d and 5.25e) is a requirement, not a goal. Feature changes land
-  upstream in QUILL first and reach this app through a vendor sync. This repo
-  must not grow a second pipeline or forked wizard behavior.
+  in the shared package and reach this app on its next build. There must not be
+  a second pipeline or forked wizard behavior.
 - REL-4. The app must use the shared `%APPDATA%\Quill` data store, the same
   store used by QUILL, Quill Radio, and QUILL Cast. Speech defaults (engine,
   voices, rates, chapter sounder) live in the shared settings.json: a voice
@@ -84,6 +87,23 @@ requirement, not a layer.
 - A-8. Outcomes -- run completion, save, publish, download, error -- must be
   announced in plain sentences through the screen-reader bridge, and errors
   must surface as dialogs on the UI thread, never silently.
+- A-9. Announcements must be delivered by the shared announcement service, not
+  by a private speech call, so every channel the service carries -- speech,
+  braille, sound, and the visual status slot -- reaches this app, and a channel
+  added upstream appears here without app-side work.
+- A-10. Announcements must reach a connected braille display by default, under
+  three invariants: braille must never cost speech (any braille failure is
+  recorded for diagnostics and degrades to speech-only, never to silence); a
+  message must never be truncated to the display width; and the display must
+  not be stolen twice -- an identical message inside the dedupe window is
+  skipped, and a burst of differing messages settles to the newest rather than
+  each overwriting the last, with errors always written through immediately.
+- A-11. Announcement behaviour must be user-configurable from the shared
+  settings store (braille on/off, braille style, dedupe window, sticky errors,
+  app sound cues, cue-instead-of-speech under Quiet Mode, and which severities
+  interrupt), and diagnostics must report whether braille was both supported
+  and active, so "braille is broken" and "no display is connected" are
+  distinguishable in a support bundle.
 
 ## 4. Functional requirements
 
@@ -97,22 +117,34 @@ requirement, not a layer.
   selected book in the Chapter Workbench; Delete removes the entry from the
   list without touching the file (and says so).
 - AS-3. The menu bar must provide: Studio (Open Audio Studio Ctrl+N, the three
-  journeys, Open Book File Ctrl+O, Open Job File, Preferences Ctrl+Comma,
-  Exit), Book Tools (Publish a Finished Book, Make a Podcast Feed From a
-  Folder, ACX Compliance Check), Voices (Speech Hub, Manage Speech Models,
-  Download Optional Components, Get FFmpeg), AI (Set Up AI), and Help (User
-  Guide, PRD, Release Notes, Command Palette Ctrl+Shift+P, Check for Updates,
-  Report a Bug, About).
+  journeys, Open Book File Ctrl+O, Open Job File, Resume on launch, Recently
+  Played, Preferences Ctrl+Comma, Exit), Book Tools (Publish a Finished Book,
+  Make a Podcast Feed From a Folder, ACX Compliance Check, Sleep Timer, Mute
+  Playback Ctrl+M, Play Queue), Voices (Speech Hub, Manage Speech Models,
+  Pronunciation Dictionaries, Generate Captions, Convert Audio, Convert from
+  URL, Download Optional Components, Get FFmpeg), AI (Set Up AI), View (Show
+  Status Bar), and Help (User Guide, PRD, Release Notes, Command Palette
+  Ctrl+Shift+P, Check for Updates, Report a Bug, View Log, Save Diagnostics,
+  About).
 - AS-4. All menu actions must also be registered as commands reachable from
   the command palette.
 - AS-5. The status bar must reflect readiness ("Ready - N books in your
   library") when idle and must be owned by the running task while background
   work is in flight.
+- AS-85. The status bar must be reviewable, not merely visible: F6 moves focus
+  into it, Left/Right move between cells, Enter activates the focused cell, a
+  per-cell context menu is available, and Escape or a second F6 returns focus
+  to the window. Cells are Activity, Progress, Sleep timer, Your books, and
+  Time. View > Show Status Bar must toggle it and the choice must persist in
+  the app-local prefs.
+- AS-86. A running narration or build must drive the Progress cell (percent,
+  files, current step) and the same text must be written to the system-tray
+  tooltip, so a run minimized to the tray stays reviewable.
 - AS-6. Opening a book that no longer exists at its recorded path must show a
   warning naming the path and refresh the library list.
 - AS-76. The home-window library must be a tree (Favorites, In Progress,
   Recently Played, Inbox, plus any folders the user creates), built from
-  `quillas/core/audio_studio/library.py`, with each book row tagged by path
+  `quill/core/audio_studio/library.py`, with each book row tagged by path
   so selection resolves to a concrete book. The tree must preserve the
   selected book across a reload.
 - AS-77. The library tree must offer a keyboard-complete context menu on each
@@ -280,7 +312,7 @@ requirement, not a layer.
   shell) that caches the pre-mute volume, sets volume to zero while muted,
   restores it on unmute, updates the button label, and announces the state.
 - AS-80. The Workbench player must apply per-book volume and mute on open
-  from `book_prefs` (`quillas/core/audio_studio/book_prefs.py`) and persist
+  from `book_prefs` (`quill/core/audio_studio/book_prefs.py`) and persist
   volume and mute changes back to that store, so each book remembers its own
   level across launches.
 - AS-81. While a Workbench is open, the app shell must route the media
@@ -319,6 +351,29 @@ requirement, not a layer.
   synthesis results are discarded by generation check and playback is cut.
 - AS-51. Choosing "Export to audio" from the Speech Hub must open the Audio
   Studio wizard (documents journey).
+- AS-87. Generate Captions (Offline) must transcribe a chosen audio or video
+  file to `.srt` or `.vtt` entirely on the local machine, using the shared
+  speech-recognition models, and must offer to install a model when none is
+  present. No audio may leave the machine.
+- AS-88. Convert Audio must offer a mixed file/folder queue, an output format,
+  a preset, a destination, and an on-conflict choice (Rename / Skip /
+  Overwrite). It must run off the UI thread with multiple workers, a
+  determinate progress dialog, a working Cancel, and a spoken summary that
+  names failed files rather than reporting a clean run. The offered output
+  formats must be probed from the available ffmpeg, never assumed, so a batch
+  cannot fail part-way for a missing encoder. It is fully local and must
+  therefore remain available in Safe Mode.
+- AS-89. The converter's Advanced panel must expose loudness normalization
+  (audiobook/ACX or podcast), gain, high-pass, silence trimming,
+  pitch-preserving tempo, compressor, leveler, fade in, fade out, and a
+  limiter, all neutral by default, and must reveal them without changing the
+  Basic flow.
+- AS-90. Convert from URL must obtain one-time consent covering both the
+  on-demand downloader install and the user's rights to the audio, before any
+  network contact, and must be unavailable in Safe Mode.
+- AS-91. Converter progress must be reported through the same task-progress
+  channel as a narration run, so it reaches the status bar's Progress cell and
+  the tray tooltip.
 
 ### 4.8 AI features and Safe Mode
 
@@ -401,13 +456,22 @@ requirement, not a layer.
   a second dialog.
 - AS-69. On real exit the app must stop any preview, shut down the task
   manager without waiting, unregister media keys, and remove the tray icon.
-- AS-70. Update checks must query the app's own GitHub releases
-  (Community-Access/quill-audio-studio): manually from Help at any time, and
-  automatically on launch only when enabled, only when due, deferred until
-  after the window is up, and silent when there is no update.
-- AS-71. Help must open the packaged User Guide, PRD, and Release Notes, and
-  Report a Bug must submit through the shared feedback channel tagged with
-  this app's name and version.
+- AS-70. Update checks must query the shared QUILL project's GitHub releases
+  (Community-Access/quill) and resolve **this app's own** release asset for the
+  running flavor (installer for an installed copy, portable zip for a portable
+  one), so each QuillVille app updates independently from one publishing point
+  and an update to a sibling app is never offered here. Checks must be
+  available manually from Help at any time, and automatically on launch only
+  when enabled, only when due, deferred until after the window is up, and
+  silent when there is no update.
+- AS-71. Help must open the packaged User Guide, PRD, and Release Notes, offer
+  View Log and Save Diagnostics (a redacted bundle), and Report a Bug must
+  submit through the shared feedback channel tagged with this app's name and
+  version.
+- AS-92. An available update must be installable in one step: after Download,
+  "Install and restart now" applies it (extracting portable files over the
+  install folder, or running the installer silently) and relaunches the app,
+  preserving all settings and data.
 - AS-83. The Studio menu must offer a Resume on launch opt-in (check item)
   that, when set, reopens the most recently played book at its saved
   listening position on the next launch, silently skipping if the file no
@@ -438,7 +502,7 @@ requirement, not a layer.
   setting must persist from `sleep_timer.py` and a `SleepTimerWatcher` must
   fire the stop on the UI thread.
 - AS-86. Book Tools must offer a Play Queue dialog backed by
-  `quillas/core/audio_studio/play_queue.py`: an ordered, editable list of
+  `quill/core/audio_studio/play_queue.py`: an ordered, editable list of
   books (add, remove, clear, set next) that persists to disk.
 - AS-87. When the current book finishes and the Workbench is then closed,
   the shell must advance to the next queue entry whose file still exists,
@@ -481,16 +545,22 @@ requirement, not a layer.
 ## 6. Packaging and distribution
 
 - P-1. The Python entry point must be `quill-audio-studio =
-  quillas.apps.studio:main` (gui-script), package `quill-audio-studio`
-  version 1.0.0, Python 3.12+.
-- P-2. Release builds must be PyInstaller onedir (`QuillAudioStudio.exe`,
-  windowed, no UPX), with the heavy ML runtimes (faster-whisper, vosk,
-  kokoro-onnx, onnxruntime, torch) excluded from the bundle -- they install on
-  demand into the shared engine-packs store.
-- P-3. One onedir build must feed both artifacts: an Inno Setup installer
-  (`QUILL-Audio-Studio-Setup-1.0.0.exe`, per-user default install, x64,
-  Windows 10+, Start-menu and optional desktop shortcuts, packaged docs) and a
-  portable zip (`QUILL-Audio-Studio-Portable-1.0.0.zip`).
+  quill_audio_studio:main` (gui-script), a thin wrapper over
+  `quill.apps.studio`; package `quill-audio-studio`, Python 3.12+. The
+  packaging version is the shared QuillVille family version (2.2.0), aligned
+  with Quill Radio and Quill Weather because the three install on one shared
+  runtime; releases remain independent per app.
+- P-2. Release builds must exclude the heavy ML runtimes (faster-whisper,
+  vosk, kokoro-onnx, onnxruntime, torch) and the large libraries the Studio
+  never loads -- they install on demand into the shared engine-packs store, and
+  excluding the rest keeps both the installer and the portable zip small.
+- P-3. One build must feed both artifacts: an Inno Setup installer
+  (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`, per-user default install,
+  x64, Windows 10+, Start-menu and optional desktop shortcuts, packaged docs)
+  and a portable zip (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`). The
+  installer must offer Full, Compact (no bundled documentation), and Custom
+  setup types; the shared runtime and the app itself are fixed components and
+  only the documentation is optional.
 - P-4. ffmpeg and ffprobe must be bundled at `tools\ffmpeg` (with license
   text); the build must fail without them. libmpv should be bundled at
   `tools\mpv` (GPL, with license text) for the gapless Workbench player;
@@ -554,14 +624,19 @@ requirement, not a layer.
 - Bundling neural voices or ML runtimes in the installer. Engines and voices
   are download-on-demand, always.
 - Direct platform publishing (WordPress and similar) -- deferred upstream to
-  QUILL 2.0; when it lands there, it arrives here by vendor sync.
+  QUILL 2.0; when it lands there, it arrives here on the next build.
 - A second pipeline. Any narration or assembly behavior that diverges from
   QUILL's Audio Studio is a bug, not a feature.
 
 ## 8. Future directions
 
-- Watch-folder auto rebuild surfaced in the UI: `core/watch_audiobook.py` is
-  vendored but has no Studio surface yet.
+- Watch-folder auto rebuild surfaced in the UI: the shared
+  `core/watch_audiobook.py` has no Studio surface yet.
+- Quillins in Audio Studio. QUILL, Quill Radio, and QUILL Cast host Quillins;
+  the Studio does not yet build a Quillins menu or an app host, so a
+  `studio.pipeline` contribution (the bundled `studio-normalizer` sample) has
+  no way to load here. Composing the app-Quillins mixin into the Studio shell
+  is the remaining work.
 - Recognize `QuillAudioStudio.exe` in the shared portable-evidence check
   (`storage_mode._has_portable_evidence` currently lists only the other Quill
   app executables; the launcher's env export covers the gap today).
@@ -569,7 +644,13 @@ requirement, not a layer.
   across projects, beyond the per-run rules on the Voices page).
 - Toast/notification center: the runner already passes notification flags that
   the standalone host currently drops; a small notification surface would let
-  finished overnight runs be reviewed later.
+  finished overnight runs be reviewed later. (The shared announcement service
+  now records announcements, so the history exists; the surface does not.)
+- Repeat Last Announcement and the Announcement Self-Test. Both commands are
+  implemented on the shared app shell but no companion app calls
+  `register_announcement_commands()`, so neither is reachable from the Studio's
+  command palette yet. They are deliberately left undocumented for users until
+  they are wired up.
 
 ---
 

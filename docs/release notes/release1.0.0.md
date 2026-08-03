@@ -679,6 +679,28 @@ The new local git experience also includes:
 - **Who Wrote This Line...** — make git blame useful by speaking the result for the current line.
 - **Start Bisect...** and **End Bisect** — turn `git bisect` into a plain conversation asking whether the current version is good or bad.
 
+### Worktrees: a folder for each branch, so nothing changes while you are reading it
+
+Here is a problem that almost never gets named, because most people never notice it.
+
+When you switch to another branch the ordinary way, git rewrites every file in the folder. The names stay the same. The paths stay the same. The contents become something else. If you can see the screen, the text changes in front of you and you know instantly what happened. If you are reading with a screen reader, nothing tells you anything. The paragraph under your review cursor is now a paragraph from a different branch, sitting in a file that still calls itself the file you opened. You keep reading, and the words no longer belong to the thing you thought you were reading.
+
+A worktree is the fix, and it is a structural one rather than a warning message. A worktree is simply a second folder attached to the same repository, with a different branch checked out inside it. One history, one set of branches, two folders. Your main folder stays on main; a second folder holds the feature you are working on. Nothing under your cursor ever changes, because the two never share a file. Switching context becomes "open a different file" — something you choose to do, and hear yourself doing — instead of "this file is now a different file", which is something that happens to you without a sound.
+
+That is why QUILL supports worktrees properly instead of leaving them to the command line.
+
+**Tools > Local Git > Worktrees...** shows you what you have. QUILL announces the count as the dialog opens, and every row is a whole sentence you hear once and understand — "Main worktree at S:\code\quill, on branch main", or "Linked worktree at D:\usb\quill-spike, on branch spike, locked: on a USB drive" — rather than four narrow columns you would have to arrow across. After anything you do, QUILL says what happened, rereads the list, and puts you back on it.
+
+**New Worktree...** asks where the folder should go and which branch it should hold, or lets you create a brand-new branch right there with an optional starting point. The folder field takes whatever you actually paste — a path copied from File Explorer with the quotes still attached, an %APPDATA% path, a file:// link. And QUILL checks before it runs git, so a mistake is a sentence you hear rather than an error you have to decode: the folder already has files in it, the folder is inside the repository itself, or that branch is already open in another worktree — and in that last case QUILL tells you exactly which folder has it, so you can go open that one instead.
+
+**Open in QUILL** does the obvious thing: it opens the same document you are reading, from the worktree you picked. If that file does not exist on that branch, QUILL says so and offers you a file picker already pointed at the right folder, instead of leaving you at a dead end.
+
+**Remove...** deletes a worktree's folder. The branch itself stays — you are removing the folder, not the work. The confirmation defaults to No, so pressing Enter out of habit never costs you anything. And if git refuses because the worktree still holds uncommitted changes, QUILL passes that refusal on in plain language and asks a second, separate question before discarding anything. It will not quietly force the removal on your behalf.
+
+**Lock** and **Unlock** protect a worktree that lives on a USB drive or a network share, which git would otherwise mistake for a folder that has vanished; you can record a reason and hear it later in the list. **Prune** clears out records for folders that really are gone, and tells you which ones it tidied — or simply says nothing needed doing.
+
+Throughout, git's own raw error output is never read at you. Every message is a finished sentence written to be spoken.
+
 These commands do not contact GitHub or any network service. They operate entirely through local git and work with any repository you point QUILL toward.
 
 We tested them against real repositories performing real operations: divergent branches producing a real merge conflict, and an interactive rebase that encountered a conflict partway through and then had to continue. Subprocess orchestration earns trust by surviving the actual workflow, not by looking correct on paper.
@@ -848,6 +870,84 @@ The existing **Misspelling List** on **Alt+Shift+L** remains unchanged and conti
 > teh (Ln 12, Col 4, 8 occurrences)
 
 This Kurzweil 1000-inspired feature came directly from a longtime user. In an OCR document or a draft containing a repeated typo, correcting the most frequent problem first can eliminate a large portion of the noise immediately.
+
+### Live spelling alerts get their own sound — and learn when to stay quiet
+
+With **spell check as you type** on, finishing a word the dictionary does not recognize now plays a soft, distinct spelling sound from your sound pack instead of the bare system beep. A sound rather than speech is deliberate: it never talks over what your screen reader is saying. If your chosen pack has no spelling sound, the familiar beep still fires, so the alert is never silently lost — and it has its own toggle in **Sound Events**.
+
+The live alert has also learned some judgment. Words inside web addresses, email addresses, Markdown inline code, and fenced code blocks no longer alert — those regions are wall-to-wall "misspellings" that sighted users filter out with a glance, and now QUILL filters them for everyone. The full F7 review still covers the whole document; only the ambient alert holds back.
+
+### The command palette understands what you mean
+
+Palette search grew three new abilities. Multi-word queries match in any order — `url open` and `open url` both find **Open From URL...**. A command's shortcut is searchable, so `ctrl+o` finds Open. And common intent words now work as aliases: `settings` finds **Preferences...**, `quit` finds **Exit**, `theme` finds dark mode — the palette meets you at the word you were thinking of, not the label QUILL happens to use.
+
+One more change matters especially with a screen reader: arrowing through results now **speaks each command's shortcut with its name**. The visual list always showed the shortcut; now you hear it too, every time — so the palette quietly teaches you the faster route while it runs your command.
+
+### Report Editor Surface: a braille bug report in one keystroke
+
+A new **Report Editor Surface** command (in the command palette; give it a key in the Keymap Editor if you want one) speaks everything a braille or speech report needs in a single announcement: the active editor surface, its native window class, whether the system-edit braille fix is applied, whether the editor border is hidden, and whether braille output is live — and through which backend. Nothing from your document is included.
+
+If braille ever looks wrong, run this first and include what it says. "Braille starts in cell 2" plus this one sentence is a report that can be investigated immediately, with no screenshots and no back-and-forth.
+
+### QUILL finds its voice: every slot is a note, and progress is a melody
+
+Numbered features have always had a problem: "Copied to slot 7" takes as long to hear as the copy took to do. Now every one of the twelve Copy Tray slots and ten quick bookmarks plays its own note on a shared musical scale — Copy Tray as soft marimba taps, bookmarks as brighter chirps — so after a little use, slot seven is a pitch you simply recognize. Copy, paste, set, jump: the note is the confirmation, instantly, without a word spoken.
+
+Long downloads and installs sing too. Every 5 percent plays a short blip that rises as the work approaches done; the quarter marks carry a touch of harmony, and 100 percent lands with a little two-note finish. Unlike a spoken "forty-five percent", a blip never talks over your screen reader — the spoken milestones at 25, 50, and 75 stay right where they were for the big picture.
+
+Two more touches round out the set. Starting a selection with F8 opens a rising two-note gate and completing it plays the mirror image, so selection mode is always audible. And the very top and very end of your document now answer with a high ceiling tick and a low floor thud.
+
+If your USB or Bluetooth speakers clip the first instant of sound after a quiet pause — a common quirk of audio hardware saving power — turn on the new **Keep the sound device awake** setting and QUILL will keep the device listening with a silent pulse every 20 seconds.
+
+All 48 new sounds were designed for QUILL's Ink pack, every one has its own on/off switch in Sound Events, and any custom sound pack can replace any of them. Want a tour? `python scripts/audition_ink_sounds.py` plays the whole identity set, family by family.
+
+### The AI can fill in your document's details — and you approve every one
+
+A new **Suggest Document Metadata** command asks your AI for a title, a short summary, topic tags, and a category for whatever you're writing — and then hands the decisions entirely to you. Each suggestion is reviewed on its own: you hear the field, what it currently says, and what the AI proposes, and you choose Accept, Skip, or just copy the value. If a field already has something in it, QUILL asks before replacing it, and the safe answer — No — is the default. Nothing is written until you choose Apply Accepted, and then it all lands as a single undo.
+
+It's the same philosophy as the word-by-word AI change review, applied to fields instead of prose: the AI proposes, you dispose, and a bulk overwrite is never on the table.
+
+### The AI never quietly changes what's answering you
+
+Two more honesty guarantees joined the AI. If QUILL has to start a chat on a different engine than the one you configured — say your provider was unreachable — it now tells you the moment the chat opens, instead of quietly answering with a different brain. And when a call fails from a connection problem, the fallback suggestion now works in both directions: a failed cloud call points you at your on-device model, and a failed on-device model points you at the cloud provider you have configured — while telling you plainly that switching would send your text to the cloud, and never switching for you.
+
+### More errors that end with what to do next
+
+The error-specificity work keeps spreading. Voice and component downloads, extension problems, and remote file transfers (SSH, FTP, S3, WebDAV) now finish their error messages with the concrete next step — "Check your internet connection, then retry the download from Help > Download Optional Components." A menu item that a safety advisory has disabled now explains itself right in the menu. Small sentences, but each one is the difference between fixing something yourself and needing to ask.
+
+### If your screen reader stops, your work is already safe
+
+Losing your screen reader mid-session is one of the most disorienting things that can happen at a computer. QUILL now has your back when it does. If the screen reader QUILL detected goes away — and stays away past one grace check, so simply restarting JAWS or NVDA never sets this off — QUILL immediately saves a snapshot of every open document, then tells you what happened using whatever can still talk: another screen reader if one is running, or QUILL's own built-in voice. A note also lands in Notifications, so even if you missed the announcement, the explanation is waiting.
+
+QUILL keeps running the whole time. Restart your screen reader whenever you're ready — QUILL announces when it hears it again — and nothing you were writing is at risk in between.
+
+### The default answer to "Delete?" is now always No
+
+Press Enter on a "Delete this recording?" prompt out of habit, and it used to be gone. Twenty-seven confirmations across QUILL, Quill Radio, QUILL Cast, and QuillBeacon had Yes as the default button on questions that destroy things. Every one of them now defaults to No: Enter is always the safe answer, and Yes is a choice you make on purpose. A new automated check in QUILL's build makes sure no future dialog can ship with a destructive Yes-default again.
+
+### Paste any path, and it just works
+
+Copy a path from File Explorer and it arrives wrapped in quotes. Copy one from a web page and it may be a `file://` link with invisible characters in it. Type `%APPDATA%\Quill` or `~` like a power user. The Simple File Open dialog's path field now takes all of it — QUILL quietly cleans up whatever you paste before using it, so "path does not exist" stops being the answer to a path that exists perfectly well.
+
+### AI changes are now reviewable word by word, in their sentences
+
+Every AI edit in QUILL already stopped at a review dialog — an accept/reject checklist, applied as one undo step, nothing touching your document until you agree. But the review described changes by *line*, and a line diff is a poor fit for prose: when the AI changes one word in a long line, you heard the whole line twice and had to catch the difference by ear.
+
+The review now speaks each change as what it is: **"Changed 'quick' to 'rapid' at line 3."** Edits that sit next to each other merge into one phrase instead of several fragments. And the details pane shows **the sentence before and the sentence after** each change, so you can judge a one-word edit with the same context a sighted reviewer gets from highlighting — while the complete old and new lines remain available below, exactly as before.
+
+Two deliberate limits keep it honest: a genuine rewrite (many scattered edits, or whole passages replaced) is presented as lines, because forty spoken word pairs is worse than hearing the lines whole; and spacing-only changes are never announced as word edits. This applies everywhere AI edits are reviewed — the Review AI Changes dialog, the agent editor, and AI tools — with no change to how you accept, reject, or undo.
+
+### Errors start telling you what to do next
+
+An error message that names the exact failure — and the next step — is the difference between fixing something yourself and needing help. That matters double when you cannot glance at the failing file to see what's wrong. This release begins a deliberate, product-wide error-specificity programme:
+
+- **Coded errors carry a what-to-do sentence.** Messages with a `[QUILL-...]` support code increasingly end with the concrete action: *"Install Pandoc from Help > Download Optional Components to convert this format."*, *"Check the address, credentials, and connection under File > Manage Remote Sites."* The AI question-answering surfaces are the first adopters, and the pattern will spread release by release.
+- **The palette says why.** A command disabled by a safety advisory now reads and speaks its reason — *"unavailable: Turned off by a safety update: ..."* — on the result row and again if you try to run it. No more bare "(unavailable)" with nothing behind it.
+- **AI never quietly answers from less than you sent.** If your document had to be trimmed to fit the model's context window, Ask Quill now announces the working size — *"The answer used the first 6,000 of the document's 40,000 characters."* — and Document Q&A states how much of a large document its answer covers. The Q&A dialog also speaks its status changes and errors now, instead of only repainting a label you would have to go find.
+
+### Braille bursts settle instead of flickering
+
+QUILL already avoided flashing the identical message twice in a row on a braille display. Now a burst of *different* messages — a status cascade, a fast-updating poll — settles too: the first message writes instantly, and anything arriving within the next moment collapses to the newest message rather than each one shoving the last aside before it could be read. Errors are exempt and always come through at once.
 
 Arrow through the list and press Enter to jump to an occurrence, exactly as in the regular misspelling list. Users who prefer reviewing from the beginning of the document can continue using **Alt+Shift+L**.
 
@@ -1109,7 +1209,7 @@ These improvements have landed on the development branch since 1.0.0 and will sh
 
 ### Open password-protected PDFs
 
-- **Locked PDFs just open now.** Previously QUILL correctly recognized an encrypted (password-protected) PDF but refused it, telling you to strip the password yourself in another tool first. Now QUILL simply **asks for the password and reads the file** — the way Leasey Word does. Type the password and the PDF opens; enter the wrong one and QUILL says so and lets you try again; press **Cancel** to stop opening it.
+- **Locked PDFs just open now.** Previously QUILL correctly recognized an encrypted (password-protected) PDF but refused it, telling you to strip the password yourself in another tool first. Now QUILL simply **asks for the password and reads the file**. Type the password and the PDF opens; enter the wrong one and QUILL says so and lets you try again; press **Cancel** to stop opening it.
 - **Your password is never kept.** It is used only to unlock that one file for reading — QUILL never stores it, logs it, or writes it anywhere — so if you close and reopen the file, it asks again. PDFs that are technically "encrypted" but open with an empty password (permissions-only locks) still open with no prompt, exactly as before. The whole read runs in the background, so the screen reader stays responsive while a big PDF loads.
 
 ### Sort lines by date
@@ -1119,7 +1219,7 @@ These improvements have landed on the development branch since 1.0.0 and will sh
 
 ### Read the sentence around a misspelling aloud
 
-- **Ctrl+R in the Spelling Review.** In the F7 Spelling Review, a new **Read Sentence** button — and the **Ctrl+R** shortcut — reads the whole sentence around the current misspelled word aloud, so you can judge a correction in context without leaving the dialog or scrolling the document to find the word. It reads the same context the dialog already shows. This matches Leasey Word's in-dialog "read the sentence" affordance.
+- **Ctrl+R in the Spelling Review.** In the F7 Spelling Review, a new **Read Sentence** button — and the **Ctrl+R** shortcut — reads the whole sentence around the current misspelled word aloud, so you can judge a correction in context without leaving the dialog or scrolling the document to find the word. It reads the same context the dialog already shows. This is the in-dialog "read the sentence" affordance.
 
 ### Your PDF's own bookmarks come with it
 
@@ -1128,12 +1228,12 @@ These improvements have landed on the development branch since 1.0.0 and will sh
 
 ### More one-click writing presets
 
-- **Six named tools added to the Prompt Library.** **AI > Prompt Library** gains **Generate FAQs**, **Draft a Speech**, **Summary Email**, **Social Media Post** (280 characters or fewer), **Step-by-Step Instructions**, and **Paraphrase** — the named one-shot tools QUILL didn't already ship next to its Summarize, rewrite, tone, and expand presets. Each runs over your selection or the whole document in one click, and like every built-in you can tweak its wording or switch it off. This rounds out parity with Leasey Word's set of named ChatGPT tools.
+- **Six named tools added to the Prompt Library.** **AI > Prompt Library** gains **Generate FAQs**, **Draft a Speech**, **Summary Email**, **Social Media Post** (280 characters or fewer), **Step-by-Step Instructions**, and **Paraphrase** — the named one-shot tools QUILL didn't already ship next to its Summarize, rewrite, tone, and expand presets. Each runs over your selection or the whole document in one click, and like every built-in you can tweak its wording or switch it off. This rounds out QUILL's set of named one-shot tools.
 
 ### Improve Reading Order with AI
 
 - **Fix a jumbled document in one step.** Some documents arrive with their text in the wrong order — a two-column PDF that extracts as one scrambled stream, a page with sidebars or text boxes, or lines out of sequence. **AI > More > Improve Reading Order...** (also on the command palette) sends the current document's text to your configured AI provider and gets it back in natural reading order: columns merged into one flow, mid-sentence line breaks joined, and headings, lists, and tables inferred — with your exact wording preserved (it never summarizes or invents).
-- **Always asks first, never touches your original.** A confirmation names the provider and its host and the approximate page size before anything is sent; the improved text opens as a **new, unsaved document** (Save As to keep it), leaving your original exactly as it was. It refuses documents over a page limit (Settings, default 40) so a huge or costly send can't happen by accident, and it's off in Safe Mode. (For a *scanned* image-only PDF, use File > Import's OCR path instead — this command is for text that's simply in the wrong order.) This closes the last Leasey Word editor-parity gap.
+- **Always asks first, never touches your original.** A confirmation names the provider and its host and the approximate page size before anything is sent; the improved text opens as a **new, unsaved document** (Save As to keep it), leaving your original exactly as it was. It refuses documents over a page limit (Settings, default 40) so a huge or costly send can't happen by accident, and it's off in Safe Mode. (For a *scanned* image-only PDF, use File > Import's OCR path instead — this command is for text that's simply in the wrong order.) This closes the last editor-parity gap.
 - **Your provider, your choice — or fully on-device.** Improve Reading Order isn't wired to any single service. It uses whichever AI backend you've set up in **AI > Set Up AI** — **OpenAI**, **Claude**, **Google Gemini**, **OpenRouter**, **Ollama** (local), **Ollama Cloud**, or a **custom OpenAI-compatible endpoint** — with your own account and key (QUILL bundles no keys and adds nothing to your bill). Haven't set up a cloud provider? QUILL falls back to its **bundled on-device model** (Apple's on-device model on a supported Mac, otherwise a local CPU model), so the repair can run **entirely on your computer with nothing uploaded**. Either way the confirmation names the exact provider and host first, so you always know where your text is going.
 
 ### Bookmarks that survive edits

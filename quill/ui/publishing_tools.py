@@ -758,7 +758,7 @@ class PublishingConnectionsDialog:
         answer = show_message_box(
             f"Remove the publishing connection '{selected.label or selected.site_url}'?",
             "Remove Publishing Connection",
-            self._wx.YES_NO | self._wx.ICON_WARNING,
+            self._wx.YES_NO | self._wx.NO_DEFAULT | self._wx.ICON_WARNING,
             self.dialog,
             announce=self._announce,
         )

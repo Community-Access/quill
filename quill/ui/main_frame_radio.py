@@ -26,7 +26,9 @@ from quill.core.radio.recording import (
     load_recording_settings,
     save_recording_settings,
 )
+from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
+from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
@@ -91,7 +93,7 @@ class RadioMixin:
             output_device=self._radio_history.output_device,
             on_output_device_error=self._on_radio_output_device_error,
             playback_engine=self._radio_history.playback_engine,
-            on_buffering=lambda: self._wx.CallAfter(self._announce, "Buffering..."),
+            on_buffering=lambda: self._wx.CallAfter(self._radio_announce_buffering),
             spotify_token_provider=self._spotify_session.access_token,
             resolve_youtube=self._radio_resolve_youtube,
         )
@@ -114,6 +116,9 @@ class RadioMixin:
         self._radio_recorder = RadioRecorder(
             on_state_changed=self._on_radio_recording_changed,
             on_reconnect=self._on_radio_recording_reconnect,
+            # The recorder builds the sentence (it knows how many parts there
+            # were and whether the join succeeded); the UI only speaks it.
+            on_parts_joined=lambda note: self._wx.CallAfter(self._announce, note),
         )
         self._radio_scheduler = RecordingScheduler(
             data_dir=app_data_dir(),
@@ -312,7 +317,10 @@ class RadioMixin:
                 filter_graph=self._radio_recording_filter_graph(),
                 entry_id=entry_id,
             )
-            self._announce(f"Resuming recording of {station_name} for {max(1, left)} minute(s).")
+            self._announce(
+                f"Resuming recording of {station_name} for {max(1, left)} minute(s).",
+                sound=SoundEvent.RADIO_RECORDING_STARTED,
+            )
             # The old marker (from the previous run) is superseded by the fresh
             # one the new job wrote under its own id; clear the stale one.
             self._clear_radio_recording_marker(job_id)
@@ -376,7 +384,12 @@ class RadioMixin:
             # crash/kill leaves markers behind for the next launch to find.
             self._clear_radio_recording_marker(job_id)
             if destination is not None:
-                self._announce(f"Recording saved: {destination.name}")
+                # The recorder's own stop-and-finalize edge: the one moment a
+                # capture is really over and on disk (#1302).
+                self._announce(
+                    f"Recording saved: {destination.name}",
+                    sound=SoundEvent.RADIO_RECORDING_STOPPED,
+                )
 
     def _persist_radio_recording_marker(self, job_id: str = "") -> None:
         """Write a per-recording marker from the recorder's live state (R3).
@@ -427,12 +440,19 @@ class RadioMixin:
         except Exception:  # noqa: BLE001 - best-effort
             pass
 
+    def _radio_announce_buffering(self) -> None:
+        """A mid-stream rebuffer, spoken instead of dead air -- cued once per
+        run of stalls (#1302). A stream that keeps dropping calls this over and
+        over without ever leaving PLAYING, so the earcon is armed again only by
+        a real playback state change: ten rebuffers make one sound, not ten,
+        while the words still arrive each time because each stall is news.
+        """
+        cue = "" if getattr(self, "_radio_buffer_cued", False) else SoundEvent.RADIO_BUFFERING
+        self._radio_buffer_cued = True
+        self._announce("Buffering...", sound=cue)
+
     def _on_radio_recording_reconnect(self, attempt: int, maximum: int) -> None:
-        self._wx.CallAfter(
-            self._announce,
-            f"Recording lost its stream; reconnecting, attempt {attempt} of {maximum}. "
-            "The recording continues in a new part file.",
-        )
+        self._wx.CallAfter(self._announce, describe_reconnect(attempt, maximum))
 
     def _on_radio_scheduled_recording_fired(self, entry: object, error: str) -> None:
         self._wx.CallAfter(self._apply_radio_scheduled_recording_fired, entry, error)
@@ -442,7 +462,10 @@ class RadioMixin:
         if error:
             self._announce(f"Scheduled recording of {station_name} could not start: {error}")
         else:
-            self._announce(f"Scheduled recording started: {station_name}")
+            self._announce(
+                f"Scheduled recording started: {station_name}",
+                sound=SoundEvent.RADIO_RECORDING_STARTED,
+            )
         self._refresh_statusbar()
 
     def _on_radio_scheduled_recording_busy(self, entry: object) -> None:
@@ -563,7 +586,9 @@ class RadioMixin:
             return
         # "Recording started" (not the label-like "Recording X") so it is
         # unmistakable that pressing the command actually began a capture.
-        self._announce(f"Recording started: {station.name}.")
+        self._announce(
+            f"Recording started: {station.name}.", sound=SoundEvent.RADIO_RECORDING_STARTED
+        )
         self._refresh_statusbar()
 
     def radio_stop_all_recordings(self) -> None:
@@ -638,6 +663,11 @@ class RadioMixin:
         self._radio_track_history_and_volume(state)
         self._radio_track_titles_follow_playback(state)
         self._radio_maybe_try_fallback_url(state)
+        # A real playback transition re-arms the buffering earcon (#1302) --
+        # volume/mute notifications land here too, and must not.
+        if state.state is not getattr(self, "_radio_cued_playback_state", None):
+            self._radio_cued_playback_state = state.state
+            self._radio_buffer_cued = False
         if state.station is not None and not self._radio_ever_played:
             self._radio_ever_played = True
             hidden = list(getattr(self.settings, "status_bar_hidden", []))
@@ -1121,7 +1151,10 @@ class RadioMixin:
         except RecordingError as error:
             self._announce(str(error))
             return
-        self._announce(f"Recording started: {station.display_name}, for {minutes} minutes.")
+        self._announce(
+            f"Recording started: {station.display_name}, for {minutes} minutes.",
+            sound=SoundEvent.RADIO_RECORDING_STARTED,
+        )
         self._refresh_statusbar()
 
     def radio_play_last(self) -> None:
@@ -1751,7 +1784,7 @@ class RadioMixin:
         refresh_toggle = getattr(self, "_refresh_favorite_toggle", None)
         if callable(refresh_toggle):
             refresh_toggle()
-        self._announce(f"Added {station.name} to Favorites")
+        self._announce(f"Added {station.name} to Favorites", sound=SoundEvent.RADIO_FAVORITE_ADDED)
 
     def _radio_open_link_finder(self) -> None:
         if self._safe_mode:

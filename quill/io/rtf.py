@@ -381,8 +381,8 @@ def _tokenize(rtf: str) -> list[tuple[str, object, object]]:
                 except ValueError:
                     pass
                 index += 4
-            else:
-                tokens.append(("symbol", nxt, None))
+            else:  # "\\", "\{" and "\}" are literal text, not control symbols
+                tokens.append(("char" if nxt in "\\{}" else "symbol", nxt, None))
                 index += 2
         elif char == "{":
             tokens.append(("group_open", None, None))

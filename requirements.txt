@@ -10,12 +10,21 @@ regex>=2026.7.19
 # — disables entity expansion to block billion-laughs denial-of-service files.
 defusedxml>=0.7.1
 
+# Windows COM — SAPI 5 Read Aloud and self-voicing announcements, the Rich Edit
+# TOM surface, the Narrator bridge, and persona .lnk shortcuts (WScript.Shell).
+# A base dependency, not a UI one: quill/core reaches it through
+# persona_launcher.py and read_aloud.py.
+comtypes>=1.4.16; sys_platform == "win32"
+
 # UI
 wxPython>=4.2.5
 # Accessible wx.html2.WebView surfaces (chat, preview, About, update dialogs).
 wx-accessible-webview>=0.2.0
-# Windows SAPI 5 text-to-speech (Read Aloud + self-voicing announcements).
-comtypes>=1.4; sys_platform == "win32"
+# pywin32 — win32gui for active-window screen capture (AI image description) and
+# win32api.ShellExecute for the update bootstrapper hand-off. Previously
+# undeclared and present only transitively, even though the Windows build script
+# prunes its unused extras on purpose.
+pywin32>=306; sys_platform == "win32"
 
 # CA bundle for verified HTTPS (update checks) — Python on macOS otherwise has
 # no trusted roots wired into urllib (CERTIFICATE_VERIFY_FAILED).

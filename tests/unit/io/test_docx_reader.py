@@ -159,3 +159,39 @@ def test_table_cell_pipes_are_escaped(tmp_path: Path) -> None:
     rich = read_docx_rich(path)
     first = "".join(span.text for span in rich.paragraphs[0].spans)
     assert first == r"| a \| b |"
+
+
+def test_imported_table_navigates_after_the_rich_edit_rtf_round_trip(tmp_path: Path) -> None:
+    """A Word table stays cell-navigable through the whole rich-edit path.
+
+    Rich Word mode is docx -> RichDocument -> RTF -> the native control, so the
+    text the caret actually sees is the far side of that round trip. The escaped
+    pipe a cell needs has to survive it, or the grid comes back one column wide
+    and every announced position is wrong.
+    """
+    import docx
+
+    from quill.core import table_nav
+    from quill.io.rtf_model import rich_to_rtf, rtf_to_rich
+
+    source_doc = docx.Document()
+    table = source_doc.add_table(rows=2, cols=2)
+    table.cell(0, 0).text = "Metric"
+    table.cell(0, 1).text = "Size | Units"
+    table.cell(1, 0).text = "Depth"
+    table.cell(1, 1).text = "3"
+    path = tmp_path / "round_trip.docx"
+    source_doc.save(str(path))
+
+    landed = rtf_to_rich(rich_to_rtf(read_docx_rich(path)))
+    text = "\n".join("".join(s.text for s in par.spans) for par in landed.paragraphs) + "\n"
+    grid = table_nav.find_table_at(text, text.index("Depth"))
+
+    assert grid is not None
+    assert (grid.row_count, grid.col_count) == (2, 2)
+    assert table_nav.move(grid, text.index("Depth"), "up").announcement == (
+        "Row 1 of 2, column 1 of 2: Metric"
+    )
+    assert table_nav.move(grid, text.index("Metric"), "next").announcement == (
+        "Row 1 of 2, column 2 of 2: Size | Units"
+    )

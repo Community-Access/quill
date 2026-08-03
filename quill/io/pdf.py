@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.io.markitdown_bridge import convert_with_markitdown
+from quill.io.pdf_repair import repair_extracted_text
 
 # PERF-13: bound how many pages we pull text from so a very large PDF cannot
 # materialize every page at once. Pages beyond this cap are counted but skipped.
@@ -218,7 +219,11 @@ def _extract_with_pdfplumber(path: Path, *, password: str | None = None) -> PdfE
             if index >= _PDF_MAX_PAGES:
                 break
             text = page.extract_text() or ""
-            page_texts.append(text.strip())
+            # Extraction phase 2: undo the layout artefacts (private-use
+            # ligatures, letter-spaced headings, wrap hyphens, hard-wrapped
+            # lines) before the text is scored or shown. Per page, so nothing is
+            # ever joined across a page boundary. See quill/io/pdf_repair.py.
+            page_texts.append(repair_extracted_text(text.strip()))
             flush_cache = getattr(page, "flush_cache", None)
             if callable(flush_cache):
                 flush_cache()
@@ -256,7 +261,8 @@ def _extract_with_pypdf(path: Path, *, password: str | None = None) -> PdfExtrac
     for index, page in enumerate(reader.pages):
         if index >= _PDF_MAX_PAGES:
             break
-        page_texts.append((page.extract_text() or "").strip())
+        # See the matching repair comment in _extract_with_pdfplumber above.
+        page_texts.append(repair_extracted_text((page.extract_text() or "").strip()))
     # #872: see the matching comment in _extract_with_pdfplumber above.
     text = "\f".join(page_texts).strip()
     score = _score_pdf_text(text, page_count, sum(1 for page_text in page_texts if page_text))

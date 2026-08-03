@@ -151,8 +151,15 @@ def register_quillin_sounds(
 # ---------------------------------------------------------------------------
 
 
+#: Seconds between keep-alive plays. Short enough that a device's power-down
+#: timeout (typically 30-60 s) never elapses, long enough to cost nothing.
+_KEEPALIVE_INTERVAL_SECONDS = 20.0
+
+
 class _SoundManager:
     def __init__(self, settings: Settings) -> None:
+        import threading
+
         from quill.platform.sound_player import SoundPlayer
 
         self.player = SoundPlayer()
@@ -162,6 +169,11 @@ class _SoundManager:
         # Tracks event IDs contributed by the indent tone overlay so they can
         # be included in get_loaded_events() without re-reading disk.
         self._indent_event_ids: frozenset[str] = frozenset()
+        # Soundcard keep-alive (audio identity, opt-in): a silent clip on a
+        # timer so USB/Bluetooth devices never power down and clip the first
+        # earcon after a pause. The thread exists only while enabled.
+        self._keepalive_stop = threading.Event()
+        self._keepalive_thread: threading.Thread | None = None
         self.apply_settings(settings)
 
     def apply_settings(self, settings: Settings) -> None:
@@ -172,11 +184,15 @@ class _SoundManager:
         disabled = frozenset(e.strip() for e in events_disabled_raw.split(",") if e.strip())
         new_indent_scale = str(getattr(settings, "indent_tone_scale", ""))
 
+        keepalive = bool(getattr(settings, "sound_keepalive_enabled", False))
+
         if not self.enabled:
             self.player.set_muted(True)
+            self._set_keepalive(False)
             return
 
         self.player.set_muted(False)
+        self._set_keepalive(keepalive)
 
         # Reload pack only when the path actually changed.
         if new_pack_path != self._pack_path:
@@ -199,7 +215,33 @@ class _SoundManager:
         if self.enabled:
             self.player.play(event_id)
 
+    def _set_keepalive(self, enabled: bool) -> None:
+        """Start or stop the keep-alive loop to match the setting."""
+        import threading
+
+        if not enabled:
+            self._keepalive_stop.set()
+            self._keepalive_thread = None
+            return
+        if self._keepalive_thread is not None and self._keepalive_thread.is_alive():
+            return
+        self._keepalive_stop = threading.Event()
+        stop = self._keepalive_stop
+
+        def _loop() -> None:
+            while not stop.wait(_KEEPALIVE_INTERVAL_SECONDS):
+                try:
+                    self.player.play("keepalive")
+                except Exception:  # noqa: BLE001 - keep-alive must never surface
+                    return
+
+        self._keepalive_thread = threading.Thread(  # GATE-40-OK: opt-in keep-alive loop.
+            target=_loop, daemon=True, name="quill-sound-keepalive"
+        )
+        self._keepalive_thread.start()
+
     def shutdown(self) -> None:
+        self._keepalive_stop.set()
         self.player.shutdown()
 
     # ------------------------------------------------------------------

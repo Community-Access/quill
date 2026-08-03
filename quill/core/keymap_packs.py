@@ -37,6 +37,8 @@ _PACK_LABELS: dict[str, str] = {
     "edit.insert_equation": "Insert Equation",
     "app.repeat_last_announcement": "Repeat Last Announcement",
     "app.announcement_self_test": "Announcement Self-Test",
+    "app.report_editor_surface": "Report Editor Surface",
+    "ai.suggest_metadata": "Suggest Document Metadata",
     "edit.redo": "Redo",
     "edit.replace": "Replace",
     "edit.replace_all": "Replace All",

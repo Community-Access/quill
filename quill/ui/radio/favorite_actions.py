@@ -59,7 +59,7 @@ def remove_favorite(
     answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
         f"Remove {name} from your favorites?",
         "Remove Favorite",
-        wx.ICON_QUESTION | wx.YES_NO,
+        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
     )
     if answer != wx.YES:
@@ -186,7 +186,7 @@ def delete_folder_prompt(
         "folder and line up at the top level of your favorites, in the "
         "same order. Nothing leaves your collection.",
         "Delete Folder",
-        wx.ICON_QUESTION | wx.YES_NO,
+        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
         parent,
     )
     if answer != wx.YES:

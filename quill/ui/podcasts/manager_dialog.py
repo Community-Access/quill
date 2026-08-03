@@ -658,7 +658,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 f"Also delete the downloaded episode files of the "
                 f"{len(removed)} unsubscribed show(s)?",
                 "Delete Downloaded Files",
-                wx.YES_NO | wx.ICON_QUESTION,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
                 self.dialog,
                 announce=self._announce,
             )
@@ -1178,7 +1178,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             show_message_box(
                 f"Unsubscribe from {show.title}?",
                 "Unsubscribe",
-                wx.YES_NO | wx.ICON_QUESTION,
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
                 self.dialog,
                 announce=self._announce,
             )
@@ -1193,7 +1193,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 show_message_box(
                     f"Also delete the {len(downloaded)} downloaded episode file(s)?",
                     "Delete Downloaded Files",
-                    wx.YES_NO | wx.ICON_QUESTION,
+                    wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
                     self.dialog,
                     announce=self._announce,
                 )
