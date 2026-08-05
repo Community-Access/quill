@@ -1650,6 +1650,15 @@
     "user_guide_section": "navigation"
   },
   {
+    "id": "navigate.go_to_temp_bookmark",
+    "title": "Go to Temporary Bookmark",
+    "body": "Jump straight back to the temporary bookmark with no list and no dialog. If none is set, QUILL says so and the cursor stays put.",
+    "keystrokes": [
+      "Ctrl+Shift+J"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
     "id": "navigate.go_to_bookmark_in_notebook",
     "title": "Go To Bookmark In Notebook",
     "body": "Jump to a bookmark located in any entry of the current notebook.",
@@ -1800,6 +1809,15 @@
     "id": "navigate.set_bookmark",
     "title": "Set Bookmark...",
     "body": "Set a named bookmark at the cursor so you can return to this spot later. Bookmarks belong to the file and survive a restart.",
+    "user_guide_section": "navigation"
+  },
+  {
+    "id": "navigate.set_temp_bookmark",
+    "title": "Set Temporary Bookmark",
+    "body": "Drop a single unnamed jump point at the cursor. No dialog appears; setting it again silently moves it, and it is forgotten when QUILL closes. Use it for a quick come-right-back-here marker.",
+    "keystrokes": [
+      "Ctrl+J"
+    ],
     "user_guide_section": "navigation"
   },
   {

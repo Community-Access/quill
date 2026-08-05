@@ -145,6 +145,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.previous_structure": "Alt+Up",
     "navigate.heading_organizer": "Ctrl+Shift+Grave, O",
     "navigate.list_bookmarks": "Alt+Shift+B",
+    # #1317: re-registered after the historical Ctrl+Shift+K / Alt+Shift+K went
+    # to Unquote Lines (#608) and Keep Unique Lines (§4.22). J = jump point.
+    "navigate.set_temp_bookmark": "Ctrl+J",
+    "navigate.go_to_temp_bookmark": "Ctrl+Shift+J",
     # support#67: bare Alt+Q is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "tools.ask_quill_chat": "" if sys.platform == "darwin" else "Alt+Q",

@@ -778,6 +778,18 @@ class CommandRegistryMixin:
             self._binding_for("navigate.list_bookmarks"),
         )
         self.commands.register(
+            "navigate.set_temp_bookmark",
+            "Set Temporary Bookmark",
+            self.set_temp_bookmark,
+            self._binding_for("navigate.set_temp_bookmark"),
+        )
+        self.commands.register(
+            "navigate.go_to_temp_bookmark",
+            "Go to Temporary Bookmark",
+            self.go_to_temp_bookmark,
+            self._binding_for("navigate.go_to_temp_bookmark"),
+        )
+        self.commands.register(
             "tools.word_count",
             "Word Count...",
             self.show_word_count,
@@ -2429,6 +2441,8 @@ class CommandRegistryMixin:
             "navigate.go_to_line": self._id_go_to_line,
             "navigate.go_to_page": self._id_go_to_page,
             "navigate.list_bookmarks": self._id_list_bookmarks,
+            "navigate.set_temp_bookmark": self._id_set_temp_bookmark,
+            "navigate.go_to_temp_bookmark": self._id_go_to_temp_bookmark,
             "navigate.back_location": self._id_back_location,
             "navigate.forward_location": self._id_forward_location,
             "navigate.outline_navigator": self._id_outline_navigator,

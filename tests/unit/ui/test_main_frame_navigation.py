@@ -1144,6 +1144,34 @@ def test_go_to_temp_bookmark_when_unset_announces() -> None:
     assert frame._status_message == "No temporary bookmark set"
 
 
+def test_temp_bookmark_commands_are_registered_with_chords_and_a_feature() -> None:
+    """#1317: temp bookmarks lost their command ids, chords, and menu items.
+
+    The historical Ctrl+Shift+K / Alt+Shift+K chords were reassigned to Unquote
+    Lines and Keep Unique Lines, leaving both commands unreachable. Guard the
+    re-registration surface so it cannot silently regress again.
+    """
+    from quill.core.feature_command_map import COMMAND_FEATURE_MAP
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.keymap_packs import _PACK_LABELS
+
+    assert DEFAULT_KEYMAP["navigate.set_temp_bookmark"] == "Ctrl+J"
+    assert DEFAULT_KEYMAP["navigate.go_to_temp_bookmark"] == "Ctrl+Shift+J"
+    assert _PACK_LABELS["navigate.set_temp_bookmark"] == "Set Temporary Bookmark"
+    assert _PACK_LABELS["navigate.go_to_temp_bookmark"] == "Go to Temporary Bookmark"
+    assert COMMAND_FEATURE_MAP["navigate.set_temp_bookmark"] == "core.navigate"
+    assert COMMAND_FEATURE_MAP["navigate.go_to_temp_bookmark"] == "core.navigate"
+
+
+def test_temp_bookmark_chords_do_not_collide_with_another_default() -> None:
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    owners_ctrl_j = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+J"]
+    owners_ctrl_shift_j = [cmd for cmd, chord in DEFAULT_KEYMAP.items() if chord == "Ctrl+Shift+J"]
+    assert owners_ctrl_j == ["navigate.set_temp_bookmark"]
+    assert owners_ctrl_shift_j == ["navigate.go_to_temp_bookmark"]
+
+
 def test_toggle_fold_folds_then_unfolds_heading_section() -> None:
     frame = _build_frame("# Title\nBody line one\nBody line two\n", insertion_point=0)
     frame._folded_regions = set()

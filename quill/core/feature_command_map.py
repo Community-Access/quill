@@ -139,6 +139,8 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "navigate.set_bookmark": "core.navigate",
     "navigate.go_to_bookmark": "core.navigate",
     "navigate.list_bookmarks": "core.navigate",
+    "navigate.set_temp_bookmark": "core.navigate",
+    "navigate.go_to_temp_bookmark": "core.navigate",
     "navigate.quick_nav": "core.navigate",
     "edit.toggle_fold": "core.edit",
     "navigate.next_fold": "core.navigate",

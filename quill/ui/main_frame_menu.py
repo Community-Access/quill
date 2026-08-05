@@ -817,6 +817,8 @@ class MenuBuilderMixin:
         self._id_set_bookmark = wx.NewIdRef()
         self._id_go_to_bookmark = wx.NewIdRef()
         self._id_list_bookmarks = wx.NewIdRef()
+        self._id_set_temp_bookmark = wx.NewIdRef()
+        self._id_go_to_temp_bookmark = wx.NewIdRef()
         self._id_go_to_page = wx.NewIdRef()
         self._id_back_location = wx.NewIdRef()
         self._id_forward_location = wx.NewIdRef()
@@ -1008,6 +1010,14 @@ class MenuBuilderMixin:
         navigate_menu.Append(
             self._id_list_bookmarks,
             self._menu_label(_("List B&ookmarks..."), "navigate.list_bookmarks"),
+        )
+        navigate_menu.Append(
+            self._id_set_temp_bookmark,
+            self._menu_label(_("Set Te&mporary Bookmark"), "navigate.set_temp_bookmark"),
+        )
+        navigate_menu.Append(
+            self._id_go_to_temp_bookmark,
+            self._menu_label(_("Go to Temporar&y Bookmark"), "navigate.go_to_temp_bookmark"),
         )
         navigate_menu.AppendSeparator()
         navigate_menu.Append(

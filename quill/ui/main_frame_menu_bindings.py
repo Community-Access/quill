@@ -1215,6 +1215,16 @@ class MenuBindingsMixin:
             lambda _e: self.list_bookmarks(),
             id=self._id_list_bookmarks,
         )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.set_temp_bookmark(),
+            id=self._id_set_temp_bookmark,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.go_to_temp_bookmark(),
+            id=self._id_go_to_temp_bookmark,
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.find_next(), id=self._id_find_next)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.find_previous(), id=self._id_find_previous)
         self.frame.Bind(
