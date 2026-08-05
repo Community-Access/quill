@@ -2,7 +2,7 @@
 
 A small, shared provider layer for free/accessible ebook sources -- Project
 Gutenberg (via the Gutendex API) and OPDS catalogues (Standard Ebooks, Feedbooks)
-today, with eligibility-gated sources (NLS BARD, Bookshare) able to plug in behind
+today, with additional eligibility-gated sources able to plug in behind
 the same shapes later. It is pure domain logic (no wx): search returns
 :class:`Book` records, and ``download`` returns bytes the caller writes to a file
 and opens through ``quill.io.open_read.read_open_document`` -- so a downloaded
