@@ -478,12 +478,16 @@ commands, headings, links, lists, tables, block quotes, bookmarks, code
 blocks, misspellings, and live search hits. Back and Forward walk your
 location history. Match Bracket, Next and Previous Token, and structure
 and region movement fill in the rest.</p>
-<p><strong>QUILL Quick Nav</strong> (<strong>Ctrl+Shift+Grave</strong>)
-is a browse-style cursor mode with single-key element movement in the
-tradition your screen reader already taught you: jump by heading, link,
-list, table, quote, bookmark, code block, paragraph, sentence, or block,
-with configurable wrapping and a feedback mode of speech, sound, both,
-or nothing.</p>
+<p><strong>QUILL Quick Nav</strong> is a browse-style cursor mode,
+entered from the QUILL Key, with single-key element movement in the
+tradition your screen reader already taught you: <strong>H</strong> for
+headings, <strong>A</strong> for links, <strong>L</strong> for lists,
+<strong>I</strong> for list items, <strong>T</strong> for tables,
+<strong>Q</strong> for block quotes, <strong>B</strong> for bookmarks,
+<strong>C</strong> for the table of contents, <strong>P</strong> for
+paragraphs, <strong>S</strong> for sentences, and Tab for blocks, with
+configurable wrapping and a feedback mode of speech, sound, both, or
+nothing.</p>
 <p>The very top and the very end of a document answer with a high
 ceiling tick and a low floor thud, so hitting an edge is something you
 hear rather than something you infer from silence.</p>
@@ -491,13 +495,10 @@ hear rather than something you infer from silence.</p>
 <ul>
 <li><strong>Named bookmarks.</strong> Unlimited and persistent.
 <strong>Set Bookmark</strong>, <strong>Go To Bookmark</strong>, and
-<strong>List Bookmarks</strong>, plus a Bookmarks Manager.</li>
-<li><strong>A temporary bookmark.</strong> <strong>Ctrl+Shift+K</strong>
-marks this exact spot with no dialog and no name ("Temporary bookmark
-set"), and <strong>Alt+Shift+K</strong> returns to it with no picker.
-Setting another replaces it. It does not survive a restart,
-deliberately: this is disposable working memory for the next few
-minutes.</li>
+<strong>List Bookmarks</strong> (<strong>Alt+Shift+B</strong>), plus a
+Bookmarks Manager.</li>
+<li><strong>Named marks and a mark stack</strong>, for the code-editor
+habit of setting a mark, going somewhere, and popping back.</li>
 <li><strong>Ten numbered quick bookmarks.</strong>
 <strong>Alt+Shift+0</strong> through <strong>Alt+Shift+9</strong> set
 slots zero through nine; <strong>Ctrl+Alt+Shift+0</strong> through
@@ -518,27 +519,27 @@ a document's format is not established yet, QUILL asks once, remembers
 your answer for that document, and never asks again.</p>
 <p>Headings have direct chords (<strong>Ctrl+Alt+1</strong> through
 <strong>Ctrl+Alt+6</strong>), list toggles sit on
-<strong>Ctrl+Alt+7</strong> and <strong>Ctrl+Alt+8</strong>, and
+<strong>Ctrl+Alt+B</strong> and <strong>Ctrl+Alt+N</strong>, and
 <strong>Alt+Shift+Up</strong> and <strong>Alt+Shift+Down</strong> move a
 whole heading section past its sibling. A status-bar cell reports
 "Section: Heading 2 (3 of 11)" so you always know where in the structure
 you are standing.</p>
-<p>The <strong>Heading Organizer</strong>
-(<strong>Ctrl+Alt+Shift+H</strong>) is a keyboard-first view of the
-whole heading tree for promoting, demoting, reordering, and renaming
-sections, with an accessibility validation pass that flags skipped
-levels and, optionally, duplicate H1s. <strong>Style Headings</strong>
-applies a font family, size, and alignment to the current level or to
-every heading at once.</p>
-<p>Lists get two dedicated tools. The <strong>List Manager</strong>
-(<strong>Ctrl+Alt+L</strong>) restructures an existing list as a tree:
-move, promote, demote, add, edit, delete. The <strong>Structured List
-Studio</strong> (<strong>F2</strong>) builds a new one by concept,
-choosing bulleted, numbered, checklist, or definition, nesting as you
-go, moving whole subtrees, with a live view of the source it is
-producing. In Markdown, ordinary typing does the ordinary thing: Enter
-continues a list item, Enter on an empty marker exits the list, and Tab
-and Shift+Tab nest and promote.</p>
+<p>The <strong>Heading Organizer</strong> (the QUILL Key followed by
+<strong>O</strong>) is a keyboard-first view of the whole heading tree
+for promoting, demoting, reordering, and renaming sections, with an
+accessibility validation pass that flags skipped levels and, optionally,
+duplicate H1s. <strong>Style Headings</strong> applies a font family,
+size, and alignment to the current level or to every heading at
+once.</p>
+<p>Lists get two dedicated tools. The <strong>List Manager</strong> (the
+QUILL Key followed by <strong>L</strong>) restructures an existing list
+as a tree: move, promote, demote, add, edit, delete. The
+<strong>Structured List Studio</strong> (<strong>F2</strong>) builds a
+new one by concept, choosing bulleted, numbered, checklist, or
+definition, nesting as you go, moving whole subtrees, with a live view
+of the source it is producing. In Markdown, ordinary typing does the
+ordinary thing: Enter continues a list item, Enter on an empty marker
+exits the list, and Tab and Shift+Tab nest and promote.</p>
 <p><strong>Update Outline Numbering</strong> writes numeric or
 legal-style heading numbers into the document as literal text, removable
 and re-runnable, for documents that need real section numbers rather
@@ -599,7 +600,7 @@ multiplication) to QUILL, along with accessible built-ins such as
 <code>=rand(3,4)</code> and QUILL inserts the generated content. The
 parser is deliberately strict and single-line, and a large insertion
 asks for confirmation first.</li>
-<li><strong>Word Prediction</strong> (<strong>Ctrl+Space</strong>)
+<li><strong>Word Prediction</strong> (<strong>Ctrl+Period</strong>)
 suggests completions drawn from the words already in your document and
 from HTML and Markdown tags.</li>
 </ul>
@@ -620,9 +621,10 @@ and every captured item is appended to your open document and saved as
 it goes. It checks the clipboard cheaply about once a second and touches
 it only when the contents have actually changed, and each distinct item
 is collected exactly once.</p>
-<p><strong>Magic Paste</strong> (<strong>Ctrl+Alt+V</strong>) inspects
-what is on the clipboard, recognizes a URL, a Markdown block, or a
-base64 image, and offers you a choice of how to insert it.</p>
+<p><strong>Magic Paste</strong> inspects what is on the clipboard,
+recognizes a URL, a Markdown block, or a base64 image, and offers you a
+choice of how to insert it. It ships without a default chord, so give it
+one in the Keymap Editor if you want it under your fingers.</p>
 <h3 id="notes-on-your-work">Notes on your work</h3>
 <p><strong>Sticky Notes</strong> are timestamped, searchable, and
 exportable. <strong>Inline anchored notes</strong>
@@ -637,16 +639,16 @@ from anywhere in Windows, with QUILL's window restored first so it
 genuinely appears.</p>
 <h3 id="comparing-documents">Comparing documents</h3>
 <p><strong>Compare Mode</strong> is a keyboard-first diff.
-<strong>F8</strong> and <strong>Shift+F8</strong> move to the next and
-previous difference, <strong>Ctrl+F8</strong> re-announces the current
-one, <strong>Alt+F8</strong> switches to word-level detail, and
-<strong>Ctrl+Shift+F8</strong> toggles whether whitespace counts.
-Differences are described in words with character-level precision, each
-kind of change has its own sound cue, and <strong>Compare Selection With
-Clipboard</strong> handles the common small case without needing two
-files. From the command line, <code>--diff</code> opens two files
-straight into compare mode, and <code>--goto</code> opens a file at a
-position.</p>
+<strong>Ctrl+Alt+Shift+Period</strong> and
+<strong>Ctrl+Alt+Shift+Comma</strong> move to the next and previous
+difference, and <strong>Ctrl+Alt+Shift+D</strong> re-announces the
+current one. Word-level detail and a whitespace-sensitivity toggle are
+available alongside them. Differences are described in words with
+character-level precision, each kind of change has its own sound cue,
+and <strong>Compare Selection With Clipboard</strong> handles the common
+small case without needing two files. From the command line,
+<code>--diff</code> opens two files straight into compare mode, and
+<code>--goto</code> opens a file at a position.</p>
 <h3 id="folding-without-losing-anything">Folding without losing
 anything</h3>
 <p>QUILL folds heading sections and fenced code blocks, and the
@@ -997,6 +999,8 @@ itself shifts braille output away from cell 1. The borderless frame is a
 functional part of the correction, not a visual preference. Unchecking
 it warns you clearly that braille cell alignment will break.</li>
 </ul>
+<p>Both settings are Windows-only, and both ask you to restart QUILL so
+the change applies everywhere.</p>
 <p><strong>Report Editor Surface</strong> is a single command that
 speaks everything a braille bug report needs: the active editor surface,
 its native window class, whether the system-edit braille fix is applied,
@@ -1444,14 +1448,14 @@ pastes, saves, and removes those keys.</p>
 previewed, undoable approval as everything else. Agentic writing tasks
 (rewrite, summarize, expand, generate a table of contents) run in the
 background with cancellation and a reviewable step log.</p>
-<p>Fourteen named agent personas ship ready to run, including
-Accessibility Editor, Citation and Link Fixer, Code Doctor, Data
-Cleaner, GitHub Maintainer, Markdown Publisher, Math Tutor, Meeting
-Notes to Actions, Plain-Language Rewriter, PRD Architect, QUILL
-Concierge, Release Notes Builder, Researcher, Reviewer, Summarizer, and
-Writing Companion. The <strong>AI Library</strong> manages prompts,
-skills, and agents in one place, with a promotion path from a prompt you
-wrote once, to a reusable skill, to a full agent.</p>
+<p>Sixteen named agent personas ship ready to run: Accessibility Editor,
+Citation and Link Fixer, Code Doctor, Data Cleaner, GitHub Maintainer,
+Markdown Publisher, Math Tutor, Meeting Notes to Actions, Plain-Language
+Rewriter, PRD Architect, QUILL Concierge, Release Notes Builder,
+Researcher, Reviewer, Summarizer, and Writing Companion. The <strong>AI
+Library</strong> manages prompts, skills, and agents in one place, with
+a promotion path from a prompt you wrote once, to a reusable skill, to a
+full agent.</p>
 <h3 id="the-listening-companion">The Listening Companion</h3>
 <p>The Listening Companion turns a recording into something you can use.
 Transcribe it, with optional translation and speaker identification, and
@@ -2327,9 +2331,9 @@ field accepts a path with the quotes File Explorer wrapped around it, a
 <code>%APPDATA%\Quill</code>, a <code>~</code>, or smart quotes, and
 cleans it up before using it, so "path does not exist" stops being the
 answer to a path that exists perfectly well.</li>
-<li><strong>File context summary</strong> (<strong>Alt+I</strong>)
-speaks the word, line, and heading counts, the last-saved time, and
-whether a recovery snapshot exists.</li>
+<li><strong>Document Summary</strong> (<strong>Alt+I</strong> on
+Windows) speaks the word, line, and heading counts, the last-saved time,
+and whether a recovery snapshot exists.</li>
 <li><strong>Speak-status commands</strong> say the window title, the
 full file path, or a status summary on demand.</li>
 <li><strong>A filename is suggested from your first line</strong> when

@@ -288,11 +288,12 @@ blocks, misspellings, and live search hits. Back and Forward walk your location
 history. Match Bracket, Next and Previous Token, and structure and region movement fill
 in the rest.
 
-**QUILL Quick Nav** (**Ctrl+Shift+Grave**) is a browse-style cursor mode with
+**QUILL Quick Nav** is a browse-style cursor mode, entered from the QUILL Key, with
 single-key element movement in the tradition your screen reader already taught you:
-jump by heading, link, list, table, quote, bookmark, code block, paragraph, sentence,
-or block, with configurable wrapping and a feedback mode of speech, sound, both, or
-nothing.
+**H** for headings, **A** for links, **L** for lists, **I** for list items, **T** for
+tables, **Q** for block quotes, **B** for bookmarks, **C** for the table of contents,
+**P** for paragraphs, **S** for sentences, and Tab for blocks, with configurable
+wrapping and a feedback mode of speech, sound, both, or nothing.
 
 The very top and the very end of a document answer with a high ceiling tick and a low
 floor thud, so hitting an edge is something you hear rather than something you infer
@@ -301,11 +302,9 @@ from silence.
 ### Bookmarks, three kinds
 
 - **Named bookmarks.** Unlimited and persistent. **Set Bookmark**, **Go To Bookmark**,
-  and **List Bookmarks**, plus a Bookmarks Manager.
-- **A temporary bookmark.** **Ctrl+Shift+K** marks this exact spot with no dialog and
-  no name ("Temporary bookmark set"), and **Alt+Shift+K** returns to it with no picker.
-  Setting another replaces it. It does not survive a restart, deliberately: this is
-  disposable working memory for the next few minutes.
+  and **List Bookmarks** (**Alt+Shift+B**), plus a Bookmarks Manager.
+- **Named marks and a mark stack**, for the code-editor habit of setting a mark, going
+  somewhere, and popping back.
 - **Ten numbered quick bookmarks.** **Alt+Shift+0** through **Alt+Shift+9** set slots
   zero through nine; **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jump to them.
   Direct chords, no mode to enter. They persist per document like named bookmarks,
@@ -324,17 +323,17 @@ an HTML document. If a document's format is not established yet, QUILL asks once
 remembers your answer for that document, and never asks again.
 
 Headings have direct chords (**Ctrl+Alt+1** through **Ctrl+Alt+6**), list toggles sit on
-**Ctrl+Alt+7** and **Ctrl+Alt+8**, and **Alt+Shift+Up** and **Alt+Shift+Down** move a
+**Ctrl+Alt+B** and **Ctrl+Alt+N**, and **Alt+Shift+Up** and **Alt+Shift+Down** move a
 whole heading section past its sibling. A status-bar cell reports "Section: Heading 2
 (3 of 11)" so you always know where in the structure you are standing.
 
-The **Heading Organizer** (**Ctrl+Alt+Shift+H**) is a keyboard-first view of the whole
+The **Heading Organizer** (the QUILL Key followed by **O**) is a keyboard-first view of the whole
 heading tree for promoting, demoting, reordering, and renaming sections, with an
 accessibility validation pass that flags skipped levels and, optionally, duplicate H1s.
 **Style Headings** applies a font family, size, and alignment to the current level or to
 every heading at once.
 
-Lists get two dedicated tools. The **List Manager** (**Ctrl+Alt+L**) restructures an
+Lists get two dedicated tools. The **List Manager** (the QUILL Key followed by **L**) restructures an
 existing list as a tree: move, promote, demote, add, edit, delete. The **Structured List
 Studio** (**F2**) builds a new one by concept, choosing bulleted, numbered, checklist, or
 definition, nesting as you go, moving whole subtrees, with a live view of the source it
@@ -394,7 +393,7 @@ sums, averages, medians, and more over selected data, a table column, or a row.
 - **Smart text triggers** go further: type `=meeting()`, `=todo(5)`, or `=rand(3,4)`
   and QUILL inserts the generated content. The parser is deliberately strict and
   single-line, and a large insertion asks for confirmation first.
-- **Word Prediction** (**Ctrl+Space**) suggests completions drawn from the words
+- **Word Prediction** (**Ctrl+Period**) suggests completions drawn from the words
   already in your document and from HTML and Markdown tags.
 
 ### The clipboard, expanded
@@ -415,8 +414,9 @@ document and saved as it goes. It checks the clipboard cheaply about once a seco
 touches it only when the contents have actually changed, and each distinct item is
 collected exactly once.
 
-**Magic Paste** (**Ctrl+Alt+V**) inspects what is on the clipboard, recognizes a URL, a
-Markdown block, or a base64 image, and offers you a choice of how to insert it.
+**Magic Paste** inspects what is on the clipboard, recognizes a URL, a Markdown block, or
+a base64 image, and offers you a choice of how to insert it. It ships without a default
+chord, so give it one in the Keymap Editor if you want it under your fingers.
 
 ### Notes on your work
 
@@ -431,13 +431,14 @@ window restored first so it genuinely appears.
 
 ### Comparing documents
 
-**Compare Mode** is a keyboard-first diff. **F8** and **Shift+F8** move to the next and
-previous difference, **Ctrl+F8** re-announces the current one, **Alt+F8** switches to
-word-level detail, and **Ctrl+Shift+F8** toggles whether whitespace counts. Differences
-are described in words with character-level precision, each kind of change has its own
-sound cue, and **Compare Selection With Clipboard** handles the common small case
-without needing two files. From the command line, `--diff` opens two files straight into
-compare mode, and `--goto` opens a file at a position.
+**Compare Mode** is a keyboard-first diff. **Ctrl+Alt+Shift+Period** and
+**Ctrl+Alt+Shift+Comma** move to the next and previous difference, and
+**Ctrl+Alt+Shift+D** re-announces the current one. Word-level detail and a
+whitespace-sensitivity toggle are available alongside them. Differences are described in
+words with character-level precision, each kind of change has its own sound cue, and
+**Compare Selection With Clipboard** handles the common small case without needing two
+files. From the command line, `--diff` opens two files straight into compare mode, and
+`--goto` opens a file at a position.
 
 ### Folding without losing anything
 
@@ -728,6 +729,9 @@ default:
   the visible editor border itself shifts braille output away from cell 1. The borderless
   frame is a functional part of the correction, not a visual preference. Unchecking it
   warns you clearly that braille cell alignment will break.
+
+Both settings are Windows-only, and both ask you to restart QUILL so the change applies
+everywhere.
 
 **Report Editor Surface** is a single command that speaks everything a braille bug report
 needs: the active editor surface, its native window class, whether the system-edit
@@ -1133,7 +1137,7 @@ Vendor agents run text-only and their edits go through the same previewed, undoa
 approval as everything else. Agentic writing tasks (rewrite, summarize, expand, generate
 a table of contents) run in the background with cancellation and a reviewable step log.
 
-Fourteen named agent personas ship ready to run, including Accessibility Editor, Citation
+Sixteen named agent personas ship ready to run: Accessibility Editor, Citation
 and Link Fixer, Code Doctor, Data Cleaner, GitHub Maintainer, Markdown Publisher, Math
 Tutor, Meeting Notes to Actions, Plain-Language Rewriter, PRD Architect, QUILL Concierge,
 Release Notes Builder, Researcher, Reviewer, Summarizer, and Writing Companion. The **AI
@@ -1912,8 +1916,8 @@ Some things are too small for a section of their own and too useful to leave out
   Explorer wrapped around it, a `file://` link with invisible characters in it, `%APPDATA%\Quill`,
   a `~`, or smart quotes, and cleans it up before using it, so "path does not exist" stops being
   the answer to a path that exists perfectly well.
-- **File context summary** (**Alt+I**) speaks the word, line, and heading counts, the last-saved
-  time, and whether a recovery snapshot exists.
+- **Document Summary** (**Alt+I** on Windows) speaks the word, line, and heading counts, the
+  last-saved time, and whether a recovery snapshot exists.
 - **Speak-status commands** say the window title, the full file path, or a status summary on
   demand.
 - **A filename is suggested from your first line** when you save an untitled document. It never
