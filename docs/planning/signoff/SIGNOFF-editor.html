@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SIGNOFF-editor</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100-sign-off--editor-commands">QUILL 1.0.0 Sign-off —
+Editor commands</h1>
+<p><strong>642 core-editor commands</strong> (of 715 total). Legend per
+item: <strong>W</strong>=Works · <strong>S</strong>=Surface-exact
+(label/shortcut/menu path + accessible name) ·
+<strong>A</strong>=Accessible (keyboard + announced). Verify each across
+every §A environment in the master plan.</p>
+<blockquote>
+<p><code>[GATED ...]</code> = only present when its feature flag is on;
+scope in/out of the pass explicitly.</p>
+</blockquote>
+<h2 id="tools-159"><code>tools.*</code> (159)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_accessibility_agent</code> — Accessibility
+Tune-Up</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_agent_center</code> — Agent Center</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_assistant</code> — Writing Assistant <strong>[GATED
+future.ai]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_connection</code> — AI Connection</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_continue_writing</code> — Continue Writing <strong>[GATED
+future.ai]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_expand_selection</code> — Expand Selection</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_fix_grammar</code> — Fix Grammar <strong>[GATED
+future.ai]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_generate_toc</code> — Generate Table of
+Contents</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_grammar_style</code> — AI Grammar and Style Check...
+<code>Ctrl+Alt+Shift+G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_hub</code> — AI Hub</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_library</code> — AI Library</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_model</code> — AI Model</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_prompt_studio</code> — Prompt Studio</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_reading_order</code> — Improve Reading Order</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_rewrite_selection</code> — Rewrite Selection
+<strong>[GATED future.ai]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_session_browser</code> — AI Session Branches</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_spell_check</code> — AI Spell Check...
+<code>Ctrl+Alt+Shift+S</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_spell_check_interactive</code> — AI Spell Check
+Interactive... <code>Ctrl+Alt+Shift+I</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_summarize_selection</code> — Summarize Selection
+<strong>[GATED future.ai]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_switch_engine</code> — Switch AI Engine
+<code>Ctrl+Alt+Shift+E</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_thesaurus</code> — AI Thesaurus
+<code>Ctrl+Alt+Shift+H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ai_translate_selection</code> — Translate Selection...
+<code>Ctrl+Alt+Shift+T</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.announcement_backend</code> — Announcement
+Backend...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.announcement_trace_toggle</code> — Toggle Announcement Trace
+Capture</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ask_quill_chat</code> — Ask Quill Chat
+<code>Alt+Q</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ask_quill_conversation</code> — Ask Quill: Voice
+Conversation</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.calculator</code> — Calculator...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.check_glow_updates</code> — Check for GLOW Updates...
+<strong>[GATED core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.check_grammar_ai</code> — Check Grammar with AI</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.check_updates</code> — Check for Updates...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_announce_difference</code> — Announce Current
+Difference <code>Ctrl+Alt+Shift+D</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_copy_all_differences</code> — Copy All
+Differences</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_copy_current_difference</code> — Copy Current
+Difference</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_create_summary</code> — Create Difference
+Summary</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_difference_list</code> — Open Difference
+List...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_next_difference</code> — Next Difference
+<code>Ctrl+Alt+Shift+.</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_open_documents</code> — Compare Open
+Documents...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_options</code> — Compare Options...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_previous_difference</code> — Previous Difference
+<code>Ctrl+Alt+Shift+,</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_toggle_sync</code> — Toggle Compare
+Synchronization</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.compare_with_file</code> — Compare with File...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.copy_diagnostic_summary</code> — Copy Diagnostic
+Summary</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.csv_studio</code> — Open CSV in Table Studio
+(Experimental)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.cycle_autosave_interval</code> — Cycle Autosave
+Interval</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.delete_ocr_temp</code> — Delete OCR Temporary
+Files</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.describe_image</code> — Describe Image...
+<code>Ctrl+Shift+Grave, I</code> <strong>[GATED
+future.ai]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictation_cancel</code> — Cancel Dictation (discard)
+<code>Shift+Escape</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictation_emergency_stop</code> — Stop Dictation (keep
+speech) <code>Escape</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictation_lock_toggle</code> — Locked Dictation
+(start/finish) <code>Ctrl+F9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictation_pause</code> — Pause or Resume Dictation
+<code>Ctrl+Shift+F9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictation_status</code> — Dictation Status
+<code>Alt+F9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictation_toggle</code> — Dictation
+<code>Ctrl+Shift+Grave, D</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.dictionary_status</code> — Dictionary Status...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.document_intake_report</code> — Document Intake Report...
+<code>Ctrl+Shift+I</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.export_keyboard_pack</code> — Export Keyboard Pack
+(.kqp)...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.export_keymap</code> — Export Keymap...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.external_tools</code> — External Tools and Format
+Support...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.global_hotkeys</code> — Global Hotkeys...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.glow_audit_document</code> — GLOW Audit Current Document
+<strong>[GATED core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.glow_audit_file</code> — GLOW Audit File <strong>[GATED
+core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.glow_audit_selection</code> — GLOW Audit Selection
+<strong>[GATED core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.glow_fix_document</code> — GLOW Fix Current Document
+<strong>[GATED core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.glow_fix_file</code> — GLOW Fix File <strong>[GATED
+core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.glow_fix_selection</code> — GLOW Fix Selection
+<strong>[GATED core.glow]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.import_keyboard_pack</code> — Import Keyboard Pack
+(.kqp)...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.import_keymap</code> — Import Keymap...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.individual_feature_toggles</code> — Manage Individual
+Features...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.install_local_ocr</code> — Install Local OCR Engine
+(Tesseract)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.keymap_editor</code> — Keymap Editor...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.manage_macros</code> — Manage Macros...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.manage_mastodon_accounts</code> — Mastodon
+Accounts...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.mastodon_add_user_to_list</code> — Add a User to a Mastodon
+List...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.misspelling_list</code> — Misspelling List...
+<code>Alt+Shift+L</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.next_misspelling</code> — Next Misspelling
+<code>Ctrl+F7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.notifications</code> — Open Notifications...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ocr_clipboard</code> — OCR Clipboard Image</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ocr_image</code> — OCR Image...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ocr_screen</code> — OCR Screen Capture...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ocr_service_settings</code> — OCR Service
+Settings</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.ocr_services</code> — OCR and Conversion
+Services</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.open_keyboard_reference</code> — Open Keyboard
+Reference</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.open_python_console</code> — Open Python
+Console...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.open_typescript_console</code> — Open TypeScript
+Console...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.open_welcome_guide</code> — Open Welcome Guide</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.play_last_macro</code> — Play Last Macro</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.post_to_mastodon</code> — Post to Mastodon...
+<code>Ctrl+Shift+Grave, Shift+P</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.previous_misspelling</code> — Previous Misspelling
+<code>Ctrl+Shift+F7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.profiles_and_features_settings</code> — Profiles and
+Features...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.prompt_library</code> — Prompt Library</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.quillin_hub_submit</code> — Submit to Quillin
+Hub</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.quillin_wizard</code> — New Quillin</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.quillins_manager</code> — Manage Quillins</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.read_aloud_edge</code> — Read Document in Browser
+(Experimental)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.read_aloud_generate_audio</code> — Generate Speech
+Audio...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.read_aloud_settings</code> — Read Aloud
+Settings...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.read_aloud_start_pause</code> — Read Aloud Start/Pause
+<code>Ctrl+Shift+Grave, R</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.read_aloud_stop</code> — Read Aloud Stop
+<code>Ctrl+Shift+Grave, Shift+R</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.read_aloud_voice</code> — Read Aloud Voice...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.regex_helper</code> — Regular Expression
+Helper...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.replace_in_files</code> — Replace Across Files...
+<code>Ctrl+Shift+R</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.report_bad_extraction</code> — Report Bad
+Extraction...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.reset_all_defaults</code> — Reset Everything to Factory
+Defaults...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.reset_keymap</code> — Reset Keymap</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.restart_typescript_worker</code> — Restart TypeScript
+Worker</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.review_extraction_quality</code> — Review Extraction
+Quality...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.review_last_ocr</code> — Review Last OCR Result</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent</code> — Run Agent on Selection</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.accessibility_editor</code> — Run Agent:
+Accessibility Editor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.citation_link_fixer</code> — Run Agent: Citation
+&amp; Link Fixer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.code_doctor</code> — Run Agent: Code
+Doctor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.data_cleaner</code> — Run Agent: Data
+Cleaner</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.github_maintainer</code> — Run Agent: GitHub
+Maintainer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.markdown_publisher</code> — Run Agent: Markdown
+Publisher</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.math_tutor</code> — Run Agent: Math
+Tutor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.meeting_notes_to_actions</code> — Run Agent:
+Meeting Notes to Action Items</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.plain_language_rewriter</code> — Run Agent:
+Plain-Language Rewriter</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.prd_architect</code> — Run Agent: PRD
+Architect</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.quill_concierge</code> — Run Agent: QUILL
+Concierge</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.release_notes_builder</code> — Run Agent: Release
+Notes Builder</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.researcher</code> — Run Agent:
+Researcher</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.reviewer</code> — Run Agent: Reviewer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.summarizer</code> — Run Agent:
+Summarizer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.run_agent.writing_companion</code> — Run Agent: Writing
+Companion</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.search_in_files</code> — Search in Files...
+<code>Ctrl+Shift+F</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.share_export</code> — Export and Back Up...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.share_import</code> — Import or Restore...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.shell_install</code> — Install Shell
+Integration...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.shell_remove</code> — Remove Shell Integration</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.skill_library</code> — Skill Library</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.sound_events</code> — Manage Sound Events</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.sound_toggle</code> — Toggle Sound
+Notifications</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_captions</code> — Generate Captions
+(Offline)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_dictate</code> — Dictate (Offline)
+<code>Ctrl+Shift+Grave, Shift+D</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_ffmpeg</code> — Download FFmpeg</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_hf_token</code> — Hugging Face Token</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_microphone</code> — Dictation Microphone</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_models</code> — Manage Speech Models</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.speech_transcribe</code> — Transcribe Audio or Video
+(Offline)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.spell_check_dialog</code> — Spell Check...
+<code>F7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.start_macro_recording</code> — Start Macro
+Recording</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.status_bar_settings</code> — Status Bar
+Layout...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.sticky_note_capture</code> — New Sticky Note...
+<code>Ctrl+Shift+Grave, Shift+N</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.sticky_notes</code> — Sticky Notes...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.stop_macro_recording</code> — Stop Macro
+Recording</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.table_studio</code> — Table Studio
+(Experimental)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.thesaurus</code> — Thesaurus...
+<code>Shift+F7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.train_writing_style</code> — Train Writing
+Style</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.undo_recommended_updates</code> — Undo Recent Shortcut
+Change</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.view_mastodon_profile</code> — View Mastodon
+Profile...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.voice_command</code> — Voice Command (Offline)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.voice_conversation</code> — Voice Conversation
+Mode</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.voice_status</code> — Speak Voice Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.voice_wakeword</code> — Listen for Hey QUILL (Wake
+Word)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.watch_folder_settings</code> — Watch Folder
+Settings...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.watch_folder_status</code> — Watch Folder
+Status...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.watch_folder_toggle</code> — Watch Folder
+Monitoring</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.word_count</code> — Word Count...
+<code>Ctrl+Shift+W</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.work_personas</code> — Work Personas...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>tools.writing_instructions</code> — Open Writing Instructions
+<strong>[GATED future.ai]</strong></label></li>
+</ul>
+<h2 id="edit-86"><code>edit.*</code> (86)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.clear_all_tray_slots</code> — Clear All Tray
+Slots</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.complete_selection</code> — Complete Selection
+<code>Shift+F8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.convert_indentation_to_spaces</code> — Convert Indentation to
+Spaces <strong>[GATED future.cleanup]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.convert_indentation_to_tabs</code> — Convert Indentation to
+Tabs <strong>[GATED future.cleanup]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_all</code> — Copy All <code>Ctrl+F8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_next_slot</code> — Copy to Next Empty Tray
+Slot</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_1</code> — Copy to Tray Slot 1
+<code>Ctrl+Shift+Grave, Shift+1</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_10</code> — Copy to Tray Slot 10
+<code>Ctrl+Shift+Grave, Shift+0</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_11</code> — Copy to Tray Slot 11
+<code>Ctrl+Shift+Grave, Shift+-</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_12</code> — Copy to Tray Slot 12
+<code>Ctrl+Shift+Grave, Shift+=</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_2</code> — Copy to Tray Slot 2
+<code>Ctrl+Shift+Grave, Shift+2</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_3</code> — Copy to Tray Slot 3
+<code>Ctrl+Shift+Grave, Shift+3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_4</code> — Copy to Tray Slot 4
+<code>Ctrl+Shift+Grave, Shift+4</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_5</code> — Copy to Tray Slot 5
+<code>Ctrl+Shift+Grave, Shift+5</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_6</code> — Copy to Tray Slot 6
+<code>Ctrl+Shift+Grave, Shift+6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_7</code> — Copy to Tray Slot 7
+<code>Ctrl+Shift+Grave, Shift+7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_8</code> — Copy to Tray Slot 8
+<code>Ctrl+Shift+Grave, Shift+8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_to_tray_9</code> — Copy to Tray Slot 9
+<code>Ctrl+Shift+Grave, Shift+9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.copy_with_source</code> — Copy With Source
+<code>Ctrl+Shift+C</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.duplicate_selection</code> — Duplicate Selection</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.exchange_point_mark</code> — Exchange Point and Mark
+<code>Ctrl+Shift+X</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.expand_selection</code> — Expand Selection
+<code>Ctrl+Shift+Grave, J</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>edit.find</code>
+— Find... <code>Ctrl+F</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.find_all_matches</code> — Find All Matches
+<code>Ctrl+Shift+F3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.find_next</code> — Find Next <code>F3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.find_previous</code> — Find Previous
+<code>Shift+F3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.follow_link</code> — Follow Link
+<code>Ctrl+Enter</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.go_to_start_of_selection</code> — Go to Start of Selection
+<code>Alt+Shift+F8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.insert_citation</code> — Insert Citation...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.insert_emoji</code> — Insert Emoji...
+<code>Alt+.</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.insert_equation</code> — Insert Equation...
+<code>Ctrl+Shift+E</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.insert_link</code> — Insert Link...
+<code>Ctrl+Alt+K</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.jump_to_named_mark</code> — Jump to Named Mark</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.keep_selection_in_clip_library</code> — Keep Selection in
+Clip Library</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.list_marks</code> — List Marks
+<code>Alt+M</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.magic_paste</code> — Magic Paste</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.normalize_whitespace</code> — Normalize Whitespace
+<strong>[GATED future.cleanup]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.open_clip_library</code> — Open Clip Library</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.open_copy_tray</code> — Open Copy Tray
+<code>Ctrl+Shift+Grave, X</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.open_review_buffer</code> — Open Review Buffer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_1</code> — Paste from Tray Slot 1
+<code>Ctrl+Shift+1</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_10</code> — Paste from Tray Slot 10
+<code>Ctrl+Shift+0</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_11</code> — Paste from Tray Slot 11
+<code>Ctrl+Shift+-</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_12</code> — Paste from Tray Slot 12
+<code>Ctrl+Shift+=</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_2</code> — Paste from Tray Slot 2
+<code>Ctrl+Shift+2</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_3</code> — Paste from Tray Slot 3
+<code>Ctrl+Shift+3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_4</code> — Paste from Tray Slot 4
+<code>Ctrl+Shift+4</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_5</code> — Paste from Tray Slot 5
+<code>Ctrl+Shift+5</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_6</code> — Paste from Tray Slot 6
+<code>Ctrl+Shift+6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_7</code> — Paste from Tray Slot 7
+<code>Ctrl+Shift+7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_8</code> — Paste from Tray Slot 8
+<code>Ctrl+Shift+8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.paste_from_tray_9</code> — Paste from Tray Slot 9
+<code>Ctrl+Shift+9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.pop_mark</code> — Pop Mark <code>Ctrl+M</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.quote_lines</code> — Quote Lines
+<code>Ctrl+Shift+Q</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.read_all</code> — Read All <code>Alt+F8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>edit.redo</code>
+— Redo <code>Ctrl+Y</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.remove_duplicate_lines</code> — Remove Duplicate
+Lines</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.repeat_command</code> — Repeat Next Command</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.replace</code> — Replace... <code>Ctrl+H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.replace_all</code> — Replace All...
+<code>Ctrl+Shift+H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.reselect</code> — Reselect
+<code>Ctrl+Shift+F8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.restore_deletion</code> — Restore Deleted Text</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.reverse_lines</code> — Reverse Lines
+<code>Alt+Shift+Z</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.say_selected</code> — Say Selected</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.search_tray_slots</code> — Search Copy Tray
+Slots</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_block</code> — Select Block
+<code>Ctrl+Shift+B</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_chunk</code> — Select Chunk
+<code>Ctrl+Space</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_line</code> — Select Line</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_paragraph</code> — Select Paragraph</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_to_end_of_document</code> — Select to End of Document
+<code>Ctrl+Shift+End</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_to_end_of_line</code> — Select to End of Line
+<code>Shift+End</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_to_start_of_document</code> — Select to Start of
+Document <code>Ctrl+Shift+Home</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.select_to_start_of_line</code> — Select to Start of Line
+<code>Shift+Home</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.selection_actions</code> — Selection Actions</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.set_mark</code> — Set Mark
+<code>Ctrl+Shift+M</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.set_named_mark</code> — Set Named Mark</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.shrink_selection</code> — Shrink Selection
+<code>Ctrl+Shift+Grave, Shift+J</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.sort_lines_ascending</code> — Sort Lines
+Ascending</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.sort_lines_descending</code> — Sort Lines
+Descending</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.start_selection</code> — Start Selection
+<code>F8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.toggle_extend_selection_mode</code> — Toggle Extend Selection
+Mode</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.trim_trailing_whitespace</code> — Trim Trailing Whitespace
+<strong>[GATED future.cleanup]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>edit.undo</code>
+— Undo <code>Ctrl+Z</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.unquote_lines</code> — Unquote Lines
+<code>Ctrl+Shift+K</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.unselect_all</code> — Unselect All
+<code>Ctrl+Shift+A</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>edit.word_prediction</code> — Word Prediction...
+<code>Ctrl+.</code></label></li>
+</ul>
+<h2 id="power-74"><code>power.*</code> (74)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.analyze_encoding_requirements</code> — Analyze Encoding
+Requirements</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.apply_auto_outline_numbering</code> — Update Outline
+Numbering</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.collect_clipboard_now</code> — Collect Clipboard
+Now</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.compute_line_statistics</code> — Line
+Statistics</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.convert_ansi_to_oem</code> — Convert ANSI to OEM
+(DOS)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.convert_box_drawing_to_ascii</code> — Convert Line-Drawing
+Characters to ASCII</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.convert_oem_to_ansi</code> — Convert OEM (DOS) to
+ANSI</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.copy_as_email_body</code> — Copy as Email Body</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.count_occurrences</code> — Count Occurrences</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.count_regex_matches</code> — Count Regular Expression
+Matches</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.decode_html_entities</code> — Decode HTML
+Entities</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_current_file</code> — Delete Current
+File</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_lines_containing</code> — Delete Lines
+Containing</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_lines_not_containing</code> — Delete Lines Not
+Containing</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_paragraph</code> — Delete Paragraph</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_to_document_end</code> — Delete to Document
+End</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_to_document_start</code> — Delete to Document
+Start</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_to_line_end</code> — Delete to Line End</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.delete_to_line_start</code> — Delete to Line
+Start</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.describe_character</code> — Describe Character at
+Cursor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.describe_image_at_cursor</code> — Describe Image at
+Cursor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.encode_all_non_ascii</code> — Convert Non-ASCII to HTML
+Entities</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.encode_html_entities</code> — Encode HTML
+Entities</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.expand_abbreviation</code> — Expand
+Abbreviation</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.explain_abbreviation</code> — Explain
+Abbreviation</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.extract_regex_matches</code> — Extract Regular Expression
+Matches</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.go_to_percent</code> — Go to Percent</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.hard_wrap_lines</code> — Hard-Wrap Lines</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.hex_dump</code> — Convert to Hex Dump</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.infer_indent</code> — Infer Indentation</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.insert_file_content</code> — Insert File
+Content</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.insert_image</code> — Insert Image
+<code>Ctrl+Alt+I</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.insert_special_character</code> — Insert Special Character
+<code>Shift+F2</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.insert_table_of_contents</code> — Insert Table of
+Contents</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.keep_unique_lines</code> — Keep Unique Lines
+<code>Alt+Shift+K</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.move_to_first_non_blank</code> — Move to First
+Non-Blank</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.move_to_last_non_blank</code> — Move to Last
+Non-Blank</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.multi_replace</code> — Multi Replace</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.new_document_from_clipboard</code> — New Document from
+Clipboard</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.non_ascii_jump_to_report</code> — Jump Back to Non-ASCII
+Report</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.non_ascii_jump_to_source</code> — Jump to Source
+Line</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.number_lines</code> — Number Lines
+<code>Alt+Shift+N</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.number_lines_advanced</code> — Number Lines
+(Advanced)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.open_snippet_gallery</code> — Snippet Gallery...
+<code>Ctrl+Shift+Grave, Shift+G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.paste_html_as_markdown</code> — Paste HTML as Markdown
+<code>Ctrl+Shift+Grave, M</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.preview_abbreviation</code> — Preview
+Abbreviation</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.read_markdown_status</code> — Read Markdown Processing
+Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.reencode_file</code> — Re-encode As</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.remove_auto_outline_numbering</code> — Remove Outline
+Numbering</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.remove_email_quote_markers</code> — Remove Email Quote
+Markers</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.rename_current_file</code> — Rename Current
+File</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.run_current_file</code> — Run Current File</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.run_target_at_cursor</code> — Open Target at
+Cursor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.save_minimum_encoding</code> — Save Using Minimum Required
+Encoding</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.select_citation_style</code> — Select Citation
+Style</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.select_markdown_profile</code> — Select Markdown
+Profile</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.send_as_email</code> — Send as Email</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.set_lines_common</code> — Lines Common to Both
+Blocks</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.set_lines_first_not_second</code> — Lines in First Block
+Only</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.show_non_ascii</code> — Show Non-ASCII
+Characters</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.shuffle_lines</code> — Shuffle Lines</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.sort_lines_by_date</code> — Sort Lines by Date</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.sort_lines_by_length</code> — Sort Lines by
+Length</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.sort_lines_numeric</code> — Sort Lines
+Numerically</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.strip_box_drawing</code> — Strip Line-Drawing
+Characters</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.strip_high_ascii</code> — Strip High ASCII (Non-ASCII)
+Characters</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.strip_html_tags</code> — Strip HTML Tags</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.strip_low_ascii</code> — Strip Low ASCII
+Characters</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.toggle_clipboard_collector</code> — Toggle Clipboard
+Collector</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.toggle_indent_announce</code> — Toggle Indentation
+Announcements</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.toggle_key_describer</code> — Toggle Key
+Describer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.toggle_preserve_line_breaks</code> — Preserve Single Line
+Breaks</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.toggle_read_only_guard</code> — Toggle Read-Only
+Guard</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>power.trim_blank_lines</code> — Trim Blank Lines
+<code>Ctrl+Shift+Enter</code></label></li>
+</ul>
+<h2 id="format-56"><code>format.*</code> (56)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.auto_indent_newline</code> — Auto-Indent
+Newline</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.blockquote</code> — Insert Block Quote
+<code>Ctrl+Alt+Q</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.bold</code> — Bold <code>Ctrl+B</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.clear_formatting</code> — Clear Formatting</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.decrease_heading_level</code> — Decrease Heading Level
+<code>Alt+Shift+Left</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.delete_line</code> — Delete Line</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.describe_formatting</code> — Describe Formatting at Cursor
+<code>Ctrl+Shift+D</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.duplicate_line</code> — Duplicate Line</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.expand_abbreviation</code> — Expand Abbreviation
+<code>Ctrl+Shift+Grave, A</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.font_dialog</code> — Font...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.heading_1</code> — Insert Heading 1
+<code>Ctrl+Alt+1</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.heading_2</code> — Insert Heading 2
+<code>Ctrl+Alt+2</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.heading_3</code> — Insert Heading 3
+<code>Ctrl+Alt+3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.heading_4</code> — Insert Heading 4
+<code>Ctrl+Alt+4</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.heading_5</code> — Insert Heading 5
+<code>Ctrl+Alt+5</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.heading_6</code> — Insert Heading 6
+<code>Ctrl+Alt+6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.horizontal_rule</code> — Insert Horizontal Rule
+<code>Ctrl+Alt+H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.increase_heading_level</code> — Increase Heading Level
+<code>Alt+Shift+Right</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.indent</code> — Indent <code>Ctrl+]</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_bullet_list</code> — Insert Bullet List</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_code_block</code> — Insert Code Block</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_footnote</code> — Insert Footnote</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_html_tag</code> — Insert HTML Tag...
+<code>Ctrl+Shift+Grave, H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_markdown_tag</code> — Insert Markdown
+Tag...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_numbered_list</code> — Insert Numbered
+List</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_page_break</code> — Insert Page Break</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_snippet</code> — Insert Snippet...
+<code>Ctrl+Shift+Grave, S</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_table</code> — Insert Table
+<code>Ctrl+Alt+T</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.insert_task_list</code> — Insert Task List</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.italic</code> — Italic <code>Ctrl+I</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.join_lines</code> — Join Lines</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.list_manager</code> — List Manager
+<code>Ctrl+Shift+Grave, L</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.list_studio</code> — Structured List Studio
+<code>F2</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.list_studio_settings</code> — Structured List Studio
+Settings</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.lower_case</code> — Lower Case</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.manage_abbreviations</code> — Manage Abbreviations...
+<code>Ctrl+Shift+Grave, Shift+A</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.manage_snippets</code> — Manage Snippets...
+<code>Ctrl+Shift+Grave, Shift+S</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.move_line_down</code> — Move Line Down</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.move_line_up</code> — Move Line Up</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.move_section_down</code> — Move Section Down
+<code>Alt+Shift+Down</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.move_section_up</code> — Move Section Up
+<code>Alt+Shift+Up</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.outdent</code> — Outdent <code>Ctrl+[</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.sentence_case</code> — Sentence Case</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.style_headings</code> — Style Headings...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.switch_document_format</code> — Switch Document Format
+<code>Ctrl+Shift+Grave, K</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.title_case</code> — Title Case</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_abbreviation_expansion</code> — Toggle Abbreviation
+Expansion <code>Ctrl+Shift+Grave, E</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_announce_formatting</code> — Announce Formatting on
+Cursor Move</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_block_comment</code> — Toggle Block Comment
+<code>Shift+Alt+A</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_bullet_list</code> — Toggle Bullet List
+<code>Ctrl+Alt+B</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_case</code> — Toggle Case</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_line_comment</code> — Toggle Line Comment
+<code>Ctrl+/</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_numbered_list</code> — Toggle Numbered List
+<code>Ctrl+Alt+N</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.toggle_tab_insert_mode</code> — Toggle Tab Key Mode (Indent
+/ Tab Character) <code>Ctrl+Shift+Grave, U</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.underline</code> — Underline</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>format.upper_case</code> — Upper Case</label></li>
+</ul>
+<h2 id="braille-45"><code>braille.*</code> (45)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.add_proofing_note</code> — Add Proofing Note to Current
+Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.announce_running_head</code> — Announce Running
+Head</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.back_translate</code> — Back-Translate UEB
+(draft)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.back_translate_auto</code> — Back-Translate to Text
+(Auto-Detect Braille Code)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.clear_proofing_mark</code> — Clear Proofing Mark on
+Current Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.convert_brf_file</code> — Convert BRF File to
+Document...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.export_proofing_report</code> — Export Proofing
+Report</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.go_to_longest_line</code> — Go to Longest Braille
+Line</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.go_to_longest_page</code> — Go to Longest Braille
+Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.go_to_page</code> — Go to Braille Page...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.go_to_print_page</code> — Go to Print Page...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.ignore_running_head_for_status</code> — Omit Running Head
+from Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.insert_page_break</code> — Insert Braille Page
+Break</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.list_pages_needing_review</code> — List Braille Pages
+Needing Review</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.list_proofed_pages</code> — List Proofed Braille
+Pages</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.mark_page_needs_review</code> — Mark Current Braille Page
+Needs Review</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.mark_page_proofed</code> — Mark Current Braille Page as
+Proofed</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.next_page</code> — Next Braille Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.next_print_page_change</code> — Next Print Page
+Change</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.next_warning</code> — Next Braille Layout
+Warning</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.normalize_line_endings</code> — Normalize Line
+Endings</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.previous_page</code> — Previous Braille Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.previous_print_page_change</code> — Previous Print Page
+Change</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.previous_warning</code> — Previous Braille Layout
+Warning</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_braille_page</code> — Read Current Braille
+Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_detailed_status</code> — Read Detailed Braille
+Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_layout_metrics</code> — Read Braille Layout
+Metrics</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_line_and_cell</code> — Read Current Line and
+Cell</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_print_page</code> — Read Current Print
+Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_progress_summary</code> — Read Progress
+Summary</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_proofing_progress</code> — Read Proofing Progress
+Summary</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.read_status</code> — Read Braille Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.recalculate_page_map</code> — Recalculate Page
+Map</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.remove_page_break</code> — Remove Braille Page
+Break</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.save_as_clean</code> — Save As Clean BRF</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.strip_trailing_spaces_document</code> — Remove Trailing
+Spaces in Whole File</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.strip_trailing_spaces_line</code> — Remove Trailing Spaces
+on Current Line</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.translate_selection</code> — Translate Selection to
+UEB</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.translate_standard_g1</code> — Translate to Standard
+American Braille Uncontracted (Legacy Grade 1)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.translate_standard_g2</code> — Translate to Standard
+American Braille Contracted (Legacy Grade 2)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.translate_ueb_g1</code> — Translate to UEB Grade 1
+(Uncontracted)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.translate_ueb_g2</code> — Translate to UEB Grade 2
+(Contracted)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.use_running_head_in_status</code> — Include Running Head
+in Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.validate_layout</code> — Validate BRF Layout</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>braille.warnings_summary</code> — Braille Layout Warnings
+Summary</label></li>
+</ul>
+<h2 id="file-29"><code>file.*</code> (29)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.choose_encoding</code> — Choose Encoding...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.close_document</code> — Close Document
+<code>Ctrl+W</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.convert_file</code> — Convert File...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.github_manage_accounts</code> — Manage GitHub Accounts...
+<code>Ctrl+Shift+Grave, Shift+Z</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.github_save_back</code> — Save to GitHub...
+<code>Ctrl+Shift+Grave, Shift+Q</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.header_footer</code> — Header and Footer...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.import_convert</code> — Import / Convert Document
+(OCR)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>file.new</code>
+— New File <code>Ctrl+N</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>file.open</code>
+— Open File... <code>Ctrl+O</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.open_containing_folder</code> — Open Containing
+Folder</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.open_github_file_url</code> — Open Remote GitHub File URL...
+<code>Ctrl+Shift+Grave, Shift+W</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.open_github_items</code> — Open GitHub Items...
+<code>Ctrl+Shift+Grave, Shift+I</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.open_github_repository</code> — Open Remote GitHub
+Repository... <code>Ctrl+Shift+Grave, Shift+Y</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.open_session</code> — Open Session...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.open_url</code> — Open from URL...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.page_setup</code> — Page Setup...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.print</code> — Print... <code>Ctrl+P</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.print_studio</code> — Print Studio...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.reload_from_disk</code> — Reload from Disk</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.restore_backup</code> — Restore Backup...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.restore_previous_version</code> — Restore Previous
+Version</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>file.save</code>
+— Save <code>Ctrl+S</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.save_all</code> — Save All</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.save_as</code> — Save As...
+<code>Ctrl+Shift+S</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.save_as_plain_text</code> — Save As Plain
+Text...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.save_session</code> — Save Session...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.ssh_quick_connect</code> — Open over SSH: Quick
+Connect...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.ssh_site_manager</code> — Open over SSH: Site
+Manager...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>file.toggle_line_endings</code> — Toggle Line Endings</label></li>
+</ul>
+<h2 id="navigate-26"><code>navigate.*</code> (26)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.back_location</code> — Back Location
+<code>Alt+Left</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.forward_location</code> — Forward Location
+<code>Alt+Right</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.go_to_anything</code> — Go to Anything
+<code>Ctrl+Shift+Grave, G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.go_to_bookmark</code> — Go To Bookmark...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.go_to_line</code> — Go To Line...
+<code>Ctrl+G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.go_to_page</code> — Go To Page...
+<code>Ctrl+Shift+G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.heading_organizer</code> — Heading Organizer...
+<code>Ctrl+Shift+Grave, O</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.list_bookmarks</code> — List Bookmarks...
+<code>Alt+Shift+B</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.match_bracket</code> — Match Bracket
+<code>Ctrl+Shift+\</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.next_block</code> — Next Block</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.next_heading</code> — Next Heading</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.next_region</code> — Next Region
+<code>F6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.next_structure</code> — Next Structure
+<code>Alt+Down</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.next_token</code> — Next Token</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.outline_navigator</code> — Outline Navigator...
+<code>Ctrl+Shift+O</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.previous_block</code> — Previous Block</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.previous_heading</code> — Previous Heading</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.previous_region</code> — Previous Region
+<code>Shift+F6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.previous_structure</code> — Previous Structure
+<code>Alt+Up</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.previous_token</code> — Previous Token</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.quick_nav</code> — Quick Nav (Go to
+Anything)</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.set_bookmark</code> — Set Bookmark...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.set_language</code> — Set Document
+Language...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.speak_full_path</code> — Speak Full Path
+<code>Ctrl+Shift+Grave, P</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.speak_status_summary</code> — Speak Status Summary
+<code>Ctrl+Shift+Grave, Q</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.speak_window_title</code> — Speak Window Title
+<code>Ctrl+Shift+Grave, F</code></label></li>
+</ul>
+<h2 id="vault-22"><code>vault.*</code> (22)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.backlinks</code> — Show Backlinks</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.complete</code> — Complete Link or Tag at
+Cursor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.explorer</code> — Vault Explorer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.export_site</code> — Export Vault as Website</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.follow_link</code> — Follow Wikilink</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.insert_link</code> — Insert Link to Note</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.insert_template</code> — Insert Template</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.neighborhood</code> — Note Neighborhood</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.next_daily</code> — Next Daily Note</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.open</code> — Open Vault</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.prev_daily</code> — Previous Daily Note</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.publish_note</code> — Publish Note <strong>[GATED
+future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.quick_switch</code> — Go to Note</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.rename</code> — Rename Note</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.resolve_embed</code> — Resolve Embed Inline</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.search</code> — Search Vault</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.settings</code> — Vault Settings</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.speak_embed</code> — Speak Embed at Cursor</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.sync</code> — Sync Vault</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.tags</code> — Show Tags</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.today</code> — Open Today's Note</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>vault.unlinked_mentions</code> — Unlinked Mentions</label></li>
+</ul>
+<h2 id="help-21"><code>help.*</code> (21)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.about_quill</code> — About Quill</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.context_help</code> — Context Help: Current Mode Keys
+<code>Ctrl+Shift+Grave, Shift+H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.enable_braille_mode</code> — Enable Braille
+Mode...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.feature_profile_health_check</code> — Feature Profile Health
+Check...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.key_cheatsheet</code> — Key Cheatsheet
+<code>Alt+Shift+/</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.open_diagnostics_folder</code> — Open Diagnostics
+Folder</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.open_logs_folder</code> — Open Logs Folder</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.open_third_party_notices</code> — Open Third-Party
+Notices</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.open_user_guide</code> — Open User Guide</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.redeem_unlock_code</code> — Help: Redeem Unlock
+Code...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.report_bug</code> — Report a Bug...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.reset_feature_profile</code> — Reset to Essential
+Profile</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.run_profile_onboarding</code> — Startup
+Wizard...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.save_diagnostics</code> — Save Diagnostics...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.startup_wizard</code> — Startup Wizard...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.status_page</code> — Status Page</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.switch_feature_profile</code> — Switch Feature Profile...
+<code>Alt+Shift+P</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.undo_last_profile_change</code> — Undo Last Profile
+Change</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.what_can_i_do_here</code> — What Can I Do Here?</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.why_dont_i_see_feature</code> — Why Don't I See a
+Feature?</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>help.why_unavailable</code> — Why Is This Unavailable?
+<code>Alt+F1</code></label></li>
+</ul>
+<h2 id="github-17"><code>github.*</code> (17)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.browse_organization</code> — GitHub: Browse Organization
+Repositories...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.change_default_branch</code> — GitHub: Change Default
+Branch... <code>Ctrl+Shift+Grave, Shift+B</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.change_repository_visibility</code> — GitHub: Change
+Repository Visibility...
+<code>Ctrl+Shift+Grave, Shift+V</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.commit_multiple_files</code> — GitHub: Commit Multiple
+Files... <code>Ctrl+Shift+Grave, Shift+U</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.configure_branch_protection</code> — GitHub: Configure
+Branch Protection... <code>Ctrl+Shift+Grave, Shift+L</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.copilot_explain</code> — GitHub: Explain a
+Command...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.copilot_suggest</code> — GitHub: Ask Copilot for a
+Command...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.create_codespace</code> — GitHub: Create
+Codespace...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.create_release</code> — GitHub: Create
+Release...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.create_repository</code> — GitHub: Create Repository...
+<code>Ctrl+Shift+Grave, Shift+K</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.delete_branch</code> — GitHub: Delete Branch...
+<code>Ctrl+Shift+Grave, Shift+X</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.dispatch_workflow</code> — GitHub: Dispatch
+Workflow...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.fork_repository</code> — GitHub: Fork Repository...
+<code>Ctrl+Shift+Grave, Shift+F</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.list_codespaces</code> — GitHub: Codespaces...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.rename_repository</code> — GitHub: Rename Repository...
+<code>Ctrl+Shift+Grave, Shift+E</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.view_notifications</code> — GitHub:
+Notifications...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>github.view_security_alerts</code> — GitHub: Security
+Alerts...</label></li>
+</ul>
+<h2 id="view-16"><code>view.*</code> (16)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.announce_contrast</code> — Announce Contrast Ratio
+<code>Ctrl+Shift+Grave, Shift+C</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.browser_preview</code> — Browser Preview
+<code>Ctrl+Shift+Grave, V</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.focus_preview</code> — Focus Preview
+<code>Ctrl+F6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.preview</code> — Preview
+<code>Ctrl+Shift+V</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.reveal_codes_toggle</code> — Reveal Codes
+<code>Alt+F3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.send_to_tray</code> — Send to Tray
+<code>Ctrl+Shift+Grave, T</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.split_preview</code> — Preview Side by Side
+<code>Ctrl+Shift+Backslash</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.spoken_echo</code> — Show Spoken Echo
+<code>Alt+Shift+E</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_dark_mode</code> — Toggle Dark Mode
+<code>Alt+Shift+D</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_find_wrap</code> — Toggle Find Wrap</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_intellisense_as_you_type</code> — Toggle Word
+Prediction As You Type</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_overwrite_mode</code> — Toggle Overwrite
+Mode</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_persistent_undo</code> — Toggle Persistent
+Undo</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_soft_wrap</code> — Toggle Soft Wrap
+<code>Alt+Z</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_spellcheck_as_you_type</code> — Toggle Spell Check As
+You Type</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_tab_control</code> — Toggle Tab Control
+<code>Ctrl+Shift+Grave, Shift+T</code></label></li>
+</ul>
+<h2 id="window-14"><code>window.*</code> (14)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.close_other_documents</code> — Close Other Documents
+<code>Ctrl+Shift+F4</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_1</code> — Go to Document 1
+<code>Alt+1</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_10</code> — Go to Document 10
+<code>Alt+0</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_2</code> — Go to Document 2
+<code>Alt+2</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_3</code> — Go to Document 3
+<code>Alt+3</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_4</code> — Go to Document 4
+<code>Alt+4</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_5</code> — Go to Document 5
+<code>Alt+5</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_6</code> — Go to Document 6
+<code>Alt+6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_7</code> — Go to Document 7
+<code>Alt+7</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_8</code> — Go to Document 8
+<code>Alt+8</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.go_to_document_9</code> — Go to Document 9
+<code>Alt+9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.new_document_tab</code> — New Tab
+<code>Ctrl+T</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.next_document</code> — Next Document
+<code>Ctrl+Tab</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>window.previous_document</code> — Previous Document
+<code>Ctrl+Shift+Tab</code></label></li>
+</ul>
+<h2 id="whisperer-12"><code>whisperer.*</code> (12)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.about</code> — About BITS Whisperer <strong>[GATED
+core.bw_whisperer]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.capability_matrix</code> — BITS Whisperer Capability
+Matrix</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.check_faster_whisper</code> — BITS Whisperer Check
+faster-whisper Engine</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.download_queue</code> — BITS Whisperer Download
+Queue...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.model_manager</code> — BITS Whisperer Speech Model
+Manager...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.model_recommend</code> — BITS Whisperer Use Recommended
+Speech Model</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.model_status</code> — BITS Whisperer Speech Model
+Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.provider_center</code> — BITS Whisperer Provider
+Center...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.provider_recommend</code> — BITS Whisperer Use
+Recommended Provider</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.provider_select</code> — BITS Whisperer Select
+Provider...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.provider_status</code> — BITS Whisperer Provider
+Status</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>whisperer.readiness_check</code> — BITS Whisperer Readiness
+Check</label></li>
+</ul>
+<h2 id="localgit-12"><code>localgit.*</code> (12)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.bisect_reset</code> — Local Git: End Bisect</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.bisect_start</code> — Local Git: Start
+Bisect...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.blame_at_cursor</code> — Local Git: Who Wrote This
+Line...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.interactive_rebase</code> — Local Git: Interactive
+Rebase...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.manage_stashes</code> — Local Git: Manage
+Stashes...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.new_worktree</code> — Local Git: New
+Worktree...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.rebase_abort</code> — Local Git: Abort
+Rebase</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.resolve_conflicts</code> — Local Git: Resolve
+Conflicts...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.stash_changes</code> — Local Git: Stash
+Changes...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.switch_branch</code> — Local Git: Switch
+Branch...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.uncommitted_changes</code> — Local Git: Uncommitted
+Changes...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>localgit.worktrees</code> — Local Git: Worktrees...</label></li>
+</ul>
+<h2 id="publishing-11"><code>publishing.*</code> (11)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.browse_content</code> — Browse Publishing Content...
+<strong>[GATED future.publishing_read]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.compare_remote_item</code> — Compare With Remote...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.connections</code> — Publishing Connections...
+<strong>[GATED future.publishing_read]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.create_draft</code> — Create Post Draft...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.create_page_draft</code> — Create Page Draft...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.publish_current</code> — Publish Post Now...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.publish_current_page</code> — Publish Page Now...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.publish_remote_item</code> — Publish Open Remote
+Content... <strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.schedule_publish</code> — Schedule Publish...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.update_remote_item</code> — Update Remote Content...
+<strong>[GATED future.publishing]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>publishing.verify_connection</code> — Verify Current Publishing
+Connection <strong>[GATED future.publishing_read]</strong></label></li>
+</ul>
+<h2 id="app-10"><code>app.*</code> (10)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.announcement_self_test</code> — Announcement
+Self-Test...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.command_palette</code> — Command Palette...
+<code>Ctrl+Shift+P</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.display_language</code> — Change Display
+Language...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>app.exit</code>
+— Exit <code>Ctrl+Q</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.open_media_player</code> — Open the Media Player</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.open_radio</code> — Open Quill Radio</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.open_weather</code> — Open Quill Weather</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.preferences</code> — Preferences...
+<code>Ctrl+,</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.repeat_last_announcement</code> — Repeat Last
+Announcement</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>app.report_editor_surface</code> — Report Editor
+Surface</label></li>
+</ul>
+<h2 id="verbosity-8"><code>verbosity.*</code> (8)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.history</code> — Announcement History</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.preferences</code> — Verbosity Preferences</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.speak_status</code> — Speak Status Bar</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.toggle_meeting</code> — Toggle Meeting Mode</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.toggle_quiet</code> — Toggle Quiet Mode</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.undo</code> — Undo Verbosity Change</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.what_changed</code> — What Changed</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>verbosity.where_am_i</code> — Where Am I</label></li>
+</ul>
+<h2 id="table-8"><code>table.*</code> (8)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.cell_above</code> — Table: Cell Above
+<code>Ctrl+Alt+Up</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.cell_below</code> — Table: Cell Below
+<code>Ctrl+Alt+Down</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.first_cell</code> — Table: First Cell
+<code>Ctrl+Alt+Home</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.last_cell</code> — Table: Last Cell
+<code>Ctrl+Alt+End</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.next_cell</code> — Table: Next Cell
+<code>Ctrl+Alt+Right</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.previous_cell</code> — Table: Previous Cell
+<code>Ctrl+Alt+Left</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.row_end</code> — Table: Last Cell in Row
+<code>Alt+End</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>table.row_start</code> — Table: First Cell in Row
+<code>Alt+Home</code></label></li>
+</ul>
+<h2 id="notes-5"><code>notes.*</code> (5)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>notes.add_inline_note</code> — Add Inline Note
+<code>Alt+Shift+I</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>notes.next_inline_note</code> — Next Inline Note
+<code>Alt+Shift+J</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>notes.previous_inline_note</code> — Previous Inline Note
+<code>Alt+Shift+G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>notes.speak_inline_note</code> — Speak Inline Note (double-press
+to edit) <code>Alt+Shift+H</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>notes.sticky_browser</code> — Sticky Notes Browser...</label></li>
+</ul>
+<h2 id="reveal-4"><code>reveal.*</code> (4)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>reveal.go_to_pair</code> — Reveal Codes: Go to Matching
+Code</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>reveal.next_code</code> — Reveal Codes: Next Code</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>reveal.previous_code</code> — Reveal Codes: Previous
+Code</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>reveal.toggle_speak</code> — Reveal Codes: Speak Codes
+Aloud</label></li>
+</ul>
+<h2 id="adp-2"><code>adp.*</code> (2)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A <code>adp.ask</code> —
+ADP: Ask about Described Movies and TV... <strong>[GATED
+future.adp_assistant]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>adp.settings</code> — ADP: Settings... <strong>[GATED
+future.adp_assistant]</strong></label></li>
+</ul>
+<h2 id="media-2"><code>media.*</code> (2)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>media.cancel_sleep_timer</code> — Media: Cancel Sleep
+Timer</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>media.sleep_timer</code> — Media: Sleep Timer...</label></li>
+</ul>
+<h2 id="ai-1"><code>ai.*</code> (1)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>ai.suggest_metadata</code> — Suggest Document Metadata...
+<strong>[GATED future.ai]</strong></label></li>
+</ul>
+<h2 id="document-1"><code>document.*</code> (1)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>document.summary</code> — Document Summary
+<code>Alt+I</code></label></li>
+</ul>
+<h2 id="sync-1"><code>sync.*</code> (1)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>sync.sync_folder</code> — Sync Folder with GitHub...</label></li>
+</ul>
+</body>
+</html>

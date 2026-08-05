@@ -137,13 +137,13 @@ _REVIEWED_EGRESS: dict[str, str] = {
     ),
     "core/library/http.py::fetch_bytes": (
         "Single egress site for the accessible book libraries (Part 4): keyword "
-        "search of Project Gutenberg via the free, no-key Gutendex API "
-        "(gutendex.com), OPDS catalogue browsing (Standard Ebooks / Feedbooks "
-        "public domain), and downloading a chosen book's plain-text / EPUB file "
-        "so it opens in QUILL's reader. Reached only by an explicit user action "
-        "(searching the Library or downloading a book); no key or credential is "
-        "ever sent. HTTPS-only over a verified TLS context with a bounded timeout "
-        "and a size cap. Disabled in Safe Mode via library.http.refuse_in_safe_mode."
+        "search of Project Gutenberg (Gutendex), Google Books, the NLS BARD "
+        "public catalogue (api.nlsbard.loc.gov, a no-key POST JSON search), OPDS "
+        "browsing (Standard Ebooks / Feedbooks), and downloading a chosen book's "
+        "plain-text / EPUB file so it opens in QUILL's reader. Reached only by an "
+        "explicit user action (searching the Library or downloading a book); no "
+        "key or credential is ever sent. HTTPS-only over a verified TLS context "
+        "with a bounded timeout and a size cap; disabled in Safe Mode."
     ),
     "core/ai/onboarding.py::pull_ollama_model": (
         "Streams Ollama's own /api/pull endpoint to download a model, the same "

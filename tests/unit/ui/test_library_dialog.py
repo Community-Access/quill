@@ -122,7 +122,43 @@ def test_new_sources_offered(app, tmp_path):
         labels = [dlg.source.GetString(i) for i in range(dlg.source.GetCount())]
         assert any("All free sources" in s for s in labels)
         assert any("Google Books" in s for s in labels)
+        assert any("NLS BARD" in s for s in labels)
         assert any("Feedbooks" in s for s in labels)
+    finally:
+        dlg.Destroy()
+
+
+def test_open_in_bard_opens_site_url(app, tmp_path, monkeypatch):
+    from quill.ui import library_dialog
+    from quill.ui.library_dialog import LibraryDialog
+
+    opened: list[str] = []
+    monkeypatch.setattr(library_dialog.webbrowser, "open", opened.append)
+
+    book = Book(
+        book_id="bard:DB55555",
+        title="Sunset pass",
+        authors=("Grey, Zane",),
+        source="bard",
+        site_url="http://hdl.loc.gov/loc.nls/db.55555",
+    )
+    said: list[str] = []
+    dlg = LibraryDialog(
+        None,
+        dest_dir=tmp_path,
+        search_fn=lambda q, **k: [book],
+        download_fn=lambda b, d, **k: Path(d) / "x",
+        announce=said.append,
+    )
+    try:
+        dlg.query.SetValue("sunset")
+        dlg._on_search(None)
+        # A metadata-only BARD result is tagged for the "Open in BARD" action.
+        assert "open in BARD" in dlg.results.GetString(0)
+        dlg.results.SetSelection(0)
+        dlg._open_in_bard()
+        assert opened == ["http://hdl.loc.gov/loc.nls/db.55555"]
+        assert any("Sign in on the BARD site" in s for s in said)
     finally:
         dlg.Destroy()
 

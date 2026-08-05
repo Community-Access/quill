@@ -14,6 +14,7 @@ unit-testable without the network.
 
 from __future__ import annotations
 
+import webbrowser
 from collections.abc import Callable
 from pathlib import Path
 
@@ -24,9 +25,10 @@ from quill.core.library.model import Book, LibraryError
 
 # Display label -> source ids passed to library.search.
 _SOURCES: list[tuple[str, tuple[str, ...]]] = [
-    ("All free sources", ("gutenberg", "googlebooks")),
+    ("All free sources", ("gutenberg", "googlebooks", "bard")),
     ("Project Gutenberg", ("gutenberg",)),
     ("Google Books (free ebooks)", ("googlebooks",)),
+    ("NLS BARD (catalogue search)", ("bard",)),
     ("Standard Ebooks", ("standard-ebooks",)),
     ("Feedbooks (public domain)", ("feedbooks",)),
 ]
@@ -114,6 +116,9 @@ class LibraryDialog(wx.Dialog):
         btns = wx.BoxSizer(wx.HORIZONTAL)
         self.open_btn = wx.Button(self, label="Download && &Open")
         self.dl_btn = wx.Button(self, label="&Download")
+        # For catalogue-only results (e.g. NLS BARD) that have a web page but no
+        # in-app download, open the title's official page in the browser.
+        self.bard_btn = wx.Button(self, label="Open in &BARD")
         close_btn = wx.Button(self, wx.ID_CANCEL, "&Close")
         self.open_btn.SetDefault()
         # Right-align the buttons with a leading stretch spacer + EXPAND instead of
@@ -121,6 +126,7 @@ class LibraryDialog(wx.Dialog):
         btns.AddStretchSpacer(1)
         btns.Add(self.open_btn, 0, wx.RIGHT, 6)
         btns.Add(self.dl_btn, 0, wx.RIGHT, 6)
+        btns.Add(self.bard_btn, 0, wx.RIGHT, 6)
         btns.Add(close_btn, 0)
         sizer.Add(btns, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -138,6 +144,7 @@ class LibraryDialog(wx.Dialog):
         self.query.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         self.open_btn.Bind(wx.EVT_BUTTON, lambda _e: self._download(open_after=True))
         self.dl_btn.Bind(wx.EVT_BUTTON, lambda _e: self._download(open_after=False))
+        self.bard_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_in_bard())
         self.find.Bind(wx.EVT_TEXT_ENTER, lambda _e: self._find_in_results(1))
         self.find_btn.Bind(wx.EVT_BUTTON, lambda _e: self._find_in_results(1))
         self.results.Bind(wx.EVT_LISTBOX, lambda _e: self._sync_format_choice())
@@ -162,6 +169,15 @@ class LibraryDialog(wx.Dialog):
     def _selected_sources(self) -> tuple[str, ...]:
         idx = self.source.GetSelection()
         return _SOURCES[idx][1] if idx >= 0 else _SOURCES[0][1]
+
+    @staticmethod
+    def _book_tag(book: Book) -> str:
+        """The bracketed availability tag shown after a result's title."""
+        if book.formats:
+            return ", ".join(sorted(book.formats))
+        if book.site_url:
+            return "open in BARD" if book.source == "bard" else "open on site"
+        return "no downloads"
 
     def _on_search(self, _e) -> None:
         query = self.query.GetValue().strip()
@@ -188,13 +204,17 @@ class LibraryDialog(wx.Dialog):
         wx.EndBusyCursor()
         self._results = books
         for book in books:
-            fmts = ", ".join(sorted(book.formats)) or "no downloads"
-            self.results.Append(f"{book.title} — {book.authors_label}  [{fmts}]")
+            self.results.Append(f"{book.title} — {book.authors_label}  [{self._book_tag(book)}]")
         if books:
             self.results.SetSelection(0)
             self._sync_format_choice()
             self.results.SetFocus()
-            self._set_status(f"Found {len(books)} book(s). Choose one, then Download.")
+            hint = (
+                "Choose one, then Download."
+                if any(book.formats for book in books)
+                else "Choose one, then Open in BARD to sign in and download there."
+            )
+            self._set_status(f"Found {len(books)} book(s). {hint}")
         else:
             self.format_choice.Set([])
             self._set_status("No books found. Try different words.")
@@ -274,3 +294,31 @@ class LibraryDialog(wx.Dialog):
             self._on_open(path)
             if self.IsModal():
                 self.EndModal(wx.ID_OK)
+
+    def _open_in_bard(self) -> None:
+        """Open the selected result's official BARD / Library of Congress page.
+
+        BARD titles are obtained on the BARD website (an eligible patron account
+        and sign-in are required there), so this hands the reader off to the
+        title's page in their browser rather than downloading inside QUILL. The
+        outcome is spoken so a screen-reader user hears where they were taken.
+        """
+        idx = self.results.GetSelection()
+        if idx == wx.NOT_FOUND or not (0 <= idx < len(self._results)):
+            self._set_status("Choose a result first.")
+            return
+        book = self._results[idx]
+        if not book.site_url:
+            self._set_status(f"No web page is available for {book.title}.")
+            return
+        # Speak the hand-off BEFORE opening the browser: webbrowser.open raises the
+        # browser to the foreground and the screen reader switches context, which
+        # would clip an announcement made afterward. The status field still records
+        # it for when the reader returns to QUILL.
+        if book.source == "bard":
+            self._set_status(
+                f"Opening {book.title} in your browser. Sign in on the BARD site to download."
+            )
+        else:
+            self._set_status(f"Opening {book.title} in your browser.")
+        webbrowser.open(book.site_url)

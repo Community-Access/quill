@@ -13,7 +13,7 @@ from collections.abc import Callable
 from dataclasses import replace
 from pathlib import Path
 
-from quill.core.library import googlebooks, gutendex, opds
+from quill.core.library import bard, googlebooks, gutendex, opds
 from quill.core.library.model import Book, LibraryError
 
 # Format key -> file extension, so a downloaded book opens by suffix in
@@ -31,6 +31,15 @@ OPDS_CATALOGS: dict[str, str] = {
     "standard-ebooks": "https://standardebooks.org/feeds/opds/all",
     "feedbooks": "https://catalog.feedbooks.com/catalog/public_domain.atom",
 }
+
+
+def _as_post_fetch(fetch: Fetch | None) -> bard.Fetch | None:
+    """Adapt the shared GET-style ``fetch`` (URL-only, used by tests) to BARD's
+    ``(url, body)`` signature by ignoring the body. ``None`` in production lets
+    BARD use its own default POST fetch."""
+    if fetch is None:
+        return None
+    return lambda url, _body: fetch(url)
 
 
 def _dedupe_key(book: Book) -> tuple[str, str]:
@@ -83,6 +92,11 @@ def search(
             results.extend(gutendex.search(query, fetch=fetch, limit=limit, safe_mode=safe_mode))
         elif source == "googlebooks":
             results.extend(googlebooks.search(query, fetch=fetch, limit=limit, safe_mode=safe_mode))
+        elif source == "bard":
+            # NLS BARD public catalogue (metadata only; POST search endpoint).
+            results.extend(
+                bard.search(query, fetch=_as_post_fetch(fetch), limit=limit, safe_mode=safe_mode)
+            )
         elif source in OPDS_CATALOGS:
             # OPDS "all" feeds have no server-side search; filter titles locally.
             books = opds.catalog(OPDS_CATALOGS[source], fetch=fetch, safe_mode=safe_mode)
