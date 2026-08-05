@@ -213,10 +213,13 @@ an optional AI suite, and an extension system. It is the program most of
 this document is about.</p>
 <p><strong>Quill Radio</strong> is a standalone internet radio player: a
 real window with its own menu bar, its own tray icon, favorites,
-recording, scheduled recording, and a built-in weather center.
-Everything it does is also available inside the editor, because both run
-the same code, but Quill Radio opens in seconds when you just want the
-radio on and do not want to load an editor to get it.</p>
+recording, scheduled recording, and a built-in weather center. Nearly
+all of it is also available inside the editor, because both run the same
+code and share the same favorites and settings, but Quill Radio opens in
+seconds when you just want the radio on and do not want to load an
+editor to get it, and a handful of listener-side features live only in
+the standalone app. Those are named where they come up in the Quill
+Radio section below.</p>
 <p><strong>Quill Weather</strong> is a standalone tray application that
 watches the National Weather Service for watches, warnings, and
 advisories at the places you care about, and speaks them to you the
@@ -385,8 +388,23 @@ registry. There are more than seven hundred named commands, and all of
 them are reachable three ways: from the menu bar, from the Command
 Palette, and from a keyboard shortcut you can assign.</p>
 <p>The menu bar is conventional and complete: File, Edit, View, Insert,
-Format, Navigate, Search, Tools, AI, Window, QuillVille, and Help.
-Nothing hides in a toolbar with no menu equivalent.</p>
+Format, Navigate, Search, Tools, AI, Audio Description Project, Window,
+QuillVille, and Help. That is thirteen top-level menus in a default
+installation, and nothing hides in a toolbar with no menu
+equivalent.</p>
+<p><strong>Audio Description Project</strong> is the one name on that
+list you may not have expected, so it should not arrive as a surprise.
+It holds two items, <strong>Ask ADP</strong> and <strong>ADP
+Settings</strong>, and it is a preview of a search built around the
+American Council of the Blind's Audio Description Project: ask in
+ordinary language which films and series are audio described, or what is
+described on television tonight, and read or hear the answer in an
+accessible results list. It reaches a hosted ADP service over HTTPS when
+you ask it a question and does nothing at all until then, it refuses to
+run in Safe Mode, and it is early enough that it is fairly described as
+a preview rather than a finished feature. If you would rather not carry
+the menu, turn <strong>ADP Assistant</strong> off in Profiles and
+Features and it leaves the menu bar entirely.</p>
 <p>The <strong>Command Palette</strong> finds any command by name.
 Multi-word queries match in any order, so <code>url open</code> and
 <code>open url</code> both find <strong>Open From URL</strong>. A
@@ -416,16 +434,16 @@ conflicts and OS-reserved combinations before it commits.</p>
 <p><strong>Global Hotkeys</strong> (<strong>Tools &gt; Global
 Hotkeys</strong>) go one step further: system-wide combinations that
 work from any application. The safety design is the point. Only a
-curated allowlist can ever be bound globally: Radio and Podcasts
-transport (play/pause, stop, mute, volume), New Sticky Note, the Sticky
-Notes Browser, posting to Mastodon (which opens the compose dialog and
-never auto-sends), and show/hide to the tray. Nothing that edits a
-document, deletes anything, or acts invisibly can be bound, no matter
-what a settings file says, because the allowlist is enforced in code and
-guarded by its own test. A global press always announces its outcome, so
-you hear what happened even with QUILL minimized. The default show/hide
-chords are <strong>Ctrl+Alt+Shift+Q</strong> for QUILL,
-<strong>Ctrl+Alt+Shift+R</strong> for Quill Radio, and
+curated allowlist can ever be bound globally: Radio play/pause, stop,
+mute, and volume up and down; Podcasts play/pause and stop; New Sticky
+Note, the Sticky Notes Browser, posting to Mastodon (which opens the
+compose dialog and never auto-sends), and show/hide to the tray. Nothing
+that edits a document, deletes anything, or acts invisibly can be bound,
+no matter what a settings file says, because the allowlist is enforced
+in code and guarded by its own test. A global press always announces its
+outcome, so you hear what happened even with QUILL minimized. The
+default show/hide chords are <strong>Ctrl+Alt+Shift+Q</strong> for
+QUILL, <strong>Ctrl+Alt+Shift+R</strong> for Quill Radio, and
 <strong>Ctrl+Alt+Shift+W</strong> for Quill Weather, and all three are
 rebindable. Global hotkeys are Windows-only, because macOS offers no
 equivalent; the same commands remain on menus and the palette
@@ -594,7 +612,13 @@ multiplication) to QUILL, along with accessible built-ins such as
 <code>form:a11y</code>.</li>
 <li><strong>Smart Insert</strong> provides built-in typed abbreviations
 (<code>qbug</code>, <code>qmeet</code>, <code>qlog</code>,
-<code>qtodo</code>, <code>qbrf</code>) that expand as you type.</li>
+<code>qtodo</code>) that expand as you type. A fifth trigger,
+<code>qbrf</code>, generates a BRF test document, which means it has to
+run code rather than paste fixed text, and the type-ahead expander
+deliberately never runs code in the middle of a word. So
+<code>qbrf</code> is reached the two other ways instead: <strong>Insert
+&gt; Insert BRF Test Document</strong>, or typing
+<code>=brftest()</code> on its own line.</li>
 <li><strong>Smart text triggers</strong> go further: type
 <code>=meeting()</code>, <code>=todo(5)</code>, or
 <code>=rand(3,4)</code> and QUILL inserts the generated content. The
@@ -891,8 +915,8 @@ then narrates into the languages you choose, using any configured AI
 provider or a local LibreTranslate instance, with a combined cost
 estimate up front.</p>
 <p>Closing QUILL while one of these exports is running asks first, and
-offers <strong>File &gt; Send to Tray</strong> as a way to keep it
-running quietly instead. Routine background work (search and replace,
+offers <strong>Window &gt; Send to System Tray</strong> as a way to keep
+it running quietly instead. Routine background work (search and replace,
 dictation, downloads) does not trigger the warning; only genuinely
 hard-to-redo jobs do.</p>
 <h3 id="speech-to-text">Speech to text</h3>
@@ -1307,6 +1331,26 @@ for your saved sites and an SSH Quick Connect for the one-off case. SSH
 host-key checking defaults to rejecting an unknown key; automatically
 adding one requires an explicit trust-on-first-use opt-in, which is a
 setting you turn on deliberately rather than a prompt you dismiss.</p>
+<h3 id="publishing-read-only-in-10">Publishing, read-only in 1.0</h3>
+<p>If you run the <strong>Full Quill</strong> profile, the File menu
+carries a <strong>Publish</strong> submenu with three items:
+<strong>Publishing Connections</strong>, <strong>Verify Current
+Publishing Connection</strong>, and <strong>Browse Publishing
+Content</strong>. Together they let you save a WordPress site account,
+check that the credentials still work, and browse that site's posts and
+pages and open one into QUILL as an ordinary document to read or edit
+locally.</p>
+<p>That is the whole of it in 1.0, and the boundary is deliberate. The
+half that sends content back to a site (create a draft, publish, update
+a remote item, schedule a post) is a separate feature that is locked off
+in this release and cannot be switched on from Settings. It is written
+and it is under review; it is not in your hands yet, and we would rather
+say so than ship a Publish button whose behavior we are not ready to
+stand behind. Site credentials are stored in the Windows credential
+vault rather than in a settings file, and every call the read-only half
+makes goes through QUILL's audited network layer. Other profiles leave
+the Publish submenu off the File menu entirely; you can light it for
+yourself in Profiles and Features, under Publishing (Read-Only).</p>
 <hr />
 <h2 id="the-ai-suite">The AI Suite</h2>
 <p>QUILL's AI is entirely optional, entirely opt-in, and silent until
@@ -1341,10 +1385,21 @@ download progress.</p>
 <p>On-device AI is a first-class option, not a fallback: Apple
 Foundation Models on macOS, and llama.cpp with GGUF models on
 Windows.</p>
-<p>The <strong>AI Hub</strong> is the settings home, with tabs for
-Provider, On-Device, Audio Services, Instructions, and Advanced. It
-probes a running Ollama server automatically and shows each model's real
-capabilities (vision, tools) rather than guessing from a name.</p>
+<p>The <strong>AI Hub</strong> is the settings home, and it has eight
+tabs: Provider, Engines, On-Device, Audio Services, Services,
+Instructions, Sessions, and Advanced. Provider and On-Device hold the
+connection settings; <strong>Engines</strong> is where the agent
+harnesses described under Agents below are signed into and configured;
+<strong>Audio Services</strong> covers transcription and speech;
+<strong>Services</strong> is the document conversion and OCR page, which
+states plainly that the free on-device converter and the local OCR
+engine run first and that the one paid cloud service is
+bring-your-own-key and asks consent before every upload;
+<strong>Instructions</strong> holds your standing writing instructions;
+<strong>Sessions</strong> lists your saved AI sessions; and
+<strong>Advanced</strong> holds the consent and diagnostic settings. The
+Hub probes a running Ollama server automatically and shows each model's
+real capabilities (vision, tools) rather than guessing from a name.</p>
 <h3 id="ask-quill">Ask Quill</h3>
 <p><strong>Ask Quill</strong> is the conversational surface: a single
 context-aware conversation that knows what document you are in. It can
@@ -1920,12 +1975,26 @@ href="../tutorials/08-github-inside-quill.md">Tutorial 8: GitHub inside
 QUILL</a>.</p>
 <hr />
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Quill Radio is a full internet radio player. Everything described
-here is available inside the editor under <strong>Tools &gt; Media &gt;
-Internet Radio</strong>, and also as a standalone application with its
-own window, menu bar, and tray icon, for the times you want the radio on
-without loading an editor. They are the same code and the same settings:
-a station you favorite in one is there in the other.</p>
+<p>Quill Radio is a full internet radio player. It comes two ways.
+Inside the editor it lives on <strong>Tools &gt; Media</strong>, where
+the radio commands sit directly on that menu rather than in a submenu of
+their own: Browse Stations, Add Custom Station, Find Streams from a
+Website, Manage Favorites, Play Last Station, What's Playing, the
+transport and volume controls, and the whole recording group.
+Separately, it is a standalone application with its own window, menu
+bar, and tray icon, for the times you want the radio on without loading
+an editor.</p>
+<p>They are the same code and the same settings: a station you favorite
+in one is there in the other. What the standalone app adds is the
+listener-side furniture that an editor has no sensible place for, and
+this document flags each of those as it comes up. They are:
+<strong>Sound Enhancements</strong> and the <strong>radio output
+device</strong> chooser (in the editor, Sound Enhancements is reachable
+from the Command Palette but is not on any menu, and the output device
+is a saved setting with no chooser); the <strong>Station
+Details</strong> command on a favorite; <strong>back up and
+restore</strong>; <strong>Customize Features</strong>; and <strong>Start
+Quill Radio with Windows</strong>.</p>
 <h3 id="finding-something-to-listen-to">Finding something to listen
 to</h3>
 <p><strong>Browse Stations</strong> searches <a
@@ -1934,23 +2003,39 @@ community-run directory, with a name box and optional narrowing by tag
 or genre and by country. A unified <strong>Find Stations</strong> search
 spans RadioBrowser, iHeart, TuneIn, and SomaFM at once, and can also
 take a website address directly.</p>
-<p>The browse tree also carries sources that need no search at all:</p>
+<p>The browse tree also carries sources that need no search at all.
+There are twelve branches on it, in this order:</p>
 <ul>
 <li><strong>Favorites</strong>, your own saved stations in nested
 folders you arrange, with search, reordering, and a scoped "find in this
 folder".</li>
+<li><strong>Popular Stations</strong>, the directory's most-listened
+stations, for when you want something on and do not much mind what.</li>
+<li><strong>Radio Browser (by Genre)</strong>, the community directory
+browsed as genre folders rather than searched.</li>
+<li><strong>Weather / NOAA</strong>, an authoritative directory of real
+NWR transmitters browsable and searchable by state, SAME code, or call
+sign, with a three-tier offline fallback so it works even when the
+directory cannot be refreshed.</li>
 <li><strong>ACB Media</strong>, the American Council of the Blind's ten
 Live365 stations, bundled directly into QUILL so they are there before
 any network call, because the mission overlap is direct.</li>
+<li><strong>NFB Radio</strong>, the National Federation of the Blind's
+NFB-NEWSLINE Radio Network stream, bundled the same way and for the same
+reason: one long-lived speech and talk mount, there before any network
+call.</li>
 <li><strong>Radio Reading Services</strong>, twenty vetted audio-reading
 services for blind and print-disabled listeners, bundled offline with a
 live refresh.</li>
-<li><strong>NOAA Weather Radio</strong>, an authoritative directory of
-real NWR transmitters browsable and searchable by state, SAME code, or
-call sign, with a three-tier offline fallback so it works even when the
-directory cannot be refreshed.</li>
-<li><strong>Radio Browser by Genre</strong>, and <strong>iHeart</strong>
-browsing by genre and A to Z.</li>
+<li><strong>SomaFM</strong>, the listener-supported independent channel
+family, fetched live from somafm.com and listed as its own branch.</li>
+<li><strong>TuneIn</strong>, browsed through TuneIn's own folder tree
+rather than flattened into a list.</li>
+<li><strong>iHeart</strong>, browsable by genre and A to Z.</li>
+<li><strong>Community M3U (Music Genres)</strong>, a
+community-maintained playlist catalogue organized by musical genre.</li>
+<li><strong>Xiph / Icecast Directory</strong>, the open Icecast
+directory, also by genre.</li>
 </ul>
 <p>Whatever you select, a read-only details pane reports what QUILL
 knows about it: country, language, tags, codec and bitrate, community
@@ -1996,11 +2081,15 @@ custom-station dialog, or the link finder never stops the music, which
 is what makes "listen while you keep writing" actually work.</p>
 <p>Playback controls cover Play and Pause, Stop, Play Last Station, Jump
 to Live, Rewind 30 seconds and Forward 30 seconds, volume up and down,
-mute, a volume boost, sound enhancements, and an output device chooser.
-Radio's volume is its own, separate from your Windows system volume and
-separate from your screen reader's speech volume, so you can set the
-music quietly under your speech without touching either. Your volume is
-remembered between sessions.</p>
+mute, and a volume boost, in both the editor and the standalone app. Two
+more are standalone-app menu items: <strong>Sound Enhancements</strong>,
+a three-band equalizer and compressor that can be set once for
+everything or remembered per station, and the <strong>radio output
+device</strong> chooser, which sends the music to a different device
+than your screen reader. Radio's volume is its own, separate from your
+Windows system volume and separate from your screen reader's speech
+volume, so you can set the music quietly under your speech without
+touching either. Your volume is remembered between sessions.</p>
 <p><strong>Announce Track Titles</strong> can be toggled. <strong>What's
 Playing</strong> speaks the current track; <strong>What's Playing
 (Review and Copy)</strong> opens a read-only window you can arrow
@@ -2029,12 +2118,21 @@ moment you decide you do want the full editor after all.</p>
 <strong>Record Now</strong> captures whatever is playing straight to a
 file, from the menu, the status-bar cell, or the tray. <strong>Schedule
 Recording</strong> queues one for later: once, daily, or weekly at a
-chosen time. <strong>Recording Settings</strong> covers format (MP3,
-OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern with
-<code>{station}</code>, <code>{date}</code>, and <code>{time}</code>
-tokens, an optional temporary folder for in-progress files (moved
-atomically into place when finished), and a maximum-length safety cap so
-a recording you forgot about cannot quietly fill your disk.</p>
+chosen time. <strong>Recording Settings</strong> covers format, bitrate,
+destination folder, a filename pattern with <code>{station}</code>,
+<code>{date}</code>, and <code>{time}</code> tokens, an optional
+temporary folder for in-progress files (moved atomically into place when
+finished), and a maximum-length safety cap so a recording you forgot
+about cannot quietly fill your disk.</p>
+<p>There are five recording formats. <strong>MP3</strong> and
+<strong>OGG Vorbis</strong> re-encode to a lossy file and are the two
+that use the bitrate setting. <strong>FLAC</strong> and
+<strong>WAV</strong> re-encode losslessly. <strong>Raw stream</strong>
+is the fifth and the one worth knowing about: it copies the broadcast
+through to disk exactly as it was sent, with no re-encoding at all, so
+nothing is lost and nothing is added, and QUILL picks the file extension
+from the stream's own codec. Choose Raw stream when you are archiving;
+the bitrate control hides itself, because it would do nothing.</p>
 <p>Recording is built to survive the real world. A dropped connection
 reconnects rather than ending the recording. Filenames are made unique
 rather than overwriting. A fatal error is distinguished from a transient
@@ -2047,20 +2145,28 @@ The recordings list updates in place with live elapsed time, and
 finished recordings land in a visible default folder rather than
 somewhere you have to hunt for.</p>
 <h3 id="weather-inside-radio">Weather inside Radio</h3>
-<p>Quill Radio carries the full Weather menu described in the next
-section, so the app you leave running all day is also the one watching
-for a tornado warning.</p>
+<p>The standalone Quill Radio app carries the full Weather menu
+described in the next section, so the app you leave running all day is
+also the one watching for a tornado warning. This is one of the two
+places that menu exists (the other is Quill Weather itself); the editor
+does not have it.</p>
 <h3 id="housekeeping">Housekeeping</h3>
 <ul>
 <li><strong>Wake-Up Timer</strong> starts a station at a time you
-choose.</li>
+choose. It is in both the editor and the standalone app.</li>
+<li><strong>Remove All</strong> clears every favorite in one step,
+behind a confirmation and with an undoable backup written first. It
+lives in the Favorites manager, so it is in both.</li>
+</ul>
+<p>The rest of this list is the standalone app only:</p>
+<ul>
 <li><strong>Start Quill Radio with Windows</strong> registers a per-user
-autostart entry.</li>
+autostart entry, and then tells you what actually took, because a
+locked-down registry can refuse silently.</li>
 <li><strong>Back up and restore</strong> writes a portable
 <code>.qrbackup</code> archive of favorites, settings, wake timer, and
-recording schedule, and reads it back on another machine.</li>
-<li><strong>Remove All</strong> clears every favorite in one step,
-behind a confirmation and with an undoable backup written first.</li>
+recording schedule (and optionally your recordings), and reads it back
+on another machine.</li>
 <li><strong>Customize Features</strong> turns whole menu areas
 (Recording, Weather) on or off, so the app can be exactly as small as
 you want it.</li>
@@ -2071,8 +2177,11 @@ diagnosing.</li>
 <h2 id="quill-weather">Quill Weather</h2>
 <p>Quill Weather watches the United States National Weather Service and
 tells you when something is happening where you are. It runs as a
-standalone tray application, and the same Weather menu is available
-inside QUILL and inside Quill Radio.</p>
+standalone tray application, and the same Weather menu is carried by
+Quill Radio, so if you already leave the radio running you already have
+the whole of what follows. The QUILL editor does not have a Weather
+menu; weather is the companion apps' job, and running Quill Weather in
+the tray beside the editor is how you get it there.</p>
 <p><strong>Weather Now</strong> (<strong>Ctrl+Shift+W</strong>) opens
 the Weather Center: current conditions, an hour-by-hour forecast of
 configurable length with temperature, conditions, and chance of
