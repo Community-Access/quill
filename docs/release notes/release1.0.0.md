@@ -113,7 +113,7 @@ your disk. Nothing about your documents is uploaded anywhere as a matter of cour
 
 Every feature that reaches the internet is optional, is named as such, asks before its
 first use, and is disabled in Safe Mode. That includes the AI suite, the book library,
-podcast feeds, radio streams, weather alerts, GitHub, remote file sites, update checks,
+radio streams, weather alerts, GitHub, remote file sites, update checks,
 and cloud transcription. QUILL ships no API keys and adds nothing to anyone's bill; if
 you use a paid AI provider, it is your account and your key. Secrets you do give QUILL
 (provider keys, remote-site passwords, service tokens) go through a single hardened
@@ -174,7 +174,7 @@ QUILL's messages?" from a guess into an answer.
 QUILL's status bar carries cells for word count, selection, file information, spelling,
 autosave, background tasks, notifications, read-aloud, the Copy Tray, the current
 document format, the current section, the page indicator, the detected screen reader,
-and, when they are running, Radio and Podcasts. Every cell is directly activatable:
+and, when it is playing, Radio. Every cell is directly activatable:
 arrow to it and press Enter to act on it, or open its context menu for more. The
 spelling cell opens spelling. The Format cell opens the format switcher. The Radio cell
 plays and pauses. A status bar you can only look at would be worthless here, so this one
@@ -244,9 +244,8 @@ OS-reserved combinations before it commits.
 **Global Hotkeys** (**Tools > Global Hotkeys**) go one step further: system-wide
 combinations that work from any application. The safety design is the point. Only a
 curated allowlist can ever be bound globally: Radio play/pause, stop, mute, and volume up
-and down; Podcasts play/pause and stop; New Sticky Note, the Sticky Notes Browser, posting
-to Mastodon (which opens the compose dialog and never auto-sends), and show/hide to the
-tray.
+and down; New Sticky Note, the Sticky Notes Browser, posting to Mastodon (which opens the
+compose dialog and never auto-sends), and show/hide to the tray.
 Nothing that edits a document, deletes anything, or acts invisibly can be bound, no
 matter what a settings file says, because the allowlist is enforced in code and guarded
 by its own test. A global press always announces its outcome, so you hear what happened
@@ -324,10 +323,11 @@ from silence.
   zero through nine; **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jump to them.
   Direct chords, no mode to enter. They persist per document like named bookmarks,
   because that is what they are underneath.
-- **One temporary bookmark.** **Ctrl+J** sets it at the cursor — no dialog, no name —
-  and **Ctrl+Shift+J** jumps back to it. Setting a new one silently replaces the old,
-  and it does not persist between sessions, by design: it is disposable scratch state
-  for "step away and come right back."
+- **One temporary bookmark.** **Set Temporary Bookmark** (**Ctrl+J**) drops a single
+  unnamed jump point at the cursor with no dialog, and **Go to Temporary Bookmark**
+  (**Ctrl+Shift+J**) returns to it. Setting it again just moves it, and it is deliberately
+  forgotten when QUILL closes: it is the come-right-back-here marker, not something to
+  keep. Both are on the Navigate menu.
 
 The persistent kinds re-anchor to the text around them, so inserting or deleting above
 a bookmark moves the bookmark with its sentence instead of leaving it pointing at a
@@ -665,7 +665,13 @@ hard-to-redo jobs do.
 
 QUILL transcribes on your own machine. The bundled engine is **whisper.cpp**, with
 **Faster Whisper** (GPU-accelerated) and **Vosk** (low-resource, CPU-only) as
-alternatives. **Manage Speech Models** checks your actual RAM and GPU, flags a model
+alternatives. **NVIDIA Nemotron** (Nemotron Speech Streaming EN) is a fourth option:
+NVIDIA's 600M streaming model, run int8 through sherpa-onnx, the same runtime Visual
+Studio Code uses for its own on-device dictation. It is English-only, runs on the CPU
+with no GPU and no PyTorch, and is an optional install (the `quill[nemotron]` extra,
+or the engine's entry in **Help > Download Optional Components**); its model is
+fetched checksum-pinned from QUILL's own release assets and is off in Safe Mode.
+**Manage Speech Models** checks your actual RAM and GPU, flags a model
 that is too big for your machine, recommends the best fit, and downloads with a
 checksum-pinned, cancelable progress dialog.
 
@@ -1300,7 +1306,8 @@ silently dropped.
 
 ## The Book Library
 
-**The Book Library** is one search box across free, accessible reading sources:
+**The Book Library**, at **Tools > Media > Book Library**, is one search box across free,
+accessible reading sources:
 
 - **Project Gutenberg**, through the Gutendex API.
 - **Standard Ebooks** and **Feedbooks**, through their public OPDS catalogues.
@@ -1321,99 +1328,6 @@ in and download. QUILL never asks for or stores your BARD credentials. The searc
 uses BARD's free public API, with nothing sent but the words you searched for.
 
 Like every library source, it is disabled in Safe Mode.
-
----
-
-## Podcasts
-
-QUILL has a full podcast client built in, at **Tools > Media > Podcasts**. It is designed
-around the same idea as Internet Radio: one player that outlives any dialog you close, so
-listening never competes with writing.
-
-**Finding and adding shows.** **Add Podcast** searches Apple's free, keyless iTunes
-directory with a results list and a Subscribe button. **Add by Feed URL** takes a feed
-address directly. **Import OPML** reads another app's entire subscription list, folder
-structure included, so switching to QUILL does not mean re-subscribing to everything by
-hand, and **Export OPML** writes it back out so you are never locked in.
-
-**Organizing.** Shows live in a genuinely nested folder tree, with an episode list for
-whatever show or folder is selected. Any show can be paused, which keeps it and its
-downloads in your library while it stops fetching anything new.
-
-Four pinned views sit above the tree. **Favorites** gathers the shows you have starred.
-**New Episodes** collects every unplayed episode across every subscription. **Continue
-Listening** lists everything you are partway through. The **Inbox** is a triage layer that
-organizes *episodes* rather than shows: route a show to the Inbox and its new episodes
-surface there no matter which folder the show itself lives in, file them into your own
-nested Inbox folders, and QUILL remembers the first folder you choose for a show and
-auto-files that show's future episodes there, announcing that it will, with a Forget
-command for when you change your mind. Inbox actions never delete an episode.
-
-**Downloads.** Every download runs on its own dedicated background thread, so a big
-backlog never slows down anything else QUILL is doing. Two independent pause controls do
-two different things: **Pause All Downloads** stops the queue from starting anything new
-while letting whatever is mid-transfer finish, and pausing one specific episode halts that
-transfer immediately and resumes later from the exact byte it left off. Retention is per
-podcast, or a global default: keep everything, keep the most recent few, or delete a file
-the moment you finish listening.
-
-**Playback.** Closing the dialog never stops an episode. Starting a different episode
-always replaces what was playing, because QUILL never plays two things at once. Your
-position in an episode is saved as you go, so returning even much later resumes exactly
-where you stopped, and that position travels with your settings between machines. A speed
-control runs from 0.75x to 2.0x, remembered per show.
-
-**A real Play Queue.** Right-click any episode for **Play Next** or **Add to Queue**. When
-an episode ends, the next queued one starts, across shows. The queue dialog reorders
-entirely from the keyboard: Move Up and Move Down for nudges, plus Mark for Move and Move
-Marked Above or Below for long-distance placement. The queue survives restarts, and a
-queued episode that has vanished simply skips.
-
-**Search Everywhere** covers shows, episodes, your own episode notes, and every transcript
-you have fetched, grouped by type, with Enter jumping to the hit. Episode filters
-(Unplayed, Downloaded) and show filters (Favorites only, Has unplayed) narrow the manager
-live. Sorting is available for both lists, and every folder and show shows its unheard
-count in parentheses.
-
-**Transcripts and notes.** Feed-provided transcripts (VTT, SRT, or JSON) save to a file or
-open in the editor, cached so the next open is instant and searchable. **Add Episode Note**
-stamps a note at the current playback position, and pressing Enter on that note later jumps
-playback back to that exact moment.
-
-**Chapters.** When an episode carries chapter data, a **Chapters** button opens a jumpable
-list, and Next Chapter and Previous Chapter work from anywhere while a chaptered episode
-plays.
-
-**Show notes, read your way.** **View Show Notes** presents an episode's description either
-as accessible plain text (HTML stripped, real paragraph breaks so line-by-line navigation
-moves by line rather than word by word through one giant wrapped line, links rendered as
-`link text (https://...)`) or as rich formatted text with images removed, so opening show
-notes can never quietly trigger a network fetch. **Send Show Notes to Editor** opens the
-plain-text version as a new document.
-
-**Your own audio.** **Add Local Podcast** turns a folder of your own audio files into a
-show, stored outside your synced data directory by construction so nothing tries to carry
-gigabytes of audio between machines, and a watched folder turns anything you drop there
-into a new episode on the next scan.
-
-**ACB Media Podcasts** subscribe as a single command that imports the whole live
-directory, every show arriving stream-only so nothing mass-downloads.
-
-**Quality of listening.** **Always Sync** backfills a show's whole catalogue, and because
-that fights keep-last-N retention, ticking it nudges retention to keep-all and says so out
-loud. **Auto-trim silence** and **normalize loudness** run on each finished download. A
-live volume boost pushes quiet audio louder without changing your saved volume.
-
-A **Podcasts** status-bar cell appears the first time you play something, with play, pause,
-stop, and pause-or-resume-downloads on it and its context menu, and the system tray carries
-the same controls when QUILL is minimized.
-
-Audio only. There are no video podcasts, matching every other playback surface in QUILL.
-
-**Tools > Media > Sleep Timer** covers both Podcasts and Radio: choose a preset or type a
-custom duration, and whichever is playing fades gently to silence rather than cutting off
-mid-sentence, then stops, with your volume restored to what it was so pressing play later
-is not a quiet surprise.
 
 ---
 
@@ -1714,6 +1628,11 @@ remembered per station, and the **radio output device** chooser, which sends the
 different device than your screen reader. Radio's volume is its own, separate from your Windows system
 volume and separate from your screen reader's speech volume, so you can set the music quietly
 under your speech without touching either. Your volume is remembered between sessions.
+
+**Tools > Media > Sleep Timer**, in the editor, ends a listening session gently: choose a
+preset or type a custom duration, and the radio fades to silence rather than cutting off
+mid-sentence, then stops, with your volume restored to what it was so pressing play later
+is not a quiet surprise.
 
 **Announce Track Titles** can be toggled. **What's Playing** speaks the current track;
 **What's Playing (Review and Copy)** opens a read-only window you can arrow through and copy
@@ -2038,7 +1957,7 @@ Some things are too small for a section of their own and too useful to leave out
 - **The QuillVille menu** is the cross-app switcher, present in every app in the family, for
   jumping between QUILL, Quill Radio, and Quill Weather.
 - **Background watchers all answer the same three questions.** The watch folder, weather
-  monitoring, podcast episode checks, and GitHub monitors share one policy model covering how often
+  monitoring, and GitHub monitors share one policy model covering how often
   they poll, whether they tick audibly, and whether a result interrupts you. You configure the
   behavior once and it means the same thing everywhere.
 

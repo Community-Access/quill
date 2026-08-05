@@ -2,7 +2,7 @@
 
 **Purpose:** verify **every feature in QUILL** — the editor plus the two public companion apps (**Quill Radio**, **Quill Weather**) — works, presents an exact surface, and is accessible, under **both portable and system installs**. Nothing ships until every applicable box is checked.
 
-**Scope (derived from the codebase, not memory):** ~290 feature sub-items across 22 areas · 3 menu bars (~480–500 editor leaves + Radio ~10 / Weather ~7 top menus) · 227 distinct custom dialogs + 376 native + 7 web-form. Companion apps Cast / Studio / Converter / Beacon and the Media Player are **gated (dev/admin only)** for 1.0.0 and are verified only for *absence* from public surfaces (§G).
+**Scope (derived from the codebase, not memory):** ~290 feature sub-items across 22 areas · 3 menu bars (~480–500 editor leaves + Radio ~10 / Weather ~7 top menus) · 227 distinct custom dialogs + 376 native + 7 web-form. Companion apps Cast / Studio / Converter / Beacon, the Media Player, and the editor-embedded **Podcasts** feature (`core.podcasts`) are **gated (dev/admin only)** for 1.0.0 and are verified only for *absence* from public surfaces (§G) — do **not** sign them off as public editor features. Internet Radio and the Book Library are public and are signed off in full.
 
 ## How to use this pack
 Each checklist item is verified on three axes:
@@ -70,10 +70,11 @@ With the release/dev flag OFF (default public build), confirm these are **not re
 - [ ] The **standalone Audio Studio** launcher (QuillVille) is gated. *(Note: `Tools ▸ Speech ▸ Audiobook & Batch Speech…` / `tools.speech_batch_export` is the editor-embedded batch document-to-speech wizard, NOT the standalone app — it stays. It was relabelled from "Audio Studio…" to remove the name clash.)*
 - [ ] **Quill Cast / Converter / Beacon** launchers, command-palette commands, Explorer "Convert with Quill" shell verb, and build products are gated.
 - [ ] Command palette does not surface gated-app commands.
-- [ ] Radio + Weather remain fully public and unaffected.
+- [ ] **Podcasts (`core.podcasts`)** is absent from the editor: no `Tools ▸ Media ▸ Podcasts` items, no `podcasts.*` commands in the command palette, no Podcasts status-bar cell or tray section, no Podcasts entries in `Tools ▸ Global Hotkeys`, no Podcasts chords on the QUILL-key cheat sheet, and no Podcasts row in `Manage Individual Features`. The background new-episode check never runs. (`QUILL_DEV_BUILD=1` restores all of it.)
+- [ ] Radio + Weather remain fully public and unaffected; **Book Library** (`core.library`) remains public — `Tools ▸ Media` carries Radio, Book Library, and Sleep Timer.
 - [ ] Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable).
 
-Already-gated (`future.*`, verify still correct): ADP (`future.adp_assistant`, default ON — decide for 1.0), Publishing send half (`future.publishing`), Spotify (`future.spotify`), GLOW (`core.glow`), BITS Whisperer (`core.bw_whisperer`), third-party Quillins (locked; bundled load regardless).
+Already-gated (verify still correct): Podcasts (`core.podcasts`, unreleased in public builds — see above), ADP (`future.adp_assistant`, default ON — decide for 1.0), Publishing send half (`future.publishing`), Spotify (`future.spotify`), GLOW (`core.glow`), BITS Whisperer (`core.bw_whisperer`), third-party Quillins (locked; bundled load regardless).
 
 ---
 

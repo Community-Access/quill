@@ -294,16 +294,15 @@ writes them back to your disk. Nothing about your documents is uploaded
 anywhere as a matter of course.</p>
 <p>Every feature that reaches the internet is optional, is named as
 such, asks before its first use, and is disabled in Safe Mode. That
-includes the AI suite, the book library, podcast feeds, radio streams,
-weather alerts, GitHub, remote file sites, update checks, and cloud
-transcription. QUILL ships no API keys and adds nothing to anyone's
-bill; if you use a paid AI provider, it is your account and your key.
-Secrets you do give QUILL (provider keys, remote-site passwords, service
-tokens) go through a single hardened store backed by the Windows
-Credential Manager, a DPAPI-encrypted file in portable mode, or the
-macOS Keychain. A secret is never written to a settings file, a log, or
-a diagnostic bundle, and signing out of a service erases everything it
-stored in one step.</p>
+includes the AI suite, the book library, radio streams, weather alerts,
+GitHub, remote file sites, update checks, and cloud transcription. QUILL
+ships no API keys and adds nothing to anyone's bill; if you use a paid
+AI provider, it is your account and your key. Secrets you do give QUILL
+(provider keys, remote-site passwords, service tokens) go through a
+single hardened store backed by the Windows Credential Manager, a
+DPAPI-encrypted file in portable mode, or the macOS Keychain. A secret
+is never written to a settings file, a log, or a diagnostic bundle, and
+signing out of a service erases everything it stored in one step.</p>
 <p>Crash reports and diagnostic bundles never include your document
 text, and they are scrubbed for tokens and keys before they are
 written.</p>
@@ -356,12 +355,12 @@ bar is a control panel, not a decoration</h3>
 <p>QUILL's status bar carries cells for word count, selection, file
 information, spelling, autosave, background tasks, notifications,
 read-aloud, the Copy Tray, the current document format, the current
-section, the page indicator, the detected screen reader, and, when they
-are running, Radio and Podcasts. Every cell is directly activatable:
-arrow to it and press Enter to act on it, or open its context menu for
-more. The spelling cell opens spelling. The Format cell opens the format
-switcher. The Radio cell plays and pauses. A status bar you can only
-look at would be worthless here, so this one is a place you can go.</p>
+section, the page indicator, the detected screen reader, and, when it is
+playing, Radio. Every cell is directly activatable: arrow to it and
+press Enter to act on it, or open its context menu for more. The
+spelling cell opens spelling. The Format cell opens the format switcher.
+The Radio cell plays and pauses. A status bar you can only look at would
+be worthless here, so this one is a place you can go.</p>
 <h3 id="verbosity-how-much-quill-says">Verbosity: how much QUILL
 says</h3>
 <p>Different people want radically different amounts of speech, and the
@@ -435,15 +434,15 @@ conflicts and OS-reserved combinations before it commits.</p>
 Hotkeys</strong>) go one step further: system-wide combinations that
 work from any application. The safety design is the point. Only a
 curated allowlist can ever be bound globally: Radio play/pause, stop,
-mute, and volume up and down; Podcasts play/pause and stop; New Sticky
-Note, the Sticky Notes Browser, posting to Mastodon (which opens the
-compose dialog and never auto-sends), and show/hide to the tray. Nothing
-that edits a document, deletes anything, or acts invisibly can be bound,
-no matter what a settings file says, because the allowlist is enforced
-in code and guarded by its own test. A global press always announces its
-outcome, so you hear what happened even with QUILL minimized. The
-default show/hide chords are <strong>Ctrl+Alt+Shift+Q</strong> for
-QUILL, <strong>Ctrl+Alt+Shift+R</strong> for Quill Radio, and
+mute, and volume up and down; New Sticky Note, the Sticky Notes Browser,
+posting to Mastodon (which opens the compose dialog and never
+auto-sends), and show/hide to the tray. Nothing that edits a document,
+deletes anything, or acts invisibly can be bound, no matter what a
+settings file says, because the allowlist is enforced in code and
+guarded by its own test. A global press always announces its outcome, so
+you hear what happened even with QUILL minimized. The default show/hide
+chords are <strong>Ctrl+Alt+Shift+Q</strong> for QUILL,
+<strong>Ctrl+Alt+Shift+R</strong> for Quill Radio, and
 <strong>Ctrl+Alt+Shift+W</strong> for Quill Weather, and all three are
 rebindable. Global hotkeys are Windows-only, because macOS offers no
 equivalent; the same commands remain on menus and the palette
@@ -523,12 +522,13 @@ slots zero through nine; <strong>Ctrl+Alt+Shift+0</strong> through
 <strong>Ctrl+Alt+Shift+9</strong> jump to them. Direct chords, no mode
 to enter. They persist per document like named bookmarks, because that
 is what they are underneath.</li>
-<li><strong>One temporary bookmark.</strong> <strong>Ctrl+J</strong>
-sets it at the cursor — no dialog, no name — and
-<strong>Ctrl+Shift+J</strong> jumps back to it. Setting a new one
-silently replaces the old, and it does not persist between sessions, by
-design: it is disposable scratch state for "step away and come right
-back."</li>
+<li><strong>One temporary bookmark.</strong> <strong>Set Temporary
+Bookmark</strong> (<strong>Ctrl+J</strong>) drops a single unnamed jump
+point at the cursor with no dialog, and <strong>Go to Temporary
+Bookmark</strong> (<strong>Ctrl+Shift+J</strong>) returns to it. Setting
+it again just moves it, and it is deliberately forgotten when QUILL
+closes: it is the come-right-back-here marker, not something to keep.
+Both are on the Navigate menu.</li>
 </ul>
 <p>The persistent kinds re-anchor to the text around them, so inserting
 or deleting above a bookmark moves the bookmark with its sentence
@@ -929,9 +929,17 @@ hard-to-redo jobs do.</p>
 <p>QUILL transcribes on your own machine. The bundled engine is
 <strong>whisper.cpp</strong>, with <strong>Faster Whisper</strong>
 (GPU-accelerated) and <strong>Vosk</strong> (low-resource, CPU-only) as
-alternatives. <strong>Manage Speech Models</strong> checks your actual
-RAM and GPU, flags a model that is too big for your machine, recommends
-the best fit, and downloads with a checksum-pinned, cancelable progress
+alternatives. <strong>NVIDIA Nemotron</strong> (Nemotron Speech
+Streaming EN) is a fourth option: NVIDIA's 600M streaming model, run
+int8 through sherpa-onnx, the same runtime Visual Studio Code uses for
+its own on-device dictation. It is English-only, runs on the CPU with no
+GPU and no PyTorch, and is an optional install (the
+<code>quill[nemotron]</code> extra, or the engine's entry in
+<strong>Help &gt; Download Optional Components</strong>); its model is
+fetched checksum-pinned from QUILL's own release assets and is off in
+Safe Mode. <strong>Manage Speech Models</strong> checks your actual RAM
+and GPU, flags a model that is too big for your machine, recommends the
+best fit, and downloads with a checksum-pinned, cancelable progress
 dialog.</p>
 <ul>
 <li><strong>Locked Dictation</strong> is the reliable path for speaking
@@ -1627,8 +1635,9 @@ jump to with single-key navigation rather than being silently
 dropped.</p>
 <hr />
 <h2 id="the-book-library">The Book Library</h2>
-<p><strong>The Book Library</strong> is one search box across free,
-accessible reading sources:</p>
+<p><strong>The Book Library</strong>, at <strong>Tools &gt; Media &gt;
+Book Library</strong>, is one search box across free, accessible reading
+sources:</p>
 <ul>
 <li><strong>Project Gutenberg</strong>, through the Gutendex API.</li>
 <li><strong>Standard Ebooks</strong> and <strong>Feedbooks</strong>,
@@ -1652,105 +1661,6 @@ page in your browser, where you sign in and download. QUILL never asks
 for or stores your BARD credentials. The search itself uses BARD's free
 public API, with nothing sent but the words you searched for.</p>
 <p>Like every library source, it is disabled in Safe Mode.</p>
-<hr />
-<h2 id="podcasts">Podcasts</h2>
-<p>QUILL has a full podcast client built in, at <strong>Tools &gt; Media
-&gt; Podcasts</strong>. It is designed around the same idea as Internet
-Radio: one player that outlives any dialog you close, so listening never
-competes with writing.</p>
-<p><strong>Finding and adding shows.</strong> <strong>Add
-Podcast</strong> searches Apple's free, keyless iTunes directory with a
-results list and a Subscribe button. <strong>Add by Feed URL</strong>
-takes a feed address directly. <strong>Import OPML</strong> reads
-another app's entire subscription list, folder structure included, so
-switching to QUILL does not mean re-subscribing to everything by hand,
-and <strong>Export OPML</strong> writes it back out so you are never
-locked in.</p>
-<p><strong>Organizing.</strong> Shows live in a genuinely nested folder
-tree, with an episode list for whatever show or folder is selected. Any
-show can be paused, which keeps it and its downloads in your library
-while it stops fetching anything new.</p>
-<p>Four pinned views sit above the tree. <strong>Favorites</strong>
-gathers the shows you have starred. <strong>New Episodes</strong>
-collects every unplayed episode across every subscription.
-<strong>Continue Listening</strong> lists everything you are partway
-through. The <strong>Inbox</strong> is a triage layer that organizes
-<em>episodes</em> rather than shows: route a show to the Inbox and its
-new episodes surface there no matter which folder the show itself lives
-in, file them into your own nested Inbox folders, and QUILL remembers
-the first folder you choose for a show and auto-files that show's future
-episodes there, announcing that it will, with a Forget command for when
-you change your mind. Inbox actions never delete an episode.</p>
-<p><strong>Downloads.</strong> Every download runs on its own dedicated
-background thread, so a big backlog never slows down anything else QUILL
-is doing. Two independent pause controls do two different things:
-<strong>Pause All Downloads</strong> stops the queue from starting
-anything new while letting whatever is mid-transfer finish, and pausing
-one specific episode halts that transfer immediately and resumes later
-from the exact byte it left off. Retention is per podcast, or a global
-default: keep everything, keep the most recent few, or delete a file the
-moment you finish listening.</p>
-<p><strong>Playback.</strong> Closing the dialog never stops an episode.
-Starting a different episode always replaces what was playing, because
-QUILL never plays two things at once. Your position in an episode is
-saved as you go, so returning even much later resumes exactly where you
-stopped, and that position travels with your settings between machines.
-A speed control runs from 0.75x to 2.0x, remembered per show.</p>
-<p><strong>A real Play Queue.</strong> Right-click any episode for
-<strong>Play Next</strong> or <strong>Add to Queue</strong>. When an
-episode ends, the next queued one starts, across shows. The queue dialog
-reorders entirely from the keyboard: Move Up and Move Down for nudges,
-plus Mark for Move and Move Marked Above or Below for long-distance
-placement. The queue survives restarts, and a queued episode that has
-vanished simply skips.</p>
-<p><strong>Search Everywhere</strong> covers shows, episodes, your own
-episode notes, and every transcript you have fetched, grouped by type,
-with Enter jumping to the hit. Episode filters (Unplayed, Downloaded)
-and show filters (Favorites only, Has unplayed) narrow the manager live.
-Sorting is available for both lists, and every folder and show shows its
-unheard count in parentheses.</p>
-<p><strong>Transcripts and notes.</strong> Feed-provided transcripts
-(VTT, SRT, or JSON) save to a file or open in the editor, cached so the
-next open is instant and searchable. <strong>Add Episode Note</strong>
-stamps a note at the current playback position, and pressing Enter on
-that note later jumps playback back to that exact moment.</p>
-<p><strong>Chapters.</strong> When an episode carries chapter data, a
-<strong>Chapters</strong> button opens a jumpable list, and Next Chapter
-and Previous Chapter work from anywhere while a chaptered episode
-plays.</p>
-<p><strong>Show notes, read your way.</strong> <strong>View Show
-Notes</strong> presents an episode's description either as accessible
-plain text (HTML stripped, real paragraph breaks so line-by-line
-navigation moves by line rather than word by word through one giant
-wrapped line, links rendered as <code>link text (https://...)</code>) or
-as rich formatted text with images removed, so opening show notes can
-never quietly trigger a network fetch. <strong>Send Show Notes to
-Editor</strong> opens the plain-text version as a new document.</p>
-<p><strong>Your own audio.</strong> <strong>Add Local Podcast</strong>
-turns a folder of your own audio files into a show, stored outside your
-synced data directory by construction so nothing tries to carry
-gigabytes of audio between machines, and a watched folder turns anything
-you drop there into a new episode on the next scan.</p>
-<p><strong>ACB Media Podcasts</strong> subscribe as a single command
-that imports the whole live directory, every show arriving stream-only
-so nothing mass-downloads.</p>
-<p><strong>Quality of listening.</strong> <strong>Always Sync</strong>
-backfills a show's whole catalogue, and because that fights keep-last-N
-retention, ticking it nudges retention to keep-all and says so out loud.
-<strong>Auto-trim silence</strong> and <strong>normalize
-loudness</strong> run on each finished download. A live volume boost
-pushes quiet audio louder without changing your saved volume.</p>
-<p>A <strong>Podcasts</strong> status-bar cell appears the first time
-you play something, with play, pause, stop, and
-pause-or-resume-downloads on it and its context menu, and the system
-tray carries the same controls when QUILL is minimized.</p>
-<p>Audio only. There are no video podcasts, matching every other
-playback surface in QUILL.</p>
-<p><strong>Tools &gt; Media &gt; Sleep Timer</strong> covers both
-Podcasts and Radio: choose a preset or type a custom duration, and
-whichever is playing fades gently to silence rather than cutting off
-mid-sentence, then stops, with your volume restored to what it was so
-pressing play later is not a quiet surprise.</p>
 <hr />
 <h2 id="git-and-github">Git and GitHub</h2>
 <p>Version control is one of the least accessible corners of computing:
@@ -2096,6 +2006,11 @@ than your screen reader. Radio's volume is its own, separate from your
 Windows system volume and separate from your screen reader's speech
 volume, so you can set the music quietly under your speech without
 touching either. Your volume is remembered between sessions.</p>
+<p><strong>Tools &gt; Media &gt; Sleep Timer</strong>, in the editor,
+ends a listening session gently: choose a preset or type a custom
+duration, and the radio fades to silence rather than cutting off
+mid-sentence, then stops, with your volume restored to what it was so
+pressing play later is not a quiet surprise.</p>
 <p><strong>Announce Track Titles</strong> can be toggled. <strong>What's
 Playing</strong> speaks the current track; <strong>What's Playing
 (Review and Copy)</strong> opens a read-only window you can arrow
@@ -2487,11 +2402,10 @@ they are writing in. It is off in Safe Mode.</li>
 present in every app in the family, for jumping between QUILL, Quill
 Radio, and Quill Weather.</li>
 <li><strong>Background watchers all answer the same three
-questions.</strong> The watch folder, weather monitoring, podcast
-episode checks, and GitHub monitors share one policy model covering how
-often they poll, whether they tick audibly, and whether a result
-interrupts you. You configure the behavior once and it means the same
-thing everywhere.</li>
+questions.</strong> The watch folder, weather monitoring, and GitHub
+monitors share one policy model covering how often they poll, whether
+they tick audibly, and whether a result interrupts you. You configure
+the behavior once and it means the same thing everywhere.</li>
 </ul>
 <hr />
 <h2 id="getting-help-and-helping-back">Getting help, and helping
