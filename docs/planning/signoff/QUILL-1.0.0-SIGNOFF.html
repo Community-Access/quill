@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL-1.0.0-SIGNOFF</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100--release-sign-off-test-plan-master">QUILL 1.0.0 —
+Release Sign-off Test Plan (master)</h1>
+<p><strong>Purpose:</strong> verify <strong>every feature in
+QUILL</strong> — the editor plus the two public companion apps
+(<strong>Quill Radio</strong>, <strong>Quill Weather</strong>) — works,
+presents an exact surface, and is accessible, under <strong>both
+portable and system installs</strong>. Nothing ships until every
+applicable box is checked.</p>
+<p><strong>Scope (derived from the codebase, not memory):</strong> ~290
+feature sub-items across 22 areas · 3 menu bars (~480–500 editor leaves
++ Radio ~10 / Weather ~7 top menus) · 227 distinct custom dialogs + 376
+native + 7 web-form. Companion apps Cast / Studio / Converter / Beacon
+and the Media Player are <strong>gated (dev/admin only)</strong> for
+1.0.0 and are verified only for <em>absence</em> from public surfaces
+(§G).</p>
+<h2 id="how-to-use-this-pack">How to use this pack</h2>
+<p>Each checklist item is verified on three axes:</p>
+<ul>
+<li><strong>[ ] Works</strong> — the action does what it says, no
+error/crash.</li>
+<li><strong>[ ] Surface-exact</strong> — label, shortcut, and menu path
+exactly match the reference inventory (<code>signoff/inventory/</code>),
+and the accessible name is correct.</li>
+<li><strong>[ ] A11y</strong> — keyboard-reachable, focus correct, and
+the outcome is <strong>announced</strong> (speech + braille), no silent
+state change.</li>
+</ul>
+<p>Run the <strong>entire pass once per environment</strong> in §A. A
+feature is "signed off" only when it passes on <strong>every applicable
+environment</strong>.</p>
+<p>Files in this pack:</p>
+<ul>
+<li><code>QUILL-1.0.0-SIGNOFF.md</code> — this master (harness +
+cross-cutting matrices + readiness summary).</li>
+<li><code>signoff/SIGNOFF-editor.md</code> — every editor
+menu/command/dialog (generated).</li>
+<li><code>signoff/SIGNOFF-radio.md</code> ·
+<code>signoff/SIGNOFF-weather.md</code> — the public companion
+apps.</li>
+<li><code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface
+(generated from the A11Y-4 registry).</li>
+<li><code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system
+scenario deep-dive.</li>
+</ul>
+<hr />
+<h2 id="a-environment-matrix--run-the-whole-pack-in-each">§A.
+Environment matrix — run the whole pack in EACH</h2>
+<p>Because install-mode behavior is governed by <strong>three
+independent "portable" signals that can disagree</strong> (data-dir,
+secrets/<code>QUILL_PORTABLE</code>, update-asset), each must be
+exercised, per OS.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Environment</th>
+<th>Data dir</th>
+<th>Secrets backend</th>
+<th>Update path</th>
+<th>Must run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td><strong>Windows — system install</strong> (Inno, no
+<code>data/</code>)</td>
+<td><code>%APPDATA%\Quill</code></td>
+<td>Windows Credential Manager</td>
+<td>installer <code>setup.exe</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>E2</td>
+<td><strong>Windows — portable ZIP</strong> (<code>data/</code> beside
+exe, <code>QUILL_PORTABLE=1</code>)</td>
+<td><code>&lt;app&gt;\data</code></td>
+<td>DPAPI <code>keys.enc</code>
+(<code>quill-portable-keys-v1</code>)</td>
+<td>portable <code>.zip</code> robocopy</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>E3</td>
+<td><strong>Windows — installed but ships <code>data/</code></strong>
+(the split-signal case, #1100)</td>
+<td>resolves per <code>storage-mode.json</code></td>
+<td><strong>DPAPI <code>keys.enc</code></strong> even if data is
+<code>%APPDATA%</code></td>
+<td>installer (via <code>unins000</code> marker)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>E4</td>
+<td><strong>Windows — custom data location</strong>
+(<code>Settings ▸ data location</code>)</td>
+<td>user-chosen path</td>
+<td>per <code>QUILL_PORTABLE</code></td>
+<td>per detection</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>E5</td>
+<td><strong>macOS — app bundle</strong></td>
+<td><code>~/.quill</code> (or chosen)</td>
+<td>login <strong>Keychain</strong> (no portable single-folder store —
+expect the one-time warning)</td>
+<td><code>.dmg</code>/<code>.pkg</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>E6</td>
+<td><strong>Safe Mode</strong> (<code>QUILL_SAFE_MODE=1</code>, both
+portable + system)</td>
+<td>as above</td>
+<td>as above</td>
+<td>n/a</td>
+<td>✅ (network/AI/plugins off)</td>
+</tr>
+</tbody>
+</table>
+<ul class="task-list">
+<li><label><input type="checkbox" />E1 pass complete [ ] E2 [ ] E3 [ ]
+E4 [ ] E5 [ ] E6</label></li>
+<li><label><input type="checkbox" /><strong>Cross-signal check:</strong>
+in E3, confirm <code>keys.enc</code> lands where product intent expects
+(it follows the <em>resolved data dir</em>, so an appdata data-dir +
+<code>QUILL_PORTABLE=1</code> writes
+<code>%APPDATA%\Quill\keys.enc</code>). Record actual vs.
+intended.</label></li>
+</ul>
+<p>Full per-scenario cases:
+<strong><code>signoff/SIGNOFF-install-matrix.md</code></strong>.</p>
+<hr />
+<h2 id="b-editor--featurecommandsurface-sign-off">§B. Editor —
+feature/command/surface sign-off</h2>
+<p>Every editor menu (File · Edit · View · Insert · Format · Navigate ·
+Search · Tools · AI · [ADP] · Window · QuillVille · Help) with each leaf
+item and dialog. See
+<strong><code>signoff/SIGNOFF-editor.md</code></strong> (generated from
+the command registry + menu tree + dialog registry). Section is complete
+when every item there is triple-checked across §A environments.</p>
+<h2 id="c-quill-radio-public--sign-off">§C. Quill Radio (public) —
+sign-off</h2>
+<p>Station · Playback · [Record] · [Weather] · [ADP] · View · QuillVille
+· Quillins · Help. Every item + all 15 Radio custom dialogs (+21
+native). See <strong><code>signoff/SIGNOFF-radio.md</code></strong>.
+Include: playback survives dropped connection, scheduled recording
+fires, favorites order preserved, backup/restore round-trip, autostart,
+missed-recording report.</p>
+<h2 id="d-quill-weather-public--sign-off">§D. Quill Weather (public) —
+sign-off</h2>
+<p>File · Weather · Options · [ADP] · QuillVille · Help. Every item +
+WeatherCenter/AddLocation/Settings dialogs. See
+<strong><code>signoff/SIGNOFF-weather.md</code></strong>. Include:
+background Scheduled-Task alert check (no process running),
+severe-weather poll tightening, alert sounder options, Test Alert,
+"already-told-you" dedupe across live + background.</p>
+<h2 id="e-dialogs--every-surface">§E. Dialogs — every surface</h2>
+<p>All 227 custom + 376 native + 7 web-form dialogs, grouped by area,
+each verified: opens, keyboard-complete, accessible name/role,
+Escape/Close contract, announces its outcome. See
+<strong><code>signoff/SIGNOFF-dialogs.md</code></strong>
+(generated).</p>
+<hr />
+<h2 id="f-cross-cutting--accessibility-applies-to-every-item-above">§F.
+Cross-cutting — accessibility (applies to every item above)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Every focusable control has an
+accessible <strong>name</strong> (audited by
+<code>accessible_name_audit</code>).</label></li>
+<li><label><input type="checkbox" />Every dialog honors the
+<strong>Escape/Close</strong> contract (<code>apply_modal_ids</code>)
+and is registered in the A11Y-4 dialog inventory.</label></li>
+<li><label><input type="checkbox" />Every user-visible outcome is
+<strong>announced</strong> (GATE-12 announce-gap); no silent state
+changes.</label></li>
+<li><label><input type="checkbox" />Menu items expose correct
+<strong>mnemonics + shortcuts</strong>; no mnemonic collisions
+introduced.</label></li>
+<li><label><input type="checkbox" />Braille output routes for
+announcements across Editor + Radio + Cast (the #1283
+path).</label></li>
+<li><label><input type="checkbox" />Screen readers verified:
+<strong>NVDA, JAWS, Narrator</strong> (Windows) and
+<strong>VoiceOver</strong> (macOS).</label></li>
+</ul>
+<h2
+id="g-gating-verification--non-public-apps-must-be-absent-from-public-surfaces">§G.
+Gating verification — non-public apps MUST be absent from public
+surfaces</h2>
+<p>With the release/dev flag OFF (default public build), confirm these
+are <strong>not reachable</strong>:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>QuillVille menu</strong>
+lists only Open QUILL / Quill Radio / Quill Weather (Cast, Studio,
+Converter, Beacon hidden — <code>RELEASED_APPS</code>).</label></li>
+<li><label><input type="checkbox" /><strong>Tools ▸ Media ▸ Media
+Player</strong> (<code>app.open_media_player</code>) is
+hidden/gated.</label></li>
+<li><label><input type="checkbox" /><strong>Tools ▸ Speech ▸ Audio
+Studio</strong> (<code>tools.speech_batch_export</code>) is
+hidden/gated.</label></li>
+<li><label><input type="checkbox" /><strong>Quill Cast / Converter /
+Beacon</strong> launchers, command-palette commands, Explorer "Convert
+with Quill" shell verb, and build products are gated.</label></li>
+<li><label><input type="checkbox" />Command palette does not surface
+gated-app commands.</label></li>
+<li><label><input type="checkbox" />Radio + Weather remain fully public
+and unaffected.</label></li>
+<li><label><input type="checkbox" />Automated test asserts gated apps
+are absent from public surfaces when the flag is off (Phase 2
+deliverable).</label></li>
+</ul>
+<p>Already-gated (<code>future.*</code>, verify still correct): ADP
+(<code>future.adp_assistant</code>, default ON — decide for 1.0),
+Publishing send half (<code>future.publishing</code>), Spotify
+(<code>future.spotify</code>), GLOW (<code>core.glow</code>), BITS
+Whisperer (<code>core.bw_whisperer</code>), third-party Quillins
+(locked; bundled load regardless).</p>
+<hr />
+<h2 id="h-readiness-summary-fill-as-sections-complete">§H. Readiness
+summary (fill as sections complete)</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Items</th>
+<th>Signed off (E1–E6)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editor (§B)</td>
+<td>~500 menu + 179 dialogs</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Radio (§C)</td>
+<td>~10 menus + 15 dialogs</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Weather (§D)</td>
+<td>~7 menus + 3 dialogs</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Dialogs (§E)</td>
+<td>227 custom + 376 native + 7 web</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Accessibility (§F)</td>
+<td>cross-cutting</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Gating (§G)</td>
+<td>non-public absent</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Install matrix</td>
+<td>E1–E6 all scenarios</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>1.0.0 is ready to test when every box in §A–§G is checked and
+this table is all ✅.</strong></p>
+</body>
+</html>

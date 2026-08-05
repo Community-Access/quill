@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SIGNOFF-radio</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100-sign-off--quill-radio-public-app">QUILL 1.0.0 Sign-off
+— Quill Radio (public app)</h1>
+<p><strong>29 commands</strong> + <strong>36 dialog surfaces.</strong>
+Run across every §A environment (portable + system, Windows + macoS).
+Legend: W/S/A as in the master.</p>
+<h2 id="commands">Commands</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.add_custom_station</code> — Internet Radio: Add Custom
+Station...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.browse</code> — Internet Radio: Browse
+Stations...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.copy_whats_playing</code> — Internet Radio: Copy What's
+Playing</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.find_streams</code> — Internet Radio: Find Streams from a
+Website...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.forward</code> — Internet Radio: Forward 30
+Seconds</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.jump_to_live</code> — Internet Radio: Back to
+Live</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.manage_favorites</code> — Internet Radio: Manage
+Favorites...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.mute_toggle</code> — Internet Radio: Mute/Unmute
+<code>Ctrl+Shift+Grave, 9</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.play_last</code> — Internet Radio: Play Last
+Station</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.play_pause</code> — Internet Radio: Play/Pause
+<code>Ctrl+Shift+Grave, N</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.record_station</code> — Internet Radio: Record
+Station...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.record_toggle</code> — Internet Radio: Record Now / Stop
+Recording <code>Ctrl+Shift+Grave, 6</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.recording_settings</code> — Internet Radio: Recording
+Settings...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.recordings</code> — Internet Radio:
+Recordings...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.rewind</code> — Internet Radio: Rewind 30
+Seconds</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.schedule_recording</code> — Internet Radio: Schedule
+Recording...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.sound_enhancements</code> — Internet Radio: Sound
+Enhancements...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.stop</code> — Internet Radio: Stop
+<code>Ctrl+Shift+Grave, 0</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.stop_all_recordings</code> — Internet Radio: Stop All
+Recordings</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.toggle_title_announcements</code> — Internet Radio: Announce
+Track Titles On/Off</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.volume_boost</code> — Internet Radio: Volume Boost
+On/Off</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.volume_down</code> — Internet Radio: Volume
+Down</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.volume_up</code> — Internet Radio: Volume Up</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.wake_timer</code> — Internet Radio: Wake-Up
+Timer...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.whats_playing</code> — Internet Radio: What's
+Playing?</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>radio.whats_playing_details</code> — Internet Radio: What's
+Playing - Review and Copy...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>spotify.browse</code> — Spotify: Browse Spotify Podcasts...
+<strong>[GATED future.spotify]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>spotify.connect</code> — Spotify: Connect to Spotify...
+<strong>[GATED future.spotify]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>view.toggle_window_to_tray</code> — Show/Hide QUILL Cast to the
+Tray</label></li>
+</ul>
+<h2 id="dialog-surfaces">Dialog surfaces</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/radio.py::RadioAppFrame._on_sort_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/add_station_dialog.py::AddStationDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/backup_ui.py::back_up_radio_data::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/backup_ui.py::restore_radio_data::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/browse_tree_dialog.py::BrowseTreeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/close_confirm_dialog.py::RadioCloseConfirmDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::create_folder_prompt::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::create_folder_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::delete_folder_prompt::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::move_favorite_to_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::move_favorite_to_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::remove_all_favorites::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::remove_favorite::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::rename_favorite::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::rename_folder_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_delete_folder::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_rename_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/import_stations_dialog.py::prompt_import_target::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/now_playing_dialog.py::NowPlayingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/output_device_ui.py::choose_output_device::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/playlist_export_ui.py::export_favorites_to_playlist::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/record_station_dialog.py::RecordStationDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog._on_browse_temp::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog._on_remove::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/resume_recording_dialog.py::ResumeRecordingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/resume_recording_dialog.py::ResumeRecordingsBatchDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/wake_timer_dialog.py::WakeUpTimerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2 id="scenario-checks-beyond-per-command">Scenario checks (beyond
+per-command)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A Playback survives a
+dropped connection (auto-reconnect) and a crash (resume).</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A A scheduled recording
+fires while the app is in the tray.</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A Favorites manual order
+is preserved across restart; move up/down announces
+landing.</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A Back Up / Restore
+stations &amp; settings (<code>.qrbackup</code>)
+round-trips.</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A Start-with-Windows
+autostart; missed-recording report on launch.</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A Weather menu
+(embedded) works; QuillVille switcher lists only
+QUILL/Weather.</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A Volume remembered
+across restart; media keys / tray hotkey
+(Ctrl+Alt+Shift+R).</label></li>
+</ul>
+</body>
+</html>

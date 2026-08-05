@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SIGNOFF-install-matrix</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="quill-100-sign-off--installation-mode-matrix-portable-vs-system-all-scenarios">QUILL
+1.0.0 Sign-off — Installation-mode matrix (portable vs system, all
+scenarios)</h1>
+<p>Install-mode behavior is governed by <strong>three independent
+"portable" signals that can disagree</strong>: (1)
+<strong>data-dir</strong>
+(<code>storage_mode.py</code>/<code>storage-mode.json</code>), (2)
+<strong>secrets</strong> (<code>QUILL_PORTABLE=1</code> → DPAPI
+<code>keys.enc</code> vs Credential Manager), (3)
+<strong>update-asset</strong> (<code>updates.running_portable()</code>,
+subtracts the <code>unins000</code> marker). Every scenario below must
+be run for <strong>QUILL editor, Quill Radio, and Quill
+Weather</strong>. Legend per box: <strong>[ ]</strong> = verified.</p>
+<h2 id="environments-run-the-whole-sign-off-in-each">Environments (run
+the whole sign-off in each)</h2>
+<ul>
+<li><strong>E1 Windows system install</strong> (Inno, no
+<code>data/</code>) · <strong>E2 Windows portable ZIP</strong>
+(<code>data/</code> beside exe) · <strong>E3 Windows
+installed-but-ships-<code>data/</code></strong> (split-signal, #1100) ·
+<strong>E4 Windows custom data location</strong> · <strong>E5 macOS
+bundle</strong> · <strong>E6 Safe Mode</strong> (portable +
+system).</li>
+</ul>
+<hr />
+<h2 id="1-data-directory--settings-location">1. Data directory &amp;
+settings location</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />E1 data + <code>settings.json</code>
+resolve to <code>%APPDATA%\Quill</code>.</label></li>
+<li><label><input type="checkbox" />E2 data + settings resolve to
+<code>&lt;app&gt;\data</code>; nothing written under
+<code>%APPDATA%</code>.</label></li>
+<li><label><input type="checkbox" />E3 data resolves per
+<code>storage-mode.json</code>; confirm no accidental split (data in
+appdata while app "feels" portable).</label></li>
+<li><label><input type="checkbox" />E4 custom path honored;
+<code>pending-data-location.json</code> applied on next launch before
+dirs resolve.</label></li>
+<li><label><input type="checkbox" />E5 data resolves to
+<code>~/.quill</code> (or chosen); <code>storage-mode.json</code> under
+it.</label></li>
+<li><label><input type="checkbox" /><code>ensure_app_directories</code>
+creates logs / diagnostics / backups / autosave / sessions in the
+resolved dir (all E).</label></li>
+</ul>
+<h2 id="2-credential--api-key--secret-storage-the-highest-risk-axis">2.
+Credential / API-key &amp; secret storage (the highest-risk axis)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />E1 (Windows,
+<code>QUILL_PORTABLE</code> unset): secrets in <strong>Windows
+Credential Manager</strong> (<code>CRED_PERSIST_LOCAL_MACHINE</code>);
+nothing in a <code>keys.enc</code>.</label></li>
+<li><label><input type="checkbox" />E2 (Windows,
+<code>QUILL_PORTABLE=1</code>): secrets in <strong>DPAPI
+<code>keys.enc</code></strong> in the resolved data dir, entropy
+<code>quill-portable-keys-v1</code>, per-key
+<code>CryptProtectData</code>.</label></li>
+<li><label><input type="checkbox" /><strong>E3 split-signal:</strong>
+with <code>QUILL_PORTABLE=1</code> but data in <code>%APPDATA%</code>,
+confirm <code>keys.enc</code> lands in
+<code>%APPDATA%\Quill\keys.enc</code> (follows resolved data dir).
+<strong>Record actual vs product intent</strong> — keystore backend is
+chosen by bundle layout, not the user's storage choice.</label></li>
+<li><label><input type="checkbox" />Env override
+<code>QUILL_&lt;KEY&gt;_KEY</code> wins in every mode and is never
+overwritten/persisted.</label></li>
+<li><label><input type="checkbox" />E5 macOS: secrets in <strong>login
+Keychain</strong> both modes; portable shows the one-time "system-level
+storage" warning (no silent drop); DPAPI path never taken (raises
+off-Windows).</label></li>
+<li><label><input type="checkbox" />Linux/other: no secure store —
+save/load/delete return empty/None/False gracefully (no crash), both
+modes.</label></li>
+<li><label><input type="checkbox" />Sign-out of a service wipes only
+that service's namespace; nothing left behind.</label></li>
+<li><label><input type="checkbox" />Redaction: no token/key survives
+logs, diagnostics, or crash bundle (SEC-13) in any mode.</label></li>
+</ul>
+<h2 id="3-updates">3. Updates</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />E1/E3: offered the <strong>platform
+installer</strong> (<code>.exe</code>/<code>.msi</code>; macOS
+<code>.dmg</code>/<code>.pkg</code>); applies via elevated silent
+<code>setup.exe</code>, then relaunch.</label></li>
+<li><label><input type="checkbox" />E2: offered the <strong>portable
+<code>.zip</code></strong> (name contains <code>portable</code>);
+applies via <code>robocopy /MIR</code> <strong>excluding
+<code>data/</code></strong>, then relaunch; zip-slip/bomb guard
+holds.</label></li>
+<li><label><input type="checkbox" />E3 disambiguation (#1100):
+<code>running_portable()</code> returns <strong>False</strong> for an
+installed build with <code>{app}\data</code> because of the
+<code>unins000</code> marker → gets the installer (not the portable
+zip).</label></li>
+<li><label><input type="checkbox" />Update discovery is HTTPS-only,
+trusted-host allowlisted, signed-manifest verified — identical all
+modes.</label></li>
+<li><label><input type="checkbox" />Dev/non-frozen run: update falls
+back to "reveal download" (no crash) instead of applying.</label></li>
+<li><label><input type="checkbox" />Companion apps (Radio/Weather)
+resolve their own portable/installed verdict correctly (they use a bare
+<code>unins000</code>-beside-exe check +
+<code>prefer_portable</code>).</label></li>
+</ul>
+<h2 id="4-first-run-migration--import">4. First-run, migration &amp;
+import</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Fresh install triggers the
+<strong>Startup Wizard</strong> (nine pages);
+<code>quill-new-install.txt</code> marker consumed even if appdata says
+"done."</label></li>
+<li><label><input type="checkbox" />Change data location: recorded as
+pending, applied next launch; portable target =
+<code>portable_root_dir()</code>, appdata =
+<code>%APPDATA%\Quill</code>/<code>~/.quill</code>, custom = saved
+path.</label></li>
+<li><label><input type="checkbox" />Import stranded prior-install data:
+on a fresh data dir, QUILL offers to import a populated prior location
+(old portable <code>data/</code> ↔︎ appdata); location-control files are
+<strong>not</strong> carried over.</label></li>
+<li><label><input type="checkbox" />Settings schema migration
+(delta-based, <code>schema_version 2</code>): legacy backed up to
+<code>&lt;data&gt;/migration-backups/</code> before rewrite; corrupt
+settings quarantined, not lost — backup dir follows the resolved data
+dir in every mode.</label></li>
+</ul>
+<h2
+id="5-safe-mode-install-mode-independent--verify-it-does-not-differ">5.
+Safe Mode (install-mode-independent — verify it does NOT differ)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><code>QUILL_SAFE_MODE=1</code> /
+<code>--safe-mode</code> disables plugins, AI, network, restore,
+indexing, watchers, themes, snippets — identical in portable and
+system.</label></li>
+<li><label><input type="checkbox" />Verbosity Safe Mode
+(<code>QUILL_VERBOSITY_SAFE_MODE=1</code>) ignores custom verbosity —
+mode-independent.</label></li>
+<li><label><input type="checkbox" />Book Library, Radio, Weather network
+features all refuse in Safe Mode.</label></li>
+</ul>
+<h2 id="6-portable-specific-behaviors">6. Portable-specific
+behaviors</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Everything (data, settings, secrets,
+logs) stays inside the app folder <strong>only when all three signals
+agree</strong> (E2). Document any case where they don't.</label></li>
+<li><label><input type="checkbox" />Moving the portable folder to
+another machine/drive: DPAPI <code>keys.enc</code> is
+machine/account-bound — confirm the documented re-entry behavior (keys
+don't transfer), no crash.</label></li>
+<li><label><input type="checkbox" />Portable on a read-only/USB medium:
+<code>storage-mode.json</code> falls back to appdata path
+gracefully.</label></li>
+</ul>
+<h2 id="7-per-app-install-mode-pass">7. Per-app install-mode pass</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Editor:</strong> all of
+§1–§6.</label></li>
+<li><label><input type="checkbox" /><strong>Quill Radio:</strong>
+data/settings/secrets/updates verdict correct in E1–E5; stations &amp;
+recordings land in the right place; <code>.qrbackup</code> restore works
+portable + system.</label></li>
+<li><label><input type="checkbox" /><strong>Quill Weather:</strong>
+data/settings/updates verdict correct; the <strong>background
+Scheduled-Task</strong> registers per-user and fires in both install
+modes; alert dedupe store follows the data dir.</label></li>
+</ul>
+<blockquote>
+<p><strong>Landmine to watch (from code):</strong>
+<code>is_portable_mode()</code> reads only <code>QUILL_PORTABLE</code>,
+which the launcher sets whenever <code>data/</code> exists beside the
+exe — so a build shipping <code>data/</code> writes DPAPI
+<code>keys.enc</code> even if the user picked appdata storage. Verify
+this matches product intent before sign-off.</p>
+</blockquote>
+</body>
+</html>

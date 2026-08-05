@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>RELEASE-1.0.0-READINESS</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100--release-readiness-program">QUILL 1.0.0 — Release
+Readiness Program</h1>
+<p><strong>Owner:</strong> Jeff Bishop · <strong>Status:</strong> in
+progress · <strong>Goal:</strong> ship a stable, editor-first QUILL
+1.0.0 with only Radio + Weather as public companion apps, complete docs,
+and an exhaustive feature sign-off.</p>
+<h2 id="locked-decisions-2026-08-05">Locked decisions (2026-08-05)</h2>
+<ul>
+<li><strong>Public companion apps:</strong> <strong>Radio + Weather
+only.</strong> Player, Converter, Cast, Audio Studio, and Beacon are
+gated behind a <strong>developer/private/admin flag</strong> (existing
+<code>future.&lt;feature&gt;</code> mechanism) — installed but not
+publicly surfaced.</li>
+<li><strong>App "own repo" extraction = DOCS ONLY.</strong> Move
+other-app documentation out of QUILL's user guide / PRD / release notes
+into their own docs; app <strong>code stays in this repo</strong>
+(gated). No code repo split this cycle.</li>
+<li><strong>Branches:</strong> <strong>merge all <code>feat/*</code> to
+main</strong> this pass, then delete merged branches — after each merges
+cleanly and gates pass.</li>
+<li><strong>Sign-off:</strong> must cover <strong>every single feature
+in QUILL</strong>, derived from the code (commands, menus, dialogs,
+keymap) so nothing is missed.</li>
+</ul>
+<h2 id="phases">Phases</h2>
+<h3 id="phase-1--stabilize-the-tree--land-in-flight-work">Phase 1 —
+Stabilize the tree &amp; land in-flight work</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Commit the large uncommitted WIP
+(media-player / voice / secrets / auth) onto its own branch, fixing its
+gate violations so pre-commit passes:</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Register the new media dialogs
+(<code>quill/apps/player.py</code>, <code>quill/ui/media/*</code>) in
+the A11Y-4 dialog inventory.</label></li>
+<li><label><input type="checkbox" />Resolve GATE-11 size caps
+(<code>quill/apps/player.py</code> 1034 &gt; 600; split or reviewed
+budget entry).</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Fix GATE-11 on
+<code>quill/tools/network_egress_audit.py</code> (BARD egress entry
+pushed it 11 over budget — slim the entry).</label></li>
+<li><label><input type="checkbox" />Land the <strong>NLS BARD catalogue
+search</strong> commit (code + tests already green; docs land with the
+doc-consolidation commit).</label></li>
+</ul>
+<h3 id="phase-2--gate-non-public-apps-radio--weather-stay-public">Phase
+2 — Gate non-public apps (Radio + Weather stay public)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Gate <strong>Player, Converter,
+Cast, Audio Studio, Beacon</strong> behind a dev/admin flag: launchers,
+menu/QuillVille entries, command-palette commands, Explorer shell verbs,
+and build products all respect the flag.</label></li>
+<li><label><input type="checkbox" />Confirm Radio + Weather remain fully
+public and unaffected.</label></li>
+<li><label><input type="checkbox" />Tests assert the gated apps are
+absent from public surfaces when the flag is off.</label></li>
+</ul>
+<h3 id="phase-3--docs-consolidation-editor-first">Phase 3 — Docs
+consolidation (editor-first)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Archive all <strong>beta</strong>
+release notes under <code>docs/release notes/archived/</code> (keep
+1.0.0 live).</label></li>
+<li><label><input type="checkbox" />Write a <strong>new 1.0.0
+announcement about the QUILL editor features only</strong> (no
+companion-app content).</label></li>
+<li><label><input type="checkbox" />Move <strong>other-app</strong>
+sections (Player/Converter/Cast/Studio/Beacon) out of the user guide,
+PRD, and release notes into their own per-app docs; keep Radio + Weather
+where publicly relevant.</label></li>
+<li><label><input type="checkbox" />Verify the <strong>user
+guide</strong> and <strong>PRD</strong> are complete and accurate for
+the editor + public apps.</label></li>
+</ul>
+<h3
+id="phase-4--exhaustive-100-sign-off-test-plan--the-check-off-list-white_check_mark-built">Phase
+4 — Exhaustive 1.0.0 sign-off test plan ← the check-off list ✅
+BUILT</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" />Complete <strong>feature
+/ command / surface inventory</strong> generated from the codebase (715
+commands, 645 dialog surfaces, ~290 feature sub-items, 3 menu
+bars).</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Sign-off pack
+under <code>docs/planning/signoff/</code></strong> — each item has
+<strong>Works · Surface-exact · Accessible</strong> boxes, grouped,
+counted, generated from the real registry (not memory):</label>
+<ul>
+<li><code>QUILL-1.0.0-SIGNOFF.md</code> — master (env matrix,
+cross-cutting a11y + gating + readiness).</li>
+<li><code>SIGNOFF-editor.md</code> (642 editor commands) ·
+<code>SIGNOFF-radio.md</code> (29 + dialogs + scenarios) ·
+<code>SIGNOFF-weather.md</code> (11 menu + chrome + scenarios).</li>
+<li><code>SIGNOFF-dialogs.md</code> (all 645 dialog surfaces) ·
+<code>SIGNOFF-gated-apps.md</code> (44 gated-app commands to verify
+ABSENT).</li>
+<li><code>SIGNOFF-install-matrix.md</code> — portable vs system under
+all scenarios (E1–E6, all three portable signals), per app.</li>
+</ul></li>
+<li><label><input type="checkbox" />Human execution: check off every box
+across environments E1–E6 (this is the readiness gate).</label></li>
+<li><label><input type="checkbox" /><strong>Coverage MUST include the
+public companion apps:</strong> <strong>QUILL Radio</strong> and
+<strong>QUILL Weather</strong> get the same per-command / per-surface
+sign-off as the editor.</label></li>
+<li><label><input type="checkbox" /><strong>Installation-path matrix
+(tested richly, all scenarios):</strong> every item is verified under
+<strong>portable install</strong> <em>and</em> <strong>system
+install</strong> — data-dir resolution, credential storage
+(<code>keys.enc</code>/DPAPI vs Windows Credential Manager vs macOS
+Keychain), settings location, first-run, updates, Safe Mode, and every
+portable-only vs system-only behavior. Cross-cut this matrix across the
+editor, Radio, and Weather.</label></li>
+</ul>
+<h3 id="phase-5--branch-consolidation">Phase 5 — Branch
+consolidation</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Merge every <code>feat/*</code>
+branch to <code>main</code> (each verified: merges cleanly + gates
+pass).</label></li>
+<li><label><input type="checkbox" />Delete merged branches.</label></li>
+</ul>
+<h3 id="phase-6--readiness-gate">Phase 6 — Readiness gate</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />All sign-off items checked →
+<strong>announce ready to test.</strong></label></li>
+</ul>
+<hr />
+<p><em>The per-feature sign-off checklist lives in
+<code>QUILL-1.0.0-SIGNOFF.md</code> (Phase 4) and is populated from the
+code inventory so it covers every feature.</em></p>
+</body>
+</html>

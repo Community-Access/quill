@@ -1,0 +1,697 @@
+# QUILL 1.0.0 Sign-off — Editor commands
+
+**642 core-editor commands** (of 715 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
+
+> `[GATED ...]` = only present when its feature flag is on; scope in/out of the pass explicitly.
+
+## `tools.*` (159)
+- [ ] W  [ ] S  [ ] A  `tools.ai_accessibility_agent` — Accessibility Tune-Up
+- [ ] W  [ ] S  [ ] A  `tools.ai_agent_center` — Agent Center
+- [ ] W  [ ] S  [ ] A  `tools.ai_assistant` — Writing Assistant  **[GATED future.ai]**
+- [ ] W  [ ] S  [ ] A  `tools.ai_connection` — AI Connection
+- [ ] W  [ ] S  [ ] A  `tools.ai_continue_writing` — Continue Writing  **[GATED future.ai]**
+- [ ] W  [ ] S  [ ] A  `tools.ai_expand_selection` — Expand Selection
+- [ ] W  [ ] S  [ ] A  `tools.ai_fix_grammar` — Fix Grammar  **[GATED future.ai]**
+- [ ] W  [ ] S  [ ] A  `tools.ai_generate_toc` — Generate Table of Contents
+- [ ] W  [ ] S  [ ] A  `tools.ai_grammar_style` — AI Grammar and Style Check...  `Ctrl+Alt+Shift+G`
+- [ ] W  [ ] S  [ ] A  `tools.ai_hub` — AI Hub
+- [ ] W  [ ] S  [ ] A  `tools.ai_library` — AI Library
+- [ ] W  [ ] S  [ ] A  `tools.ai_model` — AI Model
+- [ ] W  [ ] S  [ ] A  `tools.ai_prompt_studio` — Prompt Studio
+- [ ] W  [ ] S  [ ] A  `tools.ai_reading_order` — Improve Reading Order
+- [ ] W  [ ] S  [ ] A  `tools.ai_rewrite_selection` — Rewrite Selection  **[GATED future.ai]**
+- [ ] W  [ ] S  [ ] A  `tools.ai_session_browser` — AI Session Branches
+- [ ] W  [ ] S  [ ] A  `tools.ai_spell_check` — AI Spell Check...  `Ctrl+Alt+Shift+S`
+- [ ] W  [ ] S  [ ] A  `tools.ai_spell_check_interactive` — AI Spell Check Interactive...  `Ctrl+Alt+Shift+I`
+- [ ] W  [ ] S  [ ] A  `tools.ai_summarize_selection` — Summarize Selection  **[GATED future.ai]**
+- [ ] W  [ ] S  [ ] A  `tools.ai_switch_engine` — Switch AI Engine  `Ctrl+Alt+Shift+E`
+- [ ] W  [ ] S  [ ] A  `tools.ai_thesaurus` — AI Thesaurus  `Ctrl+Alt+Shift+H`
+- [ ] W  [ ] S  [ ] A  `tools.ai_translate_selection` — Translate Selection...  `Ctrl+Alt+Shift+T`
+- [ ] W  [ ] S  [ ] A  `tools.announcement_backend` — Announcement Backend...
+- [ ] W  [ ] S  [ ] A  `tools.announcement_trace_toggle` — Toggle Announcement Trace Capture
+- [ ] W  [ ] S  [ ] A  `tools.ask_quill_chat` — Ask Quill Chat  `Alt+Q`
+- [ ] W  [ ] S  [ ] A  `tools.ask_quill_conversation` — Ask Quill: Voice Conversation
+- [ ] W  [ ] S  [ ] A  `tools.calculator` — Calculator...
+- [ ] W  [ ] S  [ ] A  `tools.check_glow_updates` — Check for GLOW Updates...  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.check_grammar_ai` — Check Grammar with AI
+- [ ] W  [ ] S  [ ] A  `tools.check_updates` — Check for Updates...
+- [ ] W  [ ] S  [ ] A  `tools.compare_announce_difference` — Announce Current Difference  `Ctrl+Alt+Shift+D`
+- [ ] W  [ ] S  [ ] A  `tools.compare_copy_all_differences` — Copy All Differences
+- [ ] W  [ ] S  [ ] A  `tools.compare_copy_current_difference` — Copy Current Difference
+- [ ] W  [ ] S  [ ] A  `tools.compare_create_summary` — Create Difference Summary
+- [ ] W  [ ] S  [ ] A  `tools.compare_difference_list` — Open Difference List...
+- [ ] W  [ ] S  [ ] A  `tools.compare_next_difference` — Next Difference  `Ctrl+Alt+Shift+.`
+- [ ] W  [ ] S  [ ] A  `tools.compare_open_documents` — Compare Open Documents...
+- [ ] W  [ ] S  [ ] A  `tools.compare_options` — Compare Options...
+- [ ] W  [ ] S  [ ] A  `tools.compare_previous_difference` — Previous Difference  `Ctrl+Alt+Shift+,`
+- [ ] W  [ ] S  [ ] A  `tools.compare_toggle_sync` — Toggle Compare Synchronization
+- [ ] W  [ ] S  [ ] A  `tools.compare_with_file` — Compare with File...
+- [ ] W  [ ] S  [ ] A  `tools.copy_diagnostic_summary` — Copy Diagnostic Summary
+- [ ] W  [ ] S  [ ] A  `tools.csv_studio` — Open CSV in Table Studio (Experimental)
+- [ ] W  [ ] S  [ ] A  `tools.cycle_autosave_interval` — Cycle Autosave Interval
+- [ ] W  [ ] S  [ ] A  `tools.delete_ocr_temp` — Delete OCR Temporary Files
+- [ ] W  [ ] S  [ ] A  `tools.describe_image` — Describe Image...  `Ctrl+Shift+Grave, I`  **[GATED future.ai]**
+- [ ] W  [ ] S  [ ] A  `tools.dictation_cancel` — Cancel Dictation (discard)  `Shift+Escape`
+- [ ] W  [ ] S  [ ] A  `tools.dictation_emergency_stop` — Stop Dictation (keep speech)  `Escape`
+- [ ] W  [ ] S  [ ] A  `tools.dictation_lock_toggle` — Locked Dictation (start/finish)  `Ctrl+F9`
+- [ ] W  [ ] S  [ ] A  `tools.dictation_pause` — Pause or Resume Dictation  `Ctrl+Shift+F9`
+- [ ] W  [ ] S  [ ] A  `tools.dictation_status` — Dictation Status  `Alt+F9`
+- [ ] W  [ ] S  [ ] A  `tools.dictation_toggle` — Dictation  `Ctrl+Shift+Grave, D`
+- [ ] W  [ ] S  [ ] A  `tools.dictionary_status` — Dictionary Status...
+- [ ] W  [ ] S  [ ] A  `tools.document_intake_report` — Document Intake Report...  `Ctrl+Shift+I`
+- [ ] W  [ ] S  [ ] A  `tools.export_keyboard_pack` — Export Keyboard Pack (.kqp)...
+- [ ] W  [ ] S  [ ] A  `tools.export_keymap` — Export Keymap...
+- [ ] W  [ ] S  [ ] A  `tools.external_tools` — External Tools and Format Support...
+- [ ] W  [ ] S  [ ] A  `tools.global_hotkeys` — Global Hotkeys...
+- [ ] W  [ ] S  [ ] A  `tools.glow_audit_document` — GLOW Audit Current Document  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.glow_audit_file` — GLOW Audit File  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.glow_audit_selection` — GLOW Audit Selection  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.glow_fix_document` — GLOW Fix Current Document  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.glow_fix_file` — GLOW Fix File  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.glow_fix_selection` — GLOW Fix Selection  **[GATED core.glow]**
+- [ ] W  [ ] S  [ ] A  `tools.import_keyboard_pack` — Import Keyboard Pack (.kqp)...
+- [ ] W  [ ] S  [ ] A  `tools.import_keymap` — Import Keymap...
+- [ ] W  [ ] S  [ ] A  `tools.individual_feature_toggles` — Manage Individual Features...
+- [ ] W  [ ] S  [ ] A  `tools.install_local_ocr` — Install Local OCR Engine (Tesseract)
+- [ ] W  [ ] S  [ ] A  `tools.keymap_editor` — Keymap Editor...
+- [ ] W  [ ] S  [ ] A  `tools.manage_macros` — Manage Macros...
+- [ ] W  [ ] S  [ ] A  `tools.manage_mastodon_accounts` — Mastodon Accounts...
+- [ ] W  [ ] S  [ ] A  `tools.mastodon_add_user_to_list` — Add a User to a Mastodon List...
+- [ ] W  [ ] S  [ ] A  `tools.misspelling_list` — Misspelling List...  `Alt+Shift+L`
+- [ ] W  [ ] S  [ ] A  `tools.next_misspelling` — Next Misspelling  `Ctrl+F7`
+- [ ] W  [ ] S  [ ] A  `tools.notifications` — Open Notifications...
+- [ ] W  [ ] S  [ ] A  `tools.ocr_clipboard` — OCR Clipboard Image
+- [ ] W  [ ] S  [ ] A  `tools.ocr_image` — OCR Image...
+- [ ] W  [ ] S  [ ] A  `tools.ocr_screen` — OCR Screen Capture...
+- [ ] W  [ ] S  [ ] A  `tools.ocr_service_settings` — OCR Service Settings
+- [ ] W  [ ] S  [ ] A  `tools.ocr_services` — OCR and Conversion Services
+- [ ] W  [ ] S  [ ] A  `tools.open_keyboard_reference` — Open Keyboard Reference
+- [ ] W  [ ] S  [ ] A  `tools.open_python_console` — Open Python Console...
+- [ ] W  [ ] S  [ ] A  `tools.open_typescript_console` — Open TypeScript Console...
+- [ ] W  [ ] S  [ ] A  `tools.open_welcome_guide` — Open Welcome Guide
+- [ ] W  [ ] S  [ ] A  `tools.play_last_macro` — Play Last Macro
+- [ ] W  [ ] S  [ ] A  `tools.post_to_mastodon` — Post to Mastodon...  `Ctrl+Shift+Grave, Shift+P`
+- [ ] W  [ ] S  [ ] A  `tools.previous_misspelling` — Previous Misspelling  `Ctrl+Shift+F7`
+- [ ] W  [ ] S  [ ] A  `tools.profiles_and_features_settings` — Profiles and Features...
+- [ ] W  [ ] S  [ ] A  `tools.prompt_library` — Prompt Library
+- [ ] W  [ ] S  [ ] A  `tools.quillin_hub_submit` — Submit to Quillin Hub
+- [ ] W  [ ] S  [ ] A  `tools.quillin_wizard` — New Quillin
+- [ ] W  [ ] S  [ ] A  `tools.quillins_manager` — Manage Quillins
+- [ ] W  [ ] S  [ ] A  `tools.read_aloud_edge` — Read Document in Browser (Experimental)
+- [ ] W  [ ] S  [ ] A  `tools.read_aloud_generate_audio` — Generate Speech Audio...
+- [ ] W  [ ] S  [ ] A  `tools.read_aloud_settings` — Read Aloud Settings...
+- [ ] W  [ ] S  [ ] A  `tools.read_aloud_start_pause` — Read Aloud Start/Pause  `Ctrl+Shift+Grave, R`
+- [ ] W  [ ] S  [ ] A  `tools.read_aloud_stop` — Read Aloud Stop  `Ctrl+Shift+Grave, Shift+R`
+- [ ] W  [ ] S  [ ] A  `tools.read_aloud_voice` — Read Aloud Voice...
+- [ ] W  [ ] S  [ ] A  `tools.regex_helper` — Regular Expression Helper...
+- [ ] W  [ ] S  [ ] A  `tools.replace_in_files` — Replace Across Files...  `Ctrl+Shift+R`
+- [ ] W  [ ] S  [ ] A  `tools.report_bad_extraction` — Report Bad Extraction...
+- [ ] W  [ ] S  [ ] A  `tools.reset_all_defaults` — Reset Everything to Factory Defaults...
+- [ ] W  [ ] S  [ ] A  `tools.reset_keymap` — Reset Keymap
+- [ ] W  [ ] S  [ ] A  `tools.restart_typescript_worker` — Restart TypeScript Worker
+- [ ] W  [ ] S  [ ] A  `tools.review_extraction_quality` — Review Extraction Quality...
+- [ ] W  [ ] S  [ ] A  `tools.review_last_ocr` — Review Last OCR Result
+- [ ] W  [ ] S  [ ] A  `tools.run_agent` — Run Agent on Selection
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.accessibility_editor` — Run Agent: Accessibility Editor
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.citation_link_fixer` — Run Agent: Citation & Link Fixer
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.code_doctor` — Run Agent: Code Doctor
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.data_cleaner` — Run Agent: Data Cleaner
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.github_maintainer` — Run Agent: GitHub Maintainer
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.markdown_publisher` — Run Agent: Markdown Publisher
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.math_tutor` — Run Agent: Math Tutor
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.meeting_notes_to_actions` — Run Agent: Meeting Notes to Action Items
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.plain_language_rewriter` — Run Agent: Plain-Language Rewriter
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.prd_architect` — Run Agent: PRD Architect
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.quill_concierge` — Run Agent: QUILL Concierge
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.release_notes_builder` — Run Agent: Release Notes Builder
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.researcher` — Run Agent: Researcher
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.reviewer` — Run Agent: Reviewer
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.summarizer` — Run Agent: Summarizer
+- [ ] W  [ ] S  [ ] A  `tools.run_agent.writing_companion` — Run Agent: Writing Companion
+- [ ] W  [ ] S  [ ] A  `tools.search_in_files` — Search in Files...  `Ctrl+Shift+F`
+- [ ] W  [ ] S  [ ] A  `tools.share_export` — Export and Back Up...
+- [ ] W  [ ] S  [ ] A  `tools.share_import` — Import or Restore...
+- [ ] W  [ ] S  [ ] A  `tools.shell_install` — Install Shell Integration...
+- [ ] W  [ ] S  [ ] A  `tools.shell_remove` — Remove Shell Integration
+- [ ] W  [ ] S  [ ] A  `tools.skill_library` — Skill Library
+- [ ] W  [ ] S  [ ] A  `tools.sound_events` — Manage Sound Events
+- [ ] W  [ ] S  [ ] A  `tools.sound_toggle` — Toggle Sound Notifications
+- [ ] W  [ ] S  [ ] A  `tools.speech_captions` — Generate Captions (Offline)
+- [ ] W  [ ] S  [ ] A  `tools.speech_dictate` — Dictate (Offline)  `Ctrl+Shift+Grave, Shift+D`
+- [ ] W  [ ] S  [ ] A  `tools.speech_ffmpeg` — Download FFmpeg
+- [ ] W  [ ] S  [ ] A  `tools.speech_hf_token` — Hugging Face Token
+- [ ] W  [ ] S  [ ] A  `tools.speech_microphone` — Dictation Microphone
+- [ ] W  [ ] S  [ ] A  `tools.speech_models` — Manage Speech Models
+- [ ] W  [ ] S  [ ] A  `tools.speech_transcribe` — Transcribe Audio or Video (Offline)
+- [ ] W  [ ] S  [ ] A  `tools.spell_check_dialog` — Spell Check...  `F7`
+- [ ] W  [ ] S  [ ] A  `tools.start_macro_recording` — Start Macro Recording
+- [ ] W  [ ] S  [ ] A  `tools.status_bar_settings` — Status Bar Layout...
+- [ ] W  [ ] S  [ ] A  `tools.sticky_note_capture` — New Sticky Note...  `Ctrl+Shift+Grave, Shift+N`
+- [ ] W  [ ] S  [ ] A  `tools.sticky_notes` — Sticky Notes...
+- [ ] W  [ ] S  [ ] A  `tools.stop_macro_recording` — Stop Macro Recording
+- [ ] W  [ ] S  [ ] A  `tools.table_studio` — Table Studio (Experimental)
+- [ ] W  [ ] S  [ ] A  `tools.thesaurus` — Thesaurus...  `Shift+F7`
+- [ ] W  [ ] S  [ ] A  `tools.train_writing_style` — Train Writing Style
+- [ ] W  [ ] S  [ ] A  `tools.undo_recommended_updates` — Undo Recent Shortcut Change
+- [ ] W  [ ] S  [ ] A  `tools.view_mastodon_profile` — View Mastodon Profile...
+- [ ] W  [ ] S  [ ] A  `tools.voice_command` — Voice Command (Offline)
+- [ ] W  [ ] S  [ ] A  `tools.voice_conversation` — Voice Conversation Mode
+- [ ] W  [ ] S  [ ] A  `tools.voice_status` — Speak Voice Status
+- [ ] W  [ ] S  [ ] A  `tools.voice_wakeword` — Listen for Hey QUILL (Wake Word)
+- [ ] W  [ ] S  [ ] A  `tools.watch_folder_settings` — Watch Folder Settings...
+- [ ] W  [ ] S  [ ] A  `tools.watch_folder_status` — Watch Folder Status...
+- [ ] W  [ ] S  [ ] A  `tools.watch_folder_toggle` — Watch Folder Monitoring
+- [ ] W  [ ] S  [ ] A  `tools.word_count` — Word Count...  `Ctrl+Shift+W`
+- [ ] W  [ ] S  [ ] A  `tools.work_personas` — Work Personas...
+- [ ] W  [ ] S  [ ] A  `tools.writing_instructions` — Open Writing Instructions  **[GATED future.ai]**
+
+## `edit.*` (86)
+- [ ] W  [ ] S  [ ] A  `edit.clear_all_tray_slots` — Clear All Tray Slots
+- [ ] W  [ ] S  [ ] A  `edit.complete_selection` — Complete Selection  `Shift+F8`
+- [ ] W  [ ] S  [ ] A  `edit.convert_indentation_to_spaces` — Convert Indentation to Spaces  **[GATED future.cleanup]**
+- [ ] W  [ ] S  [ ] A  `edit.convert_indentation_to_tabs` — Convert Indentation to Tabs  **[GATED future.cleanup]**
+- [ ] W  [ ] S  [ ] A  `edit.copy_all` — Copy All  `Ctrl+F8`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_next_slot` — Copy to Next Empty Tray Slot
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_1` — Copy to Tray Slot 1  `Ctrl+Shift+Grave, Shift+1`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_10` — Copy to Tray Slot 10  `Ctrl+Shift+Grave, Shift+0`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_11` — Copy to Tray Slot 11  `Ctrl+Shift+Grave, Shift+-`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_12` — Copy to Tray Slot 12  `Ctrl+Shift+Grave, Shift+=`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_2` — Copy to Tray Slot 2  `Ctrl+Shift+Grave, Shift+2`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_3` — Copy to Tray Slot 3  `Ctrl+Shift+Grave, Shift+3`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_4` — Copy to Tray Slot 4  `Ctrl+Shift+Grave, Shift+4`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_5` — Copy to Tray Slot 5  `Ctrl+Shift+Grave, Shift+5`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_6` — Copy to Tray Slot 6  `Ctrl+Shift+Grave, Shift+6`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_7` — Copy to Tray Slot 7  `Ctrl+Shift+Grave, Shift+7`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_8` — Copy to Tray Slot 8  `Ctrl+Shift+Grave, Shift+8`
+- [ ] W  [ ] S  [ ] A  `edit.copy_to_tray_9` — Copy to Tray Slot 9  `Ctrl+Shift+Grave, Shift+9`
+- [ ] W  [ ] S  [ ] A  `edit.copy_with_source` — Copy With Source  `Ctrl+Shift+C`
+- [ ] W  [ ] S  [ ] A  `edit.duplicate_selection` — Duplicate Selection
+- [ ] W  [ ] S  [ ] A  `edit.exchange_point_mark` — Exchange Point and Mark  `Ctrl+Shift+X`
+- [ ] W  [ ] S  [ ] A  `edit.expand_selection` — Expand Selection  `Ctrl+Shift+Grave, J`
+- [ ] W  [ ] S  [ ] A  `edit.find` — Find...  `Ctrl+F`
+- [ ] W  [ ] S  [ ] A  `edit.find_all_matches` — Find All Matches  `Ctrl+Shift+F3`
+- [ ] W  [ ] S  [ ] A  `edit.find_next` — Find Next  `F3`
+- [ ] W  [ ] S  [ ] A  `edit.find_previous` — Find Previous  `Shift+F3`
+- [ ] W  [ ] S  [ ] A  `edit.follow_link` — Follow Link  `Ctrl+Enter`
+- [ ] W  [ ] S  [ ] A  `edit.go_to_start_of_selection` — Go to Start of Selection  `Alt+Shift+F8`
+- [ ] W  [ ] S  [ ] A  `edit.insert_citation` — Insert Citation...
+- [ ] W  [ ] S  [ ] A  `edit.insert_emoji` — Insert Emoji...  `Alt+.`
+- [ ] W  [ ] S  [ ] A  `edit.insert_equation` — Insert Equation...  `Ctrl+Shift+E`
+- [ ] W  [ ] S  [ ] A  `edit.insert_link` — Insert Link...  `Ctrl+Alt+K`
+- [ ] W  [ ] S  [ ] A  `edit.jump_to_named_mark` — Jump to Named Mark
+- [ ] W  [ ] S  [ ] A  `edit.keep_selection_in_clip_library` — Keep Selection in Clip Library
+- [ ] W  [ ] S  [ ] A  `edit.list_marks` — List Marks  `Alt+M`
+- [ ] W  [ ] S  [ ] A  `edit.magic_paste` — Magic Paste
+- [ ] W  [ ] S  [ ] A  `edit.normalize_whitespace` — Normalize Whitespace  **[GATED future.cleanup]**
+- [ ] W  [ ] S  [ ] A  `edit.open_clip_library` — Open Clip Library
+- [ ] W  [ ] S  [ ] A  `edit.open_copy_tray` — Open Copy Tray  `Ctrl+Shift+Grave, X`
+- [ ] W  [ ] S  [ ] A  `edit.open_review_buffer` — Open Review Buffer
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_1` — Paste from Tray Slot 1  `Ctrl+Shift+1`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_10` — Paste from Tray Slot 10  `Ctrl+Shift+0`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_11` — Paste from Tray Slot 11  `Ctrl+Shift+-`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_12` — Paste from Tray Slot 12  `Ctrl+Shift+=`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_2` — Paste from Tray Slot 2  `Ctrl+Shift+2`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_3` — Paste from Tray Slot 3  `Ctrl+Shift+3`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_4` — Paste from Tray Slot 4  `Ctrl+Shift+4`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_5` — Paste from Tray Slot 5  `Ctrl+Shift+5`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_6` — Paste from Tray Slot 6  `Ctrl+Shift+6`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_7` — Paste from Tray Slot 7  `Ctrl+Shift+7`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_8` — Paste from Tray Slot 8  `Ctrl+Shift+8`
+- [ ] W  [ ] S  [ ] A  `edit.paste_from_tray_9` — Paste from Tray Slot 9  `Ctrl+Shift+9`
+- [ ] W  [ ] S  [ ] A  `edit.pop_mark` — Pop Mark  `Ctrl+M`
+- [ ] W  [ ] S  [ ] A  `edit.quote_lines` — Quote Lines  `Ctrl+Shift+Q`
+- [ ] W  [ ] S  [ ] A  `edit.read_all` — Read All  `Alt+F8`
+- [ ] W  [ ] S  [ ] A  `edit.redo` — Redo  `Ctrl+Y`
+- [ ] W  [ ] S  [ ] A  `edit.remove_duplicate_lines` — Remove Duplicate Lines
+- [ ] W  [ ] S  [ ] A  `edit.repeat_command` — Repeat Next Command
+- [ ] W  [ ] S  [ ] A  `edit.replace` — Replace...  `Ctrl+H`
+- [ ] W  [ ] S  [ ] A  `edit.replace_all` — Replace All...  `Ctrl+Shift+H`
+- [ ] W  [ ] S  [ ] A  `edit.reselect` — Reselect  `Ctrl+Shift+F8`
+- [ ] W  [ ] S  [ ] A  `edit.restore_deletion` — Restore Deleted Text
+- [ ] W  [ ] S  [ ] A  `edit.reverse_lines` — Reverse Lines  `Alt+Shift+Z`
+- [ ] W  [ ] S  [ ] A  `edit.say_selected` — Say Selected
+- [ ] W  [ ] S  [ ] A  `edit.search_tray_slots` — Search Copy Tray Slots
+- [ ] W  [ ] S  [ ] A  `edit.select_block` — Select Block  `Ctrl+Shift+B`
+- [ ] W  [ ] S  [ ] A  `edit.select_chunk` — Select Chunk  `Ctrl+Space`
+- [ ] W  [ ] S  [ ] A  `edit.select_line` — Select Line
+- [ ] W  [ ] S  [ ] A  `edit.select_paragraph` — Select Paragraph
+- [ ] W  [ ] S  [ ] A  `edit.select_to_end_of_document` — Select to End of Document  `Ctrl+Shift+End`
+- [ ] W  [ ] S  [ ] A  `edit.select_to_end_of_line` — Select to End of Line  `Shift+End`
+- [ ] W  [ ] S  [ ] A  `edit.select_to_start_of_document` — Select to Start of Document  `Ctrl+Shift+Home`
+- [ ] W  [ ] S  [ ] A  `edit.select_to_start_of_line` — Select to Start of Line  `Shift+Home`
+- [ ] W  [ ] S  [ ] A  `edit.selection_actions` — Selection Actions
+- [ ] W  [ ] S  [ ] A  `edit.set_mark` — Set Mark  `Ctrl+Shift+M`
+- [ ] W  [ ] S  [ ] A  `edit.set_named_mark` — Set Named Mark
+- [ ] W  [ ] S  [ ] A  `edit.shrink_selection` — Shrink Selection  `Ctrl+Shift+Grave, Shift+J`
+- [ ] W  [ ] S  [ ] A  `edit.sort_lines_ascending` — Sort Lines Ascending
+- [ ] W  [ ] S  [ ] A  `edit.sort_lines_descending` — Sort Lines Descending
+- [ ] W  [ ] S  [ ] A  `edit.start_selection` — Start Selection  `F8`
+- [ ] W  [ ] S  [ ] A  `edit.toggle_extend_selection_mode` — Toggle Extend Selection Mode
+- [ ] W  [ ] S  [ ] A  `edit.trim_trailing_whitespace` — Trim Trailing Whitespace  **[GATED future.cleanup]**
+- [ ] W  [ ] S  [ ] A  `edit.undo` — Undo  `Ctrl+Z`
+- [ ] W  [ ] S  [ ] A  `edit.unquote_lines` — Unquote Lines  `Ctrl+Shift+K`
+- [ ] W  [ ] S  [ ] A  `edit.unselect_all` — Unselect All  `Ctrl+Shift+A`
+- [ ] W  [ ] S  [ ] A  `edit.word_prediction` — Word Prediction...  `Ctrl+.`
+
+## `power.*` (74)
+- [ ] W  [ ] S  [ ] A  `power.analyze_encoding_requirements` — Analyze Encoding Requirements
+- [ ] W  [ ] S  [ ] A  `power.apply_auto_outline_numbering` — Update Outline Numbering
+- [ ] W  [ ] S  [ ] A  `power.collect_clipboard_now` — Collect Clipboard Now
+- [ ] W  [ ] S  [ ] A  `power.compute_line_statistics` — Line Statistics
+- [ ] W  [ ] S  [ ] A  `power.convert_ansi_to_oem` — Convert ANSI to OEM (DOS)
+- [ ] W  [ ] S  [ ] A  `power.convert_box_drawing_to_ascii` — Convert Line-Drawing Characters to ASCII
+- [ ] W  [ ] S  [ ] A  `power.convert_oem_to_ansi` — Convert OEM (DOS) to ANSI
+- [ ] W  [ ] S  [ ] A  `power.copy_as_email_body` — Copy as Email Body
+- [ ] W  [ ] S  [ ] A  `power.count_occurrences` — Count Occurrences
+- [ ] W  [ ] S  [ ] A  `power.count_regex_matches` — Count Regular Expression Matches
+- [ ] W  [ ] S  [ ] A  `power.decode_html_entities` — Decode HTML Entities
+- [ ] W  [ ] S  [ ] A  `power.delete_current_file` — Delete Current File
+- [ ] W  [ ] S  [ ] A  `power.delete_lines_containing` — Delete Lines Containing
+- [ ] W  [ ] S  [ ] A  `power.delete_lines_not_containing` — Delete Lines Not Containing
+- [ ] W  [ ] S  [ ] A  `power.delete_paragraph` — Delete Paragraph
+- [ ] W  [ ] S  [ ] A  `power.delete_to_document_end` — Delete to Document End
+- [ ] W  [ ] S  [ ] A  `power.delete_to_document_start` — Delete to Document Start
+- [ ] W  [ ] S  [ ] A  `power.delete_to_line_end` — Delete to Line End
+- [ ] W  [ ] S  [ ] A  `power.delete_to_line_start` — Delete to Line Start
+- [ ] W  [ ] S  [ ] A  `power.describe_character` — Describe Character at Cursor
+- [ ] W  [ ] S  [ ] A  `power.describe_image_at_cursor` — Describe Image at Cursor
+- [ ] W  [ ] S  [ ] A  `power.encode_all_non_ascii` — Convert Non-ASCII to HTML Entities
+- [ ] W  [ ] S  [ ] A  `power.encode_html_entities` — Encode HTML Entities
+- [ ] W  [ ] S  [ ] A  `power.expand_abbreviation` — Expand Abbreviation
+- [ ] W  [ ] S  [ ] A  `power.explain_abbreviation` — Explain Abbreviation
+- [ ] W  [ ] S  [ ] A  `power.extract_regex_matches` — Extract Regular Expression Matches
+- [ ] W  [ ] S  [ ] A  `power.go_to_percent` — Go to Percent
+- [ ] W  [ ] S  [ ] A  `power.hard_wrap_lines` — Hard-Wrap Lines
+- [ ] W  [ ] S  [ ] A  `power.hex_dump` — Convert to Hex Dump
+- [ ] W  [ ] S  [ ] A  `power.infer_indent` — Infer Indentation
+- [ ] W  [ ] S  [ ] A  `power.insert_file_content` — Insert File Content
+- [ ] W  [ ] S  [ ] A  `power.insert_image` — Insert Image  `Ctrl+Alt+I`
+- [ ] W  [ ] S  [ ] A  `power.insert_special_character` — Insert Special Character  `Shift+F2`
+- [ ] W  [ ] S  [ ] A  `power.insert_table_of_contents` — Insert Table of Contents
+- [ ] W  [ ] S  [ ] A  `power.keep_unique_lines` — Keep Unique Lines  `Alt+Shift+K`
+- [ ] W  [ ] S  [ ] A  `power.move_to_first_non_blank` — Move to First Non-Blank
+- [ ] W  [ ] S  [ ] A  `power.move_to_last_non_blank` — Move to Last Non-Blank
+- [ ] W  [ ] S  [ ] A  `power.multi_replace` — Multi Replace
+- [ ] W  [ ] S  [ ] A  `power.new_document_from_clipboard` — New Document from Clipboard
+- [ ] W  [ ] S  [ ] A  `power.non_ascii_jump_to_report` — Jump Back to Non-ASCII Report
+- [ ] W  [ ] S  [ ] A  `power.non_ascii_jump_to_source` — Jump to Source Line
+- [ ] W  [ ] S  [ ] A  `power.number_lines` — Number Lines  `Alt+Shift+N`
+- [ ] W  [ ] S  [ ] A  `power.number_lines_advanced` — Number Lines (Advanced)
+- [ ] W  [ ] S  [ ] A  `power.open_snippet_gallery` — Snippet Gallery...  `Ctrl+Shift+Grave, Shift+G`
+- [ ] W  [ ] S  [ ] A  `power.paste_html_as_markdown` — Paste HTML as Markdown  `Ctrl+Shift+Grave, M`
+- [ ] W  [ ] S  [ ] A  `power.preview_abbreviation` — Preview Abbreviation
+- [ ] W  [ ] S  [ ] A  `power.read_markdown_status` — Read Markdown Processing Status
+- [ ] W  [ ] S  [ ] A  `power.reencode_file` — Re-encode As
+- [ ] W  [ ] S  [ ] A  `power.remove_auto_outline_numbering` — Remove Outline Numbering
+- [ ] W  [ ] S  [ ] A  `power.remove_email_quote_markers` — Remove Email Quote Markers
+- [ ] W  [ ] S  [ ] A  `power.rename_current_file` — Rename Current File
+- [ ] W  [ ] S  [ ] A  `power.run_current_file` — Run Current File
+- [ ] W  [ ] S  [ ] A  `power.run_target_at_cursor` — Open Target at Cursor
+- [ ] W  [ ] S  [ ] A  `power.save_minimum_encoding` — Save Using Minimum Required Encoding
+- [ ] W  [ ] S  [ ] A  `power.select_citation_style` — Select Citation Style
+- [ ] W  [ ] S  [ ] A  `power.select_markdown_profile` — Select Markdown Profile
+- [ ] W  [ ] S  [ ] A  `power.send_as_email` — Send as Email
+- [ ] W  [ ] S  [ ] A  `power.set_lines_common` — Lines Common to Both Blocks
+- [ ] W  [ ] S  [ ] A  `power.set_lines_first_not_second` — Lines in First Block Only
+- [ ] W  [ ] S  [ ] A  `power.show_non_ascii` — Show Non-ASCII Characters
+- [ ] W  [ ] S  [ ] A  `power.shuffle_lines` — Shuffle Lines
+- [ ] W  [ ] S  [ ] A  `power.sort_lines_by_date` — Sort Lines by Date
+- [ ] W  [ ] S  [ ] A  `power.sort_lines_by_length` — Sort Lines by Length
+- [ ] W  [ ] S  [ ] A  `power.sort_lines_numeric` — Sort Lines Numerically
+- [ ] W  [ ] S  [ ] A  `power.strip_box_drawing` — Strip Line-Drawing Characters
+- [ ] W  [ ] S  [ ] A  `power.strip_high_ascii` — Strip High ASCII (Non-ASCII) Characters
+- [ ] W  [ ] S  [ ] A  `power.strip_html_tags` — Strip HTML Tags
+- [ ] W  [ ] S  [ ] A  `power.strip_low_ascii` — Strip Low ASCII Characters
+- [ ] W  [ ] S  [ ] A  `power.toggle_clipboard_collector` — Toggle Clipboard Collector
+- [ ] W  [ ] S  [ ] A  `power.toggle_indent_announce` — Toggle Indentation Announcements
+- [ ] W  [ ] S  [ ] A  `power.toggle_key_describer` — Toggle Key Describer
+- [ ] W  [ ] S  [ ] A  `power.toggle_preserve_line_breaks` — Preserve Single Line Breaks
+- [ ] W  [ ] S  [ ] A  `power.toggle_read_only_guard` — Toggle Read-Only Guard
+- [ ] W  [ ] S  [ ] A  `power.trim_blank_lines` — Trim Blank Lines  `Ctrl+Shift+Enter`
+
+## `format.*` (56)
+- [ ] W  [ ] S  [ ] A  `format.auto_indent_newline` — Auto-Indent Newline
+- [ ] W  [ ] S  [ ] A  `format.blockquote` — Insert Block Quote  `Ctrl+Alt+Q`
+- [ ] W  [ ] S  [ ] A  `format.bold` — Bold  `Ctrl+B`
+- [ ] W  [ ] S  [ ] A  `format.clear_formatting` — Clear Formatting
+- [ ] W  [ ] S  [ ] A  `format.decrease_heading_level` — Decrease Heading Level  `Alt+Shift+Left`
+- [ ] W  [ ] S  [ ] A  `format.delete_line` — Delete Line
+- [ ] W  [ ] S  [ ] A  `format.describe_formatting` — Describe Formatting at Cursor  `Ctrl+Shift+D`
+- [ ] W  [ ] S  [ ] A  `format.duplicate_line` — Duplicate Line
+- [ ] W  [ ] S  [ ] A  `format.expand_abbreviation` — Expand Abbreviation  `Ctrl+Shift+Grave, A`
+- [ ] W  [ ] S  [ ] A  `format.font_dialog` — Font...
+- [ ] W  [ ] S  [ ] A  `format.heading_1` — Insert Heading 1  `Ctrl+Alt+1`
+- [ ] W  [ ] S  [ ] A  `format.heading_2` — Insert Heading 2  `Ctrl+Alt+2`
+- [ ] W  [ ] S  [ ] A  `format.heading_3` — Insert Heading 3  `Ctrl+Alt+3`
+- [ ] W  [ ] S  [ ] A  `format.heading_4` — Insert Heading 4  `Ctrl+Alt+4`
+- [ ] W  [ ] S  [ ] A  `format.heading_5` — Insert Heading 5  `Ctrl+Alt+5`
+- [ ] W  [ ] S  [ ] A  `format.heading_6` — Insert Heading 6  `Ctrl+Alt+6`
+- [ ] W  [ ] S  [ ] A  `format.horizontal_rule` — Insert Horizontal Rule  `Ctrl+Alt+H`
+- [ ] W  [ ] S  [ ] A  `format.increase_heading_level` — Increase Heading Level  `Alt+Shift+Right`
+- [ ] W  [ ] S  [ ] A  `format.indent` — Indent  `Ctrl+]`
+- [ ] W  [ ] S  [ ] A  `format.insert_bullet_list` — Insert Bullet List
+- [ ] W  [ ] S  [ ] A  `format.insert_code_block` — Insert Code Block
+- [ ] W  [ ] S  [ ] A  `format.insert_footnote` — Insert Footnote
+- [ ] W  [ ] S  [ ] A  `format.insert_html_tag` — Insert HTML Tag...  `Ctrl+Shift+Grave, H`
+- [ ] W  [ ] S  [ ] A  `format.insert_markdown_tag` — Insert Markdown Tag...
+- [ ] W  [ ] S  [ ] A  `format.insert_numbered_list` — Insert Numbered List
+- [ ] W  [ ] S  [ ] A  `format.insert_page_break` — Insert Page Break
+- [ ] W  [ ] S  [ ] A  `format.insert_snippet` — Insert Snippet...  `Ctrl+Shift+Grave, S`
+- [ ] W  [ ] S  [ ] A  `format.insert_table` — Insert Table  `Ctrl+Alt+T`
+- [ ] W  [ ] S  [ ] A  `format.insert_task_list` — Insert Task List
+- [ ] W  [ ] S  [ ] A  `format.italic` — Italic  `Ctrl+I`
+- [ ] W  [ ] S  [ ] A  `format.join_lines` — Join Lines
+- [ ] W  [ ] S  [ ] A  `format.list_manager` — List Manager  `Ctrl+Shift+Grave, L`
+- [ ] W  [ ] S  [ ] A  `format.list_studio` — Structured List Studio  `F2`
+- [ ] W  [ ] S  [ ] A  `format.list_studio_settings` — Structured List Studio Settings
+- [ ] W  [ ] S  [ ] A  `format.lower_case` — Lower Case
+- [ ] W  [ ] S  [ ] A  `format.manage_abbreviations` — Manage Abbreviations...  `Ctrl+Shift+Grave, Shift+A`
+- [ ] W  [ ] S  [ ] A  `format.manage_snippets` — Manage Snippets...  `Ctrl+Shift+Grave, Shift+S`
+- [ ] W  [ ] S  [ ] A  `format.move_line_down` — Move Line Down
+- [ ] W  [ ] S  [ ] A  `format.move_line_up` — Move Line Up
+- [ ] W  [ ] S  [ ] A  `format.move_section_down` — Move Section Down  `Alt+Shift+Down`
+- [ ] W  [ ] S  [ ] A  `format.move_section_up` — Move Section Up  `Alt+Shift+Up`
+- [ ] W  [ ] S  [ ] A  `format.outdent` — Outdent  `Ctrl+[`
+- [ ] W  [ ] S  [ ] A  `format.sentence_case` — Sentence Case
+- [ ] W  [ ] S  [ ] A  `format.style_headings` — Style Headings...
+- [ ] W  [ ] S  [ ] A  `format.switch_document_format` — Switch Document Format  `Ctrl+Shift+Grave, K`
+- [ ] W  [ ] S  [ ] A  `format.title_case` — Title Case
+- [ ] W  [ ] S  [ ] A  `format.toggle_abbreviation_expansion` — Toggle Abbreviation Expansion  `Ctrl+Shift+Grave, E`
+- [ ] W  [ ] S  [ ] A  `format.toggle_announce_formatting` — Announce Formatting on Cursor Move
+- [ ] W  [ ] S  [ ] A  `format.toggle_block_comment` — Toggle Block Comment  `Shift+Alt+A`
+- [ ] W  [ ] S  [ ] A  `format.toggle_bullet_list` — Toggle Bullet List  `Ctrl+Alt+B`
+- [ ] W  [ ] S  [ ] A  `format.toggle_case` — Toggle Case
+- [ ] W  [ ] S  [ ] A  `format.toggle_line_comment` — Toggle Line Comment  `Ctrl+/`
+- [ ] W  [ ] S  [ ] A  `format.toggle_numbered_list` — Toggle Numbered List  `Ctrl+Alt+N`
+- [ ] W  [ ] S  [ ] A  `format.toggle_tab_insert_mode` — Toggle Tab Key Mode (Indent / Tab Character)  `Ctrl+Shift+Grave, U`
+- [ ] W  [ ] S  [ ] A  `format.underline` — Underline
+- [ ] W  [ ] S  [ ] A  `format.upper_case` — Upper Case
+
+## `braille.*` (45)
+- [ ] W  [ ] S  [ ] A  `braille.add_proofing_note` — Add Proofing Note to Current Page
+- [ ] W  [ ] S  [ ] A  `braille.announce_running_head` — Announce Running Head
+- [ ] W  [ ] S  [ ] A  `braille.back_translate` — Back-Translate UEB (draft)
+- [ ] W  [ ] S  [ ] A  `braille.back_translate_auto` — Back-Translate to Text (Auto-Detect Braille Code)
+- [ ] W  [ ] S  [ ] A  `braille.clear_proofing_mark` — Clear Proofing Mark on Current Page
+- [ ] W  [ ] S  [ ] A  `braille.convert_brf_file` — Convert BRF File to Document...
+- [ ] W  [ ] S  [ ] A  `braille.export_proofing_report` — Export Proofing Report
+- [ ] W  [ ] S  [ ] A  `braille.go_to_longest_line` — Go to Longest Braille Line
+- [ ] W  [ ] S  [ ] A  `braille.go_to_longest_page` — Go to Longest Braille Page
+- [ ] W  [ ] S  [ ] A  `braille.go_to_page` — Go to Braille Page...
+- [ ] W  [ ] S  [ ] A  `braille.go_to_print_page` — Go to Print Page...
+- [ ] W  [ ] S  [ ] A  `braille.ignore_running_head_for_status` — Omit Running Head from Status
+- [ ] W  [ ] S  [ ] A  `braille.insert_page_break` — Insert Braille Page Break
+- [ ] W  [ ] S  [ ] A  `braille.list_pages_needing_review` — List Braille Pages Needing Review
+- [ ] W  [ ] S  [ ] A  `braille.list_proofed_pages` — List Proofed Braille Pages
+- [ ] W  [ ] S  [ ] A  `braille.mark_page_needs_review` — Mark Current Braille Page Needs Review
+- [ ] W  [ ] S  [ ] A  `braille.mark_page_proofed` — Mark Current Braille Page as Proofed
+- [ ] W  [ ] S  [ ] A  `braille.next_page` — Next Braille Page
+- [ ] W  [ ] S  [ ] A  `braille.next_print_page_change` — Next Print Page Change
+- [ ] W  [ ] S  [ ] A  `braille.next_warning` — Next Braille Layout Warning
+- [ ] W  [ ] S  [ ] A  `braille.normalize_line_endings` — Normalize Line Endings
+- [ ] W  [ ] S  [ ] A  `braille.previous_page` — Previous Braille Page
+- [ ] W  [ ] S  [ ] A  `braille.previous_print_page_change` — Previous Print Page Change
+- [ ] W  [ ] S  [ ] A  `braille.previous_warning` — Previous Braille Layout Warning
+- [ ] W  [ ] S  [ ] A  `braille.read_braille_page` — Read Current Braille Page
+- [ ] W  [ ] S  [ ] A  `braille.read_detailed_status` — Read Detailed Braille Status
+- [ ] W  [ ] S  [ ] A  `braille.read_layout_metrics` — Read Braille Layout Metrics
+- [ ] W  [ ] S  [ ] A  `braille.read_line_and_cell` — Read Current Line and Cell
+- [ ] W  [ ] S  [ ] A  `braille.read_print_page` — Read Current Print Page
+- [ ] W  [ ] S  [ ] A  `braille.read_progress_summary` — Read Progress Summary
+- [ ] W  [ ] S  [ ] A  `braille.read_proofing_progress` — Read Proofing Progress Summary
+- [ ] W  [ ] S  [ ] A  `braille.read_status` — Read Braille Status
+- [ ] W  [ ] S  [ ] A  `braille.recalculate_page_map` — Recalculate Page Map
+- [ ] W  [ ] S  [ ] A  `braille.remove_page_break` — Remove Braille Page Break
+- [ ] W  [ ] S  [ ] A  `braille.save_as_clean` — Save As Clean BRF
+- [ ] W  [ ] S  [ ] A  `braille.strip_trailing_spaces_document` — Remove Trailing Spaces in Whole File
+- [ ] W  [ ] S  [ ] A  `braille.strip_trailing_spaces_line` — Remove Trailing Spaces on Current Line
+- [ ] W  [ ] S  [ ] A  `braille.translate_selection` — Translate Selection to UEB
+- [ ] W  [ ] S  [ ] A  `braille.translate_standard_g1` — Translate to Standard American Braille Uncontracted (Legacy Grade 1)
+- [ ] W  [ ] S  [ ] A  `braille.translate_standard_g2` — Translate to Standard American Braille Contracted (Legacy Grade 2)
+- [ ] W  [ ] S  [ ] A  `braille.translate_ueb_g1` — Translate to UEB Grade 1 (Uncontracted)
+- [ ] W  [ ] S  [ ] A  `braille.translate_ueb_g2` — Translate to UEB Grade 2 (Contracted)
+- [ ] W  [ ] S  [ ] A  `braille.use_running_head_in_status` — Include Running Head in Status
+- [ ] W  [ ] S  [ ] A  `braille.validate_layout` — Validate BRF Layout
+- [ ] W  [ ] S  [ ] A  `braille.warnings_summary` — Braille Layout Warnings Summary
+
+## `file.*` (29)
+- [ ] W  [ ] S  [ ] A  `file.choose_encoding` — Choose Encoding...
+- [ ] W  [ ] S  [ ] A  `file.close_document` — Close Document  `Ctrl+W`
+- [ ] W  [ ] S  [ ] A  `file.convert_file` — Convert File...
+- [ ] W  [ ] S  [ ] A  `file.github_manage_accounts` — Manage GitHub Accounts...  `Ctrl+Shift+Grave, Shift+Z`
+- [ ] W  [ ] S  [ ] A  `file.github_save_back` — Save to GitHub...  `Ctrl+Shift+Grave, Shift+Q`
+- [ ] W  [ ] S  [ ] A  `file.header_footer` — Header and Footer...
+- [ ] W  [ ] S  [ ] A  `file.import_convert` — Import / Convert Document (OCR)
+- [ ] W  [ ] S  [ ] A  `file.new` — New File  `Ctrl+N`
+- [ ] W  [ ] S  [ ] A  `file.open` — Open File...  `Ctrl+O`
+- [ ] W  [ ] S  [ ] A  `file.open_containing_folder` — Open Containing Folder
+- [ ] W  [ ] S  [ ] A  `file.open_github_file_url` — Open Remote GitHub File URL...  `Ctrl+Shift+Grave, Shift+W`
+- [ ] W  [ ] S  [ ] A  `file.open_github_items` — Open GitHub Items...  `Ctrl+Shift+Grave, Shift+I`
+- [ ] W  [ ] S  [ ] A  `file.open_github_repository` — Open Remote GitHub Repository...  `Ctrl+Shift+Grave, Shift+Y`
+- [ ] W  [ ] S  [ ] A  `file.open_session` — Open Session...
+- [ ] W  [ ] S  [ ] A  `file.open_url` — Open from URL...
+- [ ] W  [ ] S  [ ] A  `file.page_setup` — Page Setup...
+- [ ] W  [ ] S  [ ] A  `file.print` — Print...  `Ctrl+P`
+- [ ] W  [ ] S  [ ] A  `file.print_studio` — Print Studio...
+- [ ] W  [ ] S  [ ] A  `file.reload_from_disk` — Reload from Disk
+- [ ] W  [ ] S  [ ] A  `file.restore_backup` — Restore Backup...
+- [ ] W  [ ] S  [ ] A  `file.restore_previous_version` — Restore Previous Version
+- [ ] W  [ ] S  [ ] A  `file.save` — Save  `Ctrl+S`
+- [ ] W  [ ] S  [ ] A  `file.save_all` — Save All
+- [ ] W  [ ] S  [ ] A  `file.save_as` — Save As...  `Ctrl+Shift+S`
+- [ ] W  [ ] S  [ ] A  `file.save_as_plain_text` — Save As Plain Text...
+- [ ] W  [ ] S  [ ] A  `file.save_session` — Save Session...
+- [ ] W  [ ] S  [ ] A  `file.ssh_quick_connect` — Open over SSH: Quick Connect...
+- [ ] W  [ ] S  [ ] A  `file.ssh_site_manager` — Open over SSH: Site Manager...
+- [ ] W  [ ] S  [ ] A  `file.toggle_line_endings` — Toggle Line Endings
+
+## `navigate.*` (26)
+- [ ] W  [ ] S  [ ] A  `navigate.back_location` — Back Location  `Alt+Left`
+- [ ] W  [ ] S  [ ] A  `navigate.forward_location` — Forward Location  `Alt+Right`
+- [ ] W  [ ] S  [ ] A  `navigate.go_to_anything` — Go to Anything  `Ctrl+Shift+Grave, G`
+- [ ] W  [ ] S  [ ] A  `navigate.go_to_bookmark` — Go To Bookmark...
+- [ ] W  [ ] S  [ ] A  `navigate.go_to_line` — Go To Line...  `Ctrl+G`
+- [ ] W  [ ] S  [ ] A  `navigate.go_to_page` — Go To Page...  `Ctrl+Shift+G`
+- [ ] W  [ ] S  [ ] A  `navigate.heading_organizer` — Heading Organizer...  `Ctrl+Shift+Grave, O`
+- [ ] W  [ ] S  [ ] A  `navigate.list_bookmarks` — List Bookmarks...  `Alt+Shift+B`
+- [ ] W  [ ] S  [ ] A  `navigate.match_bracket` — Match Bracket  `Ctrl+Shift+\`
+- [ ] W  [ ] S  [ ] A  `navigate.next_block` — Next Block
+- [ ] W  [ ] S  [ ] A  `navigate.next_heading` — Next Heading
+- [ ] W  [ ] S  [ ] A  `navigate.next_region` — Next Region  `F6`
+- [ ] W  [ ] S  [ ] A  `navigate.next_structure` — Next Structure  `Alt+Down`
+- [ ] W  [ ] S  [ ] A  `navigate.next_token` — Next Token
+- [ ] W  [ ] S  [ ] A  `navigate.outline_navigator` — Outline Navigator...  `Ctrl+Shift+O`
+- [ ] W  [ ] S  [ ] A  `navigate.previous_block` — Previous Block
+- [ ] W  [ ] S  [ ] A  `navigate.previous_heading` — Previous Heading
+- [ ] W  [ ] S  [ ] A  `navigate.previous_region` — Previous Region  `Shift+F6`
+- [ ] W  [ ] S  [ ] A  `navigate.previous_structure` — Previous Structure  `Alt+Up`
+- [ ] W  [ ] S  [ ] A  `navigate.previous_token` — Previous Token
+- [ ] W  [ ] S  [ ] A  `navigate.quick_nav` — Quick Nav (Go to Anything)
+- [ ] W  [ ] S  [ ] A  `navigate.set_bookmark` — Set Bookmark...
+- [ ] W  [ ] S  [ ] A  `navigate.set_language` — Set Document Language...
+- [ ] W  [ ] S  [ ] A  `navigate.speak_full_path` — Speak Full Path  `Ctrl+Shift+Grave, P`
+- [ ] W  [ ] S  [ ] A  `navigate.speak_status_summary` — Speak Status Summary  `Ctrl+Shift+Grave, Q`
+- [ ] W  [ ] S  [ ] A  `navigate.speak_window_title` — Speak Window Title  `Ctrl+Shift+Grave, F`
+
+## `vault.*` (22)
+- [ ] W  [ ] S  [ ] A  `vault.backlinks` — Show Backlinks
+- [ ] W  [ ] S  [ ] A  `vault.complete` — Complete Link or Tag at Cursor
+- [ ] W  [ ] S  [ ] A  `vault.explorer` — Vault Explorer
+- [ ] W  [ ] S  [ ] A  `vault.export_site` — Export Vault as Website
+- [ ] W  [ ] S  [ ] A  `vault.follow_link` — Follow Wikilink
+- [ ] W  [ ] S  [ ] A  `vault.insert_link` — Insert Link to Note
+- [ ] W  [ ] S  [ ] A  `vault.insert_template` — Insert Template
+- [ ] W  [ ] S  [ ] A  `vault.neighborhood` — Note Neighborhood
+- [ ] W  [ ] S  [ ] A  `vault.next_daily` — Next Daily Note
+- [ ] W  [ ] S  [ ] A  `vault.open` — Open Vault
+- [ ] W  [ ] S  [ ] A  `vault.prev_daily` — Previous Daily Note
+- [ ] W  [ ] S  [ ] A  `vault.publish_note` — Publish Note  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `vault.quick_switch` — Go to Note
+- [ ] W  [ ] S  [ ] A  `vault.rename` — Rename Note
+- [ ] W  [ ] S  [ ] A  `vault.resolve_embed` — Resolve Embed Inline
+- [ ] W  [ ] S  [ ] A  `vault.search` — Search Vault
+- [ ] W  [ ] S  [ ] A  `vault.settings` — Vault Settings
+- [ ] W  [ ] S  [ ] A  `vault.speak_embed` — Speak Embed at Cursor
+- [ ] W  [ ] S  [ ] A  `vault.sync` — Sync Vault
+- [ ] W  [ ] S  [ ] A  `vault.tags` — Show Tags
+- [ ] W  [ ] S  [ ] A  `vault.today` — Open Today's Note
+- [ ] W  [ ] S  [ ] A  `vault.unlinked_mentions` — Unlinked Mentions
+
+## `help.*` (21)
+- [ ] W  [ ] S  [ ] A  `help.about_quill` — About Quill
+- [ ] W  [ ] S  [ ] A  `help.context_help` — Context Help: Current Mode Keys  `Ctrl+Shift+Grave, Shift+H`
+- [ ] W  [ ] S  [ ] A  `help.enable_braille_mode` — Enable Braille Mode...
+- [ ] W  [ ] S  [ ] A  `help.feature_profile_health_check` — Feature Profile Health Check...
+- [ ] W  [ ] S  [ ] A  `help.key_cheatsheet` — Key Cheatsheet  `Alt+Shift+/`
+- [ ] W  [ ] S  [ ] A  `help.open_diagnostics_folder` — Open Diagnostics Folder
+- [ ] W  [ ] S  [ ] A  `help.open_logs_folder` — Open Logs Folder
+- [ ] W  [ ] S  [ ] A  `help.open_third_party_notices` — Open Third-Party Notices
+- [ ] W  [ ] S  [ ] A  `help.open_user_guide` — Open User Guide
+- [ ] W  [ ] S  [ ] A  `help.redeem_unlock_code` — Help: Redeem Unlock Code...
+- [ ] W  [ ] S  [ ] A  `help.report_bug` — Report a Bug...
+- [ ] W  [ ] S  [ ] A  `help.reset_feature_profile` — Reset to Essential Profile
+- [ ] W  [ ] S  [ ] A  `help.run_profile_onboarding` — Startup Wizard...
+- [ ] W  [ ] S  [ ] A  `help.save_diagnostics` — Save Diagnostics...
+- [ ] W  [ ] S  [ ] A  `help.startup_wizard` — Startup Wizard...
+- [ ] W  [ ] S  [ ] A  `help.status_page` — Status Page
+- [ ] W  [ ] S  [ ] A  `help.switch_feature_profile` — Switch Feature Profile...  `Alt+Shift+P`
+- [ ] W  [ ] S  [ ] A  `help.undo_last_profile_change` — Undo Last Profile Change
+- [ ] W  [ ] S  [ ] A  `help.what_can_i_do_here` — What Can I Do Here?
+- [ ] W  [ ] S  [ ] A  `help.why_dont_i_see_feature` — Why Don't I See a Feature?
+- [ ] W  [ ] S  [ ] A  `help.why_unavailable` — Why Is This Unavailable?  `Alt+F1`
+
+## `github.*` (17)
+- [ ] W  [ ] S  [ ] A  `github.browse_organization` — GitHub: Browse Organization Repositories...
+- [ ] W  [ ] S  [ ] A  `github.change_default_branch` — GitHub: Change Default Branch...  `Ctrl+Shift+Grave, Shift+B`
+- [ ] W  [ ] S  [ ] A  `github.change_repository_visibility` — GitHub: Change Repository Visibility...  `Ctrl+Shift+Grave, Shift+V`
+- [ ] W  [ ] S  [ ] A  `github.commit_multiple_files` — GitHub: Commit Multiple Files...  `Ctrl+Shift+Grave, Shift+U`
+- [ ] W  [ ] S  [ ] A  `github.configure_branch_protection` — GitHub: Configure Branch Protection...  `Ctrl+Shift+Grave, Shift+L`
+- [ ] W  [ ] S  [ ] A  `github.copilot_explain` — GitHub: Explain a Command...
+- [ ] W  [ ] S  [ ] A  `github.copilot_suggest` — GitHub: Ask Copilot for a Command...
+- [ ] W  [ ] S  [ ] A  `github.create_codespace` — GitHub: Create Codespace...
+- [ ] W  [ ] S  [ ] A  `github.create_release` — GitHub: Create Release...
+- [ ] W  [ ] S  [ ] A  `github.create_repository` — GitHub: Create Repository...  `Ctrl+Shift+Grave, Shift+K`
+- [ ] W  [ ] S  [ ] A  `github.delete_branch` — GitHub: Delete Branch...  `Ctrl+Shift+Grave, Shift+X`
+- [ ] W  [ ] S  [ ] A  `github.dispatch_workflow` — GitHub: Dispatch Workflow...
+- [ ] W  [ ] S  [ ] A  `github.fork_repository` — GitHub: Fork Repository...  `Ctrl+Shift+Grave, Shift+F`
+- [ ] W  [ ] S  [ ] A  `github.list_codespaces` — GitHub: Codespaces...
+- [ ] W  [ ] S  [ ] A  `github.rename_repository` — GitHub: Rename Repository...  `Ctrl+Shift+Grave, Shift+E`
+- [ ] W  [ ] S  [ ] A  `github.view_notifications` — GitHub: Notifications...
+- [ ] W  [ ] S  [ ] A  `github.view_security_alerts` — GitHub: Security Alerts...
+
+## `view.*` (16)
+- [ ] W  [ ] S  [ ] A  `view.announce_contrast` — Announce Contrast Ratio  `Ctrl+Shift+Grave, Shift+C`
+- [ ] W  [ ] S  [ ] A  `view.browser_preview` — Browser Preview  `Ctrl+Shift+Grave, V`
+- [ ] W  [ ] S  [ ] A  `view.focus_preview` — Focus Preview  `Ctrl+F6`
+- [ ] W  [ ] S  [ ] A  `view.preview` — Preview  `Ctrl+Shift+V`
+- [ ] W  [ ] S  [ ] A  `view.reveal_codes_toggle` — Reveal Codes  `Alt+F3`
+- [ ] W  [ ] S  [ ] A  `view.send_to_tray` — Send to Tray  `Ctrl+Shift+Grave, T`
+- [ ] W  [ ] S  [ ] A  `view.split_preview` — Preview Side by Side  `Ctrl+Shift+Backslash`
+- [ ] W  [ ] S  [ ] A  `view.spoken_echo` — Show Spoken Echo  `Alt+Shift+E`
+- [ ] W  [ ] S  [ ] A  `view.toggle_dark_mode` — Toggle Dark Mode  `Alt+Shift+D`
+- [ ] W  [ ] S  [ ] A  `view.toggle_find_wrap` — Toggle Find Wrap
+- [ ] W  [ ] S  [ ] A  `view.toggle_intellisense_as_you_type` — Toggle Word Prediction As You Type
+- [ ] W  [ ] S  [ ] A  `view.toggle_overwrite_mode` — Toggle Overwrite Mode
+- [ ] W  [ ] S  [ ] A  `view.toggle_persistent_undo` — Toggle Persistent Undo
+- [ ] W  [ ] S  [ ] A  `view.toggle_soft_wrap` — Toggle Soft Wrap  `Alt+Z`
+- [ ] W  [ ] S  [ ] A  `view.toggle_spellcheck_as_you_type` — Toggle Spell Check As You Type
+- [ ] W  [ ] S  [ ] A  `view.toggle_tab_control` — Toggle Tab Control  `Ctrl+Shift+Grave, Shift+T`
+
+## `window.*` (14)
+- [ ] W  [ ] S  [ ] A  `window.close_other_documents` — Close Other Documents  `Ctrl+Shift+F4`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_1` — Go to Document 1  `Alt+1`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_10` — Go to Document 10  `Alt+0`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_2` — Go to Document 2  `Alt+2`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_3` — Go to Document 3  `Alt+3`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_4` — Go to Document 4  `Alt+4`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_5` — Go to Document 5  `Alt+5`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_6` — Go to Document 6  `Alt+6`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_7` — Go to Document 7  `Alt+7`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_8` — Go to Document 8  `Alt+8`
+- [ ] W  [ ] S  [ ] A  `window.go_to_document_9` — Go to Document 9  `Alt+9`
+- [ ] W  [ ] S  [ ] A  `window.new_document_tab` — New Tab  `Ctrl+T`
+- [ ] W  [ ] S  [ ] A  `window.next_document` — Next Document  `Ctrl+Tab`
+- [ ] W  [ ] S  [ ] A  `window.previous_document` — Previous Document  `Ctrl+Shift+Tab`
+
+## `whisperer.*` (12)
+- [ ] W  [ ] S  [ ] A  `whisperer.about` — About BITS Whisperer  **[GATED core.bw_whisperer]**
+- [ ] W  [ ] S  [ ] A  `whisperer.capability_matrix` — BITS Whisperer Capability Matrix
+- [ ] W  [ ] S  [ ] A  `whisperer.check_faster_whisper` — BITS Whisperer Check faster-whisper Engine
+- [ ] W  [ ] S  [ ] A  `whisperer.download_queue` — BITS Whisperer Download Queue...
+- [ ] W  [ ] S  [ ] A  `whisperer.model_manager` — BITS Whisperer Speech Model Manager...
+- [ ] W  [ ] S  [ ] A  `whisperer.model_recommend` — BITS Whisperer Use Recommended Speech Model
+- [ ] W  [ ] S  [ ] A  `whisperer.model_status` — BITS Whisperer Speech Model Status
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_center` — BITS Whisperer Provider Center...
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_recommend` — BITS Whisperer Use Recommended Provider
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_select` — BITS Whisperer Select Provider...
+- [ ] W  [ ] S  [ ] A  `whisperer.provider_status` — BITS Whisperer Provider Status
+- [ ] W  [ ] S  [ ] A  `whisperer.readiness_check` — BITS Whisperer Readiness Check
+
+## `localgit.*` (12)
+- [ ] W  [ ] S  [ ] A  `localgit.bisect_reset` — Local Git: End Bisect
+- [ ] W  [ ] S  [ ] A  `localgit.bisect_start` — Local Git: Start Bisect...
+- [ ] W  [ ] S  [ ] A  `localgit.blame_at_cursor` — Local Git: Who Wrote This Line...
+- [ ] W  [ ] S  [ ] A  `localgit.interactive_rebase` — Local Git: Interactive Rebase...
+- [ ] W  [ ] S  [ ] A  `localgit.manage_stashes` — Local Git: Manage Stashes...
+- [ ] W  [ ] S  [ ] A  `localgit.new_worktree` — Local Git: New Worktree...
+- [ ] W  [ ] S  [ ] A  `localgit.rebase_abort` — Local Git: Abort Rebase
+- [ ] W  [ ] S  [ ] A  `localgit.resolve_conflicts` — Local Git: Resolve Conflicts...
+- [ ] W  [ ] S  [ ] A  `localgit.stash_changes` — Local Git: Stash Changes...
+- [ ] W  [ ] S  [ ] A  `localgit.switch_branch` — Local Git: Switch Branch...
+- [ ] W  [ ] S  [ ] A  `localgit.uncommitted_changes` — Local Git: Uncommitted Changes...
+- [ ] W  [ ] S  [ ] A  `localgit.worktrees` — Local Git: Worktrees...
+
+## `publishing.*` (11)
+- [ ] W  [ ] S  [ ] A  `publishing.browse_content` — Browse Publishing Content...  **[GATED future.publishing_read]**
+- [ ] W  [ ] S  [ ] A  `publishing.compare_remote_item` — Compare With Remote...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.connections` — Publishing Connections...  **[GATED future.publishing_read]**
+- [ ] W  [ ] S  [ ] A  `publishing.create_draft` — Create Post Draft...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.create_page_draft` — Create Page Draft...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.publish_current` — Publish Post Now...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.publish_current_page` — Publish Page Now...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.publish_remote_item` — Publish Open Remote Content...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.schedule_publish` — Schedule Publish...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.update_remote_item` — Update Remote Content...  **[GATED future.publishing]**
+- [ ] W  [ ] S  [ ] A  `publishing.verify_connection` — Verify Current Publishing Connection  **[GATED future.publishing_read]**
+
+## `app.*` (10)
+- [ ] W  [ ] S  [ ] A  `app.announcement_self_test` — Announcement Self-Test...
+- [ ] W  [ ] S  [ ] A  `app.command_palette` — Command Palette...  `Ctrl+Shift+P`
+- [ ] W  [ ] S  [ ] A  `app.display_language` — Change Display Language...
+- [ ] W  [ ] S  [ ] A  `app.exit` — Exit  `Ctrl+Q`
+- [ ] W  [ ] S  [ ] A  `app.open_media_player` — Open the Media Player
+- [ ] W  [ ] S  [ ] A  `app.open_radio` — Open Quill Radio
+- [ ] W  [ ] S  [ ] A  `app.open_weather` — Open Quill Weather
+- [ ] W  [ ] S  [ ] A  `app.preferences` — Preferences...  `Ctrl+,`
+- [ ] W  [ ] S  [ ] A  `app.repeat_last_announcement` — Repeat Last Announcement
+- [ ] W  [ ] S  [ ] A  `app.report_editor_surface` — Report Editor Surface
+
+## `verbosity.*` (8)
+- [ ] W  [ ] S  [ ] A  `verbosity.history` — Announcement History
+- [ ] W  [ ] S  [ ] A  `verbosity.preferences` — Verbosity Preferences
+- [ ] W  [ ] S  [ ] A  `verbosity.speak_status` — Speak Status Bar
+- [ ] W  [ ] S  [ ] A  `verbosity.toggle_meeting` — Toggle Meeting Mode
+- [ ] W  [ ] S  [ ] A  `verbosity.toggle_quiet` — Toggle Quiet Mode
+- [ ] W  [ ] S  [ ] A  `verbosity.undo` — Undo Verbosity Change
+- [ ] W  [ ] S  [ ] A  `verbosity.what_changed` — What Changed
+- [ ] W  [ ] S  [ ] A  `verbosity.where_am_i` — Where Am I
+
+## `table.*` (8)
+- [ ] W  [ ] S  [ ] A  `table.cell_above` — Table: Cell Above  `Ctrl+Alt+Up`
+- [ ] W  [ ] S  [ ] A  `table.cell_below` — Table: Cell Below  `Ctrl+Alt+Down`
+- [ ] W  [ ] S  [ ] A  `table.first_cell` — Table: First Cell  `Ctrl+Alt+Home`
+- [ ] W  [ ] S  [ ] A  `table.last_cell` — Table: Last Cell  `Ctrl+Alt+End`
+- [ ] W  [ ] S  [ ] A  `table.next_cell` — Table: Next Cell  `Ctrl+Alt+Right`
+- [ ] W  [ ] S  [ ] A  `table.previous_cell` — Table: Previous Cell  `Ctrl+Alt+Left`
+- [ ] W  [ ] S  [ ] A  `table.row_end` — Table: Last Cell in Row  `Alt+End`
+- [ ] W  [ ] S  [ ] A  `table.row_start` — Table: First Cell in Row  `Alt+Home`
+
+## `notes.*` (5)
+- [ ] W  [ ] S  [ ] A  `notes.add_inline_note` — Add Inline Note  `Alt+Shift+I`
+- [ ] W  [ ] S  [ ] A  `notes.next_inline_note` — Next Inline Note  `Alt+Shift+J`
+- [ ] W  [ ] S  [ ] A  `notes.previous_inline_note` — Previous Inline Note  `Alt+Shift+G`
+- [ ] W  [ ] S  [ ] A  `notes.speak_inline_note` — Speak Inline Note (double-press to edit)  `Alt+Shift+H`
+- [ ] W  [ ] S  [ ] A  `notes.sticky_browser` — Sticky Notes Browser...
+
+## `reveal.*` (4)
+- [ ] W  [ ] S  [ ] A  `reveal.go_to_pair` — Reveal Codes: Go to Matching Code
+- [ ] W  [ ] S  [ ] A  `reveal.next_code` — Reveal Codes: Next Code
+- [ ] W  [ ] S  [ ] A  `reveal.previous_code` — Reveal Codes: Previous Code
+- [ ] W  [ ] S  [ ] A  `reveal.toggle_speak` — Reveal Codes: Speak Codes Aloud
+
+## `adp.*` (2)
+- [ ] W  [ ] S  [ ] A  `adp.ask` — ADP: Ask about Described Movies and TV...  **[GATED future.adp_assistant]**
+- [ ] W  [ ] S  [ ] A  `adp.settings` — ADP: Settings...  **[GATED future.adp_assistant]**
+
+## `media.*` (2)
+- [ ] W  [ ] S  [ ] A  `media.cancel_sleep_timer` — Media: Cancel Sleep Timer
+- [ ] W  [ ] S  [ ] A  `media.sleep_timer` — Media: Sleep Timer...
+
+## `ai.*` (1)
+- [ ] W  [ ] S  [ ] A  `ai.suggest_metadata` — Suggest Document Metadata...  **[GATED future.ai]**
+
+## `document.*` (1)
+- [ ] W  [ ] S  [ ] A  `document.summary` — Document Summary  `Alt+I`
+
+## `sync.*` (1)
+- [ ] W  [ ] S  [ ] A  `sync.sync_folder` — Sync Folder with GitHub...

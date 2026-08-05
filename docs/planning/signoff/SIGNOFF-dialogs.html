@@ -1,0 +1,2153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SIGNOFF-dialogs</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100-sign-off--dialog-surfaces-a11y-4-registry">QUILL 1.0.0
+Sign-off — Dialog surfaces (A11Y-4 registry)</h1>
+<p><strong>645 dialog call-sites</strong> from
+<code>tests/unit/ui/fixtures/dialog_inventory.json</code>. Each: opens,
+keyboard-complete, correct accessible name/role, Escape/Close contract,
+announces outcome. <code>native</code>=stock OS dialog,
+<code>hardened_custom</code>=QUILL dialog, <code>web</code>=HTML-form
+dialog.</p>
+<h2 id="core-editor-485--native279-hardened_custom199-web7">CORE-EDITOR
+(485) — native:279, hardened_custom:199, web:7</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/devtools/console_window.py::ConsoleWindow._save_transcript::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog._on_delete::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/abbreviation_manager_dialog.py::_AbbreviationEditDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/action_builder_dialog.py::ActionBuilderDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/action_builder_dialog.py::ActionBuilderDialog._on_attach_reference::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/adp_dialog.py::AdpAskDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/agent_validator_dialog.py::AgentValidatorDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/agent_validator_dialog.py::AgentValidatorDialog._on_choose_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/agent_validator_dialog.py::AgentValidatorDialog._on_choose_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_agent_result_dialog.py::AIAgentResultDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_chat_dialog.py::AIResponseDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_document_qa_dialog.py::AIDocumentQADialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_document_qa_dialog.py::AIDocumentQADialog._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_grammar_check_dialog.py::AIGrammarCheckDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_hub_dialog.py::AIHubDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_hub_dialog.py::AIHubDialog._on_reset::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_library_dialog.py::AILibraryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_library_dialog.py::AILibraryDialog._ask_open::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_library_dialog.py::AILibraryDialog._ask_save::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_library_dialog.py::AILibraryDialog._confirm::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_library_dialog.py::_PromotedAgentDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_library_dialog.py::_PromotedAgentDialog._on_save::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_model_panel.py::AIModelDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_setup_wizard.py::AISetupWizard.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_setup_wizard.py::maybe_offer_ai_setup::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_spell_check_dialog.py::AISpellCheckDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_spell_check_dialog.py::AISpellCheckInteractiveDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_thesaurus_dialog.py::AIThesaurusDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_transcribe_dialog.py::AIProgressDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_transcribe_dialog.py::AITranscribeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_transcribe_dialog.py::AITranscribeDialog._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_transcribe_dialog.py::AITranscribeDialog._on_ok::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_transcribe_dialog.py::AITranscribeDialog._on_ok::wx.MessageBox#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_transcribe_dialog.py::AITranscriptionResultDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_translation_dialog.py::AITranslationDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ai_translation_dialog.py::AITranslationDialog._on_lt_help::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_features_dialog.py::AppFeaturesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_preferences_dialog.py::PreferencesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_quillins.py::QuillinsAppMixin._quillin_consent::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_quillins.py::QuillinsAppMixin.open_quillins_manager.on_remove::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_quillins.py::QuillinsAppMixin.open_quillins_manager::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_quillins_host.py::_AppHostServices.prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_quillins_host.py::_AppHostServices.show_choices::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_shell.py::AppShellFrame._offer_app_update_install::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/app_shell.py::AppShellFrame._show_message_box::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_panel.py::AskQuillChatDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_panel.py::AskQuillChatDialog._on_change_provider::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::AIHubDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::AccessibilityAgentDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::AssistantConnectionDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::DiffReviewDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::RunPythonDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::SearchableModelPickerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/assistant_tools.py::WritingAssistantDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog._on_export_titles::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog._on_import_titles::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/batch_wizard_pages.py::BatchWizardDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/calculator_dialog.py::CalculatorDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/clip_library_dialog.py::ClipLibraryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/compare_dialog.py::CompareDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/concierge_menu.py::open_concierge::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/context_help.py::ContextHelpDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/context_preview_dialog.py::confirm_context_share::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/convert_file_dialog.py::ConvertFileDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/convert_file_dialog.py::ConvertFileDialog._browse_output::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/convert_file_dialog.py::ConvertFileDialog._browse_source::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/copilot_onboarding_dialog.py::CopilotOnboardingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/copy_tray_dialog.py::CopyTrayDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/crash_report_dialog.py::CrashReportDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/dialog_contract.py::show_message_box::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/dictation_history_dialog.py::DictationHistoryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/field_apply_dialog.py::FieldApplyDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/field_apply_dialog.py::FieldApplyDialog._accept::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/git_worktree_dialogs.py::NewWorktreeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/git_worktree_dialogs.py::NewWorktreeDialog._browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/git_worktree_dialogs.py::WorktreesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_artifacts_dialog.py::ArtifactsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_artifacts_dialog.py::ArtifactsDialog._choose_download_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_artifacts_dialog.py::ArtifactsDialog._confirm_overwrite::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_compare_branches_dialog.py::GitHubCompareBranchesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_dialogs.py::GitHubConsentDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_dialogs.py::GitHubManageAccountsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_dialogs.py::GitHubRepositoryBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_dialogs.py::GitHubSignInDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._confirm_action::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._edit_current_comment::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._on_batch_menu._on_pick::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._on_goto::wx.NumberEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._prompt_and_create::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._prompt_and_create::wx.TextEntryDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._prompt_and_create::wx.TextEntryDialog#3</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._prompt_and_create::wx.TextEntryDialog#4</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._reply_to_thread::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog.py::GitHubItemsDialog._run_batch::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog_branches.py::GitHubBranchActionsMixin._on_compare_branches::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog_branches.py::GitHubBranchActionsMixin._on_compare_branches::wx.TextEntryDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_items_dialog_workflows.py::GitHubWorkflowsMixin._run_selected_workflow::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_pr_diff_dialog.py::GitHubPullDiffDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_repo_admin_dialogs.py::BranchProtectionDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_repo_admin_dialogs.py::CreateRepositoryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/github_repo_admin_dialogs.py::TypedConfirmDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/global_hotkeys_dialog.py::GlobalHotkeysDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/global_hotkeys_dialog.py::_CaptureDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/guided_speech_dialog.py::show_guided_speech_setup::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/harness_api_key_dialog.py::HarnessApiKeyDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/header_footer_dialog.py::HeaderFooterDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/hygiene_dialog.py::HygieneReviewDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/info_pages.py::show_about_quill_native::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/info_pages.py::show_bw_capability_matrix_native::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/info_pages.py::show_whisperer_about_native::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/inline_note_dialog.py::show_inline_note_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/insert_image_dialog.py::InsertImageDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/insert_image_dialog.py::InsertImageDialog._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/keymap_editor.py::KeymapEditorMixin._capture_keybinding::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/keymap_editor.py::KeymapEditorMixin._rebind_quill_key::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/keymap_editor.py::KeymapEditorMixin.open_keymap_editor.edit_selected::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/keymap_editor.py::KeymapEditorMixin.open_keymap_editor::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/library_dialog.py::LibraryDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/list_studio_dialog.py::ListStudioDialog._on_import_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/list_studio_prompts.py::prompt_definition_fallback::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/list_studio_prompts.py::prompt_definition_fallback::wx.SingleChoiceDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/list_studio_settings_dialog.py::ListStudioSettingsDialog._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/list_studio_settings_dialog.py::ListStudioSettingsDialog._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/local_git_dialogs.py::InteractiveRebaseDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/local_git_dialogs.py::MergeConflictDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/local_git_dialogs.py::UncommittedChangesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._ask_pdf_password::wx.PasswordEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._ask_plain_text_formatting_choice::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._choose_searchable_option::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._confirm_close_with_busy_jobs::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._maybe_prompt_braille_pack_install::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._maybe_prompt_kokoro_package_install::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._present_quick_nav::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_code_language::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_open_mode::wx.RichMessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_snippet_editor::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_table_shape.prompt_dimension::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_table_shape::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_unsaved_changes_action::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._prompt_untrusted_location::wx.RichMessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._render_snippet_with_prompts::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._render_snippet_with_prompts::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._resolve_structured_markup::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._review_diagnostics_export::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._save_table_as_csv::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._send_crash_report::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._send_crash_report::wx.MessageDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._send_crash_report::wx.MessageDialog#3</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_crash_recovery_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_crash_recovery_dialog::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_error_with_hint::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_external_change_prompt::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_external_change_prompt::wx.MessageDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_heading_organizer_dialog.rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_heading_organizer_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_list_manager_dialog.add_item::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_list_manager_dialog.edit_item::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_list_manager_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_notifications_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_tree_navigator::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_trust_consent_onboarding::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_yaml_structure_editor.prompt_kind::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_yaml_structure_editor.prompt_label::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame._show_yaml_structure_editor::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.ai_tts_export_mp3::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.change_display_language::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.choose_announcement_backend::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.choose_document_encoding::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.enable_braille_mode::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.export_daisy::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.export_document::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.export_document_other::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.generate_speech_audio::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.generate_speech_audio::wx.FileDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.go_to_bookmark::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.go_to_line::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.go_to_page::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.import_document::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.import_document_other::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.insert_citation::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.insert_html_tag::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.insert_link::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.insert_markdown_tag::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.install_starter_snippet_packs::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.magic_paste::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.manage_macros.rename_selected::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.manage_macros::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.manage_snippets::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.manage_snippets::wx.FileDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.manage_snippets::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.manage_snippets::wx.SingleChoiceDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_csv_studio::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_from_favorite_folder::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_individual_feature_toggles::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_key_cheatsheet::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings.create_custom_profile::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings.create_custom_profile::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings.create_custom_profile::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings.create_custom_profile::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings.export_profile::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings.import_profile::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_profiles_and_features_settings::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_snippet_gallery::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_url::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.open_watch_folder_settings::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.remove_favorite_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.report_bad_extraction::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.reset_feature_profile_to_essential::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.restore_backup::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.run_batch_conversion_wizard._confirm_overwrite_all::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.save_as_plain_text::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.save_diagnostics_bundle::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.save_file_as::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.set_bookmark::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.set_document_language::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.show_external_tools_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.show_feature_explanation::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.show_lookup_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.show_regex_helper::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.show_spoken_echo::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.show_watch_folder_status::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame.py::MainFrame.start_macro_recording::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_adp.py::AdpMixin.open_adp_settings::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille.py::BrailleCommandsMixin.convert_brf_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille.py::BrailleCommandsMixin.go_to_braille_page::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille_phase2.py::BraillePhase2CommandsMixin.go_to_print_page::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin._show_pages_list::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin._show_warnings_list::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.add_proofing_note::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.export_proofing_report::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_classic_editor.py::ClassicEditorMixin.restore_deletion::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_clip_library.py::ClipLibraryMixin._promote_clip_to_tray::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_compare.py::CompareMixin.compare_start_with_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_compare.py::CompareMixin.compare_with_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_compare.py::CompareMixin.open_compare_difference_list::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_copy_tray.py::CopyTrayMixin.clear_all_tray_slots::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_copy_tray.py::_TraySearchDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_dictation_hotkeys.py::DictationHotkeysMixin.open_dictation_settings::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_docconvert.py::DocConvertMixin.import_convert_document::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_emoji_picker.py::EmojiPickerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_equations.py::EquationsMixin.insert_equation::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_format_codes.py::FormatCodesMixin.open_font_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_gh_bridge.py::GhBridgeMixin._gh_bridge_confirm::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_gh_bridge.py::GhBridgeMixin._gh_bridge_prompt_single::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_gh_bridge.py::GhBridgeMixin._on_gh_bridge_codespaces_loaded::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_git_sync.py::GitSyncMixin._choose_git_sync_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_git_sync.py::GitSyncMixin._git_sync_confirm::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_git_sync.py::GitSyncMixin._git_sync_prompt_single::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github.py::GitHubRemoteMixin.github_save_back::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github.py::GitHubRemoteMixin.open_github_file_url::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_admin.py::GitHubAdminMixin._gh_admin_confirm::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_admin.py::GitHubAdminMixin._gh_admin_prompt_single::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_admin.py::GitHubAdminMixin._on_github_branches_for_default::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_admin.py::GitHubAdminMixin._on_github_branches_for_delete::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_admin.py::GitHubAdminMixin.github_commit_multiple_files::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_extras.py::GitHubExtrasMixin._on_github_notifications_loaded::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_extras.py::GitHubExtrasMixin._on_github_org_repos_loaded::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_extras.py::GitHubExtrasMixin._on_github_orgs_loaded::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_github_extras.py::GitHubExtrasMixin._on_github_security_alerts_loaded::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_glow.py::GlowFileMixin._glow_pick_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin._pick_image_source::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin._pick_image_source::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin._run_ocr_on_path::wx.ProgressDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin._show_style_picker::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin.describe_image_with_ai::wx.ProgressDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin.ocr_image_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image.py::ImageCaptureMixin.ocr_screen_capture::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_image_alt.py::ImageAltMixin._run_vision_describe::wx.ProgressDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin._prompt_migration_summary::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin._prompt_migration_summary::wx.MessageDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.export_keyboard_pack_file::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.export_keyboard_pack_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.export_keymap_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.import_keyboard_pack_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.import_keymap_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.open_share_export_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.open_share_export_dialog::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.open_share_import_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_keymap_io.py::KeymapIoMixin.open_share_import_dialog::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_list_studio.py::ListStudioMixin.open_list_studio::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_list_studio.py::ListStudioMixin.open_list_studio_settings::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_local_git.py::LocalGitMixin._local_git_confirm::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_local_git.py::LocalGitMixin._local_git_prompt_single::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_local_git.py::LocalGitMixin._local_git_repo_root::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_local_git.py::LocalGitMixin._on_local_git_branches::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_local_git.py::LocalGitMixin._on_local_git_stashes::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_mastodon_social.py::MastodonSocialMixin._ask_handle::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_menu_editor.py::MenuEditorMixin._build_context_menu_editor_tab._on_rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_menu_editor.py::MenuEditorMixin._build_menu_items_editor_tab._on_rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_menu_editor.py::MenuEditorMixin._build_top_menu_editor_tab._on_rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_menu_editor.py::MenuEditorMixin.open_menu_editor::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.manage_notebook_snapshots.on_rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.manage_notebook_snapshots::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.new_notebook::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.new_notebook::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.new_notebook_from_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.new_notebook_from_folder::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.new_notebook_from_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.notebook_save_snapshot::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_notebook.py::NotebookUIMixin.open_notebook::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_podcasts.py::PodcastsMixin._podcast_export_opml::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_podcasts.py::PodcastsMixin.add_local_podcast::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_podcasts.py::PodcastsMixin.add_local_podcast::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_podcasts.py::PodcastsMixin.add_podcast_note::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin._power_tools_prompt_single::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.insert_file_content::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.multi_replace::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.number_lines_advanced::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.reencode_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.reencode_file::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.save_minimum_encoding::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.select_citation_style::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.select_markdown_profile::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin._confirm_restart_for_data_location::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin._confirm_show_editor_border::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin._maybe_offer_legacy_data_import::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._build_data_location_block._on_choose::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_control._make_abbr_sound_row._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_control._make_folder_row._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_control._make_sound_file_row._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_control._make_sp_row._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_page_builder._build._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_page_builder._build._on_export_profile::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_page_builder._build._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences._make_page_builder._build._on_import_profile::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_general_preferences::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_glow_settings::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_preferences.py::PreferencesMixin.open_preferences::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quill_key.py::QuillKeyMixin._present_quill_key_help::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quillins.py::QuillinsMenuMixin._open_event_toggle_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quillins.py::QuillinsMenuMixin._quillin_consent::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager.on_install::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager.on_remove::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_quillins_host.py::_EditorHostServices.show_choices::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_restore_points.py::RestorePointsMixin.restore_previous_version::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_rich_mode.py::RichModeMixin._confirm_lossy_format_switch::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_rich_mode.py::RichModeMixin._offer_docx_rich_choice::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_rich_mode.py::RichModeMixin._offer_plain_text_formatting_choice::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_search.py::SearchCommandsMixin._open_find_replace::wx.FindReplaceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_search.py::SearchCommandsMixin._prompt_file_search::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_search.py::SearchCommandsMixin._prompt_search::show_web_form</code>
+<em>(web)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_selection.py::SelectionMarksMixin.jump_to_named_mark::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_selection.py::SelectionMarksMixin.open_review_buffer::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_selection.py::SelectionMarksMixin.quill_key_selection_actions::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_selection.py::SelectionMarksMixin.set_named_mark::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_sessions.py::SessionsMixin.open_session::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_sessions.py::SessionsMixin.save_session::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_simple_open.py::SimpleOpenMixin._prompt_native_open_dialog::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech.py::SpeechCommandsMixin._choose_transcript_format::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech.py::SpeechCommandsMixin._save_captions::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech.py::SpeechCommandsMixin._save_captions::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech.py::SpeechCommandsMixin.choose_dictation_microphone::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech.py::SpeechCommandsMixin.generate_captions_offline::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech.py::SpeechCommandsMixin.transcribe_audio_offline::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech_downloads.py::SpeechDownloadsMixin._choose_voice_to_preview::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_speech_downloads.py::SpeechDownloadsMixin.set_huggingface_token::wx.PasswordEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_spellcheck.py::SpellcheckCommandsMixin._choose_misspelling_with_context::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_spellcheck.py::SpellcheckCommandsMixin.show_thesaurus::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_spellcheck.py::SpellcheckCommandsMixin.show_thesaurus::wx.SingleChoiceDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_spellcheck.py::SpellcheckCommandsMixin.show_thesaurus::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_spellcheck.py::SpellcheckCommandsMixin.spell_check_word_at_cursor::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_ssh.py::SshEditingMixin._request_for_site::wx.PasswordEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_statusbar.py::StatusBarMixin.open_status_bar_settings::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_story_studio.py::StoryStudioMixin._edit_story_element_details::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_story_studio.py::StoryStudioMixin.open_story_studio::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_story_studio.py::StoryStudioMixin.open_story_studio::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_updates.py::UpdatesMixin._confirm_beta_channel::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_updates.py::UpdatesMixin._html_info::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_updates.py::UpdatesMixin._offer_beta_switch::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_updates.py::UpdatesMixin._offer_post_download_actions::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_updates.py::UpdatesMixin._present_release_notes::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_vault.py::VaultMixin._choose_ambiguous::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_vault.py::VaultMixin._prompt_text::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_vault.py::VaultMixin.export_vault_site::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_vault.py::VaultMixin.open_vault::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_vault.py::VaultMixin.show_vault_explorer::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_verbosity.py::VerbosityCommandsMixin.open_verbosity_preferences::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_watch_profile.py::WatchProfileDialogMixin._edit_watch_profile._pick_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_watch_profile.py::WatchProfileDialogMixin._edit_watch_profile::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_worktrees.py::WorktreesMixin._worktree_confirm::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_worktrees.py::WorktreesMixin._worktree_pick_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/main_frame_worktrees.py::WorktreesMixin._worktree_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_dialogs.py::MastodonAccountsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_dialogs.py::MastodonAccountsDialog._on_remove::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_dialogs.py::MastodonAccountsDialog._prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_dialogs.py::MastodonComposeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_social_dialogs.py::MastodonProfileDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_social_dialogs.py::choose_account::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/mastodon_social_dialogs.py::choose_from_list::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ocr_review_dialog.py::OcrReviewDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/optional_components_dialog.py::show_optional_components_picker::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/palette.py::CommandPaletteDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/palette.py::GoToAnythingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/preview_dialog.py::AccessibleHtmlDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/print_studio_dialog.py::PrintStudioDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/profile_picker.py::ProfilePickerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/prompt_library_dialog.py::PromptLibraryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/prompt_library_dialog.py::PromptLibraryDialog._on_delete::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/prompt_library_dialog.py::PromptLibraryDialog._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/prompt_library_dialog.py::PromptLibraryDialog._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/prompt_library_dialog.py::_PromptEditDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/pronunciation_dictionary_dialog.py::PronunciationDictionaryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/pronunciation_dictionary_dialog.py::PronunciationDictionaryDialog._on_new_dict::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/pronunciation_dictionary_dialog.py::PronunciationEntryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/publishing_tools.py::BrowsePublishingContentDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/publishing_tools.py::EditPublishingConnectionDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/publishing_tools.py::PublishingConnectionsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/publishing_tools.py::SchedulePublishDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/quillin_hub_submit.py::open_hub_submission::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/quillin_hub_submit.py::open_hub_submission::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/quillin_prefs_dialog.py::build_quillin_pref_dialog::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/quillin_wizard.py::open_quillin_wizard.on_save::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/quillin_wizard.py::open_quillin_wizard::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/remote_sites_dialog.py::RemoteSitesDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/remote_sites_dialog.py::_SiteEditorDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/session_browser.py::SessionBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/setup_wizard_pages.py::SetupWizardDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/setup_wizard_pages.py::_DataLocationPage._on_choose_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/simple_open_dialog.py::SimpleOpenDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/single_convert_dialog.py::prompt_open_in_new_window::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/skill_library_dialog.py::SkillLibraryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/skill_library_dialog.py::SkillLibraryDialog._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/skill_library_dialog.py::_SkillParameterDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/skill_library_dialog.py::_SkillResultDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/sleep_timer_dialog.py::SleepTimerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/sound_enhance_dialog.py::SoundEnhanceDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/sound_events_dialog.py::SoundEventsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/speech_hub_dialog.py::SpeechHubDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/speech_player_dialog.py::show_speech_player.on_save::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/speech_player_dialog.py::show_speech_player::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/speech_setup_dialog.py::SpeechSetupDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/spell_language.py::open_spell_language_chooser::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/spelling_review_dialog.py::SpellingReviewDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/spotify/browse_dialog.py::SpotifyBrowseDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/spotify/connect_dialog.py::SpotifyConnectDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::QuickConnectDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::QuickConnectDialog._on_browse_key::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::RemoteBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::SiteEditDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::SiteEditDialog._on_browse_key::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::SiteManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssh_dialogs.py::SiteManagerDialog._on_delete::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssml_builder_dialog.py::SsmlBuilderDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/ssml_builder_dialog.py::SsmlBuilderDialog._prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/status_dialog.py::HelpStatusDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/sticky_notes.py::StickyNoteEditorDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/sticky_notes.py::StickyNotesVaultDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/sticky_notes_browser.py::StickyNotesBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/table_studio.py::TableListCtrl.edit_active_cell::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/table_studio.py::TableListCtrl.rename_column_header::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/table_studio.py::TableStudioDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/train_style_dialog.py::TrainStyleDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/transcript_actions_ui.py::offer_transcript_actions::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/translated_speech_export_dialog.py::TranslatedSpeechExportDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/translated_speech_runner.py::_prompt_output_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/unlock_code_dialog.py::UnlockCodeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/vault_dialogs.py::show_vault_filter_modal::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/vault_dialogs.py::show_vault_list_modal::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_chord_editor.py::VerbosityChordEditorDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_data_order.py::VerbosityDataOrderDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_history.py::VerbosityHistoryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_import_export.py::VerbosityImportExportDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_import_export.py::VerbosityImportExportDialog._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_import_export.py::VerbosityImportExportDialog._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_library.py::VerbosityLibraryDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_preview_lab.py::VerbosityPreviewLabDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_qvp_install.py::VerbosityQvpInstallDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_qvp_install.py::VerbosityQvpInstallDialog._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_safe_mode.py::VerbositySafeModeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/verbosity_token_editor.py::VerbosityTokenEditorDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._on_delete::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._show_prompt_editor::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/voice_browser_dialog.py::VoiceBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/web_form.py::_WebFormDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/work_persona_dialog.py::WorkPersonaDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_add_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_browse_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_shortcut::wx.DirDialog</code>
+<em>(native)</em></label></li>
+</ul>
+<h2
+id="other-app-studio-gated-43--native33-hardened_custom10">OTHER-APP:
+studio (gated) (43) — native:33, hardened_custom:10</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame._save_captions::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame._save_captions::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.generate_captions_offline::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.make_podcast_feed::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.open_book_picker::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.open_job_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.publish_book::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.run_acx_check::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::StudioAppFrame.save_diagnostics_bundle::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/studio.py::main::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_export::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_save_as::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_split_into_files::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench_dialogs.py::AcxResultDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/chapter_workbench_dialogs.py::SilenceParamsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._on_add_files::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._on_add_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/convert_audio_dialog.py::_prompt_for_url::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/feed_dialog.py::FolderFeedDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/library_tree.py::LibraryTreeActions.delete_book::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/library_tree.py::LibraryTreeActions.move_to_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/library_tree.py::LibraryTreeActions.new_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_audio.py::AudioSourcePage._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_audio.py::EditSourcePage._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_documents.py::DocSourcePage._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_documents.py::OutputPage._on_browse_temp::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_shared.py::BookPage._on_browse_cover::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_shared.py::BookPage._on_browse_output::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_shared.py::BookPage._on_lookup::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/pages_shared.py::SummaryPage._on_save_job::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/play_queue_dialog.py::PlayQueueDialog._on_add::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/play_queue_dialog.py::PlayQueueDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/publish_dialog.py::PublishDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/sleep_timer_dialog.py::SleepTimerDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/translated_speech_export.py::TranslatedSpeechExportDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/translated_speech_export.py::run_translated_speech_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/wizard.py::AudioStudioWizard._on_load_job::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/audio_studio/wizard.py::AudioStudioWizard::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2 id="radio-public-36--native21-hardened_custom15">RADIO (public) (36)
+— native:21, hardened_custom:15</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/radio.py::RadioAppFrame._on_sort_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/radio.py::RadioAppFrame.import_stations_from_playlist::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/add_station_dialog.py::AddStationDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/backup_ui.py::back_up_radio_data::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/backup_ui.py::restore_radio_data::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/browse_tree_dialog.py::BrowseTreeDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/close_confirm_dialog.py::RadioCloseConfirmDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::create_folder_prompt::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::create_folder_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::delete_folder_prompt::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::move_favorite_to_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::move_favorite_to_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::remove_all_favorites::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::remove_favorite::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::rename_favorite::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorite_actions.py::rename_folder_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_delete_folder::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_rename_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/import_stations_dialog.py::prompt_import_target::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/now_playing_dialog.py::NowPlayingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/output_device_ui.py::choose_output_device::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/playlist_export_ui.py::export_favorites_to_playlist::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/record_station_dialog.py::RecordStationDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog._on_browse_temp::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog._on_remove::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/resume_recording_dialog.py::ResumeRecordingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/resume_recording_dialog.py::ResumeRecordingsBatchDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/radio/wake_timer_dialog.py::WakeUpTimerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2 id="core-podcasts-gated-app-35--native22-hardened_custom13">CORE
+(podcasts, gated app) (35) — native:22, hardened_custom:13</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/podcasts.py::PodcastsAppFrame._new_library_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/add_podcast_dialog.py::AddPodcastDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/add_podcast_dialog.py::AddPodcastDialog._on_import_opml::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/chapters_dialog.py::ChaptersDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/episode_notes_dialog.py::EpisodeNotesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/feed_credentials_dialog.py::FeedCredentialsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog._on_new_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/folder_picker_dialog.py::FolderPickerDialog._on_rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog._on_delete_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog._on_new_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog._prompt_rename::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_phase4.py::ManagerPhase4Mixin._on_add_to_playlist::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_phase4.py::ManagerPhase4Mixin._on_save_transcript::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/manager_phase4.py::ManagerPhase4Mixin._prompt_playlist_name::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/opml_import_report_dialog.py::OpmlImportReportDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/opml_import_report_dialog.py::OpmlImportReportDialog._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/play_queue_dialog.py::PlayQueueDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/playlist_rules_dialog.py::PlaylistRulesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/search_everywhere_dialog.py::SearchEverywhereDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::create_folder_prompt::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::create_folder_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::delete_folder_prompt::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::move_show_to_folder::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::move_show_to_folder::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::remove_all_episodes_prompt::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::remove_all_episodes_prompt::wx.MessageBox#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::rename_folder_prompt::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::unsubscribe_show_prompt::wx.MessageBox</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_actions.py::unsubscribe_show_prompt::wx.MessageBox#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/show_notes_dialog.py::ShowNotesDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/podcasts/skip_settings_dialog.py::SkipSettingsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2
+id="other-app-beacon-gated-30--hardened_custom20-native10">OTHER-APP:
+beacon (gated) (30) — hardened_custom:20, native:10</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/app.py::BeaconFrame._on_auto_sync::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/app.py::BeaconFrame._on_capture_bridge_info::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/app.py::BeaconFrame._on_export::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/app.py::BeaconFrame._on_export::wx.SingleChoiceDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/app.py::BeaconFrame._on_import::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/commands.py::CommandPalette::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::A11ySettingsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::AttachmentAddDialog._on_browse::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::AttachmentAddDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::AttachmentsDialog._on_view::wx.MessageDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::AttachmentsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::BuildSearchDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::CollectionEditorDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::PlayerSettingsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::PreferencesDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::PublishDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::QuickCaptureDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::RadioProgramDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::RepairReviewDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::RoutingRuleDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SmartCollectionEditorDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SmartCollectionsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::StatusCenterDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SyncHistoryDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SyncSettingsDialog._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SyncSettingsDialog._on_pair::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SyncSettingsDialog._on_pair::wx.TextEntryDialog#2</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::SyncSettingsDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::TrailEditorDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/beacon/dialogs.py::TrailStepDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2 id="other-app-player-gated-9--native7-hardened_custom2">OTHER-APP:
+player (gated) (9) — native:7, hardened_custom:2</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/player.py::QuillMediaPlayerFrame._on_open_daisy::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/player.py::QuillMediaPlayerFrame._on_open_file::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/player.py::QuillMediaPlayerFrame._on_open_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/player.py::QuillMediaPlayerFrame._on_voice_command::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/player.py::QuillMediaPlayerFrame._prompt_text::wx.TextEntryDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/media/bookmark_actions.py::_save_path::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/media/bookmark_actions.py::import_sync_bundle::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/media/go_to_position_dialog.py::GoToPositionDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/media/library_dialog.py::LibraryDialog::subclass:wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2 id="weather-public-4--hardened_custom3-native1">WEATHER (public) (4)
+— hardened_custom:3, native:1</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/weather/add_location_dialog.py::AddLocationDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em></label></li>
+</ul>
+<h2 id="other-app-converter-gated-3--native3">OTHER-APP: converter
+(gated) (3) — native:3</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/converter.py::QuillConverterFrame._on_add_files::wx.FileDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/converter.py::QuillConverterFrame._on_add_folder::wx.DirDialog</code>
+<em>(native)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/apps/converter.py::QuillConverterFrame._on_browse::wx.DirDialog</code>
+<em>(native)</em></label></li>
+</ul>
+</body>
+</html>
