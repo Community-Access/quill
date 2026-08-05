@@ -271,6 +271,15 @@ class MpvAudioEngine:
         """Playback speed (1.0 = normal); mpv's scaletempo keeps the pitch."""
         self._mpv.set_str("speed", f"{max(0.25, min(4.0, float(rate))):.2f}")
 
+    def set_audio_filters(self, chain: str) -> None:
+        """Apply an ffmpeg audio-filter chain (mpv ``af``): EQ, boost, silence.
+
+        ``chain`` is a comma-separated ffmpeg filter string (see
+        :func:`quill.core.media.build_audio_filters`); an empty string clears it.
+        Only libmpv can do this -- the ``wx.media`` backend has no equivalent.
+        """
+        self._mpv.set_str("af", chain)
+
     # -- polling ---------------------------------------------------------------
 
     def _on_poll(self, _evt: wx.TimerEvent) -> None:

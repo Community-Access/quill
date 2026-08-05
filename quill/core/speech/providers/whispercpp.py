@@ -144,6 +144,9 @@ def build_whisper_command(
         args.append("-tr")
     if request.diarize:
         args.append("-tdrz")  # whisper.cpp tinydiarize: mark speaker turns
+    if request.initial_prompt:
+        # Bias recognition toward the user's vocabulary (dictation profile).
+        args += ["--prompt", request.initial_prompt]
     return args
 
 

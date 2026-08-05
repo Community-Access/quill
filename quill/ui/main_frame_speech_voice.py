@@ -358,7 +358,7 @@ class VoiceInteractionMixin:
     def _conv_start_capture(self) -> None:
         """Open the mic for one conversation turn, ending it when you stop
         speaking (voice-activity detection) with a hard cap as a backstop."""
-        from quill.core.speech.capture import CHANNELS, SAMPLE_RATE, MicRecorder
+        from quill.core.speech.capture import SAMPLE_RATE, MicRecorder
         from quill.core.speech.service import load_input_device
         from quill.core.speech.vad import SilenceDetector
 
@@ -375,7 +375,9 @@ class VoiceInteractionMixin:
             # The setting documents 0 as "the engine default"; for this
             # timed-turn loop that is the standard 2 s pause window (#793).
             silence_ms = 2000
-        self._conv_vad = SilenceDetector(sample_rate=SAMPLE_RATE * CHANNELS, silence_ms=silence_ms)
+        # VAD endpointing works on the frame rate (samples/sec) = SAMPLE_RATE for
+        # mono capture; the old `* CHANNELS` was a latent multi-channel bug.
+        self._conv_vad = SilenceDetector(sample_rate=SAMPLE_RATE, silence_ms=silence_ms)
         self._conv_vad_seen = 0
         # Poll microphone energy; a turn ends when speech is followed by the
         # pause window. A hard cap stops a stuck-open mic even if VAD misses;

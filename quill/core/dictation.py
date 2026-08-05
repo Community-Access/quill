@@ -1,13 +1,16 @@
 """Dictation control for QUILL.
 
-**What this does today, honestly:** on Windows, dictation toggles the operating
-system's built-in dictation panel (the Win+H experience) via
-``launch_windows_dictation``. QUILL does not yet capture or transcribe audio
-itself. The ``engine``/``model``/``language`` fields on :class:`DictationSettings`
-are forward-looking placeholders from the offline speech engine work (issue
-#617); the controller currently ignores them and always drives the OS panel.
-Keeping this module truthful — rather than pretending a local vosk/whisper
-recognizer is wired up — is deliberate (Speech wave S0).
+**What this module is, honestly:** the *legacy* Win+H bridge. On Windows it
+toggles the operating system's built-in dictation panel via
+``launch_windows_dictation``. It predates QUILL's own offline speech stack and
+does not capture or transcribe audio itself; the ``engine``/``model``/``language``
+fields on :class:`DictationSettings` are inert here.
+
+QUILL **does** now have a fully offline recognizer — see
+``quill/core/speech/dictation/`` (the Locked Dictation state machine, Ctrl+F9),
+``quill/core/speech/capture.py`` (microphone capture), and the whisper.cpp /
+Faster-Whisper / Vosk / Nemotron providers. This Win+H shim is retained only as
+the OS-panel fallback; new work belongs on the ``core/speech`` stack, not here.
 """
 
 from __future__ import annotations

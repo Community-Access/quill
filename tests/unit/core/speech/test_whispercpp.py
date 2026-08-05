@@ -59,6 +59,26 @@ def test_build_whisper_command_includes_flags(tmp_path: Path) -> None:
     assert "-tr" in args
 
 
+def test_build_whisper_command_passes_initial_prompt(tmp_path: Path) -> None:
+    request = TranscriptionRequest(
+        source_path=tmp_path / "a.wav",
+        model_id="small",
+        initial_prompt="Vocabulary: QUILL, wxPython.",
+    )
+    args = whispercpp.build_whisper_command(
+        "whisper-cli", tmp_path / "ggml-small.bin", tmp_path / "a.wav", tmp_path / "out", request
+    )
+    assert args[args.index("--prompt") + 1] == "Vocabulary: QUILL, wxPython."
+
+
+def test_build_whisper_command_omits_prompt_when_empty(tmp_path: Path) -> None:
+    request = TranscriptionRequest(source_path=tmp_path / "a.wav", model_id="small")
+    args = whispercpp.build_whisper_command(
+        "whisper-cli", tmp_path / "ggml-small.bin", tmp_path / "a.wav", tmp_path / "out", request
+    )
+    assert "--prompt" not in args
+
+
 def test_resolve_executable_honors_allowed_configured(tmp_path: Path) -> None:
     exe = tmp_path / "whisper-cli"
     exe.write_text("", encoding="utf-8")

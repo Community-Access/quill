@@ -6162,6 +6162,16 @@ structure explorer, Browser Preview, and the Word round trip.
 
 ---
 
+### 5.95 NLS BARD catalogue search (Book Library source, shipped)
+
+The Book Library gains **NLS BARD** as a search source alongside Project Gutenberg, Google Books, and the OPDS catalogues. BARD is the collection of the National Library Service for the Blind and Print Disabled (Library of Congress), and NLS publishes a free, no-key **public catalogue API** over its metadata.
+
+- **Scope: catalogue search only.** QUILL queries BARD's public metadata search and shows matching titles (title, authors, subjects) as ordinary Library results. It does **not** download or store BARD files — borrowing a title requires an eligible BARD patron account and is done on the BARD website. Each BARD result therefore carries a `site_url` (the title's stable `hdl.loc.gov` Library of Congress page), and the Library dialog offers an **Open in BARD** action that opens it in the browser. In-app borrowing of BARD titles is planned for a future release.
+- **No credentials, no key.** The search endpoint is unauthenticated; QUILL sends only the search terms. No BARD account, token, or secret is involved.
+- **Implementation.** `quill/core/library/bard.py` (`parse_search`, `search`) mirrors the other single-source providers; because BARD's search is an HTTP `POST` with a JSON body, `quill/core/library/http.py` gained `fetch_json_post` (same HTTPS-only, Safe-Mode, timeout and size-cap guarantees as `fetch_bytes`). `providers.py` registers the `"bard"` source; `quill/ui/library_dialog.py` adds the source and the accessible **Open in BARD** action. The new egress site is reviewed in `network_egress_audit.py` (GATE-9). Disabled in Safe Mode. Unit-tested in `tests/unit/core/library/test_library_catalog.py` and `tests/unit/ui/test_library_dialog.py`.
+
+---
+
 ## 6. Spell checking deep dive
 
 ### 6.1 The TinySpell question
@@ -7395,6 +7405,7 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 - **Subprocess**: limited to Tesseract and (post-v1.1) plugin-declared binaries; arguments are always passed as lists; no `shell=True`.
 - **Threat model**: a malicious document might try to (a) crash the parser, (b) request a keymap override to bind dangerous keys, (c) trigger an outbound network request. (a) parsers are fuzz-tested with `atheris`; (b) keymap overrides require explicit consent (5.50); (c) network is gated.
 - **Responsible disclosure**: a `SECURITY.md` file documents the disclosure email and PGP key.
+- **Secrets Manager (unified façade)**: `quill.core.secrets` is the single, hardened entry point every subsystem uses to read, write, and wipe secrets. It wraps the existing `platform.windows.credential_store` chain (environment override → portable DPAPI `keys.enc` → Windows Credential Manager, with the macOS Keychain facade) so no feature module talks to DPAPI, the Credential Manager, or the Keychain directly — keeping exactly one owner of the OS vault. Secrets are addressed by a namespaced `SecretRef` (`quill-<namespace>-<name>`); `get_json`/`set_json` standardise OAuth token bundles; and `wipe_namespace(...)` clears every entry a service ever stored in a single call (the account-sign-out primitive), tracked by a per-namespace index of *names* — never values. Nothing here is ever a secret in source: values live only in the OS vault, never in settings, logs, diagnostics bundles, or the repository. Strict-typed and in `mypy` scope; `SecretsError` carries the coded `QUILL-SECRETS-REF-INVALID` (GATE-EC).
 
 ### 10.12 Update mechanism
 

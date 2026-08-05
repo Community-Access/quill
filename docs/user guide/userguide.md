@@ -5448,6 +5448,13 @@ gesture is the reliable one.)
   can **insert** one at the cursor, **copy** it, or **discard** it (Enter inserts the
   selected row). If anything is awaiting review at startup, QUILL announces it and
   points you here, so dictated speech is never silently lost.
+- **Teach dictation your words.** A small file called **`dictation.md`** in your
+  QUILL data folder lets you add your own vocabulary (so names and jargon come back
+  spelled right), spoken-to-written replacements (like "new line" → an actual line
+  break), and custom spoken command phrases. It applies to Locked Dictation, the
+  Dictate (Offline) toggle, and the Media Player's hands-free voice. See the
+  **Voice Interaction** guide, "Teaching dictation your words," for the format and
+  for choosing a speech engine (Whisper's small models, or Nemotron).
 - **Distinct sound, one-time hint.** Locked Dictation plays its own earcons, and
   the very first time you dictate QUILL speaks a brief one-time hint about the keys.
 - **Remappable.** Ctrl+F9 and the rest are defaults; change them in the Keymap
@@ -7006,6 +7013,12 @@ Under **Format → HTML & Encoding**, Quill includes a full set of tools for the
 ## Tools for Reading, Review, and Inspection
 
 Quill earns trust by making difficult files readable and inspectable.
+
+### The Book Library — free, accessible reading sources (including NLS BARD)
+
+**Tools → Book Library...** searches free, accessible reading sources from inside QUILL and opens a chosen book in the reader. Pick a **Source** — Project Gutenberg, Google Books (free ebooks), Standard Ebooks, Feedbooks, **NLS BARD**, or *All free sources* — type a title, author, or subject in **Search for**, and press **Search**. Results land in a single-select list you arrow through; **Find in results** (Ctrl+F, then F3 / Shift+F3) jumps between matches, and the status line speaks what happened at every step. For a source that offers downloads, choose a **Format** and press **Download** or **Download and Open**.
+
+**NLS BARD** is the catalogue of the National Library Service for the Blind and Print Disabled at the Library of Congress. QUILL searches BARD's free public catalogue and lists matching titles, but BARD titles are borrowed on the BARD website with an eligible patron account — so a BARD result is a *catalogue listing*, shown as "open in BARD" rather than a download. Select it and press **Open in BARD** (Alt+B): QUILL opens that title's official Library of Congress page in your browser, where you sign in and download. QUILL never asks for or stores your BARD account details, and the catalogue search needs no account or key. Like every source, the Book Library does nothing in Safe Mode.
 
 ### Describe Character at Cursor
 
@@ -8973,6 +8986,12 @@ When portable mode is on, keys are stored in a file called `keys.enc` inside the
 | AI Assistant | `QUILL_ASSISTANT_KEY` |
 
 You can also set a **Default model for prompt runs** (`ai_prompt_default_model`). Leave it blank to share the same model across Ask AI and the Prompt Library, or set a different model here if you want a more capable model for prompt-library work.
+
+### How QUILL protects your keys and sign-ins
+
+Everything secret that QUILL holds for you — AI provider keys, remote-site passwords, and the sign-in tokens for any online service you connect — goes through one hardened store. On Windows that is the Windows Credential Manager (or the DPAPI-encrypted `keys.enc` file in portable mode); on macOS it is the login Keychain. QUILL never writes a secret in plain text, never puts one in a settings file, a log, or a diagnostic bundle, and never keeps one inside its own program files. If you use an environment-variable override, that value is used directly and is never saved to disk.
+
+When you sign out of a service, QUILL clears every secret that service stored in a single step, so nothing is left behind. And because no secret is ever part of QUILL's source code, there is nothing to extract from the app itself: your keys and tokens live only in your operating system's protected store, tied to your account. This one store is where a future eligible-service sign-in (such as an authenticated online library) would keep its tokens as well.
 
 ### Ask AI (quick one-off question)
 

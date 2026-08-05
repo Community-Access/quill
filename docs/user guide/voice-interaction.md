@@ -177,6 +177,58 @@ phrasings still match.
 Anywhere you can speak a command, you can also say **"cancel"**, **"never
 mind"**, **"stop"**, or **"dismiss"** to abort.
 
+## Teaching dictation your words (a dictation profile)
+
+Dictation can learn *your* vocabulary. QUILL reads a small, human-editable file
+called **`dictation.md`** in your QUILL data folder; edit it, save, and the next
+dictation uses it. Every section is optional.
+
+```markdown
+## Vocabulary
+- QUILL
+- wxPython
+- GitHub
+
+## Replacements
+new line => \n
+open paren => (
+get hub => GitHub
+
+## Commands
+save everything => file.save_all
+```
+
+- **Vocabulary** — names, jargon, and acronyms you use. QUILL passes these to the
+  speech engine as a hint (Whisper's *initial prompt*), so it spells them your way
+  — "wxPython", not "w x python". (Engines that don't accept a hint simply ignore
+  this; the other two sections still work.)
+- **Replacements** — spoken-to-written fixes applied to the finished transcript,
+  one per line as `spoken => written`. Use `\n` for a new line. Great for
+  punctuation macros and names the engine keeps mishearing.
+- **Commands** — add your own spoken phrases for existing commands, as
+  `phrase => command.id`. These still obey the same safe-command allowlist.
+
+The profile applies everywhere dictation transcribes: **Locked Dictation**, the
+**Dictate (Offline)** toggle, and the **Media Player's** hands-free voice
+commands.
+
+### Choosing a speech engine and model
+
+Dictation is engine-agnostic and fully offline. In **Manage Speech Models** you
+can install and choose:
+
+- **Whisper (whisper.cpp)** — the default. The **small models are best for most
+  people**: *Tiny* (~75 MB) and *Base* (~145 MB) are fast and ideal for short
+  voice commands; *Small* (~465 MB) is the recommended all-round choice. Larger
+  models (Medium, Large) are more accurate but slower and much bigger.
+- **Nemotron** (NVIDIA, via sherpa-onnx) — a strong offline English engine that
+  runs without heavy dependencies.
+- **Vosk** and **Faster Whisper** — additional offline options.
+
+The engine you set as default in QUILL is the one the Media Player uses for
+hands-free voice too. For short commands the player automatically prefers a small,
+fast model.
+
 ## Privacy and control at a glance
 
 - **On-device.** All speech recognition uses the offline engine. No audio and
@@ -196,7 +248,8 @@ mind"**, **"stop"**, or **"dismiss"** to abort.
 
 Voice interaction shipped in four phases, and the polish refinements followed:
 true silence detection (your turn ends when you stop speaking), personalized
-and optionally-spoken prompts with screen-reader parity, and the Speak Voice
-Status check are all in place. The one genuinely future item is a dedicated
-low-power keyword spotter for the wake word (so always-listening costs even
-less than it does today).
+and optionally-spoken prompts with screen-reader parity, the Speak Voice Status
+check, hands-free voice commands in the **Media Player**, and the editable
+**dictation profile** (`dictation.md`) are all in place. The one genuinely future
+item is a dedicated low-power keyword spotter for the wake word (so
+always-listening costs even less than it does today).

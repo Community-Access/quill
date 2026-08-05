@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>617-audit</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="offline-speech--dictation-stack-audit-617-663-669">Offline
+Speech / Dictation Stack Audit (#617, #663, #669)</h1>
+<p><em>Audit date: 2026-08-04. Read-only assessment of the offline
+speech/dictation stack, with follow-up work driven from the
+recommendations. Items marked <strong>[done 2026-08-04]</strong> were
+addressed in the same change set that added this file.</em></p>
+<h2 id="summary">Summary</h2>
+<p>The offline speech stack for #617 is <strong>substantially built and
+genuinely wired end-to-end</strong> — a mature feature, not scaffolding.
+The default whisper.cpp provider plus three optional engines (Faster
+Whisper, Vosk, Nemotron/sherpa-onnx) all implement
+<code>transcribe_file</code> and are registered lazily; the small
+Whisper models (tiny/base/small/medium) have working, SHA-pinned
+download paths via QUILL's own <code>assets-v1</code> mirror. There are
+three coexisting dictation systems: the full state-machine "Locked
+Dictation" (Ctrl+F9), a simpler "Dictate (Offline)" push-to-talk toggle,
+and a legacy Win+H OS-panel shim that is still live. VAD
+auto-endpointing and the "Hey QUILL" wake word are both wired, but only
+into Conversation Mode / always-listening — not into dictation. The main
+gaps are dead scaffold, stale catalog data, and a near-total end-user
+documentation gap.</p>
+<h2 id="fully-wired--working-usable-today">Fully wired &amp; working
+(usable today)</h2>
+<ul>
+<li><strong>Locked Dictation (Ctrl+F9)</strong> — the real #617 feature.
+The wx-free state machine (<code>quill/core/speech/dictation/</code>
+controller/session/states/insertion/ recovery) is driven by
+<code>DictationHotkeysMixin</code>
+(<code>quill/ui/main_frame_dictation_hotkeys.py</code>), fully mixed
+into <code>MainFrame</code>, registered at startup, key-routed through
+the editor, and menu-bound. Captures via <code>MicRecorder</code>,
+secures audio to a recovery repository before transcribing, runs Whisper
+on a worker thread, inserts as one atomic/undoable edit, and provides
+pause/resume, focus-loss stop, a max-duration watchdog, first-use
+onboarding, and crash-recovery review. Default keys in
+<code>keymap.py:188-192</code>.</li>
+<li><strong>Dictate (Offline) push-to-talk</strong> —
+<code>VoiceInteractionMixin.dictate_offline_toggle</code>; simpler (no
+state machine/recovery) but fully functional.</li>
+<li><strong>Providers</strong>, all implementing
+<code>transcribe_file</code>, registered in
+<code>service.default_registry()</code>: WhisperCpp (always),
+FasterWhisper, Vosk, Nemotron (each if importable), plus Quillin cloud
+adapters (network, skipped by the offline paths).</li>
+<li><strong>Small Whisper model download + transcribe</strong> —
+<code>catalog.WHISPER_CPP_MODELS</code>
+(tiny/base/small/medium/large-v3/small.en-tdrz) carry pinned sha256;
+downloads go through the <code>assets-v1</code> mirror
+(<code>model_mirrors.py</code>). Tiny/Base/Small have complete, working
+paths.</li>
+<li><strong>Voice commands (#663), Conversation Mode, and "Hey QUILL"
+wake word</strong> — all wired and menu-bound; off by default,
+Safe-Mode-gated, dispatch limited to <code>SAFE_TOOL_IDS</code>.</li>
+<li><strong>VAD auto-endpointing</strong> — live in Conversation Mode
+(<code>SilenceDetector</code> fed polled mic energy).</li>
+<li><strong>Always-listening / hotword</strong> —
+<code>WakeController</code>; a transcription-based wake word (rolling
+windows + Whisper + string-match), off by default.</li>
+</ul>
+<h2 id="built-but-unwired-scaffold">Built but unwired (scaffold)</h2>
+<ul>
+<li><strong><code>RecordingTranscriptionRequest</code></strong>
+(<code>provider.py:104</code>) is defined but never imported or consumed
+anywhere. Every live path uses <code>TranscriptionRequest</code> with a
+WAV path. Dead.</li>
+<li><strong>Removed Hold-to-Dictate leaves dead branches</strong> —
+<code>_on_dictation_tick</code> still handles
+<code>HOLD_RECORDING</code> and looks up
+<code>tools.dictation_hold</code>, a binding that does not exist.
+Unreachable.</li>
+<li><strong>Stale HF catalog data</strong> —
+<code>WHISPER_CPP_MODELS</code> still carry <code>download_url</code> /
+<code>hf_filename</code> / <code>revision</code>, but
+<code>_download_to_file</code> uses only <code>model_mirrors</code>; the
+HF fields and the "left to fill in" module docstring are stale.</li>
+<li><strong>Legacy <code>dictation_*</code> settings</strong>
+(<code>settings.py:215-218</code>) are consumed only by the legacy Win+H
+path; the real dictation uses <code>speech_default_model_id</code>.</li>
+</ul>
+<h2 id="bugs--inconsistencies">Bugs / inconsistencies</h2>
+<ol type="1">
+<li><strong>Three overlapping dictation systems</strong> — legacy Win+H
+(<code>core/dictation.py</code>, still instantiated and key-routed),
+"Dictate (Offline)", and "Locked Dictation". A real source of
+user/maintainer confusion; the legacy shim's "QUILL does not yet capture
+or transcribe audio" premise is now false. <strong>[done
+2026-08-04]</strong> the false premise in <code>core/dictation.py</code>
+is corrected.</li>
+<li><strong>Wake word can clip inline commands</strong> — fixed 2.5s/4s
+windows, no VAD.</li>
+<li><strong>Misleading VAD sample-rate expression</strong> —
+<code>_conv_start_capture</code> passed
+<code>sample_rate=SAMPLE_RATE * CHANNELS</code> (correct only because
+mono). <strong>[done 2026-08-04]</strong> corrected to
+<code>SAMPLE_RATE</code>.</li>
+<li><strong>large-v3 has no working auto-download</strong> (by design,
+&gt;2 GiB) yet the recommender can return it — worth surfacing as
+"manual install only".</li>
+<li><strong>Wake word runs full Whisper on rolling windows</strong> — a
+battery/perf concern the code does not bound.</li>
+</ol>
+<h2 id="test-coverage">Test coverage</h2>
+<p>Broad and healthy across <code>tests/unit/core/speech/</code> and the
+dictation package. Notable untested seams:
+<code>dictation/session.py</code> serialization (only exercised
+indirectly through <code>test_recovery.py</code>) and
+<code>ui/voice_services.py</code>.</p>
+<h2 id="documentation-gaps">Documentation gaps</h2>
+<ul>
+<li><strong>No #617 PRD in the repo</strong>; the committed
+<code>QUILL-PRD.md</code> has zero mentions of dictation/Whisper though
+the code cites PRD sections.</li>
+<li><strong>The flagship feature is undocumented for end users</strong>
+— <code>userguide.md</code> has no mention of dictation / Dictate /
+Whisper.</li>
+<li><code>docs/user guide/voice-interaction.md</code> is good but scoped
+to "Hey QUILL".</li>
+</ul>
+<h2 id="concrete-recommendations-ranked">Concrete recommendations
+(ranked)</h2>
+<ol type="1">
+<li><strong>Write the missing user documentation</strong> for offline
+dictation (highest user impact). <em>In progress alongside this
+audit.</em></li>
+<li><strong>Delete the dead
+<code>RecordingTranscriptionRequest</code></strong> or add a tracking
+note.</li>
+<li><strong>Remove the dead Hold-to-Dictate branches</strong> (or
+restore the binding).</li>
+<li><strong>Resolve the three-dictation-systems overlap</strong> —
+decide what stays; update the false premise in
+<code>core/dictation.py</code>. <strong>[done 2026-08-04]</strong>
+(premise fixed; consolidation still open.)</li>
+<li><strong>Clean up stale catalog data</strong> — drop unused HF fields
+or make the fallback real; fix the <code>catalog.py</code>
+docstring.</li>
+<li><strong>Apply VAD to the wake-word command window</strong>; fix the
+<code>SAMPLE_RATE * CHANNELS</code> expression. <strong>[done
+2026-08-04]</strong> (sample-rate fixed; wake-word VAD still open.)</li>
+<li><strong>Add unit tests</strong> for
+<code>dictation/session.py</code> serialization and
+<code>ui/voice_services.py</code>.</li>
+<li><strong>Surface the large-v3 limitation</strong> in the model
+picker/recommender.</li>
+</ol>
+<h2 id="follow-up-landed-with-this-audit-2026-08-04">Follow-up landed
+with this audit (2026-08-04)</h2>
+<p>Beyond the fixes tagged above, the same change set delivered the two
+features the audit's #1 recommendation and the surrounding work called
+for:</p>
+<ul>
+<li><strong>Hands-free voice in the Media Player</strong> — the player's
+command bar now listens (offline, small Whisper) and executes media
+commands. New modules: <code>quill/ui/media/voice_capture.py</code>,
+<code>quill/ui/media/listen_mixin.py</code>;
+<code>service.preferred_command_model</code> prefers the small Whisper
+tiers.</li>
+<li><strong>User dictation profile</strong> (<code>dictation.md</code>,
+adapted from VS Code) —
+<code>quill/core/speech/dictation_profile.py</code>: vocabulary biases
+Whisper via <code>initial_prompt</code> (whisper.cpp gained
+<code>--prompt</code>), plus spoken→written replacements and custom
+command aliases. Wired into Locked Dictation and
+<code>voice_services</code>.</li>
+</ul>
+<p>Still open from the recommendations: dead-scaffold removal (#2, #3),
+catalog cleanup (#5), wake-word VAD (#6 part 2), the two coverage seams
+(#7), the large-v3 surfacing (#8), and the three-systems consolidation
+(#4).</p>
+</body>
+</html>

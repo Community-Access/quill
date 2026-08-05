@@ -66,18 +66,31 @@ class VoiceServices:
         self._recorder.start(self._device_index)
 
     def stop_and_transcribe(self) -> str:
-        """Stop recording, transcribe the audio, and return the recognized text."""
+        """Stop recording, transcribe the audio, and return the recognized text.
+
+        Applies the user's dictation profile (:mod:`quill.core.speech`
+        ``dictation_profile``): the vocabulary biases recognition via Whisper's
+        ``initial_prompt``, and the spoken->written replacements are applied to
+        the result. Both are no-ops when the user has no profile.
+        """
         recorder = self._recorder
         self._recorder = None
         if recorder is None:
             return ""
         wav_path = recorder.stop()
+        from quill.core.speech.dictation_profile import load_profile
         from quill.core.speech.provider import TranscriptionRequest
 
-        request = TranscriptionRequest(source_path=Path(wav_path), model_id=self._stt_model_id)
+        profile = load_profile()
+        request = TranscriptionRequest(
+            source_path=Path(wav_path),
+            model_id=self._stt_model_id,
+            initial_prompt=profile.initial_prompt() or None,
+        )
         try:
             result = self._stt_provider.transcribe_file(request)
-            return (getattr(result, "full_text", "") or "").strip()
+            text = (getattr(result, "full_text", "") or "").strip()
+            return profile.apply_replacements(text)
         finally:
             try:
                 Path(wav_path).unlink()

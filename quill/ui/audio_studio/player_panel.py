@@ -112,6 +112,7 @@ class PlayerPanel(wx.Panel):
         *,
         resume_ms: int = 0,
         book_prefs: BookPrefs | None = None,
+        autoplay: bool = False,
     ) -> bool:
         """Begin loading *path*; chapter navigation uses *chapters*.
 
@@ -119,11 +120,14 @@ class PlayerPanel(wx.Panel):
         (paused) — the remembered listening position. When *book_prefs* is
         supplied, the remembered per-book volume (and mute state) is applied
         before the first play; an unset volume (``-1``) falls back to 100%.
+        With *autoplay*, playback starts as soon as loading finishes (used to
+        auto-advance to the next track in a multi-file book).
         """
         self._chapters = list(chapters)
         self._loaded = False
         self._announced_chapter = -1
         self._resume_ms = max(0, int(resume_ms))
+        self._autoplay = autoplay
         if self._engine is None:
             return False
         self._apply_book_prefs(book_prefs)
@@ -138,6 +142,66 @@ class PlayerPanel(wx.Panel):
     def playhead_ms(self) -> int:
         """The current position — the anchor for split-at-playhead and retiming."""
         return self._engine.position_ms() if self._engine is not None else 0
+
+    def length_ms(self) -> int:
+        """Total media length in ms (0 until the file has loaded)."""
+        return self._engine.length_ms() if self._engine is not None else 0
+
+    def play(self) -> None:
+        """Start (or resume) playback."""
+        if self._engine is not None and self._loaded:
+            self._engine.play()
+            self._sync_play_label()
+            self._timer.Start(_TICK_MS)
+
+    def toggle(self) -> None:
+        """Toggle play/pause (used by the mini-player)."""
+        if self.is_playing():
+            self.pause()
+        else:
+            self.play()
+
+    def pause(self) -> None:
+        """Pause playback, keeping the position (used by the sleep timer)."""
+        if self._engine is not None and self._loaded:
+            self._engine.pause()
+            self._sync_play_label()
+
+    def stop(self) -> None:
+        """Stop playback and the position timer."""
+        if self._engine is not None:
+            self._engine.stop()
+        self._timer.Stop()
+        self._sync_play_label()
+
+    def is_playing(self) -> bool:
+        """True when audio is currently playing."""
+        return self._engine is not None and self._engine.is_playing()
+
+    def supports_dsp(self) -> bool:
+        """True when the active engine can apply audio filters (libmpv only)."""
+        return self._engine is not None and hasattr(self._engine, "set_audio_filters")
+
+    def apply_audio_filters(self, filters: list[str]) -> bool:
+        """Apply a DSP filter chain to the engine; returns False if unsupported.
+
+        ``filters`` is the list from :func:`quill.core.media.build_audio_filters`.
+        Only the libmpv backend can apply them; on ``wx.media`` this is a no-op
+        that returns ``False`` so the caller can tell the user why.
+        """
+        if not self.supports_dsp():
+            return False
+        setter = self._engine.set_audio_filters  # type: ignore[union-attr]
+        setter(",".join(filters))
+        return True
+
+    def seek_to(self, ms: int) -> None:
+        """Seek to an absolute position in ms (used by 'Go to Position')."""
+        if self._engine is None or not self._loaded:
+            return
+        target = max(0, int(ms))
+        self._engine.seek(target, resume=False)
+        self._announce(format_timestamp(target))
 
     def current_chapter_index(self) -> int:
         """The chapter the playhead is in (-1 when no chapters loaded)."""
@@ -178,6 +242,33 @@ class PlayerPanel(wx.Panel):
         self._announce(_("Muted") if self._muted else _("Unmuted"))
         if self._on_mute_cb is not None:
             self._on_mute_cb(self._muted)
+
+    def volume(self) -> int:
+        """The current volume (0-100)."""
+        return int(self._volume.GetValue())
+
+    def duck(self, level_percent: int = 20) -> None:
+        """Temporarily lower the *engine* volume for a spoken prompt.
+
+        Leaves the slider (the user's chosen level) untouched so :meth:`unduck`
+        restores exactly what was playing. Used while listening for a voice
+        command so an earcon/announcement is clearly audible over the book
+        without pausing or losing the user's place.
+        """
+        if self._engine is None:
+            return
+        self._duck_saved = int(self._volume.GetValue())
+        self._engine.set_volume(min(self._duck_saved, max(0, int(level_percent))))
+
+    def unduck(self) -> None:
+        """Restore the volume ducked by :meth:`duck` (respecting mute)."""
+        if self._engine is None:
+            return
+        saved = getattr(self, "_duck_saved", None)
+        if saved is None:
+            return
+        self._engine.set_volume(0 if self._muted else saved)
+        self._duck_saved = None
 
     # -- helpers ----------------------------------------------------------------
 
@@ -270,6 +361,8 @@ class PlayerPanel(wx.Panel):
             )
         self._update_status()
         self._timer.Start(_TICK_MS)
+        if getattr(self, "_autoplay", False):
+            self.play()
 
     def _on_engine_finished(self) -> None:
         self._sync_play_label()

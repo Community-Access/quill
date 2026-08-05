@@ -271,6 +271,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # rebindable in the Keymap Editor, which is what the issue actually asks for.
     "app.repeat_last_announcement": "",
     "app.announcement_self_test": "",
+    "app.open_media_player": "",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
     # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The

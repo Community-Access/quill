@@ -130,9 +130,15 @@ class _LiveDictationServices:
         audio_path = Path(session.audio_path) if session.audio_path else None
         session_id = session.session_id
 
+        from quill.core.speech.dictation_profile import load_profile
         from quill.core.speech.provider import TranscriptionRequest
 
-        request = TranscriptionRequest(source_path=audio_path, model_id=model_id)
+        # Dictation profile: vocabulary -> initial_prompt; spoken -> written below.
+        profile = load_profile()
+        prompt = profile.initial_prompt() or None
+        request = TranscriptionRequest(
+            source_path=audio_path, model_id=model_id, initial_prompt=prompt
+        )
         asize = audio_path.stat().st_size if (audio_path and audio_path.exists()) else -1
         logger.info("dictation: transcribe model=%s audio size=%d bytes", model_id, asize)
 
@@ -164,6 +170,7 @@ class _LiveDictationServices:
             try:
                 result = provider.transcribe_file(request, _on_progress)  # type: ignore[attr-defined]
                 text = (getattr(result, "full_text", "") or "").strip()
+                text = profile.apply_replacements(text)
                 logger.info("dictation: transcription ok, %d chars: %r", len(text), text[:120])
             except Exception as exc:  # noqa: BLE001 - report failure to the controller
                 logger.warning("dictation: transcription failed: %s", exc)

@@ -2633,8 +2633,16 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=id_sleep_timer
             )
-        if radio_enabled or podcasts_enabled or library_enabled:
-            tools_menu.AppendSubMenu(media_menu, _("&Media"))
+        # The Media Player is always available (it launches the standalone app),
+        # so it is added unconditionally and the Media submenu always appears.
+        if media_menu.GetMenuItemCount():
+            media_menu.AppendSeparator()
+        id_media_player = wx.NewIdRef()
+        media_menu.Append(
+            id_media_player, self._menu_label(_("&Media Player..."), "app.open_media_player")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_media_player(), id=id_media_player)
+        tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------
         compare_menu = wx.Menu()

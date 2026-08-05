@@ -269,6 +269,22 @@ Pick a **preset** — Podcast, Audiobook, MP3 320, Web Opus, Archival FLAC, Hear
 
 The one part that reaches the internet — Convert from URL — is honest about it: yt-dlp is **not** bundled, so the first time you use it QUILL asks once, shows a plain rights notice (only download what you have the right to use), installs the small component on demand, and stays off entirely in Safe Mode.
 
+## Speak to Command: Voice on Your Own Device
+
+Speech in QUILL has always run on your own machine, and 1.0.0 extends it in two directions at once — into the Media Player, and into a file you can teach.
+
+### The Media Player listens — hands-free, and offline
+
+The Quill Media Player can now be driven by voice. Press **Ctrl+Shift+L** and it starts listening: you hear a "Listening" cue, the audiobook quietens to make room, and you say what you want — *"next chapter," "skip back thirty," "go to one twenty-three," "bookmark this," "how much is left," "sleep in twenty."* Press the same key again and the player transcribes what you said **entirely on your computer** and does it, telling you the result.
+
+Because a blind listener gets nothing from a mic light on the screen, every moment is a sound and a spoken state of its own: a distinct cue when listening opens and closes, a short "Working" while it transcribes, the *effect* announced when a command runs ("Paused," "Bookmark added"), and — when it doesn't understand — it tells you *what it heard* so you can adjust, rather than guessing. Successes are spoken politely behind your screen reader; failures interrupt so you never miss them. The book is **quietened, never paused**, so you never lose your place, and it comes back the instant the command finishes. Capture starts a beat *after* the spoken cue, so your screen reader's own voice never lands in the recording, and a safety timer closes the microphone if you ever forget to stop. If you'd rather not talk aloud, **Ctrl+Shift+V** opens a box you can type a command into instead. Every voice command also has an ordinary key, so voice only ever adds a faster path — it never becomes the only one.
+
+It runs on the speech engine you already chose in QUILL — **Whisper** (the small Tiny, Base, and Small models are perfect for short commands) or **Nemotron** — and for quick commands it automatically prefers a small, fast model so the answer comes back quickly.
+
+### Teach dictation your words
+
+Every voice has its own vocabulary, and dictation should not fight yours. QUILL now reads a small, plain file called **`dictation.md`** in your data folder, with three optional sections. **Vocabulary** lists the names, jargon, and acronyms you use, so the recognizer spells "wxPython" and "GitHub" your way instead of sounding them out. **Replacements** are spoken-to-written fixes you write yourself, one per line — *"new line"* can insert an actual line break; *"get hub"* can become *GitHub* — for punctuation macros and any word the engine keeps mishearing. **Commands** let you add your own spoken phrases for existing actions, still bound by the same safe-command allowlist that governs all of voice. It applies everywhere dictation transcribes — Locked Dictation, the Dictate (Offline) toggle, and the Media Player's hands-free voice — and it does nothing at all until you decide to make one. The idea comes from a similar file in other editors; here it is native to QUILL, and offline like everything else in speech.
+
 ## Community Reports, Real Repairs
 
 Every bug report is a person encountering friction while trying to create, read, learn, or contribute. 1.0.0 treats those reports accordingly: not as loose tickets to close, but as invitations to make QUILL more trustworthy.
@@ -307,6 +323,10 @@ The dialog constructor had gained two required arguments — `kokoro_ok` and `ko
 While investigating Kokoro, the same tester found that selecting it before its optional component was installed produced outdated directions: “Tools > Speech > Install Kokoro ONNX will fetch it.” That menu item had already moved into **Help > Download Optional Components** in an earlier release.
 
 The message now sends users to the correct place.
+
+### Voice's end-of-turn timing was quietly relying on a coincidence
+
+A review of the offline speech stack found a latent bug in how always-listening decides your turn has ended. The silence detector was built with the microphone's sample rate multiplied by its channel count — a value that happened to be correct only because capture is single-channel, and would have skewed the moment your turn ends the instant capture ever became stereo. 1.0.0 corrects it to the sample rate proper. The same review also passes your dictation vocabulary through to whisper.cpp (so the new profile can actually steer it) and retires an out-of-date note in the legacy Windows-dictation shim that still claimed QUILL could not transcribe on its own — it has a full offline recognizer, and that shim is only the fallback to the OS panel.
 
 ### A keystroke can no longer arrive before the editor exists and bring down macOS
 
@@ -1186,6 +1206,22 @@ Thank you for testing. Thank you for challenging assumptions. Thank you for help
 ## After 1.0.0 — in progress (unreleased)
 
 These improvements have landed on the development branch since 1.0.0 and will ship in the next build. They are staged in the **Unreleased** section of `CHANGELOG.md`.
+
+### One hardened home for every secret QUILL holds
+
+QUILL keeps a small number of secrets for you — your AI provider keys, remote-site passwords, and the sign-in tokens for any online service you connect. Until now, each of those reached into your operating system's protected store on its own. They now all pass through a single hardened place, so there is exactly one part of QUILL that touches the Windows Credential Manager (or the DPAPI-encrypted `keys.enc` file in portable mode, or the macOS Keychain), following one consistent set of rules.
+
+Those rules are simple and strict: a secret is never written in plain text, never lands in a settings file, a log, or a diagnostic bundle, and is never part of QUILL's own program files. There is nothing inside the app for anyone to extract, because your keys and tokens live only in your OS vault, tied to your account. Each service's secrets are grouped under its own name, so signing out of a service erases everything it stored in a single step, with nothing left behind.
+
+You will not see this directly today — it is deliberately quiet, foundational work. But it is the store that the authenticated online libraries on our roadmap will sign in through, and it is why we can promise, honestly, that the application-level secrets those services rely on will never live on your machine at all.
+
+### The Book Library learns to search NLS BARD
+
+QUILL's Book Library — the one place you search free, accessible reading sources — now includes **NLS BARD**, the catalogue of the National Library Service for the Blind and Print Disabled at the Library of Congress. Choose **NLS BARD** in the Source list (or leave it on *All free sources*) and search by title, author, or subject; the results arrive in the same single-select, fully keyboard- and screen-reader-friendly list as every other source, with Find-in-results and a spoken status line.
+
+BARD catalogue entries are listings, not files: borrowing a title requires an eligible BARD patron account, which you set up and use on the BARD website. So every BARD result offers **Open in BARD**, which opens that title's official Library of Congress page in your browser, where you sign in and download. QUILL never asks for or stores your BARD credentials.
+
+The search itself uses BARD's free public API — no account, no key, nothing sent but the words you searched for — and is disabled in Safe Mode like every other library source. This release adds catalogue *search*; borrowing BARD titles inside QUILL is planned for a future release.
 
 ### Writing Tools that match your document's format
 

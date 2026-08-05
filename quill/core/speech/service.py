@@ -160,6 +160,30 @@ def recommend_model_id(model_ids: list[str], total_ram_gb: float, has_gpu: bool)
     return model_ids[0]
 
 
+#: Preference order for short voice *commands* (as opposed to long-form
+#: dictation): the small, fast Whisper tiers first. Commands are a few words, so
+#: low latency matters far more than the accuracy of the heavier models, and the
+#: small models (Tiny 75 MB / Base 145 MB / Small 465 MB) are more than enough.
+_COMMAND_MODEL_PREFERENCE = ("base", "tiny", "small", "small.en-tdrz", "medium", "large-v3")
+
+
+def preferred_command_model(model_ids: list[str]) -> str:
+    """Pick the best *small* installed model for short voice commands.
+
+    Prefers the fast, small Whisper tiers (Base, then Tiny, then Small) because a
+    command is only a few words and latency beats accuracy here. Always returns an
+    id actually present in ``model_ids`` (or ``""`` when the list is empty), so the
+    choice is usable.
+    """
+    if not model_ids:
+        return ""
+    available = set(model_ids)
+    for candidate in _COMMAND_MODEL_PREFERENCE:
+        if candidate in available:
+            return candidate
+    return model_ids[0]
+
+
 def models_dir_free_gb() -> float:
     """Free disk space (GB) where speech models are stored; -1.0 if unknown."""
     import shutil
