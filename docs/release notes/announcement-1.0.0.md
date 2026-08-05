@@ -89,8 +89,9 @@ DECtalk, eSpeak-NG, the local neural engines Piper and Kokoro, the macOS system 
 optional bring-your-own-key cloud voices. Audiobook and Batch Speech exports a whole folder
 to chaptered audio with real MP3 chapter markers and ACX loudness normalization.
 
-Dictation runs **on your own machine**, on whisper.cpp, Faster Whisper, or Vosk, with a
-model manager that checks your actual RAM and GPU before recommending one. A safety net
+Dictation runs **on your own machine**, on whisper.cpp, Faster Whisper, Vosk, or NVIDIA's
+Nemotron, with a model manager that checks your actual RAM and GPU before recommending
+one. A safety net
 saves your audio before transcription runs, so a session is never lost to a failed
 transcription.
 
