@@ -28,15 +28,29 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
         raise LibraryHTTPError("Book libraries are disabled in Safe Mode.")
 
 
-def fetch_bytes(url: str, *, safe_mode: bool = False, accept: str = "") -> bytes:
-    """Fetch ``url`` over verified HTTPS and return the (capped) response bytes."""
+def fetch_bytes(
+    url: str,
+    *,
+    safe_mode: bool = False,
+    accept: str = "",
+    body: bytes | None = None,
+    content_type: str = "",
+) -> bytes:
+    """Fetch ``url`` over verified HTTPS and return the (capped) response bytes.
+
+    Pass ``body`` (with ``content_type``) to issue a POST instead of a GET — used
+    by catalogue sources whose search endpoint takes a JSON request body (e.g. the
+    NLS BARD public catalogue search). No key or credential is ever sent.
+    """
     refuse_in_safe_mode(safe_mode)
     if not url.lower().startswith("https://"):
         raise LibraryHTTPError(f"Library URL must be https://: {url}")
     headers = {"User-Agent": _USER_AGENT}
     if accept:
         headers["Accept"] = accept
-    request = urllib.request.Request(url, headers=headers)
+    if content_type:
+        headers["Content-Type"] = content_type
+    request = urllib.request.Request(url, data=body, headers=headers)
     context = ssl.create_default_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_S, context=context) as response:

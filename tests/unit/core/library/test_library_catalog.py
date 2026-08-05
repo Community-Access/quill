@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from quill.core.library import googlebooks, gutendex, opds, providers
+from quill.core.library import bard, googlebooks, gutendex, opds, providers
 from quill.core.library.http import fetch_bytes, refuse_in_safe_mode
 from quill.core.library.model import (
     Book,
@@ -149,6 +149,83 @@ def test_googlebooks_search_builds_query_and_free_filter():
 def test_provider_search_googlebooks():
     books = providers.search("moby", sources=("googlebooks",), fetch=lambda u: GOOGLEBOOKS)
     assert books and books[0].source == "googlebooks"
+
+
+# NLS BARD public catalogue search: a POST /search/ response, metadata only.
+BARD = json.dumps({
+    "pagination": {"count": 2, "offset": 0, "totalResults": 2},
+    "results": [
+        {
+            "id": "DB55555",
+            "type": "book",
+            "format": "audio",
+            "details": {
+                "titles": [{"value": "Sunset pass", "language": "en"}],
+                "authors": [{"value": ["Grey, Zane"], "language": "en"}],
+                "subjects": ["Romance", "Western Stories"],
+                "primaryLanguageCode": "en",
+                "urls": ["http://hdl.loc.gov/loc.nls/db.55555"],
+            },
+        },
+        {
+            "id": "BR12345",
+            "type": "book",
+            "format": "braille",
+            "details": {
+                "titles": [{"value": "A Braille Title", "language": "en"}],
+                "authors": [{"value": ["Writer, A."], "language": "en"}],
+                # no "urls" -> site_url is constructed from the book number
+            },
+        },
+    ],
+}).encode("utf-8")
+
+
+def test_bard_parse():
+    books = bard.parse_search(BARD)
+    assert len(books) == 2
+    audio, braille = books
+    assert audio.book_id == "bard:DB55555"
+    assert audio.title == "Sunset pass"
+    assert audio.authors == ("Grey, Zane",)
+    assert audio.source == "bard"
+    assert audio.language == "en"
+    assert audio.subjects == ("Romance", "Western Stories")
+    assert audio.site_url == "http://hdl.loc.gov/loc.nls/db.55555"
+    assert audio.formats == {}  # metadata only; obtained on the BARD site
+    # When the record omits urls, site_url is built from the book number.
+    assert braille.site_url == "http://hdl.loc.gov/loc.nls/br.12345"
+
+
+def test_bard_search_posts_query_body():
+    seen = {}
+
+    def fake_fetch(url, body):
+        seen["url"] = url
+        seen["body"] = body
+        return BARD
+
+    books = bard.search("sunset", fetch=fake_fetch)
+    assert seen["url"].endswith("/search/")
+    payload = json.loads(seen["body"])
+    assert payload["terms"][0]["field"] == "searchText"
+    assert payload["terms"][0]["term"] == ["sunset"]
+    assert books[0].title == "Sunset pass"
+
+
+def test_provider_search_bard_metadata_only():
+    books = providers.search("sunset", sources=("bard",), fetch=lambda u: BARD)
+    assert books and books[0].source == "bard"
+    assert books[0].formats == {}  # no in-app download; open on the BARD site
+    assert books[0].site_url.startswith("http://hdl.loc.gov/loc.nls/")
+
+
+def test_fetch_bytes_post_body_rejects_non_https_and_safe_mode():
+    # BARD search POSTs a JSON body through fetch_bytes; the same guards apply.
+    with pytest.raises(LibraryHTTPError):
+        fetch_bytes("http://insecure.example/search", body=b"{}", content_type="application/json")
+    with pytest.raises(LibraryHTTPError):
+        fetch_bytes("https://api.nlsbard.loc.gov/search/", body=b"{}", safe_mode=True)
 
 
 def test_feedbooks_catalog_registered():
