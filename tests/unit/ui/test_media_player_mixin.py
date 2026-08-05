@@ -16,7 +16,7 @@ def test_open_media_player_launches_player(monkeypatch: pytest.MonkeyPatch) -> N
     assert calls == ["player"]
 
 
-def test_register_media_player_command() -> None:
+def test_register_media_player_command_is_gated(monkeypatch: pytest.MonkeyPatch) -> None:
     registered: list[tuple[str, str]] = []
 
     class _Commands:
@@ -30,6 +30,14 @@ def test_register_media_player_command() -> None:
         def _binding_for(self, command_id: str) -> None:
             return None
 
+    # Public build: the Media Player is a gated companion app, so its command is
+    # NOT registered (never reaches the command palette).
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+    _Frame()._register_media_player_commands()
+    assert registered == []
+
+    # Developer build: the command IS registered.
+    monkeypatch.setenv("QUILL_DEV_BUILD", "1")
     _Frame()._register_media_player_commands()
     assert registered == [("app.open_media_player", "Open the Media Player")]
 

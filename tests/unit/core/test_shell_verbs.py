@@ -109,10 +109,16 @@ def test_convert_verb_media_matches_engine_extensions() -> None:
     assert set(MEDIA_EXTENSIONS) == set(AUDIO_EXTENSIONS) | set(VIDEO_EXTENSIONS)
 
 
-def test_convert_verb_enabled_by_its_toggle() -> None:
-    active = enabled_verbs(
+def test_convert_verb_gated_in_public_enabled_in_dev(monkeypatch) -> None:
+    kwargs = dict(
         settings_values=_FakeSettings(shell_verb_convert=True),
         master_enabled=True,
         assistant_enabled=False,
     )
-    assert [verb.action for verb in active] == ["convert"]
+    # Public build: the Convert verb launches the gated Quill Converter app, so it
+    # is withheld even when its own toggle is on.
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+    assert [verb.action for verb in enabled_verbs(**kwargs)] == []
+    # Developer build: the toggle enables it.
+    monkeypatch.setenv("QUILL_DEV_BUILD", "1")
+    assert [verb.action for verb in enabled_verbs(**kwargs)] == ["convert"]

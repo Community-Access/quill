@@ -67,7 +67,7 @@ All 227 custom + 376 native + 7 web-form dialogs, grouped by area, each verified
 With the release/dev flag OFF (default public build), confirm these are **not reachable**:
 - [ ] **QuillVille menu** lists only Open QUILL / Quill Radio / Quill Weather (Cast, Studio, Converter, Beacon hidden — `RELEASED_APPS`).
 - [ ] **Tools ▸ Media ▸ Media Player** (`app.open_media_player`) is hidden/gated.
-- [ ] **Tools ▸ Speech ▸ Audio Studio** (`tools.speech_batch_export`) is hidden/gated.
+- [ ] The **standalone Audio Studio** launcher (QuillVille) is gated. *(Note: `Tools ▸ Speech ▸ Audiobook & Batch Speech…` / `tools.speech_batch_export` is the editor-embedded batch document-to-speech wizard, NOT the standalone app — it stays. It was relabelled from "Audio Studio…" to remove the name clash.)*
 - [ ] **Quill Cast / Converter / Beacon** launchers, command-palette commands, Explorer "Convert with Quill" shell verb, and build products are gated.
 - [ ] Command palette does not surface gated-app commands.
 - [ ] Radio + Weather remain fully public and unaffected.

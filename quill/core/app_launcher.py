@@ -16,6 +16,7 @@ the launcher, and never raising.
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -68,6 +69,24 @@ APP_NAMES: dict[str, str] = {
 
 def app_name(app_key: str) -> str:
     return APP_NAMES.get(app_key, app_key)
+
+
+#: Apps that may be surfaced (launched/advertised) in a public 1.0.0 build. Quill
+#: Cast, Audio Studio, Quill Converter, the Media Player, and QuillBeacon are built
+#: but gated for now -- add a key here when it ships publicly. This is the single
+#: source of truth every launcher/menu should gate on (via :func:`is_app_released`).
+RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather"})
+
+
+def is_app_released(app_key: str) -> bool:
+    """Whether ``app_key`` may be surfaced in this build.
+
+    True for a publicly-released app always, and for *every* app in a
+    developer/admin build (``QUILL_DEV_BUILD=1``) so internal builds can still
+    reach the gated apps. The one gate every launcher, menu, shell verb, and
+    download offer checks.
+    """
+    return app_key in RELEASED_APPS or os.environ.get("QUILL_DEV_BUILD") == "1"
 
 
 def build_launch_argv(app_key: str) -> list[str] | None:

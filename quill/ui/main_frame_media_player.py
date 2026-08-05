@@ -16,6 +16,13 @@ class MediaPlayerMixin:
     """Adds the ``app.open_media_player`` command to MainFrame."""
 
     def _register_media_player_commands(self) -> None:
+        from quill.core.app_launcher import is_app_released
+
+        # The Media Player is a gated companion app for 1.0.0; don't register its
+        # command (so it never appears in the palette) unless it's released or
+        # this is a developer build.
+        if not is_app_released("player"):
+            return
         self.commands.register(  # type: ignore[attr-defined]
             "app.open_media_player",
             "Open the Media Player",

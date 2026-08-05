@@ -15,16 +15,16 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.app_launcher import APP_NAMES
+from quill.core.app_launcher import APP_NAMES, RELEASED_APPS, is_app_released
 
 #: The order siblings are listed in the QuillVille menu (the current app is
 #: skipped via ``exclude``).
 QUILLVILLE_APP_ORDER: tuple[str, ...] = ("quill", "radio", "weather", "cast", "studio", "converter")
 
-#: Apps that have shipped a public release and may be offered as "Open ..."
-#: targets. Quill Cast and Audio Studio are built but not released yet, so they
-#: are not advertised in the menu -- add them here when they ship.
-RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather"})
+#: ``RELEASED_APPS`` is re-exported from ``quill.core.app_launcher`` (the single
+#: source of truth). Gating uses :func:`is_app_released`, which also honors a
+#: developer build (``QUILL_DEV_BUILD=1``).
+__all__ = ["QUILLVILLE_APP_ORDER", "RELEASED_APPS", "build_quillville_menu"]
 
 
 def build_quillville_menu(
@@ -45,7 +45,7 @@ def build_quillville_menu(
     """
     menu = wx.Menu()
     for key in QUILLVILLE_APP_ORDER:
-        if key == exclude or key not in RELEASED_APPS:
+        if key == exclude or not is_app_released(key):
             continue
         item_id = wx.NewIdRef()
         menu.Append(item_id, f"Open {APP_NAMES[key]}")

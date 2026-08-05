@@ -192,10 +192,16 @@ def enabled_verbs(
     """
     if not master_enabled:
         return []
+    from quill.core.app_launcher import is_app_released
+
     pool = tuple(verbs) if verbs is not None else _SHELL_VERBS
     result: list[ShellVerb] = []
     for verb in pool:
         if verb.requires_ai and not assistant_enabled:
+            continue
+        # The "Convert with Quill" verb launches the gated Quill Converter app;
+        # never register it in a public build (RELEASED_APPS).
+        if verb.action == "convert" and not is_app_released("converter"):
             continue
         if not bool(getattr(settings_values, verb.settings_key, False)):
             continue

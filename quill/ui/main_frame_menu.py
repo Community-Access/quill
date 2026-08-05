@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import sys
 
+from quill.core.app_launcher import is_app_released
 from quill.core.i18n import _
 
 
@@ -2328,19 +2329,18 @@ class MenuBuilderMixin:
         )
         speech_menu.Append(
             self._id_speech_batch_export,
-            self._menu_label(_("&Audio Studio..."), "tools.speech_batch_export"),
+            self._menu_label(_("Audiobook && &Batch Speech..."), "tools.speech_batch_export"),
         )
         speech_menu.Append(
             self._id_speech_pronunciations,
             self._menu_label(_("Manage &Pronunciations..."), "tools.speech_pronunciations"),
         )
         tools_menu.AppendSubMenu(speech_menu, _("&Speech"))
-
         # Media (Internet Radio, Podcasts) -------------------------------------
         radio_enabled = self._feature_enabled("core.radio")
         podcasts_enabled = self._feature_enabled("core.podcasts")
         library_enabled = self._feature_enabled("core.library")
-        if radio_enabled or podcasts_enabled or library_enabled:
+        if radio_enabled or podcasts_enabled or library_enabled or is_app_released("player"):
             media_menu = wx.Menu()
         if radio_enabled:
             id_radio_browse = wx.NewIdRef()
@@ -2633,16 +2633,16 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=id_sleep_timer
             )
-        # The Media Player is always available (it launches the standalone app),
-        # so it is added unconditionally and the Media submenu always appears.
-        if media_menu.GetMenuItemCount():
-            media_menu.AppendSeparator()
-        id_media_player = wx.NewIdRef()
-        media_menu.Append(
-            id_media_player, self._menu_label(_("&Media Player..."), "app.open_media_player")
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_media_player(), id=id_media_player)
-        tools_menu.AppendSubMenu(media_menu, _("&Media"))
+        if is_app_released("player"):
+            if media_menu.GetMenuItemCount():
+                media_menu.AppendSeparator()
+            id_media_player = wx.NewIdRef()
+            media_menu.Append(
+                id_media_player, self._menu_label(_("&Media Player..."), "app.open_media_player")
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_media_player(), id=id_media_player)
+        if radio_enabled or podcasts_enabled or library_enabled or is_app_released("player"):
+            tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------
         compare_menu = wx.Menu()

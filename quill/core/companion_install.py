@@ -60,8 +60,14 @@ class CompanionAsset:
 def can_offer_download(app_key: str) -> bool:
     """Whether obtaining ``app_key`` is even possible on this build. Only a
     frozen build has a real install/portable layout to add a sibling to; from
-    source, ``python -m`` already runs any app, so there is nothing to fetch."""
-    return bool(getattr(sys, "frozen", False)) and app_key in ASSET_PREFIX
+    source, ``python -m`` already runs any app, so there is nothing to fetch.
+    Gated companion apps (not in RELEASED_APPS) are never offered for download in
+    a public build, so a public build has no path to fetch a hidden app."""
+    from quill.core.app_launcher import is_app_released
+
+    return (
+        bool(getattr(sys, "frozen", False)) and app_key in ASSET_PREFIX and is_app_released(app_key)
+    )
 
 
 def _kind_markers(portable: bool) -> tuple[str, str]:
