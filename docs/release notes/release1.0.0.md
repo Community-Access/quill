@@ -1,1304 +1,1975 @@
 # QUILL 1.0.0
 
-## One Editor. Every Format. A Community Moving Forward Together.
+## The screen-reader-first writing suite, built by the people who depend on it.
 
 *From Community Access. Free. Optional by design. Private by default. Built with you.*
 
-QUILL 1.0.0 is more than a version number. It is a celebration of what becomes possible when people test boldly, report honestly, imagine generously, and build together.
+QUILL is a writing, reading, and document suite for people who work by ear and by
+touch. It was designed from the first line of code for blind and print-disabled
+readers, writers, students, proofreaders, and braille transcribers, and for anyone
+who navigates a computer with a keyboard rather than a mouse.
 
-Three flagship stories headline this release.
+That is not a compatibility claim. Most software is built to be looked at, and then
+made reachable afterward: a label is added, a focus order is repaired, a warning that
+flashed red is given a word. QUILL starts at the other end. Every feature here begins
+with the question of what you will *hear* and what your fingers will *read*, and the
+visible interface is what falls out of that answer. When a feature could not be made
+to work well by ear, it was redesigned until it could, or it was not shipped.
 
-**One Editor, Every Format.** The braille correction explored with the community in Beta 2 is now proven, polished, and enabled by default for everyone. RTF and Word documents become genuinely editable rich documents. A single Document Format switcher lets one living document move among plain text, Markdown, HTML, Rich Text, and Word without forcing you into a different editing world.
-
-**Braille Without Barriers.** QUILL now detects what braille code a file is written in — UEB or legacy American, Grade 1 or Grade 2, computer braille — so you are told, never asked. One command turns any BRF file into a document you can read, edit, and export to Word, HTML, or Markdown; the general Convert File dialog accepts braille sources like any other document; and the translation engine now works identically from every kind of install, including straight from source.
-
-**Your Media, Your Way.** Internet Radio and Podcasts — new in this release cycle — now also live as their own standalone apps. **Quill Radio** and **QUILL Cast** open in seconds, put your favorite stations or subscribed shows one keystroke away, sit in the system tray, and share every setting and subscription with QUILL itself, because they run the very same code. The installer puts them in your Start Menu, with optional desktop icons.
-
-Around those three is an extraordinary collection of community-powered progress: every open community bug report addressed, portable updates made clearer, imports made safer, Narrator treated as a first-class screen reader, GitHub transformed from a viewing window into a working environment, local git conflicts made understandable, the Offline Edition made truly offline, and a constellation of small accessibility-first tools designed to make daily work faster and more humane.
-
-Every shortcut is explained. Every important safeguard is named. Every limitation is stated honestly. Nothing here asks you to discover essential behavior by accident.
-
-This is the full, friendly companion to the **“1.0.0”** section of `CHANGELOG.md`. The shorter summaries shown under **Help > What's New** and **Check for Updates** come from that changelog. This document tells the complete story: what changed, why it matters, how to use it, and how the community helped make it real.
-
----
-
-## The Heart of 1.0.0: One Editor, Every Format
-
-For years, document formats have tried to dictate the experience: one tool for plain text, another for Markdown, another for rich text, another for Word. 1.0.0 turns that relationship around. The format now serves the writer. The editor remains familiar.
-
-### The braille fix graduates — enabled for everyone by default
-
-In Beta 2, we asked braille display users to step into an experimental space, test a proposed correction, and tell us exactly what happened. You did. Your reports confirmed that it works.
-
-Text now begins in **braille cell 1**, eliminating the long-standing “cell two” behavior that RichEdit controls share with Microsoft Word. When text is selected, the display now shows **dots 7-8**, restoring the tactile selection feedback braille users expect.
-
-In 1.0.0, the experiment becomes the standard. There is nothing special to turn on, no Experimental tab to find, and no restart ritual. Every document opens in the same native Windows editor QUILL users already know, now carrying the braille correction automatically.
-
-Two straightforward checkboxes under **Preferences > Braille** control the complete behavior, and both are checked by default:
-
-- **Fix braille cell alignment and selection dots (recommended)** — enables the system-edit emulation that starts braille output in cell 1 and exposes selection dots.
-- **Hide editor border (required for braille cell alignment)** — testing revealed that the visible editor border itself shifts braille output away from cell 1. The borderless frame is therefore a functional part of the correction, not merely a visual preference. If you uncheck it, QUILL warns you clearly that braille cell alignment will break before applying the change.
-
-Users who experimented with alternate editor surfaces in earlier betas are brought forward automatically. Those retired experimental settings are removed during upgrade, the new default is applied, and QUILL explains once, in plain language, that the editor settings were simplified.
-
-This is exactly how a beta should work: the community tests an idea, the evidence guides the decision, and a better default reaches everyone.
-
-### Rich text becomes real: RTF documents are truly formatted in the editor
-
-Open an `.rtf` file in 1.0.0 and the formatting is no longer flattened, simulated, or merely described. It is there, alive in the document.
-
-Bold text is genuinely bold. Headings carry real sizes. **Ctrl+B** applies true bold formatting. **Insert > Heading 2** creates an actual heading. **Describe Formatting at Cursor** reads the live document state and can report, for example: “Arial, 14 point, bold, centered.”
-
-The guiding rule is simple and powerful: **bold means bold — and QUILL speaks the language of the document you are editing.**
-
-- In Markdown, **Ctrl+B** continues to wrap the selection in `**`, exactly as it always has.
-- In HTML, the same command produces `<strong>`.
-- In RTF, it applies real rich-text bold.
-
-One command. One familiar intention. The correct result for the current format.
-
-Rich mode changes presentation, not the trusted foundation beneath it. Search, spell check, AI commands, read aloud, bookmarks, inline notes, and braille continue working with the same document text they always have. Autosave also protects the full rich document: snapshots include formatting as well as text, so crash recovery can restore your bold, headings, and other formatting rather than recovering only the words.
-
-Plain-text documents remain respectfully plain. The first time you use a formatting command in a `.txt` file, QUILL asks once what you intend:
-
-- Treat the document as Markdown.
-- Convert it to Rich Text.
-- Keep it as plain text.
-
-Choose **stay plain**, and QUILL remembers the answer instead of asking repeatedly.
-
-### Word documents become editable — without pretending nothing can be lost
-
-A `.docx` file can now open for genuine rich editing and save back as a real Word document.
-
-Word files can contain structures QUILL’s editor cannot fully preserve, including tables, images, comments, tracked changes, headers, and footers. Rather than hiding that reality, QUILL meets it with clarity at the moment it matters:
-
-- A **clean Word file**, containing nothing QUILL cannot carry, opens directly in rich mode.
-- A Word file containing unsupported features identifies those features specifically and asks how you want to proceed: open for reading and plain editing, which is the safe default; edit as Rich Text while understanding exactly what cannot survive a save; or edit a copy while leaving the original untouched.
-- The first rich save over a flagged original automatically creates a **timestamped backup** beside it.
-
-QUILL never silently rewrites a complex Word file while asking you to trust that everything survived. The editor gives you meaningful choices, protects the original, and lets you decide.
-
-### One switcher connects the formats
-
-The new **Document Format** switcher brings the promise together.
-
-Open it through any of these paths:
-
-- **Format > Document Format...**
-- **Ctrl+Shift+Grave, K**
-- The Command Palette
-- The new **Format** cell on the status bar, which displays the current format and opens the switcher when you press Enter on it
-
-From there, the current document can move among:
-
-- Plain text
-- Markdown
-- HTML
-- Rich Text (RTF)
-- Word (`.docx`)
-
-The conversion is meaningful, not cosmetic. Moving a Markdown draft into Rich Text turns `# headings` into real headings. Moving a rich document into Markdown first produces a specific warning naming anything that will not survive the conversion.
-
-A format change also never silently overwrites the old file. The next save proposes a filename with the correct extension — for example, `notes.md` becomes `notes.rtf` — so the file on disk always tells the truth about the format inside it.
-
-### Reveal Codes — see, hear, and now *edit* the hidden scaffolding
-
-QUILL keeps formatting codes hidden so your editing buffer stays clean plain text. **Reveal Codes** (**Alt+F3**, or **View → Reveal Codes**) is the on-demand companion that makes every one of them visible and speakable — the beloved WordPerfect feature, rebuilt screen-reader-first. In 1.0.0 it grew up from a list you scan into a surface you *live in*.
-
-**It now feels like editing text.** The default **Flowed** view reads like your document with the hidden scaffolding shown inline (`[Bold On]Hello[Bold Off]`), and the caret moves exactly the way it does in the editor:
-
-- **Left/Right** walk one character at a time through text — but step *over* a whole code as a single unit. One press crosses `[Bold On]` and you simply hear "bold on," never spelled out.
-- **Ctrl+Left/Right** move by word; **Up/Down** move by line and read it; **Home/End** (and **Ctrl+Home/End**) go to the ends of the line and document.
-
-**It stopped talking over itself.** Reveal Codes used to say "Reveal Codes" on *every* arrow press, and JAWS and NVDA narrated the same move differently because two voices were speaking at once. Now the pane is the single voice while you navigate: the region is named once when you enter it, and after that you hear only the character, word, line, or code you landed on — identically in JAWS and NVDA.
-
-**Edit a run in place with F2.** Land on text that sits between a pair of codes — the words inside `[Bold On] … [Bold Off]` — and press **F2**. The pane restricts you to just that region for free editing; **Enter** applies your change back into the document, **Escape** cancels, and the surrounding codes are left untouched. The whole region comes along as a unit, so a run containing a `[Tab]` or a nested code (bold text with an italic word inside) edits together.
-
-**The two carets stay locked together, however you move** — arrows, word jumps, Home/End, Page Up/Down, a mouse click, or a jump from Find. Move in the editor and the pane follows; move in the pane and the editor follows. A **Structured** list view (one labelled item per code) remains available for scanning, and your view and verbosity choices persist between sessions.
-
-### Rich editing on macOS — ready from the first launch
-
-Rich mode ships ready to use on the Mac. The macOS editor remains the same native text view VoiceOver users already know, and the application now **bundles everything required for rich mode**. There is nothing additional to install and nothing to configure.
-
-Open an `.rtf` or Word document and it appears formatted. **Ctrl+B** applies genuine bold and announces “Bold.” **Insert > Heading 2** applies a real heading. **Describe Formatting at Cursor** reports the live formatting, such as “Helvetica, 14 point, bold.”
-
-If the rich-text bridge is ever unavailable on a particular system, QUILL does not collapse or strand the document. It opens the same content as editable text and places a clear explanation in the status area. Nothing breaks, nothing is discarded, and VoiceOver continues reading the same native control.
-
-#### Mac and VoiceOver testers: your experience is the promotion gate
-
-Please put this through a real workflow:
-
-1. Open an `.rtf` file.
-2. Apply formatting.
-3. Save it.
-4. Close and reopen it.
-5. Confirm that the formatting survived.
-
-For VoiceOver users, please also test whether typing echo, arrow-key review, and selection announcements continue to work normally. Check whether formatted content — such as a bold word or a sized heading — reads and navigates correctly.
-
-Send the result through **Help > Report a Bug** and include your macOS version. A report that says “it works perfectly” is every bit as valuable as a failure report. Real-hardware evidence in both directions is the promotion gate, just as braille users’ Beta 2 reports made the Windows correction ready for everyone.
+This document is the complete description of QUILL 1.0.0. It is written for someone
+opening QUILL for the first time. It describes the whole product as it stands today,
+not the difference between this version and the last one. Every shortcut named here
+is real, every limitation is stated plainly, and nothing important is left for you to
+discover by accident.
 
 ---
 
-## Braille Without Barriers
+## What ships in 1.0.0
 
-The braille cell-alignment fix graduating above is one half of this release's braille story. The other half is bigger: braille *translation* stopped asking you questions it should have been answering itself.
+Three programs carry the QUILL name in this release.
 
-### Your file's braille code is detected, never asked
+**QUILL** is the editor: a complete writing and document environment covering plain
+text, Markdown, HTML, rich text, Word, braille, e-books, PDFs, spreadsheets, and
+more, with reading aloud, dictation, spell checking, note-taking, version history,
+git and GitHub, an optional AI suite, and an extension system. It is the program most
+of this document is about.
 
-Until now, back-translating a braille file demanded that you already know which code it uses — UEB or the legacy American tables, Grade 1 or Grade 2 — and picking wrong produced garbage with no explanation. That knowledge burden is gone.
+**Quill Radio** is a standalone internet radio player: a real window with its own menu
+bar, its own tray icon, favorites, recording, scheduled recording, and a built-in
+weather center. Everything it does is also available inside the editor, because both
+run the same code, but Quill Radio opens in seconds when you just want the radio on
+and do not want to load an editor to get it.
 
-**Back-Translate to Text (Auto-Detect Code)** now leads the Tools > Braille > Translation submenu. QUILL samples your document (or just your selection), tries every English braille code it knows — UEB Grade 2, UEB Grade 1, Standard American (EBAE) Grade 1 and 2, and 8-dot computer braille — scores how much each attempt reads like real English, and announces the winner: "Detected UEB Grade 2 (contracted)." You learn what your file is; you are never quizzed about it. And when a file is uncontracted, QUILL tells you Grade 1 even though the Grade 2 table would also have decoded it, because the honest answer wins ties.
+**Quill Weather** is a standalone tray application that watches the National Weather
+Service for watches, warnings, and advisories at the places you care about, and speaks
+them to you the moment they are issued, whether or not anything else is running.
 
-### From BRF to any format, in one command
+All three are free. All three are keyboard-first. All three speak through the same
+announcement service, so QUILL sounds like QUILL wherever you are in it.
 
-**Convert BRF File to Document...** is the one-command path from a braille file on disk to something you can read, edit, and share. Pick any `.brf` or `.brl` file — QUILL detects its code, back-translates the whole file, and opens the result as a clearly labeled draft. From there, **Save As** exports it to Markdown, HTML, Word, or plain text. BRF in, any format out.
+### Platforms
 
-And braille is now a first-class citizen of the general-purpose converter too: **File > Convert File...** accepts `.brf` and `.brl` sources in the same picker as every other document type, detects the code, and writes whichever output format you chose — Word, HTML, EPUB, Markdown, plain text, and the rest. One converter dialog for everything, braille included.
+Windows is the primary platform, with full support for JAWS, NVDA, and Narrator.
+macOS is supported from the same codebase, with VoiceOver-routed announcements, a
+native Cmd-based keymap, Preferences in the standard application-menu location, and
+notarized, Developer-ID-signed builds. Linux and other Unix systems are not a target
+for QUILL and no promises are made about them.
 
-### An engine that works everywhere — including from source
+### How you can install it
 
-Underneath it all: translation now works from **every** kind of install. Previously, the worker required a Python liblouis binding that no QUILL installer, portable build, or source checkout actually installs — so translation could fail with "liblouis is not installed" even when the braille pack was sitting right there. The worker now uses the pack's own bundled `lou_translate` engine directly whenever the binding is absent. Same pack, same tables, no extra installation step, on every platform QUILL ships for.
+- **Windows installer.** The ordinary choice. Installs per-user or for all machines,
+  creates Start Menu entries for QUILL, Quill Radio, and Quill Weather, and offers
+  optional desktop icons, file associations, and an **Add Quill to PATH** task so the
+  command `quill somefile.txt` works from any terminal. All of those are opt-in
+  checkboxes, unchecked by default, because your desktop and your PATH belong to you.
+- **Portable ZIP.** Unpack it anywhere, including a USB stick, and run it. Everything
+  QUILL stores lives in a `data` folder beside the program, so nothing is written to
+  the system drive and nothing is left behind.
+- **Offline Edition.** A larger installer and portable bundle that carries every
+  optional component inside it, described in its own section below. It is the right
+  choice for an air-gapped machine or a locked-down laptop that cannot reach the
+  internet.
+- **macOS.** An application bundle delivered as a `.dmg` or `.pkg`.
 
-Two companion repairs round out the story. **Downloading the Braille Translation Pack now lights up the Translation submenu immediately** — the menu previously refreshed its item state but never rebuilt its structure, so the submenu stayed hidden until a restart even though the pack was installed; the download item also now routes through the guided Download Optional Components hub instead of dropping you back into the editor. And **back-translating a large BRF file no longer fails instantly**: the whole document used to travel as a single command-line argument to the translation worker, and Windows caps command lines at roughly 32,000 characters, so a real hymnal-sized file (reproduced live at ~450 KB) failed before the worker even launched. The text now travels over the worker's standard input, which has no such limit — and any translation failure opens a visible dialog, never just a spoken message that was easy to miss.
+QUILL keeps its everyday download small by fetching bigger optional pieces only when
+you reach for them: Pandoc, offline speech engines, neural voices, the braille
+translation pack, OCR, portable copies of git and the GitHub CLI, and more. They all
+live in one place, **Help > Download Optional Components**, with a plain-language
+description and size for each, a Test button, and a Remove button. Nothing is fetched
+without you asking for it.
+
+### The first two minutes
+
+The first launch opens a startup wizard built around a single question: what kind of
+writing do you do? Your answer selects a **feature profile**, and the profile decides
+how much of QUILL is switched on to begin with. The profiles are Just a Text Editor,
+Writer, Markdown and Web Author, Accessibility Professional, Braille Professional,
+AI-Powered Author, and Developer and Power User, plus Full QUILL for everything at
+once. A live plain-English preview tells you what each one turns on before you commit.
+
+No profile is a trap. **Alt+Shift+P** switches profiles at any time, **Manage
+Individual Features** turns any single capability on or off regardless of profile, and
+**Help > Why Don't I See a Feature?** answers the question directly when something you
+read about here is not on your menus. If you would rather skip the wizard, Full QUILL
+gives you everything and you can prune later.
+
+### Safe Mode
+
+**Safe Mode** is QUILL's known-good state. Start it with `--safe-mode` or by setting
+`QUILL_SAFE_MODE=1`, and QUILL launches with extensions, AI, network features, watch
+folders, background monitoring, indexing, themes, and session restore all switched
+off. It behaves identically in a portable copy and an installed one. Use it when
+something has gone wrong and you need to get to your documents, or when you want a
+session that provably reaches nothing outside your machine. Throughout this document,
+"off in Safe Mode" appears next to every feature that can touch a network, and it
+means exactly what it says.
+
+### Privacy, stated once
+
+QUILL is a local program. It opens your files from your disk and writes them back to
+your disk. Nothing about your documents is uploaded anywhere as a matter of course.
+
+Every feature that reaches the internet is optional, is named as such, asks before its
+first use, and is disabled in Safe Mode. That includes the AI suite, the book library,
+podcast feeds, radio streams, weather alerts, GitHub, remote file sites, update checks,
+and cloud transcription. QUILL ships no API keys and adds nothing to anyone's bill; if
+you use a paid AI provider, it is your account and your key. Secrets you do give QUILL
+(provider keys, remote-site passwords, service tokens) go through a single hardened
+store backed by the Windows Credential Manager, a DPAPI-encrypted file in portable
+mode, or the macOS Keychain. A secret is never written to a settings file, a log, or a
+diagnostic bundle, and signing out of a service erases everything it stored in one
+step.
+
+Crash reports and diagnostic bundles never include your document text, and they are
+scrubbed for tokens and keys before they are written.
 
 ---
 
-## Your Media, Your Way: Quill Radio and QUILL Cast
+## How QUILL Talks to You
 
-Internet Radio and Podcasts arrived inside QUILL this release cycle — but not everyone wants to launch a full document editor to turn the radio on. 1.0.0 introduces **Quill Radio** and **QUILL Cast**: standalone apps with their own window, their own menu bar, their own system tray icon, and their own Start Menu entries.
+Before any individual feature, it is worth describing the layer underneath all of them,
+because it is the part that makes the rest usable.
 
-The important word is *same*. These are not stripped-down copies or forks. Each app runs the exact same feature code QUILL itself uses — the same station browser, the same podcast manager, the same download queue with pause and resume, the same recording scheduler, the same dialogs with the same keyboard behavior your screen reader already knows. They read and write the same settings, favorites, and subscriptions from the same place on disk. Subscribe to a show in QUILL Cast tonight, and it is there in QUILL tomorrow morning. Fix a radio bug in QUILL, and Quill Radio has the fix too, automatically, because there is only one copy of the code.
+### One announcement service, four channels
 
-### Internet Radio — listen in the background while you write
+Everything QUILL says reaches you through one shared service, and that service speaks
+on four channels at once: **speech**, **braille**, **sound**, and the **status line**.
 
-**Tools > Media > Internet Radio** brings live internet radio into QUILL itself, built to keep playing quietly in the background while you keep typing, not to pull focus away from your document.
+Speech goes to your screen reader through a dedicated bridge for each one, so
+announcements arrive in your own voice at your own rate rather than through a second,
+competing synthesizer. JAWS and NVDA have long had that treatment. Narrator now does
+too: QUILL raises announcements as UI Automation notification events, the channel
+Narrator supports, and separately reads the marker Windows maintains while Narrator is
+running so it can never fail to detect it. On macOS, announcements are routed to
+VoiceOver. When any screen reader is running, QUILL's own built-in voice stays silent
+so it can never talk over you.
 
-**Browse Stations...** searches [RadioBrowser](https://api.radio-browser.info), a free, keyless, community-run directory of internet radio streams — no account, no advertising, and no commercial API terms to depend on or lose access to later. A search box takes a station name, and two optional fields narrow it further by tag/genre or by country. Alongside search sits a category list with two entries that need no network call at all to see: **Favorites**, your own saved stations, and **ACB Media**, the American Council of the Blind's ten Live365 stations, bundled directly into QUILL because the mission overlap is direct and immediate access matters. Whatever station you've selected, a read-only details pane reports everything QUILL knows about it — country, language, tags, codec and bitrate, community vote count, homepage, and the stream URL itself — so you know what you're about to listen to before you press Play.
+Braille is a first-class channel, not an afterthought. Status and informational
+messages go to your braille display through Prism, JAWS, or NVDA, with nothing
+truncated. An identical message repeating immediately is suppressed, and a burst of
+different messages settles rather than flickering: the first writes instantly and
+anything arriving in the next moment collapses to the newest, so a fast status cascade
+does not shove each line off the display before you can read it. Errors are exempt and
+always come through at once. Braille can never cost you speech: if the display fails,
+the announcement is still spoken. Turn it off in **Preferences > Accessibility** if you
+prefer.
 
-Not every station worth listening to is in RadioBrowser's directory. **Add Custom Station...** takes any stream link directly — name, URL, an optional homepage and tags — with a **Test** button that plays it right there in the dialog before you commit to saving it. And when all you have is a station's own website, **Find Streams from a Website...** takes the address you type, fetches that one page, and lists every stream-shaped link it finds (an `<audio>` tag, a `.pls`/`.m3u` playlist link, a URL that looks like a Shoutcast or Icecast mount point) with a plain-language reason for each — Test to preview, then **Use This Link...** to carry the guessed name and stream URL straight into Add Custom Station. This deliberately fetches and reads one page rather than opening a full interactive browser inside QUILL: station pages almost always list their stream as a plain link, and a screen-reader-native results list beats navigating an embedded browser for this particular job.
+Sound is the third channel, and it exists because a sound never talks over a screen
+reader. QUILL ships a full earcon system with the synthesized Ink pack, an indentation
+tone family, and pluggable custom packs. Every one of QUILL's sounds has its own on
+and off switch in the **Sound Events** dialog, and a single **Toggle Sound
+Notifications** command silences the lot.
 
-**YouTube, treated like a station.** A listener asked for this directly (#1268): let YouTube — including YouTube Live — behave like any other stream. It now does. Paste a YouTube link into **Add Custom Station** and you get a station: the same player, the same Favorites list, **Record Now**, and **scheduled recordings**. What is saved is the page link, not the stream, because YouTube's stream addresses expire within hours — QUILL finds the audio again every time the station plays or records, which is precisely what makes a recording you schedule today still work next week. The lookup runs through **yt-dlp**, which QUILL never bundles: it installs on demand (about 3 MB) after a one-time notice the first time you add a YouTube station, and that notice includes the plain reminder to record only what you have the right to record. You are asked when you add the station rather than when it plays, so a recording that fires at 3 a.m. while you are asleep is never the first time QUILL reaches YouTube. It is off entirely in Safe Mode. And because finding the stream is a network round trip, it happens off the interface thread: you hear "Connecting" straight away, the window never freezes, and if you press Stop or pick a different station mid-lookup, the one you chose last is the one that plays.
+The status line is the fourth, for anything you might want to go back and read.
 
-**Live365 links just work.** Live365 hosts thousands of stations, and the link a listener actually has in hand is almost never the stream — it's the station page or the web player, which is a web page. Pasting one into Add Custom Station used to save a station that could never play, with nothing to explain why. Now QUILL recognizes any Live365 station page, player link, or even a bare station id (`a25891`), rewrites it to that station's real stream address, and says so in the dialog. It is a pure text rewrite — no network lookup, no scraping, nothing sent anywhere — and any URL that isn't Live365 is passed through untouched.
+Two commands make the whole thing inspectable. **Repeat Last Announcement** says the
+last thing again. **Announcement Self-Test** sends a test message through every channel
+and reports which ones actually reached you, which turns "is my braille display getting
+QUILL's messages?" from a guess into an answer.
 
-Every one of these dialogs shares the same single player, which is what makes "listen while you keep writing" work at all: closing the station browser, the custom-station dialog, or the link finder never stops the music, because playback lives independently of any of them. Once something is playing, a **Radio** cell appears on the status bar showing the station and state — click it, or press Enter on it, to play or pause; right-click (or open its context menu from the keyboard) for Stop, Mute, a **Favorite Stations** quick-switch, and a shortcut back into the full browser. Minimize QUILL to the system tray and the same controls follow you there, in the tray icon's right-click menu, alongside a live Now Playing line. And you never have to leave the editor to reach for any of it: **Ctrl+Shift+Grave**, then **N**, toggles play/pause; then **0** stops; then **9** mutes — all fully remappable, like every other QUILL Key chord.
+### The status bar is a control panel, not a decoration
 
-Radio volume is QUILL's own — a slider right in the station browser, separate entirely from your Windows system volume and separate from your screen reader's own speech volume, so you can set the music quietly under your speech without touching either of those.
+QUILL's status bar carries cells for word count, selection, file information, spelling,
+autosave, background tasks, notifications, read-aloud, the Copy Tray, the current
+document format, the current section, the page indicator, the detected screen reader,
+and, when they are running, Radio and Podcasts. Every cell is directly activatable:
+arrow to it and press Enter to act on it, or open its context menu for more. The
+spelling cell opens spelling. The Format cell opens the format switcher. The Radio cell
+plays and pauses. A status bar you can only look at would be worthless here, so this one
+is a place you can go.
 
-**Recording a station, live or scheduled.** Once FFmpeg is installed — the same on-demand optional component the Audio Studio already uses for compressed exports, so nothing new to learn — **Record Now** captures whatever station is currently playing straight to a file, reachable from Tools > Media > Internet Radio, the status bar's Radio cell, or the tray. **Schedule Recording...** queues a recording for later: once, every day, or every week at a chosen time, firing as long as QUILL is running (there's no background service and no catch-up if QUILL wasn't open when the time came — the scope is deliberately "while QUILL is open," not a full OS-level scheduled task). **Recording Settings...** covers format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern with `{station}`/`{date}`/`{time}` tokens, and a maximum-length safety cap so a recording you forgot about can't quietly fill your disk. Stopping a recording — whether you press Stop or it reaches its cap — asks FFmpeg to finish cleanly rather than killing it outright, the same graceful shutdown pressing "q" gives it at a terminal, so the file's container closes properly.
+### Verbosity: how much QUILL says
 
-Two things worth naming plainly. First, a deliberate scope decision, learned from studying FastPlay and ACB Link, the two existing accessible radio players this feature drew on: TuneIn and iHeartRadio (both undocumented, reverse-engineered commercial APIs with no public terms) and YouTube audio are not in QUILL and are not planned — RadioBrowser alone covers the real need without that risk. Second, recording is genuinely new this release, not something promised earlier and now delivered late — it shipped alongside everything else described here. Podcasts, described next, ship in this same release.
+Different people want radically different amounts of speech, and the same person wants
+different amounts at different moments. QUILL's verbosity system has four profiles
+(Beginner, Normal, Expert, and Quiet) plus **Quiet Mode** and **Meeting Mode** toggles
+for the moments when you need QUILL to stop talking right now.
+
+Underneath the profiles, announcements can be reworded. A token-and-filter system lets
+you write your own phrasing for any announcement, a Preview Lab lets you hear a change
+before you keep it, an Announcement History shows what QUILL has said, **Undo Verbosity
+Change** backs out a setting you regret, and anti-flood collapsing keeps a busy moment
+from turning into a wall of speech. Safe Mode resets verbosity to a sane default so a
+misconfigured profile can never leave you deaf to QUILL.
+
+**Spoken Echo** (**Alt+Shift+E**) replays the last twenty announcements in an arrowable,
+copyable list, for the message you half-heard while your screen reader was busy.
+
+### The keyboard is the interface
+
+Every feature in QUILL has a menu home and a place in the command registry. There are
+more than seven hundred named commands, and all of them are reachable three ways: from
+the menu bar, from the Command Palette, and from a keyboard shortcut you can assign.
+
+The menu bar is conventional and complete: File, Edit, View, Insert, Format, Navigate,
+Search, Tools, AI, Window, QuillVille, and Help. Nothing hides in a toolbar with no
+menu equivalent.
+
+The **Command Palette** finds any command by name. Multi-word queries match in any
+order, so `url open` and `open url` both find **Open From URL**. A command's shortcut
+is searchable, so typing `ctrl+o` finds Open. Common intent words work as aliases:
+`settings` finds Preferences, `quit` finds Exit, `theme` finds dark mode. Arrowing
+through the results speaks each command's shortcut along with its name, so the palette
+quietly teaches you the faster route while it runs the command for you. And when a
+command is unavailable, the palette says why on the row itself rather than leaving a
+bare "(unavailable)" behind.
+
+Keyboard control is deep. The **Keymap Editor** rebinds anything, with reverse lookup
+("what does this key do?"), a Record Keys capture mode so you can press a chord instead
+of describing it, and a diagnostics pass with a **Heal** action that finds duplicate,
+orphaned, or inert bindings. Complete keybinding sets export and import as **keyboard
+packs** (`.kqp`), which are validated JSON files you can share. The **Dynamic Keyboard
+Reference** is generated live from your actual bindings and active profile rather than
+from a hand-maintained list, and exports as semantic HTML.
+
+Many QUILL commands live behind a prefix chord called the **QUILL Key**, so they never
+collide with your screen reader's own key map. **Change QUILL Key** reassigns the prefix
+for every one of those chords in a single step, warning you about conflicts and
+OS-reserved combinations before it commits.
+
+**Global Hotkeys** (**Tools > Global Hotkeys**) go one step further: system-wide
+combinations that work from any application. The safety design is the point. Only a
+curated allowlist can ever be bound globally: Radio and Podcasts transport (play/pause,
+stop, mute, volume), New Sticky Note, the Sticky Notes Browser, posting to Mastodon
+(which opens the compose dialog and never auto-sends), and show/hide to the tray.
+Nothing that edits a document, deletes anything, or acts invisibly can be bound, no
+matter what a settings file says, because the allowlist is enforced in code and guarded
+by its own test. A global press always announces its outcome, so you hear what happened
+even with QUILL minimized. The default show/hide chords are **Ctrl+Alt+Shift+Q** for
+QUILL, **Ctrl+Alt+Shift+R** for Quill Radio, and **Ctrl+Alt+Shift+W** for Quill
+Weather, and all three are rebindable. Global hotkeys are Windows-only, because macOS
+offers no equivalent; the same commands remain on menus and the palette everywhere.
+
+### Help that answers the question you actually asked
+
+**F1** gives per-control help. **Shift+F1** answers "What Can I Do Here?" for the
+surface you are on. A context-help chord speaks the shortcuts most relevant to where
+your focus is. Every command in QUILL carries a plain-language description and its
+shortcut, so nothing in the palette is a bare identifier. And three discoverability
+commands exist specifically for the moments when software usually goes silent: **Why
+Don't I See a Feature?**, **Why Is This Unavailable?**, and the Feature Profile health
+check.
 
 ---
 
-### Podcasts — subscribe, organize, download, and never lose your place
-
-**Tools > Media > Podcasts...** is QUILL's own podcast client: subscribe to shows, organize them into folders, download episodes for offline listening, and pick up exactly where you left off — all without ever pulling focus away from your writing any more than Internet Radio does, and sharing that feature's central design idea of one player that outlives any dialog you close.
-
-**Finding and adding shows.** The Podcasts dialog's **Add Podcast...** button opens a search box against Apple's free, keyless iTunes Search directory — the same starting point most podcast apps use — with a results list and a **Subscribe to Selected** button. If a show isn't in that directory, or you already know its feed address, **Add by Feed URL** takes it directly. And if you're moving from another podcast app, **Import OPML...** reads that app's whole subscription list in one step, folder structure included, so switching to QUILL doesn't mean re-subscribing to everything by hand; **Export OPML...** writes the same structure back out, so you're never locked in.
-
-**Organizing your library.** Shows live in a folder tree on the left of the Podcasts dialog — genuinely nested, as deep as you like — with an episode list on the right for whatever show or folder is selected, the same tree-and-list shape Radio's own dialogs already established. **New Folder...** creates a folder (nested under whatever's currently selected), and a show's context menu can pause it — keeping it, its episodes, and any downloads fully in your library while it stops fetching or downloading anything new, for a show you want to keep without actively following right now.
-
-**Downloads, and two pause controls that mean different things.** Every download runs on its own dedicated background thread, separate from QUILL's shared task pool, so a big backlog of episodes never slows down AI calls, transcription, or anything else running in the background. Pausing downloads is two genuinely independent controls, not one setting doing double duty: **Pause All Downloads** (from the tray, the status bar, or the Podcasts dialog) stops the queue from *starting* anything new, while whatever's already mid-transfer keeps running to completion; pausing one specific episode halts that transfer immediately, wherever it is, and resuming it later continues from the exact byte it left off via an HTTP Range request rather than starting over. Retention — what happens to a downloaded file over time — is a setting per podcast (or a global default): keep every episode forever, keep only the most recent few, or delete a file automatically the moment you finish listening to it.
-
-**Playback that behaves like Radio's.** The Podcasts dialog drives the same kind of single, app-owned player Radio uses: closing the dialog never stops an episode that's playing, and starting a different episode always replaces whatever was playing rather than layering two streams — QUILL never plays two things at once. Your position within an episode is saved automatically, so returning to a podcast — even much later — resumes exactly where you stopped, and that position is stored the same way QUILL Sync already carries your settings between machines, so the sync story here is "already works" rather than "planned." A **Speed** control in the dialog sets playback rate per podcast from 0.75x to 2.0x, remembered the next time you open that show — read faster through a familiar host's cadence, or slow down a dense interview, independently per show.
-
-**Rich context menus, everywhere you'd expect one.** Right-click (or open the context menu from the keyboard) on an episode for Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show Notes..., and Send Show Notes to Editor — every action reachable without leaving the list. Right-click a show in the folder tree for Refresh Feed, Pause/Resume This Podcast's Downloads, and Unsubscribe; right-click a folder for New Folder. Unsubscribing also works with the plain Delete key on a selected show, and now asks (or, per your **Podcast Settings...**, always does or never does) whether to delete that show's downloaded files along with it.
-
-**Podcast Settings...** is the one place for global defaults every newly subscribed show starts with — playback mode, retention, speed, download location — plus the delete-on-unsubscribe policy above. Any individual podcast can still override these from its own context menu; these are only the starting point.
-
-**Chapters, sorting, and knowing what's left to hear.** When an episode carries Podcasting 2.0 chapter data, a **Chapters...** button opens a jumpable list of chapter markers — select one and jump straight to it, whether or not that episode is already playing. **Next Chapter** and **Previous Chapter** are Command Palette commands that work from anywhere while a chaptered episode is playing. **Sort episodes** (newest/oldest, title, duration, unplayed-first) and **Sort shows** (title, most-unheard-first, recently-updated-first) sit right above their respective lists; every folder and show in the tree also shows its own unheard-episode count in parentheses, so you can see at a glance where you're behind.
-
-**Show notes, read your way.** **View Show Notes...** shows an episode's description either as accessible plain text — HTML stripped out, real paragraph line breaks (so a screen reader's line-by-line navigation moves by line, not word by word through one giant wrapped line), links rendered as `link text (https://...)` — or as rich formatted text with images removed, so opening show notes can never quietly trigger a network fetch QUILL didn't audit. **Send Show Notes to Editor**, on the same context menu, opens the plain-text version as a brand-new QUILL document.
-
-**Everywhere Radio already lives, Podcasts lives too.** A **Podcasts** status bar cell appears the first time you play something, mirroring Radio's cell exactly: click or press Enter to play/pause, open its context menu for Stop and Pause/Resume All Downloads. The system tray's right-click menu gets the same controls for when QUILL is minimized. **Ctrl+Shift+Grave**, then **8**, toggles play/pause; then **7** stops — both remappable QUILL Key chords, and deliberately adjacent to Radio's own N/0/9 chords rather than colliding with them.
-
-No video podcasts, ever — audio only, matching every other playback surface in QUILL.
-
-### Podcasts Phase 4: the promised next phases, delivered in this same release
-
-Those "real, planned next phases" didn't wait for the next release. Every one of them ships here.
-
-**Four pinned views crown the folder tree.** **Favorites** gathers every show you've starred; **New Episodes** collects every unplayed episode across every subscription; **Continue Listening** lists everything you're partway through, most useful first; and the **Inbox** is something genuinely new — a triage layer that organizes *episodes* instead of shows. Route a show to the Inbox and its new episodes surface there no matter which library folder the show lives in. File episodes into your own nested Inbox folders; QUILL remembers the first folder you choose per show and auto-files that show's future episodes there, announcing that it will — with a Forget command when you change your mind. Inbox actions never delete an episode, and none of this local curation leaks into OPML.
-
-**A real Play Queue.** Right-click any episode: **Play Next** or **Add to Queue**. When an episode ends, the next queued one starts — across shows. The queue dialog reorders entirely from the keyboard: Move Up and Move Down for nudges, and Mark for Move plus Move Marked Above/Below for long-distance placement, the same pattern Interactive Rebase's commit list uses. The queue survives restarts, and a queued episode that has since vanished simply skips.
-
-**Search Everywhere, filter anything.** One search box covers shows, episodes, your episode notes, and every transcript you've already fetched — grouped by type, Enter jumps to the hit. Episode filters (Unplayed, Downloaded, and friends) and show filters (Favorites only, Has unplayed) narrow the manager live.
-
-**Transcripts, notes, and your own audio.** Feed-provided transcripts (Podcasting 2.0 — VTT, SRT, or JSON) save to a file or open straight in the editor, cached so the next open is instant and searchable. **Add Episode Note** stamps a note at the current position of whatever's playing; opening an episode's notes and pressing Enter jumps playback to that exact moment. **Add Local Podcast** turns a folder of your own audio files into a show — stored outside your synced data directory *by construction*, so QUILL Sync never tries to carry gigabytes of audio — and a **watched folder** turns any file you drop there into a new episode on the next scan. **Subscribe to ACB Media Podcasts** imports ACB's entire live directory in one idempotent command, every show arriving stream-only so nothing mass-downloads.
-
-**Quality-of-listening, handled honestly.** **Always Sync** backfills and downloads a show's whole catalog — and because that fights keep-last-N retention, ticking it nudges retention to keep-all and says so out loud. **Auto-trim silence** and **normalize loudness** run the audiobook builder's own ffmpeg passes on each finished download. A live **volume boost** (1.5x/2x/3x) pushes quiet audio louder without touching your saved volume, so the Sleep Timer still restores the true level. And a long-standing quiet gap is closed: pausing, stopping, or switching episodes now *writes* your resume position — it was always read, and now it is reliably saved.
-
-Standalone **QUILL Cast** inherits all of it automatically — same code, remember — and its menus grow the matching entries.
-
----
-
-### A shared Sleep Timer, and starting with Windows
-
-**Tools > Media > Sleep Timer...** lives one level up from both Internet Radio and Podcasts, because it genuinely covers both: pick a preset (15, 30, 45, 60, or 90 minutes) or type a custom duration, and whichever of the two is currently playing fades gently down to silence over the last 20 seconds rather than cutting off mid-sentence, then stops. Your volume is restored to what it was before the fade the moment playback stops, so pressing play again later isn't a quiet surprise. **Cancel Sleep Timer** is available from the same dialog or the Command Palette. Radio and Podcasts are independent players — starting one has never stopped the other — so the timer checks both and fades/stops whichever is actually active.
-
-**Start QUILL when Windows starts**, a new checkbox in **Preferences > General** right next to the existing **Enable background mode**, registers a per-user Windows startup entry — the same mechanism most everyday Windows apps use, needing no elevation and no installer changes. Checking it also turns background mode on automatically: launching silently at login with no tray icon to bring the window back would be a dead end, so the two are kept in sync.
-
----
-
-### Keyboard-first from the very first moment
-
-Each app opens onto a real working surface, not an empty window. **Quill Radio** opens with focus already in your **Favorite stations** list — arrow to a station, press Enter, and you're listening. Tab reaches Play/Pause, Stop, Record, and Browse Stations, with a live now-playing line above. **QUILL Cast** opens with focus in your **Subscribed shows** list — press Enter on a show to open the full Podcast Manager — with Open Manager, Add Podcast, Play/Pause, and Stop a Tab away.
-
-The menu bars carry everything else. Quill Radio: a Station menu (Browse Stations, Add Custom Station, Find Streams from a Website, and your Favorite Stations listed right in the menu for one-keystroke switching), a Playback menu with a live now-playing line, and a Record menu (Record Now, Schedule Recording, Recording Settings). QUILL Cast: Subscriptions (the full Podcast Manager, Add Podcast, OPML import and export, Podcast Settings), an Episode menu with play/pause and chapter navigation, and a Downloads menu to pause or resume everything at once.
-
-Both apps put an icon in the system tray with the same radio and podcast controls QUILL's own tray icon carries, plus Show and Exit. And both include **Help > Open in Quill** for the moment you decide you *do* want the full editor after all — say, to paste a podcast's show notes into a document. (Speaking of which: QUILL Cast's "Send Show Notes to Editor" copies them to the clipboard instead, and says so, since there is no editor standing by.)
-
-### In your Start Menu, on your desktop if you want them
-
-The Windows installer now creates Start Menu entries for both apps, right next to QUILL's own. Desktop icons are a checkbox during setup — unchecked by default, because your desktop belongs to you. From a source checkout or the portable build, `run-quill-radio.bat` and `run-quill-cast.bat` launch them directly.
-
-These apps are new — tell us how they behave with your screen reader through Help > Report a Bug. Your reports are what graduated the braille fix; they will shape these apps the same way.
-
-## Convert Anything to Anything: The Universal Audio Converter
-
-Somewhere between "I recorded this in the wrong format" and "this podcast only downloads as an `.m4a` and my player wants MP3," almost everyone hits the wall of audio conversion — and the usual answer is a sketchy website that wants you to upload your file. 1.0.0 gives you a real one that runs entirely on your own machine.
-
-The **Universal Audio Converter** changes audio files between formats — MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, AAC, and more — and pulls the audio track out of video files (MP4, MKV, MOV, WebM…) along the way. It converts through the same bundled FFmpeg the Audio Studio already uses, so there is nothing new to install, nothing is uploaded, and it works in Safe Mode. It only ever offers formats your FFmpeg can actually encode, so a batch never dies half-way for a missing encoder, and every run ends with a spoken summary that **names the files that failed** instead of quietly reporting success.
-
-There is one converter behind five doors, so you meet it wherever you already are. Inside the editor it is **Audio Studio → Voices → Convert Audio…**. As its own program it is **Quill Converter**, a standalone tray app that carries the QuillVille menu like the rest of the family and has its own show/hide hotkey (Ctrl+Alt+Shift+C). For scripts and power users there is a headless **`quill convert`** command with a `--dry-run` planner and the whole option set on the command line. Right-click an audio or video file in **Windows Explorer** and — once you turn the verb on in Settings — **Convert with Quill** opens it ready to go. And **Convert from URL…** pastes in a link (YouTube and the many sites yt-dlp supports), downloads the audio, and drops it straight into the converter.
-
-Pick a **preset** — Podcast, Audiobook, MP3 320, Web Opus, Archival FLAC, Hearing-aid mono, and more — or open **Advanced** for the full studio: exact bit rate, sample rate, channels and bit depth; loudness-normalize to an audiobook or podcast target; gain, a rumble-removing high-pass, silence trimming, a speed change with no pitch shift, a compressor, a volume leveler, and fades. Queue a single file or point it at a whole folder; it mirrors the folder's structure, never overwrites an original unless you tell it to, and runs the batch across several workers while the window stays responsive and the tray shows progress.
-
-The one part that reaches the internet — Convert from URL — is honest about it: yt-dlp is **not** bundled, so the first time you use it QUILL asks once, shows a plain rights notice (only download what you have the right to use), installs the small component on demand, and stays off entirely in Safe Mode.
-
-## Speak to Command: Voice on Your Own Device
-
-Speech in QUILL has always run on your own machine, and 1.0.0 extends it in two directions at once — into the Media Player, and into a file you can teach.
-
-### The Media Player listens — hands-free, and offline
-
-The Quill Media Player can now be driven by voice. Press **Ctrl+Shift+L** and it starts listening: you hear a "Listening" cue, the audiobook quietens to make room, and you say what you want — *"next chapter," "skip back thirty," "go to one twenty-three," "bookmark this," "how much is left," "sleep in twenty."* Press the same key again and the player transcribes what you said **entirely on your computer** and does it, telling you the result.
-
-Because a blind listener gets nothing from a mic light on the screen, every moment is a sound and a spoken state of its own: a distinct cue when listening opens and closes, a short "Working" while it transcribes, the *effect* announced when a command runs ("Paused," "Bookmark added"), and — when it doesn't understand — it tells you *what it heard* so you can adjust, rather than guessing. Successes are spoken politely behind your screen reader; failures interrupt so you never miss them. The book is **quietened, never paused**, so you never lose your place, and it comes back the instant the command finishes. Capture starts a beat *after* the spoken cue, so your screen reader's own voice never lands in the recording, and a safety timer closes the microphone if you ever forget to stop. If you'd rather not talk aloud, **Ctrl+Shift+V** opens a box you can type a command into instead. Every voice command also has an ordinary key, so voice only ever adds a faster path — it never becomes the only one.
-
-It runs on the speech engine you already chose in QUILL — **Whisper** (the small Tiny, Base, and Small models are perfect for short commands) or **Nemotron** — and for quick commands it automatically prefers a small, fast model so the answer comes back quickly.
-
-### Teach dictation your words
-
-Every voice has its own vocabulary, and dictation should not fight yours. QUILL now reads a small, plain file called **`dictation.md`** in your data folder, with three optional sections. **Vocabulary** lists the names, jargon, and acronyms you use, so the recognizer spells "wxPython" and "GitHub" your way instead of sounding them out. **Replacements** are spoken-to-written fixes you write yourself, one per line — *"new line"* can insert an actual line break; *"get hub"* can become *GitHub* — for punctuation macros and any word the engine keeps mishearing. **Commands** let you add your own spoken phrases for existing actions, still bound by the same safe-command allowlist that governs all of voice. It applies everywhere dictation transcribes — Locked Dictation, the Dictate (Offline) toggle, and the Media Player's hands-free voice — and it does nothing at all until you decide to make one. The idea comes from a similar file in other editors; here it is native to QUILL, and offline like everything else in speech.
-
-## Community Reports, Real Repairs
-
-Every bug report is a person encountering friction while trying to create, read, learn, or contribute. 1.0.0 treats those reports accordingly: not as loose tickets to close, but as invitations to make QUILL more trustworthy.
-
-### Portable updates now offer an actual next step
-
-A community member on Mastodon reported that a portable update finished with only **Open folder** and **Close**. QUILL downloaded the correct portable ZIP, but offered no in-app path to use it. The user had to open the folder, locate the archive, and extract it manually.
-
-The underlying detection was already correct: portable installations received the portable ZIP rather than the Windows installer. The problem came afterward. The completion dialog knew how to act on `.exe` and `.msi` files, but a `.zip` fell through to a bare folder-opening path.
-
-1.0.0 adds an **Extract now** button for portable updates. QUILL extracts the ZIP into a ready-to-run sibling folder and reveals that folder instead of leaving you at the raw archive.
-
-QUILL still does not replace its own running files while open. You must copy your `data` folder and swap the folders yourself, just as with any portable application update. What disappears is the needless archaeology of locating and unpacking the download.
-
-### Pandoc imports can no longer “succeed” with an empty document
-
-A community member reported — and correctly identified the root cause of — a serious import failure. Using **File > Import > EPUB Book** could produce an entirely empty document while QUILL announced success.
-
-Pandoc emits UTF-8. QUILL’s shared subprocess helper had been decoding that output using the operating system’s default locale encoding. On Windows systems whose locale uses a legacy code page rather than UTF-8, decoding could fail and leave QUILL with no text, yet the import path still reported success.
-
-1.0.0 makes two important corrections:
-
-- Subprocess output is always decoded as UTF-8, with a safe fallback so even genuinely non-UTF-8 bytes cannot crash the process or silently blank the result.
-- The Pandoc import path now fails loudly when no output is received instead of handing the user an empty page and calling it success.
-
-Because many tools share this subprocess helper, the change strengthens far more than EPUB import. It is a broader reliability improvement across every feature that travels through that path.
-
-### Speech and Dictation opens again
-
-Four testers independently found the same crash. Opening **Tools > Speech > Speech and Dictation** raised a `TypeError` instead of displaying the dialog, whether the Offline or Online tab was involved.
-
-The dialog constructor had gained two required arguments — `kokoro_ok` and `kokoro_can_install` — but its caller had not been updated to supply them. 1.0.0 now populates both values using the same availability logic already used for Vosk, and the Speech and Dictation dialog opens normally again.
-
-### The Kokoro installation message now points to the menu that actually exists
-
-While investigating Kokoro, the same tester found that selecting it before its optional component was installed produced outdated directions: “Tools > Speech > Install Kokoro ONNX will fetch it.” That menu item had already moved into **Help > Download Optional Components** in an earlier release.
-
-The message now sends users to the correct place.
-
-### Voice's end-of-turn timing was quietly relying on a coincidence
-
-A review of the offline speech stack found a latent bug in how always-listening decides your turn has ended. The silence detector was built with the microphone's sample rate multiplied by its channel count — a value that happened to be correct only because capture is single-channel, and would have skewed the moment your turn ends the instant capture ever became stereo. 1.0.0 corrects it to the sample rate proper. The same review also passes your dictation vocabulary through to whisper.cpp (so the new profile can actually steer it) and retires an out-of-date note in the legacy Windows-dictation shim that still claimed QUILL could not transcribe on its own — it has a full offline recognizer, and that shim is only the fallback to the OS panel.
-
-### A keystroke can no longer arrive before the editor exists and bring down macOS
-
-On macOS, an extremely early or late keystroke — before the first document tab finished initializing or after the last one closed — could trigger `AttributeError: 'MainFrame' object has no attribute 'editor'` inside the global keyboard hook.
-
-Two neighboring checks already guarded against that lifecycle edge case; one still accessed the editor directly. All three checks are now consistent and defensive.
-
-### On macOS, the letter G is a letter again
-
-One of the most surprising reports in this cycle came from a completely blank document: pressing **G**, uppercase or lowercase, opened Find instead of typing the character. Every other letter behaved normally.
-
-The cause lived in the keyboard-shortcut hint shown at the right side of a menu item. **Find Next** uses **Cmd+G** on macOS. QUILL embeds that visible hint after a literal tab in the menu label, and wxWidgets interprets the text after that tab as a second keyboard shortcut, separate from QUILL’s own shortcut system.
-
-wxWidgets recognizes modifier words such as “Ctrl,” “Alt,” and “Shift,” but not “Cmd.” Rather than rejecting the unsupported hint, it dropped “Cmd,” retained the bare **G**, and registered that single letter as a system-level shortcut for Find Next. The shortcut then intercepted every G before it could reach the editor.
-
-This could affect every macOS-only `Cmd+something` hint, not only Find Next. 1.0.0 changes how the hint is built so wxWidgets receives a modifier name it understands, while the visible shortcut continues to read **Cmd+G** exactly as Mac users expect.
-
-### Portable updates now describe the manual swap honestly
-
-After downloading a portable update and restarting, a user reasonably asked why the old version still appeared.
-
-Portable updates have never installed themselves automatically in any QUILL release. The downloaded ZIP has always required a manual replacement step. Previously, that meant choosing **Open folder** and extracting it yourself. With the new **Extract now** button, QUILL performs the extraction, but you still swap the new folder into place.
-
-If QUILL’s wording suggested that the update would apply automatically “on next launch,” the wording was the bug. 1.0.0 tightens both this document and the in-app dialog so **swap it into place** is unmistakably described as the manual step it has always been.
-
-### Tree-navigator dialogs no longer expand a root that is intentionally hidden
-
-**Go to Entry in Notebook** and related tree-navigation dialogs could open with a `wxAssertionError`. The underlying correction had already reached the development branch before Beta 2 froze, but it belongs in this record for anyone who encountered the problem on a Beta 2 build.
-
-The dialogs no longer attempt to expand their intentionally hidden root node.
-
-### Narrator becomes a first-class citizen
-
-George Kerscher reported that QUILL’s self-voice spoke at the same time as Narrator, especially in the Command Palette. 1.0.0 addresses both the detection problem and the announcement path.
-
-#### Narrator detection now uses the Windows API marker
-
-In addition to its process check, QUILL now reads the marker Windows maintains while Narrator is active: the named `NarratorRunning` system event. This is one inexpensive API call with no process scan.
-
-Narrator can no longer escape detection because of timing, process visibility, or elevation differences.
-
-#### QUILL announcements now travel through Narrator
-
-QUILL now raises announcements as **UI Automation notification events**, the channel Narrator has supported since Windows 10 version 1709.
-
-Status changes, Command Palette narration, and other QUILL feedback can therefore arrive in the user’s own One Core voice, spoken by Narrator itself — just as dedicated bridges deliver announcements through JAWS or NVDA.
-
-If the notification channel is unavailable on a particular system, the message is placed in the status bar. The old failure mode is removed unconditionally: when any screen reader is running, QUILL’s SAPI self-voice is silenced, including announcements previously marked as “forced.” QUILL will no longer talk over the screen reader.
-
-One important caveat remains. The direct Narrator path is verified in code and automated tests, but it still needs real Narrator users to confirm the complete experience. Please test 1.0.0 and report through **Help > Report a Bug** whether announcements arrive once, through One Core, and in the expected voice.
-
-### Starter Snippet Packs now behave like an accessible list
-
-In Beta 2, **Install Starter Snippet Packs** required pressing Space on an invisible checkbox that provided no feedback before Enter would work.
-
-The interface is now a standard multi-select list. Arrow to `daily-writing` and press Enter to install it. Hold Shift or Ctrl to select several packs, and your screen reader announces the selected state as you move.
-
-### The Application Status page remembers where you are
-
-A tester supplied precise reproduction steps: open **Help > Status Page**, move down through any list, and watch focus jump back to the first row before you can act.
-
-The page refreshes every two seconds to keep task and download progress current. Each refresh had been rebuilding the lists without preserving the focused row.
-
-1.0.0 keeps focus anchored across refreshes. You can now navigate the lists under **Status**, **Tasks & Downloads**, and **Features** without being pulled back to the top.
-
-### Creating a Notebook on macOS can no longer crash through window activation
-
-Shannon Dyer encountered a hard macOS crash while creating a Notebook: `SystemError: ActivateEvent returned a result with an exception set`.
-
-A window-activation handler collided with a wx assertion while dialogs were being torn down. That handler exists only to return focus to the document, so it is now fully contained. A focus-restoration attempt can no longer take down the entire application.
-
-### Crash and feedback reports now identify the exact beta
-
-Two reports arrived for a bug already corrected in Beta 2, yet they appeared to be regressions because every 0.9.0 beta identified itself only as “0.9.0.”
-
-Reports now include the full version string, such as **0.9.0 Beta 2**, making an older installation immediately recognizable.
-
-If you encounter the Profiles and Features crash involving `_LazyString`, update to the current release; that issue was already fixed there.
-
-### QUILL no longer offers crash recovery when there is no crash evidence
-
-Two automatic crash-recovery submissions contained only normal background activity until the application stopped. There was no exception, no error, and no actionable trace. That pattern is consistent with an external termination — such as a forced shutdown or killed task — rather than a crash inside QUILL.
-
-1.0.0 turns that observation into a real behavior change. Before showing crash recovery, QUILL now looks for genuine evidence in the log: an `ERROR`, a `CRITICAL`, or a traceback.
-
-An inconclusive exit no longer produces the **“Quill detected an unclean exit”** dialog because there is nothing meaningful to diagnose. A real crash still records an error and offers recovery exactly as before.
-
-The autosave snapshot is never removed or altered by this decision. It remains on disk either way. The only change is whether QUILL asks you to recover after an exit for which the log contains no evidence of a crash.
-
-### Crash-recovery reports now show their own evidence
-
-A follow-up report showed the gap in that fix from the reporter's side: filing a crash-recovery report from the dialog bundled only the last few thousand characters of the log, while the check above scans a much larger window near the end of the file. A genuine error early in that window could justify the recovery offer without ever appearing in what got filed, leaving a report that looked unexplained even when the underlying decision was correct.
-
-Filed crash-recovery reports now include the actual log lines that triggered the offer, wherever they fall in the scanned window, so a report is self-explanatory instead of a mystery to whoever triages it.
-
-### macOS VoiceOver now hears what a control is for, not just its value
-
-A community accessibility audit found that many QUILL dialogs relied on a Windows-only convention: a visible label sitting next to a control, with nothing else connecting the two. Windows screen readers infer the connection from that layout; VoiceOver does not; it needs an explicit accessible name, and without one it announces a bare value — a number with no unit, an empty edit field with no hint what belongs there.
-
-Two related patterns caused this. Plain fields and lists in a number of hand-built dialogs never received a name at all. Separately, every `SpinCtrl`/`SpinCtrlDouble` — the numeric steppers used throughout Preferences and elsewhere — is a composite control on macOS: naming the stepper itself doesn't reach the inner text field VoiceOver actually focuses, so even a named spinner could still read as a bare number.
-
-Both patterns are fixed with one small shared helper that names a control and, for spinners, its inner field too. The fix was swept across every affected dialog identified by the audit — Preferences, Watch Folder profiles, the Export/Import and GitHub dialogs, Quick Nav, the Heading Organizer, List Manager, the Regular Expression Helper, and dozens more — so a VoiceOver user hears what each control is, not just what it currently holds.
-
-### A live crash report traced a UnicodeEncodeError to autosave
-
-Autosave was writing each snapshot using the source document's own encoding rather than UTF-8. A document read as Braille Ready Format defaults to an ASCII encoding; the moment its in-memory text picked up a character outside that range — in the reported case, a U+2004 space introduced through abbreviation expansion — the write crashed outright.
-
-Recovery always reads a snapshot back as UTF-8, regardless of what encoding the source document itself uses, so the writer now always writes UTF-8 too. A defensive try/except around the autosave call also means a future write failure, whatever the cause, interrupts a snapshot rather than the editing session.
-
-### Radio and Podcasts could crash QUILL on every single launch
-
-The Radio and Podcast player controllers were built before `self.frame` existed inside `MainFrame.__init__`, so parenting either controller on the not-yet-created frame raised `AttributeError` immediately. Both now initialize right after the frame itself is created.
-
-### Insert > Date and Time's submenu now actually opens
-
-Jayson Smith reported it precisely: open the Insert menu, arrow up to **Date and Time**, press Right Arrow to open the submenu, and land in the **Format** menu instead.
-
-The cause was a startup ordering gap, not a keyboard-handling bug. QUILL builds its menu bar before Quillins finish loading — deliberately, so a slow or misbehaving Quillin can never delay the window appearing or bring the whole launch down. But nothing rebuilt the menu bar afterward, so the bundled `insert-tools` Quillin's three contributions (Insert Date, Insert Time, Insert Date and Time) never actually landed inside the **Date and Time** submenu. The submenu itself was still there — created unconditionally — just permanently empty. With nothing inside to open, Right Arrow had nowhere to go but onward to the next top-level menu.
-
-QUILL now rebuilds the menu bar once Quillin loading finishes at startup, and again after any enable, disable, install, remove, or reload in the Quillins Manager. The **Date and Time** submenu opens correctly now, and so does every other menu location a Quillin contributes to.
-
-### Manage Versions no longer renders as a silent, unexplained blank list
-
-While tracking down the Date and Time submenu fix above, we found a related rough edge already noted in planning as “Snapshots vs Versions”: **File > Notebook > Manage Versions** on a notebook that had never had a Version saved showed a genuinely empty list — no placeholder, no explanation. Tabbing into it told you nothing about whether the feature was working.
-
-The list now shows **“(No versions saved yet)”** and disables Rename and Delete until there is something to act on, matching the “(No open documents in workspace)” pattern QUILL already uses in the Snapshots menu.
-
-### A per-machine install no longer needs administrator elevation to run at full speed
-
-Tyler Rodick installed QUILL system-wide (Program Files, all users) instead of per-user, and noticed something specific: startup was several seconds faster the first time he ran it as administrator than it was running normally afterward.
-
-The cause was a gap in a fix QUILL already had. comtypes — the library behind SAPI speech, Narrator's UIA announcement bridge, and the Rich Edit rich-text object model — writes a generated wrapper file to disk the first time it touches each of those three COM interfaces. Its default location is inside its own package folder, which a per-machine install makes read-only without elevation. QUILL already redirected this cache to a writable per-user folder, but only did the redirecting once, from inside the SAPI code path — Narrator's and Rich Edit's own comtypes calls only inherited that redirect if SAPI happened to run first in the same session. Whichever one ran first without that accident of ordering fell back to comtypes' own read-only default and degraded silently.
-
-Every comtypes call site now requests the redirect itself before touching comtypes, rather than counting on another feature to have already done it. None of the three depends on session ordering anymore, on any install type, with or without administrator elevation.
-
-### Check for Updates could hand a Windows user the macOS download
-
-A release that only publishes assets for one platform — which is exactly what happened when a 1.0.0 Windows build failed in CI while the macOS build succeeded — used to fall through to whatever asset *was* published, regardless of platform. A Windows client checking for updates against that release got pointed at the release's only file: a `.dmg`.
-
-Asset selection now excludes every other platform's installer extensions outright, and a release with nothing installable for the running platform is skipped entirely, so Check for Updates falls back to the newest release that actually has a matching build for you rather than ever offering a foreign-platform link.
-
----
-
-## GitHub Grows from a Viewer into a Workspace
-
-Beta 2 introduced the read-only GitHub Items viewer. 1.0.0 begins unifying the best ideas from [GHManage](https://github.com/kellylford/GHManage) — Kelly Ford's open-source, screen-reader-first GitHub browser, QUILL's reference viewer for this entire integration — and fastgh, and moves QUILL toward something much bigger: a keyboard-first GitHub environment where information can be found, understood, and — with explicit consent — acted upon. Every feature below with a GHManage ancestor keeps its idea and extends it with something specific to QUILL.
-
-### GitHub Items gains pins, favorites, real search, automatic repository awareness, and View Upstream
-
-The first group of improvements adds five everyday capabilities:
-
-- **Pinned repositories.** The **Pinned...** button holds a short, intentional list of the repositories you use most. Select one to load it immediately, or pin and unpin the currently loaded repository from the same menu. You no longer need to retype `owner/repo` every time.
-- **Favorites.** Press **Ctrl+D** on any selected issue, pull request, branch, or release to bookmark it. **Favorites...** lists bookmarks from every repository and opens the selected item in your browser. These bookmarks remain entirely on your machine.
-- **Full GitHub search syntax.** Press **Ctrl+F**, enter a GitHub query such as `label:bug is:open crash` or `author:alice is:pr`, and press Enter. Search is scoped to the loaded repository. Clear the search to restore the normal list.
-- **Local git awareness.** When the document you are editing lives inside a git clone whose `origin` points to GitHub, the repository field fills itself in automatically. This works for any file regardless of how it was opened, not only files reached through QUILL’s GitHub commands.
-- **View Upstream.** Load a repository that's a fork, and the **View Upstream** button enables itself the moment QUILL confirms it. Press it and the parent repository loads in its place — the only path there before was retyping the parent's name by hand.
-
-### Pull-request differences become something you can understand, not a wall of symbols
-
-Select a pull request and choose **Diff...** to browse its changed files in an accessible list.
-
-QUILL sends each file’s before-and-after content through the same comparison engine used by **Compare Documents**. Instead of forcing you through a dense stream of plus and minus signs, it presents a numbered walk through meaningful changes, such as:
-
-> Difference 2 of 5. Text changed at line 41. main: ... this PR: ...
-
-The changed words are described directly.
-
-- A newly added file is read as its content.
-- A deleted file is announced as deleted.
-- A binary or oversized file falls back honestly to its available change counts.
-
-### Batch operations are powerful — and deliberately fenced by consent
-
-The GitHub Items list now supports multi-selection. Select several rows, press **Batch...**, and close, reopen, or add a label to all selected items at once.
-
-This is the deliberate exception to the viewer’s read-only foundation, so the boundaries are explicit:
-
-- Batch actions require a signed-in account.
-- Anonymous viewing remains fully read-only.
-- Before anything changes, the confirmation identifies the exact action and the exact item numbers involved.
-- If some items fail, QUILL tells you which ones failed and why, while allowing successful items to complete.
-
-### AI can turn a hundred-comment thread into a useful starting point
-
-A hundred-comment issue late at night is not a humane reading experience.
-
-Press **Summarize** on an issue or pull request and QUILL’s AI creates a brief, plain-prose TL;DR covering:
-
-- What the thread is about
-- Where it currently stands
-- What remains unresolved
-- The apparent next step
-
-The summary appears in the details pane and is announced. It uses the same AI connection, privacy, and consent gates as every other QUILL AI feature. Nothing is transmitted or generated until you choose **Summarize**.
-
-### Compare two branches without leaving the list
-
-Switch the Items viewer to the **Branches** view, select one, and press **Compare...** (or **Ctrl+Shift+B**). Unlike Batch and Actions, this needs no signed-in account — it never writes to GitHub. Type a base branch, then the branch to compare against it (the selected row prefills the second prompt), and QUILL reports how far the two have diverged, lists every commit between them, and walks each changed file's differences the same accessible way **Diff...** does on a pull request.
-
-### Run a workflow straight from the list
-
-A new **Workflows** view sits alongside Workflow Runs — it shows the workflow *definitions* in the repository (the `.yml` files) rather than their run history. Select one and press **Enter**, or use **Actions... > Run ... on Branch...**, and QUILL asks for a branch, confirms, and dispatches the run. This needs a signed-in account; if the workflow doesn't accept manual (`workflow_dispatch`) runs, GitHub's own refusal is reported plainly instead of QUILL guessing.
-
-### Filter what you've already loaded, instantly
-
-**Quick filter** (Ctrl+Shift+F) is a second, different kind of narrowing from Search: it filters the rows already sitting in the list, live as you type, with no network round trip. It never steals keyboard focus away from the box you're typing in, and — since re-announcing "12 items" on every keystroke would fight a screen reader's own character echo — it stays silent while you type and only speaks the result count once you stop. Escape clears it.
-
-Three smaller navigation additions round this out: **Columns...** lets you choose which fields appear as list columns for the current view, and remembers your choice the next time you open the viewer; **Backspace** in the Commits view (reached by pressing Enter on a branch) steps straight back to the branch list; and the repository field now accepts a pasted `github.com` URL or `git@github.com:` remote, not just `owner/repo`.
-
-The viewer and every GitHub feature continue to honor QUILL’s token, consent, and Safe Mode controls. A wiki browser and additional parts of the broader unification review remain on the roadmap; notifications move from roadmap to reality later in this release.
-
-**With thanks.** Every feature in this section traces back to [GHManage](https://github.com/kellylford/GHManage), Kelly Ford's open-source GitHub browser — pinned repositories, favorites, real search, local git awareness, View Upstream, the PR diff viewer, Compare Branches, the Workflows view, and Quick Filter all started as ideas GHManage shipped first. QUILL's job in each case was to extend that idea with something the rest of the app already had to offer — routing differences through QUILL's own compare engine, or keeping Quick Filter quiet enough not to fight a screen reader's character echo — not to reinvent it. This integration would not exist in its current form without GHManage to learn from.
-
----
-
-## GitHub Stops Being a One-Way Window
-
-Before 1.0.0, QUILL could show you a great deal of GitHub while changing very little. You could browse a repository, open a file, save that one file back, list issues and pull requests, and perform limited batch labeling or state changes. Creating repositories, opening and merging pull requests, or deleting obsolete branches still pushed you into the browser.
-
-The planning document at `docs/planning/github.md` examines how far QUILL can go without adding a dependency on the `gh` CLI. 1.0.0 ships the part of that plan we can support confidently: repository administration, richer item actions, organization browsing, releases, workflow dispatch, notifications, and security alerts.
-
-### A new Tools > GitHub command center
-
-**Tools > GitHub** is a new submenu containing eight repository commands:
-
-- **Create Repository...** — provide a name and description, choose public or private visibility, and optionally select an organization. After creation, QUILL offers to synchronize a local folder immediately. Say yes and move directly from “no repository” to “a local folder pushing to GitHub” without opening a browser.
-- **Fork Repository...** — fork the repository and receive the same offer to create or connect a local synchronized folder.
-- **Rename Repository...** — change the repository name from within QUILL.
-- **Change Repository Visibility...** — move between public and private visibility with an explicit confirmation.
-- **Change Default Branch...** — select the branch GitHub should treat as the default.
-- **Delete Branch...** — remove a branch through a guarded workflow.
-- **Configure Branch Protection...** — choose a branch, set the number of required approving reviews, specify required status checks, or select an option to clear existing protection.
-- **Commit Multiple Files...** — choose several local files and commit them together in one atomic commit. This is intentionally different from **Save to GitHub**, which handles only the currently open document.
-
-### The Items viewer gains an Actions menu
-
-Alongside **Batch...**, the Issues, Pull Requests, Branches, and Commits viewer now includes **Actions...** with commands for:
-
-- **New Issue...**
-- **New Pull Request...**
-- **Merge Pull Request...** when a pull request is selected
-- **Delete Branch...** when a branch is selected
-- **Re-run Workflow** when a workflow run is selected
-- **View Artifacts...** when a workflow run is selected
-- **Reply to Thread...**
-- **Edit This Comment...**
-- **Delete This Comment...**
-
-The comment actions build on the existing **Alt+N** and **Alt+P** navigation. Move to the relevant comment, then reply to, edit, or delete that specific comment.
-
-### Download a workflow run's build artifacts, without your token leaking to a third party
-
-Choosing **View Artifacts...** on a workflow run opens a small list of that run's build artifacts — name, size, and whether GitHub has already let it expire. From there:
-
-- **Download Selected...** or **Download All...** ask for a destination folder, then save each artifact as a zip file.
-- If a file of that name already exists, QUILL asks before overwriting it.
-- A progress dialog with **Cancel** tracks the download; you can stop it at any point.
-- **Open Run in Browser** takes you straight to the run on GitHub.
-
-The download itself needed a deliberate design decision, not a default one. GitHub's artifact download link redirects to a short-lived, signed URL hosted elsewhere (Azure Blob Storage in production) — and your GitHub token must never travel to that second host. Standard redirect-following would send it there anyway, and reaching into PyGithub's private internals to work around that felt like the wrong kind of shortcut. QUILL instead follows the redirect itself: it blocks the automatic follow, reads the redirect target, and makes exactly one more request to that address with no `Authorization` header attached. Your token only ever goes to `github.com`.
-
-### Signed-in actions remain signed-in actions
-
-None of the write commands operates anonymously. Each requires an authenticated account. When you are not signed in, QUILL offers to begin sign-in from the point of need instead of simply refusing and leaving you to find another route.
-
-Four high-consequence actions require stronger confirmation than an ordinary Yes/No prompt:
-
-- Renaming a repository
-- Changing repository visibility
-- Deleting a branch
-- Merging a pull request
-
-For those operations, you must retype the exact repository name, branch name, or pull-request number. These are the actions for which an accidental Enter can be particularly difficult to reverse.
-
-Every other write action uses a clear confirmation that names precisely what is about to change.
-
-All thirteen GitHub commands — the eight new administration commands plus the five browsing commands present since QUILL 0.5.0 — now appear in the Command Palette and ship with default QUILL Key chords. Every chord can be reassigned in Preferences.
-
-### Organizations, releases, workflows, notifications, and security alerts
-
-Five additional commands complete the read-mostly side of the plan:
-
-- **Browse Organization Repositories...** — choose from the organizations associated with your account and then browse that organization’s repositories. Teams remain intentionally out of scope.
-- **Create Release...** — choose a tag, supply optional release notes or use GitHub’s automatically generated notes from merged pull requests, and create the release as a draft or publish it.
-- **Dispatch Workflow...** — run a workflow against a branch or tag, equivalent to choosing **Run workflow** on GitHub’s website.
-- **Notifications...** — open a genuine inbox spanning all repositories rather than only the repository currently loaded.
-- **Security Alerts...** — review a repository’s open Dependabot alerts.
-
-### Codespaces and Copilot CLI — needs your help to confirm it actually works
-
-Four more Tools > GitHub commands round out this release's GitHub work, and they work a little differently from everything above: instead of talking to GitHub's API directly, they run your own installed `gh` command-line tool.
-
-**Codespaces...** lists your active Codespaces — name, repository, current state — and lets you Stop or Delete one from a menu. **Create Codespace...** asks for a repository and an optional branch and creates a new one. This is the one command in QUILL's entire GitHub integration that carries a real cost: Codespaces consume GitHub compute and storage minutes, and the confirmation dialog says exactly that before anything happens, rather than the general "this changes something on GitHub" wording every other GitHub command uses.
-
-**Ask Copilot for a Command...** and **Explain a Command...** are small but genuinely useful: describe what you're trying to do in plain language and get a suggested git or `gh` command back, or paste in a command you don't recognize and get a plain-language explanation of what it does.
-
-We are asking for your help here specifically. These four commands are thoroughly unit-tested against a simulated `gh` tool — the argument-building and response-parsing logic is solid — but none of it has been exercised against a real Codespaces-enabled repository or real Copilot CLI access on an actual device. If you use Codespaces or Copilot CLI, please try these commands and tell us what happened through **Help > Report a Bug**, good or bad.
-
-**Don't have `git` or `gh` installed?** Both are now available right from **Help > Download Optional Components** — a portable copy of Git for Windows, and the GitHub CLI for Windows and macOS, each checksum-verified the same way every other optional download is. QUILL always prefers a copy you already have on your system first; these exist purely so Tools > Local Git and these four Codespaces/Copilot commands work for someone who has never installed either.
-
-### What is not included — because confidence matters more than pretending
-
-Before implementing these commands, we checked the actual boundaries of PyGithub instead of assuming that every GitHub capability had a stable wrapper.
-
-Several ideas from the original plan remain out for concrete reasons:
-
-- **Discussions** has a PyGithub entry point, but it requires a hand-written GraphQL field-selection string. Shipping that without live repository validation would mean shipping a guess.
-- **Projects (v2)** has no PyGithub support. The library supports only the classic Projects API that GitHub has been sunsetting, so building against it would produce a feature that fails on many modern repositories.
-- **Packages** has no PyGithub support.
-- **Transferring a repository to another owner** also lacks a wrapped method. This was initially described as renaming in the plan, but transfer is the actual operation.
-
-Discussions, Projects v2, Packages, and repository transfer remain legitimate future candidates when they can be implemented and verified responsibly.
-
----
-
-## Local Git, Reimagined for Screen Reader Users
-
-This section is not about GitHub. It is about `git` itself — and it may be the capability in 1.0.0 of which we are proudest.
-
-Traditional git tools expose complex operations as punctuation-heavy text and visually arranged changes. QUILL starts from a different question: what would these workflows look like if structure, sequence, context, and choice were communicated directly?
-
-### Merge conflicts become a guided conversation
-
-Anyone who has worked with git has eventually encountered conflict markers:
-
-```text
-<<<<<<<
-=======
->>>>>>>
-```
-
-A screen reader encounters those markers as line noise unless the user manually reconstructs the surrounding structure. The git CLI, GitHub Desktop, and most graphical merge tools were not designed around that experience. None of them is also the trusted editor in which a screen reader user already writes.
-
-QUILL is.
-
-Open **Tools > Local Git > Resolve Conflicts...** and QUILL parses each conflicted file into meaningful parts. It then walks through the conflicts one at a time, announcing language such as:
-
-> Conflict 1 of 3: your version says X; their version says Y.
-
-For each conflict, choose to:
-
-- Keep yours
-- Keep theirs
-- Keep both
-- Enter a different replacement
-
-The process continues through every conflict in every affected file, preserving structure and making the decision explicit.
-
-### Interactive rebase becomes an accessible list instead of editable syntax
-
-`git rebase -i` normally opens a generated text file and expects you to reorder commits and change commands such as `pick`, `squash`, `reword`, or `drop` without damaging the syntax.
-
-**Interactive Rebase...** replaces that fragile visual editing task with a real dialog:
-
-- One commit appears on each row.
-- Each row has an action selected from a dropdown.
-- **Move Up** and **Move Down** reorder commits directly.
-
-Under the hood, QUILL uses the same mechanism employed by graphical git clients: git can send its generated todo list to any program named as the sequence editor. QUILL becomes that program and returns the structured list built in the accessible dialog.
-
-If a rebase step causes a conflict, the same guided conflict resolver opens automatically. Resolve the conflict, and QUILL continues the rebase.
-
-### The rest of the local git toolkit
-
-The new local git experience also includes:
-
-- **Uncommitted Changes...** — stage or unstage work through an accessible comparison rather than a raw diff.
-- **Switch Branch...** — change branches with a guard that prevents uncommitted work from following you unexpectedly.
-- **Stash Changes...** and **Manage Stashes...** — create and manage stashes through guided interfaces.
-- **Who Wrote This Line...** — make git blame useful by speaking the result for the current line.
-- **Start Bisect...** and **End Bisect** — turn `git bisect` into a plain conversation asking whether the current version is good or bad.
-
-### Worktrees: a folder for each branch, so nothing changes while you are reading it
-
-Here is a problem that almost never gets named, because most people never notice it.
-
-When you switch to another branch the ordinary way, git rewrites every file in the folder. The names stay the same. The paths stay the same. The contents become something else. If you can see the screen, the text changes in front of you and you know instantly what happened. If you are reading with a screen reader, nothing tells you anything. The paragraph under your review cursor is now a paragraph from a different branch, sitting in a file that still calls itself the file you opened. You keep reading, and the words no longer belong to the thing you thought you were reading.
-
-A worktree is the fix, and it is a structural one rather than a warning message. A worktree is simply a second folder attached to the same repository, with a different branch checked out inside it. One history, one set of branches, two folders. Your main folder stays on main; a second folder holds the feature you are working on. Nothing under your cursor ever changes, because the two never share a file. Switching context becomes "open a different file" — something you choose to do, and hear yourself doing — instead of "this file is now a different file", which is something that happens to you without a sound.
-
-That is why QUILL supports worktrees properly instead of leaving them to the command line.
-
-**Tools > Local Git > Worktrees...** shows you what you have. QUILL announces the count as the dialog opens, and every row is a whole sentence you hear once and understand — "Main worktree at S:\code\quill, on branch main", or "Linked worktree at D:\usb\quill-spike, on branch spike, locked: on a USB drive" — rather than four narrow columns you would have to arrow across. After anything you do, QUILL says what happened, rereads the list, and puts you back on it.
-
-**New Worktree...** asks where the folder should go and which branch it should hold, or lets you create a brand-new branch right there with an optional starting point. The folder field takes whatever you actually paste — a path copied from File Explorer with the quotes still attached, an %APPDATA% path, a file:// link. And QUILL checks before it runs git, so a mistake is a sentence you hear rather than an error you have to decode: the folder already has files in it, the folder is inside the repository itself, or that branch is already open in another worktree — and in that last case QUILL tells you exactly which folder has it, so you can go open that one instead.
-
-**Open in QUILL** does the obvious thing: it opens the same document you are reading, from the worktree you picked. If that file does not exist on that branch, QUILL says so and offers you a file picker already pointed at the right folder, instead of leaving you at a dead end.
-
-**Remove...** deletes a worktree's folder. The branch itself stays — you are removing the folder, not the work. The confirmation defaults to No, so pressing Enter out of habit never costs you anything. And if git refuses because the worktree still holds uncommitted changes, QUILL passes that refusal on in plain language and asks a second, separate question before discarding anything. It will not quietly force the removal on your behalf.
-
-**Lock** and **Unlock** protect a worktree that lives on a USB drive or a network share, which git would otherwise mistake for a folder that has vanished; you can record a reason and hear it later in the list. **Prune** clears out records for folders that really are gone, and tells you which ones it tidied — or simply says nothing needed doing.
-
-Throughout, git's own raw error output is never read at you. Every message is a finished sentence written to be spoken.
-
-These commands do not contact GitHub or any network service. They operate entirely through local git and work with any repository you point QUILL toward.
-
-We tested them against real repositories performing real operations: divergent branches producing a real merge conflict, and an interactive rebase that encountered a conflict partway through and then had to continue. Subprocess orchestration earns trust by surviving the actual workflow, not by looking correct on paper.
-
-Everything across these three GitHub chapters — browsing and saving files, working issues and pull requests, administering a repository, and resolving a merge conflict — is also taught end to end in [Tutorial 8: GitHub inside QUILL](../tutorials/08-github-inside-quill.md).
-
----
-
-## Headers and Footers Become Part of the Document
-
-Beta 2’s Header/Footer Builder could apply headers and footers during printing, but the saved files themselves did not contain them.
-
-1.0.0 carries them into the document:
-
-- Save as `.docx` and the header or footer becomes a real Word header or footer.
-- Page numbers use a live Word field, so Word continues renumbering them as the document changes.
-- Save as `.rtf` and QUILL writes the equivalent native RTF header and footer groups.
-- Roman numeral numbering carries through.
-- A custom starting page number carries through.
-- A different first page carries through.
-
-An empty header/footer specification changes nothing, and a header can never become the reason a save fails.
-
----
-
-## QUILL Sync: Let Trusted Tools Carry the Work
-
-We explored what it would mean to build a complete QUILL synchronization service: QUILL accounts, QUILL-hosted storage, a custom synchronization engine, and the operational burden that comes with all of it.
-
-We chose not to build a new cloud merely because we could.
-
-Cloud-synchronized folders and git already solve the essential problems well. 1.0.0 lets QUILL work with those systems instead of competing with them. Two focused capabilities deliver practical synchronization without making QUILL a storage provider.
-
-### Synchronize settings through a folder you already trust
-
-The existing **“Where should QUILL store your data?”** option was originally created so users could move their application data away from the system drive. It also serves as a straightforward settings synchronization mechanism.
-
-Point QUILL’s data location to a folder already synchronized by OneDrive, Dropbox, Google Drive, or iCloud. Your settings, snippets, dictionaries, and keymap then travel with that folder across devices. QUILL writes normal files; the provider’s sync client handles transport.
-
-The setup wizard now explains this use clearly and names the important limitation: do not run QUILL simultaneously on two devices that share the same synchronized data folder. This path has no cross-device conflict-resolution system.
-
-### Synchronize any folder with GitHub
-
-**Tools > Sync Folder with GitHub...** works with any folder: notes, a writing project, source code, or an entire body of work.
-
-When the selected folder is already a git repository with a remote, QUILL commits, pulls, and pushes it in the background.
-
-When the folder is not yet configured, QUILL explains exactly what it proposes to do:
-
-> This runs `git init`, then adds the remote repository you provide as `origin`.
-
-Nothing changes until you approve. Provide the repository URL and the folder becomes synchronized.
-
-If the same file changed in both locations, QUILL lists the conflicts by name and stops. It never resolves the situation through a silent overwrite.
-
-The engine is familiar because it is the same foundation used by Accessible Vault’s **Sync Vault** command, generalized from vaults to any folder.
-
-QUILL relies on your installed git and the credentials git already knows — an SSH key or the account stored in your system’s git credential manager. It does not create or store a second set of credentials. The behavior mirrors a normal `git push` from the terminal.
-
-Like every network-touching feature, folder synchronization is disabled in Safe Mode.
-
-The reasoning behind this approach, including the larger synchronization design that was considered and rejected, is preserved in `docs/engineering/sync-engine-history.md`.
-
----
-
-## Small Features, Enormous Everyday Impact
-
-Some features change an architecture. Others remove one interruption, one unnecessary dialog, one repeated search, or one inaccessible ritual from a person’s day. 1.0.0 makes room for both.
-
-These accessibility-first additions came from real workflows and direct requests. They are small enough to feel natural and powerful enough to become habits.
-
-### The Sticky Notes Browser: every note, one hotkey away
-
-Sticky notes are only as useful as your ability to find the right one later. **Tools > Sticky Notes Browser...** opens a fast, keyboard-first finder: start typing and the list filters live — titles and bodies, case-insensitive, newest first. Press Down to drop into the results, arrow to a note, and Tab to a read-only multi-line preview so you can skim the whole note without opening anything. **Edit** (or just Enter on a note) opens the full editor.
-
-The best part: assign it a global hotkey (below) and the browser opens from *anywhere in Windows* — reading email, mid-browser, wherever — with QUILL's window restored first so it always genuinely appears.
-
-### Global Hotkeys: your keys, working everywhere — inside a hard safety boundary
-
-**Tools > Global Hotkeys...** lets you wire system-wide key combinations to QUILL commands, so pausing a podcast or capturing a thought never requires switching windows first. Press **Assign**, then press the combination you want (it must include Ctrl or Alt — a bare letter would swallow normal typing everywhere); **Clear** removes one; conflicts with keys another app already owns are reported by name and simply stay inactive until you choose differently.
-
-The safety design is the point. Only a curated allowlist can ever go global: Radio and Podcasts transport (play/pause, stop, mute, volume up/down), New Sticky Note, the Sticky Notes Browser, Post to Mastodon — which opens the compose dialog and *never* auto-sends — and **Show/Hide QUILL to the tray** (see below). Nothing that edits a document, deletes anything, or acts invisibly can be bound, no matter what's in the settings file — the allowlist is enforced in code and guarded by its own test. Commands that need a window restore QUILL first; pure transport commands act in place; and every global press announces its outcome through speech, so you always hear what happened even with QUILL minimized to the tray. Your long-standing sticky-note hotkey keeps working exactly as before unless you override it here. Windows-only, because the operating system offers no macOS equivalent — the same commands remain available from menus and the command palette everywhere.
-
-**One key to duck away and come back — and every app in the family has its own.** A new global hotkey, **Ctrl+Alt+Shift+Q** by default, hides QUILL to the system tray when it is showing and brings it back — focused — when it is hidden, from wherever you are. It's a normal, rebindable entry in the Global Hotkeys table, so you can change or clear it like any other. The standalone apps carry the same idea with their own, deliberately non-colliding chords: **Quill Radio is Ctrl+Alt+Shift+R** and **Quill Weather is Ctrl+Alt+Shift+W**, so an always-in-the-tray app — Quill Weather watching for alerts, Quill Radio playing in the background — is a single keystroke away without ever hunting for its tray icon. Hiding leaves the app fully running; the toggle speaks "hidden to the tray" or "shown"; and, like every global hotkey here, it's Windows-only and best-effort — if another program already owns the combination, that combination stays theirs and QUILL simply doesn't grab it.
-
-### Unlock codes: staged features, switched on with a signed code
-
-Some QUILL capabilities ship locked until they are ready for everyone, then roll out gradually — to early testers, partners, or pilots. **Help > Redeem Unlock Code...** is how one gets switched on: paste a code (it starts with `QUILL-`), and QUILL verifies its digital signature entirely on your machine — no network call, no account, nothing transmitted — then announces exactly which feature was unlocked. Codes persist across restarts and re-verify on every launch; an expired or tampered code stops working and says why. If you never receive a code, nothing changes for you: every standard feature works without one.
-
-### The Clipboard Collector now reaches beyond QUILL
-
-Dean Martineau asked for the behavior familiar from EdSharp: turn on the collector, copy from anywhere, and let every captured item flow into the active document.
-
-That is now exactly what happens.
-
-While **Toggle Clipboard Collector** is enabled, QUILL watches the system clipboard. Copy text from a browser, an email, a terminal, or another application and QUILL appends it to the open document, saving as it goes.
-
-The implementation is intentionally light. QUILL performs one inexpensive check roughly once per second and touches the clipboard only when its contents have actually changed. Copies made within QUILL still arrive immediately, and each distinct clipboard item is collected exactly once.
-
-### QUILL can become Thunderbird’s external editor
-
-Martin Courcelles asked to write email in QUILL. The happy discovery is that the underlying behavior already works.
-
-QUILL’s one-process-per-file model matches what Thunderbird’s **External Editor Revived** add-on expects. The user guide now includes a complete **Using QUILL as an external editor** walkthrough:
-
-1. Install the Thunderbird add-on.
-2. Point it to `quill.exe`.
-3. Press **Ctrl+E** in a Thunderbird compose window.
-4. Write using the full QUILL editing environment.
-5. Save and close the QUILL document.
-6. The text returns to the Thunderbird message.
-
-### The Windows installer can add QUILL to PATH
-
-The installer now includes an optional **Add Quill to PATH** task. It is unchecked by default and appears beside the existing file-association choices.
-
-Enable it and the command `quill` resolves from any terminal or from a shortcut’s **Target** field without requiring the complete installation path.
-
-The change is per-user only. It requires no elevation and affects no other Windows account.
-
-Already installed Beta 2 or an earlier build? Run the installer again and select the task to add it retroactively.
-
-### A temporary bookmark for “right here, right now”
-
-Sometimes you do not need a named landmark, a list, or a persistent record. You simply need to mark this exact place and return a few moments later.
-
-- **Ctrl+Shift+K** sets one unnamed bookmark at the cursor. There is no dialog. QUILL announces: “Temporary bookmark set.”
-- **Alt+Shift+K** returns to it immediately. There is no picker. QUILL announces: “Jumped to temporary bookmark.”
-
-Setting another temporary bookmark replaces the previous one without prompting. Only one exists at a time.
-
-It does **not** persist across sessions. Closing and reopening QUILL clears it. That is deliberate: this is disposable working memory for the next few minutes, not a replacement for the existing unlimited, persistent **Set Bookmark...**, **Go To Bookmark...**, and **List Bookmarks...** commands.
-
-### Ten numbered quick bookmarks, each one keystroke away
-
-1.0.0 also adds ten fixed bookmark slots numbered 0 through 9.
-
-- **Alt+Shift+0** through **Alt+Shift+9** sets the corresponding slot at the cursor. For example: “Quick bookmark 3 set.”
-- **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jumps directly to that slot. QUILL announces “Jumped to quick bookmark 3,” or “Quick bookmark 3 is not set” when the slot is empty.
-
-These are direct chords. There is no menu to open and no bookmark mode to enter first.
-
-Internally, the slots are stored as normal named bookmarks with generated names such as **Quick 3**. That means they persist per document across restarts just like existing named bookmarks. There is nothing new to configure and no separate storage system to maintain.
-
-### Alt+F7 checks only the word under the cursor
-
-Press **Alt+F7** to run **Spell Check Word** on the current word.
-
-When the word is correct, QUILL says so and returns you immediately to your work.
-
-When the word is misspelled, a compact list opens with the same choices available from the right-click spelling menu:
-
-- Suggested replacements
-- **Add to Dictionary**
-- **Ignore**
-
-Arrow to an option and press Enter, or press Escape to cancel without changing anything.
-
-This is the focused-word spelling workflow familiar from Microsoft Office. Use **F7** for a systematic review of the full document. Use **Alt+F7** when you need an answer about the one word at the cursor.
-
-### Ranked spelling puts the most repeated problem first
-
-Press **Ctrl+Shift+L** to open a misspelling list ranked by frequency.
-
-The existing **Misspelling List** on **Alt+Shift+L** remains unchanged and continues to present words in document order. The new ranked view begins with the misspelling that occurs most often and shows the count in each entry, for example:
-
-> teh (Ln 12, Col 4, 8 occurrences)
-
-This Kurzweil 1000-inspired feature came directly from a longtime user. In an OCR document or a draft containing a repeated typo, correcting the most frequent problem first can eliminate a large portion of the noise immediately.
-
-### Live spelling alerts get their own sound — and learn when to stay quiet
-
-With **spell check as you type** on, finishing a word the dictionary does not recognize now plays a soft, distinct spelling sound from your sound pack instead of the bare system beep. A sound rather than speech is deliberate: it never talks over what your screen reader is saying. If your chosen pack has no spelling sound, the familiar beep still fires, so the alert is never silently lost — and it has its own toggle in **Sound Events**.
-
-The live alert has also learned some judgment. Words inside web addresses, email addresses, Markdown inline code, and fenced code blocks no longer alert — those regions are wall-to-wall "misspellings" that sighted users filter out with a glance, and now QUILL filters them for everyone. The full F7 review still covers the whole document; only the ambient alert holds back.
-
-### The command palette understands what you mean
-
-Palette search grew three new abilities. Multi-word queries match in any order — `url open` and `open url` both find **Open From URL...**. A command's shortcut is searchable, so `ctrl+o` finds Open. And common intent words now work as aliases: `settings` finds **Preferences...**, `quit` finds **Exit**, `theme` finds dark mode — the palette meets you at the word you were thinking of, not the label QUILL happens to use.
-
-One more change matters especially with a screen reader: arrowing through results now **speaks each command's shortcut with its name**. The visual list always showed the shortcut; now you hear it too, every time — so the palette quietly teaches you the faster route while it runs your command.
-
-### Report Editor Surface: a braille bug report in one keystroke
-
-A new **Report Editor Surface** command (in the command palette; give it a key in the Keymap Editor if you want one) speaks everything a braille or speech report needs in a single announcement: the active editor surface, its native window class, whether the system-edit braille fix is applied, whether the editor border is hidden, and whether braille output is live — and through which backend. Nothing from your document is included.
-
-If braille ever looks wrong, run this first and include what it says. "Braille starts in cell 2" plus this one sentence is a report that can be investigated immediately, with no screenshots and no back-and-forth.
-
-### QUILL finds its voice: every slot is a note, and progress is a melody
-
-Numbered features have always had a problem: "Copied to slot 7" takes as long to hear as the copy took to do. Now every one of the twelve Copy Tray slots and ten quick bookmarks plays its own note on a shared musical scale — Copy Tray as soft marimba taps, bookmarks as brighter chirps — so after a little use, slot seven is a pitch you simply recognize. Copy, paste, set, jump: the note is the confirmation, instantly, without a word spoken.
-
-Long downloads and installs sing too. Every 5 percent plays a short blip that rises as the work approaches done; the quarter marks carry a touch of harmony, and 100 percent lands with a little two-note finish. Unlike a spoken "forty-five percent", a blip never talks over your screen reader — the spoken milestones at 25, 50, and 75 stay right where they were for the big picture.
-
-Two more touches round out the set. Starting a selection with F8 opens a rising two-note gate and completing it plays the mirror image, so selection mode is always audible. And the very top and very end of your document now answer with a high ceiling tick and a low floor thud.
-
-If your USB or Bluetooth speakers clip the first instant of sound after a quiet pause — a common quirk of audio hardware saving power — turn on the new **Keep the sound device awake** setting and QUILL will keep the device listening with a silent pulse every 20 seconds.
-
-All 48 new sounds were designed for QUILL's Ink pack, every one has its own on/off switch in Sound Events, and any custom sound pack can replace any of them. Want a tour? `python scripts/audition_ink_sounds.py` plays the whole identity set, family by family.
-
-### The AI can fill in your document's details — and you approve every one
-
-A new **Suggest Document Metadata** command asks your AI for a title, a short summary, topic tags, and a category for whatever you're writing — and then hands the decisions entirely to you. Each suggestion is reviewed on its own: you hear the field, what it currently says, and what the AI proposes, and you choose Accept, Skip, or just copy the value. If a field already has something in it, QUILL asks before replacing it, and the safe answer — No — is the default. Nothing is written until you choose Apply Accepted, and then it all lands as a single undo.
-
-It's the same philosophy as the word-by-word AI change review, applied to fields instead of prose: the AI proposes, you dispose, and a bulk overwrite is never on the table.
-
-### The AI never quietly changes what's answering you
-
-Two more honesty guarantees joined the AI. If QUILL has to start a chat on a different engine than the one you configured — say your provider was unreachable — it now tells you the moment the chat opens, instead of quietly answering with a different brain. And when a call fails from a connection problem, the fallback suggestion now works in both directions: a failed cloud call points you at your on-device model, and a failed on-device model points you at the cloud provider you have configured — while telling you plainly that switching would send your text to the cloud, and never switching for you.
-
-### More errors that end with what to do next
-
-The error-specificity work keeps spreading. Voice and component downloads, extension problems, and remote file transfers (SSH, FTP, S3, WebDAV) now finish their error messages with the concrete next step — "Check your internet connection, then retry the download from Help > Download Optional Components." A menu item that a safety advisory has disabled now explains itself right in the menu. Small sentences, but each one is the difference between fixing something yourself and needing to ask.
-
-### If your screen reader stops, your work is already safe
-
-Losing your screen reader mid-session is one of the most disorienting things that can happen at a computer. QUILL now has your back when it does. If the screen reader QUILL detected goes away — and stays away past one grace check, so simply restarting JAWS or NVDA never sets this off — QUILL immediately saves a snapshot of every open document, then tells you what happened using whatever can still talk: another screen reader if one is running, or QUILL's own built-in voice. A note also lands in Notifications, so even if you missed the announcement, the explanation is waiting.
-
-QUILL keeps running the whole time. Restart your screen reader whenever you're ready — QUILL announces when it hears it again — and nothing you were writing is at risk in between.
-
-### The default answer to "Delete?" is now always No
-
-Press Enter on a "Delete this recording?" prompt out of habit, and it used to be gone. Twenty-seven confirmations across QUILL, Quill Radio, QUILL Cast, and QuillBeacon had Yes as the default button on questions that destroy things. Every one of them now defaults to No: Enter is always the safe answer, and Yes is a choice you make on purpose. A new automated check in QUILL's build makes sure no future dialog can ship with a destructive Yes-default again.
-
-### Paste any path, and it just works
-
-Copy a path from File Explorer and it arrives wrapped in quotes. Copy one from a web page and it may be a `file://` link with invisible characters in it. Type `%APPDATA%\Quill` or `~` like a power user. The Simple File Open dialog's path field now takes all of it — QUILL quietly cleans up whatever you paste before using it, so "path does not exist" stops being the answer to a path that exists perfectly well.
-
-### AI changes are now reviewable word by word, in their sentences
-
-Every AI edit in QUILL already stopped at a review dialog — an accept/reject checklist, applied as one undo step, nothing touching your document until you agree. But the review described changes by *line*, and a line diff is a poor fit for prose: when the AI changes one word in a long line, you heard the whole line twice and had to catch the difference by ear.
-
-The review now speaks each change as what it is: **"Changed 'quick' to 'rapid' at line 3."** Edits that sit next to each other merge into one phrase instead of several fragments. And the details pane shows **the sentence before and the sentence after** each change, so you can judge a one-word edit with the same context a sighted reviewer gets from highlighting — while the complete old and new lines remain available below, exactly as before.
-
-Two deliberate limits keep it honest: a genuine rewrite (many scattered edits, or whole passages replaced) is presented as lines, because forty spoken word pairs is worse than hearing the lines whole; and spacing-only changes are never announced as word edits. This applies everywhere AI edits are reviewed — the Review AI Changes dialog, the agent editor, and AI tools — with no change to how you accept, reject, or undo.
-
-### Errors start telling you what to do next
-
-An error message that names the exact failure — and the next step — is the difference between fixing something yourself and needing help. That matters double when you cannot glance at the failing file to see what's wrong. This release begins a deliberate, product-wide error-specificity programme:
-
-- **Coded errors carry a what-to-do sentence.** Messages with a `[QUILL-...]` support code increasingly end with the concrete action: *"Install Pandoc from Help > Download Optional Components to convert this format."*, *"Check the address, credentials, and connection under File > Manage Remote Sites."* The AI question-answering surfaces are the first adopters, and the pattern will spread release by release.
-- **The palette says why.** A command disabled by a safety advisory now reads and speaks its reason — *"unavailable: Turned off by a safety update: ..."* — on the result row and again if you try to run it. No more bare "(unavailable)" with nothing behind it.
-- **AI never quietly answers from less than you sent.** If your document had to be trimmed to fit the model's context window, Ask Quill now announces the working size — *"The answer used the first 6,000 of the document's 40,000 characters."* — and Document Q&A states how much of a large document its answer covers. The Q&A dialog also speaks its status changes and errors now, instead of only repainting a label you would have to go find.
-
-### Braille bursts settle instead of flickering
-
-QUILL already avoided flashing the identical message twice in a row on a braille display. Now a burst of *different* messages — a status cascade, a fast-updating poll — settles too: the first message writes instantly, and anything arriving within the next moment collapses to the newest message rather than each one shoving the last aside before it could be read. Errors are exempt and always come through at once.
-
-Arrow through the list and press Enter to jump to an occurrence, exactly as in the regular misspelling list. Users who prefer reviewing from the beginning of the document can continue using **Alt+Shift+L**.
-
-### Ranked Spelling Review brings the full F7 workflow into frequency order
-
-**Alt+Shift+F7** opens the complete guided Spelling Review, but orders issues from most frequent to least frequent.
-
-It includes every action available in the normal F7 dialog:
-
-- **Change**
-- **Change All**
-- **Ignore Once**
-- **Ignore All**
-- **Add to Dictionary**
-- **Undo Last**
-
-This is designed for difficult documents: rough OCR, systematic autocorrect failures, and files containing the same few errors dozens of times.
-
-Choose **Change All** on the first item and the ranking recalculates immediately. The most frequent remaining issue rises to the top, allowing you to keep clearing the largest groups of errors first.
-
-**F7** and **Alt+Shift+F7** use the same dialog and the same actions. Only the presentation order changes: document order for F7, frequency order for Alt+Shift+F7.
-
-### Favorite folders remember what matters, not merely what was recent
-
-Windows recent folders answer one question: what did you open lately?
-
-Favorite folders answer a different and often more useful one: what must always be easy to reach?
-
-A folder holding a document your supervisor might request at any moment may deserve permanent prominence even if you have not opened it in months. 1.0.0 adds a short, curated favorites list modeled on a valued Kurzweil 1000 workflow.
-
-- **Ctrl+Alt+Shift+A — Add Favorite Folder.** Adds the folder containing the current document. An untitled document must be saved first because QUILL needs a real folder path.
-- **Ctrl+Alt+Shift+R — Remove Favorite Folder...** Opens the favorites list and lets you choose one to remove.
-- **Ctrl+Alt+Shift+O — Open From Favorite Folder...** Opens the new Quick Open experience scoped to your favorite folders.
-
-All three commands also appear under **File > Favorite Folders** for users who prefer menu navigation.
-
-### Quick Open searches across favorite folders as you type
-
-Press **Ctrl+Alt+Shift+O** and a compact dialog opens with focus already in the search box.
-
-Begin typing any part of a filename. The results below filter live and case-insensitively across every favorite folder, following the same type-to-filter rhythm as **Ctrl+P** in Visual Studio Code.
-
-Each result identifies the favorite folder it came from, which matters when multiple folders contain similarly named files. Arrow to a result and press Enter, or choose **OK**, to open it. Press Escape or **Cancel** to leave everything unchanged.
-
-By default, the search includes only files at the top level of each favorite folder. It does not recurse into subfolders. That keeps results immediate even when a favorite contains a large nested tree and reinforces the intentionally curated nature of the feature.
-
-Enable **Include subfolders** when a deeper search is needed. Recursive results are capped at a few thousand files so a very large favorite cannot freeze the dialog.
-
-QUILL does not impose a single project-root or workspace model like Visual Studio Code, so Quick Open deliberately searches the user’s chosen favorites rather than attempting to scan the entire computer.
-
-### Accessible code folding reduces clutter without hiding content from you
-
-QUILL can now fold heading sections and fenced code blocks — the ```` ``` ```` through ```` ``` ```` structure used in Markdown and embedded code — while preserving complete access to every word.
-
-The commands are:
-
-- **Ctrl+Alt+Shift+F — Toggle Fold.** Folds or unfolds the smallest foldable region containing the cursor. QUILL announces exactly what happened, such as “Folded: 14 lines under ‘Chapter Two’” or “Unfolded: ‘Chapter Two.’”
-- **Alt+Shift+] — Next Fold.** Moves to the next foldable boundary, whether expanded or folded, and announces the label, state, and line count: “‘Chapter Three,’ expanded, 22 lines.”
-- **Alt+Shift+[ — Previous Fold.** Performs the same navigation in reverse.
-- **Ctrl+Alt+Shift+L — List Folds...** Opens a complete list of foldable regions, each with its current state and line count. Select one to jump to it directly.
-
-The accessibility design is intentionally different from folding in most editors.
-
-Mainstream folding generally hides lines visually and makes ordinary arrow navigation skip silently over the collapsed content. A screen reader user may have no reliable way to know whether text was removed, folded, or simply bypassed.
-
-QUILL never creates that uncertainty.
-
-**The document text is never changed, and normal character, word, and line navigation is never intercepted.** Fold state exists for the four folding commands to describe and use. Arrow through a folded region normally and every word remains available exactly as though the region were expanded.
-
-Folding changes the behavior of fold-specific jump commands. It never makes reachable content silently unreachable.
-
-### Insert Emoji — 3,781 emoji, findable by ear, described in words
-
-QUILL already has Insert Special Character for the case where you know exactly which Unicode code point you want. Emoji are the opposite problem: you don't know the code point, you might not even remember the exact name, and you cannot see a picture grid to recognize one by eye. Every mainstream emoji picker is built around that grid — rows of small pictures meant to be scanned visually — which makes the entire category of feature effectively unusable without sight. Insert Emoji is built the other way around, from the ground up, for browsing and finding by ear.
-
-**Insert > Insert Emoji... (Alt+Period)** opens on every complete, standard emoji Unicode currently defines — 3,781 of them, current as of Unicode's 16.0 emoji release — organized into the same nine categories Unicode itself uses:
+## Writing and Editing
+
+### The document surface
+
+QUILL is a multi-document editor. Documents open as tabs, **Ctrl+Tab** and
+**Ctrl+Shift+Tab** move between them, **Alt+1** through **Alt+0** jump directly to a
+numbered document, **Ctrl+Shift+F4** closes everything but the one you are in, and the
+Window menu lists them all. Recent files, save and save-all, and session restore all
+behave the way you expect.
+
+**Notebooks** collect a folder of related files into a project with entries, headings,
+bookmarks, sticky notes, saved versions, and optional writing goals. **Workspace
+Snapshots** save and restore an entire working environment, open documents and tabs
+included, so you can put a project down and pick it up exactly as you left it.
+
+QUILL remembers where you were. Your caret position is saved with every autosave cycle
+and every workspace snapshot, and a persistent per-document bookmark returns you to
+your last position when you reopen a file.
+
+### Selection and movement
+
+Selection is a workflow, not a drag. Structured selection commands start, extend,
+complete, and reselect a previous selection, and expand or shrink it by word, sentence,
+line, paragraph, or block. Starting a selection with **F8** opens with a rising two-note
+gate and completing it plays the mirror image, so selection mode is always audible
+rather than something you have to remember you are in.
+
+Long-document navigation moves you between headings, paragraphs, blocks, links, lists,
+tables, bookmarks, code blocks, and search results. The **Outline Navigator**
+(**Ctrl+Shift+O**) presents the whole structure at once: headings, bookmarks, sticky
+notes, and search matches in one navigable tree. **Go to Anything** is a single search
+panel across commands, headings, links, lists, tables, block quotes, bookmarks, code
+blocks, misspellings, and live search hits. Back and Forward walk your location
+history. Match Bracket, Next and Previous Token, and structure and region movement fill
+in the rest.
+
+**QUILL Quick Nav** (**Ctrl+Shift+Grave**) is a browse-style cursor mode with
+single-key element movement in the tradition your screen reader already taught you:
+jump by heading, link, list, table, quote, bookmark, code block, paragraph, sentence,
+or block, with configurable wrapping and a feedback mode of speech, sound, both, or
+nothing.
+
+The very top and the very end of a document answer with a high ceiling tick and a low
+floor thud, so hitting an edge is something you hear rather than something you infer
+from silence.
+
+### Bookmarks, three kinds
+
+- **Named bookmarks.** Unlimited and persistent. **Set Bookmark**, **Go To Bookmark**,
+  and **List Bookmarks**, plus a Bookmarks Manager.
+- **A temporary bookmark.** **Ctrl+Shift+K** marks this exact spot with no dialog and
+  no name ("Temporary bookmark set"), and **Alt+Shift+K** returns to it with no picker.
+  Setting another replaces it. It does not survive a restart, deliberately: this is
+  disposable working memory for the next few minutes.
+- **Ten numbered quick bookmarks.** **Alt+Shift+0** through **Alt+Shift+9** set slots
+  zero through nine; **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jump to them.
+  Direct chords, no mode to enter. They persist per document like named bookmarks,
+  because that is what they are underneath.
+
+All of them re-anchor to the text around them, so inserting or deleting above a bookmark
+moves the bookmark with its sentence instead of leaving it pointing at a line number that
+now means something else.
+
+### Structured authoring
+
+Headings, lists, links, tables, code blocks, block quotes, horizontal rules, footnotes,
+and a table of contents all have insert commands, and every one of them is
+**format-aware**: the same command writes Markdown in a Markdown document and HTML in
+an HTML document. If a document's format is not established yet, QUILL asks once,
+remembers your answer for that document, and never asks again.
+
+Headings have direct chords (**Ctrl+Alt+1** through **Ctrl+Alt+6**), list toggles sit on
+**Ctrl+Alt+7** and **Ctrl+Alt+8**, and **Alt+Shift+Up** and **Alt+Shift+Down** move a
+whole heading section past its sibling. A status-bar cell reports "Section: Heading 2
+(3 of 11)" so you always know where in the structure you are standing.
+
+The **Heading Organizer** (**Ctrl+Alt+Shift+H**) is a keyboard-first view of the whole
+heading tree for promoting, demoting, reordering, and renaming sections, with an
+accessibility validation pass that flags skipped levels and, optionally, duplicate H1s.
+**Style Headings** applies a font family, size, and alignment to the current level or to
+every heading at once.
+
+Lists get two dedicated tools. The **List Manager** (**Ctrl+Alt+L**) restructures an
+existing list as a tree: move, promote, demote, add, edit, delete. The **Structured List
+Studio** (**F2**) builds a new one by concept, choosing bulleted, numbered, checklist, or
+definition, nesting as you go, moving whole subtrees, with a live view of the source it
+is producing. In Markdown, ordinary typing does the ordinary thing: Enter continues a
+list item, Enter on an empty marker exits the list, and Tab and Shift+Tab nest and
+promote.
+
+**Update Outline Numbering** writes numeric or legal-style heading numbers into the
+document as literal text, removable and re-runnable, for documents that need real
+section numbers rather than a rendering trick.
+
+### Finding and changing text
+
+The find and replace suite covers plain search, wildcard search, regular expressions,
+search history, and a find-all report. **Multi Replace** runs up to four search and
+replace pairs in a single pass. **Count Occurrences** speaks how many times a term
+appears. **Search and Replace Across Files** works over a folder.
+
+The **Regular Expression Helper** exists because regular expressions are the least
+speakable syntax in common use. It offers ready-made presets, explains what a pattern
+does in plain language, and previews it against sample text before you turn it loose on
+a document.
+
+Line-level tools round it out: sort ascending, descending, by length, numerically, or by
+date; reverse; shuffle; remove duplicates; quote and unquote; and **Number Lines
+(Advanced)** with a configurable start, increment, digit or Roman-numeral style,
+zero-padding, suffix, and alignment.
+
+**Sort Lines by Date** deserves its own note, because dates are written a dozen ways. It
+recognizes ISO dates, slash and dot forms, and English month names, and for an ambiguous
+numeric date it reads day-month order the way your region does. Lines with no
+recognizable date stay together at the bottom in their original order, so nothing is
+lost.
+
+**Line Statistics** counts, totals, averages, and reports the median, mode, and standard
+deviation of one number per line, for the everyday case of a column of figures in a text
+file.
+
+The **Calculator** (**Tools > Calculator**) evaluates scientific and natural-language
+expressions through a safe parser that can never execute arbitrary code, and computes
+sums, averages, medians, and more over selected data, a table column, or a row.
+
+### Typing less
+
+- **Snippets** expand a trigger word into a template with placeholders, choices,
+  date and time values, and defined cursor stops. Snippet packs group them, and
+  starter packs install from an ordinary accessible multi-select list.
+- The **Snippet Gallery** adds parameterized templates contributed by extensions,
+  each with its own prompt sequence, including a set of ready-made math formulas.
+- **Abbreviations** expand short triggers into boilerplate, signatures, notes, code,
+  or markup, and can be toggled off entirely.
+- **Emmet-style expansion** brings the HTML and CSS shorthand grammar (children,
+  siblings, climb-up, grouping, multiplication) to QUILL, along with accessible
+  built-ins such as `!a11y`, `skiplink`, and `form:a11y`.
+- **Smart Insert** provides built-in typed abbreviations (`qbug`, `qmeet`, `qlog`,
+  `qtodo`, `qbrf`) that expand as you type.
+- **Smart text triggers** go further: type `=meeting()`, `=todo(5)`, or `=rand(3,4)`
+  and QUILL inserts the generated content. The parser is deliberately strict and
+  single-line, and a large insertion asks for confirmation first.
+- **Word Prediction** (**Ctrl+Space**) suggests completions drawn from the words
+  already in your document and from HTML and Markdown tags.
+
+### The clipboard, expanded
+
+The **Copy Tray** holds twelve numbered slots. Copy to a slot, paste from a slot, and
+search within slots. Beneath it, the **Clip Library** keeps a rolling, searchable
+history of up to two hundred copied selections, any of which can be favorited or
+promoted into a tray slot.
+
+Every tray slot and every quick bookmark plays its own note on a shared musical scale:
+the Copy Tray as soft marimba taps, bookmarks as brighter chirps. After a little use,
+slot seven is a pitch you simply recognize, and "copied to slot seven" stops needing to
+be said at all.
+
+The **Clipboard Collector** reaches outside QUILL. Turn it on, then copy from a browser,
+an email, a terminal, or anything else, and every captured item is appended to your open
+document and saved as it goes. It checks the clipboard cheaply about once a second and
+touches it only when the contents have actually changed, and each distinct item is
+collected exactly once.
+
+**Magic Paste** (**Ctrl+Alt+V**) inspects what is on the clipboard, recognizes a URL, a
+Markdown block, or a base64 image, and offers you a choice of how to insert it.
+
+### Notes on your work
+
+**Sticky Notes** are timestamped, searchable, and exportable. **Inline anchored notes**
+(**Alt+Shift+I**) attach to a place in the text, follow your edits, reload with the
+document, and have next, previous, hear, and edit commands of their own. The **Sticky
+Notes Browser** is the fast way back to any of them: start typing and the list filters
+live across titles and bodies, newest first; Down drops into the results; Tab reaches a
+read-only preview so you can skim a whole note without opening it; Enter opens it for
+editing. Give it a global hotkey and it opens from anywhere in Windows, with QUILL's
+window restored first so it genuinely appears.
+
+### Comparing documents
+
+**Compare Mode** is a keyboard-first diff. **F8** and **Shift+F8** move to the next and
+previous difference, **Ctrl+F8** re-announces the current one, **Alt+F8** switches to
+word-level detail, and **Ctrl+Shift+F8** toggles whether whitespace counts. Differences
+are described in words with character-level precision, each kind of change has its own
+sound cue, and **Compare Selection With Clipboard** handles the common small case
+without needing two files. From the command line, `--diff` opens two files straight into
+compare mode, and `--goto` opens a file at a position.
+
+### Folding without losing anything
+
+QUILL folds heading sections and fenced code blocks, and the accessibility design here
+is deliberately different from every other editor's.
+
+- **Ctrl+Alt+Shift+F** toggles the fold containing the cursor, announcing exactly what
+  happened: "Folded: 14 lines under 'Chapter Two'."
+- **Alt+Shift+]** and **Alt+Shift+[** move to the next and previous foldable boundary
+  and announce its label, state, and line count.
+- **Ctrl+Alt+Shift+L** lists every foldable region with its state and size.
+
+Mainstream folding hides lines and makes ordinary arrow navigation skip silently over
+them, which means a screen reader user cannot tell whether text was folded, deleted, or
+simply passed over. QUILL never creates that ambiguity. **The document text is never
+changed and normal character, word, and line navigation is never intercepted.** Fold
+state exists for the four folding commands to describe and use. Arrow through a folded
+region and every word is still there. Folding changes what the jump commands do; it
+never makes reachable content silently unreachable.
+
+### Macros and repetition
+
+**Macros** record and replay a sequence of commands. **Repeat Next Command** sets a count
+so the next command or macro runs that many times. **Restore Deleted Text** recovers any
+of the last three blocks removed by a structured delete, for the moment when a "delete
+paragraph" turns out to have been the wrong paragraph.
+
+### Preview
+
+The **In-App Preview** and **Side-by-Side Preview** render Markdown and HTML with
+keyboard-first movement between the editor and the rendered view. From any block in the
+preview, the context menu (Applications key, Shift+F10, or right-click) offers **Go to
+this location in the editor**, which puts your caret on that block's source line. It
+opens a menu rather than firing an action, which is the behavior screen-reader users
+expect from that key. A separate browser preview renders the document as a page, with
+MathJax for equations.
+
+### Insert Emoji
+
+QUILL already has Insert Special Character for when you know the code point you want.
+Emoji are the opposite problem: you do not know the code point, you may not remember the
+exact name, and you cannot recognize one from a grid of small pictures. Every mainstream
+emoji picker is built around exactly that grid, which makes the entire category of
+feature unusable without sight. Insert Emoji is built the other way around.
+
+**Insert > Insert Emoji** (**Alt+Period**) opens on every standard emoji Unicode
+currently defines, 3,781 of them, current as of Unicode's 16.0 emoji release, in the
+nine categories Unicode itself uses:
 
 | Category | Emoji |
 | --- | --- |
-| People & Body | 2,261 |
+| People and Body | 2,261 |
 | Flags | 270 |
 | Objects | 264 |
 | Symbols | 224 |
-| Travel & Places | 218 |
-| Smileys & Emotion | 169 |
-| Animals & Nature | 159 |
-| Food & Drink | 131 |
+| Travel and Places | 218 |
+| Smileys and Emotion | 169 |
+| Animals and Nature | 159 |
+| Food and Drink | 131 |
 | Activities | 85 |
 
-*(“People & Body” includes every skin-tone and gesture variant Unicode defines as its own standalone emoji, which is why it dwarfs the others.)*
+People and Body includes every skin-tone and gesture variant Unicode defines as its own
+standalone emoji, which is why it dwarfs the others.
 
-The dialog is two ways into the same list. **Search**, at the top, live-filters as you type and matches in order of confidence: the emoji symbol itself, if you paste or type one in; a legacy typed alias like `:)`, `:D`, or `<3`, for the smiley shorthand habit many people already have; a match against the emoji's official Unicode name or one of its keywords; and, as a last resort, a match inside the emoji's own written description — so a half-remembered phrase like “melting” or “puddle” can still surface the right result even when that word never appears in the emoji's official name or keyword list. **Category**, a list on the left, is the browse path: pick a category and its emoji fill the results list, for exploring rather than searching.
+There are two ways in. **Search** live-filters as you type and matches in order of
+confidence: the emoji character itself if you paste one, a legacy typed alias like `:)`
+or `<3`, the official Unicode name or one of its keywords, and finally a match inside the
+emoji's written description, so a half-remembered word like "melting" or "puddle" can
+still find the right result. **Category** is the browse path for exploring rather than
+searching.
 
-Whichever way you got there, arrowing through the results list updates a live **description pane** with everything QUILL knows about the selected emoji: category and subgroup, official name, keywords, any legacy typed alias, and — the piece that makes this genuinely usable without sight — a real, original one-to-two-sentence description of what the emoji actually looks like: colors, shape, expression, pose. Press **Insert**, or press Enter directly on a result, and it lands at your cursor; **Cancel** or Escape backs out with nothing inserted.
+Whichever way you arrive, arrowing through results updates a live description pane with
+the category and subgroup, the official name, the keywords, any typed alias, and, the
+part that makes this usable at all, a real one-to-two-sentence description of what the
+emoji actually looks like: colors, shape, expression, pose. Two extra entries sit above
+Unicode's nine groups: **Favorites**, which you curate, and **Recent**, which fills
+itself with the last thirty emoji you actually inserted.
 
-Two more entries sit at the very top of the category list, ahead of Unicode's nine groupings: **Favorites** and **Recent**. Select any emoji and press **Add to Favorites** to star it for one-step access from then on — the button relabels to **Remove from Favorites** once it is, and works from any view, search results included. **Recent** fills itself in automatically: the last 30 emoji you've actually inserted, most-recently-used first, so the ones you reach for constantly never need a search or a category dig again. Removing something from Favorites, or clearing out Recent, only changes what shows up in those two shortcuts — the emoji itself is never touched and is still exactly as findable under its normal category or by search as it always was.
+Every one of those descriptions is text QUILL wrote for this feature, generated ahead of
+time from Unicode's own names, categories, and keywords rather than scraped from another
+picker's website. The whole catalogue ships as a single bundled file, and using the
+picker makes no network connection at all, in Safe Mode or anywhere else.
 
-Every one of those 3,781 descriptions is text QUILL generated itself, purpose-built for this feature — from Unicode's own official names, categories, and keywords, through an AI model, in QUILL's own words — rather than copied or scraped from another picker's site, which would have carried real licensing risk. The whole catalog, descriptions included, ships as a single bundled file built entirely offline ahead of time; using the picker itself makes no network connection at all, in Safe Mode or anywhere else.
+### Equations
 
-## Introducing the Offline Edition, and Real Polish for the AI Setup Wizard and Audio Studio
+**Insert Equation** takes a LaTeX or MathML equation as text and places it at your cursor
+with the right delimiters, inline or as its own block. Selecting an equation you already
+wrote reopens it for editing with the delimiters stripped. Math AutoCorrect-style
+shortcuts (`\alpha`, `\sqrt`) work while you type. **Explore Equation Structure** steps
+through the parts of an equation (numerator, exponent, radicand) instead of reading it as
+one undifferentiated string.
 
-### A build for machines with no internet at all
+Typing math as text is the accessible route: keyboard-only, reviewable character by
+character, and readable by screen readers that speak math. The preview and HTML export
+render it through MathJax, and Word export writes real, editable Word equation objects
+that round-trip back to text when you reopen the file. With the optional MathCAT engine
+installed, "read this part aloud" speaks math the way NVDA does.
 
-QUILL normally keeps its everyday installer small by downloading its bigger optional pieces — Pandoc, offline speech engines, neural voices, the braille pack, and more — only when you actually reach for them.
-
-The new **Offline Edition** build inverts that: every optional component ships inside the installer and the portable bundle up front. QUILL is fully functional the moment it's installed, with no internet connection ever needed. That makes it the right choice for an air-gapped machine, a locked-down work laptop, or anywhere your first login can't reach the internet.
-
-**Help > Download Optional Components** reflects the difference honestly: under the Offline Edition, each component shows as already **Bundled** — or, for the handful the offline build doesn't carry, **Not included** — instead of offering a Download button that has nothing left to fetch. The regular, smaller installer and portable download are unchanged and remain the default for everyone else.
-
-The section right after this one covers a real gap a community member found in the Offline Edition's first pass, and how it was closed.
-
-### The AI Setup Wizard treats Ollama fairly
-
-A never-configured install's saved settings default to provider "Ollama" — a reasonable default, but the wizard's "remember what you already set up" logic mistook that default for proof you'd deliberately added Ollama. The result: on first run, the wizard silently marked Ollama as already configured, quietly dropped it from the Provider list, and left only key-requiring cloud providers to choose from — even on a machine where Ollama had never been touched.
-
-The wizard now confirms a local Ollama server actually answers before treating it as configured. A related, simpler bug in the AI Hub's Provider tab is fixed alongside it: the API key field stayed active for every provider regardless of whether one was actually needed, making Ollama's key field look required when nothing ever enforced it. It now greys out correctly for Ollama and any other no-key provider.
-
-Two smaller Setup Wizard rough edges are fixed in the same pass. Reaching the Connect step (or removing a provider from the Added list) could land focus straight in an API key field instead of the Provider list — jarring, and easy to misread as "Ollama needs a key too." Focus now always starts on the Provider list itself. The Remove button also used to look clickable the instant anything was added, whether or not you'd actually selected an entry; it now stays disabled until a real selection exists.
-
-### Ollama, wherever it actually runs — and pull a model without a terminal
-
-The Setup Wizard always assumed Ollama lived at `localhost`, even though reaching an Ollama server on another machine on your network was never actually wired up end to end. A new **Ollama server address** field on the Connect step — shown only when Ollama is selected, defaulting to localhost — now genuinely drives the verify, model-list, and Finish steps, so a LAN or self-hosted Ollama is a real, working choice.
-
-Choosing your default model used to mean opening a terminal and typing `ollama pull <model>` yourself. The Model step now shows which recommended models are already installed and offers a **Pull model** button on the rest, with live download progress, selecting the model for you the moment it's ready.
-
-### Preferences lands you on the right control when you switch tabs
-
-Using Ctrl+Tab or Ctrl+Shift+Tab to move between Preferences tabs — or clicking a different one — moved the visible page but left keyboard focus wherever it had been, so a screen reader sometimes announced just "Panel" instead of the new tab's first real field. Switching tabs now always moves focus to that tab's first control, matching the routing every other tabbed dialog in QUILL already uses.
-
-### Audio Studio gets a working Cancel button, an honest log, and a tidier WAV output
-
-Generating audio for a whole folder of documents had no Cancel button at all, and pressing Escape just dinged — there was no way to stop a run short of quitting QUILL outright. Cancel (and Escape) now work properly: whatever file is currently synthesizing finishes normally, so you never end up with a half-written audio file, and the run stops cleanly before starting the next one.
-
-The diagnostics log used to record only which document was up next, not the chunk-by-chunk progress the on-screen dialog already showed — so glancing at the log during (or after) a run told you far less than watching the screen did. The log now mirrors that same chunk-by-chunk detail.
-
-Choosing WAV as your export format used to drop the file right next to your source document, the same place MP3 already lands — awkward for a format that tends to produce large files. WAV output now goes into an **Audio Output** subfolder beside the document it came from; exporting recursively through nested folders gives each subfolder its own Audio Output folder rather than funneling everything into one shared location at the top.
-
-### QUILL warns before Alt+F4 abandons real work in progress
-
-Closing QUILL while an Audio Studio export was running used to exit immediately, mid-job, with no warning at all. QUILL now asks first — close and stop the job now, or leave QUILL open so it can finish — and mentions **File > Send to Tray** as a way to keep it running quietly in the background instead. Routine background activity (search and replace, dictation, downloads) is unaffected; only genuinely hard-to-redo jobs like an Audio Studio export trigger the warning.
+This feature was contributed by @salorajan.
 
 ---
 
-## The Offline Edition Is Finally True to Its Name
+## Spelling, Language, and Words
 
-A community member installed the Offline Edition and discovered that Kokoro neural voices still requested an internet connection on first use — inside a build whose defining promise is that the internet should not be required.
+**F7** runs the full guided Spelling Review over the document: Change, Change All,
+Ignore Once, Ignore All, Add to Dictionary, and Undo Last. **Ctrl+R** inside the dialog
+reads the whole sentence around the current misspelling aloud, so you can judge a
+correction in context without leaving the review to go find the word.
 
-That report did not become a one-line patch. It triggered an audit of every optional speech component QUILL offers. 1.0.0 closes every gap found in that audit except one clearly documented remaining limitation.
+**Alt+F7** is the focused version: **Spell Check Word** checks only the word under the
+cursor. If it is correct, QUILL says so and gives you back your place. If not, a compact
+list offers the suggestions, Add to Dictionary, and Ignore.
 
-### What “Offline Edition” is supposed to mean
+Two ranked views exist for documents where the same mistake happens over and over, such
+as rough OCR or a systematic autocorrect failure. **Ctrl+Shift+L** opens a misspelling
+list ordered by how often each word recurs, with the count in each entry ("teh (Ln 12,
+Col 4, 8 occurrences)"). **Alt+Shift+F7** opens the complete F7 review in that same
+frequency order, and choosing Change All on the first item immediately recalculates the
+ranking so the next-largest group of errors rises to the top. **Alt+Shift+L** keeps the
+plain document-order list for anyone who prefers to work from the beginning.
 
-The Offline Edition should be self-contained: the components a user can reasonably expect to use are already on the computer, and normal operation requires no internet connection after installation.
+With spell check as you type enabled, finishing an unrecognized word plays a soft,
+distinct spelling sound from your sound pack rather than a bare system beep. A sound
+rather than speech is deliberate: it never talks over your screen reader. The live alert
+also has judgment. Words inside web addresses, email addresses, Markdown inline code, and
+fenced code blocks do not alert, because those regions are wall-to-wall "misspellings"
+that a sighted reader filters out with a glance. The full F7 review still covers the whole
+document; only the ambient alert holds back.
 
-Kokoro’s voice model files were already included. The missing piece was the software engine that reads those models. Kokoro’s underlying package and several supporting libraries were still being installed the first time the voice was selected.
+An in-editor **thesaurus** is available when its data is installed. **Proofread before
+publish** can run a spelling pass automatically on save, on save-as, or on the text of a
+Mastodon post before it goes out.
 
-On a truly offline computer, the model was present but unusable because the engine tried to cross a network connection that did not exist.
+**Set Document Language** pins the language of an unsaved buffer or an unusual file
+extension, which drives what Ctrl+B produces, what comment syntax is used, and how the
+heading, table, and list tools behave. Automatic detection is available in hint, prompt,
+or automatic modes.
 
-### Kokoro now installs and speaks entirely from local files
-
-The Offline Edition now contains everything required to install Kokoro neural voices. No connection is needed during first use or any later use.
-
-### whisper.cpp now includes its starter model
-
-QUILL’s default speech-to-text engine, **whisper.cpp**, now ships with its starter model already present.
-
-This was the most important gap in the audit. whisper.cpp is not merely an optional engine a user might choose later; it is the transcription path QUILL reaches for automatically. An Offline Edition unable to transcribe until it downloaded a model was not genuinely offline. That contradiction is now resolved.
-
-### Faster Whisper, Vosk, and MP3 chapter markers are locally complete
-
-Three smaller optional components receive the same treatment:
-
-- **Faster Whisper**
-- **Vosk**
-- **MP3 chapter-marker support**
-
-Choose any of them in the Offline Edition and installation completes without a network connection.
-
-Vosk also becomes more reliable in the process. It depended on one supporting library that previously came only from the internet even when the verified Vosk package itself was available locally. That final external dependency is now bundled.
-
-A second, more fundamental Vosk problem surfaced during this release's own build process: Vosk also lists a subtitle-file helper library as a dependency that QUILL never actually uses, and that library has never published a ready-to-install package — only its source code. Because the Offline Edition build only ever installs verified, ready-to-install packages (never source code that would need to be compiled), it rejected that one unused dependency every time, which meant the Offline Edition installer could not be built at all until this was found and fixed. It now fetches exactly what Vosk actually needs and skips the one piece it doesn't.
-
-### Piper arrives with an engine and a ready-to-speak voice
-
-Piper is now fully prepared for offline use as well.
-
-The Offline Edition bundles:
-
-- Piper’s engine
-- Integrity verification against the same pinned fingerprint at build time and again during installation
-- A ready-to-use starter voice: **Lessac, US English, medium quality**
-
-Select Piper after an Offline Edition installation and it speaks without contacting the network. Additional voices remain available from the online catalog whenever a connection is available and the user chooses to download them.
-
-### The one remaining offline gap
-
-**Node.js-based Quillins** still require an internet connection the first time they are used, even in the Offline Edition.
-
-This is a known and tracked limitation, not an overlooked dependency. It remains on the list for future work.
+QUILL's display language can be changed in-app under **Tools > Writing and Language**.
+Italian is the first shipped display language beyond English, covering menus, dialogs,
+and spoken messages.
 
 ---
 
-## Built by the Community, Not Merely Released to It
+## Reading and Speech
 
-Every fix in 1.0.0 traces to a specific community report. Nine reports, spanning issues **#939 through #953**, are now closed with an explanation of what was discovered and, where a change was needed, what was done.
+### Reading aloud
 
-The two reports containing no crash evidence — **#940** and **#948** — were not dismissed as unreproducible. They inspired QUILL to recognize that pattern itself and stop presenting crash recovery when the log contains nothing actionable.
+**Read Aloud** speaks the document, a section, or a selection, with start, pause, stop,
+and voice selection all on commands you can bind. It strips Markdown punctuation as it
+reads, so you hear the words rather than a recital of hash marks and asterisks, and it
+does the same for exported audio. A text cleanup pass fixes typography and reads phone
+numbers, email addresses, and URLs the way a person would say them.
 
-Ranked spelling and favorite folders came directly from a tester’s side-by-side comparison with another product. The same conversation also called for an instant single-word spelling check, and **Alt+F7** arrives in this release alongside them.
+The voices available to it are:
 
-The braille correction moved from experiment to default because braille users tested it.
+- **Windows SAPI 5** voices, including every language you have installed.
+- **DECtalk**, for the people who have been reading with it for thirty years.
+- **eSpeak-NG**, with its very wide multilingual data.
+- **Piper**, a fast local neural engine, including Italian.
+- **Kokoro**, a higher-quality local neural engine, covering English plus Spanish,
+  French, Hindi, Italian, and Brazilian Portuguese.
+- The **macOS system voice**, backed by the same engine VoiceOver uses.
+- **Cloud voices** by bring-your-own-key: OpenAI, Google Gemini, and ElevenLabs, each
+  with a cost estimate shown before anything is spent, and MP3 export.
 
-The macOS corrections exist because testers described experiences that sounded improbable until the underlying toolkit behavior made them completely explainable.
+Every voice previews before you commit to it, and the default engine can be set right
+from the Download Optional Components list when you install one.
 
-The Offline Edition became genuinely offline because a community member tested its promise rather than assuming the label was enough.
+The **SSML Builder** composes emphasis, pauses, say-as instructions, phonemes, and
+prosody, and plays the result natively on SAPI 5 and eSpeak-NG. **Manage Pronunciations**
+keeps global and per-project pronunciation dictionaries with live preview, for the names
+and terms every synthesizer gets wrong.
 
-This is not simply how QUILL improves. **This is how QUILL is built.**
+**Read the document aloud in your browser** is an experimental alternative that builds a
+self-contained, accessible reader page using the browser's own voices, including Edge's
+Online (Natural) voices, section by section, with a Pause that remembers your position.
+
+### Turning documents into audio
+
+**Audiobook and Batch Speech** exports a whole folder of documents to audio in one run.
+It produces chaptered output with real MP3 chapter markers, applies ACX loudness
+normalization, can rotate through several voices round-robin, and offers a dry run that
+tells you what it would do before it does it. A Cancel button (and Escape) stops a run
+cleanly: the file currently being synthesized finishes normally, so you never end up with
+a half-written audio file, and the run stops before starting the next one. The
+diagnostics log mirrors the same chunk-by-chunk progress the dialog shows. WAV output
+lands in an **Audio Output** subfolder beside the source document rather than cluttering
+the folder itself, and a recursive export gives each subfolder its own.
+
+**Export to Translated Speech Audio** translates and then narrates into the languages you
+choose, using any configured AI provider or a local LibreTranslate instance, with a
+combined cost estimate up front.
+
+Closing QUILL while one of these exports is running asks first, and offers **File > Send
+to Tray** as a way to keep it running quietly instead. Routine background work (search
+and replace, dictation, downloads) does not trigger the warning; only genuinely
+hard-to-redo jobs do.
+
+### Speech to text
+
+QUILL transcribes on your own machine. The bundled engine is **whisper.cpp**, with
+**Faster Whisper** (GPU-accelerated) and **Vosk** (low-resource, CPU-only) as
+alternatives. **Manage Speech Models** checks your actual RAM and GPU, flags a model
+that is too big for your machine, recommends the best fit, and downloads with a
+checksum-pinned, cancelable progress dialog.
+
+- **Locked Dictation** is the reliable path for speaking into a document:
+  **Ctrl+F9** starts and stops, **Ctrl+Shift+F9** pauses and resumes, **Alt+F9** speaks
+  the current state. Everything you dictate arrives as a single undoable edit.
+- A **dictation safety net** saves your audio to a recovery folder before transcription
+  runs, and a History and Review window lets you insert, copy, or discard a recovered
+  recording. A dictation session is never lost because a transcription failed.
+- **Transcribe Audio or Video** handles a file rather than a microphone, producing plain
+  text, Markdown, or HTML, speaker-labeled when diarization is installed, across a wide
+  range of formats with ffmpeg fetched on demand.
+- **Generate Captions** writes timestamped SRT or VTT subtitle files.
+- A **Watch Folder** automates the whole thing: drop audio or video in, and QUILL
+  transcribes it to text, SRT, VTT, or Markdown without being asked again.
+- **Cloud transcription** is available opt-in through OpenAI Whisper, Groq Whisper, or
+  ElevenLabs Scribe (which does speaker diarization), for when local accuracy is not
+  enough and you have decided the tradeoff is worth it.
+
+### Voice commands
+
+**Voice Command (Offline)** drives QUILL hands-free through a curated set of safe
+commands recognized entirely on your device. **Voice Conversation Mode** chains follow-up
+commands, and the **"Hey QUILL"** wake word makes it always-on when you want it to be.
+Every voice command also has an ordinary key, so voice is always a faster path and never
+the only one.
+
+### Teaching dictation your words
+
+Every voice has its own vocabulary, and dictation should not fight yours. QUILL reads a
+small plain file called **`dictation.md`** in your data folder, with three optional
+sections:
+
+- **Vocabulary** lists the names, jargon, and acronyms you use, so the recognizer writes
+  "wxPython" and "GitHub" rather than sounding them out.
+- **Replacements** are spoken-to-written fixes you write yourself, one per line. "New
+  line" can insert an actual line break; "get hub" can become GitHub.
+- **Commands** add your own spoken phrases for existing actions, still bound by the same
+  safe-command allowlist that governs all of voice.
+
+It applies everywhere dictation transcribes, and it does nothing at all until you decide
+to write one.
+
+### Performance
+
+Speech models are large. A setting unloads idle models after a number of minutes you
+choose, and a **low-resource mode** (which enables itself automatically on a very
+low-memory machine) keeps QUILL usable on modest hardware.
 
 ---
 
-## Toward 1.0 — Together
+## Braille
 
-1.0.0 moves the 0.9.0 cycle closer to 1.0 with a stronger editor, clearer safeguards, deeper accessibility, and a growing set of workflows shaped by the people who use them.
+QUILL treats braille as a document format and a reading medium in its own right, not as a
+rendering of print.
 
-Please keep exploring. Open the formats that matter to you. Try the braille behavior, Narrator announcements, VoiceOver rich editing, portable update flow, local git tools, GitHub commands, spell-checking workflows, folder favorites, folding, speech engines, and offline installation.
+Turn it on through the startup wizard's **Braille Professional** profile, through **Help
+> Enable Braille Mode**, or through Manage Individual Features.
 
-When something surprises you — beautifully or badly — use **Help > Report a Bug** and tell us what happened.
+### Braille files, byte for byte
 
-A successful report matters. A failure report matters. A strange edge case matters. A feature request grounded in real work matters.
+QUILL opens and saves `.brf`, `.brl`, `.pef`, and `.ueb` files while **preserving the
+bytes**: form feeds, line endings, and layout come back out exactly as they went in. A
+round trip produces an identical file. For a transcriber, that is the whole ballgame.
 
-Thank you for testing. Thank you for challenging assumptions. Thank you for helping turn an editor into a community-built place where more people can create, contribute, and belong.
+A braille status cell reports what a transcriber actually needs to know, in one place:
+`BRF Pg 12/87 | Ln 14/25 | Cell 31/40 | Print 7`. A single detailed-status command speaks
+all of it at once. When you reopen a braille file, QUILL returns you to the exact cursor
+position with spoken page, line, and cell detail.
 
-**QUILL 1.0.0 is here. One editor. Every format. Built with you.**
+### The braille display starts in cell 1
+
+Text in QUILL begins in **braille cell 1**, not cell 2, eliminating the long-standing
+offset that RichEdit controls share with Microsoft Word. When text is selected, the
+display shows **dots 7-8**, restoring the tactile selection feedback braille readers
+expect.
+
+Two checkboxes under **Preferences > Braille** control this, and both are checked by
+default:
+
+- **Fix braille cell alignment and selection dots (recommended)**, which enables the
+  system-edit emulation that produces the behavior above.
+- **Hide editor border (required for braille cell alignment)**, because testing showed
+  the visible editor border itself shifts braille output away from cell 1. The borderless
+  frame is a functional part of the correction, not a visual preference. Unchecking it
+  warns you clearly that braille cell alignment will break.
+
+**Report Editor Surface** is a single command that speaks everything a braille bug report
+needs: the active editor surface, its native window class, whether the system-edit
+braille fix is applied, whether the border is hidden, and whether braille output is live
+and through which backend. Nothing from your document is included. If braille ever looks
+wrong, run this first and paste what it says into a report; "braille starts in cell 2"
+plus that one sentence is a report that can be investigated immediately.
+
+You can also choose the underlying editor control (RichEdit 3.0, RichEdit 2.0, or a plain
+edit control) if a particular display or driver prefers a different one.
+
+### Translation, without being quizzed
+
+Back-translating a braille file elsewhere requires that you already know which code it uses,
+and picking wrong produces garbage with no explanation.
+
+**Back-Translate to Text (Auto-Detect Code)** removes that burden. QUILL samples the
+document or your selection, back-translates it through every English braille code it
+knows, scores how much each result reads like real English, and announces the winner:
+"Detected UEB Grade 2 (contracted)." The candidates are UEB Grade 2, UEB Grade 1,
+Standard American Grade 2 (EBAE, legacy), Standard American Grade 1 (EBAE, legacy), and
+8-dot computer braille. You learn what your file is instead of being asked.
+
+**Convert BRF File to Document** is the one-command path from a braille file on disk to
+something you can read, edit, and share: pick any `.brf` or `.brl`, and QUILL detects the
+code, back-translates the whole file, and opens the result as a clearly labeled draft.
+From there, Save As exports it to Markdown, HTML, Word, or plain text. Braille is also a
+first-class source in the general converter: **File > Convert File** accepts `.brf` and
+`.brl` in the same picker as every other document type.
+
+Forward translation runs through the optional **QUILL Braille Pack**, whose Translation
+menu offers UEB Grade 1 and Grade 2, Standard American English (Legacy), and an
+auto-populated More Languages section covering dozens of languages. Translation works
+from every kind of install, including a source checkout, because the worker uses the
+pack's own bundled engine when a Python binding is not present. Large files translate
+correctly regardless of size, because the document travels to the worker over standard
+input rather than as a command-line argument.
+
+### Proofreading braille
+
+- **Print-page and running-head detection** identifies print page numbers and running
+  heads from BRF separators and margin numbers, and labels its own confidence rather than
+  asserting.
+- **Print-page navigation**: Go to Print Page, Next and Previous Print Page Change,
+  Announce Running Head, and Include or Omit Running Head in the status readout.
+- **Proofreading tracking**: mark pages as proofed or needing review, attach notes, hear
+  a spoken progress summary, jump to the next unfinished page, and export a proofing
+  report.
+- **Layout validation** flags over-long lines and pages, missing page breaks, mixed line
+  endings, stray non-braille characters, numbering gaps, and running-head mismatches,
+  with next-warning and previous-warning navigation.
+- **Read Layout Metrics**, **Go to Longest Line or Page**, and **Remove Trailing Spaces**
+  pinpoint and clear page-width violations directly.
+- **Page Tools** insert and remove page breaks, recalculate the page map, and normalize
+  line endings.
 
 ---
 
-## After 1.0.0 — in progress (unreleased)
+## Documents and Formats
 
-These improvements have landed on the development branch since 1.0.0 and will ship in the next build. They are staged in the **Unreleased** section of `CHANGELOG.md`.
+### What QUILL can open
 
-### One hardened home for every secret QUILL holds
+Plain text, Markdown, CommonMark, GitHub-flavored Markdown, HTML, CSV and TSV, Word
+(`.docx`), RTF, OpenDocument, EPUB, PowerPoint, spreadsheets, PDF, LaTeX, JSON, XML,
+TOML, YAML, Jupyter notebooks, SQLite databases, Apple Pages extraction, braille formats,
+and images through OCR. Pandoc, installed on demand, extends that list further in both
+directions, and every complex extraction comes with a **Document Intake Report** telling
+you honestly how well it went.
 
-QUILL keeps a small number of secrets for you — your AI provider keys, remote-site passwords, and the sign-in tokens for any online service you connect. Until now, each of those reached into your operating system's protected store on its own. They now all pass through a single hardened place, so there is exactly one part of QUILL that touches the Windows Credential Manager (or the DPAPI-encrypted `keys.enc` file in portable mode, or the macOS Keychain), following one consistent set of rules.
+PDF and spreadsheet readers ship with every install, so a brand-new copy of QUILL opens a
+PDF or an `.xlsx` immediately with nothing to fetch first. Word files read through
+python-docx by default, which means headings arrive as headings, lists as lists, and
+tables as tables, in document order, rather than as one flat line per paragraph.
 
-Those rules are simple and strict: a secret is never written in plain text, never lands in a settings file, a log, or a diagnostic bundle, and is never part of QUILL's own program files. There is nothing inside the app for anyone to extract, because your keys and tokens live only in your OS vault, tied to your account. Each service's secrets are grouped under its own name, so signing out of a service erases everything it stored in a single step, with nothing left behind.
+A few specific reading improvements are worth naming because they are the difference
+between a document you can use and one you cannot:
 
-You will not see this directly today — it is deliberately quiet, foundational work. But it is the store that the authenticated online libraries on our roadmap will sign in through, and it is why we can promise, honestly, that the application-level secrets those services rely on will never live on your machine at all.
+- **PDF text repair on open** removes hyphenation across line breaks, reflows paragraphs,
+  collapses letter-spaced titles, and repairs ligatures.
+- **Password-protected PDFs** simply open: QUILL asks for the password, reads the file,
+  and never stores, logs, or writes the password anywhere. A wrong password says so and
+  lets you try again.
+- **A PDF's own bookmarks** (the outline you would see in Adobe Reader's bookmarks pane)
+  import into QUILL's Bookmarks Manager the first time you open the file, and respect any
+  renaming or deleting you do afterward.
+- **EPUB heading navigation** renders chapter-internal headings inline so single-key
+  heading navigation walks them, and infers headings from structure when a chapter has
+  none.
+- **PowerPoint import** turns slide titles into headings and bullet levels into nested
+  lists, and brings tables and speaker notes along.
 
-### The Book Library learns to search NLS BARD
+Your documents open as your documents. There is no engine banner or extraction header
+prepended to your text; everything QUILL knows about how a file was read lives in the
+intake report and the spoken open announcement.
 
-QUILL's Book Library — the one place you search free, accessible reading sources — now includes **NLS BARD**, the catalogue of the National Library Service for the Blind and Print Disabled at the Library of Congress. Choose **NLS BARD** in the Source list (or leave it on *All free sources*) and search by title, author, or subject; the results arrive in the same single-select, fully keyboard- and screen-reader-friendly list as every other source, with Find-in-results and a spoken status line.
+### Rich editing
 
-BARD catalogue entries are listings, not files: borrowing a title requires an eligible BARD patron account, which you set up and use on the BARD website. So every BARD result offers **Open in BARD**, which opens that title's official Library of Congress page in your browser, where you sign in and download. QUILL never asks for or stores your BARD credentials.
+QUILL's editing buffer is clean plain text. Formatting lives beside it as hidden codes.
+That is what makes search, spell check, AI commands, read aloud, bookmarks, inline notes,
+and braille all work identically no matter how formatted a document is.
 
-The search itself uses BARD's free public API — no account, no key, nothing sent but the words you searched for — and is disabled in Safe Mode like every other library source. This release adds catalogue *search*; borrowing BARD titles inside QUILL is planned for a future release.
+Open an `.rtf` file and the formatting is genuinely there, not simulated. Bold is bold.
+Headings carry real sizes. **Ctrl+B** applies true rich-text bold. **Describe Formatting
+at Cursor** reads the live state of the document: "Arial, 14 point, bold, centered."
 
-### Writing Tools that match your document's format
+The rule underneath is that **QUILL speaks the language of the document you are editing**.
+In Markdown, Ctrl+B wraps the selection in `**`. In HTML, it produces `<strong>`. In RTF
+or Word, it applies real formatting. One command, one intention, the correct result for
+the current format.
 
-- **Insert Block Quote** and **Insert Horizontal Rule** join the Insert menu. Together with tables and images, these are now *format-aware*: they write Markdown in a Markdown document and HTML in an HTML document.
-- **Ask once, then just work.** If a document's format isn't set yet — a brand-new, unsaved, or plain-text buffer — QUILL asks "Markdown or HTML?" the first time you insert structured content, remembers your answer for that document, and never asks again.
-- The two new commands have no default shortcut (we don't add Ctrl+Alt chords, which fight screen readers); assign your own in the Keymap Editor, just like Insert Table.
+A `.docx` file opens for genuine rich editing and saves back as a real Word document, and
+QUILL is honest about the limits of that:
 
-### Insert Image gets AI alt text and page-ready HTML
+- A clean Word file containing nothing QUILL cannot carry opens directly in rich mode.
+- A Word file containing unsupported features names those features specifically and asks
+  how you want to proceed: open for reading and plain editing (the safe default), edit as
+  rich text knowing exactly what cannot survive a save, or edit a copy and leave the
+  original untouched.
+- The first rich save over a flagged original automatically creates a timestamped backup
+  beside it.
 
-- **Suggest alt text with AI.** When you have an AI vision model connected and aren't in Safe Mode, one button describes your chosen image and drafts the alt text for you to review and edit. You always approve what goes in. (The button is absent in Safe Mode, where AI stays off.)
-- **Correct layout on a web page.** Inserting into an HTML document, you can set width and height (so the page doesn't jump as the image loads), keep it responsive (never overflowing a narrow column), and add a caption that's properly tied to the image with `<figure>`/`<figcaption>`.
+QUILL never silently rewrites a complex Word file and asks you to trust that everything
+survived.
 
-### Reading richer documents
+Plain text stays plain. The first time you use a formatting command in a `.txt` file,
+QUILL asks once whether to treat it as Markdown, convert it to rich text, or keep it
+plain, and remembers your answer rather than asking again.
 
-- **Write maths without a mouse — Insert Equation (community contribution).** **Insert > Insert Equation...** (Ctrl+Shift+E) takes a LaTeX or MathML equation as *text* and places it at your cursor with the right delimiters, inline or as its own block. Selecting an equation you already wrote reopens it for editing with the delimiters stripped. Typing maths as text is the accessible route — keyboard-only, reviewable character by character, and readable by screen readers that speak maths — and the preview and HTML export render it. Contributed by @salorajan.
-- **The live preview can send you back to the editor.** Reading the side preview and want to edit what you just heard? Open the context menu on a block (Applications key, Shift+F10, or right-click) and choose "Go to this location in the editor" — the caret lands on that block's source and focus follows. It reads the way screen-reader users expect: the Applications key opens a menu rather than firing an action.
-- **Word documents read properly out of the box.** A Word file used to come through QUILL's weakest reader in a packaged install — one flat line per paragraph, with headings, lists, and tables flattened away — because the better reader was an optional download most people never found. Word now reads through python-docx, which ships with every copy of QUILL: headings arrive as headings, lists as lists, tables as tables, in document order. Nothing to install.
-- **PDF text and Excel sheets work in a fresh install.** The Windows installer, the portable build, and the macOS app now include the PDF and spreadsheet readers (about 16 MB), so a brand-new install can open a PDF or an `.xlsx` immediately. The optional MarkItDown pack is still there for legacy `.doc`/`.ppt`/`.xls` files and awkward layouts — it is now labeled honestly as a ~150 MB download rather than "~30 MB", and described as the enhancement it is rather than something you need.
-- **ePub headings you can actually navigate.** Chapter headings now appear inline so single-key heading navigation (`H` / `Shift+H`) walks them — and when an ePub has no real heading markup at all, QUILL infers headings from the book's structure so navigation still works.
-- **Word tables are no longer lost in rich editing.** Opening a `.docx` for rich editing used to silently drop its tables; they now appear inline as accessible tables you can read and jump to with `T`.
+On macOS, rich mode is ready on first launch with nothing to install. If the rich-text
+bridge is ever unavailable on a particular system, the document opens as editable text
+with a clear explanation in the status area rather than failing.
 
-### Open password-protected PDFs
+**Illuminations** solve the opposite problem. When a file must remain a genuinely plain
+`.txt`, a `.txt.illumination` sidecar stores the formatting (bold, italic, font, color,
+alignment) beside it, and reopening the file restores it exactly. The plain file stays
+plain for every other tool that reads it.
 
-- **Locked PDFs just open now.** Previously QUILL correctly recognized an encrypted (password-protected) PDF but refused it, telling you to strip the password yourself in another tool first. Now QUILL simply **asks for the password and reads the file**. Type the password and the PDF opens; enter the wrong one and QUILL says so and lets you try again; press **Cancel** to stop opening it.
-- **Your password is never kept.** It is used only to unlock that one file for reading — QUILL never stores it, logs it, or writes it anywhere — so if you close and reopen the file, it asks again. PDFs that are technically "encrypted" but open with an empty password (permissions-only locks) still open with no prompt, exactly as before. The whole read runs in the background, so the screen reader stays responsive while a big PDF loads.
+### The Document Format switcher
 
-### Sort lines by date
+**Format > Document Format** moves the current document between plain text, Markdown,
+HTML, Rich Text, and Word, mid-session, without opening a different program. It is also
+on the Command Palette and on the **Format** cell of the status bar.
 
-- **A fourth way to sort.** Alongside the existing alphabetical, numeric, and by-length sorts, **Format > Sort Lines by Date** sorts the selected lines (or the whole document) by the first date it finds on each line — perfect for logs, transcripts, and hand-kept lists.
-- **It understands how people actually write dates.** It recognizes ISO (`2020-03-05`), slash and dot forms (`03/04/2020`, `5.1.2020`), and English month names (`Jan 5, 2020`, `5 January 2020`, `March 3rd, 1999`). For an ambiguous numeric date it reads the day/month order the way your region does — US English reads `03/04` as March 4th, elsewhere as 4 March — and an unambiguous value like `25/12` is always read correctly either way. Lines with no recognizable date stay together at the bottom in their original order, so nothing is lost. Like the other structured sorts, it has no default shortcut and can be given one in the Keymap Editor.
+The conversion is meaningful rather than cosmetic. Moving a Markdown draft into rich text
+turns `# headings` into real headings. Moving a rich document into Markdown first warns
+you by name about anything that will not survive.
 
-### Read the sentence around a misspelling aloud
+A format change never silently overwrites the old file. The next save proposes a filename
+with the correct extension, so `notes.md` becomes `notes.rtf` and the file on disk always
+tells the truth about what is inside it.
 
-- **Ctrl+R in the Spelling Review.** In the F7 Spelling Review, a new **Read Sentence** button — and the **Ctrl+R** shortcut — reads the whole sentence around the current misspelled word aloud, so you can judge a correction in context without leaving the dialog or scrolling the document to find the word. It reads the same context the dialog already shows. This is the in-dialog "read the sentence" affordance.
+### Reveal Codes
 
-### Your PDF's own bookmarks come with it
+QUILL keeps formatting codes hidden so the editing buffer stays clean. **Reveal Codes**
+(**Alt+F3**, or **View > Reveal Codes**) is the on-demand companion that makes every one
+of them visible and speakable. It is the WordPerfect feature many people still miss,
+rebuilt screen-reader-first.
 
-- **Jump straight to a chapter.** When you open a PDF that has an embedded outline — the chapters and sections you'd see in Adobe Reader's bookmarks pane — QUILL now imports those into its own **Bookmarks Manager** (Ctrl+Shift+G), just as it already surfaces Word and EPUB structure. Each bookmark jumps to exactly where **Go To Page** for that page would land.
-- **It respects your edits.** The import happens once, the first time you open the PDF; if you later rename or delete some of those bookmarks, reopening the file won't bring them back or make duplicates. A PDF with no outline (or a damaged one) simply opens as before.
+The default **Flowed** view reads like your document with the scaffolding shown inline
+(`[Bold On]Hello[Bold Off]`), and the caret moves the way it does in the editor. Left and
+Right walk one character at a time through text but step over a whole code as a single
+unit, so one press crosses `[Bold On]` and you hear "bold on" rather than a spelled-out
+bracket. Ctrl+Left and Ctrl+Right move by word; Up and Down move by line and read it;
+Home, End, Ctrl+Home, and Ctrl+End go to the ends.
 
-### More one-click writing presets
+The pane is a single voice while you navigate. The region is named once when you enter,
+and after that you hear only the character, word, line, or code you landed on,
+identically in JAWS and NVDA. **Reveal Codes: Speak Codes Aloud** is an opt-in setting for
+anyone who wants QUILL to speak each code as well.
 
-- **Six named tools added to the Prompt Library.** **AI > Prompt Library** gains **Generate FAQs**, **Draft a Speech**, **Summary Email**, **Social Media Post** (280 characters or fewer), **Step-by-Step Instructions**, and **Paraphrase** — the named one-shot tools QUILL didn't already ship next to its Summarize, rewrite, tone, and expand presets. Each runs over your selection or the whole document in one click, and like every built-in you can tweak its wording or switch it off. This rounds out QUILL's set of named one-shot tools.
+Press **F2** on text sitting between a pair of codes to edit that run in place. The pane
+restricts you to that region, Enter applies the change back into the document, Escape
+cancels, and the surrounding codes are untouched. A run containing a tab or a nested code
+edits as one unit.
 
-### Improve Reading Order with AI
+The two carets stay locked together however you move: arrows, word jumps, Home and End,
+Page Up and Down, a mouse click, or a jump from Find. A **Structured** list view, one
+labelled item per code, remains available for scanning, and your view and verbosity
+choices persist between sessions. **Describe Formatting at Cursor** and **Describe
+Character at Cursor** (Unicode name, code point, category, and notes about invisible
+characters) answer the same questions without opening the pane at all.
 
-- **Fix a jumbled document in one step.** Some documents arrive with their text in the wrong order — a two-column PDF that extracts as one scrambled stream, a page with sidebars or text boxes, or lines out of sequence. **AI > More > Improve Reading Order...** (also on the command palette) sends the current document's text to your configured AI provider and gets it back in natural reading order: columns merged into one flow, mid-sentence line breaks joined, and headings, lists, and tables inferred — with your exact wording preserved (it never summarizes or invents).
-- **Always asks first, never touches your original.** A confirmation names the provider and its host and the approximate page size before anything is sent; the improved text opens as a **new, unsaved document** (Save As to keep it), leaving your original exactly as it was. It refuses documents over a page limit (Settings, default 40) so a huge or costly send can't happen by accident, and it's off in Safe Mode. (For a *scanned* image-only PDF, use File > Import's OCR path instead — this command is for text that's simply in the wrong order.) This closes the last editor-parity gap.
-- **Your provider, your choice — or fully on-device.** Improve Reading Order isn't wired to any single service. It uses whichever AI backend you've set up in **AI > Set Up AI** — **OpenAI**, **Claude**, **Google Gemini**, **OpenRouter**, **Ollama** (local), **Ollama Cloud**, or a **custom OpenAI-compatible endpoint** — with your own account and key (QUILL bundles no keys and adds nothing to your bill). Haven't set up a cloud provider? QUILL falls back to its **bundled on-device model** (Apple's on-device model on a supported Mac, otherwise a local CPU model), so the repair can run **entirely on your computer with nothing uploaded**. Either way the confirmation names the exact provider and host first, so you always know where your text is going.
+### Converting between formats
 
-### Bookmarks that survive edits
+**File > Convert File** converts to any format Pandoc supports, with a choice of Convert
+File or Convert and Open, and it remembers your last folder and format. The **Pandoc
+Conversion Wizard** walks the same ground in steps. The **Batch Conversion wizard** does
+a whole folder at once through four pages (intro and tool probe, folder and options,
+format and profile, review and start) with live per-file progress rows.
 
-- Bookmarks and quick-bookmarks now remember the text around them, so jumping to one lands where that text actually is — even after you've inserted or deleted text above it. Your "Points" stop drifting.
+Seven built-in conversion profiles cover the common destinations: Clean Word Document,
+Accessible HTML Page, EPUB Book, GitHub README, Print PDF, Instructor Handout, and Plain
+Text for Screen Readers.
 
-### Moving between formats keeps more of your formatting
+The Tier-1 import and export set is Markdown, CommonMark, GitHub-flavored Markdown, HTML,
+DOCX, ODT, RTF, plain text, CSV and TSV, EPUB, and LaTeX, plus PDF export.
 
-QUILL now carries far more across when you **Save As** or convert between Markdown, HTML, Word, RTF, and plain text:
+QUILL has also written down honestly what carries over between formats, in the
+"What carries over between formats" section of the User Guide. The short version: the
+common formatting (headings, emphasis, links, lists, and tables) travels between Markdown,
+HTML, and Word; numbered lists keep their starting number; a hyperlink survives a Word
+round trip as a real Word hyperlink; a table saved to Word becomes a genuine editable Word
+table with a repeating header row your screen reader announces as column headers. A few
+things are format-specific: a table saved to RTF is written as readable pipe-text rather
+than a native RTF table, Word-embedded images are not pulled into the text, and plain text
+never carries formatting, by design.
 
-- **Open a Word document and Save As Markdown or HTML — and keep the formatting.** Previously, a Word document opened for rich editing could Save As Markdown/HTML and quietly lose its headings, lists, bold, and links (they came out as flat text). Now the headings, lists, bold, italic, and links all come across as native Markdown/HTML.
-- **Links survive a Word round trip.** A hyperlink saved to Word is a real Word hyperlink now, and opening that Word file back into QUILL recovers the link — it no longer flattens to plain text.
-- **Numbered lists stay numbered lists** everywhere — Markdown, HTML, and Word — and keep their starting number (a list that starts at 3 stays 3).
-- **Tables convert as real tables between Markdown, HTML, and Word.** A Markdown or HTML table saved to Word is now a genuine, editable Word table — with a proper header row that repeats across pages and that your screen reader announces as the column headers — instead of a wall of pipe characters. (Word tables already opened in QUILL as clean, navigable tables.)
-- **Images and quotes render properly in exported HTML.** An image (`![alt](file)`) becomes a real `<img>` on the page, and a `>` quote becomes a real blockquote, instead of showing up as stray characters.
+**DAISY 2.02 text-only talking book export** (**File > Export > DAISY Talking Book**)
+produces a navigable-by-heading talking book from any document.
 
-And we've written down, honestly, **exactly what carries over between every format** — see "What carries over between formats" in the User Guide. The short version: the common formatting (headings, emphasis, links, lists, and now tables) travels between Markdown, HTML, and Word; a few things are format-specific (a table saved to RTF is written as readable pipe-text rather than a native RTF table; Word-embedded images aren't pulled into the text; plain text never carries formatting, by design).
+### Optical character recognition
 
-### Fixes
+**Import/Convert Document (OCR)** routes Word, PowerPoint, Excel, HTML, EPUB, PDF, and
+image files through a free local converter first, then falls back to on-device OCR
+(Tesseract) for scanned or image-only PDFs, reporting confidence per page. **Review Last
+OCR Result** presents a checklist of the low-confidence lines with jump-to-page, and
+**Delete OCR Temporary Files** cleans up afterward. OCR is also available directly on an
+image file, on the clipboard, and on a region of the screen.
 
-- Podcast search now returns focus to the results list after you subscribe, so you can keep arrowing through shows.
-- **QuillBeacon speaks, and every companion app gained braille, cues and a notification history.** Beacon had no screen-reader speech at all; the other apps had speech and nothing else. One shared announcement service now carries speech, braille, sound and status in QUILL, Quill Radio, Cast, Audio Studio, Converter, Weather, Podcasts and Beacon alike — with **Repeat Last Announcement** to hear the last one again, and an **Announcement Self-Test** that reports exactly which channels reached you.
-- **Announcements reach your braille display.** Status and informational messages — What's Playing, a finished weather refresh, a Radio Reading Services update — were spoken but never brailled, because QUILL had never called a braille API at all. They now go to the display as well as to speech, in QUILL, Quill Radio, and Quill Cast alike, with nothing truncated and no repeat of an identical message inside two seconds. Braille can never cost you speech: if the display fails, the announcement is still spoken. Turn it off in Preferences > Accessibility if you prefer.
-- **Quill Radio remembers your volume between sessions, and Ctrl+Up/Down works from anywhere in the window.** A station that was not a favorite used to come back at full volume on every launch; the level you last set is now saved and restored. The volume keys also no longer depend on having the favorites tree focused.
-- **Reveal Codes stops speaking every code twice.** Arrowing through the flowed pane produced two voices for one keystroke — your screen reader reading the line, and QUILL speaking its own phrase over it — and JAWS and NVDA disagreed about what you heard. Arrow navigation now mirrors the phrase silently to the status bar and lets the screen reader speak; explicit jumps still speak. **Reveal Codes: Speak Codes Aloud** restores the old behaviour for anyone who wants it.
-- **Copy What's Playing and What's Playing - Review and Copy always answer you.** With a station on, both commands could return to the main window having done nothing — no window, no copy, nothing spoken — because a track title that had not been read yet was treated as "nothing is playing", and the fallback fetch failed silently. Both now fetch the title when it is not known, then finish the job; a stream that carries no titles says so and still opens a window naming the station; and in Quill Radio a successful copy no longer reports failure.
-- **Your documents open as your documents.** A Word file no longer opens with `# DOCX Extract` above its first line, and a PDF no longer opens with a four-line engine/quality banner. Everything QUILL knows about how the file was read now lives in the Document Intake Report and the spoken open announcement, where it belongs.
-- **A JSON file that starts with a byte order mark opens** instead of crashing or falling back to unformatted text; `.xml`, `.toml`, `.yaml`, and `.ipynb` get the same fix, and they now keep their original line endings too.
-- Fixed crashes: typing into the accessible Word view, opening a Vault containing a non-UTF-8 file, launching Quill Radio on an early keystroke, and radio audio that could keep playing after the app exits.
-- Quill Radio: Alt+S no longer opens the Stations menu instead of Stop (use Ctrl+P for a reliable Play/Stop); custom stations and TuneIn stations can now be added to Favorites; a new **Remove All** clears favorites in one step; and Browse Stations picks up new listings after an in-place update.
-- The live preview no longer renumbers ordered lists or splits blank-line-separated lists.
-- A batch of Quill Radio feedback items filed via Report a Bug were resolved or answered; update/distribution reports that were fixed in a later build (or are release-configuration rather than code) were closed with an explanation.
+When on-device OCR genuinely cannot rescue a document, a consent-gated,
+bring-your-own-key cloud escalation is available. It is never automatic.
+
+### Headers, footers, and printing
+
+The **Header and Footer Builder** offers named presets or a custom mix of tokens (title,
+filename, date, page number), a different first page, and numeric or Roman numbering.
+These are real parts of the saved document, not a print-time overlay: save as `.docx` and
+the header becomes a genuine Word header with a live page-number field that Word keeps
+renumbering; save as `.rtf` and QUILL writes the equivalent native RTF groups. A custom
+starting page number and a different first page both carry through. An empty
+specification changes nothing, and a header can never be the reason a save fails.
+
+**Print Studio** (**File > Print Studio**) is an accessible print preview that is spoken
+and textual rather than a picture of a page, with all, odd, or even pages, reverse order,
+and skip-first-page options.
+
+A **page indicator** on the status bar reports exact page numbers for PDFs and an
+estimated page count (with a tunable words-per-page figure) for text, Markdown, and Word.
+
+### Text encoding
+
+Legacy text is a real, ongoing accessibility problem, and QUILL takes it seriously:
+
+- **Show Non-ASCII Characters** reports every one, says whether it is convertible to
+  Latin-1 or Windows-1252, and jumps to it in the source.
+- **Convert Non-ASCII to HTML Entities** and **Decode HTML Entities**.
+- **Re-encode As** UTF-8, UTF-8 with BOM, Latin-1, Windows-1252, or ASCII.
+- **Analyze and Save Using Minimum Required Encoding**.
+- **Remove Email Quote Markers**, **Strip Low or High ASCII Characters**, **Convert to Hex
+  Dump**, OEM (DOS) to ANSI conversion in both directions, and conversion or stripping of
+  line-drawing characters.
+- RTF files declare their code page, and QUILL reads it, so Cyrillic and other
+  non-Western RTF decodes correctly instead of arriving as noise.
+- JSON, XML, TOML, YAML, and notebook files that begin with a byte order mark open
+  normally and keep their original line endings.
+
+### Version history
+
+**File > Restore Previous Version** keeps a plain-language history of a document. Restore
+takes you back (snapshotting the current text first, so restoring is itself undoable), or
+Open as Copy leaves the current file alone. Identical content is deduplicated, and older
+entries age out on a tiered retention schedule rather than growing forever. Inside a
+notebook, **Manage Versions** does the same for named versions, and tells you plainly
+when there are none yet instead of showing a blank list.
+
+An **extracted-text overwrite guard** stops **Ctrl+S** on a document derived from a PDF,
+EPUB, PowerPoint, or spreadsheet from destroying the binary original, and opens Save As
+instead.
+
+### Citations
+
+QUILL formats citations in MLA 9, Chicago 17, and APA 7 from a labelled form, producing an
+in-text citation, a bibliography entry, or both, and lets you select whether Markdown
+citations use footnotes or a bibliography.
+
+### Remote files
+
+QUILL opens and saves files over **FTP**, **SFTP**, **WebDAV**, **S3**, **HTTPS**, and
+**GitHub**, with a Site Manager for your saved sites and an SSH Quick Connect for the
+one-off case. SSH host-key checking defaults to rejecting an unknown key; automatically
+adding one requires an explicit trust-on-first-use opt-in, which is a setting you turn on
+deliberately rather than a prompt you dismiss.
+
+---
+
+## The AI Suite
+
+QUILL's AI is entirely optional, entirely opt-in, and silent until invited. If you never
+set it up, nothing here bothers you and no menu nags you. If you do set it up, it is
+yours: your provider, your account, your key, or a model running on your own machine with
+nothing leaving it. QUILL bundles no keys and takes no cut.
+
+Everything lives under a top-level **AI** menu, and everything is disabled in Safe Mode.
+
+### Setting it up
+
+The **AI Setup Wizard** asks one question at a time, offers a Basic and an Advanced mode,
+and ends with a Test Connection that either works or tells you specifically why it did
+not. Supported providers are Ollama (local or cloud), OpenAI, Claude, Google Gemini,
+OpenRouter, and any custom OpenAI-compatible endpoint.
+
+There is a genuinely free path, and the wizard shows it rather than hiding it behind the
+paid options. Run **Ollama** locally and everything runs on your own machine at no cost.
+Or choose OpenRouter, where the wizard preselects a free model and labels every free
+model as "Free" in the list. Each provider that needs a key has a **Get API key** button
+that takes you to the right page. If you point QUILL at Ollama, it verifies that a server
+actually answers before treating it as configured, and the API key field greys out for
+providers that do not need one.
+
+Ollama does not have to be on this machine. An **Ollama server address** field on the
+Connect step drives verification, the model list, and the finish step, so a LAN or
+self-hosted server is a real, working choice. And you never need a terminal to get a
+model: the Model step shows which recommended models are already installed and offers a
+**Pull model** button on the rest, with live download progress.
+
+On-device AI is a first-class option, not a fallback: Apple Foundation Models on macOS,
+and llama.cpp with GGUF models on Windows.
+
+The **AI Hub** is the settings home, with tabs for Provider, On-Device, Audio Services,
+Instructions, and Advanced. It probes a running Ollama server automatically and shows each
+model's real capabilities (vision, tools) rather than guessing from a name.
+
+### Ask Quill
+
+**Ask Quill** is the conversational surface: a single context-aware conversation that
+knows what document you are in. It can answer questions, and it can propose changes, but
+it can never make one.
+
+That is the discipline underneath every AI feature in QUILL: **the AI proposes, you
+dispose.** Every edit an AI suggests stops at a review dialog. Nothing touches your
+document until you agree, and when you do, the whole set of changes lands as a single
+undo step.
+
+The review is built to be judged by ear. Changes are announced as what they are:
+"Changed 'quick' to 'rapid' at line 3." Adjacent edits merge into one phrase instead of
+several fragments. The details pane shows the sentence before and the sentence after each
+change, so you can judge a one-word edit with the same context a sighted reviewer gets
+from a highlight, with the complete old and new lines still available below. Two
+deliberate limits keep it honest: a genuine rewrite with many scattered edits is presented
+as whole lines, because forty spoken word pairs is worse than hearing the lines; and
+spacing-only changes are never announced as word edits.
+
+### Writing help
+
+- **Rewrite**, **Summarize**, **Expand**, **Continue**, and **Fix Grammar** work with or
+  without a selection, falling back to the paragraph or the whole document.
+- **Check Grammar with AI** and **Check Spelling with AI** produce a structured list of
+  issues with the original phrasing, the proposed fix, and an explanation of why. With no
+  AI configured, they fall back to the lexical spell checker rather than failing.
+- The **AI Thesaurus** (**Ctrl+Alt+Shift+H**) gives synonyms with usage notes about
+  register and connotation, using the sentence around your cursor as context
+  automatically.
+- **Generate Table of Contents** builds one from the document's structure.
+- **AI Translate Document or Selection** offers a target-language picker driven by your
+  provider, with a local LibreTranslate fallback that keeps the whole job on your machine.
+- The **Prompt Library** holds named one-click tools: Generate FAQs, Draft a Speech,
+  Summary Email, Social Media Post, Step-by-Step Instructions, Paraphrase, and the
+  summarize, rewrite, tone, and expand presets. Each runs over your selection or the whole
+  document, and you can edit any of them or switch it off.
+- **Custom Instructions** override the system prompt per task across the built-in tasks,
+  so the assistant can be told once how you want it to behave rather than every time.
+- **Train Writing Style** conditions the assistant on your own writing.
+- **Suggest Document Metadata** proposes a title, a summary, topic tags, and a category,
+  and hands every decision back to you field by field: you hear the field, what it says
+  now, and what the AI proposes, and choose Accept, Accept and Next, Skip, or just copy
+  the value. If a field already has content, QUILL asks before replacing it and the safe
+  answer is the default. Nothing is written until you choose Apply Accepted.
+
+### Reading help
+
+- **Document Q&A** is a multi-turn session grounded in the open document, navigable by
+  heading, with middle-trimming for documents too large to send whole. When a document
+  has to be trimmed, QUILL tells you the working size rather than quietly answering from
+  less than you sent.
+- **Improve Reading Order** repairs a document whose text arrives in the wrong order: a
+  two-column PDF that extracts as one scrambled stream, a page with sidebars, lines out of
+  sequence. It merges columns into one flow, joins mid-sentence line breaks, and infers
+  headings, lists, and tables, while preserving your exact wording, because it never
+  summarizes or invents. A confirmation names the provider, its host, and the approximate
+  size before anything is sent, the result opens as a new unsaved document leaving your
+  original untouched, and it refuses documents over a page limit you control so a huge or
+  costly send cannot happen by accident. With no cloud provider configured, it runs on the
+  bundled on-device model instead, entirely on your computer.
+- **Describe Image with AI** carries a library of twelve evaluated description prompt
+  styles, all editable, with a "try a different prompt" action and a manager for your own.
+  HEIC and HEIF images are supported.
+- The **Insert Image** dialog will not let you insert an image without either real alt
+  text or an explicit "decorative" choice, and **Describe Image at Cursor** reports the
+  filename and alt text or flags it as MISSING. With a vision model connected, one button
+  drafts alt text for you to review and edit; you always approve what goes in, and the
+  button is simply absent in Safe Mode. Inserting into HTML, you can also set width and
+  height so the page does not jump as the image loads, keep the image responsive, and add
+  a caption properly tied to it with `<figure>` and `<figcaption>`.
+
+### Agents
+
+QUILL can run multi-step agentic tasks, and it lets you choose the engine that runs them:
+**GitHub Copilot** through device-code sign-in, the **Claude Agent SDK** or the **OpenAI
+Agents SDK** through your existing API keys, or QUILL's own built-in **Native** engine.
+An in-app dialog pastes, saves, and removes those keys.
+
+Vendor agents run text-only and their edits go through the same previewed, undoable
+approval as everything else. Agentic writing tasks (rewrite, summarize, expand, generate
+a table of contents) run in the background with cancellation and a reviewable step log.
+
+Fourteen named agent personas ship ready to run, including Accessibility Editor, Citation
+and Link Fixer, Code Doctor, Data Cleaner, GitHub Maintainer, Markdown Publisher, Math
+Tutor, Meeting Notes to Actions, Plain-Language Rewriter, PRD Architect, QUILL Concierge,
+Release Notes Builder, Researcher, Reviewer, Summarizer, and Writing Companion. The **AI
+Library** manages prompts, skills, and agents in one place, with a promotion path from a
+prompt you wrote once, to a reusable skill, to a full agent.
+
+### The Listening Companion
+
+The Listening Companion turns a recording into something you can use. Transcribe it, with
+optional translation and speaker identification, and then generate Meeting Minutes, Action
+Items, an Executive Summary, Interview or Study Notes, a Q&A, a Follow-Up Email, Key
+Quotes, a Decisions Log, or simply a clean draft. An **Action Builder** with no syntax to
+learn lets you describe your own output rather than choosing from a list, and watch-folder
+automation runs the whole pipeline on anything you drop in.
+
+### Honesty guarantees
+
+Three commitments hold across every AI feature:
+
+- **QUILL never quietly changes what is answering you.** If a chat has to start on a
+  different engine than the one you configured, because your provider was unreachable, it
+  says so the moment the chat opens.
+- **Fallback offers work in both directions, and never happen by themselves.** A failed
+  cloud call points you at your on-device model; a failed on-device model points you at
+  the cloud provider you have configured, while telling you plainly that switching would
+  send your text to the cloud. QUILL never switches for you.
+- **Connection problems are diagnosed, not generalized.** QUILL distinguishes a rejected
+  key from a key with no model access, from rate limiting, from a model still warming up,
+  from a local server that is not running, and reports the actual HTTP status. If a saved
+  key cannot be decrypted on this device (a portable copy moved to a new machine), QUILL
+  asks you to re-enter it rather than failing obscurely.
+
+Prompt caching routes system prompts through each provider's own caching mechanism where
+one exists, which cuts token cost on repeated work.
+
+---
+
+## Accessible Vault
+
+The Accessible Vault is QUILL's linked-notes system: a personal knowledge base built out
+of ordinary plain-text files in an ordinary folder. There is no proprietary database and
+no graph picture to look at, because a graph picture is exactly the wrong interface for
+this.
+
+Open a vault on a folder of notes and QUILL indexes it and speaks a summary: "Vault name:
+312 notes, 480 links."
+
+- **Wikilinks.** Write `[[Another Note]]`. **Follow Wikilink** jumps to the exact heading
+  or block, offers to create the note if it does not exist, and disambiguates when a name
+  is ambiguous.
+- **Show Backlinks** answers "what links here" as a spoken list, each entry read with the
+  sentence that contains the mention, and Enter opens that note at the mention itself.
+- **Note Neighborhood** shows what sits around the current note in the link graph, as a
+  list rather than a picture.
+- **Go to Note** is a type-ahead jump box that narrows by title and speaks the match count
+  as you type.
+- **Search Vault** does phrase and word search with regex and whole-word options, and
+  reads results as note, line, and sentence.
+- **Show Tags** presents a spoken tag pane with per-tag counts and nested tag rollup.
+- **Unlinked Mentions** finds places where a note's name appears without a link.
+- **Embeds** pull one note into another: `![[Note]]`, `![[Note#Heading]]`, and
+  `![[Note#^block]]`, with **Speak Embed at Cursor** and **Resolve Embed Inline**.
+- **Insert Template** fills `{{date}}`, `{{time}}`, and `{{title}}`, prompts for
+  `{{prompt:Question}}`, and leaves your cursor at `{{cursor}}`.
+- **Daily notes**: Open Today's Note, and Previous and Next Daily Note.
+- **Export Vault as Website** produces a self-contained accessible site, one page per
+  note, with links and embeds resolved and an index page.
+- **Sync Vault** commits, pulls, and pushes over your own git remote, and when the same
+  file changed in both places it lists the conflicts by name and stops rather than
+  overwriting anything.
+
+---
+
+## Story Studio
+
+Story Studio is a binder for a long work: a novel, a thesis, a manual.
+
+**Tools > Story Studio** opens a keyboard-navigable tree with a Manuscript branch (parts,
+chapters, and scenes derived from your headings) alongside groups for Characters, Places,
+Plot threads, Research, and Brainstorm. An accessible details form records a character's
+role, goal, motivation, and arc, a plot thread's status, and tags, all saved as ordinary
+front matter in the file itself.
+
+**Compile manuscript** stitches every manuscript file together in order into one document,
+which then goes out through the normal File > Export path to Word, EPUB, PDF, or anything
+else.
+
+The project format is deliberately boring: an ordinary folder of plain-text files plus one
+small companion file recording order and groupings. Your book is never trapped inside
+QUILL.
+
+---
+
+## Tables and CSV
+
+**Table Studio** (experimental) opens a CSV or TSV file, or builds a new table, in a
+keyboard-accessible grid designed for screen readers rather than for the eye. Left and
+Right speak the column heading as you move, **F2** edits a cell, Alt with the arrow keys
+moves an entire row or column, and Ctrl+Insert adds a row. An optional native UIA provider
+gives NVDA and JAWS richer cell events where it is installed.
+
+The result inserts into your document as a headed Markdown or HTML table, or saves back
+out as CSV.
+
+Inside a document, table navigation commands move by cell: next, previous, above, below,
+first, last, row start, and row end. Word tables opened for rich editing appear as
+accessible tables you can read and jump to with single-key navigation rather than being
+silently dropped.
+
+---
+
+## The Book Library
+
+**The Book Library** is one search box across free, accessible reading sources:
+
+- **Project Gutenberg**, through the Gutendex API.
+- **Standard Ebooks** and **Feedbooks**, through their public OPDS catalogues.
+- **Google Books**.
+- **NLS BARD**, the catalogue of the National Library Service for the Blind and Print
+  Disabled at the Library of Congress.
+
+Search by title, author, or subject, with results in a single-select, fully keyboard- and
+screen-reader-friendly list, a find-in-results box, and a spoken status line. For
+Gutenberg, Standard Ebooks, and Feedbooks, a chosen title opens directly in QUILL's reader
+as plain text or EPUB.
+
+BARD works differently, and QUILL is explicit about why. BARD catalogue entries are
+listings, not files: borrowing a title requires an eligible BARD patron account, which you
+set up and use on the BARD website. Every BARD result therefore offers **Open in BARD**,
+which opens that title's official Library of Congress page in your browser, where you sign
+in and download. QUILL never asks for or stores your BARD credentials. The search itself
+uses BARD's free public API, with nothing sent but the words you searched for.
+
+Like every library source, it is disabled in Safe Mode.
+
+---
+
+## Podcasts
+
+QUILL has a full podcast client built in, at **Tools > Media > Podcasts**. It is designed
+around the same idea as Internet Radio: one player that outlives any dialog you close, so
+listening never competes with writing.
+
+**Finding and adding shows.** **Add Podcast** searches Apple's free, keyless iTunes
+directory with a results list and a Subscribe button. **Add by Feed URL** takes a feed
+address directly. **Import OPML** reads another app's entire subscription list, folder
+structure included, so switching to QUILL does not mean re-subscribing to everything by
+hand, and **Export OPML** writes it back out so you are never locked in.
+
+**Organizing.** Shows live in a genuinely nested folder tree, with an episode list for
+whatever show or folder is selected. Any show can be paused, which keeps it and its
+downloads in your library while it stops fetching anything new.
+
+Four pinned views sit above the tree. **Favorites** gathers the shows you have starred.
+**New Episodes** collects every unplayed episode across every subscription. **Continue
+Listening** lists everything you are partway through. The **Inbox** is a triage layer that
+organizes *episodes* rather than shows: route a show to the Inbox and its new episodes
+surface there no matter which folder the show itself lives in, file them into your own
+nested Inbox folders, and QUILL remembers the first folder you choose for a show and
+auto-files that show's future episodes there, announcing that it will, with a Forget
+command for when you change your mind. Inbox actions never delete an episode.
+
+**Downloads.** Every download runs on its own dedicated background thread, so a big
+backlog never slows down anything else QUILL is doing. Two independent pause controls do
+two different things: **Pause All Downloads** stops the queue from starting anything new
+while letting whatever is mid-transfer finish, and pausing one specific episode halts that
+transfer immediately and resumes later from the exact byte it left off. Retention is per
+podcast, or a global default: keep everything, keep the most recent few, or delete a file
+the moment you finish listening.
+
+**Playback.** Closing the dialog never stops an episode. Starting a different episode
+always replaces what was playing, because QUILL never plays two things at once. Your
+position in an episode is saved as you go, so returning even much later resumes exactly
+where you stopped, and that position travels with your settings between machines. A speed
+control runs from 0.75x to 2.0x, remembered per show.
+
+**A real Play Queue.** Right-click any episode for **Play Next** or **Add to Queue**. When
+an episode ends, the next queued one starts, across shows. The queue dialog reorders
+entirely from the keyboard: Move Up and Move Down for nudges, plus Mark for Move and Move
+Marked Above or Below for long-distance placement. The queue survives restarts, and a
+queued episode that has vanished simply skips.
+
+**Search Everywhere** covers shows, episodes, your own episode notes, and every transcript
+you have fetched, grouped by type, with Enter jumping to the hit. Episode filters
+(Unplayed, Downloaded) and show filters (Favorites only, Has unplayed) narrow the manager
+live. Sorting is available for both lists, and every folder and show shows its unheard
+count in parentheses.
+
+**Transcripts and notes.** Feed-provided transcripts (VTT, SRT, or JSON) save to a file or
+open in the editor, cached so the next open is instant and searchable. **Add Episode Note**
+stamps a note at the current playback position, and pressing Enter on that note later jumps
+playback back to that exact moment.
+
+**Chapters.** When an episode carries chapter data, a **Chapters** button opens a jumpable
+list, and Next Chapter and Previous Chapter work from anywhere while a chaptered episode
+plays.
+
+**Show notes, read your way.** **View Show Notes** presents an episode's description either
+as accessible plain text (HTML stripped, real paragraph breaks so line-by-line navigation
+moves by line rather than word by word through one giant wrapped line, links rendered as
+`link text (https://...)`) or as rich formatted text with images removed, so opening show
+notes can never quietly trigger a network fetch. **Send Show Notes to Editor** opens the
+plain-text version as a new document.
+
+**Your own audio.** **Add Local Podcast** turns a folder of your own audio files into a
+show, stored outside your synced data directory by construction so nothing tries to carry
+gigabytes of audio between machines, and a watched folder turns anything you drop there
+into a new episode on the next scan.
+
+**ACB Media Podcasts** subscribe as a single command that imports the whole live
+directory, every show arriving stream-only so nothing mass-downloads.
+
+**Quality of listening.** **Always Sync** backfills a show's whole catalogue, and because
+that fights keep-last-N retention, ticking it nudges retention to keep-all and says so out
+loud. **Auto-trim silence** and **normalize loudness** run on each finished download. A
+live volume boost pushes quiet audio louder without changing your saved volume.
+
+A **Podcasts** status-bar cell appears the first time you play something, with play, pause,
+stop, and pause-or-resume-downloads on it and its context menu, and the system tray carries
+the same controls when QUILL is minimized.
+
+Audio only. There are no video podcasts, matching every other playback surface in QUILL.
+
+**Tools > Media > Sleep Timer** covers both Podcasts and Radio: choose a preset or type a
+custom duration, and whichever is playing fades gently to silence rather than cutting off
+mid-sentence, then stops, with your volume restored to what it was so pressing play later
+is not a quiet surprise.
+
+---
+
+## Git and GitHub
+
+Version control is one of the least accessible corners of computing: punctuation-heavy
+text, visually arranged differences, and interactive tools that assume you can see two
+columns at once. QUILL is a text editor that a screen reader user already trusts, which
+makes it the right place to fix that.
+
+### Files on GitHub
+
+QUILL opens files directly from a GitHub repository, browses a repository's tree, and
+saves a file back, with your token held in the system credential store and a first-use
+consent prompt. The repository field accepts `owner/repo`, a pasted `github.com` URL, or a
+`git@github.com:` remote.
+
+### The Items viewer
+
+The GitHub Items viewer browses issues, pull requests, branches, commits, workflows, and
+workflow runs in an accessible list.
+
+- **Pinned repositories** hold a short, intentional list of the ones you use most, so you
+  are not retyping `owner/repo`. **Favorites** (**Ctrl+D**) bookmark an individual issue,
+  pull request, branch, or release, across repositories, and stay entirely on your machine.
+- **Full GitHub search syntax** (**Ctrl+F**) accepts a real query such as
+  `label:bug is:open crash` scoped to the loaded repository.
+- **Quick filter** (**Ctrl+Shift+F**) is the other kind of narrowing: it filters the rows
+  already loaded, live as you type, with no network round trip. It never steals focus from
+  the box you are typing in, and it stays silent while you type, speaking the result count
+  only once you stop, because re-announcing "12 items" on every keystroke would fight your
+  screen reader's own character echo.
+- **Local git awareness** fills in the repository automatically when the document you are
+  editing lives in a clone whose origin points at GitHub.
+- **View Upstream** loads a fork's parent repository in place.
+- **Columns** chooses which fields appear for the current view and remembers it.
+
+**Diff** on a pull request browses its changed files, and rather than a wall of plus and
+minus signs it routes each file through the same comparison engine **Compare Documents**
+uses, presenting a numbered walk through meaningful changes: "Difference 2 of 5. Text
+changed at line 41." A newly added file is read as its content, a deleted file is announced
+as deleted, and a binary or oversized file falls back honestly to its change counts.
+**Compare** on a branch does the same between two branches, and needs no sign-in because it
+never writes.
+
+**Summarize** hands a hundred-comment thread to your AI and gets back a plain-prose
+summary of what it is about, where it stands, what is unresolved, and the apparent next
+step. It uses the same AI connection, privacy, and consent gates as everything else, and
+nothing is sent until you press it.
+
+**Batch** operates on a multi-selection: close, reopen, or label several items at once. It
+is the deliberate exception to the viewer's read-only foundation, so the fence is explicit:
+batch actions require a signed-in account, anonymous viewing stays fully read-only, the
+confirmation names the exact action and the exact item numbers, and a partial failure tells
+you which items failed and why while letting the rest complete.
+
+**Actions** covers the per-item write operations: New Issue, New Pull Request, Merge Pull
+Request, Delete Branch, Re-run Workflow, View Artifacts, Reply to Thread, Edit This
+Comment, and Delete This Comment. The comment actions build on **Alt+N** and **Alt+P**
+comment navigation: move to the comment, then act on that one.
+
+**View Artifacts** lists a workflow run's build artifacts with name, size, and expiry, and
+downloads one or all of them to a folder you choose, with a cancelable progress dialog and
+an overwrite prompt. That download needed a deliberate decision rather than a default one:
+GitHub's artifact link redirects to a short-lived signed URL on another host, and your
+GitHub token must never travel there. QUILL blocks the automatic redirect, reads the target
+itself, and makes exactly one more request to that address with no authorization header
+attached. Your token only ever goes to github.com.
+
+### Administering a repository
+
+**Tools > GitHub** is a command center for the operations that would otherwise send you to a
+browser: **Create Repository** (with an immediate offer to synchronize a local folder, so
+you go from nothing to a folder pushing to GitHub without opening a browser), **Fork
+Repository**, **Rename Repository**, **Change Repository Visibility**, **Change Default
+Branch**, **Delete Branch**, **Configure Branch Protection**, and **Commit Multiple Files**
+(several local files in one atomic commit, which is deliberately different from Save to
+GitHub's single open document).
+
+Alongside them: **Browse Organization Repositories**, **Create Release** (with GitHub's
+auto-generated notes from merged pull requests as an option, published or left as a draft),
+**Dispatch Workflow**, **Notifications** (a genuine inbox across all repositories, not just
+the loaded one), and **Security Alerts** for open Dependabot alerts.
+
+None of the write commands works anonymously, and when you are not signed in, QUILL offers
+to start sign-in from the point of need rather than refusing and leaving you to find another
+route. Four high-consequence actions need more than a Yes/No: renaming a repository,
+changing visibility, deleting a branch, and merging a pull request each require you to
+retype the exact name or number. Every other write action uses a confirmation that names
+precisely what is about to change.
+
+Two more commands run through your own installed `gh` command-line tool: **Ask Copilot for a
+Command** describes what you are trying to do and gets a suggested git or `gh` command back,
+and **Explain a Command** takes a command you do not recognize and explains it in plain
+language. Codespaces management is there too, and because Codespaces consume real compute
+and storage minutes, its confirmation says so explicitly rather than using the generic "this
+changes something on GitHub" wording.
+
+If you do not have `git` or `gh` installed, both are available from **Help > Download
+Optional Components**: a portable copy of Git for Windows and the GitHub CLI for Windows and
+macOS, each checksum-verified. QUILL always prefers a copy already on your system.
+
+Some things are deliberately absent, and the reasons are worth stating: **Discussions**
+needs a hand-written GraphQL field selection that would ship as a guess without live
+validation; **Projects (v2)** has no supported library path (only the classic Projects API
+GitHub is sunsetting); **Packages** likewise; and **transferring a repository to another
+owner** has no wrapped method. They remain candidates for when they can be implemented and
+verified responsibly.
+
+### Local git
+
+This part is not about GitHub. It is about `git` itself, and it may be the capability in
+QUILL we are proudest of.
+
+**Resolve Conflicts.** Anyone who has used git has met the conflict markers `<<<<<<<`,
+`=======`, and `>>>>>>>`, which a screen reader encounters as line noise unless you
+manually reconstruct the surrounding structure by hand. QUILL parses each conflicted file
+into its real parts and walks you through the conflicts one at a time: "Conflict 1 of 3:
+your version says X; their version says Y." For each one you choose to keep yours, keep
+theirs, keep both, or type a different replacement. The process continues through every
+conflict in every affected file, with the decision explicit each time.
+
+**Interactive Rebase.** `git rebase -i` normally opens a generated text file and expects
+you to reorder lines and change words like `pick`, `squash`, `reword`, and `drop` without
+breaking the syntax. QUILL replaces that with a real dialog: one commit per row, an action
+chosen from a dropdown, and Move Up and Move Down to reorder. Underneath, it uses the same
+mechanism graphical git clients use, standing in as git's sequence editor and returning the
+structured list your dialog built. If a step causes a conflict, the guided conflict resolver
+opens automatically and the rebase continues afterward.
+
+**The rest of the toolkit.** **Uncommitted Changes** stages and unstages through an
+accessible comparison rather than a raw diff. **Switch Branch** guards against uncommitted
+work following you unexpectedly. **Stash Changes** and **Manage Stashes** are guided.
+**Who Wrote This Line** makes `git blame` useful by speaking the answer for the current
+line. **Start Bisect** and **End Bisect** turn `git bisect` into a plain conversation about
+whether the current version is good or bad.
+
+**Worktrees.** Here is a problem that almost never gets named, because most people never
+notice it. When you switch branches the ordinary way, git rewrites every file in the folder.
+The names stay the same. The paths stay the same. The contents become something else. If you
+can see the screen, the text changes in front of you and you know instantly. If you are
+reading with a screen reader, nothing tells you anything: the paragraph under your review
+cursor is now a paragraph from a different branch, in a file that still calls itself the file
+you opened, and you keep reading words that no longer belong to what you thought you were
+reading.
+
+A worktree is the structural fix rather than a warning message. It is a second folder
+attached to the same repository with a different branch checked out inside it. One history,
+one set of branches, two folders. Nothing under your cursor ever changes, because the two
+never share a file. Switching context becomes "open a different file", something you choose
+and hear yourself doing, instead of "this file is now a different file", which happens to you
+without a sound.
+
+**Tools > Local Git > Worktrees** announces the count as it opens, and every row is a whole
+sentence you hear once and understand ("Linked worktree at D:\usb\quill-spike, on branch
+spike, locked: on a USB drive") rather than four narrow columns you would have to arrow
+across. **New Worktree** asks where the folder goes and which branch it holds, or creates a
+brand-new branch with an optional starting point, and its folder field takes whatever you
+actually paste. QUILL checks before it runs git, so a mistake is a sentence you hear rather
+than an error you decode: the folder already has files in it, the folder is inside the
+repository, or that branch is already open in another worktree, and in that last case QUILL
+tells you which folder has it. **Open in QUILL** opens the same document you are reading from
+the worktree you picked, and offers a file picker pointed at the right folder if that file
+does not exist on that branch. **Remove** deletes the folder, never the branch, defaults to
+No, and if git refuses because of uncommitted changes it passes that on in plain language and
+asks a second, separate question rather than forcing it. **Lock** and **Unlock** protect a
+worktree on a USB drive or network share that git would otherwise think had vanished, with a
+reason you can record and hear later. **Prune** clears records for folders that really are
+gone and says which ones it tidied, or that nothing needed doing.
+
+Throughout local git, raw git error output is never read at you. Every message is a finished
+sentence written to be spoken. None of these commands contacts GitHub or any network service.
+
+### Synchronizing a folder
+
+**Tools > Sync Folder with GitHub** works with any folder: notes, a writing project, source
+code, a whole body of work. If it is already a git repository with a remote, QUILL commits,
+pulls, and pushes in the background. If it is not, QUILL explains exactly what it proposes
+("this runs `git init`, then adds the remote repository you provide as origin") and changes
+nothing until you approve. If the same file changed in both places, it lists the conflicts by
+name and stops; it never resolves a conflict by silently overwriting.
+
+QUILL uses your installed git and the credentials git already knows, an SSH key or your
+system's git credential manager. It creates no second set of credentials. The behavior mirrors
+a normal `git push` from a terminal.
+
+There is a second, simpler kind of sync that needs no git at all. QUILL's data location can be
+pointed at a folder already synchronized by OneDrive, Dropbox, Google Drive, or iCloud, and
+your settings, snippets, dictionaries, and keymap then travel with that folder between
+machines. QUILL writes ordinary files and the provider's client handles transport. The setup
+wizard explains this and names the limitation plainly: do not run QUILL on two machines at
+once against the same synchronized data folder, because there is no cross-device conflict
+resolution.
+
+We considered building a full QUILL synchronization service, with accounts and hosted storage
+and an engine of our own, and chose not to build a new cloud merely because we could. Folder
+sync and git already solve the essential problem.
+
+Everything across these sections is taught end to end in
+[Tutorial 8: GitHub inside QUILL](../tutorials/08-github-inside-quill.md).
+
+---
+
+## Quill Radio
+
+Quill Radio is a full internet radio player. Everything described here is available inside
+the editor under **Tools > Media > Internet Radio**, and also as a standalone application
+with its own window, menu bar, and tray icon, for the times you want the radio on without
+loading an editor. They are the same code and the same settings: a station you favorite in
+one is there in the other.
+
+### Finding something to listen to
+
+**Browse Stations** searches [RadioBrowser](https://api.radio-browser.info), a free,
+keyless, community-run directory, with a name box and optional narrowing by tag or genre
+and by country. A unified **Find Stations** search spans RadioBrowser, iHeart, TuneIn, and
+SomaFM at once, and can also take a website address directly.
+
+The browse tree also carries sources that need no search at all:
+
+- **Favorites**, your own saved stations in nested folders you arrange, with search,
+  reordering, and a scoped "find in this folder".
+- **ACB Media**, the American Council of the Blind's ten Live365 stations, bundled directly
+  into QUILL so they are there before any network call, because the mission overlap is
+  direct.
+- **Radio Reading Services**, twenty vetted audio-reading services for blind and
+  print-disabled listeners, bundled offline with a live refresh.
+- **NOAA Weather Radio**, an authoritative directory of real NWR transmitters browsable and
+  searchable by state, SAME code, or call sign, with a three-tier offline fallback so it
+  works even when the directory cannot be refreshed.
+- **Radio Browser by Genre**, and **iHeart** browsing by genre and A to Z.
+
+Whatever you select, a read-only details pane reports what QUILL knows about it: country,
+language, tags, codec and bitrate, community vote count, homepage, and the stream address,
+so you know what you are about to hear before you press Play. **Station Details** gives the
+same readout for any favorite.
+
+Not every station is in a directory. **Add Custom Station** takes any stream link with an
+optional homepage and tags, and a **Test** button plays it right there before you save.
+**Find Streams from a Website** takes an address, fetches that one page, and lists every
+stream-shaped link it finds (an `<audio>` tag, a `.pls` or `.m3u` playlist, a Shoutcast or
+Icecast mount point) with a plain-language reason for each, a Test to preview, and **Use
+This Link** to carry the guessed name and address into Add Custom Station. This deliberately
+reads one page rather than embedding a browser, because station pages almost always list
+their stream as a plain link and a screen-reader-native results list beats navigating an
+embedded browser for this particular job.
+
+Two link formats get special handling. **Live365** station pages, player links, and even a
+bare station id are recognized and rewritten to the real stream address, as a pure text
+rewrite with no network lookup and nothing sent anywhere; a URL that is not Live365 passes
+through untouched. **YouTube** links, including YouTube Live, behave like any other station:
+paste one into Add Custom Station and you get a station with the same player, favorites,
+Record Now, and scheduled recording. What is saved is the page link rather than the stream,
+because YouTube stream addresses expire within hours, so QUILL finds the audio again every
+time the station plays or records. That lookup runs through **yt-dlp**, which QUILL never
+bundles: it installs on demand after a one-time notice the first time you add a YouTube
+station, and that notice includes the plain reminder to record only what you have the right
+to record. You are asked when you add the station rather than when it plays, so a recording
+that fires at 3 a.m. is never the first time QUILL reaches YouTube. It is off entirely in
+Safe Mode. And because finding a stream is a network round trip, it happens off the interface
+thread: you hear "Connecting" immediately, the window never freezes, and if you press Stop or
+choose a different station mid-lookup, the one you chose last is the one that plays.
+
+### Listening
+
+One player outlives every dialog. Closing the station browser, the custom-station dialog, or
+the link finder never stops the music, which is what makes "listen while you keep writing"
+actually work.
+
+Playback controls cover Play and Pause, Stop, Play Last Station, Jump to Live, Rewind 30
+seconds and Forward 30 seconds, volume up and down, mute, a volume boost, sound enhancements,
+and an output device chooser. Radio's volume is its own, separate from your Windows system
+volume and separate from your screen reader's speech volume, so you can set the music quietly
+under your speech without touching either. Your volume is remembered between sessions.
+
+**Announce Track Titles** can be toggled. **What's Playing** speaks the current track;
+**What's Playing (Review and Copy)** opens a read-only window you can arrow through and copy
+from; **Copy What's Playing** puts it on the clipboard. A stream that carries no titles says
+so rather than going silent on you.
+
+Inside the editor, a **Radio** status-bar cell appears once something is playing, showing the
+station and state, with play and pause on Enter and a context menu offering Stop, Mute, a
+Favorite Stations quick-switch, and a way back into the browser. Minimize to the tray and the
+same controls follow, along with a live now-playing line. Direct chords reach it without
+leaving the editor at all, and every one of them is remappable.
+
+The standalone app opens onto a real working surface rather than an empty window: focus starts
+in your Favorite stations list, so you arrow to a station and press Enter and you are
+listening. Its menu bar carries a Station menu (Browse Stations, Add Custom Station, Find
+Streams from a Website, and your favorites listed right in the menu for one-keystroke
+switching), a Playback menu with a live now-playing line, and a Record menu. Its Browse,
+Favorites, Schedule, and Weather windows are modeless frames sharing one menu bar, one Window
+menu, and Ctrl+Tab cycling between them. **Help > Open in Quill** is there for the moment you
+decide you do want the full editor after all.
+
+### Recording
+
+With FFmpeg installed (an on-demand optional component), **Record Now** captures whatever is
+playing straight to a file, from the menu, the status-bar cell, or the tray. **Schedule
+Recording** queues one for later: once, daily, or weekly at a chosen time. **Recording
+Settings** covers format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename
+pattern with `{station}`, `{date}`, and `{time}` tokens, an optional temporary folder for
+in-progress files (moved atomically into place when finished), and a maximum-length safety cap
+so a recording you forgot about cannot quietly fill your disk.
+
+Recording is built to survive the real world. A dropped connection reconnects rather than
+ending the recording. Filenames are made unique rather than overwriting. A fatal error is
+distinguished from a transient one. Scheduled recordings fire anywhere within their window
+rather than only at the exact second. A recording interrupted by a restart offers to resume,
+and a recording that was missed while the app was closed is reported at the next launch.
+Stopping a recording asks FFmpeg to finish cleanly rather than killing it, so the file's
+container closes properly. The recordings list updates in place with live elapsed time, and
+finished recordings land in a visible default folder rather than somewhere you have to hunt
+for.
+
+### Weather inside Radio
+
+Quill Radio carries the full Weather menu described in the next section, so the app you leave
+running all day is also the one watching for a tornado warning.
+
+### Housekeeping
+
+- **Wake-Up Timer** starts a station at a time you choose.
+- **Start Quill Radio with Windows** registers a per-user autostart entry.
+- **Back up and restore** writes a portable `.qrbackup` archive of favorites, settings, wake
+  timer, and recording schedule, and reads it back on another machine.
+- **Remove All** clears every favorite in one step, behind a confirmation and with an
+  undoable backup written first.
+- **Customize Features** turns whole menu areas (Recording, Weather) on or off, so the app can
+  be exactly as small as you want it.
+- Radio writes a configurable log for when something needs diagnosing.
+
+---
+
+## Quill Weather
+
+Quill Weather watches the United States National Weather Service and tells you when something
+is happening where you are. It runs as a standalone tray application, and the same Weather menu
+is available inside QUILL and inside Quill Radio.
+
+**Weather Now** (**Ctrl+Shift+W**) opens the Weather Center: current conditions, an
+hour-by-hour forecast of configurable length with temperature, conditions, and chance of
+precipitation, and a moon almanac (phase, illumination, moonrise, and moonset) computed locally
+with no extra service and no extra dependency. The current local time at the searched location
+leads the readout, because "what time is it there" is usually the first thing you want to know
+about somewhere else. **Quick Weather** (**Ctrl+Shift+Q**) is the short spoken version.
+
+**Weather Guardian** is the part that matters most. It monitors your location in the background
+for watches, warnings, and advisories, speaks them, and interrupts for genuinely severe events
+rather than waiting politely behind whatever else is being said. During severe weather it
+tightens its polling (down to the National Weather Service's own 30-second floor) and relaxes
+again afterward. A Windows toast accompanies the announcement. An "already told you" check is
+shared between the live watch and the background check, so the same warning is never announced
+twice.
+
+The **alert sounder** is fully under your control: on or off, your own `.wav` file with a
+preview button, and a repeat count. **Test Alert** plays the entire alert experience through
+from beginning to end, clearly marked as a test, changing no state and requiring no network, so
+you can find out how it will sound at 3 a.m. at a time of your choosing.
+
+**Active Alerts** lists what is currently in effect. **Add Location** adds a place to watch.
+**Start and Stop Weather Monitoring** (**Ctrl+Shift+M**) and **Pause and Resume Alert Checks**
+give you direct control over whether it is running. **Listen to Local NOAA Weather Radio**
+tunes the nearest transmitter, and **Update NOAA Weather Radio Directory** refreshes that list.
+
+The standalone app can **start with Windows**, start minimized to the tray, and keep monitoring
+when you close its window. It can also register a **per-user Windows Scheduled Task** so alert
+checking happens with no process running at all, delivering a Windows toast your screen reader
+announces. **Ctrl+Alt+Shift+W** shows and hides it from anywhere.
+
+---
+
+## Quillins: extending QUILL
+
+Quillins are QUILL's extensions. The model is capability-and-consent: a Quillin declares in its
+manifest exactly what it needs (read text, write text, use the clipboard, fetch a URL, read or
+write files, change core settings), and every action in those categories requires consent at
+the moment it happens, not once at install time. A network-using Quillin must also declare the
+specific hosts it may reach.
+
+Quillins can be written declaratively, or as out-of-process handlers in Python or Node.js.
+There is a `@quill/api` package for JavaScript authors and a scaffold tool that generates a
+manifest, an extension file, a README, and a license to start from.
+
+What a Quillin can contribute: commands and menu items, settings pages (declared in the
+manifest as control type, label, default, and validation, rendered as accessible tabbed
+preferences), status-bar cells, snippet-gallery templates, abbreviations, insert triggers,
+subscriptions to fourteen document and lifecycle events with per-subscription condition
+filters, timer events for scheduled background work, file-type contributions that fire on a
+matching extension, category labels, and dependency declarations.
+
+A set of Quillins ships bundled and enabled, including Math Equations (contributed by Robert
+Danaraj), BRF Tools, Smart Insert, Journal Stamp, Document Guardian, Status Scribe, Insert
+Tools, Insert Character, Line Tools, Text Tools, Markdown Helpers, and a Node.js word-count
+example that exists to prove the JavaScript path works end to end.
+
+**Third-party Quillins are disabled by default** in a standard 1.0.0 build. A default install
+never loads extension code it did not ship with. When you do enable them, the **Quillins
+Manager** handles enable, disable, reload, and remove, and the menu bar rebuilds itself
+immediately afterward so a newly enabled Quillin's contributions appear without a restart.
+
+The **Quillin Hub** is the community store. **Submit to Quillin Hub** validates your artifact
+locally before any network contact happens. Published artifacts are cryptographically signed,
+the Hub fails closed on an unsigned submission, and the storefront shows a spoken "Signed by"
+badge so you can hear who published something before installing it.
+
+One honest limitation: Node.js-based Quillins still require an internet connection the first
+time they are used, even in the Offline Edition. It is a known and tracked gap, not an oversight.
+
+---
+
+## The Offline Edition
+
+QUILL normally keeps its everyday installer small by downloading its bigger optional pieces on
+demand. The **Offline Edition** inverts that: every optional component ships inside the
+installer and the portable bundle up front, so QUILL is fully functional the moment it is
+installed with no internet connection ever needed. It is the right choice for an air-gapped
+machine, a locked-down work laptop, or anywhere your first login cannot reach the internet.
+
+"Offline" here means what it says, and the claim has been audited rather than assumed:
+
+- **Kokoro** neural voices install and speak entirely from local files, engine included.
+- **whisper.cpp**, the default speech-to-text engine, ships with its starter model present.
+  This mattered most: whisper.cpp is not merely an engine you might choose later, it is the
+  path QUILL reaches for automatically, and an offline edition that could not transcribe until
+  it downloaded a model was not genuinely offline.
+- **Faster Whisper**, **Vosk**, and **MP3 chapter-marker support** all install with no network
+  connection, down to the supporting libraries that other packagings leave to be fetched from
+  the internet even when the main package is local.
+- **Piper** arrives with its engine, integrity verification against a pinned fingerprint at both
+  build and install time, and a ready-to-speak starter voice (Lessac, US English, medium
+  quality). Additional voices remain available from the online catalogue whenever you do have a
+  connection and want them.
+
+**Help > Download Optional Components** tells the truth about the difference: in the Offline
+Edition each component shows as already **Bundled**, or as **Not included** for the handful the
+offline build does not carry, rather than offering a Download button with nothing left to fetch.
+
+The regular, smaller installer and portable download are unchanged and remain the default for
+everyone else.
+
+The one remaining gap is the Node.js Quillin runtime noted above.
+
+---
+
+## Reliability, Recovery, and Safety
+
+Trust is the product. A writing tool that loses work, or that silently does something other
+than what it said, is worse than no writing tool at all, and that is doubly true when you cannot
+glance at the screen to catch it.
+
+### Your work is protected
+
+- **Autosave** snapshots your documents continuously, including their formatting, so crash
+  recovery restores bold and headings rather than only the words. Snapshots are written
+  atomically (write to a temporary file, flush, rename) and always in UTF-8, so a document in an
+  unusual encoding can never break a save.
+- **Document saves are atomic** by the same mechanism. A power failure mid-save cannot leave you
+  with half a file.
+- **Persistent undo** survives a session.
+- **Restore Backup** and **Restore Previous Version** cover the slower kinds of mistake.
+- **If your screen reader stops, your work is already safe.** Losing a screen reader mid-session
+  is one of the most disorienting things that can happen at a computer. QUILL watches for it, and
+  if the screen reader it detected goes away and stays away past a grace check (so restarting
+  JAWS or NVDA never triggers this), it immediately snapshots every open document and then tells
+  you what happened using whatever can still talk: another screen reader if one is running, or
+  QUILL's own built-in voice. A note lands in Notifications too, so the explanation is waiting
+  even if you missed the announcement. QUILL keeps running throughout, and announces when it
+  hears your screen reader come back.
+
+### When something goes wrong
+
+- An unhandled crash shows a **plain Win32 message box** that screen readers can read, even when
+  the toolkit itself is down and could not draw a normal dialog.
+- **Crash recovery is offered only when there is evidence of a crash**: an error, a critical, or
+  a traceback in the log. An inconclusive exit, such as a forced shutdown or a killed process,
+  does not produce a recovery dialog, because there is nothing to diagnose. The autosave snapshot
+  is kept either way; the only thing that changes is whether QUILL asks.
+- A **recovery diff preview** shows a read-only snippet of what would be restored before you
+  restore it.
+- **Crash reports** bundle diagnostics with the actual traceback and the specific log lines that
+  triggered the offer, so a report is self-explanatory to whoever reads it. They never include
+  document content, and they are scrubbed for GitHub tokens, OpenAI keys, AWS credentials, Slack
+  tokens, and long alphanumeric secrets before they are written.
+- **Every internal error type carries a short support code** in the form `[QUILL-...]`, which
+  rides along in crash reports and turns "it said something went wrong" into a specific,
+  searchable fact. A build gate enforces that no new error type ships without one.
+- **Errors end with what to do next.** A coded error increasingly finishes with the concrete
+  action: "Install Pandoc from Help > Download Optional Components to convert this format", or
+  "Check the address, credentials, and connection under File > Manage Remote Sites." Voice and
+  component downloads, extension problems, and remote transfers over SSH, FTP, S3, and WebDAV all
+  do this. A soft "What to try next" toggle appears on file-open, export, and import failures.
+- **Corrupt configuration cannot stop you working.** A damaged `settings.json` or `keymap.json`
+  is quarantined and defaults are used, rather than crashing at launch. Settings are
+  schema-versioned with delta-based migration and backups of the previous shape.
+
+### Safety by construction
+
+- **Destructive confirmations always default to No.** Pressing Enter out of habit on "Delete
+  this?" is never the destructive answer, across every dialog in every app in the family. A build
+  gate makes sure no future dialog can ship with a destructive Yes-default.
+- **Every modal dialog goes through one hardened path** that guarantees the keyboard contract,
+  and an automated inventory audits compliance across hundreds of dialogs.
+- **Every outbound network call site is inventoried** by a build gate. A new network call cannot
+  be added without an explicit entry and explicit consent.
+- **The Python snippet sandbox** blocks dunder attribute access statically, allows only a
+  restricted set of imports, and caps time and memory.
+- **External engines are allowlisted** by executable name before any input or output happens.
+- **Update manifests are signature-verified**, and an unconfigured or placeholder signature is
+  rejected rather than trusted. Update discovery is HTTPS-only against an allowlist of trusted
+  hosts. A portable copy receives a ZIP (applied by mirroring, excluding your `data` folder, with
+  zip-slip and zip-bomb guards) and an installed copy receives the installer; QUILL never hands a
+  Windows user a macOS download.
+- **A signed safety-advisory system** can remotely disable one specific misbehaving feature, in a
+  way that is announced, reversible, honored offline, and overridable locally. A menu item
+  disabled by an advisory explains itself right there in the menu rather than being mysteriously
+  greyed out.
+- **Unlock codes** switch on staged features: paste a code beginning with `QUILL-` into **Help >
+  Redeem Unlock Code**, and QUILL verifies its signature entirely on your machine, with no
+  network call, no account, and nothing transmitted, then announces which feature was unlocked.
+  Codes re-verify on every launch, and an expired or tampered code stops working and says why. If
+  you never receive one, nothing changes for you: every standard feature works without one.
+
+### Resetting and moving
+
+**Reset Everything to Factory Defaults** puts settings, shortcuts, menu customizations, and the
+feature profile back behind one confirmation. **Import data from a previous QUILL install** brings
+settings, shortcuts, and documents forward from an older copy. **Work Personas** (**Tools > Work
+Personas**) bundle a feature profile, a working folder, favorite files, and a keymap profile under
+a name, launchable with `quill --persona NAME` or from a generated shortcut, for the people whose
+day has two or three genuinely different modes in it.
+
+---
+
+## Everyday details that add up
+
+Some things are too small for a section of their own and too useful to leave out.
+
+- **Favorite folders.** Recent folders answer "what did I open lately?" Favorite folders answer
+  the more useful question, "what must always be easy to reach?" **Ctrl+Alt+Shift+A** adds the
+  current document's folder, **Ctrl+Alt+Shift+R** removes one, and **Ctrl+Alt+Shift+O** opens the
+  Quick Open dialog scoped to them. All three are also under **File > Favorite Folders**.
+- **Quick Open** puts focus straight in a search box and filters live and case-insensitively
+  across every favorite folder as you type, naming which folder each result came from. By default
+  it searches only the top level of each folder, which keeps results instant and reinforces the
+  curated nature of the list; **Include subfolders** goes deeper, capped so a very large tree
+  cannot freeze the dialog.
+- **Paste any path and it works.** The file-open path field accepts a path with the quotes File
+  Explorer wrapped around it, a `file://` link with invisible characters in it, `%APPDATA%\Quill`,
+  a `~`, or smart quotes, and cleans it up before using it, so "path does not exist" stops being
+  the answer to a path that exists perfectly well.
+- **File context summary** (**Alt+I**) speaks the word, line, and heading counts, the last-saved
+  time, and whether a recovery snapshot exists.
+- **Speak-status commands** say the window title, the full file path, or a status summary on
+  demand.
+- **A filename is suggested from your first line** when you save an untitled document. It never
+  overrides a name you already gave a file, and it can be turned off.
+- **Send as Email** hands your selection or document to your mail client; **Copy as Email Body**
+  copies it formatted for pasting.
+- **Post to Mastodon** composes, posts, and manages accounts and lists from inside QUILL, with an
+  optional automatic proofread of the post text first.
+- **Progress sings.** Long downloads and installs play a short blip every five percent that rises
+  as the work approaches done, with a touch of harmony at the quarter marks and a two-note finish
+  at the end. A blip never talks over your screen reader, and the spoken milestones at 25, 50, and
+  75 percent stay where they were for the big picture.
+- **Keep the sound device awake.** If your USB or Bluetooth speakers clip the first instant of
+  sound after a quiet pause, a common power-saving quirk, this setting keeps the device listening
+  with a silent pulse.
+- **Dark mode**, contrast-ratio announcement, soft wrap, overwrite mode, and tab-control toggles
+  live on the View menu, with system dark-mode and high-contrast detection on both platforms.
+- **QUILL can be Thunderbird's external editor.** QUILL's one-process-per-file model matches what
+  Thunderbird's External Editor Revived add-on expects: point the add-on at `quill.exe`, press
+  **Ctrl+E** in a compose window, write in the full QUILL environment, save and close, and the
+  text returns to your message. The User Guide has the complete walkthrough.
+- **The QUILL Developer Console** provides Python and TypeScript consoles with session history,
+  output capture, and a `q.*` host API, for the people who want to script the editor they are
+  writing in. It is off in Safe Mode.
+- **The QuillVille menu** is the cross-app switcher, present in every app in the family, for
+  jumping between QUILL, Quill Radio, and Quill Weather.
+- **Background watchers all answer the same three questions.** The watch folder, weather
+  monitoring, podcast episode checks, and GitHub monitors share one policy model covering how often
+  they poll, whether they tick audibly, and whether a result interrupts you. You configure the
+  behavior once and it means the same thing everywhere.
+
+---
+
+## Getting help, and helping back
+
+**Help > Report a Bug** is the direct line. It opens with focus in the Summary field, remembers
+your name and email if you want it to, and includes a screen-reader picker, because "which screen
+reader" is the first question every accessibility bug raises. Reports carry the full version
+string, so an older installation is immediately recognizable. **Save Diagnostics** writes a bundle
+you can attach, already scrubbed of secrets.
+
+**Help > About Quill** carries a live contributor list (with an offline fallback) and a **Golden
+Quills** tab recognizing the people who support the project financially.
+
+QUILL is free, and it is built by and with the community that uses it. Features in this release
+exist because people asked for them: the ranked spelling workflow and favorite folders came from a
+longtime Kurzweil 1000 user's side-by-side comparison; the Clipboard Collector came from a request
+for EdSharp's behavior; the Thunderbird integration came from someone who wanted to write email in
+QUILL; the braille cell-alignment correction became the default because braille readers tested it
+and reported back; the Offline Edition became genuinely offline because someone checked the promise
+instead of assuming the label was enough. The GitHub integration owes its shape to
+[GHManage](https://github.com/kellylford/GHManage), Kelly Ford's open-source screen-reader-first
+GitHub browser, which shipped many of these ideas first and which QUILL learned from rather than
+reinvented.
+
+If something surprises you, beautifully or badly, tell us. A report that says "this works
+perfectly" is worth as much as one that says it does not.
+
+**QUILL 1.0.0. One editor. Every format. Built with you.**
