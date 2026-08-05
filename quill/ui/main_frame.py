@@ -18196,7 +18196,7 @@ class MainFrame(
             (
                 (feature_id, definition)
                 for feature_id, definition in FEATURE_DEFINITIONS.items()
-                if not definition.locked_on and not definition.locked_off
+                if not definition.locked_on and not definition.is_locked_off
             ),
             key=lambda item: (item[1].category, item[1].name),
         )

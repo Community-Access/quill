@@ -11,6 +11,8 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
+from quill.core.app_launcher import is_dev_build
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,6 +28,20 @@ class FeatureDefinition:
     locked_on: bool = False
     locked_off: bool = False
     category: str = ""
+    #: False for a feature that is built but held back from the public
+    #: release: locked off in a public build, normal in a developer build
+    #: (``QUILL_DEV_BUILD=1``) -- the same one switch that reveals the gated
+    #: companion apps (``app_launcher.RELEASED_APPS``). Use ``locked_off``
+    #: instead for a feature that is off in *every* build.
+    released: bool = True
+
+    @property
+    def is_locked_off(self) -> bool:
+        """Locked off in *this* build: permanently, or merely unreleased.
+
+        The question every caller wants; read this, not the raw field.
+        """
+        return self.locked_off or not (self.released or is_dev_build())
 
 
 FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
@@ -283,6 +299,10 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "status bar mini-player and system tray controls."
         ),
         category="core",
+        # Held back from the public 1.0.0 release until its companion app
+        # (Quill Cast) ships; developer builds keep it. Internet Radio and Book
+        # Library are unaffected -- both ship publicly.
+        released=False,
     ),
     "core.library": FeatureDefinition(
         "core.library",
@@ -609,6 +629,12 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
     ),
 }
 
+
+#: The ``released=False`` roster, derived so it can never drift from the
+#: definitions. Locked off in a public build; ``QUILL_DEV_BUILD=1`` restores it.
+UNRELEASED_FEATURE_IDS: frozenset[str] = frozenset(
+    feature_id for feature_id, definition in FEATURE_DEFINITIONS.items() if not definition.released
+)
 
 FEATURE_ALIASES: dict[str, str] = {}
 for _feature in FEATURE_DEFINITIONS.values():

@@ -92,6 +92,7 @@ class PodcastsMixin:
             library_provider=lambda: self._podcast_library,
             refresh_show=self.refresh_podcast_feed,
             safe_mode=self._safe_mode,
+            feature_enabled=lambda: self._feature_enabled("core.podcasts"),
         )
         self._podcast_check_monitor.apply()
 

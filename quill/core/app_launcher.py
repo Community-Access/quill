@@ -78,6 +78,21 @@ def app_name(app_key: str) -> str:
 RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather"})
 
 
+def is_dev_build() -> bool:
+    """Whether this is a developer/admin build (``QUILL_DEV_BUILD=1``).
+
+    The single source of truth for the release gate: gated companion apps
+    (:func:`is_app_released`) and unreleased editor features
+    (``feature_catalog.FeatureDefinition.released``) both ask this one question,
+    so a developer build reveals all of them and a public build reveals none.
+
+    Deliberately reads the environment on every call rather than caching at
+    import time, and deliberately *not* ``paths._DEV_BUILD`` (which the test
+    suite forces True session-wide for data-directory isolation).
+    """
+    return os.environ.get("QUILL_DEV_BUILD") == "1"
+
+
 def is_app_released(app_key: str) -> bool:
     """Whether ``app_key`` may be surfaced in this build.
 
@@ -86,7 +101,7 @@ def is_app_released(app_key: str) -> bool:
     reach the gated apps. The one gate every launcher, menu, shell verb, and
     download offer checks.
     """
-    return app_key in RELEASED_APPS or os.environ.get("QUILL_DEV_BUILD") == "1"
+    return app_key in RELEASED_APPS or is_dev_build()
 
 
 def build_launch_argv(app_key: str) -> list[str] | None:

@@ -408,3 +408,126 @@ def test_every_feature_id_referenced_in_main_frame_is_defined() -> None:
     assert referenced, "expected main_frame to wire feature ids to commands"
     missing = sorted(fid for fid in referenced if fid not in FEATURE_DEFINITIONS)
     assert missing == [], f"command feature ids missing from FEATURE_DEFINITIONS: {missing}"
+
+
+# -- unreleased (developer-build-only) features -----------------------------
+# The editor-embedded Podcasts manager is built, but its companion app (Quill
+# Cast) has not shipped, so a public 1.0.0 build must not surface it. The gate
+# is the same one the companion apps use (``QUILL_DEV_BUILD=1``, via
+# ``app_launcher.is_dev_build``); these tests pin both halves of it. The env
+# var -- not ``paths._DEV_BUILD``, which the session-wide conftest fixture
+# forces True -- is what the gate reads, so monkeypatching it is enough.
+
+
+def _public_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+
+
+def _developer_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("QUILL_DEV_BUILD", "1")
+
+
+def test_podcasts_is_the_only_unreleased_feature() -> None:
+    from quill.core.feature_catalog import FEATURE_DEFINITIONS, UNRELEASED_FEATURE_IDS
+
+    # Book Library and Internet Radio ship publicly; only the editor-embedded
+    # podcast manager waits on its companion app.
+    assert UNRELEASED_FEATURE_IDS == frozenset({"core.podcasts"})
+    assert FEATURE_DEFINITIONS["core.podcasts"].released is False
+
+
+def test_podcasts_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    _public_build(monkeypatch)
+    for profile_id in PROFILE_DEFINITIONS:
+        manager = FeatureManager(active_profile_id=profile_id)
+        assert manager.state_for("core.podcasts") == FEATURE_STATE_OFF, profile_id
+        assert manager.is_enabled("core.podcasts") is False, profile_id
+        assert manager.is_visible("core.podcasts") is False, profile_id
+
+
+def test_podcasts_cannot_be_enabled_by_a_user_in_a_public_build(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _public_build(monkeypatch)
+    manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
+    manager.enable_feature("core.podcasts")
+    assert manager.is_enabled("core.podcasts") is False
+    # A hand-edited override in features.json is no way past the gate either.
+    manager.overrides["core.podcasts"] = FEATURE_STATE_ON
+    assert manager.state_for("core.podcasts") == FEATURE_STATE_OFF
+    assert manager.is_enabled("core.podcasts") is False
+
+
+def test_podcasts_is_hidden_from_manage_individual_features(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # MainFrame.open_individual_feature_toggles lists every definition that is
+    # neither locked on nor locked off; the build gate must drop Podcasts from
+    # that list exactly as a ``locked_off`` feature is dropped.
+    from quill.core.feature_catalog import FEATURE_DEFINITIONS
+
+    _public_build(monkeypatch)
+    toggleable = {
+        feature_id
+        for feature_id, definition in FEATURE_DEFINITIONS.items()
+        if not definition.locked_on and not definition.is_locked_off
+    }
+    assert "core.podcasts" not in toggleable
+    assert "core.radio" in toggleable
+    assert "core.library" in toggleable
+
+    _developer_build(monkeypatch)
+    toggleable_dev = {
+        feature_id
+        for feature_id, definition in FEATURE_DEFINITIONS.items()
+        if not definition.locked_on and not definition.is_locked_off
+    }
+    assert "core.podcasts" in toggleable_dev
+
+
+def test_developer_build_restores_podcasts(monkeypatch: pytest.MonkeyPatch) -> None:
+    _developer_build(monkeypatch)
+    manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
+    # Podcasts is not listed in the Essential profile, and an unlisted feature
+    # defaults to ON -- the behaviour a developer build keeps.
+    assert manager.state_for("core.podcasts") == FEATURE_STATE_ON
+    assert manager.is_enabled("core.podcasts") is True
+    assert manager.is_visible("core.podcasts") is True
+
+
+def test_radio_and_book_library_are_unaffected_by_the_build_gate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core.feature_catalog import FEATURE_DEFINITIONS
+
+    _public_build(monkeypatch)
+    manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
+    for feature_id in ("core.radio", "core.library"):
+        assert FEATURE_DEFINITIONS[feature_id].released is True, feature_id
+        assert FEATURE_DEFINITIONS[feature_id].is_locked_off is False, feature_id
+        assert manager.state_for(feature_id) == FEATURE_STATE_ON, feature_id
+        assert manager.is_enabled(feature_id) is True, feature_id
+        assert manager.is_visible(feature_id) is True, feature_id
+
+
+def test_podcast_commands_are_not_visible_in_the_palette(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _public_build(monkeypatch)
+    registry = CommandRegistry()
+    registry.register(
+        "podcasts.open_manager",
+        "Podcasts: Open Manager...",
+        lambda: None,
+        feature_id="core.podcasts",
+    )
+    registry.register(
+        "radio.browse",
+        "Radio: Browse Stations...",
+        lambda: None,
+        feature_id="core.radio",
+    )
+    manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
+    visible = {command.id for command in registry.list(manager)}
+    assert "podcasts.open_manager" not in visible
+    assert "radio.browse" in visible

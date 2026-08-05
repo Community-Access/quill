@@ -46,11 +46,17 @@ class PodcastCheckMonitor:
         refresh_show: Callable[[str], None],
         safe_mode: bool = False,
         post_tick: Callable[[str], None] | None = None,
+        feature_enabled: Callable[[], bool] | None = None,
     ) -> None:
         self._settings_provider = settings_provider
         self._library_provider = library_provider
         self._refresh_show = refresh_show
         self._safe_mode = safe_mode
+        #: Asked on every enablement check so a Podcasts feature that is off --
+        #: including a build where it is not released yet -- never polls feeds
+        #: in the background, whatever the saved setting says. Omitted means
+        #: "no feature gate" (the standalone apps).
+        self._feature_enabled = feature_enabled
         self._post_tick = post_tick
         self._policy = resolve_monitor_policy(self._settings(), MONITOR_PODCASTS)
         self._timer = wx.Timer(parent)
@@ -86,6 +92,8 @@ class PodcastCheckMonitor:
 
     def _enabled(self) -> bool:
         if self._safe_mode:
+            return False
+        if self._feature_enabled is not None and not self._feature_enabled():
             return False
         return bool(getattr(self._settings(), "podcast_check_enabled", False))
 

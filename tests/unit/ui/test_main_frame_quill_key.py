@@ -3,6 +3,8 @@ from __future__ import annotations
 import time
 from types import SimpleNamespace
 
+import pytest
+
 from quill.branding import QUILL_KEY_LABEL
 from quill.core.quill_key_help import MODE_BROWSE, MODE_PREFIX
 from quill.ui.main_frame import MainFrame
@@ -467,6 +469,43 @@ def test_quill_key_cheat_sheet_includes_chord_groups() -> None:
     assert "Navigate" in text
     assert "View" in text
     assert "File" in text
+
+
+def test_chords_for_an_unreleased_feature_never_fire_or_appear(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Podcasts is not released in a public 1.0.0 build, so its QUILL-key chords
+    # must neither dispatch nor be advertised in the cheat sheet. Radio, which
+    # ships, is untouched.
+    from quill.core.commands import CommandRegistry
+
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+    frame = _build_frame()
+    _wire_help_stubs(frame)
+    registry = CommandRegistry()
+    registry.register(
+        "podcasts.play_pause", "Podcasts: Play/Pause", lambda: None, feature_id="core.podcasts"
+    )
+    registry.register(
+        "radio.play_pause", "Radio: Play/Pause", lambda: None, feature_id="core.radio"
+    )
+    frame.commands = registry  # type: ignore[attr-defined]
+    frame.keymap = {  # type: ignore[attr-defined]
+        "podcasts.play_pause": "Ctrl+Shift+Grave, 8",
+        "radio.play_pause": "Ctrl+Shift+Grave, 0",
+    }
+    frame._binding_for = lambda cid: frame.keymap.get(cid)  # type: ignore[method-assign]
+
+    assert frame._chord_command_available("podcasts.play_pause") is False
+    assert frame._chord_command_available("radio.play_pause") is True
+    assert frame._chord_command_for_event(_Event(ord("8"))) is None
+    assert frame._chord_command_for_event(_Event(ord("0"))) == "radio.play_pause"
+
+    frame._enter_quill_key_mode()
+    frame._handle_quill_key_mode_event(_Event(ord("?")))
+    _mode, text = frame._help_shown[0]  # type: ignore[attr-defined]
+    assert "Podcasts" not in text
+    assert "Radio" in text
 
 
 def test_browse_mode_unlimited_preset_disables_timeout() -> None:

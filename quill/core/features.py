@@ -521,7 +521,9 @@ class FeatureManager:
             return FEATURE_STATE_OFF
         if definition.locked_on:
             return FEATURE_STATE_ON
-        if definition.locked_off:
+        if definition.is_locked_off:
+            # ``is_locked_off`` covers both a permanently locked feature and one
+            # that is merely unreleased in this build (see FeatureDefinition).
             # A redeemed, signature-verified unlock code is the one sanctioned
             # way past locked_off (Help > Redeem Unlock Code...).
             if feature_id in self.unlocked_feature_ids:

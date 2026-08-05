@@ -49,6 +49,31 @@ class GlobalHotkeysMixin:
 
     # -- registration -----------------------------------------------------
 
+    def _global_hotkey_command_available(self, command_id: str) -> bool:
+        """Whether ``command_id`` may be offered/registered as a global hotkey.
+
+        A command whose feature is off -- by profile, by a remote lock, or
+        because the feature is not released in this build -- is neither listed
+        in the manager nor registered with Windows. Otherwise a public build
+        would advertise (and hand a system-wide key to) a surface it does not
+        ship. An unregistered command is allowed through: the dispatch path
+        does its own gating.
+        """
+        registry = getattr(self, "commands", None)
+        command = registry.get(command_id) if registry is not None else None
+        gate = getattr(self, "_feature_enabled", None)
+        if command is None or gate is None:
+            return True
+        return bool(gate(command.feature_id))
+
+    def _global_hotkey_safe_commands(self) -> tuple[tuple[str, str, bool], ...]:
+        """The allowlist, minus anything this build's features do not offer."""
+        return tuple(
+            entry
+            for entry in GLOBAL_HOTKEY_SAFE_COMMANDS
+            if self._global_hotkey_command_available(entry[0])
+        )
+
     def _global_hotkey_bindings(self) -> dict[str, str]:
         """command_id -> binding, allowlist-filtered. The legacy sticky-note
         keymap binding keeps working unless the new table overrides it."""
@@ -56,7 +81,9 @@ class GlobalHotkeysMixin:
         bindings = {
             command_id: str(binding).strip()
             for command_id, binding in configured.items()
-            if command_id in _SAFE_IDS and str(binding).strip()
+            if command_id in _SAFE_IDS
+            and str(binding).strip()
+            and self._global_hotkey_command_available(command_id)
         }
         if "tools.sticky_note_capture" not in bindings:
             legacy = self._binding_for("tools.sticky_note_capture")
@@ -173,7 +200,7 @@ class GlobalHotkeysMixin:
 
         dialog = GlobalHotkeysDialog(
             self.frame,
-            commands=GLOBAL_HOTKEY_SAFE_COMMANDS,
+            commands=self._global_hotkey_safe_commands(),
             current=dict(getattr(self.settings, "global_hotkeys", {}) or {}),
             show_modal_fn=self._show_modal_dialog,
             announce_cb=self._announce,

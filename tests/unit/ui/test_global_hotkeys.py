@@ -74,6 +74,45 @@ def test_legacy_sticky_binding_survives_unless_overridden() -> None:
     assert host._global_hotkey_bindings()["tools.sticky_note_capture"] == "Ctrl+Alt+M"
 
 
+class _GatedHost(_Host):
+    """A host whose Podcasts feature is off (the public-build shape)."""
+
+    def __init__(self, configured: dict[str, str]) -> None:
+        super().__init__(configured)
+        from quill.core.commands import CommandRegistry
+
+        self.commands = CommandRegistry()
+        self.commands.register(
+            "podcasts.play_pause", "Podcasts: Play/Pause", lambda: None, feature_id="core.podcasts"
+        )
+        self.commands.register(
+            "podcasts.stop", "Podcasts: Stop", lambda: None, feature_id="core.podcasts"
+        )
+        self.commands.register(
+            "radio.play_pause", "Radio: Play/Pause", lambda: None, feature_id="core.radio"
+        )
+
+    def _feature_enabled(self, feature_id: str) -> bool:
+        return feature_id != "core.podcasts"
+
+
+def test_a_disabled_features_command_is_never_registered_as_a_global_hotkey() -> None:
+    # A feature this build does not offer (Podcasts is not released for 1.0.0)
+    # must not get a system-wide key, whatever the saved settings say.
+    host = _GatedHost({"podcasts.play_pause": "Ctrl+Alt+8", "radio.play_pause": "Ctrl+Alt+P"})
+    bindings = host._global_hotkey_bindings()
+    assert "podcasts.play_pause" not in bindings
+    assert bindings["radio.play_pause"] == "Ctrl+Alt+P"
+
+
+def test_a_disabled_features_command_is_not_listed_in_the_manager() -> None:
+    host = _GatedHost({})
+    listed = {command_id for command_id, _label, _needs in host._global_hotkey_safe_commands()}
+    assert "podcasts.play_pause" not in listed
+    assert "podcasts.stop" not in listed
+    assert "radio.play_pause" in listed
+
+
 def test_every_allowlisted_command_is_low_risk_by_construction() -> None:
     """Meta-guard: the allowlist stays media/notes/compose/window-visibility
     only. Anything document-editing or destructive being added here should fail

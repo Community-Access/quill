@@ -18,6 +18,7 @@ try:
 except ImportError:  # pragma: no cover - non-Windows fallback
     _winsound = None  # type: ignore[assignment]
 
+from quill.core.feature_catalog import FEATURE_DEFINITIONS
 from quill.core.quill_key_help import (
     MODE_BROWSE,
     MODE_PREFIX,
@@ -540,6 +541,22 @@ class QuillKeyMixin:
             return True
         return False
 
+    def _chord_command_available(self, command_id: str) -> bool:
+        """Whether a chord may resolve to (and the cheat sheet may list) this command.
+
+        Only the build-level gate is applied: a feature that is locked off --
+        permanently, or because it is not released in this build -- is not part
+        of this QUILL at all, so its chord must neither fire nor be advertised.
+        Profile-level on/off/quiet is deliberately left to the handlers, which
+        keep their own explanatory behaviour.
+        """
+        registry = getattr(self, "commands", None)
+        command = registry.get(command_id) if registry is not None else None
+        if command is None:
+            return True
+        definition = FEATURE_DEFINITIONS.get(command.feature_id)
+        return definition is None or not definition.is_locked_off
+
     def _chord_command_for_event(self, event: object) -> str | None:
         """Return the command_id for a chord that matches the current event.
 
@@ -552,6 +569,8 @@ class QuillKeyMixin:
         chord_prefix = prefix + ", "
         for command_id, binding in (getattr(self, "keymap", None) or {}).items():
             if not binding or not binding.startswith(chord_prefix):
+                continue
+            if not self._chord_command_available(command_id):
                 continue
             second_key = binding[len(chord_prefix) :].strip()
             parsed = self._parse_chord_second_key(second_key)
@@ -608,7 +627,13 @@ class QuillKeyMixin:
             counts=counts,
             selection_active=self._has_active_selection(),
             quill_key_label=QUILL_KEY_LABEL,
-            chord_map=self.keymap,
+            # Chords for features this build does not ship are neither
+            # dispatchable nor listed (see _chord_command_available).
+            chord_map={
+                command_id: binding
+                for command_id, binding in (self.keymap or {}).items()
+                if self._chord_command_available(command_id)
+            },
             prefix=str(getattr(self.settings, "quill_key_binding", "Ctrl+Shift+Grave")),
         )
 
