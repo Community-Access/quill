@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIGNOFF-weather (interactive sign-off)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 60em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  li { margin: 0.35em 0; }
+  input.so { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+          border-bottom: 1px solid GrayText; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; } }
+</style>
+</head>
+<body>
+<div class="bar" role="group" aria-label="Sign-off progress and state">
+  <span id="progress" role="status">Loading…</span>
+  <button id="export">Export progress…</button>
+  <button id="import">Import progress…</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All checklists</a>
+</div>
+<h1>QUILL 1.0.0 Sign-off — Quill Weather (public app)</h1>
+<p>Weather binds menu handlers directly (no palette/registry ids). <strong>11 menu actions</strong> + standalone-app chrome + <strong>4 dialog surfaces.</strong> Run across every §A environment. Legend: W/S/A.</p>
+<h2>Weather menu (shown in editor, Radio, and standalone)</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:39f311da67c9:0:0" aria-label="Works: W S A Weather &gt; Weather Now... Ctrl+Shift+W"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:39f311da67c9:0:1" aria-label="Surface-exact: W S A Weather &gt; Weather Now... Ctrl+Shift+W"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:39f311da67c9:0:2" aria-label="Accessible: W S A Weather &gt; Weather Now... Ctrl+Shift+W"> A  Weather &gt; Weather Now...  <code>Ctrl+Shift+W</code></li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:7c8d4220a3a0:0:0" aria-label="Works: W S A Weather &gt; Quick Weather Ctrl+Shift+Q"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:7c8d4220a3a0:0:1" aria-label="Surface-exact: W S A Weather &gt; Quick Weather Ctrl+Shift+Q"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:7c8d4220a3a0:0:2" aria-label="Accessible: W S A Weather &gt; Quick Weather Ctrl+Shift+Q"> A  Weather &gt; Quick Weather  <code>Ctrl+Shift+Q</code></li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:aca2b1bb10f8:0:0" aria-label="Works: W S A Weather &gt; Active Alerts..."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:aca2b1bb10f8:0:1" aria-label="Surface-exact: W S A Weather &gt; Active Alerts..."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:aca2b1bb10f8:0:2" aria-label="Accessible: W S A Weather &gt; Active Alerts..."> A  Weather &gt; Active Alerts...</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:5050d6e106b6:0:0" aria-label="Works: W S A Weather &gt; Add Location..."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5050d6e106b6:0:1" aria-label="Surface-exact: W S A Weather &gt; Add Location..."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5050d6e106b6:0:2" aria-label="Accessible: W S A Weather &gt; Add Location..."> A  Weather &gt; Add Location...</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:4f688db56586:0:0" aria-label="Works: W S A Weather &gt; Settings..."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:4f688db56586:0:1" aria-label="Surface-exact: W S A Weather &gt; Settings..."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:4f688db56586:0:2" aria-label="Accessible: W S A Weather &gt; Settings..."> A  Weather &gt; Settings...</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:c8c0b76b71fa:0:0" aria-label="Works: W S A Weather &gt; Test Alert"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:c8c0b76b71fa:0:1" aria-label="Surface-exact: W S A Weather &gt; Test Alert"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:c8c0b76b71fa:0:2" aria-label="Accessible: W S A Weather &gt; Test Alert"> A  Weather &gt; Test Alert</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:b99446d8a322:0:0" aria-label="Works: W S A Weather &gt; Listen to Local NOAA Weather Radio [area: noaa_radio]"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:b99446d8a322:0:1" aria-label="Surface-exact: W S A Weather &gt; Listen to Local NOAA Weather Radio [area: noaa_radio]"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:b99446d8a322:0:2" aria-label="Accessible: W S A Weather &gt; Listen to Local NOAA Weather Radio [area: noaa_radio]"> A  Weather &gt; Listen to Local NOAA Weather Radio [area: noaa_radio]</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:7d01aa117e3c:0:0" aria-label="Works: W S A Weather &gt; Update NOAA Weather Radio Directory [area: noaa_radio]"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:7d01aa117e3c:0:1" aria-label="Surface-exact: W S A Weather &gt; Update NOAA Weather Radio Directory [area: noaa_radio]"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:7d01aa117e3c:0:2" aria-label="Accessible: W S A Weather &gt; Update NOAA Weather Radio Directory [area: noaa_radio]"> A  Weather &gt; Update NOAA Weather Radio Directory [area: noaa_radio]</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:379f7cd4dd5c:0:0" aria-label="Works: W S A Weather &gt; Start/Stop Weather Monitoring Ctrl+Shift+M [area: monitoring]"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:379f7cd4dd5c:0:1" aria-label="Surface-exact: W S A Weather &gt; Start/Stop Weather Monitoring Ctrl+Shift+M [area: monitoring]"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:379f7cd4dd5c:0:2" aria-label="Accessible: W S A Weather &gt; Start/Stop Weather Monitoring Ctrl+Shift+M [area: monitoring]"> A  Weather &gt; Start/Stop Weather Monitoring  <code>Ctrl+Shift+M [area: monitoring]</code></li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:da092f213931:0:0" aria-label="Works: W S A Weather &gt; Pause/Resume Alert Checks [area: monitoring]"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:da092f213931:0:1" aria-label="Surface-exact: W S A Weather &gt; Pause/Resume Alert Checks [area: monitoring]"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:da092f213931:0:2" aria-label="Accessible: W S A Weather &gt; Pause/Resume Alert Checks [area: monitoring]"> A  Weather &gt; Pause/Resume Alert Checks [area: monitoring]</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:f25af8151036:0:0" aria-label="Works: W S A Weather &gt; Open the Quill Weather App (host apps only)"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:f25af8151036:0:1" aria-label="Surface-exact: W S A Weather &gt; Open the Quill Weather App (host apps only)"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:f25af8151036:0:2" aria-label="Accessible: W S A Weather &gt; Open the Quill Weather App (host apps only)"> A  Weather &gt; Open the Quill Weather App (host apps only)</li>
+</ul>
+<h2>Standalone Quill Weather app chrome</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:55c85a7ebf61:0:0" aria-label="Works: W S A File &gt; Minimize to Tray (Ctrl+W)"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:55c85a7ebf61:0:1" aria-label="Surface-exact: W S A File &gt; Minimize to Tray (Ctrl+W)"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:55c85a7ebf61:0:2" aria-label="Accessible: W S A File &gt; Minimize to Tray (Ctrl+W)"> A  File &gt; Minimize to Tray (Ctrl+W)</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:cfbed172d587:0:0" aria-label="Works: W S A File &gt; Exit"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:cfbed172d587:0:1" aria-label="Surface-exact: W S A File &gt; Exit"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:cfbed172d587:0:2" aria-label="Accessible: W S A File &gt; Exit"> A  File &gt; Exit</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:815e6d0491a9:0:0" aria-label="Works: W S A Options &gt; Start Quill Weather with Windows"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:815e6d0491a9:0:1" aria-label="Surface-exact: W S A Options &gt; Start Quill Weather with Windows"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:815e6d0491a9:0:2" aria-label="Accessible: W S A Options &gt; Start Quill Weather with Windows"> A  Options &gt; Start Quill Weather with Windows</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:eafe34ba50e4:0:0" aria-label="Works: W S A Options &gt; Start minimized to tray"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:eafe34ba50e4:0:1" aria-label="Surface-exact: W S A Options &gt; Start minimized to tray"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:eafe34ba50e4:0:2" aria-label="Accessible: W S A Options &gt; Start minimized to tray"> A  Options &gt; Start minimized to tray</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:51faff601ae4:0:0" aria-label="Works: W S A Options &gt; Close keeps monitoring in tray"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:51faff601ae4:0:1" aria-label="Surface-exact: W S A Options &gt; Close keeps monitoring in tray"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:51faff601ae4:0:2" aria-label="Accessible: W S A Options &gt; Close keeps monitoring in tray"> A  Options &gt; Close keeps monitoring in tray</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:55d7d098bf20:0:0" aria-label="Works: W S A Options &gt; Check for alerts in background"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:55d7d098bf20:0:1" aria-label="Surface-exact: W S A Options &gt; Check for alerts in background"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:55d7d098bf20:0:2" aria-label="Accessible: W S A Options &gt; Check for alerts in background"> A  Options &gt; Check for alerts in background</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:b56aed5ceb4a:0:0" aria-label="Works: W S A Options &gt; Customize Features..."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:b56aed5ceb4a:0:1" aria-label="Surface-exact: W S A Options &gt; Customize Features..."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:b56aed5ceb4a:0:2" aria-label="Accessible: W S A Options &gt; Customize Features..."> A  Options &gt; Customize Features...</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:d6a114c48a0d:0:0" aria-label="Works: W S A Help &gt; Check for Updates"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:d6a114c48a0d:0:1" aria-label="Surface-exact: W S A Help &gt; Check for Updates"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:d6a114c48a0d:0:2" aria-label="Accessible: W S A Help &gt; Check for Updates"> A  Help &gt; Check for Updates</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:6b83ed8c0954:0:0" aria-label="Works: W S A Help &gt; About Quill Weather"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:6b83ed8c0954:0:1" aria-label="Surface-exact: W S A Help &gt; About Quill Weather"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:6b83ed8c0954:0:2" aria-label="Accessible: W S A Help &gt; About Quill Weather"> A  Help &gt; About Quill Weather</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:9a58b55c8d38:0:0" aria-label="Works: W S A Tray &gt; Open Weather Center / Quick Weather / Start-Stop Monitoring"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:9a58b55c8d38:0:1" aria-label="Surface-exact: W S A Tray &gt; Open Weather Center / Quick Weather / Start-Stop Monitoring"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:9a58b55c8d38:0:2" aria-label="Accessible: W S A Tray &gt; Open Weather Center / Quick Weather / Start-Stop Monitoring"> A  Tray &gt; Open Weather Center / Quick Weather / Start-Stop Monitoring</li>
+</ul>
+<h2>Dialog surfaces</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:5d03c1769494:0:0" aria-label="Works: W S A quill/ui/weather/add_location_dialog.py::AddLocationDialog.__init__::wx.Dialog _(hardened_custom)_"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5d03c1769494:0:1" aria-label="Surface-exact: W S A quill/ui/weather/add_location_dialog.py::AddLocationDialog.__init__::wx.Dialog _(hardened_custom)_"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5d03c1769494:0:2" aria-label="Accessible: W S A quill/ui/weather/add_location_dialog.py::AddLocationDialog.__init__::wx.Dialog _(hardened_custom)_"> A  <code>quill/ui/weather/add_location_dialog.py::AddLocationDialog.__init__::wx.Dialog</code>  _(hardened_custom)_</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:c5cf8c1279e8:0:0" aria-label="Works: W S A quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog _(hardened_custom)_"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:c5cf8c1279e8:0:1" aria-label="Surface-exact: W S A quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog _(hardened_custom)_"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:c5cf8c1279e8:0:2" aria-label="Accessible: W S A quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog _(hardened_custom)_"> A  <code>quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog</code>  _(hardened_custom)_</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:fa9f5283798e:0:0" aria-label="Works: W S A quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog _(native)_"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:fa9f5283798e:0:1" aria-label="Surface-exact: W S A quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog _(native)_"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:fa9f5283798e:0:2" aria-label="Accessible: W S A quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog _(native)_"> A  <code>quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog</code>  _(native)_</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:bacfdbbfa8a2:0:0" aria-label="Works: W S A quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog _(hardened_custom)_"> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:bacfdbbfa8a2:0:1" aria-label="Surface-exact: W S A quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog _(hardened_custom)_"> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:bacfdbbfa8a2:0:2" aria-label="Accessible: W S A quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog _(hardened_custom)_"> A  <code>quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog</code>  _(hardened_custom)_</li>
+</ul>
+<h2>Scenario checks</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:a966279471e4:0:0" aria-label="Works: W S A Background Scheduled-Task alert check runs with no Quill process open (Windows toast → SR announces)."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:a966279471e4:0:1" aria-label="Surface-exact: W S A Background Scheduled-Task alert check runs with no Quill process open (Windows toast → SR announces)."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:a966279471e4:0:2" aria-label="Accessible: W S A Background Scheduled-Task alert check runs with no Quill process open (Windows toast → SR announces)."> A  <strong>Background Scheduled-Task alert check runs with no Quill process open</strong> (Windows toast → SR announces).</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:c320a103483c:0:0" aria-label="Works: W S A Severe-weather poll tightening (down to NWS 30s floor) then relaxes."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:c320a103483c:0:1" aria-label="Surface-exact: W S A Severe-weather poll tightening (down to NWS 30s floor) then relaxes."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:c320a103483c:0:2" aria-label="Accessible: W S A Severe-weather poll tightening (down to NWS 30s floor) then relaxes."> A  Severe-weather poll tightening (down to NWS 30s floor) then relaxes.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:d2c477039651:0:0" aria-label="Works: W S A Alert sounder: on/off, custom .wav, repeat count, Play preview."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:d2c477039651:0:1" aria-label="Surface-exact: W S A Alert sounder: on/off, custom .wav, repeat count, Play preview."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:d2c477039651:0:2" aria-label="Accessible: W S A Alert sounder: on/off, custom .wav, repeat count, Play preview."> A  Alert sounder: on/off, custom .wav, repeat count, Play preview.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:5093fa373ea4:0:0" aria-label="Works: W S A Test Alert previews full experience with no network / no state change."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5093fa373ea4:0:1" aria-label="Surface-exact: W S A Test Alert previews full experience with no network / no state change."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5093fa373ea4:0:2" aria-label="Accessible: W S A Test Alert previews full experience with no network / no state change."> A  Test Alert previews full experience with no network / no state change.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:a82799533222:0:0" aria-label="Works: W S A &#x27;Already-told-you&#x27; dedupe shared across the live watch and the background check."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:a82799533222:0:1" aria-label="Surface-exact: W S A &#x27;Already-told-you&#x27; dedupe shared across the live watch and the background check."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:a82799533222:0:2" aria-label="Accessible: W S A &#x27;Already-told-you&#x27; dedupe shared across the live watch and the background check."> A  'Already-told-you' dedupe shared across the live watch and the background check.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-weather:5bbcf6976496:0:0" aria-label="Works: W S A Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized."> W  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5bbcf6976496:0:1" aria-label="Surface-exact: W S A Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized."> S  <input type="checkbox" class="so" data-key="SIGNOFF-weather:5bbcf6976496:0:2" aria-label="Accessible: W S A Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized."> A  Tray hotkey (Ctrl+Alt+Shift+W); start-with-Windows minimized.</li>
+</ul>
+<script>
+(function () {
+  var PREFIX = "quill-signoff:";
+  var boxes = document.querySelectorAll("input.so");
+  function refresh() {
+    var done = 0;
+    boxes.forEach(function (b) { if (b.checked) done++; });
+    document.getElementById("progress").textContent =
+      done + " of " + boxes.length + " boxes checked";
+  }
+  boxes.forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      refresh();
+    });
+  });
+  refresh();
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-signoff-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      boxes.forEach(function (b) {
+        b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
+      });
+      refresh();
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QUILL-1.0.0-SIGNOFF (interactive sign-off)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 60em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  li { margin: 0.35em 0; }
+  input.so { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+          border-bottom: 1px solid GrayText; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; } }
+</style>
+</head>
+<body>
+<div class="bar" role="group" aria-label="Sign-off progress and state">
+  <span id="progress" role="status">Loading…</span>
+  <button id="export">Export progress…</button>
+  <button id="import">Import progress…</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All checklists</a>
+</div>
+<h1>QUILL 1.0.0 — Release Sign-off Test Plan (master)</h1>
+<p><strong>Purpose:</strong> verify <strong>every feature in QUILL</strong> — the editor plus the two public companion apps (<strong>Quill Radio</strong>, <strong>Quill Weather</strong>) — works, presents an exact surface, and is accessible, under <strong>both portable and system installs</strong>. Nothing ships until every applicable box is checked.</p>
+<p><strong>Scope (derived from the codebase, not memory):</strong> ~290 feature sub-items across 22 areas · 3 menu bars (~480–500 editor leaves + Radio ~10 / Weather ~7 top menus) · 227 distinct custom dialogs + 376 native + 7 web-form. Companion apps Cast / Studio / Converter / Beacon, the Media Player, and the editor-embedded <strong>Podcasts</strong> feature (<code>core.podcasts</code>) are <strong>gated (dev/admin only)</strong> for 1.0.0 and are verified only for *absence* from public surfaces (§G) — do <strong>not</strong> sign them off as public editor features. Internet Radio and the Book Library are public and are signed off in full.</p>
+<h2>How to use this pack</h2>
+<p>Each checklist item is verified on three axes:</p>
+<ul>
+<li>**<input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:80bef2b2c2f9:0:0" aria-label="Works: Works — the action does what it says, no error/crash."> Works** — the action does what it says, no error/crash.</li>
+<li>**<input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:4fbb01dfabc7:0:0" aria-label="Surface-exact: Surface-exact — label, shortcut, and menu path exactly match the reference inventory (signoff/inventory/), and the accessible name is correct."> Surface-exact** — label, shortcut, and menu path exactly match the reference inventory (<code>signoff/inventory/</code>), and the accessible name is correct.</li>
+<li>**<input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:f2f94a8738e0:0:0" aria-label="Accessible: A11y — keyboard-reachable, focus correct, and the outcome is announced (speech + braille), no silent state change."> A11y<strong> — keyboard-reachable, focus correct, and the outcome is </strong>announced** (speech + braille), no silent state change.</li>
+</ul>
+<p>Run the <strong>entire pass once per environment</strong> in §A. A feature is "signed off" only when it passes on <strong>every applicable environment</strong>.</p>
+<p>Files in this pack:</p>
+<p>- <code>QUILL-1.0.0-SIGNOFF.md</code> — this master (harness + cross-cutting matrices + readiness summary).</p>
+<p>- <code>signoff/SIGNOFF-editor.md</code> — every editor menu/command/dialog (generated).</p>
+<p>- <code>signoff/SIGNOFF-radio.md</code> · <code>signoff/SIGNOFF-weather.md</code> — the public companion apps.</p>
+<p>- <code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface (generated from the A11Y-4 registry).</p>
+<p>- <code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system scenario deep-dive.</p>
+<p>---</p>
+<h2>§A. Environment matrix — run the whole pack in EACH</h2>
+<p>Because install-mode behavior is governed by <strong>three independent "portable" signals that can disagree</strong> (data-dir, secrets/<code>QUILL_PORTABLE</code>, update-asset), each must be exercised, per OS.</p>
+<p>| # | Environment | Data dir | Secrets backend | Update path | Must run |</p>
+<p>|---|---|---|---|---|---|</p>
+<p>| E1 | <strong>Windows — system install</strong> (Inno, no <code>data/</code>) | <code>%APPDATA%\Quill</code> | Windows Credential Manager | installer <code>setup.exe</code> | ✅ |</p>
+<p>| E2 | <strong>Windows — portable ZIP</strong> (<code>data/</code> beside exe, <code>QUILL_PORTABLE=1</code>) | <code>&lt;app&gt;\data</code> | DPAPI <code>keys.enc</code> (<code>quill-portable-keys-v1</code>) | portable <code>.zip</code> robocopy | ✅ |</p>
+<p>| E3 | <strong>Windows — installed but ships <code>data/</code></strong> (the split-signal case, #1100) | resolves per <code>storage-mode.json</code> | <strong>DPAPI <code>keys.enc</code></strong> even if data is <code>%APPDATA%</code> | installer (via <code>unins000</code> marker) | ✅ |</p>
+<p>| E4 | <strong>Windows — custom data location</strong> (<code>Settings ▸ data location</code>) | user-chosen path | per <code>QUILL_PORTABLE</code> | per detection | ✅ |</p>
+<p>| E5 | <strong>macOS — app bundle</strong> | <code>~/.quill</code> (or chosen) | login <strong>Keychain</strong> (no portable single-folder store — expect the one-time warning) | <code>.dmg</code>/<code>.pkg</code> | ✅ |</p>
+<p>| E6 | <strong>Safe Mode</strong> (<code>QUILL_SAFE_MODE=1</code>, both portable + system) | as above | as above | n/a | ✅ (network/AI/plugins off) |</p>
+<ul>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:0" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E1 pass complete  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:1" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E2  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:2" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E3  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:3" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E4  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:4" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E5  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:5" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E6</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:ff29dd9f0b01:0:0" aria-label="Done: Cross-signal check: in E3, confirm keys.enc lands where product intent expects (it follows the resolved data dir, so an appdata data-dir + QUILL_PORTABLE=1 writ"> <strong>Cross-signal check:</strong> in E3, confirm <code>keys.enc</code> lands where product intent expects (it follows the *resolved data dir*, so an appdata data-dir + <code>QUILL_PORTABLE=1</code> writes <code>%APPDATA%\Quill\keys.enc</code>). Record actual vs. intended.</li>
+</ul>
+<p>Full per-scenario cases: <strong><code>signoff/SIGNOFF-install-matrix.md</code></strong>.</p>
+<p>---</p>
+<h2>§B. Editor — feature/command/surface sign-off</h2>
+<p>Every editor menu (File · Edit · View · Insert · Format · Navigate · Search · Tools · AI · [ADP] · Window · QuillVille · Help) with each leaf item and dialog. See <strong><code>signoff/SIGNOFF-editor.md</code></strong> (generated from the command registry + menu tree + dialog registry). Section is complete when every item there is triple-checked across §A environments.</p>
+<h2>§C. Quill Radio (public) — sign-off</h2>
+<p>Station · Playback · [Record] · [Weather] · [ADP] · View · QuillVille · Quillins · Help. Every item + all 15 Radio custom dialogs (+21 native). See <strong><code>signoff/SIGNOFF-radio.md</code></strong>. Include: playback survives dropped connection, scheduled recording fires, favorites order preserved, backup/restore round-trip, autostart, missed-recording report.</p>
+<h2>§D. Quill Weather (public) — sign-off</h2>
+<p>File · Weather · Options · [ADP] · QuillVille · Help. Every item + WeatherCenter/AddLocation/Settings dialogs. See <strong><code>signoff/SIGNOFF-weather.md</code></strong>. Include: background Scheduled-Task alert check (no process running), severe-weather poll tightening, alert sounder options, Test Alert, "already-told-you" dedupe across live + background.</p>
+<h2>§E. Dialogs — every surface</h2>
+<p>All 227 custom + 376 native + 7 web-form dialogs, grouped by area, each verified: opens, keyboard-complete, accessible name/role, Escape/Close contract, announces its outcome. See <strong><code>signoff/SIGNOFF-dialogs.md</code></strong> (generated).</p>
+<p>---</p>
+<h2>§F. Cross-cutting — accessibility (applies to every item above)</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:ab517fdbe049:0:0" aria-label="Done: Every focusable control has an accessible name (audited by accessible_name_audit)."> Every focusable control has an accessible <strong>name</strong> (audited by <code>accessible_name_audit</code>).</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:b718517332c1:0:0" aria-label="Done: Every dialog honors the Escape/Close contract (apply_modal_ids) and is registered in the A11Y-4 dialog inventory."> Every dialog honors the <strong>Escape/Close</strong> contract (<code>apply_modal_ids</code>) and is registered in the A11Y-4 dialog inventory.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:425d66a06368:0:0" aria-label="Done: Every user-visible outcome is announced (GATE-12 announce-gap); no silent state changes."> Every user-visible outcome is <strong>announced</strong> (GATE-12 announce-gap); no silent state changes.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:439ef90ab3d6:0:0" aria-label="Done: Menu items expose correct mnemonics + shortcuts; no mnemonic collisions introduced."> Menu items expose correct <strong>mnemonics + shortcuts</strong>; no mnemonic collisions introduced.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:99547ae63447:0:0" aria-label="Done: Braille output routes for announcements across Editor + Radio + Cast (the #1283 path)."> Braille output routes for announcements across Editor + Radio + Cast (the #1283 path).</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:68bc9506a0d8:0:0" aria-label="Surface-exact: Screen readers verified: NVDA, JAWS, Narrator (Windows) and VoiceOver (macOS)."> Screen readers verified: <strong>NVDA, JAWS, Narrator</strong> (Windows) and <strong>VoiceOver</strong> (macOS).</li>
+</ul>
+<h2>§G. Gating verification — non-public apps MUST be absent from public surfaces</h2>
+<p>With the release/dev flag OFF (default public build), confirm these are <strong>not reachable</strong>:</p>
+<ul>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:62e8d0774100:0:0" aria-label="Done: QuillVille menu lists only Open QUILL / Quill Radio / Quill Weather (Cast, Studio, Converter, Beacon hidden — RELEASED_APPS)."> <strong>QuillVille menu</strong> lists only Open QUILL / Quill Radio / Quill Weather (Cast, Studio, Converter, Beacon hidden — <code>RELEASED_APPS</code>).</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:2c29d9689eac:0:0" aria-label="Done: Tools ▸ Media ▸ Media Player (app.open_media_player) is hidden/gated."> <strong>Tools ▸ Media ▸ Media Player</strong> (<code>app.open_media_player</code>) is hidden/gated.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:e8988f0d28c9:0:0" aria-label="Done: The standalone Audio Studio launcher (QuillVille) is gated. (Note: Tools ▸ Speech ▸ Audiobook &amp; Batch Speech… / tools.speech_batch_export is the editor-embedded"> The <strong>standalone Audio Studio</strong> launcher (QuillVille) is gated. *(Note: <code>Tools ▸ Speech ▸ Audiobook &amp; Batch Speech…</code> / <code>tools.speech_batch_export</code> is the editor-embedded batch document-to-speech wizard, NOT the standalone app — it stays. It was relabelled from "Audio Studio…" to remove the name clash.)*</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:9f5cd4858bac:0:0" aria-label="Done: Quill Cast / Converter / Beacon launchers, command-palette commands, Explorer &quot;Convert with Quill&quot; shell verb, and build products are gated."> <strong>Quill Cast / Converter / Beacon</strong> launchers, command-palette commands, Explorer "Convert with Quill" shell verb, and build products are gated.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:fad22b74e736:0:0" aria-label="Done: Command palette does not surface gated-app commands."> Command palette does not surface gated-app commands.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:b3732e7d46b3:0:0" aria-label="Done: Podcasts (core.podcasts) is absent from the editor: no Tools ▸ Media ▸ Podcasts items, no podcasts. commands in the command palette, no Podcasts status-bar cell"> <strong>Podcasts (<code>core.podcasts</code>)</strong> is absent from the editor: no <code>Tools ▸ Media ▸ Podcasts</code> items, no <code>podcasts.*</code> commands in the command palette, no Podcasts status-bar cell or tray section, no Podcasts entries in <code>Tools ▸ Global Hotkeys</code>, no Podcasts chords on the QUILL-key cheat sheet, and no Podcasts row in <code>Manage Individual Features</code>. The background new-episode check never runs. (<code>QUILL_DEV_BUILD=1</code> restores all of it.)</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:def378c08dfb:0:0" aria-label="Done: Radio + Weather remain fully public and unaffected; Book Library (core.library) remains public — Tools ▸ Media carries Radio, Book Library, and Sleep Timer."> Radio + Weather remain fully public and unaffected; <strong>Book Library</strong> (<code>core.library</code>) remains public — <code>Tools ▸ Media</code> carries Radio, Book Library, and Sleep Timer.</li>
+<li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:fc22c1a38ad6:0:0" aria-label="Accessible: Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable)."> Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable).</li>
+</ul>
+<p>Already-gated (verify still correct): Podcasts (<code>core.podcasts</code>, unreleased in public builds — see above), ADP (<code>future.adp_assistant</code>, default ON — decide for 1.0), Publishing send half (<code>future.publishing</code>), Spotify (<code>future.spotify</code>), GLOW (<code>core.glow</code>), BITS Whisperer (<code>core.bw_whisperer</code>), third-party Quillins (locked; bundled load regardless).</p>
+<p>---</p>
+<h2>§H. Readiness summary (fill as sections complete)</h2>
+<p>| Area | Items | Signed off (E1–E6) |</p>
+<p>|---|---|---|</p>
+<p>| Editor (§B) | ~500 menu + 179 dialogs | ☐ |</p>
+<p>| Radio (§C) | ~10 menus + 15 dialogs | ☐ |</p>
+<p>| Weather (§D) | ~7 menus + 3 dialogs | ☐ |</p>
+<p>| Dialogs (§E) | 227 custom + 376 native + 7 web | ☐ |</p>
+<p>| Accessibility (§F) | cross-cutting | ☐ |</p>
+<p>| Gating (§G) | non-public absent | ☐ |</p>
+<p>| Install matrix | E1–E6 all scenarios | ☐ |</p>
+<p><strong>1.0.0 is ready to test when every box in §A–§G is checked and this table is all ✅.</strong></p>
+<script>
+(function () {
+  var PREFIX = "quill-signoff:";
+  var boxes = document.querySelectorAll("input.so");
+  function refresh() {
+    var done = 0;
+    boxes.forEach(function (b) { if (b.checked) done++; });
+    document.getElementById("progress").textContent =
+      done + " of " + boxes.length + " boxes checked";
+  }
+  boxes.forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      refresh();
+    });
+  });
+  refresh();
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-signoff-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      boxes.forEach(function (b) {
+        b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
+      });
+      refresh();
+    });
+  });
+})();
+</script>
+</body>
+</html>

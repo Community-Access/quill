@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QUILL sign-off index (interactive sign-off)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 60em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  li { margin: 0.35em 0; }
+  input.so { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+          border-bottom: 1px solid GrayText; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; } }
+</style>
+</head>
+<body>
+<div class="bar" role="group" aria-label="Sign-off progress and state">
+  <span id="progress" role="status">Loading…</span>
+  <button id="export">Export progress…</button>
+  <button id="import">Import progress…</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All checklists</a>
+</div>
+<h1>QUILL 1.0.0 sign-off — interactive checklists</h1><p>Open a checklist, check boxes as you verify; state is saved in the browser (localStorage) the moment a box is toggled and restored when you come back — including after closing the browser. Use Export on each page to back up progress to a JSON file.</p><ul><li><a href="QUILL-1.0.0-SIGNOFF.html">QUILL-1.0.0-SIGNOFF</a> (24 boxes)</li><li><a href="SIGNOFF-dialogs.html">SIGNOFF-dialogs</a> (1935 boxes)</li><li><a href="SIGNOFF-editor.html">SIGNOFF-editor</a> (1932 boxes)</li><li><a href="SIGNOFF-gated-apps.html">SIGNOFF-gated-apps</a> (132 boxes)</li><li><a href="SIGNOFF-install-matrix.html">SIGNOFF-install-matrix</a> (33 boxes)</li><li><a href="SIGNOFF-radio.html">SIGNOFF-radio</a> (216 boxes)</li><li><a href="SIGNOFF-weather.html">SIGNOFF-weather</a> (93 boxes)</li></ul>
+<script>
+(function () {
+  var PREFIX = "quill-signoff:";
+  var boxes = document.querySelectorAll("input.so");
+  function refresh() {
+    var done = 0;
+    boxes.forEach(function (b) { if (b.checked) done++; });
+    document.getElementById("progress").textContent =
+      done + " of " + boxes.length + " boxes checked";
+  }
+  boxes.forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      refresh();
+    });
+  });
+  refresh();
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-signoff-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      boxes.forEach(function (b) {
+        b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
+      });
+      refresh();
+    });
+  });
+})();
+</script>
+</body>
+</html>

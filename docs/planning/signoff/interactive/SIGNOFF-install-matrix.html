@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIGNOFF-install-matrix (interactive sign-off)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 60em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  li { margin: 0.35em 0; }
+  input.so { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+          border-bottom: 1px solid GrayText; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; } }
+</style>
+</head>
+<body>
+<div class="bar" role="group" aria-label="Sign-off progress and state">
+  <span id="progress" role="status">Loading…</span>
+  <button id="export">Export progress…</button>
+  <button id="import">Import progress…</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All checklists</a>
+</div>
+<h1>QUILL 1.0.0 Sign-off — Installation-mode matrix (portable vs system, all scenarios)</h1>
+<p>Install-mode behavior is governed by <strong>three independent "portable" signals that can disagree</strong>: (1) <strong>data-dir</strong> (<code>storage_mode.py</code>/<code>storage-mode.json</code>), (2) <strong>secrets</strong> (<code>QUILL_PORTABLE=1</code> → DPAPI <code>keys.enc</code> vs Credential Manager), (3) <strong>update-asset</strong> (<code>updates.running_portable()</code>, subtracts the <code>unins000</code> marker). Every scenario below must be run for <strong>QUILL editor, Quill Radio, and Quill Weather</strong>. Legend per box: <strong>[ ]</strong> = verified.</p>
+<h2>Environments (run the whole sign-off in each)</h2>
+<p>- <strong>E1 Windows system install</strong> (Inno, no <code>data/</code>) · <strong>E2 Windows portable ZIP</strong> (<code>data/</code> beside exe) · <strong>E3 Windows installed-but-ships-<code>data/</code></strong> (split-signal, #1100) · <strong>E4 Windows custom data location</strong> · <strong>E5 macOS bundle</strong> · <strong>E6 Safe Mode</strong> (portable + system).</p>
+<p>---</p>
+<h2>1. Data directory &amp; settings location</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:7e31b21d1a14:0:0" aria-label="Done: E1 data + settings.json resolve to %APPDATA%\Quill."> E1 data + <code>settings.json</code> resolve to <code>%APPDATA%\Quill</code>.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:4b4f154d8c8b:0:0" aria-label="Done: E2 data + settings resolve to &lt;app&gt;\data; nothing written under %APPDATA%."> E2 data + settings resolve to <code>&lt;app&gt;\data</code>; nothing written under <code>%APPDATA%</code>.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:da792ef36038:0:0" aria-label="Done: E3 data resolves per storage-mode.json; confirm no accidental split (data in appdata while app &quot;feels&quot; portable)."> E3 data resolves per <code>storage-mode.json</code>; confirm no accidental split (data in appdata while app "feels" portable).</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:5983cfb69bb2:0:0" aria-label="Done: E4 custom path honored; pending-data-location.json applied on next launch before dirs resolve."> E4 custom path honored; <code>pending-data-location.json</code> applied on next launch before dirs resolve.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:6cb89f1b2ea0:0:0" aria-label="Done: E5 data resolves to ~/.quill (or chosen); storage-mode.json under it."> E5 data resolves to <code>~/.quill</code> (or chosen); <code>storage-mode.json</code> under it.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:239f9d254e93:0:0" aria-label="Done: ensure_app_directories creates logs / diagnostics / backups / autosave / sessions in the resolved dir (all E)."> <code>ensure_app_directories</code> creates logs / diagnostics / backups / autosave / sessions in the resolved dir (all E).</li>
+</ul>
+<h2>2. Credential / API-key &amp; secret storage (the highest-risk axis)</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:3c3f732c7fb6:0:0" aria-label="Done: E1 (Windows, QUILL_PORTABLE unset): secrets in Windows Credential Manager (CRED_PERSIST_LOCAL_MACHINE); nothing in a keys.enc."> E1 (Windows, <code>QUILL_PORTABLE</code> unset): secrets in <strong>Windows Credential Manager</strong> (<code>CRED_PERSIST_LOCAL_MACHINE</code>); nothing in a <code>keys.enc</code>.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:f6dc5c5f7379:0:0" aria-label="Done: E2 (Windows, QUILL_PORTABLE=1): secrets in DPAPI keys.enc in the resolved data dir, entropy quill-portable-keys-v1, per-key CryptProtectData."> E2 (Windows, <code>QUILL_PORTABLE=1</code>): secrets in <strong>DPAPI <code>keys.enc</code></strong> in the resolved data dir, entropy <code>quill-portable-keys-v1</code>, per-key <code>CryptProtectData</code>.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:204caf036626:0:0" aria-label="Done: E3 split-signal: with QUILL_PORTABLE=1 but data in %APPDATA%, confirm keys.enc lands in %APPDATA%\Quill\keys.enc (follows resolved data dir). Record actual vs p"> <strong>E3 split-signal:</strong> with <code>QUILL_PORTABLE=1</code> but data in <code>%APPDATA%</code>, confirm <code>keys.enc</code> lands in <code>%APPDATA%\Quill\keys.enc</code> (follows resolved data dir). <strong>Record actual vs product intent</strong> — keystore backend is chosen by bundle layout, not the user's storage choice.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:21dfe9909316:0:0" aria-label="Done: Env override QUILL_&lt;KEY&gt;_KEY wins in every mode and is never overwritten/persisted."> Env override <code>QUILL_&lt;KEY&gt;_KEY</code> wins in every mode and is never overwritten/persisted.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:af99468170a4:0:0" aria-label="Done: E5 macOS: secrets in login Keychain both modes; portable shows the one-time &quot;system-level storage&quot; warning (no silent drop); DPAPI path never taken (raises off-"> E5 macOS: secrets in <strong>login Keychain</strong> both modes; portable shows the one-time "system-level storage" warning (no silent drop); DPAPI path never taken (raises off-Windows).</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:9fec9b4bf6de:0:0" aria-label="Done: Linux/other: no secure store — save/load/delete return empty/None/False gracefully (no crash), both modes."> Linux/other: no secure store — save/load/delete return empty/None/False gracefully (no crash), both modes.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:574fca086d6b:0:0" aria-label="Surface-exact: Sign-out of a service wipes only that service&#x27;s namespace; nothing left behind."> Sign-out of a service wipes only that service's namespace; nothing left behind.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:60d8eb861960:0:0" aria-label="Done: Redaction: no token/key survives logs, diagnostics, or crash bundle (SEC-13) in any mode."> Redaction: no token/key survives logs, diagnostics, or crash bundle (SEC-13) in any mode.</li>
+</ul>
+<h2>3. Updates</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:67c72365c7c5:0:0" aria-label="Done: E1/E3: offered the platform installer (.exe/.msi; macOS .dmg/.pkg); applies via elevated silent setup.exe, then relaunch."> E1/E3: offered the <strong>platform installer</strong> (<code>.exe</code>/<code>.msi</code>; macOS <code>.dmg</code>/<code>.pkg</code>); applies via elevated silent <code>setup.exe</code>, then relaunch.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:b54bf2995905:0:0" aria-label="Done: E2: offered the portable .zip (name contains portable); applies via robocopy /MIR excluding data/, then relaunch; zip-slip/bomb guard holds."> E2: offered the <strong>portable <code>.zip</code></strong> (name contains <code>portable</code>); applies via <code>robocopy /MIR</code> <strong>excluding <code>data/</code></strong>, then relaunch; zip-slip/bomb guard holds.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:6bbbadc5f2bc:0:0" aria-label="Done: E3 disambiguation (#1100): running_portable() returns False for an installed build with {app}\data because of the unins000 marker → gets the installer (not the "> E3 disambiguation (#1100): <code>running_portable()</code> returns <strong>False</strong> for an installed build with <code>{app}\data</code> because of the <code>unins000</code> marker → gets the installer (not the portable zip).</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:a1e437cd8fdb:0:0" aria-label="Done: Update discovery is HTTPS-only, trusted-host allowlisted, signed-manifest verified — identical all modes."> Update discovery is HTTPS-only, trusted-host allowlisted, signed-manifest verified — identical all modes.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:7d6b968a38c7:0:0" aria-label="Done: Dev/non-frozen run: update falls back to &quot;reveal download&quot; (no crash) instead of applying."> Dev/non-frozen run: update falls back to "reveal download" (no crash) instead of applying.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:54f559096190:0:0" aria-label="Done: Companion apps (Radio/Weather) resolve their own portable/installed verdict correctly (they use a bare unins000-beside-exe check + prefer_portable)."> Companion apps (Radio/Weather) resolve their own portable/installed verdict correctly (they use a bare <code>unins000</code>-beside-exe check + <code>prefer_portable</code>).</li>
+</ul>
+<h2>4. First-run, migration &amp; import</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:1d1fbd971464:0:0" aria-label="Done: Fresh install triggers the Startup Wizard (nine pages); quill-new-install.txt marker consumed even if appdata says &quot;done.&quot;"> Fresh install triggers the <strong>Startup Wizard</strong> (nine pages); <code>quill-new-install.txt</code> marker consumed even if appdata says "done."</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:d3b7943e1ae1:0:0" aria-label="Done: Change data location: recorded as pending, applied next launch; portable target = portable_root_dir(), appdata = %APPDATA%\Quill/~/.quill, custom = saved path."> Change data location: recorded as pending, applied next launch; portable target = <code>portable_root_dir()</code>, appdata = <code>%APPDATA%\Quill</code>/<code>~/.quill</code>, custom = saved path.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:0ccd6a3abcd1:0:0" aria-label="Done: Import stranded prior-install data: on a fresh data dir, QUILL offers to import a populated prior location (old portable data/ ↔ appdata); location-control file"> Import stranded prior-install data: on a fresh data dir, QUILL offers to import a populated prior location (old portable <code>data/</code> ↔ appdata); location-control files are <strong>not</strong> carried over.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:8d1337e751dd:0:0" aria-label="Surface-exact: Settings schema migration (delta-based, schema_version 2): legacy backed up to &lt;data&gt;/migration-backups/ before rewrite; corrupt settings quarantined, not lost "> Settings schema migration (delta-based, <code>schema_version 2</code>): legacy backed up to <code>&lt;data&gt;/migration-backups/</code> before rewrite; corrupt settings quarantined, not lost — backup dir follows the resolved data dir in every mode.</li>
+</ul>
+<h2>5. Safe Mode (install-mode-independent — verify it does NOT differ)</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:a581332c748a:0:0" aria-label="Done: QUILL_SAFE_MODE=1 / --safe-mode disables plugins, AI, network, restore, indexing, watchers, themes, snippets — identical in portable and system."> <code>QUILL_SAFE_MODE=1</code> / <code>--safe-mode</code> disables plugins, AI, network, restore, indexing, watchers, themes, snippets — identical in portable and system.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:9ba53312fd97:0:0" aria-label="Done: Verbosity Safe Mode (QUILL_VERBOSITY_SAFE_MODE=1) ignores custom verbosity — mode-independent."> Verbosity Safe Mode (<code>QUILL_VERBOSITY_SAFE_MODE=1</code>) ignores custom verbosity — mode-independent.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:c468e31fdc0c:0:0" aria-label="Done: Book Library, Radio, Weather network features all refuse in Safe Mode."> Book Library, Radio, Weather network features all refuse in Safe Mode.</li>
+</ul>
+<h2>6. Portable-specific behaviors</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:e8f02263a6c6:0:0" aria-label="Done: Everything (data, settings, secrets, logs) stays inside the app folder only when all three signals agree (E2). Document any case where they don&#x27;t."> Everything (data, settings, secrets, logs) stays inside the app folder <strong>only when all three signals agree</strong> (E2). Document any case where they don't.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:6f4d2e741b1b:0:0" aria-label="Done: Moving the portable folder to another machine/drive: DPAPI keys.enc is machine/account-bound — confirm the documented re-entry behavior (keys don&#x27;t transfer), n"> Moving the portable folder to another machine/drive: DPAPI <code>keys.enc</code> is machine/account-bound — confirm the documented re-entry behavior (keys don't transfer), no crash.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:d0829edb03b8:0:0" aria-label="Done: Portable on a read-only/USB medium: storage-mode.json falls back to appdata path gracefully."> Portable on a read-only/USB medium: <code>storage-mode.json</code> falls back to appdata path gracefully.</li>
+</ul>
+<h2>7. Per-app install-mode pass</h2>
+<ul>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:8fc653802bcb:0:0" aria-label="Done: Editor: all of §1–§6."> <strong>Editor:</strong> all of §1–§6.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:6bb8259a9cbf:0:0" aria-label="Done: Quill Radio: data/settings/secrets/updates verdict correct in E1–E5; stations &amp; recordings land in the right place; .qrbackup restore works portable + system."> <strong>Quill Radio:</strong> data/settings/secrets/updates verdict correct in E1–E5; stations &amp; recordings land in the right place; <code>.qrbackup</code> restore works portable + system.</li>
+<li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:8ea11b382fe5:0:0" aria-label="Done: Quill Weather: data/settings/updates verdict correct; the background Scheduled-Task registers per-user and fires in both install modes; alert dedupe store follo"> <strong>Quill Weather:</strong> data/settings/updates verdict correct; the <strong>background Scheduled-Task</strong> registers per-user and fires in both install modes; alert dedupe store follows the data dir.</li>
+</ul>
+<blockquote><p><strong>Landmine to watch (from code):</strong> <code>is_portable_mode()</code> reads only <code>QUILL_PORTABLE</code>, which the launcher sets whenever <code>data/</code> exists beside the exe — so a build shipping <code>data/</code> writes DPAPI <code>keys.enc</code> even if the user picked appdata storage. Verify this matches product intent before sign-off.</p></blockquote>
+<script>
+(function () {
+  var PREFIX = "quill-signoff:";
+  var boxes = document.querySelectorAll("input.so");
+  function refresh() {
+    var done = 0;
+    boxes.forEach(function (b) { if (b.checked) done++; });
+    document.getElementById("progress").textContent =
+      done + " of " + boxes.length + " boxes checked";
+  }
+  boxes.forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      refresh();
+    });
+  });
+  refresh();
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-signoff-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      boxes.forEach(function (b) {
+        b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
+      });
+      refresh();
+    });
+  });
+})();
+</script>
+</body>
+</html>
