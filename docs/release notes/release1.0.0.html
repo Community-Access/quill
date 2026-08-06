@@ -209,13 +209,11 @@ an optional AI suite, and an extension system. It is the program most of
 this document is about.</p>
 <p><strong>Quill Radio</strong> is a standalone internet radio player: a
 real window with its own menu bar, its own tray icon, favorites,
-recording, scheduled recording, and a built-in weather center. Nearly
-all of it is also available inside the editor, because both run the same
-code and share the same favorites and settings, but Quill Radio opens in
-seconds when you just want the radio on and do not want to load an
-editor to get it, and a handful of listener-side features live only in
-the standalone app. Those are named where they come up in the Quill
-Radio section below.</p>
+recording, scheduled recording, and a built-in weather center. It runs
+the same code and shares the same favorites and settings as the rest of
+the family, and opens in seconds when you just want the radio on and do
+not want to load an editor to get it. It is one keystroke from QUILL
+through the QuillVille switcher.</p>
 <p><strong>Quill Weather</strong> is a standalone tray application that
 watches the National Weather Service for watches, warnings, and
 advisories at the places you care about, and speaks them to you the
@@ -1667,34 +1665,6 @@ opened for rich editing appear as accessible tables you can read and
 jump to with single-key navigation rather than being silently
 dropped.</p>
 <hr />
-<h2 id="the-book-library">The Book Library</h2>
-<p><strong>The Book Library</strong>, at <strong>Tools &gt; Media &gt;
-Book Library</strong>, is one search box across free, accessible reading
-sources:</p>
-<ul>
-<li><strong>Project Gutenberg</strong>, through the Gutendex API.</li>
-<li><strong>Standard Ebooks</strong> and <strong>Feedbooks</strong>,
-through their public OPDS catalogues.</li>
-<li><strong>Google Books</strong>.</li>
-<li><strong>NLS BARD</strong>, the catalogue of the National Library
-Service for the Blind and Print Disabled at the Library of
-Congress.</li>
-</ul>
-<p>Search by title, author, or subject, with results in a single-select,
-fully keyboard- and screen-reader-friendly list, a find-in-results box,
-and a spoken status line. For Gutenberg, Standard Ebooks, and Feedbooks,
-a chosen title opens directly in QUILL's reader as plain text or
-EPUB.</p>
-<p>BARD works differently, and QUILL is explicit about why. BARD
-catalogue entries are listings, not files: borrowing a title requires an
-eligible BARD patron account, which you set up and use on the BARD
-website. Every BARD result therefore offers <strong>Open in
-BARD</strong>, which opens that title's official Library of Congress
-page in your browser, where you sign in and download. QUILL never asks
-for or stores your BARD credentials. The search itself uses BARD's free
-public API, with nothing sent but the words you searched for.</p>
-<p>Like every library source, it is disabled in Safe Mode.</p>
-<hr />
 <h2 id="git-and-github">Git and GitHub</h2>
 <p>Version control is one of the least accessible corners of computing:
 punctuation-heavy text, visually arranged differences, and interactive
@@ -1924,26 +1894,19 @@ href="../tutorials/08-github-inside-quill.md">Tutorial 8: GitHub inside
 QUILL</a>.</p>
 <hr />
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Quill Radio is a full internet radio player. It comes two ways.
-Inside the editor it lives on <strong>Tools &gt; Media</strong>, where
-the radio commands sit directly on that menu rather than in a submenu of
-their own: Browse Stations, Add Custom Station, Find Streams from a
-Website, Manage Favorites, Play Last Station, What's Playing, the
-transport and volume controls, and the whole recording group.
-Separately, it is a standalone application with its own window, menu
-bar, and tray icon, for the times you want the radio on without loading
-an editor.</p>
-<p>They are the same code and the same settings: a station you favorite
-in one is there in the other. What the standalone app adds is the
-listener-side furniture that an editor has no sensible place for, and
-this document flags each of those as it comes up. They are:
-<strong>Sound Enhancements</strong> and the <strong>radio output
-device</strong> chooser (in the editor, Sound Enhancements is reachable
-from the Command Palette but is not on any menu, and the output device
-is a saved setting with no chooser); the <strong>Station
-Details</strong> command on a favorite; <strong>back up and
-restore</strong>; <strong>Customize Features</strong>; and <strong>Start
-Quill Radio with Windows</strong>.</p>
+<p>Quill Radio is a full internet radio player: a standalone application
+with its own window, menu bar, and tray icon, for the times you want the
+radio on without loading an editor. It is one keystroke from QUILL
+through the <strong>QuillVille</strong> switcher (<strong>Alt+Q → Open
+Quill Radio</strong>).</p>
+<p>It runs the same code and reads the same settings as the rest of the
+family: a station you favorite is there next time, in every app. Its
+menus carry the full listener-side furniture — <strong>Sound
+Enhancements</strong> and the <strong>radio output device</strong>
+chooser; the <strong>Station Details</strong> command on a favorite;
+<strong>back up and restore</strong>; <strong>Customize
+Features</strong>; and <strong>Start Quill Radio with
+Windows</strong>.</p>
 <h3 id="finding-something-to-listen-to">Finding something to listen
 to</h3>
 <p><strong>Browse Stations</strong> searches <a
@@ -2030,37 +1993,29 @@ custom-station dialog, or the link finder never stops the music, which
 is what makes "listen while you keep writing" actually work.</p>
 <p>Playback controls cover Play and Pause, Stop, Play Last Station, Jump
 to Live, Rewind 30 seconds and Forward 30 seconds, volume up and down,
-mute, and a volume boost, in both the editor and the standalone app. Two
-more are standalone-app menu items: <strong>Sound Enhancements</strong>,
-a three-band equalizer and compressor that can be set once for
-everything or remembered per station, and the <strong>radio output
-device</strong> chooser, which sends the music to a different device
-than your screen reader. Radio's volume is its own, separate from your
-Windows system volume and separate from your screen reader's speech
+mute, and a volume boost. Two more sit on its menus: <strong>Sound
+Enhancements</strong>, a three-band equalizer and compressor that can be
+set once for everything or remembered per station, and the <strong>radio
+output device</strong> chooser, which sends the music to a different
+device than your screen reader. Radio's volume is its own, separate from
+your Windows system volume and separate from your screen reader's speech
 volume, so you can set the music quietly under your speech without
 touching either. Your volume is remembered between sessions.</p>
-<p><strong>Tools &gt; Media &gt; Sleep Timer</strong>, in the editor,
-ends a listening session gently: choose a preset or type a custom
-duration, and the radio fades to silence rather than cutting off
-mid-sentence, then stops, with your volume restored to what it was so
-pressing play later is not a quiet surprise.</p>
+<p>A <strong>Sleep Timer</strong> ends a listening session gently:
+choose a preset or type a custom duration, and the radio fades to
+silence rather than cutting off mid-sentence, then stops, with your
+volume restored to what it was so pressing play later is not a quiet
+surprise.</p>
 <p><strong>Announce Track Titles</strong> can be toggled. <strong>What's
 Playing</strong> speaks the current track; <strong>What's Playing
 (Review and Copy)</strong> opens a read-only window you can arrow
 through and copy from; <strong>Copy What's Playing</strong> puts it on
 the clipboard. A stream that carries no titles says so rather than going
 silent on you.</p>
-<p>Inside the editor, a <strong>Radio</strong> status-bar cell appears
-once something is playing, showing the station and state, with play and
-pause on Enter and a context menu offering Stop, Mute, a Favorite
-Stations quick-switch, and a way back into the browser. Minimize to the
-tray and the same controls follow, along with a live now-playing line.
-Direct chords reach it without leaving the editor at all, and every one
-of them is remappable.</p>
-<p>The standalone app opens onto a real working surface rather than an
-empty window: focus starts in your Favorite stations list, so you arrow
-to a station and press Enter and you are listening. Its menu bar carries
-a Station menu (Browse Stations, Add Custom Station, Find Streams from a
+<p>The app opens onto a real working surface rather than an empty
+window: focus starts in your Favorite stations list, so you arrow to a
+station and press Enter and you are listening. Its menu bar carries a
+Station menu (Browse Stations, Add Custom Station, Find Streams from a
 Website, and your favorites listed right in the menu for one-keystroke
 switching), a Playback menu with a live now-playing line, and a Record
 menu. Its Browse, Favorites, Schedule, and Weather windows are modeless
@@ -2071,10 +2026,10 @@ editor after all.</p>
 <h3 id="recording">Recording</h3>
 <p>With FFmpeg installed (an on-demand optional component),
 <strong>Record Now</strong> captures whatever is playing straight to a
-file, from the menu, the status-bar cell, or the tray. <strong>Schedule
-Recording</strong> queues one for later: once, daily, or weekly at a
-chosen time. <strong>Recording Settings</strong> covers format, bitrate,
-destination folder, a filename pattern with <code>{station}</code>,
+file, from the menu or the tray. <strong>Schedule Recording</strong>
+queues one for later: once, daily, or weekly at a chosen time.
+<strong>Recording Settings</strong> covers format, bitrate, destination
+folder, a filename pattern with <code>{station}</code>,
 <code>{date}</code>, and <code>{time}</code> tokens, an optional
 temporary folder for in-progress files (moved atomically into place when
 finished), and a maximum-length safety cap so a recording you forgot
@@ -2108,13 +2063,10 @@ does not have it.</p>
 <h3 id="housekeeping">Housekeeping</h3>
 <ul>
 <li><strong>Wake-Up Timer</strong> starts a station at a time you
-choose. It is in both the editor and the standalone app.</li>
+choose.</li>
 <li><strong>Remove All</strong> clears every favorite in one step,
-behind a confirmation and with an undoable backup written first. It
-lives in the Favorites manager, so it is in both.</li>
-</ul>
-<p>The rest of this list is the standalone app only:</p>
-<ul>
+behind a confirmation and with an undoable backup written first, from
+the Favorites manager.</li>
 <li><strong>Start Quill Radio with Windows</strong> registers a per-user
 autostart entry, and then tells you what actually took, because a
 locked-down registry can refuse silently.</li>

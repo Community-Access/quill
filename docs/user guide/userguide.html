@@ -28999,32 +28999,6 @@ causing an error.</li>
 Review, and Inspection</h2>
 <p>Quill earns trust by making difficult files readable and
 inspectable.</p>
-<h3
-id="the-book-library--free-accessible-reading-sources-including-nls-bard">The
-Book Library — free, accessible reading sources (including NLS
-BARD)</h3>
-<p><strong>Tools → Book Library...</strong> searches free, accessible
-reading sources from inside QUILL and opens a chosen book in the reader.
-Pick a <strong>Source</strong> — Project Gutenberg, Google Books (free
-ebooks), Standard Ebooks, Feedbooks, <strong>NLS BARD</strong>, or
-<em>All free sources</em> — type a title, author, or subject in
-<strong>Search for</strong>, and press <strong>Search</strong>. Results
-land in a single-select list you arrow through; <strong>Find in
-results</strong> (Ctrl+F, then F3 / Shift+F3) jumps between matches, and
-the status line speaks what happened at every step. For a source that
-offers downloads, choose a <strong>Format</strong> and press
-<strong>Download</strong> or <strong>Download and Open</strong>.</p>
-<p><strong>NLS BARD</strong> is the catalogue of the National Library
-Service for the Blind and Print Disabled at the Library of Congress.
-QUILL searches BARD's free public catalogue and lists matching titles,
-but BARD titles are borrowed on the BARD website with an eligible patron
-account — so a BARD result is a <em>catalogue listing</em>, shown as
-"open in BARD" rather than a download. Select it and press <strong>Open
-in BARD</strong> (Alt+B): QUILL opens that title's official Library of
-Congress page in your browser, where you sign in and download. QUILL
-never asks for or stores your BARD account details, and the catalogue
-search needs no account or key. Like every source, the Book Library does
-nothing in Safe Mode.</p>
 <h3 id="describe-character-at-cursor">Describe Character at Cursor</h3>
 <p>Some characters look the same but are not: a curly "smart" quote
 versus a straight apostrophe, a no-break space versus an ordinary space,
@@ -31890,9 +31864,12 @@ no separate install, no PATH changes, no restart. Remove either
 independently later from the same dialog; removing one never affects the
 other, even though they share a storage location.</p>
 <h2 id="internet-radio">Internet Radio</h2>
-<p><strong>Tools &gt; Media &gt; Internet Radio</strong> plays live
-internet radio streams in the background while you keep editing. It is
-disabled entirely in Safe Mode, since it is a network feature.</p>
+<p>Internet radio plays live streams in the background — the station
+browser, favorites, recording, scheduling, and everything else described
+in this chapter. In QUILL 1.0.0 it runs as the standalone <strong>Quill
+Radio</strong> app rather than inside the editor; see <em>Quill Radio:
+the standalone app</em> (below) for how to launch it. It is disabled
+entirely in Safe Mode, since it is a network feature.</p>
 <h3 id="finding-and-playing-a-station">Finding and playing a
 station</h3>
 <p><strong>Browse Stations...</strong> opens a search-and-browse
@@ -31992,33 +31969,14 @@ Find Streams now follows that player page and pulls out the real
 underlying stream, instead of handing back the unplayable directory page
 URL.</li>
 </ul>
-<h3 id="controlling-playback-without-opening-a-dialog">Controlling
-playback without opening a dialog</h3>
-<p>Once something is playing, three ways to control it without opening
-Browse Stations:</p>
-<ul>
-<li><strong>The status bar.</strong> A <strong>Radio</strong> cell
-appears showing the station and state (hidden until you first play
-something). Press Enter on it, or click it, to play or pause. Its
-context menu (right-click, or Menu/Shift+F10) adds Stop, Mute/Unmute, a
-<strong>Favorite Stations</strong> quick-switch submenu, and a shortcut
-back to Browse Stations.</li>
-<li><strong>The system tray.</strong> Minimize QUILL to the tray and its
-right-click menu carries the same Play/Pause, Stop, Mute, and Favorite
-Stations controls, plus a Now Playing line.</li>
-<li><strong>Keyboard shortcuts.</strong> With QUILL focused,
-<strong>Ctrl+Shift+Grave</strong> (the QUILL Key), then
-<strong>N</strong>, toggles play/pause; then <strong>0</strong> stops;
-then <strong>9</strong> mutes. Like every QUILL Key chord, these are
-remappable in <strong>Preferences &gt; Keyboard Shortcuts</strong>.</li>
-</ul>
-<p><strong>What's playing.</strong> QUILL reports the current track —
-artist and title — from the stream's own broadcast metadata, and can
-announce it automatically each time the song changes. When a stream
-sends no title of its own and the player has none to offer, QUILL now
-falls back to the station server's own now-playing information (its
-Icecast or Shoutcast status page, on the same host you're already
-streaming), so more stations tell you what's on.</p>
+<h3 id="whats-playing">What's playing</h3>
+<p>QUILL reports the current track — artist and title — from the
+stream's own broadcast metadata, and can announce it automatically each
+time the song changes. When a stream sends no title of its own and the
+player has none to offer, QUILL now falls back to the station server's
+own now-playing information (its Icecast or Shoutcast status page, on
+the same host you're already streaming), so more stations tell you
+what's on.</p>
 <p><strong>Copying and reviewing what's playing.</strong> Two commands
 go beyond the spoken announcement: <strong>Copy What's Playing</strong>
 puts the track on the clipboard, and <strong>What's Playing - Review and
@@ -32051,10 +32009,10 @@ simply not there; install it from <strong>Help &gt; Download Optional
 Components</strong> (the "Audio: export, playback &amp; chapters" entry)
 and they appear.</p>
 <ul>
-<li><strong>Record Now</strong> (Tools &gt; Media &gt; Internet Radio,
-the Radio status bar cell's context menu, or the tray) starts recording
-whatever station is currently playing. Choosing it again, or
-<strong>Stop Recording</strong>, ends the recording.</li>
+<li><strong>Record Now</strong> (the Quill Radio <strong>Record</strong>
+menu or the app's tray icon) starts recording whatever station is
+currently playing. Choosing it again, or <strong>Stop
+Recording</strong>, ends the recording.</li>
 <li><strong>Schedule Recording...</strong> queues a recording for later
 without you needing QUILL open right at that moment to press Record —
 just QUILL running somewhere. Choose <strong>Once</strong> (a specific

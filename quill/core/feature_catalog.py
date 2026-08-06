@@ -300,8 +300,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "status bar mini-player and system tray controls."
         ),
         category="core",
-        # Held back from the public 1.0.0 release until Quill Cast ships;
-        # developer builds keep it. Book Library still ships in the editor.
+        # Dev-build-only in the editor until the Quill Cast app ships.
         released=False,
     ),
     "core.library": FeatureDefinition(
@@ -314,6 +313,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "chosen title (plain text or EPUB) directly in QUILL's reader."
         ),
         category="core",
+        released=False,  # dev-build-only in the editor; Book Library is moving to QUILL Social
     ),
     "core.notebook": FeatureDefinition(
         "core.notebook",

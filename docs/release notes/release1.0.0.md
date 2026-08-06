@@ -36,11 +36,10 @@ of this document is about.
 
 **Quill Radio** is a standalone internet radio player: a real window with its own menu
 bar, its own tray icon, favorites, recording, scheduled recording, and a built-in
-weather center. Nearly all of it is also available inside the editor, because both run
-the same code and share the same favorites and settings, but Quill Radio opens in
-seconds when you just want the radio on and do not want to load an editor to get it,
-and a handful of listener-side features live only in the standalone app. Those are
-named where they come up in the Quill Radio section below.
+weather center. It runs the same code and shares the same favorites and settings as the
+rest of the family, and opens in seconds when you just want the radio on and do not want
+to load an editor to get it. It is one keystroke from QUILL through the QuillVille
+switcher.
 
 **Quill Weather** is a standalone tray application that watches the National Weather
 Service for watches, warnings, and advisories at the places you care about, and speaks
@@ -1332,33 +1331,6 @@ silently dropped.
 
 ---
 
-## The Book Library
-
-**The Book Library**, at **Tools > Media > Book Library**, is one search box across free,
-accessible reading sources:
-
-- **Project Gutenberg**, through the Gutendex API.
-- **Standard Ebooks** and **Feedbooks**, through their public OPDS catalogues.
-- **Google Books**.
-- **NLS BARD**, the catalogue of the National Library Service for the Blind and Print
-  Disabled at the Library of Congress.
-
-Search by title, author, or subject, with results in a single-select, fully keyboard- and
-screen-reader-friendly list, a find-in-results box, and a spoken status line. For
-Gutenberg, Standard Ebooks, and Feedbooks, a chosen title opens directly in QUILL's reader
-as plain text or EPUB.
-
-BARD works differently, and QUILL is explicit about why. BARD catalogue entries are
-listings, not files: borrowing a title requires an eligible BARD patron account, which you
-set up and use on the BARD website. Every BARD result therefore offers **Open in BARD**,
-which opens that title's official Library of Congress page in your browser, where you sign
-in and download. QUILL never asks for or stores your BARD credentials. The search itself
-uses BARD's free public API, with nothing sent but the words you searched for.
-
-Like every library source, it is disabled in Safe Mode.
-
----
-
 ## Git and GitHub
 
 Version control is one of the least accessible corners of computing: punctuation-heavy
@@ -1561,20 +1533,16 @@ Everything across these sections is taught end to end in
 
 ## Quill Radio
 
-Quill Radio is a full internet radio player. It comes two ways. Inside the editor it lives
-on **Tools > Media**, where the radio commands sit directly on that menu rather than in a
-submenu of their own: Browse Stations, Add Custom Station, Find Streams from a Website,
-Manage Favorites, Play Last Station, What's Playing, the transport and volume controls, and
-the whole recording group. Separately, it is a standalone application with its own window,
-menu bar, and tray icon, for the times you want the radio on without loading an editor.
+Quill Radio is a full internet radio player: a standalone application with its own window,
+menu bar, and tray icon, for the times you want the radio on without loading an editor. It
+is one keystroke from QUILL through the **QuillVille** switcher (**Alt+Q → Open Quill
+Radio**).
 
-They are the same code and the same settings: a station you favorite in one is there in the
-other. What the standalone app adds is the listener-side furniture that an editor has no
-sensible place for, and this document flags each of those as it comes up. They are: **Sound
-Enhancements** and the **radio output device** chooser (in the editor, Sound Enhancements is
-reachable from the Command Palette but is not on any menu, and the output device is a saved
-setting with no chooser); the **Station Details** command on a favorite; **back up and
-restore**; **Customize Features**; and **Start Quill Radio with Windows**.
+It runs the same code and reads the same settings as the rest of the family: a station you
+favorite is there next time, in every app. Its menus carry the full listener-side
+furniture — **Sound Enhancements** and the **radio output device** chooser; the **Station
+Details** command on a favorite; **back up and restore**; **Customize Features**; and
+**Start Quill Radio with Windows**.
 
 ### Finding something to listen to
 
@@ -1649,31 +1617,23 @@ the link finder never stops the music, which is what makes "listen while you kee
 actually work.
 
 Playback controls cover Play and Pause, Stop, Play Last Station, Jump to Live, Rewind 30
-seconds and Forward 30 seconds, volume up and down, mute, and a volume boost, in both the
-editor and the standalone app. Two more are standalone-app menu items: **Sound
-Enhancements**, a three-band equalizer and compressor that can be set once for everything or
-remembered per station, and the **radio output device** chooser, which sends the music to a
-different device than your screen reader. Radio's volume is its own, separate from your Windows system
+seconds and Forward 30 seconds, volume up and down, mute, and a volume boost. Two more sit
+on its menus: **Sound Enhancements**, a three-band equalizer and compressor that can be set
+once for everything or remembered per station, and the **radio output device** chooser,
+which sends the music to a different device than your screen reader. Radio's volume is its own, separate from your Windows system
 volume and separate from your screen reader's speech volume, so you can set the music quietly
 under your speech without touching either. Your volume is remembered between sessions.
 
-**Tools > Media > Sleep Timer**, in the editor, ends a listening session gently: choose a
-preset or type a custom duration, and the radio fades to silence rather than cutting off
-mid-sentence, then stops, with your volume restored to what it was so pressing play later
-is not a quiet surprise.
+A **Sleep Timer** ends a listening session gently: choose a preset or type a custom
+duration, and the radio fades to silence rather than cutting off mid-sentence, then stops,
+with your volume restored to what it was so pressing play later is not a quiet surprise.
 
 **Announce Track Titles** can be toggled. **What's Playing** speaks the current track;
 **What's Playing (Review and Copy)** opens a read-only window you can arrow through and copy
 from; **Copy What's Playing** puts it on the clipboard. A stream that carries no titles says
 so rather than going silent on you.
 
-Inside the editor, a **Radio** status-bar cell appears once something is playing, showing the
-station and state, with play and pause on Enter and a context menu offering Stop, Mute, a
-Favorite Stations quick-switch, and a way back into the browser. Minimize to the tray and the
-same controls follow, along with a live now-playing line. Direct chords reach it without
-leaving the editor at all, and every one of them is remappable.
-
-The standalone app opens onto a real working surface rather than an empty window: focus starts
+The app opens onto a real working surface rather than an empty window: focus starts
 in your Favorite stations list, so you arrow to a station and press Enter and you are
 listening. Its menu bar carries a Station menu (Browse Stations, Add Custom Station, Find
 Streams from a Website, and your favorites listed right in the menu for one-keystroke
@@ -1685,7 +1645,7 @@ the moment you decide you do want the full editor after all.
 ### Recording
 
 With FFmpeg installed (an on-demand optional component), **Record Now** captures whatever is
-playing straight to a file, from the menu, the status-bar cell, or the tray. **Schedule
+playing straight to a file, from the menu or the tray. **Schedule
 Recording** queues one for later: once, daily, or weekly at a chosen time. **Recording
 Settings** covers format, bitrate, destination folder, a filename pattern with `{station}`, `{date}`, and `{time}` tokens, an optional temporary folder for
 in-progress files (moved atomically into place when finished), and a maximum-length safety cap
@@ -1718,13 +1678,9 @@ not have it.
 
 ### Housekeeping
 
-- **Wake-Up Timer** starts a station at a time you choose. It is in both the editor and the
-  standalone app.
+- **Wake-Up Timer** starts a station at a time you choose.
 - **Remove All** clears every favorite in one step, behind a confirmation and with an
-  undoable backup written first. It lives in the Favorites manager, so it is in both.
-
-The rest of this list is the standalone app only:
-
+  undoable backup written first, from the Favorites manager.
 - **Start Quill Radio with Windows** registers a per-user autostart entry, and then tells you
   what actually took, because a locked-down registry can refuse silently.
 - **Back up and restore** writes a portable `.qrbackup` archive of favorites, settings, wake
