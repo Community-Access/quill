@@ -226,6 +226,11 @@ class Settings:
     # Speak the formatting delta as the caret moves (hidden-codes interrogation);
     # off by default so navigation stays quiet (Describe Formatting is on-demand).
     announce_formatting_on_move: bool = False
+    # Unified Find rollout flag (#1327 F1): when on, Ctrl+F/Ctrl+H open QUILL's
+    # own accessible Find dialog instead of the native Windows one. Off by
+    # default until the JAWS/NVDA validation pass; the native dialog remains
+    # the fallback either way.
+    find_use_quill_dialog: bool = False
     # Speak "Entered/Exited <name> dialog" as dialogs open/close. Off by default:
     # every supported screen reader already announces the dialog and its title,
     # so the cue is redundant; turn it back on to hear the explicit transition.
@@ -874,6 +879,7 @@ class Settings:
         dictation_intelligent_spacing = bool(data.get("dictation_intelligent_spacing", True))
         dictation_onboarding_shown = bool(data.get("dictation_onboarding_shown", False))
         announce_formatting_on_move = bool(data.get("announce_formatting_on_move", False))
+        find_use_quill_dialog = bool(data.get("find_use_quill_dialog", False))
         announce_dialog_transitions = bool(data.get("announce_dialog_transitions", False))
         low_resource_mode = bool(data.get("low_resource_mode", False))
         idle_unload_minutes = _clamp_int(data.get("idle_unload_minutes", 10), 10, 0, 240)
@@ -1449,6 +1455,7 @@ class Settings:
             dictation_stop_on_focus_loss=dictation_stop_on_focus_loss,
             dictation_intelligent_spacing=dictation_intelligent_spacing,
             announce_formatting_on_move=announce_formatting_on_move,
+            find_use_quill_dialog=find_use_quill_dialog,
             announce_dialog_transitions=announce_dialog_transitions,
             low_resource_mode=low_resource_mode,
             idle_unload_minutes=idle_unload_minutes,

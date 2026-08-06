@@ -1002,6 +1002,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("announcement", "screen reader", "speech"),
     ),
     SettingSpec(
+        "find_use_quill_dialog",
+        "Use QUILL's own Find dialog",
+        "navigation",
+        "bool",
+        "Ctrl+F and Ctrl+H open QUILL's accessible Find and Replace dialog — "
+        "special-character search, a spoken match count as you type, and results "
+        "you can review — instead of the standard Windows one. Off by default "
+        "while it is validated with every screen reader; the Windows dialog "
+        "remains available by turning this off.",
+        feature_id="core.app",
+        keywords=("find", "replace", "search", "dialog", "special characters"),
+    ),
+    SettingSpec(
         "announce_dialog_transitions",
         "Announce entering and leaving dialogs",
         "accessibility",
