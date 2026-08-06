@@ -24,6 +24,12 @@ echo "==> Generating bundled feedback-hub token (quill/_feedback_token.py)"
 # "No token" (#919). It is now mandatory for every build, period.
 python tools/generate_feedback_token.py --require-token
 
+echo "==> Generating bundled ADP client key (quill/_adp_client_key.py)"
+# Lenient by design (no --require-token): an unset QUILL_ADP_CLIENT_KEY bakes an
+# empty key and Ask ADP degrades to a key pasted in ADP Settings. Set
+# QUILL_ADP_CLIENT_KEY in the build env to ship the key. Module is gitignored.
+python tools/generate_adp_client_key.py
+
 echo "==> Building .app with py2app"
 python scripts/setup_macos.py py2app
 

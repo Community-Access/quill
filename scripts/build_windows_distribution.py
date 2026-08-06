@@ -1675,6 +1675,19 @@ def bundle_embedded_python(
     ]
     subprocess.run(token_cmd, check=True)
 
+    # Bundle the ADP client bearer key (quill/_adp_client_key.py) so a shipped
+    # build reaches the hosted ADP service with no user setup. Unlike the feedback
+    # token this is deliberately LENIENT (no --require-token): an unset
+    # QUILL_ADP_CLIENT_KEY bakes an empty key, and Ask ADP degrades gracefully to
+    # a key pasted in ADP Settings (see tools/generate_adp_client_key.py and
+    # quill/core/adp/client.py). Set QUILL_ADP_CLIENT_KEY in the build env to ship
+    # the key. The module is gitignored, never committed.
+    print("Generating bundled ADP client key (quill/_adp_client_key.py)...")
+    subprocess.run(
+        [str(python_exe), str(source_root / "tools" / "generate_adp_client_key.py")],
+        check=True,
+    )
+
     # Offline Edition marker. A build-time-generated module read by
     # quill.build_info.is_offline_edition() so the running app knows it is the
     # self-contained Offline Edition and suppresses Download Optional Components
