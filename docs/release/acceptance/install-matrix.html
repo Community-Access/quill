@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>install-matrix</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="section--install-matrix-portable-vs-system-secrets-updates-migration">Section
+— Install matrix (portable vs system, secrets, updates, migration)</h1>
+<p>This section proves QUILL behaves correctly depending on <strong>how
+it was installed</strong>. It is a little more technical than the rest
+of the book because you will check <strong>where files land on
+disk</strong> — but every step still tells you exactly what to open and
+what you should find. If a term is new, that is fine; follow the path
+given.</p>
+<p><strong>Why this matters most for secrets.</strong> Install mode is
+decided by <strong>three independent signals that can disagree</strong>:
+(1) the <strong>data directory</strong>, (2) the <strong>secrets
+backend</strong> (<code>QUILL_PORTABLE</code>), and (3) the
+<strong>update asset</strong>. The riskiest one is secrets — an API key
+or token must land in the <em>right</em> protected store and never in
+plain text. Run this section carefully.</p>
+<p><strong>Environments (run the whole book once per
+environment).</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Environment</th>
+<th>Data dir</th>
+<th>Secrets backend</th>
+<th>Update path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td>Windows system install (Inno, no <code>data/</code>)</td>
+<td><code>%APPDATA%\Quill</code></td>
+<td>Windows Credential Manager</td>
+<td>installer <code>setup.exe</code></td>
+</tr>
+<tr>
+<td>E2</td>
+<td>Windows portable ZIP (<code>data/</code> beside exe,
+<code>QUILL_PORTABLE=1</code>)</td>
+<td><code>&lt;app&gt;\data</code></td>
+<td>DPAPI <code>keys.enc</code>
+(<code>quill-portable-keys-v1</code>)</td>
+<td>portable <code>.zip</code></td>
+</tr>
+<tr>
+<td>E3</td>
+<td>Installed but ships <code>data/</code> (split-signal, #1100)</td>
+<td>per <code>storage-mode.json</code></td>
+<td><strong>DPAPI <code>keys.enc</code></strong> even if data is
+<code>%APPDATA%</code></td>
+<td>installer (via <code>unins000</code> marker)</td>
+</tr>
+<tr>
+<td>E4</td>
+<td>Custom data location (chosen in Settings)</td>
+<td>user path</td>
+<td>per <code>QUILL_PORTABLE</code></td>
+<td>per detection</td>
+</tr>
+<tr>
+<td>E5</td>
+<td>macOS bundle</td>
+<td><code>~/.quill</code> (or chosen)</td>
+<td>login <strong>Keychain</strong></td>
+<td><code>.dmg</code>/<code>.pkg</code></td>
+</tr>
+<tr>
+<td>E6</td>
+<td>Safe Mode (<code>QUILL_SAFE_MODE=1</code>, both modes)</td>
+<td>as above</td>
+<td>as above</td>
+<td>n/a</td>
+</tr>
+</tbody>
+</table>
+<p>Run each scenario for <strong>QUILL editor, Quill Radio, and Quill
+Weather</strong>. Read §2–§3 of <code>README.md</code> for the box
+layout. Mark <strong>N/A</strong> for environment lines that do not
+apply to the machine you are on, and record which E-number this run
+is.</p>
+<blockquote>
+<p><strong>Landmine to watch (from the code).</strong>
+<code>is_portable_mode()</code> reads only <code>QUILL_PORTABLE</code>,
+which the launcher sets whenever a <code>data/</code> folder exists
+beside the executable. So a build that <em>ships</em> a
+<code>data/</code> folder writes DPAPI <code>keys.enc</code> even if the
+user picked appdata storage. Verify this matches product intent before
+sign-off — it is the crux of INST-03.</p>
+</blockquote>
+<hr />
+<h2 id="inst-01--data-and-settings-land-in-the-right-folder">INST-01 —
+Data and settings land in the right folder</h2>
+<p><em>What &amp; why.</em> Prove the document data, settings, logs,
+backups, and autosave all resolve to the folder the install mode
+intends.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL installed for the environment under test. Know the expected
+data dir from the table above.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Launch QUILL, change one setting (e.g. toggle a view option), and
+create + save a throwaway document so backups/autosave have something to
+write.</li>
+<li>Open File Explorer (Windows) or Finder (macOS) and go to the
+<strong>expected data dir</strong> for this environment (e.g.
+<code>%APPDATA%\Quill</code> for E1, <code>&lt;app&gt;\data</code> for
+E2).</li>
+<li>Confirm <code>settings.json</code> and the <code>logs</code>,
+<code>diagnostics</code>, <code>backups</code>, <code>autosave</code>,
+and <code>sessions</code> subfolders exist there.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>E1: everything under <code>%APPDATA%\Quill</code>;
+<strong>nothing</strong> QUILL-owned appears beside the exe. E2:
+everything under <code>&lt;app&gt;\data</code>; <strong>nothing</strong>
+under <code>%APPDATA%</code>. E4: your chosen path is used. E5:
+<code>~/.quill</code> (or chosen) with <code>storage-mode.json</code>
+inside. <code>ensure_app_directories</code> created all the subfolders
+in the resolved dir.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="inst-02--secrets-go-to-the-correct-protected-store-never-plain-text">INST-02
+— Secrets go to the correct protected store (never plain text)</h2>
+<p><em>What &amp; why.</em> The highest-risk check: an API key/token
+must be stored in the platform's protected store for this mode, and
+never written in the clear.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL open. A throwaway secret to enter — e.g. add an AI provider
+key in the AI Hub, or connect a GitHub account (use a disposable
+token).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Enter the secret through its normal UI and confirm it saves.</li>
+<li>E1 (Windows, not portable): open <strong>Credential Manager ▸
+Windows Credentials</strong> and find the QUILL entry. E2 (Windows
+portable): find <strong><code>keys.enc</code></strong> in the resolved
+data dir. E5 (macOS): open <strong>Keychain Access</strong> and find the
+login-keychain entry.</li>
+<li>Search the data dir, <code>logs</code>, <code>diagnostics</code>,
+and any crash bundle for the raw secret string.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The secret is in the <strong>expected store</strong> for the mode
+(Credential Manager / DPAPI <code>keys.enc</code> / Keychain) and
+appears <strong>nowhere in plain text</strong> in settings, logs,
+diagnostics, or crash bundles (redaction, SEC-13). Signing out of the
+service removes only that service's entry.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="inst-03--the-split-signal-case-e3-keystore-follows-the-resolved-data-dir">INST-03
+— The split-signal case (E3): keystore follows the resolved data
+dir</h2>
+<p><em>What &amp; why.</em> When <code>QUILL_PORTABLE=1</code> but the
+data dir is <code>%APPDATA%</code>, the keystore must follow the
+<strong>resolved data dir</strong>, not the user's abstract choice. This
+is the #1100 landmine.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>An E3 build (installed, but ships a <code>data/</code> folder beside
+the exe). A throwaway secret.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Launch, enter a secret (as in INST-02).</li>
+<li>Confirm where <code>keys.enc</code> was written.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><code>keys.enc</code> lands in
+<strong><code>%APPDATA%\Quill\keys.enc</code></strong> (it follows the
+resolved data dir). <strong>Record actual vs. intended</strong> — the
+backend is chosen by bundle layout, not the storage choice. Flag any
+mismatch with product intent as a release blocker.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="inst-04--environment-variable-key-override-wins-and-is-never-persisted">INST-04
+— Environment-variable key override wins and is never persisted</h2>
+<p><em>What &amp; why.</em> A <code>QUILL_&lt;KEY&gt;_KEY</code> env
+override must take precedence and must not be written into any
+store.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Set an env override for a key you also have stored (e.g.
+<code>QUILL_OPENAI_KEY</code>), then launch QUILL.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Use the feature that consumes that key.</li>
+<li>Inspect the secret store afterward.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The env value is used in every mode; the stored value is
+<strong>not</strong> overwritten and the env value is
+<strong>not</strong> persisted into the store.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="inst-05--updates-offer-the-right-asset-for-the-mode">INST-05 —
+Updates offer the right asset for the mode</h2>
+<p><em>What &amp; why.</em> An installed build must update via the
+installer; a portable build via the portable zip (preserving
+<code>data/</code>).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>The build under test with update checking available (network + a
+reachable update source). If offline, mark
+<strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Help ▸ Check for Updates…</strong>.</li>
+<li>Read what update asset is offered and, if safe in your test setup,
+apply it and let QUILL relaunch.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>E1/E3: offered the <strong>platform installer</strong>
+(<code>.exe</code>/<code>.msi</code>; macOS
+<code>.dmg</code>/<code>.pkg</code>), applied via elevated silent setup
+then relaunch. E2: offered the <strong>portable
+<code>.zip</code></strong> (name contains "portable"), applied via
+mirror-copy that <strong>excludes <code>data/</code></strong>, then
+relaunch — your documents/settings survive. E3 (#1100):
+<code>running_portable()</code> returns False (the <code>unins000</code>
+marker), so it gets the installer, not the zip. Discovery is HTTPS-only,
+host-allowlisted, and signed-manifest verified in every mode. A
+dev/non-frozen run falls back to "reveal download" instead of applying
+(no crash).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="inst-06--first-run-migration-and-importing-prior-data">INST-06 —
+First run, migration, and importing prior data</h2>
+<p><em>What &amp; why.</em> A brand-new user gets the Startup Wizard; an
+existing user's data is migrated safely with backups.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>For the fresh-install path: a machine/profile with no prior QUILL
+data. For the import path: a populated prior data location
+available.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Launch a fresh install and confirm the <strong>Startup
+Wizard</strong> appears.</li>
+<li>On a fresh data dir with a populated prior location present, accept
+the offer to <strong>import prior data</strong>.</li>
+<li>Inspect the data dir for a <code>migration-backups/</code> folder
+after a settings-schema migration (e.g. upgrading over an older
+build).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Fresh install triggers the nine-page <strong>Startup Wizard</strong>
+(the <code>quill-new-install.txt</code> marker is consumed). Import
+brings over documents/settings but <strong>not</strong> the
+location-control files. Schema migration backs up the old settings to
+<code>&lt;data&gt;/migration-backups/</code> before rewriting; corrupt
+settings are <strong>quarantined, not lost</strong>. The backup dir
+follows the resolved data dir in every mode.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="inst-07--safe-mode-is-identical-in-portable-and-system">INST-07
+— Safe Mode is identical in portable and system</h2>
+<p><em>What &amp; why.</em> Safe Mode must disable the same things
+regardless of install mode.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Relaunch with <strong><code>QUILL_SAFE_MODE=1</code></strong> (or
+<code>--safe-mode</code>), once portable, once system.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Confirm plugins, AI, network, restore, indexing, watchers, themes,
+and snippets are disabled.</li>
+<li>Confirm Radio and Weather network features refuse in Safe Mode.</li>
+<li>Separately, set <code>QUILL_VERBOSITY_SAFE_MODE=1</code> and confirm
+custom verbosity is ignored.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The same features are off in both install modes; Safe Mode is
+announced/obvious; Radio/Weather network calls refuse cleanly; verbosity
+Safe Mode ignores custom verbosity — all mode-independent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="inst-08--portable-only-behaviors-self-containment-and-moving-the-stick">INST-08
+— Portable-only behaviors (self-containment and moving the stick)</h2>
+<p><em>What &amp; why.</em> A true portable copy keeps everything inside
+its folder and survives being moved — with one documented exception for
+machine-bound secrets.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>An E2 portable copy on a writable medium; optionally a second
+machine/drive and a read-only/USB medium.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Confirm data, settings, secrets, and logs all stay <strong>inside
+the app folder</strong> (all three signals agree).</li>
+<li>Move the whole folder to another machine/drive and launch.</li>
+<li>Put the folder on a read-only/USB medium and launch.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>E2 keeps everything inside the folder. After a move, DPAPI
+<code>keys.enc</code> is <strong>machine/account-bound</strong>, so
+stored keys do not transfer — QUILL prompts for re-entry (documented),
+no crash. On read-only media, <code>storage-mode.json</code> falls back
+to the appdata path gracefully.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="inst-09--per-app-pass-for-radio-and-weather">INST-09 — Per-app
+pass for Radio and Weather</h2>
+<p><em>What &amp; why.</em> The companion apps decide their own install
+mode and must place their data correctly.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Quill Radio and Quill Weather installed for the environment under
+test.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Radio:</strong> confirm the data/settings/secrets/update
+verdict is correct for E1–E5; stations and recordings land in the right
+place; a <code>.qrbackup</code> restore works in both portable and
+system.</li>
+<li><strong>Weather:</strong> confirm data/settings/update verdict; the
+<strong>background Scheduled Task</strong> registers per-user and fires
+in both install modes; the alert-dedupe store follows the data dir.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each app resolves its own portable/installed verdict (a bare
+<code>unins000</code>-beside-exe check plus
+<code>prefer_portable</code>); files land in the right place; Radio
+backup/restore round-trips; Weather's Scheduled Task fires and dedupe
+persists — all correct in both modes.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 9</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

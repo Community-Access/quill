@@ -1,0 +1,1 @@
+Café résumé — naïve façade. Prices in £ and €.

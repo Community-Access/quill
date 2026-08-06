@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-navigate</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="section--navigate-menu-navigate-28-commands">Section — Navigate
+menu (<code>navigate.*</code>, 28 commands)</h1>
+<p>Everything about <strong>moving around a document by keyboard and by
+ear</strong>: jumping by heading, block, structure, and window region;
+go-to line/page; the location history; bookmarks (named, listed, and a
+one-shot temporary one); the Outline Navigator and Heading Organizer;
+the "Go to Anything" and Quick Nav pickers; per-document language; and
+the three "speak the current context" commands a screen-reader user
+leans on constantly. Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>navigate.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes.</p>
+<p>Most items live under the <strong>Navigate menu (Alt, N)</strong>;
+bookmarks are under <strong>Navigate ▸ Bookmarks</strong>. A few pickers
+(Quick Nav, Go to Anything) are reached by their chord or the Command
+Palette. Every scenario is keyboard-first and its outcome must be
+<strong>announced out loud</strong> — a silent move is an accessibility
+fail.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <code>plain.txt</code>, and above all
+<strong><code>formatting.md</code></strong> — it holds exactly six
+headings, one of each level <strong>H1–H6, in order</strong> — and
+<code>table.md</code>. Cross-references to the core-journey plan
+(<code>../qa-core-journeys.md</code>) JOURNEY-001 (heading navigation)
+and JOURNEY-002 (table/structure) are noted where the established
+wording applies.</p>
+<p><strong>A note on chords.</strong> Several commands use QUILL's
+two-step chord: press <strong>Ctrl+Shift+Grave</strong> (Grave is the
+backtick key, top-left), release, then press the second key. This
+section spells each one out.</p>
+<hr />
+<h2 id="nav-01--next-heading-navigatenext_heading">NAV-01 — Next Heading
+(<code>navigate.next_heading</code>)</h2>
+<p><em>What &amp; why.</em> Jump the caret to the next heading — the
+single most-used way a screen-reader user skims a structured document.
+No default shortcut; this is the menu twin of your screen reader's own
+<strong>H</strong> quick key.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong>. Press
+<strong>Ctrl+Home</strong> to put the caret at the very top.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Next Heading</strong>.</li>
+<li>Invoke it <strong>six</strong> times in a row (re-open the menu each
+time, or repeat from the Command Palette).</li>
+<li>As a cross-check, from the top press your screen reader's
+<strong>H</strong> key six times.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each invocation lands the caret on the next heading in turn and
+announces the heading text, its level, and its position — in substance
+"Moved to next heading, H1, 1 of 6: Heading One … at line N, column 1",
+then H2 (2 of 6), and so on to H6 (6 of 6). A <strong>seventh</strong>
+invocation reports <strong>no further headings</strong> ("No next
+heading") rather than wrapping silently. The screen reader's own H key
+visits the same six lines.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-02--previous-heading-navigateprevious_heading">NAV-02 —
+Previous Heading (<code>navigate.previous_heading</code>)</h2>
+<p><em>What &amp; why.</em> Jump the caret to the previous heading — the
+reverse of NAV-01.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open with the caret on the
+<strong>last</strong> heading (H6). If unsure, run NAV-01 to the bottom
+first.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Previous Heading</strong> five
+times.</li>
+<li>Cross-check with your screen reader's <strong>Shift+H</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Headings are announced in descending order — H6 → H5 → … → H1 — each
+with its level and "N of 6" position and landing at line/column. No
+level is skipped or repeated. From H1 a further invocation reports "No
+previous heading" and the caret does not move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-03--next-block-navigatenext_block">NAV-03 — Next Block
+(<code>navigate.next_block</code>)</h2>
+<p><em>What &amp; why.</em> Move to the start of the next block
+(paragraph / list item / other block), a coarser step than a line and
+finer than a heading.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; caret at the top
+(<strong>Ctrl+Home</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Next Block</strong>.</li>
+<li>Invoke it repeatedly down through the document.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret jumps to the start of each successive block; QUILL
+announces "Moved to next block at line N, column C". At the end of the
+document a further invocation says <strong>"No next block"</strong> and
+the caret stays put — never silence.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-04--previous-block-navigateprevious_block">NAV-04 — Previous
+Block (<code>navigate.previous_block</code>)</h2>
+<p><em>What &amp; why.</em> Move to the start of the previous block —
+the reverse of NAV-03.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open with the caret partway down (e.g.
+after running NAV-03 a few times).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Previous Block</strong>
+repeatedly up toward the top.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret jumps to the start of each earlier block, announced "Moved
+to previous block at line N, column C". At the top a further invocation
+says <strong>"No previous block"</strong> and the caret does not
+move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-05--next-structure-navigatenext_structure-altdown">NAV-05 —
+Next Structure (<code>navigate.next_structure</code>, Alt+Down)</h2>
+<p><em>What &amp; why.</em> Step to the next structural element for the
+document's type (headings, list items, table rows, code fences, and so
+on) — a markup-aware jump.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; caret at the top
+(<strong>Ctrl+Home</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Down</strong>, or <strong>Navigate menu (Alt, N) ▸
+Next Structure</strong>.</li>
+<li>Invoke it repeatedly down the document.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret advances to each successive structural element and QUILL
+announces "Moved to next structure at line N, column C". At the end a
+further press reports <strong>"No next structure"</strong>; the caret
+holds.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-06--previous-structure-navigateprevious_structure-altup">NAV-06
+— Previous Structure (<code>navigate.previous_structure</code>,
+Alt+Up)</h2>
+<p><em>What &amp; why.</em> Step to the previous structural element —
+the reverse of NAV-05.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open, caret partway down.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Up</strong>, or <strong>Navigate menu (Alt, N) ▸
+Previous Structure</strong>, repeatedly.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves back through structural elements, each announced
+"Moved to previous structure at line N, column C". At the top a further
+press reports <strong>"No previous structure"</strong> with no
+movement.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-07--next-region-navigatenext_region-f6">NAV-07 — Next Region
+(<code>navigate.next_region</code>, F6)</h2>
+<p><em>What &amp; why.</em> Cycle keyboard focus between the window's
+major <strong>regions</strong> — the editor, the status bar, and (when
+open) the document tab bar, the Reveal Codes pane, and the rendered
+Preview. This is how a keyboard user reaches everything without a
+mouse.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>. To exercise the full rotation, also
+turn on the <strong>Preview</strong> split and the <strong>document tab
+control</strong> if your build offers them (View menu); otherwise the
+rotation is just Editor and Status Bar, which is still valid.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>With focus in the editor, press <strong>F6</strong>, or
+<strong>Navigate menu (Alt, N) ▸ Next Region</strong>.</li>
+<li>Keep pressing <strong>F6</strong> to cycle all the way around back
+to the editor.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press moves focus to the next region and the <strong>region
+name is announced</strong> (Editor, Reveal Codes, Document Tabs,
+Preview, Status Bar — only those actually present). Focus visibly and
+audibly lands inside the region, and the cycle wraps back to the editor.
+With only two regions present it toggles between them.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-08--previous-region-navigateprevious_region-shiftf6">NAV-08
+— Previous Region (<code>navigate.previous_region</code>, Shift+F6)</h2>
+<p><em>What &amp; why.</em> Cycle focus between regions in the reverse
+direction — the reverse of NAV-07.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same setup as NAV-07; focus somewhere in the region rotation.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+F6</strong>, or <strong>Navigate menu (Alt, N) ▸
+Previous Region</strong>, repeatedly.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Focus moves to the previous region each time, the region name
+announced, cycling in the opposite order to NAV-07 and wrapping
+correctly. No region is skipped or unreachable.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-09--next-token-navigatenext_token">NAV-09 — Next Token
+(<code>navigate.next_token</code>)</h2>
+<p><em>What &amp; why.</em> Move to the next code/text
+<strong>token</strong> and hear it classified — a programmer's
+fine-grained, spoken step through identifiers, keywords, numbers,
+brackets, strings, and operators.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a small code-like document, or use <code>plain.txt</code>.
+Caret at the top (<strong>Ctrl+Home</strong>). If you have a code file
+with a language profile, its keywords will be named as keywords.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Next Token</strong>.</li>
+<li>Invoke it several times across a line that mixes words, a number,
+and a bracket.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret lands on each next token and QUILL <strong>speaks a
+classification label</strong> — in substance "identifier: myName",
+"keyword: def", "number: 42", "open paren", "string: …", or "operator:
++=". At the end of the document it reports <strong>"End of
+document"</strong> (with a boundary sound) and does not move past the
+edge.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-10--previous-token-navigateprevious_token">NAV-10 — Previous
+Token (<code>navigate.previous_token</code>)</h2>
+<p><em>What &amp; why.</em> Move to the previous token and hear it
+classified — the reverse of NAV-09.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same document as NAV-09, caret partway along a line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Previous Token</strong>
+several times.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret steps back token by token, each announced with the same
+classification labels as NAV-09. At the start it reports
+<strong>"Beginning of document"</strong> (with a boundary sound) and
+holds the caret.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-11--match-bracket-navigatematch_bracket-ctrlshift">NAV-11 —
+Match Bracket (<code>navigate.match_bracket</code>, Ctrl+Shift+)</h2>
+<p><em>What &amp; why.</em> Jump between a bracket and its partner —
+indispensable for checking that parentheses/brackets/braces are
+balanced.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document containing a matched pair, e.g. type
+<code>foo(bar[1] + 2)</code> on a line. Place the caret on the opening
+<code>(</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+\</strong> (Ctrl, Shift, and the backslash
+key), or <strong>Navigate menu (Alt, N) ▸ Match Bracket</strong>.</li>
+<li>From the matching <code>)</code>, invoke it again to jump back.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret jumps to the matching bracket and QUILL announces
+<strong>"Moved to matching bracket"</strong>. With the caret
+<strong>not</strong> on a bracket, or on an unmatched one, it says
+<strong>"No matching bracket found"</strong> and the caret does not
+move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-12--go-to-line-navigatego_to_line-ctrlg">NAV-12 — Go To
+Line… (<code>navigate.go_to_line</code>, Ctrl+G)</h2>
+<p><em>What &amp; why.</em> Jump straight to a line — or a line and
+column — by number.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+G</strong>, or <strong>Navigate menu (Alt, N) ▸
+Go To Line…</strong>.</li>
+<li>In the <strong>"Enter line or line,column:"</strong> field, type
+<strong><code>5</code></strong>; press <strong>Enter</strong>.</li>
+<li>Re-open it and type <strong><code>5,3</code></strong> (line 5,
+column 3); press <strong>Enter</strong>.</li>
+<li>Re-open it and type a line <strong>past the end</strong> (e.g.
+<code>9999</code>); press <strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text-entry dialog is labelled and keyboard-complete. Line
+<code>5</code> moves the caret to the start of line 5 and announces
+<strong>"Moved to line 5"</strong>; <code>5,3</code> announces
+<strong>"Moved to line 5, column 3"</strong>. An out-of-range line
+raises a spoken error box in substance <strong>"Document has only N
+lines."</strong>; bad input ("use a line number or line,column") is
+likewise reported, never a silent no-op. Escape cancels with no
+move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-13--go-to-page-navigatego_to_page-ctrlshiftg">NAV-13 — Go To
+Page… (<code>navigate.go_to_page</code>, Ctrl+Shift+G)</h2>
+<p><em>What &amp; why.</em> Jump to a page. For paged documents this is
+exact; for plain flowing text it is an estimate based on word count, and
+QUILL says so.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (or any multi-page-ish
+document).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+G</strong>, or <strong>Navigate menu (Alt,
+N) ▸ Go To Page…</strong>.</li>
+<li>Read the prompt, type <strong><code>1</code></strong>, press
+<strong>Enter</strong>.</li>
+<li>Re-open it and type a page <strong>past the end</strong>; press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The prompt states the page range and, for flowing text, warns it is
+<strong>estimated from word count, not an exact printed page
+count</strong>. A valid page moves the caret and announces
+<strong>"Moved to page N"</strong>. Out of range raises a spoken
+<strong>"Document has only N page(s)."</strong>; non-numeric input is
+reported, not swallowed. Escape cancels.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-14--back-location-navigateback_location-altleft">NAV-14 —
+Back Location (<code>navigate.back_location</code>, Alt+Left)</h2>
+<p><em>What &amp; why.</em> Step back through your <strong>location
+history</strong> — the places the caret jumped from — like a browser
+Back button for the document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>. Make a couple of jumps first (e.g.
+NAV-12 to line 5, then Go To Line 20) so there is history to walk.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Left</strong>, or <strong>Navigate menu (Alt, N) ▸
+Back Location</strong>, a few times.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret returns to each earlier recorded location and QUILL
+announces <strong>"Moved back"</strong>. When there is no earlier
+location it says <strong>"No earlier location"</strong> and holds.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-15--forward-location-navigateforward_location-altright">NAV-15 —
+Forward Location (<code>navigate.forward_location</code>,
+Alt+Right)</h2>
+<p><em>What &amp; why.</em> Step forward again through location history
+— the reverse of NAV-14.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Immediately after NAV-14 (so there is a forward history to
+replay).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Right</strong>, or <strong>Navigate menu (Alt, N)
+▸ Forward Location</strong>, a few times.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret advances to each later recorded location, announced
+<strong>"Moved forward"</strong>. With nothing ahead it says <strong>"No
+later location"</strong> and holds.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-16--outline-navigator-navigateoutline_navigator-ctrlshifto">NAV-16
+— Outline Navigator… (<code>navigate.outline_navigator</code>,
+Ctrl+Shift+O)</h2>
+<p><em>What &amp; why.</em> Open a keyboard-navigable tree of the
+document's headings (or an ePub's table of contents, or a YAML file's
+keys) and jump to any one.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (six headings). For the negative
+check, also have <code>plain.txt</code> ready.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+O</strong>, or <strong>Navigate menu (Alt,
+N) ▸ Outline Navigator…</strong>.</li>
+<li>Arrow through the heading tree; press <strong>Enter</strong> on
+"Heading Four".</li>
+<li>Repeat with <code>plain.txt</code> open.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>Outline Navigator</strong> lists all six
+headings as a navigable tree, each item announced with its text. Enter
+jumps the caret to that heading (in substance "Moved to heading") and
+returns focus to the editor. <strong>Escape</strong> cancels ("Outline
+navigation cancelled"). With <code>plain.txt</code> (no markup) it
+reports <strong>"Outline is not available for plain text files"</strong>
+instead of opening an empty dialog.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-17--heading-organizer-navigateheading_organizer-ctrlshiftgrave-then-o">NAV-17
+— Heading Organizer… (<code>navigate.heading_organizer</code>,
+Ctrl+Shift+Grave, then O)</h2>
+<p><em>What &amp; why.</em> Restructure a document's headings —
+promote/demote a level, reorder whole sections, and rename — from one
+keyboard-driven dialog, without hand-editing <code>#</code> markers.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>. This works only for
+<strong>Markdown or HTML</strong>.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>O</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Invoke the chord, or <strong>Navigate menu (Alt, N) ▸ Heading
+Organizer…</strong>.</li>
+<li>Arrow to a heading in the list; press <strong>Demote</strong> (or
+Tab) then <strong>Promote</strong> (or Shift+Tab) and hear the level
+change; use <strong>Move Up / Move Down</strong> to reorder; use
+<strong>Rename…</strong> to change one heading's text.</li>
+<li>Press <strong>Apply</strong> to commit, or
+<strong>Escape/Cancel</strong> to discard.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>Heading Organizer</strong> lists every
+heading with its level and text; its Promote/Demote/Move Up/Move
+Down/Rename/Validate/Apply/Cancel buttons are all labelled and
+keyboard-operable, and a preview updates as you edit.
+<strong>Apply</strong> rewrites the document ("Applied heading organizer
+changes"); closing with no edits says "closed without changes";
+<strong>Cancel/Escape</strong> says "Heading Organizer cancelled" and
+changes nothing. On a plain-text document it reports it is only
+available for Markdown or HTML.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-18--quick-nav-go-to-anything-navigatequick_nav">NAV-18 —
+Quick Nav (Go to Anything) (<code>navigate.quick_nav</code>)</h2>
+<p><em>What &amp; why.</em> One type-ahead picker of every navigable
+landmark in the document — headings, links, lists and list items,
+tables, block quotes, code blocks, and bookmarks — filterable by
+category with live counts. No default shortcut; reach it from the
+Command Palette.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (it has headings, lists, a link, and
+a code block).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Command Palette</strong> and choose <strong>"Quick
+Nav"</strong> (or <strong>"Go to Anything"</strong>).</li>
+<li>In the <strong>"Type to filter"</strong> field type part of a
+heading (e.g. <code>Heading</code>).</li>
+<li>Arrow the <strong>Category</strong> list to narrow by type and read
+its counts; select a result and press <strong>Enter</strong> (the
+<strong>Go</strong> button).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>Quick Nav</strong> with a labelled filter
+field, a <strong>Category</strong> list whose entries show counts (e.g.
+"All (N)", "Headings (6)", "Links (1)"), and a <strong>Results</strong>
+list. Typing filters the results; choosing a category narrows them;
+<strong>Enter/Go</strong> jumps the caret to that element (in substance
+"Moved to heading / link / list …") and returns focus to the editor.
+<strong>Escape</strong> cancels ("Quick Nav cancelled"). An empty
+document reports "No navigable elements found".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-19--go-to-anything-navigatego_to_anything-ctrlshiftgrave-then-g">NAV-19
+— Go to Anything (<code>navigate.go_to_anything</code>,
+Ctrl+Shift+Grave, then G)</h2>
+<p><em>What &amp; why.</em> The universal palette: one search box that
+jumps to <strong>commands, headings, bookmarks, and recent
+files</strong> at once. Type-ahead with prefix conventions
+(<code>&gt;</code> for commands, <code>#</code> for headings, and so
+on).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>. Have opened a couple of files
+recently so "recent files" has entries.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>G</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Invoke the chord (or the Command Palette entry "Go to
+Anything").</li>
+<li>Type part of a heading (or prefix with
+<strong><code>#</code></strong>); select it and press
+<strong>Enter</strong>.</li>
+<li>Re-open it and type a command name prefixed with
+<strong><code>&gt;</code></strong> to confirm commands surface too.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A search-as-you-type palette that mixes commands, this document's
+headings, bookmarks, and recent files; each result is announced as you
+arrow. Choosing a heading jumps the caret to it; choosing a recent file
+opens it; choosing a command runs it. Escape closes with focus returned.
+The palette is fully operable by keyboard and every row is spoken.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-20--set-bookmark-navigateset_bookmark">NAV-20 — Set
+Bookmark… (<code>navigate.set_bookmark</code>)</h2>
+<p><em>What &amp; why.</em> Drop a <strong>named</strong> jump point at
+the caret so you can return to it later by name. Bookmarks are saved
+with the document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; place the caret on the H4
+line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Bookmarks ▸ Set
+Bookmark…</strong>.</li>
+<li>The field pre-fills a default name (e.g.
+<strong><code>Bookmark 1</code></strong>); type
+<strong><code>Section Four</code></strong>; press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled text-entry dialog ("Enter bookmark name (named jump
+point):"). On confirm QUILL announces
+<strong><code>Set bookmark "Section Four"</code></strong>. Clearing the
+name and confirming (or Escape) says "Set bookmark cancelled" and adds
+nothing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-21--go-to-bookmark-navigatego_to_bookmark">NAV-21 — Go To
+Bookmark… (<code>navigate.go_to_bookmark</code>)</h2>
+<p><em>What &amp; why.</em> Jump to a previously set named bookmark,
+chosen from a list.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open with
+<strong><code>Section Four</code></strong> set (NAV-20). Move the caret
+somewhere else first so the jump is visible.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Bookmarks ▸ Go To
+Bookmark…</strong>.</li>
+<li>In the list, select <strong><code>Section Four</code></strong>;
+press <strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled single-choice dialog ("Choose bookmark (named jump
+point):") listing your bookmarks with a valid default selection. Enter
+moves the caret to that bookmark and announces
+<strong><code>Jumped to bookmark "Section Four"</code></strong>. With
+<strong>no</strong> bookmarks set, invoking it says <strong>"No
+bookmarks available. Bookmarks are named jump points."</strong> rather
+than opening an empty dialog.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-22--list-bookmarks-navigatelist_bookmarks-altshiftb">NAV-22
+— List Bookmarks… (<code>navigate.list_bookmarks</code>,
+Alt+Shift+B)</h2>
+<p><em>What &amp; why.</em> Browse all bookmarks in a tree that shows
+each one's line and column, and jump from there.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open with at least one bookmark set
+(NAV-20); set a second on a different line for a fuller list.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+B</strong>, or <strong>Navigate menu (Alt,
+N) ▸ Bookmarks ▸ List Bookmarks…</strong>.</li>
+<li>Arrow the list; press <strong>Enter</strong> on a bookmark.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>List Bookmarks</strong> under "Bookmarks
+(Named Jump Points)", each row announced with its name and position
+(e.g. "Section Four (Ln 7, Col 1)"). Enter jumps to it and announces
+<code>Jumped to bookmark "…"</code>; Escape says "Bookmark list
+cancelled". With none set it reports "No bookmarks available…".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-23--set-temporary-bookmark-navigateset_temp_bookmark-ctrlj">NAV-23
+— Set Temporary Bookmark (<code>navigate.set_temp_bookmark</code>,
+Ctrl+J)</h2>
+<p><em>What &amp; why.</em> Drop a single, unnamed, disposable "come
+back here" mark with <strong>no dialog</strong> — the fastest possible
+scratch jump point. It is silently overwritten each time and forgotten
+on restart.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; place the caret anywhere
+memorable.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+J</strong>, or <strong>Navigate menu (Alt, N) ▸
+Bookmarks ▸ Set Temporary Bookmark</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>No dialog appears; QUILL announces <strong>"Temporary bookmark
+set"</strong> immediately. Setting it again elsewhere silently replaces
+the old one (no prompt) — that is by design.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-24--go-to-temporary-bookmark-navigatego_to_temp_bookmark-ctrlshiftj">NAV-24
+— Go to Temporary Bookmark (<code>navigate.go_to_temp_bookmark</code>,
+Ctrl+Shift+J)</h2>
+<p><em>What &amp; why.</em> Jump straight back to the temporary bookmark
+— no picker, the twin of NAV-23.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A temporary bookmark set (NAV-23); move the caret elsewhere so the
+jump is visible.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+J</strong>, or <strong>Navigate menu (Alt,
+N) ▸ Bookmarks ▸ Go to Temporary Bookmark</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret returns to the marked spot and QUILL announces
+<strong>"Jumped to temporary bookmark"</strong>. With none set (e.g.
+right after a restart) it says <strong>"No temporary bookmark
+set"</strong> and holds.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="nav-25--set-document-language-navigateset_language">NAV-25 — Set
+Document Language… (<code>navigate.set_language</code>)</h2>
+<p><em>What &amp; why.</em> Pick the language/syntax profile QUILL uses
+for <strong>this document's</strong> editing behaviour (token
+classification, indentation, structure). It changes behaviour only — it
+never renames or converts the file — and is not remembered when the file
+is reopened.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu (Alt, N) ▸ Set Document
+Language…</strong>.</li>
+<li>From the list (which starts with <strong>"Auto-detect from
+file"</strong>, then the language profiles, then <strong>"Plain
+text"</strong>), choose a profile such as <strong>Python</strong>; press
+<strong>Enter</strong>.</li>
+<li>Re-open it and choose <strong>"Auto-detect from file"</strong> to
+clear the override.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled single-choice dialog stating the change is
+editing-behaviour only and does not rename the file. Choosing a profile
+announces <strong>"Language set to Python."</strong>, and — because
+<code>plain.txt</code>'s extension does not match — appends a spoken
+<strong>Save As tip</strong> (in substance "use File, Save As to save it
+as a Python (.py) file"). Choosing <strong>Auto-detect</strong>
+announces <strong>"Language set to auto-detect from file"</strong>. The
+file on disk is untouched. Escape cancels.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-26--speak-window-title-navigatespeak_window_title-ctrlshiftgrave-then-f">NAV-26
+— Speak Window Title (<code>navigate.speak_window_title</code>,
+Ctrl+Shift+Grave, then F)</h2>
+<p><em>What &amp; why.</em> Speak the window title bar on demand — the
+quickest way for a screen-reader user to confirm which document and app
+state they are in.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>F</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Invoke the chord, or <strong>Navigate menu (Alt, N) ▸ Speak Window
+Title</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks the current title bar text (in substance "formatting.md
+— QUILL …") and mirrors it in the status bar. Type an unsaved change and
+invoke it again: the title now reflects the modified marker.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-27--speak-full-path-navigatespeak_full_path-ctrlshiftgrave-then-p">NAV-27
+— Speak Full Path (<code>navigate.speak_full_path</code>,
+Ctrl+Shift+Grave, then P)</h2>
+<p><em>What &amp; why.</em> Speak the current document's full file path
+on demand — so you always know exactly which file on disk you are
+editing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (a saved file). Also have a
+brand-new unsaved document for the negative check.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>P</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Invoke the chord, or <strong>Navigate menu (Alt, N) ▸ Speak Full
+Path</strong>.</li>
+<li>Switch to the unsaved document and invoke it again.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>For the saved file, QUILL speaks the <strong>full path</strong>
+(e.g. <code>…\qa-samples\formatting.md</code>) and shows it in the
+status bar. For an unsaved document it speaks in substance
+<strong>"Untitled — not saved to disk"</strong> rather than erroring or
+going silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="nav-28--speak-status-summary-navigatespeak_status_summary-ctrlshiftgrave-then-q">NAV-28
+— Speak Status Summary (<code>navigate.speak_status_summary</code>,
+Ctrl+Shift+Grave, then Q)</h2>
+<p><em>What &amp; why.</em> Speak a one-shot summary of the document's
+state — name, path, saved/modified status, and encoding — the "where am
+I, what state is this file in" command.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; type one character so it is
+modified, then invoke; optionally save (<strong>Ctrl+S</strong>) and
+invoke again to hear the state flip.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Q</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Invoke the chord, or <strong>Navigate menu (Alt, N) ▸ Speak Status
+Summary</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks a summary in substance <strong>"formatting.md.
+<full path>. modified. encoding UTF-8"</strong>, mirrored to the status
+bar. After saving, the same command reports <strong>"saved"</strong> in
+place of "modified". The name, path, modified/saved state, and encoding
+must all be present and correct.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 28</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

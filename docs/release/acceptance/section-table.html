@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-table</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="section--tables-reveal-codes-notes--misc-table-reveal-notes--documentsyncaimedia-22-commands">Section
+— Tables, Reveal Codes, Notes &amp; misc (<code>table.*</code>
+<code>reveal.*</code> <code>notes.*</code> +
+<code>document/sync/ai/media</code>, 22 commands)</h1>
+<p>Four small worlds in one section: moving around a
+<strong>table</strong> cell by cell and hearing where you are
+(<code>table.*</code>); inspecting the hidden formatting
+<strong>codes</strong> WordPerfect-style (<code>reveal.*</code>);
+leaving and finding your own <strong>inline notes</strong>
+(<code>notes.*</code>); and a handful of one-off commands — a spoken
+<strong>document summary</strong>, <strong>folder sync</strong> with
+GitHub, AI <strong>metadata</strong> suggestions, and the media
+<strong>sleep timer</strong> (<code>document/sync/ai/media</code>).
+Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> → the
+<code>table.*</code>, <code>reveal.*</code>, <code>notes.*</code>,
+<code>document.*</code>, <code>sync.*</code>, <code>ai.*</code>, and
+<code>media.*</code> sections. Read §2–§3 of <code>README.md</code> for
+the scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <strong><code>table.md</code></strong> — a
+one-line caption then a <strong>3-column</strong> table
+(<code>Region</code>, <code>Device</code>, <code>Notes</code>) with a
+header row and <strong>3 body rows</strong> (North / South / East), i.e.
+<strong>4 navigable rows</strong> once the <code>| --- |</code>
+separator is set aside. The South row's Device cell holds
+<code>Phone \| Watch</code> — an <strong>escaped pipe</strong> that must
+stay inside one cell. The table-navigation scenarios reuse the wording
+established in the core-journey plan,
+<code>../qa-core-journeys.md</code> → <strong>JOURNEY-002</strong>.</p>
+<p>The <code>table.*</code> chords all follow the same rule: they move
+only when the caret is <strong>inside</strong> a table, they
+<strong>speak position first then content</strong> ("Row 2 of 4, column
+3 of 3: Ships Q1"), an empty cell is spoken as <strong>"blank"</strong>,
+and hitting an edge announces the edge and leaves the caret put. Outside
+a table every chord says <strong>"Not in a table"</strong> and does
+nothing.</p>
+<hr />
+<h2 id="tbl-01--table-next-cell-tablenext_cell-ctrlaltright">TBL-01 —
+Table: Next Cell (<code>table.next_cell</code>, Ctrl+Alt+Right)</h2>
+<p><em>What &amp; why.</em> Step one cell to the right along a row — the
+everyday "read across the table" move, spoken so you always know which
+cell you landed on.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>table.md</code></strong>. Put the caret on the
+header row (the line with <code>Region</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Right</strong>. (No menu path — this is a
+keyboard command; you can also run <strong>Table: Next Cell</strong>
+from the Command Palette, <strong>Ctrl+Shift+P</strong>.)</li>
+<li>Keep pressing <strong>Ctrl+Alt+Right</strong> to the end of the row,
+then once more.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret jumps into the next cell and QUILL speaks <strong>position
+then content</strong>, e.g. "Row 1 of 4, column 2 of 3: Device", then
+"…column 3 of 3: Notes". The count is <strong>4 rows</strong> (header +
+3 body) and <strong>3 columns</strong>.</li>
+<li>At the <strong>last cell of a non-final row</strong> it says
+<strong>"No more cells"</strong> and the caret stays put. At the
+<strong>final cell of the final row</strong> (East / Backordered) it
+says <strong>"No more cells, end of table"</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tbl-02--table-previous-cell-tableprevious_cell-ctrlaltleft">TBL-02 —
+Table: Previous Cell (<code>table.previous_cell</code>,
+Ctrl+Alt+Left)</h2>
+<p><em>What &amp; why.</em> Step one cell to the <strong>left</strong>
+along a row — the mirror of TBL-01.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret in the
+<strong>Notes</strong> column of any body row (e.g. after a couple of
+Ctrl+Alt+Right presses).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Left</strong> repeatedly back toward the
+first column.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press moves one column left and speaks "Row R of 4, column C of
+3: …".</li>
+<li>From the <strong>first cell of a row</strong>, another Ctrl+Alt+Left
+says <strong>"No more cells"</strong> and the caret does not move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tbl-03--table-cell-below-tablecell_below-ctrlaltdown">TBL-03 —
+Table: Cell Below (<code>table.cell_below</code>, Ctrl+Alt+Down)</h2>
+<p><em>What &amp; why.</em> Drop straight down one row, staying in the
+same column — reading a column top to bottom.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret on the
+<strong>Region</strong> cell of the header row.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Down</strong> to walk down column 1: Region →
+North → South → East.</li>
+<li>At East, press <strong>Ctrl+Alt+Down</strong> once more.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press moves down one row in the <strong>same column</strong>
+and speaks position + content, e.g. "Row 2 of 4, column 1 of 3:
+North".</li>
+<li>Below the last row it says <strong>"No more rows"</strong> (or
+<strong>"No more rows, end of table"</strong> if you are on the final
+cell of the final row); the caret stays put.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tbl-04--table-cell-above-tablecell_above-ctrlaltup">TBL-04 —
+Table: Cell Above (<code>table.cell_above</code>, Ctrl+Alt+Up)</h2>
+<p><em>What &amp; why.</em> Move up one row in the same column — the
+mirror of TBL-03.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret on the
+<strong>East</strong> row's Region cell (bottom of column 1).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Up</strong> to climb: East → South → North →
+Region.</li>
+<li>On the header row, press <strong>Ctrl+Alt+Up</strong> once
+more.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press moves up one row and speaks position + content.</li>
+<li>Above the top row it says <strong>"No more rows"</strong> and the
+caret does not move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tbl-05--table-first-cell-tablefirst_cell-ctrlalthome">TBL-05 —
+Table: First Cell (<code>table.first_cell</code>, Ctrl+Alt+Home)</h2>
+<p><em>What &amp; why.</em> Jump straight to the very first cell of the
+whole table (row 1, column 1) from anywhere inside it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret somewhere in the
+middle of the table (e.g. the South row's Notes cell).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Home</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret lands on the top-left cell and QUILL says "Row 1 of 4,
+column 1 of 3: Region".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tbl-06--table-last-cell-tablelast_cell-ctrlaltend">TBL-06 —
+Table: Last Cell (<code>table.last_cell</code>, Ctrl+Alt+End)</h2>
+<p><em>What &amp; why.</em> Jump to the very last cell of the table
+(final row, final column).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret anywhere inside
+the table.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+End</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret lands on the bottom-right cell and QUILL says "Row 4 of 4,
+column 3 of 3: Backordered".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tbl-07--table-first-cell-in-row-tablerow_start-althome">TBL-07 —
+Table: First Cell in Row (<code>table.row_start</code>, Alt+Home)</h2>
+<p><em>What &amp; why.</em> Jump to the start of the
+<strong>current</strong> row without leaving it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret in the
+<strong>Notes</strong> cell of the South row (column 3).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Home</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret jumps to column 1 of the <strong>same</strong> row and
+QUILL says "Row 3 of 4, column 1 of 3: South". The row does not
+change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tbl-08--table-last-cell-in-row-tablerow_end-altend">TBL-08 —
+Table: Last Cell in Row (<code>table.row_end</code>, Alt+End)</h2>
+<p><em>What &amp; why.</em> Jump to the end of the
+<strong>current</strong> row. Use this scenario to also prove the
+<strong>escaped-pipe</strong> cell stays whole.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>table.md</code></strong> open. Caret in the
+<strong>Region</strong> cell of the <strong>South</strong> row (column
+1).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+End</strong> to reach the last cell of that row
+(the Notes column).</li>
+<li>Then press <strong>Ctrl+Alt+Left</strong> once to land on the
+<strong>Device</strong> cell of the South row — the one holding
+<code>Phone \| Watch</code>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Step 1: the caret jumps to column 3 of the same row: "Row 3 of 4,
+column 3 of 3: Bundle SKU".</li>
+<li>Step 2: the Device cell is announced as <strong>one cell</strong> —
+"…column 2 of 3: Phone | Watch" — the escaped pipe <code>\|</code> is
+read as a literal pipe <strong>inside</strong> the cell and does
+<strong>not</strong> split it into an extra column. Position stays
+"column 2 of 3".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="rev-01--reveal-codes-next-code-revealnext_code">REV-01 — Reveal
+Codes: Next Code (<code>reveal.next_code</code>)</h2>
+<p><em>What &amp; why.</em> With the Reveal Codes pane open, jump to the
+<strong>next</strong> hidden formatting code (a bold-on, heading, link,
+list marker, …) and hear it named — WordPerfect's "show me the codes"
+for a screen-reader user.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> (it is full of
+headings, bold/italic, a link and lists).</li>
+<li>Turn the pane on: press <strong>Alt+F3</strong> (<strong>View menu ▸
+Reveal Codes</strong>). You should hear "Reveal Codes shown." A status
+hint mentions <strong>F6</strong> to move into the pane.</li>
+<li>Note: <code>reveal.next_code</code> has <strong>no default
+shortcut</strong>. Run it from the <strong>Command Palette</strong>
+(<strong>Ctrl+Shift+P</strong> → "Reveal Codes: Next Code"), or move
+into the pane with <strong>F6</strong> and arrow through the flowed
+codes directly.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Reveal Codes: Next Code</strong> (Command Palette), or
+press <strong>Down/Right</strong> in the pane after
+<strong>F6</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The pane selection advances to the next <strong>code</strong> token
+and QUILL <strong>speaks the code phrase</strong> (e.g. "Heading 1",
+"Bold on"); the editor caret follows to the matching spot. When there is
+nothing further it says <strong>"Reveal Codes: no further
+code."</strong> and stays put.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="rev-02--reveal-codes-previous-code-revealprevious_code">REV-02 —
+Reveal Codes: Previous Code (<code>reveal.previous_code</code>)</h2>
+<p><em>What &amp; why.</em> The mirror of REV-01 — step to the
+<strong>previous</strong> code.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same as REV-01: <strong><code>formatting.md</code></strong> open,
+Reveal Codes shown (<strong>Alt+F3</strong>), with the pane caret
+somewhere past the first code.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Reveal Codes: Previous Code</strong> (Command Palette),
+or press <strong>Up/Left</strong> in the pane.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Selection moves to the previous code and its phrase is spoken; the
+editor caret follows. Before the first code it says <strong>"Reveal
+Codes: no earlier code."</strong> and the caret stays put.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="rev-03--reveal-codes-go-to-matching-code-revealgo_to_pair">REV-03 —
+Reveal Codes: Go to Matching Code (<code>reveal.go_to_pair</code>)</h2>
+<p><em>What &amp; why.</em> Formatting codes come in pairs (bold-on ↔︎
+bold-off, list-start ↔︎ list-end). This jumps from one half of the pair
+to its partner, so you can see exactly what a code encloses.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>formatting.md</code></strong> open, Reveal Codes shown
+(<strong>Alt+F3</strong>). Put the pane selection on a
+<strong>paired</strong> code — e.g. a <strong>Bold on</strong> marker on
+a bold word.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Reveal Codes: Go to Matching Code</strong> from the
+<strong>Command Palette</strong> (<strong>Ctrl+Shift+P</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Selection jumps to the <strong>partner</strong> code (the matching
+"off") and QUILL speaks the landing code; the editor caret follows. On a
+code that has no partner the command does nothing rather than jumping
+somewhere wrong. <strong>Note:</strong> if nothing is spoken on an
+unpaired code, that is expected — confirm it did not move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="rev-04--reveal-codes-speak-codes-aloud-revealtoggle_speak">REV-04 —
+Reveal Codes: Speak Codes Aloud (<code>reveal.toggle_speak</code>)</h2>
+<p><em>What &amp; why.</em> A verbosity switch. <strong>Off</strong>
+(the default) keeps your screen reader as the single voice while you
+arrow through the flowed view — QUILL mirrors the code phrase silently
+to the status bar so NVDA/JAWS don't double-speak. <strong>On</strong>
+restores QUILL's own spoken narration of each code for people who prefer
+it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>formatting.md</code></strong> open, Reveal Codes shown
+(<strong>Alt+F3</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Reveal Codes: Speak Codes Aloud</strong> from the
+<strong>Command Palette</strong> (<strong>Ctrl+Shift+P</strong>). Then
+run it again to toggle back.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning it <strong>on</strong>: QUILL says <strong>"Reveal Codes
+will speak codes aloud."</strong> — now arrowing the flowed view speaks
+each code phrase in QUILL's voice as well.</li>
+<li>Turning it <strong>off</strong>: QUILL says <strong>"Reveal Codes
+codes are now silent; your screen reader reads the line."</strong> The
+setting persists across restarts.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="note-01--add-inline-note-notesadd_inline_note-altshifti">NOTE-01
+— Add Inline Note (<code>notes.add_inline_note</code>, Alt+Shift+I)</h2>
+<p><em>What &amp; why.</em> Attach a private note to the current line or
+selection — a margin comment that is <strong>anchored to the
+text</strong> (it follows edits) and <strong>saved per
+document</strong>, so it comes back when you reopen the file.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>plain.txt</code></strong>. Put the caret on a
+line (or select a phrase) to anchor to.</li>
+<li>The note text you will type:
+<strong><code>Check this figure</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+I</strong>, or <strong>Navigate menu ▸
+Sticky Notes ▸</strong> the inline-note command.</li>
+<li>In the note dialog, type
+<strong><code>Check this figure</code></strong>; activate
+<strong>Save</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog is labelled and keyboard-complete. On Save, QUILL
+announces <strong>"Inline note added."</strong> and the status line
+shows the anchor text in quotes (e.g.
+<code>Inline note added on "…"</code>). Choosing <strong>Cancel</strong>
+(or saving an empty note) announces the add was cancelled and writes
+nothing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="note-02--next-inline-note-notesnext_inline_note-altshiftj">NOTE-02 —
+Next Inline Note (<code>notes.next_inline_note</code>, Alt+Shift+J)</h2>
+<p><em>What &amp; why.</em> Jump the caret forward to the next inline
+note in the document and hear it — walking your notes in order.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>plain.txt</code></strong> open with <strong>at least
+two</strong> inline notes added (repeat NOTE-01 on two different lines).
+Put the caret above the first note.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+J</strong> to advance to the next note;
+press again to continue.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves to the next note's anchored text and QUILL announces
+its position and summary, e.g. <strong>"Inline note 1 of 2: Check this
+figure"</strong>. Past the last note it <strong>wraps</strong> to the
+first. With no notes at all it says <strong>"No inline notes in this
+document"</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="note-03--previous-inline-note-notesprevious_inline_note-altshiftg">NOTE-03
+— Previous Inline Note (<code>notes.previous_inline_note</code>,
+Alt+Shift+G)</h2>
+<p><em>What &amp; why.</em> The mirror of NOTE-02 — step to the previous
+note.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same as NOTE-02: <strong><code>plain.txt</code></strong> with two or
+more inline notes; caret below the last note.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+G</strong> to move back to the previous
+note; press again to continue.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves to the previous note and QUILL announces "Inline
+note N of M: …". Before the first note it <strong>wraps</strong> to the
+last. With no notes it says "No inline notes in this document".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="note-04--speak-inline-note--double-press-to-edit-notesspeak_inline_note-altshifth">NOTE-04
+— Speak Inline Note / double-press to edit
+(<code>notes.speak_inline_note</code>, Alt+Shift+H)</h2>
+<p><em>What &amp; why.</em> Read the full text of the note <strong>at
+the caret</strong> aloud; press the key <strong>twice quickly</strong>
+to open that note to view, edit, or delete it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong><code>plain.txt</code></strong> open with an inline note;
+caret on the note's anchored line (use NOTE-02 to land on it
+first).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+H</strong> once — listen.</li>
+<li>Press <strong>Alt+Shift+H twice in quick succession</strong> (within
+about half a second).</li>
+<li>In the editor dialog, change the text and <strong>Save</strong> — or
+use <strong>Delete</strong> — then run NOTE-04 again to confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Single press: QUILL speaks <strong>"Inline note: "</strong> followed
+by the note's full text. With the caret <strong>not</strong> on a note
+it says "No inline notes in this document".</li>
+<li>Double press: the note opens in an edit dialog with
+<strong>Delete</strong> available. Saving announces <strong>"Inline note
+updated"</strong>; deleting announces <strong>"Inline note
+deleted"</strong>; Cancel changes nothing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="note-05--sticky-notes-browser-notessticky_browser">NOTE-05 —
+Sticky Notes Browser… (<code>notes.sticky_browser</code>)</h2>
+<p><em>What &amp; why.</em> A searchable list of your <strong>sticky
+notes</strong> (the free-standing notes, distinct from the inline notes
+above) that you can arrow, preview, and open to edit — reachable even
+when QUILL is minimized to the tray.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Create at least one sticky note first via <strong>New Sticky
+Note…</strong> (<code>tools.sticky_note_capture</code>,
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+N</strong>) so the
+browser has something to show.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Navigate menu ▸ Sticky Notes ▸ Sticky Notes
+Browser…</strong>, or run it from the Command Palette.</li>
+<li>Type in the search box; arrow the results; open one to edit;
+<strong>Escape</strong> to close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog is keyboard-navigable and announced: a search field, a
+results list you can arrow with a spoken preview, and an edit path.
+Opening a note whose underlying note no longer exists is reported ("That
+note no longer exists.") rather than erroring. Escape returns focus to
+where you were.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="misc-01--document-summary-documentsummary-alti">MISC-01 —
+Document Summary (<code>document.summary</code>, Alt+I)</h2>
+<p><em>What &amp; why.</em> A one-key spoken snapshot of where you are:
+file name, word and line counts, headings, and whether there are unsaved
+changes.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> (it has headings).
+Optionally type one word so it shows as modified.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+I</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks a single sentence in substance: the file name, then
+<strong><code>N words, M lines</code></strong>, then a heading count
+(e.g. "6 heading(s)"), and — if the document is dirty — <strong>",
+unsaved changes."</strong> An unsaved/new document is named "unsaved
+document". With nothing open it says "No document open".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="misc-02--sync-folder-with-github-syncsync_folder">MISC-02 — Sync
+Folder with GitHub… (<code>sync.sync_folder</code>)</h2>
+<p><em>What &amp; why.</em> Point QUILL at any folder and it commits,
+pulls, and pushes it over that folder's own git remote — the
+general-purpose half of QUILL Sync. It never sets anything up silently:
+you always confirm before an <code>init</code> or a network call.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> the user's own <strong>git</strong>
+is installed and its credentials work (SSH key or the system git
+credential manager). A folder that is already a git repo with a remote
+is the simplest case; otherwise you will be asked for a repo URL. If you
+cannot supply either, mark <strong>Blocked</strong>.</li>
+<li><strong>Not available in Safe Mode</strong> (it is network activity)
+— do not run this under <code>QUILL_SAFE_MODE=1</code>; there it simply
+reports it is disabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Sync ▸ Sync Folder with GitHub…</strong> (or
+Command Palette).</li>
+<li>In the folder picker, choose a folder; confirm.</li>
+<li>If prompted, confirm the setup step (it tells you it will run
+<code>git init</code> and/or
+<code>git remote add origin &lt;URL&gt;</code>) and paste the repository
+URL.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The folder picker and any confirmation/URL prompts are labelled and
+keyboard-complete; a <strong>No-defaulted</strong> confirmation appears
+before any <code>init</code> or remote is added. Progress is announced;
+on success the result message is spoken. If there are
+<strong>conflicts</strong> they are listed by name in an accessible list
+(never auto-resolved) so you can fix them and sync again.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="misc-03--suggest-document-metadata-aisuggest_metadata-gated-futureai">MISC-03
+— Suggest Document Metadata… (<code>ai.suggest_metadata</code>)
+<strong>[GATED future.ai]</strong></h2>
+<p><em>What &amp; why.</em> Ask the configured AI to propose
+front-matter (title, summary, tags, category), then accept or reject
+each field one at a time — the AI proposes, you dispose, applied as a
+<strong>single undo step</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>[GATED]</strong> This appears only when the
+<strong><code>future.ai</code></strong> flag is on (a dev/admin build).
+On a public 1.0 build it is absent — mark <strong>N/A</strong> and
+confirm its absence in <code>gated-absence.md</code>.</li>
+<li><strong>Precondition:</strong> an AI connection is configured (AI
+Connection). If none, QUILL will prompt for it; if you cannot supply
+one, mark <strong>Blocked</strong>.</li>
+<li>Open a document with real prose (e.g.
+<strong><code>formatting.md</code></strong>), not empty.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Suggest Document Metadata…</strong> from the Command
+Palette (or its menu item).</li>
+<li>In the <strong>Review Metadata Suggestions</strong> dialog, Tab
+through each proposed field; accept some and leave others; confirm with
+<strong>OK</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces <strong>"Asking the AI for metadata
+suggestions."</strong> then opens a field-by-field review dialog that is
+labelled and keyboard-complete. Only the fields you accept are written
+into the front matter; a <strong>No-defaulted</strong> confirmation
+guards overwriting any non-empty existing field. On apply it announces
+how many fields were applied and names them, <strong>as one undo
+step</strong>. An empty document says "Document is empty - nothing to
+describe."; accepting nothing says "No metadata was applied; the
+document is unchanged."</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="misc-04--media-sleep-timer-mediasleep_timer-gated-coreradio">MISC-04
+— Media: Sleep Timer… (<code>media.sleep_timer</code>) <strong>[GATED
+core.radio]</strong></h2>
+<p><em>What &amp; why.</em> Set a countdown that fades out and stops the
+editor-embedded media (Internet Radio / Podcasts) after N minutes and
+restores your volume — for falling asleep to a stream.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>[GATED]</strong> This lives in <strong>Tools ▸
+Media</strong> and depends on the editor-embedded <strong>Internet Radio
+/ Podcasts</strong>, which are <strong>gated out</strong> of the public
+1.0 build. On a public build the Media submenu / this item is absent —
+mark <strong>N/A</strong> and confirm absence in
+<code>gated-absence.md</code>. It appears only in a dev/admin build with
+the media feature on.</li>
+<li>Start something playing (Internet Radio or a Podcast) so the timer
+has a target.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Media ▸ Sleep Timer…</strong> (or Command
+Palette).</li>
+<li>In the dialog, set a number of minutes (e.g. <strong>15</strong>);
+confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog is labelled and keyboard-operable. On confirm QUILL
+announces <strong>"Sleep timer set for 15 minutes"</strong> (matching
+your value). Setting <strong>0</strong> (or confirming with the timer
+cleared) cancels it with "Sleep timer cancelled". When the countdown
+reaches zero playback stops, the volume is restored, and QUILL announces
+<strong>"Sleep timer: playback stopped, volume restored."</strong></li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="misc-05--media-cancel-sleep-timer-mediacancel_sleep_timer-gated-coreradio">MISC-05
+— Media: Cancel Sleep Timer (<code>media.cancel_sleep_timer</code>)
+<strong>[GATED core.radio]</strong></h2>
+<p><em>What &amp; why.</em> Cancel a running sleep timer before it
+fires.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>[GATED]</strong> Same gating as MISC-04 — absent from a
+public build (mark <strong>N/A</strong>).</li>
+<li>A sleep timer currently <strong>running</strong> (set one via
+MISC-04 first).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Media: Cancel Sleep Timer</strong> from the Command
+Palette (or its menu item).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With a timer running, QUILL announces <strong>"Sleep timer
+cancelled"</strong> and playback is no longer scheduled to stop. With
+<strong>no</strong> timer running it says <strong>"No sleep timer is
+running."</strong> rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 22</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

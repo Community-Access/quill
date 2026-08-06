@@ -1,0 +1,3 @@
+Meeting notes for the Q1 planning session.
+We will ship the editor in March.
+The team agreed to focus on accessibility first.

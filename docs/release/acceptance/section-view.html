@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-view</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="section--view-window--verbosity-view--window--verbosity-38-commands">Section
+— View, Window &amp; Verbosity (<code>view.*</code> +
+<code>window.*</code> + <code>verbosity.*</code>, 38 commands)</h1>
+<p>Everything about <strong>how QUILL looks, how its windows and tabs
+are arranged, and how much it talks</strong>. Three namespaces live here
+because a real user reaches for them together: change the theme or wrap,
+jump between the documents you have open, and turn the speech up or down
+for the room you are in. Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> → the
+<code>view.*</code> (16), <code>window.*</code> (14), and
+<code>verbosity.*</code> (8) sections. Read §2–§3 of
+<code>README.md</code> for the scenario layout and the
+Pass/Fail/Blocked/N-A + Works/Surface-exact/Accessible boxes.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <code>plain.txt</code>,
+<code>formatting.md</code>, <code>table.md</code>.</p>
+<p>Two conventions used throughout this section:</p>
+<ul>
+<li>A <strong>chord</strong> written
+<code>Ctrl+Shift+Grave, Shift+C</code> is a two-step shortcut: press and
+release <strong>Ctrl+Shift+Grave</strong> (Grave is the backtick key,
+top-left), then press <strong>Shift+C</strong>. You have a couple of
+seconds between the two.</li>
+<li>Several items here are <strong>toggles</strong>: pressing them a
+second time reverses the first. Every toggle scenario asks you to press
+it <strong>twice</strong> and hear both states, because a toggle that
+only announces one direction is half-broken.</li>
+</ul>
+<hr />
+<h1 id="view-options-view-16-commands">View options
+(<code>view.*</code>, 16 commands)</h1>
+<p>How the editor presents itself: wrap, theme, panels, previews, and
+the two accessibility read-outs (contrast and spoken echo). Scenarios
+VIEW-01 through VIEW-16.</p>
+<hr />
+<h2 id="view-01--toggle-soft-wrap-viewtoggle_soft_wrap-altz">VIEW-01 —
+Toggle Soft Wrap (<code>view.toggle_soft_wrap</code>, Alt+Z)</h2>
+<p><em>What &amp; why.</em> Wrap long lines to the window width so you
+never scroll sideways to read — or turn it off to see each logical line
+whole. The everyday reading comfort switch.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>. If every line is short, type one very
+long line (past the window edge) so wrapping is visible.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Z</strong>, or open <strong>View menu (Alt, V) ▸
+Soft Wrap</strong>.</li>
+<li>Press <strong>Alt+Z</strong> again to reverse it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first press announces <strong>"Soft wrap on"</strong> and the
+long line now folds to the window width; the second announces
+<strong>"Soft wrap off"</strong> and the long line runs off the edge
+again. The menu item's checked state matches the spoken state.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-02--toggle-dark-mode-viewtoggle_dark_mode-altshiftd">VIEW-02 —
+Toggle Dark Mode (<code>view.toggle_dark_mode</code>, Alt+Shift+D)</h2>
+<p><em>What &amp; why.</em> Flip the editor between the light/system
+theme and a dark theme — eye comfort and low-vision contrast.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. Note the current background (light or dark).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+D</strong>, or <strong>View menu ▸ Dark
+Mode</strong>.</li>
+<li>Press <strong>Alt+Shift+D</strong> again to return.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first press announces <strong>"Dark mode on"</strong> and the
+editor background turns dark; the second announces <strong>"Dark mode
+off"</strong> and it returns to the light/system theme. If a side
+preview is open (see VIEW-06), it re-renders to match the new theme
+rather than staying light.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-03--announce-contrast-ratio-viewannounce_contrast-chord-then-shiftc">VIEW-03
+— Announce Contrast Ratio (<code>view.announce_contrast</code>, chord
+then Shift+C)</h2>
+<p><em>What &amp; why.</em> Read out the measured contrast between the
+editor's text and background against the WCAG standard — a low-vision
+user's proof the theme is actually readable, not just "dark enough."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open, in whatever theme you want to measure. Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+C</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave, Shift+C</strong> (or
+Command Palette → "Announce Contrast Ratio").</li>
+<li>Toggle dark mode (VIEW-02) and run it again to compare the two
+numbers.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces the ratio and grade in substance, e.g.
+<strong>"Contrast ratio: 7.4:1, WCAG grade: AAA (excellent)"</strong>.
+The grade band is one of AAA (excellent), AA (good), AA large text only
+(marginal), or below AA (insufficient), and it matches the number. It
+never fails silently — an error reports "Could not calculate contrast
+ratio."</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="view-04--preview-viewpreview-ctrlshiftv">VIEW-04 — Preview
+(<code>view.preview</code>, Ctrl+Shift+V)</h2>
+<p><em>What &amp; why.</em> Open a rendered preview of the current
+document (Markdown/HTML) in an in-app window, so you hear/see the
+formatted result, not the raw markup.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (it has headings, lists, a link, an
+image).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+V</strong>, or <strong>View menu ▸
+Preview</strong>.</li>
+<li>Read the preview with your screen reader, then close it with
+<strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A preview window opens rendering the document; QUILL announces
+<strong>"Opened preview"</strong>. Because it is a real web document,
+your screen reader can use browse-mode heading navigation inside it. The
+very first preview on a fresh machine may say <strong>"Preparing
+preview… (one-time WebView2 setup)"</strong> and open a moment later —
+that one-time delay is expected. Escape returns focus to the
+editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-05--browser-preview-viewbrowser_preview-chord-then-v">VIEW-05 —
+Browser Preview (<code>view.browser_preview</code>, chord then V)</h2>
+<p><em>What &amp; why.</em> Render the same preview in your real web
+browser — useful for a full-page read or to hand to someone else. Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>V</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. A default browser installed.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave, V</strong>, or
+<strong>View menu ▸ Browser Preview</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Your browser opens the rendered document in a new tab; QUILL
+announces in substance <strong>"Opened browser preview in
+<browser name>"</strong>. Running it again for the same document says
+<strong>"Refreshed browser preview"</strong> rather than piling up new
+browser tabs. With no document open it says "No document open," not an
+error.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-06--preview-side-by-side-viewsplit_preview-ctrlshiftbackslash">VIEW-06
+— Preview Side by Side (<code>view.split_preview</code>,
+Ctrl+Shift+Backslash)</h2>
+<p><em>What &amp; why.</em> Show a live preview pane to the
+<strong>right</strong> of the editor and keep it updating as you type —
+write and see the result at once.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Backslash</strong>, or <strong>View menu ▸
+Preview Side by Side</strong>.</li>
+<li>Type a new heading line and watch/hear the pane update.</li>
+<li>Press <strong>Ctrl+Shift+Backslash</strong> again to hide it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first press splits the window and announces <strong>"Preview
+shown on the right"</strong>; the second unsplits and announces
+<strong>"Preview hidden"</strong>, returning focus to the editor. With
+no document open it says "No document open."</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="view-07--focus-preview-viewfocus_preview-ctrlf6">VIEW-07 — Focus
+Preview (<code>view.focus_preview</code>, Ctrl+F6)</h2>
+<p><em>What &amp; why.</em> Move keyboard focus <strong>into</strong>
+the side-preview pane. The editor is an edit field where NVDA cannot use
+single-letter browse navigation; the preview is a real web document
+where H (headings), K (links) and so on work — this is how you get
+there.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. (You do not need the split open
+first; this opens it if needed.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F6</strong>, or <strong>View menu ▸ Focus
+Preview</strong>.</li>
+<li>In the preview, press your screen reader's heading key (NVDA:
+<strong>H</strong>) to jump between headings.</li>
+<li>Press <strong>Escape</strong> or <strong>F6</strong> to come back to
+the editor.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Focus lands inside the preview; QUILL announces <strong>"Moved to
+preview. Press Escape or F6 to return to the editor."</strong> Your
+screen reader switches to browse mode and single-letter navigation
+works. Escape/F6 announces <strong>"Back in the editor"</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="view-08--reveal-codes-viewreveal_codes_toggle-altf3">VIEW-08 —
+Reveal Codes (<code>view.reveal_codes_toggle</code>, Alt+F3)</h2>
+<p><em>What &amp; why.</em> Show/hide the Reveal Codes pane, which
+exposes the underlying markup (the "codes" behind the formatting) — a
+WordPerfect-style read-out for checking exactly what is in the
+document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+F3</strong>, or <strong>View menu ▸ Reveal
+Codes</strong>.</li>
+<li>Press <strong>F6</strong> to move into the pane and read it, then
+<strong>Alt+F3</strong> again to hide.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first press shows the pane and speaks <strong>"Reveal Codes
+shown."</strong> (the status bar adds the hint "Press F6 to move into
+it; Alt+F3 to hide"). The second hides it and speaks <strong>"Reveal
+Codes hidden."</strong> If focus was inside the pane when you hide it,
+focus returns to the editor — it is never stranded on a hidden pane. The
+menu item's checked state matches.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="view-09--show-spoken-echo-viewspoken_echo-altshifte">VIEW-09 —
+Show Spoken Echo (<code>view.spoken_echo</code>, Alt+Shift+E)</h2>
+<p><em>What &amp; why.</em> Open a read-only window listing the most
+recent things QUILL announced, newest first, so you can re-read a
+message you missed instead of chasing it in speech. An accessibility
+safety net.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. First do a few things that speak (e.g. toggle
+soft wrap, announce contrast) so there is history to show.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+E</strong>, or <strong>View menu ▸ Show
+Spoken Echo</strong>.</li>
+<li>Arrow through the read-only text; select a line to copy it. Close
+with <strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>"Spoken Echo"</strong> opens with a
+read-only, arrow-navigable list of recent announcements newest-first,
+labelled so the screen reader reads it as "Spoken Echo — read-only
+history of recent announcements." Text is selectable and copyable.
+Escape returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-10--toggle-tab-control-viewtoggle_tab_control-chord-then-shiftt">VIEW-10
+— Toggle Tab Control (<code>view.toggle_tab_control</code>, chord then
+Shift+T)</h2>
+<p><em>What &amp; why.</em> Show or hide the visual row of document
+tabs. Keyboard users who switch documents with Alt+1..0 (see the Window
+group) may prefer it hidden; mouse users want it shown. Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+T</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Two or three documents open so tabs exist.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave, Shift+T</strong>, or
+<strong>View menu ▸ Tab Control</strong>.</li>
+<li>Press it again to reverse.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first press announces <strong>"Tab control shown"</strong> (or
+"…hidden") and the tab row appears/disappears; the second reverses it.
+The setting persists and the menu item's checked state matches. Hiding
+the tabs does <strong>not</strong> close any document.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="view-11--send-to-tray-viewsend_to_tray-chord-then-t">VIEW-11 —
+Send to Tray (<code>view.send_to_tray</code>, chord then T)</h2>
+<p><em>What &amp; why.</em> Hide QUILL to the Windows system
+tray/notification area instead of closing it — tuck it away without
+losing your documents. Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>T</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL open with a document. Know how to find the tray/notification
+area.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave, T</strong>, or
+<strong>View menu ▸ Send to Tray</strong>.</li>
+<li>Restore QUILL from its tray icon (Enter/context menu on the icon) to
+confirm your document is intact.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The main window hides and a QUILL tray icon appears; the status line
+reports it was sent to the tray. Restoring from the tray brings the
+window back with the same document open and unchanged. Nothing is closed
+or lost.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="view-12--toggle-find-wrap-viewtoggle_find_wrap">VIEW-12 — Toggle
+Find Wrap (<code>view.toggle_find_wrap</code>)</h2>
+<p><em>What &amp; why.</em> Decide whether Find, on reaching the end of
+the document, wraps back to the top to keep searching, or stops. No
+default shortcut — reach it from the menu or the Command Palette.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open with a word that appears more than
+once.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>View menu ▸ Toggle Find Wrap</strong> (or Command Palette →
+"Toggle Find Wrap").</li>
+<li>Run it again to reverse.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first invocation announces <strong>"Find wrap on"</strong>, the
+second <strong>"Find wrap off"</strong>; the setting persists. With wrap
+on, a Find that hits the bottom continues from the top; with it off,
+Find stops at the last match. (Verify the search behaviour when you run
+the Edit/Find section.)</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-13--toggle-overwrite-mode-viewtoggle_overwrite_mode">VIEW-13 —
+Toggle Overwrite Mode (<code>view.toggle_overwrite_mode</code>)</h2>
+<p><em>What &amp; why.</em> Switch between Insert (typing pushes text
+right) and Overwrite (typing replaces the character under the caret) —
+the Insert-key behaviour, as a command. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open; place the caret in the middle of a
+word.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>View menu ▸ Toggle Overwrite Mode</strong> (or Command
+Palette).</li>
+<li>Type a character and observe replace-vs-insert; run the command
+again to return.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first invocation announces <strong>"Overwrite mode on"</strong>
+and typing now replaces the character under the caret; running it again
+announces <strong>"Insert mode on"</strong> and typing inserts. The
+status bar's mode cell reflects the current mode.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-14--toggle-persistent-undo-viewtoggle_persistent_undo">VIEW-14
+— Toggle Persistent Undo (<code>view.toggle_persistent_undo</code>)</h2>
+<p><em>What &amp; why.</em> Keep undo history across save/reopen so you
+can undo past a save, rather than losing history when a file is saved.
+No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open and saved.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>View menu ▸ Toggle Persistent Undo</strong> (or Command
+Palette).</li>
+<li>Run it again to reverse.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first invocation announces <strong>"Persistent undo
+on"</strong>, the second <strong>"Persistent undo off"</strong>. With it
+on, undo history is preserved for the current file rather than reset. No
+error either way.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-15--toggle-spell-check-as-you-type-viewtoggle_spellcheck_as_you_type">VIEW-15
+— Toggle Spell Check As You Type
+(<code>view.toggle_spellcheck_as_you_type</code>)</h2>
+<p><em>What &amp; why.</em> Turn live spell checking on or off while you
+type. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>View menu ▸ Toggle Spell Check As You Type</strong> (or
+Command Palette).</li>
+<li>Run it again to reverse.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first invocation announces <strong>"Spell check as you type
+on"</strong>, the second <strong>"…off"</strong>. With it on, typing a
+misspelling is flagged; with it off, no live flagging occurs.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="view-16--toggle-word-prediction-as-you-type-viewtoggle_intellisense_as_you_type">VIEW-16
+— Toggle Word Prediction As You Type
+(<code>view.toggle_intellisense_as_you_type</code>)</h2>
+<p><em>What &amp; why.</em> Turn the live word-prediction (IntelliSense)
+pop-up on or off as you type. The label a user sees is <strong>Word
+Prediction</strong>. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>View menu ▸ Toggle Word Prediction As You Type</strong> (or
+Command Palette).</li>
+<li>Type a few letters and watch for the prediction pop-up; run the
+command again to turn it off.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first invocation announces <strong>"Word prediction as you type
+on"</strong> and a prediction pop-up appears as you type; the second
+announces <strong>"…off"</strong> and hides the pop-up. The menu item's
+checked state matches.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h1 id="window--tab-management-window-14-commands">Window &amp; tab
+management (<code>window.*</code>, 14 commands)</h1>
+<p>Opening, moving between, and closing the documents you have open.
+QUILL keeps several documents in one window; these commands are how you
+get around them by keyboard alone. Scenarios WIN-01 through WIN-05 cover
+all 14 <code>window.*</code> commands (WIN-02 covers the ten "Go to
+Document N" commands together).</p>
+<hr />
+<h2 id="win-01--new-tab-windownew_document_tab-ctrlt">WIN-01 — New Tab
+(<code>window.new_document_tab</code>, Ctrl+T)</h2>
+<p><em>What &amp; why.</em> Open a fresh blank document in a new tab
+alongside what you already have open.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL open with one document (e.g. <code>plain.txt</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+T</strong>, or <strong>Window menu (Alt, W) ▸ New
+Tab</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A new empty document opens and becomes active; the status line
+reports <strong>"New document"</strong> and a create sound plays. The
+document you had open is <strong>not</strong> disturbed — you now have
+two. Focus lands in the new editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="win-02--go-to-document-110-windowgo_to_document_1--_10-alt1--alt9-alt0">WIN-02
+— Go to Document 1–10 (<code>window.go_to_document_1</code> …
+<code>_10</code>, Alt+1 … Alt+9, Alt+0)</h2>
+<p><em>What &amp; why.</em> Jump straight to the Nth open document by
+number — the fastest way to a specific document without cycling.
+<strong>Alt+1</strong> is the first tab, <strong>Alt+9</strong> the
+ninth, and <strong>Alt+0</strong> the tenth. This one scenario exercises
+all ten commands (<code>window.go_to_document_1</code> through
+<code>window.go_to_document_10</code>).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong>three</strong> documents so tabs 1, 2 and 3 exist (e.g.
+<code>plain.txt</code>, <code>formatting.md</code>,
+<code>table.md</code>). Note their order.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+2</strong> (or <strong>Window menu ▸ Go to
+Document 2</strong>). Then <strong>Alt+1</strong>, then
+<strong>Alt+3</strong>.</li>
+<li>Press <strong>Alt+0</strong> (the "10th document" command) while
+only three are open, to check the out-of-range case.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each in-range press switches to that document and announces
+<strong>"Switched to <document name>"</strong> with the right name; the
+title bar follows. A number with no document behind it (here
+<strong>Alt+0</strong>) does <strong>not</strong> switch and instead
+announces <strong>"No document 10 open"</strong> — never an error, never
+a silent jump to nowhere.</li>
+</ul>
+<p><strong>Sign off (covers <code>_1</code>…<code>_10</code>)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="win-03--next-document-windownext_document-ctrltab">WIN-03 — Next
+Document (<code>window.next_document</code>, Ctrl+Tab)</h2>
+<p><em>What &amp; why.</em> Cycle forward through your open
+documents.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Two or three documents open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Tab</strong>, or <strong>Window menu ▸ Next
+Document</strong>.</li>
+<li>Press it enough times to wrap past the last document back to the
+first.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Focus moves to the next document and announces <strong>"Switched to
+<name>"</strong>; after the last document it wraps to the first. With
+only <strong>one</strong> document open it does not cycle and announces
+<strong>"Only one document open"</strong> rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="win-04--previous-document-windowprevious_document-ctrlshifttab">WIN-04
+— Previous Document (<code>window.previous_document</code>,
+Ctrl+Shift+Tab)</h2>
+<p><em>What &amp; why.</em> Cycle backward through your open
+documents.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Two or three documents open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Tab</strong>, or <strong>Window menu ▸
+Previous Document</strong>.</li>
+<li>Press it enough times to wrap past the first document back to the
+last.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Focus moves to the previous document and announces <strong>"Switched
+to <name>"</strong>; before the first document it wraps to the last.
+With only one document open it announces <strong>"Only one document
+open"</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="win-05--close-other-documents-windowclose_other_documents-ctrlshiftf4">WIN-05
+— Close Other Documents (<code>window.close_other_documents</code>,
+Ctrl+Shift+F4)</h2>
+<p><em>What &amp; why.</em> Close every open document
+<strong>except</strong> the current one — clear the desk in one move
+while keeping what you are working on.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Three documents open; make the one you want to keep active. Give at
+least one of the others an <strong>unsaved change</strong> so the
+save-guard is exercised.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+F4</strong>, or <strong>Window menu ▸ Close
+Other Documents</strong>.</li>
+<li>If a document with unsaved changes prompts, choose
+<strong>Cancel</strong> first (hear it), then repeat and choose Save /
+Don't Save as appropriate.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The other documents close and the active one remains open and
+focused. Any document with unsaved work triggers a
+<strong>spoken</strong> Save / Don't Save / Cancel guard first — no
+unsaved work is discarded silently (universal contract, README §3).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h1 id="speech-verbosity-verbosity-8-commands">Speech verbosity
+(<code>verbosity.*</code>, 8 commands)</h1>
+<p>How much QUILL says out loud, and the tools to review and tune it.
+The heart of this group is proving that <strong>changing the level
+actually changes how much QUILL announces</strong> — not just that a
+setting toggles. Scenarios VERB-01 through VERB-08.</p>
+<p>The talkativeness ladder has four built-in <strong>profiles</strong>:
+<strong>Beginner</strong> (full context for every action, all sounds),
+<strong>Normal</strong> (informative, the default),
+<strong>Expert</strong> (routine confirmations suppressed, errors still
+speak), and <strong>Quiet</strong> (braille and the visual status bar
+only — no speech, no earcons). On top of the profile, <strong>Quiet
+Mode</strong> and <strong>Meeting Mode</strong> are instant on/off mutes
+for the room you are in. In every case the <strong>status bar keeps the
+full text</strong> (the "visual floor"), so nothing is ever lost — it is
+just not spoken.</p>
+<hr />
+<h2 id="verb-01--toggle-quiet-mode-verbositytoggle_quiet">VERB-01 —
+Toggle Quiet Mode (<code>verbosity.toggle_quiet</code>)</h2>
+<p><em>What &amp; why.</em> Instantly silence QUILL's speech and earcons
+— the "someone just walked in" button — while the status bar still shows
+every message. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Have something handy that normally
+speaks (e.g. Soft Wrap, VIEW-01).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>verbosity.toggle_quiet</strong> from the
+<strong>View/Speech menu ▸ Toggle Quiet Mode</strong> or the Command
+Palette → "Toggle Quiet Mode".</li>
+<li>Now press <strong>Alt+Z</strong> (Soft Wrap) and listen — then read
+the status bar.</li>
+<li>Run <strong>Toggle Quiet Mode</strong> again to turn it off and
+press <strong>Alt+Z</strong> once more.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning it on reports <strong>"Quiet Mode on"</strong> and adds a
+<strong>[Q]</strong> badge to the status bar. With Quiet Mode on, the
+Soft-Wrap toggle <strong>no longer speaks</strong>, but its text ("Soft
+wrap on/off") still appears on the status bar — proof the floor holds.
+Turning it off reports <strong>"Quiet Mode off"</strong>, drops the [Q]
+badge, and speech returns. This difference in <em>how much you hear</em>
+is the core check.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-02--toggle-meeting-mode-verbositytoggle_meeting">VERB-02 —
+Toggle Meeting Mode (<code>verbosity.toggle_meeting</code>)</h2>
+<p><em>What &amp; why.</em> A stronger, presentation-safe mute:
+hard-silences every earcon and routes speech through a reduced set,
+leaving braille and the visual floor. Use it when you are sharing your
+screen or presenting. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Toggle Meeting Mode</strong> (menu or Command
+Palette).</li>
+<li>Do a few things that normally speak/chime and listen; read the
+status bar.</li>
+<li>Run <strong>Toggle Meeting Mode</strong> again to turn it off.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning it on reports <strong>"Meeting Mode on"</strong> and adds an
+<strong>[M]</strong> badge; earcons go silent and speech is reduced, but
+the status bar keeps full text. Turning it off reports <strong>"Meeting
+Mode off"</strong> and drops the [M] badge. If both modes are on you see
+both badges (<strong>[Q] [M]</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-03--undo-verbosity-change-verbosityundo">VERB-03 — Undo
+Verbosity Change (<code>verbosity.undo</code>)</h2>
+<p><em>What &amp; why.</em> Step back the most recent verbosity change
+(a mode toggle or profile change) — an "I didn't mean that" for the
+speech settings. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. First turn <strong>Quiet Mode
+on</strong> (VERB-01) so there is a change to undo.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Undo Verbosity Change</strong> (menu or Command
+Palette).</li>
+<li>Run it a second time with nothing left to undo.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first run reverses the last change and reports it in substance,
+e.g. <strong>"Undid Quiet Mode on"</strong> — and Quiet Mode is actually
+back off (the [Q] badge clears). When there is nothing left to undo it
+reports <strong>"Nothing to undo"</strong> rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-04--where-am-i-verbositywhere_am_i">VERB-04 — Where Am I
+(<code>verbosity.where_am_i</code>)</h2>
+<p><em>What &amp; why.</em> Speak the caret's current position on demand
+— line (of total) and column — so you can re-orient without moving. No
+default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code> (several lines). Put the caret partway
+down a line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Where Am I</strong> (menu or Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks the position in substance, e.g. <strong>"Line 4 of 12,
+column 7"</strong>. The numbers match where the caret actually is (move
+the caret and run it again to confirm they change). If a position cannot
+be read it says <strong>"Position unknown"</strong> rather than staying
+silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-05--what-changed-verbositywhat_changed">VERB-05 — What
+Changed (<code>verbosity.what_changed</code>)</h2>
+<p><em>What &amp; why.</em> Re-speak the most recent announcement — the
+"wait, what did it just say?" button. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Do something that speaks (e.g. Soft
+Wrap, VIEW-01) so there is a last announcement.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>What Changed</strong> (menu or Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL re-speaks the text of the last announcement (e.g.
+<strong>"Soft wrap on"</strong>). With no history yet it says
+<strong>"Nothing recent"</strong> rather than staying silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-06--speak-status-bar-verbosityspeak_status">VERB-06 — Speak
+Status Bar (<code>verbosity.speak_status</code>)</h2>
+<p><em>What &amp; why.</em> Read the current status-bar message aloud on
+demand — the visual floor spoken back to you. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Do something that sets a status message
+(e.g. a save, or Soft Wrap).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Speak Status Bar</strong> (menu or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks the current status-bar text. If the status bar is empty
+it says <strong>"Status bar empty"</strong> rather than staying silent.
+This works even in Quiet Mode, since it is an explicit request to read
+the floor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-07--verbosity-preferences-verbositypreferences">VERB-07 —
+Verbosity Preferences (<code>verbosity.preferences</code>)</h2>
+<p><em>What &amp; why.</em> The main dial: pick the talkativeness
+<strong>profile</strong> and the channel mix (Speech / Braille / Sound /
+Visual). This is where you prove that <strong>changing the level changes
+how much QUILL announces</strong>. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Verbosity Preferences</strong> (menu or Command Palette)
+to open the <strong>"Verbosity Preferences"</strong> dialog.</li>
+<li>Tab to the <strong>Profile</strong> radio group; note the four
+choices <strong>Beginner / Normal / Expert / Quiet</strong>. Select
+<strong>Expert</strong>. Close the dialog (<strong>Close</strong> button
+or Escape).</li>
+<li>Back in the editor, do a couple of routine actions that normally
+confirm aloud (e.g. Soft Wrap on/off) and listen.</li>
+<li>Reopen Preferences, switch the profile to <strong>Beginner</strong>,
+close, and repeat the same routine actions.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog's Profile radio group, the four Channels checkboxes (with
+<strong>Visual</strong> checked and disabled — the always-on floor), and
+the buttons are all labelled and reachable by keyboard. The difference
+is audible: under <strong>Expert</strong>, routine confirmations are
+trimmed/suppressed while errors still speak; under
+<strong>Beginner</strong>, the same actions speak with fuller context.
+Same action, measurably different amount of speech — that is the pass
+condition. Escape/Close returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="verb-08--announcement-history-verbosityhistory">VERB-08 —
+Announcement History (<code>verbosity.history</code>)</h2>
+<p><em>What &amp; why.</em> Review recent announcements in a browsable
+list, replay or copy one, and read its "Why did QUILL say that?"
+explanation. The deep companion to VIEW-09's quick Spoken Echo. No
+default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. First do several things that speak so
+there is history.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Announcement History</strong> (menu or Command Palette).
+In this build it opens the <strong>Verbosity Preferences</strong>
+surface, where the <strong>History</strong> button opens the full
+<strong>"Announcement history"</strong> dialog — activate it.</li>
+<li>In the history dialog, use the <strong>Filter</strong> field, arrow
+the <strong>Announcements</strong> list, and try
+<strong>Replay</strong>, <strong>Copy</strong>, and
+<strong>Explain</strong> on a selected item.</li>
+<li>Close with <strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The Announcement history dialog shows a labelled
+<strong>Filter</strong> field, a <strong>Recent announcements</strong>
+list (arrowable), a read-only <strong>"Why did QUILL say that"</strong>
+explanation area, and <strong>Replay / Copy / Explain / Clear
+History</strong> buttons — all keyboard-operable. Replay re-speaks the
+selected line; Copy puts it on the clipboard; Explain fills the
+explanation area. Escape returns focus.</li>
+</ul>
+<p><em>Note.</em> If a future build binds <strong>Announcement
+History</strong> to open the history dialog directly (rather than via
+the Preferences panel's History button), the outcome is the same dialog
+— mark Surface-exact against whichever path you actually took and note
+it.</p>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 38</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

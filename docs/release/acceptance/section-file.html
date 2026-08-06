@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-file</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="section--file-menu-file-29-commands">Section — File menu
+(<code>file.*</code>, 29 commands)</h1>
+<p>Everything about getting documents <strong>in and out</strong> of
+QUILL: new, open, save, close, print, and the remote/GitHub/SSH ways of
+doing the same. Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>file.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <code>plain.txt</code>,
+<code>formatting.md</code>, <code>table.md</code>.</p>
+<hr />
+<h2 id="file-01--new-file-filenew-ctrln">FILE-01 — New File
+(<code>file.new</code>, Ctrl+N)</h2>
+<p><em>What &amp; why.</em> Start a blank document. The everyday "give
+me a fresh page."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL open, any state.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+N</strong>, or open <strong>File menu (Alt, F) ▸
+New File</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A new empty document opens with focus in the editor; the title bar
+shows an untitled/new document. If a document with unsaved changes was
+open, it is <strong>not</strong> disturbed (the new one opens alongside
+or as a fresh buffer per QUILL's tab model).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-02--open-file-fileopen-ctrlo">FILE-02 — Open File…
+(<code>file.open</code>, Ctrl+O)</h2>
+<p><em>What &amp; why.</em> Open an existing document from disk.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>The <code>../qa-samples/</code> folder on disk. You will open
+<strong><code>formatting.md</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+O</strong>, or <strong>File menu ▸ Open
+File…</strong>.</li>
+<li>In the file dialog, navigate to <code>qa-samples</code> and select
+<strong><code>formatting.md</code></strong>; press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The file dialog is keyboard-navigable and announced. On confirm,
+<code>formatting.md</code> opens; focus lands in the editor (announced
+as a multi-line Document/text area); the title bar reads
+<strong><code>formatting.md</code></strong> with <strong>no</strong>
+modified marker.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-03--save-filesave-ctrls">FILE-03 — Save
+(<code>file.save</code>, Ctrl+S)</h2>
+<p><em>What &amp; why.</em> Write the current document back to its file.
+On a never-saved document this becomes Save As.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>, then type one extra word so there is an
+unsaved change.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+S</strong>, or <strong>File menu ▸
+Save</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The save is confirmed aloud; the title bar's <strong>modified marker
+disappears</strong>. No dialog appears for an already-named file. A
+second <strong>Ctrl+S</strong> with no new change saves silently or
+reports "no changes" — never errors.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-04--save-as-filesave_as-ctrlshifts">FILE-04 — Save As…
+(<code>file.save_as</code>, Ctrl+Shift+S)</h2>
+<p><em>What &amp; why.</em> Write the document to a new name and/or a
+different format, converting faithfully. This is the fidelity promise
+(headings, lists, links, tables survive).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Target names:
+<strong><code>formatting.docx</code></strong> (Word) and
+<strong><code>formatting.html</code></strong> (HTML).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+S</strong>, or <strong>File menu ▸ Save
+As…</strong>.</li>
+<li>Change the file type to <strong>Word Document</strong>, name it
+<strong><code>formatting</code></strong>, press
+<strong>Enter</strong>.</li>
+<li>Repeat, choosing type <strong>HTML</strong>, name
+<strong><code>formatting</code></strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A converting-Save-As is announced in substance: "Saved as
+formatting.docx, Word format. You are still editing QUILL text; each
+save converts it to Word." The title bar updates; a follow-up
+<strong>Ctrl+S</strong> saves without a dialog.</li>
+<li>Opening <code>formatting.docx</code> in Word: six heading styles
+H1–H6, real bullet and numbered lists, a live <strong>QUILL
+project</strong> hyperlink, image alt "Red circle", and
+bold/italic/underline/strikethrough on the right words.
+<code>formatting.html</code> opens in a browser with an
+<code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code> outline,
+<code>&lt;ul&gt;</code>/<code>&lt;ol&gt;</code>,
+<code>&lt;blockquote&gt;</code>, a <code>&lt;pre&gt;&lt;code&gt;</code>
+block, the <code>&lt;a href&gt;</code>, and
+<code>&lt;img alt="Red circle"&gt;</code>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-05--save-as-plain-text-filesave_as_plain_text">FILE-05 —
+Save As Plain Text… (<code>file.save_as_plain_text</code>)</h2>
+<p><em>What &amp; why.</em> Flatten to <code>.txt</code>, telling you
+first what rich content will be lost — never a silent drop.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open (it has links, an image, styles that
+plain text cannot hold).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Save As Plain Text…</strong> (or Command Palette
+→ "Save As Plain Text").</li>
+<li>Name it <strong><code>formatting</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Before writing, QUILL tells you what will be dropped (per the
+Links-in-plain-text setting) and lets you cancel. On confirm, a
+<code>.txt</code> is written containing the text content only. Nothing
+is dropped silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-06--save-all-filesave_all">FILE-06 — Save All
+(<code>file.save_all</code>)</h2>
+<p><em>What &amp; why.</em> Save every open document at once.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Two documents open, each with an unsaved change (e.g.
+<code>plain.txt</code> and a new file already named).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Save All</strong> (or Command Palette → "Save
+All").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>All modified documents are saved; QUILL announces how many were
+saved. Any never-named document prompts for a name (Save As) rather than
+failing silently. Modified markers clear on the saved tabs.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-07--close-document-fileclose_document-ctrlw">FILE-07 —
+Close Document (<code>file.close_document</code>, Ctrl+W)</h2>
+<p><em>What &amp; why.</em> Close the current document, guarding unsaved
+work.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document open with <strong>one unsaved change</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+W</strong>, or <strong>File menu ▸ Close
+Document</strong>.</li>
+<li>In the guard prompt, choose <strong>Cancel</strong> first (hear it),
+then repeat and choose <strong>Don't Save</strong> /
+<strong>Save</strong> as appropriate.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With unsaved changes, a <strong>spoken confirmation</strong> appears
+offering Save / Don't Save / Cancel; Cancel keeps the document. After
+closing, focus moves to another open document or a clean empty state —
+never nowhere.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-08--open-from-url-fileopen_url">FILE-08 — Open from URL…
+(<code>file.open_url</code>)</h2>
+<p><em>What &amp; why.</em> Open a document straight from a web address,
+confirming the host and size <strong>before</strong> any download.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Network available. A small plain-text URL you trust, staged in your
+notebook.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Open from URL…</strong>.</li>
+<li>Paste the URL into the field; proceed.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Before fetching, QUILL confirms the <strong>host and expected
+size</strong>; nothing writes to disk until you confirm. A
+blocked/unreachable host is reported clearly, not silently. On success
+the document opens in the editor.</li>
+<li>Cross-check: paste a <strong>local file path</strong> into the URL
+field — it is handled gracefully (opened as a local file or reported
+"not a URL"), never a silent network fetch.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-09--open-containing-folder-fileopen_containing_folder">FILE-09
+— Open Containing Folder (<code>file.open_containing_folder</code>)</h2>
+<p><em>What &amp; why.</em> Jump to the current file's folder in File
+Explorer.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A <strong>saved</strong> document open (e.g.
+<code>formatting.md</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Open Containing Folder</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>File Explorer opens focused on the folder with the current file
+selected. For an <strong>unsaved/untitled</strong> document, QUILL says
+there is no folder yet rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-10--reload-from-disk-filereload_from_disk">FILE-10 — Reload
+from Disk (<code>file.reload_from_disk</code>)</h2>
+<p><em>What &amp; why.</em> Discard in-memory edits and re-read the file
+as it is on disk (useful after an external change).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Type a change but <strong>do not
+save</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Reload from Disk</strong>.</li>
+<li>Read the confirmation; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL warns that unsaved changes will be lost and lets you cancel.
+On confirm, the document reverts to the on-disk content (your typed
+change is gone) and says so.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-11--restore-backup-filerestore_backup">FILE-11 — Restore
+Backup… (<code>file.restore_backup</code>)</h2>
+<p><em>What &amp; why.</em> Recover a document from QUILL's automatic
+backups.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document that has been edited and autosaved at least once (edit
+<code>plain.txt</code>, wait for an autosave, or edit over a few
+minutes).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Restore Backup…</strong>.</li>
+<li>Read the list of available backups; pick one and confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A keyboard-navigable list of backups with timestamps is announced.
+Selecting one restores its content (into the document or a new buffer)
+and says which backup was restored. If there are none, QUILL says so
+plainly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-12--restore-previous-version-filerestore_previous_version">FILE-12
+— Restore Previous Version
+(<code>file.restore_previous_version</code>)</h2>
+<p><em>What &amp; why.</em> Step back to the prior saved version of the
+current file.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A saved document you have saved <strong>at least twice</strong> with
+different content.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Restore Previous Version</strong>.</li>
+<li>Confirm the restore.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL restores the previous version and announces it; if no previous
+version exists it says so rather than erroring. Any overwrite of current
+content is confirmed first.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-13--choose-encoding-filechoose_encoding">FILE-13 — Choose
+Encoding… (<code>file.choose_encoding</code>)</h2>
+<p><em>What &amp; why.</em> Open or re-interpret a file with a specific
+text encoding (e.g. UTF-8 vs a legacy code page) when characters look
+wrong.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Choose Encoding…</strong>.</li>
+<li>Arrow the encoding list; pick <strong>UTF-8</strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A named, keyboard-navigable encoding list. Choosing one re-reads the
+document in that encoding and announces the change; the text stays
+correct for a UTF-8 file.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-14--toggle-line-endings-filetoggle_line_endings">FILE-14 —
+Toggle Line Endings (<code>file.toggle_line_endings</code>)</h2>
+<p><em>What &amp; why.</em> Switch between Windows (CRLF) and Unix (LF)
+line endings — matters for cross-platform files.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Note the current line-ending mode in
+the status bar if shown.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Toggle Line Endings</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces the new mode (e.g. "Line endings: Unix (LF)");
+saving then writes that ending. Toggling again returns to the original
+and is announced.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-15--header-and-footer-fileheader_footer">FILE-15 — Header
+and Footer… (<code>file.header_footer</code>)</h2>
+<p><em>What &amp; why.</em> Set page header/footer text for
+printing/export.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Header and Footer…</strong>.</li>
+<li>Tab through the fields; type a header
+<strong><code>Test Header</code></strong> and a footer
+<strong><code>Page</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog's fields are labelled and keyboard-complete; on confirm
+QUILL accepts the values (verified later in Print Preview / export).
+Escape cancels with no change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-16--page-setup-filepage_setup">FILE-16 — Page Setup…
+(<code>file.page_setup</code>)</h2>
+<p><em>What &amp; why.</em> Choose paper size, orientation, and margins
+for print/export.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Page Setup…</strong>.</li>
+<li>Tab through paper size, orientation, margins; change orientation to
+<strong>Landscape</strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Every control is labelled and reachable by keyboard; changes are
+accepted and announced. Escape cancels cleanly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-17--print-fileprint-ctrlp">FILE-17 — Print…
+(<code>file.print</code>, Ctrl+P)</h2>
+<p><em>What &amp; why.</em> Send the document to a printer (or a PDF
+printer).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open; at least one printer installed (the built-in
+"Microsoft Print to PDF" is fine).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+P</strong>, or <strong>File menu ▸
+Print…</strong>.</li>
+<li>Choose <strong>Microsoft Print to PDF</strong>; proceed and save a
+PDF.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The print dialog is keyboard-operable; the printer list is
+announced. Printing to PDF produces a readable file containing the
+document text. Cancel leaves nothing printed.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-18--print-studio-fileprint_studio">FILE-18 — Print Studio…
+(<code>file.print_studio</code>)</h2>
+<p><em>What &amp; why.</em> QUILL's richer print/preview workspace
+(layout and options beyond the system dialog).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Print Studio…</strong>.</li>
+<li>Explore its controls by keyboard; trigger a preview if offered;
+close with <strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Print Studio opens as a keyboard-navigable, announced surface; its
+options are labelled; a preview reflects the document. Escape/Close
+returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="file-19--convert-file-fileconvert_file">FILE-19 — Convert File…
+(<code>file.convert_file</code>)</h2>
+<p><em>What &amp; why.</em> Convert a document on disk from one format
+to another without opening it for editing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> on disk. Target: convert to
+<strong><code>.docx</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Convert File…</strong>.</li>
+<li>Pick the source <strong><code>formatting.md</code></strong>, choose
+target <strong>Word</strong>, confirm the output location.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Source and target are chosen with labelled, keyboard-navigable
+controls; the conversion runs and reports success with the output path.
+The result opens in Word as a faithful <code>.docx</code>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-20--import--convert-document-ocr-fileimport_convert">FILE-20 —
+Import / Convert Document (OCR) (<code>file.import_convert</code>)</h2>
+<p><em>What &amp; why.</em> Bring in a scanned/image PDF and OCR it into
+editable text.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A scanned/image PDF (or image) available.
+<strong>Precondition:</strong> an OCR engine installed (Tesseract via
+<code>tools.install_local_ocr</code>, or a configured OCR service). If
+none, mark <strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Import / Convert Document (OCR)</strong>.</li>
+<li>Pick the image/PDF; run the import.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Progress is announced; on success the recognized text opens as a
+document. With no OCR engine, QUILL points you to install one rather
+than failing silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-21--save-session-filesave_session-and-file-22--open-session-fileopen_session">FILE-21
+— Save Session… (<code>file.save_session</code>) and FILE-22 — Open
+Session… (<code>file.open_session</code>)</h2>
+<p><em>What &amp; why.</em> Save the whole set of open documents (a
+"session") and restore it later — your desk exactly as you left it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Two or three documents open (e.g. <code>plain.txt</code>,
+<code>formatting.md</code>, <code>table.md</code>).</li>
+<li>A session name: <strong><code>qa-session</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Save Session…</strong>; name it
+<strong><code>qa-session</code></strong>; confirm.</li>
+<li>Close all documents (<strong>Ctrl+W</strong> each).</li>
+<li><strong>File menu ▸ Open Session…</strong>; pick
+<strong><code>qa-session</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Save announces the session was saved. Open restores
+<strong>all</strong> the documents from the session with focus in a
+sensible one; the set matches what you saved.</li>
+</ul>
+<p><strong>Sign off (Save Session)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Open Session)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-23--open-over-ssh-quick-connect-filessh_quick_connect">FILE-23
+— Open over SSH: Quick Connect…
+(<code>file.ssh_quick_connect</code>)</h2>
+<p><em>What &amp; why.</em> Open a file on a remote server over SSH by
+entering the connection once.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> an SSH server you can reach with
+credentials. If none, mark <strong>Blocked</strong>. Note QUILL rejects
+unknown host keys by default (trust-on-first-use is opt-in).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Open over SSH: Quick Connect…</strong>.</li>
+<li>Enter host, username, and credentials by keyboard; connect; browse
+to a file and open it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Fields are labelled and keyboard-complete. An <strong>unknown host
+key</strong> is refused with a clear spoken message unless you have
+enabled trust-first-use — it does not silently connect. On success the
+remote file opens.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-24--open-over-ssh-site-manager-filessh_site_manager">FILE-24 —
+Open over SSH: Site Manager… (<code>file.ssh_site_manager</code>)</h2>
+<p><em>What &amp; why.</em> Save and manage named SSH sites for repeat
+connections.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same SSH precondition as FILE-23 (else
+<strong>Blocked</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Open over SSH: Site Manager…</strong>.</li>
+<li>Add a site (host/user), save it, then connect from the saved
+entry.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The site list and its add/edit/remove controls are labelled and
+keyboard-operable; a saved site connects on activation. Secrets are
+stored via the platform secret store, not in plain text.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-25--save-to-github-filegithub_save_back-ctrlshiftgrave-then-shiftq">FILE-25
+— Save to GitHub… (<code>file.github_save_back</code>, Ctrl+Shift+Grave
+then Shift+Q)</h2>
+<p><em>What &amp; why.</em> Commit the current document back to a GitHub
+repository.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> a GitHub account connected (see
+FILE-28) and a document opened from a repo. If not connected, mark
+<strong>Blocked</strong>.</li>
+<li>The chord shortcut is a two-step: press
+<strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Shift+Q</strong>. (Grave is the backtick key.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command via the chord, or <strong>File menu ▸ Save to
+GitHub…</strong>.</li>
+<li>Enter a commit message by keyboard; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled commit-message field; on confirm QUILL reports the
+commit/push result (success or a clear error). Nothing is pushed without
+your confirmation.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-26--open-remote-github-file-url-fileopen_github_file_url-chord-then-shiftw">FILE-26
+— Open Remote GitHub File URL… (<code>file.open_github_file_url</code>,
+chord then Shift+W)</h2>
+<p><em>What &amp; why.</em> Open a single file directly from a GitHub
+URL.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A GitHub file URL (a public one needs no auth). Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+W</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command (chord or <strong>File menu</strong>), paste the
+file URL, confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The URL field is labelled; the file's content opens in the editor; a
+bad URL or private file without auth is reported clearly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-27--open-remote-github-repository-fileopen_github_repository-chord-then-shifty">FILE-27
+— Open Remote GitHub Repository…
+(<code>file.open_github_repository</code>, chord then Shift+Y)</h2>
+<p><em>What &amp; why.</em> Browse and open files from a whole GitHub
+repository.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A GitHub repo URL. Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+Y</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command; enter the repository; browse its file tree by
+keyboard; open a file.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The repo browser is keyboard-navigable and announced; selecting a
+file opens it. Errors (missing repo, no access) are spoken clearly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-28--open-github-items-fileopen_github_items-chord-then-shifti">FILE-28
+— Open GitHub Items… (<code>file.open_github_items</code>, chord then
+Shift+I)</h2>
+<p><em>What &amp; why.</em> Open issues / pull requests from a
+repository as readable documents.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A connected GitHub account (FILE-29) and a repo with issues/PRs.
+Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+I</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command; pick a repo; browse issues/PRs; open one.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The item list is announced with titles/numbers; opening one shows
+its content as navigable text. Read-only browsing needs no write
+scope.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="file-29--manage-github-accounts-filegithub_manage_accounts-chord-then-shiftz">FILE-29
+— Manage GitHub Accounts… (<code>file.github_manage_accounts</code>,
+chord then Shift+Z)</h2>
+<p><em>What &amp; why.</em> Connect, view, and remove the GitHub
+accounts the file/GitHub features use. Do this <strong>before</strong>
+FILE-25/28 if not yet connected.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A GitHub account and its sign-in (token or device flow). Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+Z</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command, or <strong>File menu ▸ Manage GitHub
+Accounts…</strong>.</li>
+<li>Add an account by keyboard, following the sign-in prompts; confirm
+it appears in the list; then remove it to confirm removal works.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The account list and add/remove controls are labelled and
+keyboard-operable; a connected account is announced. <strong>Tokens are
+stored in the platform secret store</strong> (Credential Manager /
+DPAPI), never printed or written in plain text. Removal is
+confirmed.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 29</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

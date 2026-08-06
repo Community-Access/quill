@@ -1,0 +1,2115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-edit</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="section--edit--insert--find-edit-86-commands">Section — Edit /
+insert / find (<code>edit.*</code>, 86 commands)</h1>
+<p>Everything about <strong>changing, selecting, moving, finding, and
+reusing text</strong>: undo, the selection engine, the mark ring, the
+12-slot Copy Tray, the Clip Library, find/replace, links and inserts,
+and the line-transform tools. Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>edit.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes.</p>
+<p><strong>A word on the QUILL chord.</strong> Several commands use
+QUILL's two-step chord: you press <strong>Ctrl+Shift+Grave</strong>
+(Grave is the backtick key, top-left, above Tab), <strong>release all
+keys</strong>, then press the final key. Each scenario spells this
+out.</p>
+<p><strong>A word on the status announcement.</strong> Almost every
+command here announces its result through QUILL's status channel, which
+your screen reader speaks aloud. Exact wording varies by screen reader
+and QUILL version; the scenarios below give the
+<strong>substance</strong> you must hear (the count, the name, the
+mode). A silent success is an accessibility failure even when the text
+changed correctly.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <code>plain.txt</code>,
+<code>formatting.md</code>, <code>table.md</code>,
+<code>reading-order.txt</code>.</p>
+<hr />
+<h2 id="edit-01--undo-editundo-ctrlz">EDIT-01 — Undo
+(<code>edit.undo</code>, Ctrl+Z)</h2>
+<p><em>What &amp; why.</em> Take back your last edit — the single
+most-used safety net in any editor.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>. Type the word
+<strong><code>banana</code></strong> so there is something to undo.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Z</strong>, or open <strong>Edit menu (Alt, E) ▸
+Undo</strong>.</li>
+<li>Press <strong>Ctrl+Z</strong> again with nothing left to undo.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The typed <strong><code>banana</code></strong> is removed and QUILL
+announces the undo in substance ("Undo"). On the second press with an
+empty stack, QUILL says there is nothing to undo — it never errors or
+goes silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-02--redo-editredo-ctrly">EDIT-02 — Redo
+(<code>edit.redo</code>, Ctrl+Y)</h2>
+<p><em>What &amp; why.</em> Re-apply an edit you just undid.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-01: <code>plain.txt</code> with
+<code>banana</code> typed then undone.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Y</strong>, or <strong>Edit menu ▸
+Redo</strong>.</li>
+<li>Press <strong>Ctrl+Y</strong> again with nothing left to redo.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The word <strong><code>banana</code></strong> returns and QUILL
+announces the redo in substance ("Redo"). A second press with nothing to
+redo announces that there is nothing to redo — no error, no
+silence.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-03--repeat-next-command-editrepeat_command">EDIT-03 —
+Repeat Next Command (<code>edit.repeat_command</code>)</h2>
+<p><em>What &amp; why.</em> Arm the <strong>next</strong> command to run
+several times in a row — e.g. delete five lines by repeating one
+delete.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code> with several lines; caret at the
+top.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the Command Palette (or <strong>Edit menu</strong>) and choose
+<strong>Repeat Next Command</strong>.</li>
+<li>In the prompt "Repeat the next command how many times?", the field
+shows <strong><code>2</code></strong>; type
+<strong><code>3</code></strong> and press <strong>Enter</strong>.</li>
+<li>Now run one repeatable command (for example <strong>Delete
+Line</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>After step 2, QUILL announces that the <strong>next</strong> command
+will repeat 3 times. When you run the next command it applies three
+times. A non-numeric or zero entry is rejected with a spoken "Enter a
+whole number" / "Enter a count of 1 or more". Repeat Next Command cannot
+repeat itself.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-04--start-selection-editstart_selection-f8">EDIT-04 — Start
+Selection (<code>edit.start_selection</code>, F8)</h2>
+<p><em>What &amp; why.</em> Drop a selection anchor at the caret so you
+can move somewhere else and select the span between — selecting by
+keyboard without holding Shift.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; put the caret at the start of a word in
+the middle of a line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>F8</strong> (or <strong>Edit menu ▸ Start
+Selection</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL plays a "selection started" sound and announces that selection
+started, with the anchor's <strong>line and column</strong>. No text is
+highlighted yet; focus stays in the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-05--complete-selection-editcomplete_selection-shiftf8">EDIT-05
+— Complete Selection (<code>edit.complete_selection</code>,
+Shift+F8)</h2>
+<p><em>What &amp; why.</em> Close the selection you started with F8,
+selecting from the anchor to where the caret is now.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-04 (anchor set with F8). Now press <strong>Right
+Arrow</strong> a few times to move the caret past several
+characters.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+F8</strong> (or <strong>Edit menu ▸ Complete
+Selection</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text from the anchor to the caret becomes selected; QUILL plays
+a "selection completed" sound and announces the <strong>character
+count</strong> plus the start and end line/column. If you never pressed
+F8 first, QUILL tells you to press F8 to set an anchor rather than
+erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-06--reselect-editreselect-ctrlshiftf8">EDIT-06 — Reselect
+(<code>edit.reselect</code>, Ctrl+Shift+F8)</h2>
+<p><em>What &amp; why.</em> Bring back the last selection you had, after
+the caret has moved away from it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-05 (a completed selection exists). Press an arrow
+key once to collapse/lose the highlight.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+F8</strong> (or <strong>Edit menu ▸
+Reselect</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The previous selection is restored and QUILL announces "Reselected N
+characters" with the start/end line and column. If there is no
+remembered selection (or it is no longer valid for the current text)
+QUILL says so plainly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-07--go-to-start-of-selection-editgo_to_start_of_selection-altshiftf8">EDIT-07
+— Go to Start of Selection (<code>edit.go_to_start_of_selection</code>,
+Alt+Shift+F8)</h2>
+<p><em>What &amp; why.</em> Jump the caret to the beginning of the
+current selection.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Make a selection (e.g. select a word with Shift+Ctrl+Right).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+F8</strong> (or <strong>Edit menu ▸ Go to
+Start of Selection</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves to the start of the selection and QUILL announces
+the destination <strong>line and column</strong>. The selection is
+collapsed (the range is no longer highlighted). With nothing selected,
+QUILL announces "No selection." and does nothing else.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-08--toggle-extend-selection-mode-edittoggle_extend_selection_mode">EDIT-08
+— Toggle Extend Selection Mode
+(<code>edit.toggle_extend_selection_mode</code>)</h2>
+<p><em>What &amp; why.</em> Turn on a sticky "extend" mode so plain
+arrow keys keep growing the selection — hands-free from the Shift
+key.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret at the start of a line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Toggle Extend Selection Mode</strong> (or
+Command Palette). Hear it turn <strong>on</strong>.</li>
+<li>Press <strong>Right Arrow</strong> a few times, then run the command
+again to turn it <strong>off</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning it <strong>on</strong> is announced with the anchor
+line/column; while on, arrow keys extend the selection. Turning it
+<strong>off</strong> is announced, reporting the last selected region's
+start/end line/column (or just "off" if none).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-09--select-line-editselect_line">EDIT-09 — Select Line
+(<code>edit.select_line</code>)</h2>
+<p><em>What &amp; why.</em> Select the whole line the caret is on, in
+one keystroke.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret anywhere on a non-empty
+line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Select Line</strong> (or Command Palette →
+"Select Line").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The current line is selected and QUILL announces "Selected line, N
+words". Focus stays in the editor with the line highlighted.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-10--select-paragraph-editselect_paragraph">EDIT-10 — Select
+Paragraph (<code>edit.select_paragraph</code>)</h2>
+<p><em>What &amp; why.</em> Select the whole paragraph around the
+caret.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; caret inside a multi-line
+paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Select Paragraph</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The paragraph is selected and QUILL announces "Selected paragraph, N
+words".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-11--select-block-editselect_block-ctrlshiftb">EDIT-11 —
+Select Block (<code>edit.select_block</code>, Ctrl+Shift+B)</h2>
+<p><em>What &amp; why.</em> Select the structural "block" around the
+caret (a larger unit than a paragraph, e.g. a list or quoted
+region).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; put the caret inside a list or a
+block quote.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+B</strong> (or <strong>Edit menu ▸ Select
+Block</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The surrounding block is selected and QUILL announces "Selected
+block, N words".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-12--select-chunk-editselect_chunk-ctrlspace">EDIT-12 —
+Select Chunk (<code>edit.select_chunk</code>, Ctrl+Space)</h2>
+<p><em>What &amp; why.</em> Select the "chunk" (sentence-sized unit)
+around the caret for quick review or copy.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret inside a sentence.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Space</strong> (or <strong>Edit menu ▸ Select
+Chunk</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The chunk is selected. If it is 40 characters or fewer QUILL speaks
+the selected text itself ("Selected <text>"); for longer chunks it
+announces "Selected N characters". If there is nothing to select it says
+so.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-13--expand-selection-editexpand_selection-ctrlshiftgrave-then-j">EDIT-13
+— Expand Selection (<code>edit.expand_selection</code>, Ctrl+Shift+Grave
+then J)</h2>
+<p><em>What &amp; why.</em> Grow the selection outward to the next
+structural unit (word → line → paragraph → block …), one step per
+press.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; caret inside a word within a
+paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Grave</strong>, release, then press
+<strong>J</strong>. (Or <strong>Edit menu ▸ Expand
+Selection</strong>.)</li>
+<li>Repeat the chord once more to grow another level.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press selects the next larger unit and QUILL announces the new
+scope and word count (for example "Selected line, N words", then
+"Selected paragraph, N words"). When already at the whole document it
+says so. Each expansion is remembered so Shrink can reverse it
+(EDIT-14).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-14--shrink-selection-editshrink_selection-ctrlshiftgrave-then-shiftj">EDIT-14
+— Shrink Selection (<code>edit.shrink_selection</code>, Ctrl+Shift+Grave
+then Shift+J)</h2>
+<p><em>What &amp; why.</em> Undo the last Expand step, shrinking the
+selection back down one level.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-13 with an expanded selection.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Grave</strong>, release, then press
+<strong>Shift+J</strong>. (Or <strong>Edit menu ▸ Shrink
+Selection</strong>.)</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The previous, smaller selection is restored and QUILL announces
+"Shrank selection" (with a word count when the restored range has
+words). When there is nothing left on the expand stack it announces "No
+selection to shrink".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-15--select-to-start-of-line-editselect_to_start_of_line-shifthome">EDIT-15
+— Select to Start of Line (<code>edit.select_to_start_of_line</code>,
+Shift+Home)</h2>
+<p><em>What &amp; why.</em> Select from the caret back to the beginning
+of the line.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret in the middle of a line with text
+to its left.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+Home</strong> (or <strong>Edit menu ▸ Select to
+Start of Line</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Everything from the line start to the caret is selected and QUILL
+announces "Selected to start of line".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-16--select-to-end-of-line-editselect_to_end_of_line-shiftend">EDIT-16
+— Select to End of Line (<code>edit.select_to_end_of_line</code>,
+Shift+End)</h2>
+<p><em>What &amp; why.</em> Select from the caret to the end of the
+line.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret in the middle of a line with text
+to its right.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+End</strong> (or <strong>Edit menu ▸ Select to
+End of Line</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Everything from the caret to the line end is selected and QUILL
+announces "Selected to end of line".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-17--select-to-start-of-document-editselect_to_start_of_document-ctrlshifthome">EDIT-17
+— Select to Start of Document
+(<code>edit.select_to_start_of_document</code>, Ctrl+Shift+Home)</h2>
+<p><em>What &amp; why.</em> Select from the caret all the way to the top
+of the document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret somewhere in the middle of the
+file.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Home</strong> (or <strong>Edit menu ▸
+Select to Start of Document</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Everything from position zero to the caret is selected and QUILL
+announces "Selected to start of document".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-18--select-to-end-of-document-editselect_to_end_of_document-ctrlshiftend">EDIT-18
+— Select to End of Document
+(<code>edit.select_to_end_of_document</code>, Ctrl+Shift+End)</h2>
+<p><em>What &amp; why.</em> Select from the caret all the way to the end
+of the document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret somewhere in the middle of the
+file.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+End</strong> (or <strong>Edit menu ▸ Select
+to End of Document</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Everything from the caret to the last position is selected and QUILL
+announces "Selected to end of document".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-19--unselect-all-editunselect_all-ctrlshifta">EDIT-19 —
+Unselect All (<code>edit.unselect_all</code>, Ctrl+Shift+A)</h2>
+<p><em>What &amp; why.</em> Clear the current selection, leaving the
+caret where it is.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document with an active selection.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+A</strong> (or <strong>Edit menu ▸ Unselect
+All</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection collapses to the caret and QUILL announces "Selection
+cleared." The caret does not jump.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-20--selection-actions-editselection_actions">EDIT-20 —
+Selection Actions (<code>edit.selection_actions</code>)</h2>
+<p><em>What &amp; why.</em> One menu of context-aware things to do to
+the current selection (copy, cut, change case, sort, indent, and more)
+without hunting for each command.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; select <strong>several whole
+lines</strong> (so multi-line actions appear).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Selection Actions</strong> (or Command Palette).
+A choice dialog titled "Selection actions (<scope>, <N words>)"
+opens.</li>
+<li>Arrow the list; note the choices (Copy, Cut,
+Upper/Lower/Title/Sentence/Toggle case, Expand/Shrink; on multi-line:
+Sort lines ascending/descending, Indent, Outdent, Toggle line comment;
+Bold/Italic only on a markup surface).</li>
+<li>Choose <strong>Copy</strong>; press <strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With nothing selected, QUILL says "Select text first to use
+selection actions". The dialog is keyboard-navigable with the first item
+preselected; Escape announces "Selection actions cancelled". Choosing an
+action runs the matching command, whose own outcome is then announced
+(here, the selection is copied).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-21--duplicate-selection-editduplicate_selection">EDIT-21 —
+Duplicate Selection (<code>edit.duplicate_selection</code>)</h2>
+<p><em>What &amp; why.</em> Make an immediate copy of the selected text
+(or the current line if nothing is selected).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; select a short phrase (or place the
+caret on a line to duplicate the whole line).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Duplicate Selection</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A copy of the selection is inserted immediately after it and QUILL
+announces "Duplicated N chars"; the newly inserted duplicate becomes the
+selection. With no selection, the current line is duplicated
+("Duplicated line").</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-22--say-selected-editsay_selected">EDIT-22 — Say Selected
+(<code>edit.say_selected</code>)</h2>
+<p><em>What &amp; why.</em> Speak the current selection aloud on demand
+— a quick "read me back what I just picked."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; select a sentence. (Not Safe
+Mode-dependent, but needs a working speech voice — the same one your
+screen reader uses is fine.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Say Selected</strong> (or Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks the selected text aloud and sets a quiet status with a
+short preview of it. With nothing selected it announces "Nothing
+selected." and speaks nothing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-23--open-review-buffer-editopen_review_buffer">EDIT-23 —
+Open Review Buffer (<code>edit.open_review_buffer</code>)</h2>
+<p><em>What &amp; why.</em> Drop the current selection into a read-only
+window so you can review it letter by letter with your screen reader
+without risk of editing it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>; select a paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Open Review Buffer</strong> (or Command
+Palette).</li>
+<li>Read the text with your review cursor; close with
+<strong>Escape</strong> or the Close button.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled "Review Buffer" opens with a
+<strong>read-only</strong> multi-line text control (named as a read-only
+copy of the selected text) holding the selection; that control takes
+focus. With nothing selected QUILL says "Select text first to open in
+review buffer". Closing returns focus to the editor with the selection
+intact and a quiet "Closed review buffer (N words)".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-24--set-mark-editset_mark-ctrlshiftm">EDIT-24 — Set Mark
+(<code>edit.set_mark</code>, Ctrl+Shift+M)</h2>
+<p><em>What &amp; why.</em> Drop a temporary "mark" at the caret onto
+the mark ring so you can wander off and jump back later.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret at a spot you want to
+remember.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+M</strong> (or <strong>Edit menu ▸ Set
+Mark</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces "Mark ring point set at line L, column C (temporary
+jump)". The caret and selection do not change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-25--pop-mark-editpop_mark-ctrlm">EDIT-25 — Pop Mark
+(<code>edit.pop_mark</code>, Ctrl+M)</h2>
+<p><em>What &amp; why.</em> Jump back to the most recent mark you set,
+removing it from the ring.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-24 (a mark is set). Move the caret elsewhere
+first.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+M</strong> (or <strong>Edit menu ▸ Pop
+Mark</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret jumps to the most recent mark and QUILL announces "Popped
+to mark ring point at line L, column C (temporary jump)". With an empty
+ring it says "No marks in ring…" rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-26--exchange-point-and-mark-editexchange_point_mark-ctrlshiftx">EDIT-26
+— Exchange Point and Mark (<code>edit.exchange_point_mark</code>,
+Ctrl+Shift+X)</h2>
+<p><em>What &amp; why.</em> Swap the caret with the top mark — bounce
+between two spots.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Set a mark (EDIT-24), then move the caret somewhere else.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+X</strong> (or <strong>Edit menu ▸ Exchange
+Point and Mark</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves to the mark's position and QUILL announces
+"Exchanged point and mark to line L, column C"; the selection collapses
+there. With an empty ring it says "No marks in ring…".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-27--list-marks-editlist_marks-altm">EDIT-27 — List Marks
+(<code>edit.list_marks</code>, Alt+M)</h2>
+<p><em>What &amp; why.</em> See every temporary mark you have set,
+newest first.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Set two or three marks at different lines (EDIT-24, moving the caret
+between each).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+M</strong> (or <strong>Edit menu ▸ List
+Marks</strong>).</li>
+<li>Read the list; close it with <strong>Escape</strong> or Enter.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A message box titled "Mark Ring (Temporary Jump Points)" lists each
+mark, numbered, with its line and column (newest first). After closing,
+QUILL announces "Listed N mark(s)" and focus returns to the editor. With
+no marks it just says "No marks in ring…".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-28--set-named-mark-editset_named_mark">EDIT-28 — Set Named
+Mark (<code>edit.set_named_mark</code>)</h2>
+<p><em>What &amp; why.</em> Remember a spot under a name you choose, so
+you can jump to it by name later.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret where you want the named
+mark.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Set Named Mark</strong> (or Command
+Palette).</li>
+<li>In the "Set Named Mark" dialog, type
+<strong><code>intro</code></strong> in the "Mark name:" field and press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog's single field is labelled and keyboard-complete. On
+confirm QUILL announces "Named mark 'intro' set at line L, column C". An
+empty name is rejected with "Mark name cannot be empty".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-29--jump-to-named-mark-editjump_to_named_mark">EDIT-29 —
+Jump to Named Mark (<code>edit.jump_to_named_mark</code>)</h2>
+<p><em>What &amp; why.</em> Return to a named spot you saved
+earlier.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-28 (a named mark
+<strong><code>intro</code></strong> exists). Move the caret away.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Jump to Named Mark</strong> (or Command
+Palette).</li>
+<li>In the "Named Marks" dialog, arrow to
+<strong><code>intro (line L, col C)</code></strong> and press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A choice dialog lists each named mark with its line/column. Choosing
+one moves the caret there, returns focus to the editor, and announces
+"Jumped to mark 'intro' at line L, column C". With none defined it says
+"No named marks. Use Set Named Mark to create one."</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-30--copy-all-editcopy_all-ctrlf8">EDIT-30 — Copy All
+(<code>edit.copy_all</code>, Ctrl+F8)</h2>
+<p><em>What &amp; why.</em> Copy the entire document to the system
+clipboard in one keystroke.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code> (non-empty).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F8</strong> (or <strong>Edit menu ▸ Copy
+All</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL copies the whole document and announces the character count,
+e.g. "All text copied (N characters)." An empty document announces
+"Document is empty."; the caret and selection are not disturbed.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-31--copy-with-source-editcopy_with_source-ctrlshiftc">EDIT-31 —
+Copy With Source (<code>edit.copy_with_source</code>, Ctrl+Shift+C)</h2>
+<p><em>What &amp; why.</em> Copy the selection <strong>plus</strong> a
+reference to where it came from — handy when quoting a document into an
+email.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a <strong>saved</strong> document (e.g.
+<code>formatting.md</code>); select a sentence.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+C</strong> (or <strong>Edit menu ▸ Copy
+With Source</strong>).</li>
+<li>Paste into another document (<strong>Ctrl+V</strong>) to inspect the
+result.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces "Copied selection with source"; the clipboard holds
+the selected text followed by a source reference (file/location). With
+nothing selected it falls back to the current line; a clipboard failure
+says "Could not copy with source".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-32--magic-paste-editmagic_paste">EDIT-32 — Magic Paste
+(<code>edit.magic_paste</code>)</h2>
+<p><em>What &amp; why.</em> Paste smartly: QUILL detects what is on the
+clipboard (URL, Markdown, HTML, image, or plain text) and offers
+format-aware options instead of dumping raw markup.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Copy some <strong>HTML</strong> to the clipboard (e.g. select text
+in a web page and copy). Open <code>plain.txt</code> and place the caret
+where you want the paste.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Magic Paste</strong> (or Command Palette).</li>
+<li>In the "Magic Paste: HTML detected" dialog, arrow the "Paste mode"
+choices; pick one and press the <strong>Paste</strong> button (or
+Enter).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>For non-plain content a dialog opens with a labelled "Paste mode"
+radio group and Paste/Cancel; plain text pastes immediately with no
+dialog. The chosen mode inserts the transformed text at the caret (e.g.
+"Pasted cleaned HTML (N chars)"), focus returns to the editor, caret
+after the inserted text. An unreadable clipboard says "Clipboard is
+unavailable".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-33--copy-to-tray-slots-112-editcopy_to_tray_1--editcopy_to_tray_12-chord-then-shiftdigit">EDIT-33
+— Copy to Tray Slots 1–12 (<code>edit.copy_to_tray_1</code> …
+<code>edit.copy_to_tray_12</code>, chord then Shift+digit)</h2>
+<p><em>What &amp; why.</em> The Copy Tray is a <strong>persistent
+12-slot clipboard</strong>: each slot keeps its own text (and its own
+confirmation sound) so you can carry a dozen snippets at once, across
+sessions. These twelve commands copy the selection into a chosen
+slot.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>. Select a short phrase.</li>
+<li>Chord + slot key mapping: press <strong>Ctrl+Shift+Grave</strong>,
+release, then the slot key — <strong>Shift+1</strong> for slot 1 …
+<strong>Shift+9</strong> for slot 9, <strong>Shift+0</strong> for slot
+10, <strong>Shift+-</strong> (hyphen) for slot 11,
+<strong>Shift+=</strong> for slot 12.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Select the phrase. Press <strong>Ctrl+Shift+Grave</strong>, release,
+then <strong>Shift+1</strong> — this is <strong>Copy to Tray Slot
+1</strong>. (Or Command Palette → "Copy to Tray Slot 1".)</li>
+<li>Select a different phrase and repeat with <strong>Shift+2</strong>
+for slot 2.</li>
+<li>Continue for each slot you are signing off (each has its own
+sign-off line below).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>For each slot, QUILL plays that slot's distinct confirmation sound
+and announces "Copied to slot N" (plus the slot's label in parentheses
+if one is set), with a short preview in the status. With nothing
+selected it says "Select text first to copy to slot N". The paste-menu
+labels refresh to show the new contents.</li>
+</ul>
+<p><strong>Sign off (Copy to Tray Slot 1)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 2)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 3)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 4)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 5)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 6)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 7)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 8)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 9)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 10)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 11)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy to Tray Slot 12)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-34--paste-from-tray-slots-112-editpaste_from_tray_1--editpaste_from_tray_12-ctrlshiftdigit">EDIT-34
+— Paste from Tray Slots 1–12 (<code>edit.paste_from_tray_1</code> …
+<code>edit.paste_from_tray_12</code>, Ctrl+Shift+digit)</h2>
+<p><em>What &amp; why.</em> Insert what you stored in a Copy Tray slot.
+These twelve commands are <strong>multi-press aware</strong>: press once
+to paste, twice to "peek" (hear the slot without pasting), three times
+to open the full Copy Tray.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Fill a few slots first (EDIT-33). Open <code>plain.txt</code>; caret
+where you want to paste.</li>
+<li>Key mapping (no chord — these are direct):
+<strong>Ctrl+Shift+1</strong> … <strong>Ctrl+Shift+9</strong> for slots
+1–9, <strong>Ctrl+Shift+0</strong> for slot 10,
+<strong>Ctrl+Shift+-</strong> for slot 11, <strong>Ctrl+Shift+=</strong>
+for slot 12.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+1</strong> once — this pastes <strong>Tray
+Slot 1</strong> at the caret.</li>
+<li>Press <strong>Ctrl+Shift+2</strong> <strong>twice quickly</strong> —
+this <strong>peeks</strong> at slot 2 (announces it, pastes
+nothing).</li>
+<li>Continue for each slot you are signing off (each has its own
+sign-off line below).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A single press pastes the slot's text at the caret (or over the
+selection), plays that slot's sound, and announces "Pasted from slot N";
+focus stays in the editor with the caret after the inserted text. A
+double press announces the slot preview ("Slot N (label) [pinned]: …")
+without pasting. An empty slot says "Slot N is empty". A triple press
+opens the Copy Tray dialog (see EDIT-36).</li>
+</ul>
+<p><strong>Sign off (Paste from Tray Slot 1)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 2)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 3)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 4)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 5)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 6)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 7)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 8)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 9)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 10)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 11)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Paste from Tray Slot 12)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-35--copy-to-next-empty-tray-slot-editcopy_to_next_slot">EDIT-35
+— Copy to Next Empty Tray Slot
+(<code>edit.copy_to_next_slot</code>)</h2>
+<p><em>What &amp; why.</em> Copy the selection into the first free slot
+automatically — no need to pick a number.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; select a phrase. Leave at least one
+slot empty.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Copy to Next Empty Tray Slot</strong> (or
+Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL stores the selection in the first empty, non-pinned slot and
+announces "Copied to slot N (first empty)". With nothing selected it
+says "Select text first"; if all twelve slots are occupied it says "All
+12 slots occupied. Open Copy Tray to manage slots."</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-36--open-copy-tray-editopen_copy_tray-ctrlshiftgrave-then-x">EDIT-36
+— Open Copy Tray (<code>edit.open_copy_tray</code>, Ctrl+Shift+Grave
+then X)</h2>
+<p><em>What &amp; why.</em> Open the Copy Tray manager to view, relabel,
+edit, and paste from any of the twelve slots.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Fill a couple of slots first (EDIT-33). Open
+<code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>X</strong>. (Or <strong>Edit menu ▸ Open Copy
+Tray</strong>.)</li>
+<li>Arrow the "Copy tray slots" list; Tab to the "&amp;Label" and
+"&amp;Content" fields to review/edit; close or paste a slot.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled "Copy Tray" opens with a labelled slots list
+(initial focus), a status line, and editable Label and Content fields.
+It is fully keyboard-operable. Choosing to paste a slot inserts its text
+at the caret ("Pasted from slot N") and refreshes the paste-menu labels;
+closing returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-37--search-copy-tray-slots-editsearch_tray_slots">EDIT-37 —
+Search Copy Tray Slots (<code>edit.search_tray_slots</code>)</h2>
+<p><em>What &amp; why.</em> Find a slot by typing part of its text, then
+paste the match — faster than remembering slot numbers.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Fill several slots with distinguishable text (EDIT-33). Open
+<code>plain.txt</code>; caret where you want to paste.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Search Copy Tray Slots</strong> (or Command
+Palette).</li>
+<li>In the "Search Copy Tray Slots" dialog, type a word that appears in
+one slot; the "Matching slots" list filters live. Arrow to a match and
+press the <strong>Paste</strong> button (or Enter).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The search field takes focus and typing live-filters the results
+("Slot N (label) [pinned]: …"). If every slot is empty it announces "All
+copy tray slots are empty". Activating a match pastes that slot at the
+caret, focus returning to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-38--clear-all-tray-slots-editclear_all_tray_slots">EDIT-38
+— Clear All Tray Slots (<code>edit.clear_all_tray_slots</code>)</h2>
+<p><em>What &amp; why.</em> Empty all twelve Copy Tray slots at once.
+Destructive — so it asks first.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>At least one slot filled (EDIT-33).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Clear All Tray Slots</strong> (or Command
+Palette).</li>
+<li>In the "Clear Copy Tray" prompt ("Clear all 12 copy tray slots? This
+cannot be undone."), first press
+<strong>Escape</strong>/<strong>No</strong> to confirm cancel is safe;
+then repeat and choose <strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A Yes/No warning dialog (defaulting to <strong>No</strong>) appears
+— a hearable, cancellable confirmation before any loss. On Yes, QUILL
+announces "All copy tray slots cleared" and the status shows "Copy tray
+cleared"; focus returns to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-39--keep-selection-in-clip-library-editkeep_selection_in_clip_library">EDIT-39
+— Keep Selection in Clip Library
+(<code>edit.keep_selection_in_clip_library</code>)</h2>
+<p><em>What &amp; why.</em> The Clip Library is a rolling history of
+saved snippets (separate from the twelve curated tray slots). This saves
+the current selection into it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; select a phrase.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Keep Selection in Clip Library</strong> (or
+Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL saves the selection and announces "Kept in the Clip Library."
+(or "Already in the Clip Library." if it was a duplicate). With nothing
+selected it says "Select text first to keep it in the Clip
+Library".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-40--open-clip-library-editopen_clip_library">EDIT-40 — Open
+Clip Library (<code>edit.open_clip_library</code>)</h2>
+<p><em>What &amp; why.</em> Browse the rolling clip history and, if you
+like, promote a clip into one of the twelve Copy Tray slots.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Keep at least one clip first (EDIT-39). Open
+<code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Open Clip Library</strong> (or Command
+Palette).</li>
+<li>Browse the clips by keyboard. Optionally promote one: when prompted,
+type a slot number <strong>1–12</strong> and confirm. Close the
+dialog.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The Clip Library dialog opens and is keyboard-navigable. Promoting a
+clip prompts for a Copy Tray slot (1–12) and reports "Promoted to Copy
+Tray slot N." An empty or out-of-range entry is rejected ("Enter a slot
+number." / "Slot must be 1-12.").</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-41--restore-deleted-text-editrestore_deletion">EDIT-41 —
+Restore Deleted Text (<code>edit.restore_deletion</code>)</h2>
+<p><em>What &amp; why.</em> Re-insert text you recently deleted, from
+QUILL's deletion ring — a targeted "un-delete" that is distinct from
+Undo.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>. Select and delete a phrase (or two, to
+get multiple entries). Move the caret to where you want it back.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Restore Deleted Text</strong> (or Command
+Palette).</li>
+<li>If a "Restore Deleted Text" choice dialog appears (more than one
+deletion), arrow to the preview you want and press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With several deletions, a choice dialog lists previews; with one it
+restores directly. The chosen text is inserted at the caret ("Restored
+deleted text"). An empty ring says "No deleted text to restore"; a
+read-only document says "Document is read-only"; cancelling says
+"Restore deleted text cancelled".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-42--find-editfind-ctrlf">EDIT-42 — Find…
+(<code>edit.find</code>, Ctrl+F)</h2>
+<p><em>What &amp; why.</em> Search the document for text.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>. Pick a word you know appears (e.g.
+<strong><code>the</code></strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F</strong> (or <strong>Edit menu ▸
+Find…</strong>).</li>
+<li>Type <strong><code>the</code></strong> in the find field;
+check/leave <strong>Match Case</strong> and <strong>Whole Word</strong>;
+activate <strong>Find Next</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The native Find dialog opens with a find-string field (seeded with
+your last query), Match Case and Whole Word checkboxes, and Find Next /
+Cancel — all read by your screen reader and keyboard-operable. Find Next
+selects the next match in the editor. (Regex/wildcard live in Find All
+Matches, not here.)</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-43--find-next-editfind_next-f3">EDIT-43 — Find Next
+(<code>edit.find_next</code>, F3)</h2>
+<p><em>What &amp; why.</em> Jump to the next occurrence of your last
+search without reopening the dialog.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Run a Find first (EDIT-42) so there is a stored query with multiple
+matches.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>F3</strong> (or <strong>Edit menu ▸ Find
+Next</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The next match forward is selected and the caret lands at its end;
+QUILL announces a "Found next at position N" style message and plays a
+found sound. If it wrapped past the end it appends "(wrapped)". No
+matches announces "No matches found" with a not-found sound; with no
+stored query it opens the Find dialog.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-44--find-previous-editfind_previous-shiftf3">EDIT-44 — Find
+Previous (<code>edit.find_previous</code>, Shift+F3)</h2>
+<p><em>What &amp; why.</em> Jump to the previous occurrence of your last
+search.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A stored query with multiple matches (EDIT-42); caret partway down
+the file.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+F3</strong> (or <strong>Edit menu ▸ Find
+Previous</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The previous match is selected; QUILL announces a "Found previous at
+position N" message (appending "(wrapped)" if it wrapped to the bottom).
+No match announces "No matches found".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-45--find-all-matches-editfind_all_matches-ctrlshiftf3">EDIT-45
+— Find All Matches (<code>edit.find_all_matches</code>,
+Ctrl+Shift+F3)</h2>
+<p><em>What &amp; why.</em> Count and list every occurrence at once,
+with plain-text, whole-word, regex, or wildcard matching.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code> with a word that repeats.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+F3</strong> (or <strong>Edit menu ▸ Find
+All Matches</strong>).</li>
+<li>If prompted (no stored query), fill the "Find All Matches" form: the
+find-text field, the <strong>Search mode</strong> select (Plain text /
+Whole word / Regular expression / Wildcard), and the
+<strong>Case-sensitive</strong> checkbox; submit.</li>
+<li>Read the results list; close it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A summary message box lists up to 25 matches as "N. Line X, Column
+Y" with a total count (and "…and N more" beyond 25). QUILL sets status
+"Found N match(es)" (or "No matches found" / "Find error" on a bad
+pattern). The editor selection is not moved.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-46--replace-editreplace-ctrlh">EDIT-46 — Replace…
+(<code>edit.replace</code>, Ctrl+H)</h2>
+<p><em>What &amp; why.</em> Find text and replace it, one match at a
+time.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; choose a word to replace (e.g.
+<strong><code>the</code></strong> →
+<strong><code>THE</code></strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+H</strong> (or <strong>Edit menu ▸
+Replace…</strong>).</li>
+<li>Fill the find and replace-with fields; set Match Case / Whole Word
+as needed; activate <strong>Replace</strong> for a single
+replacement.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The native Replace dialog opens with find and replace-with fields,
+Match Case and Whole Word checkboxes, and Find Next / Replace / Replace
+All / Cancel — all keyboard-operable and read aloud. A single Replace
+announces "Replaced at position N" (or "No replacements made"); the
+replaced text becomes the selection.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-47--replace-all-editreplace_all-ctrlshifth">EDIT-47 —
+Replace All… (<code>edit.replace_all</code>, Ctrl+Shift+H)</h2>
+<p><em>What &amp; why.</em> Replace every occurrence in one action.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; a word that repeats.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+H</strong> (or <strong>Edit menu ▸ Replace
+All…</strong>).</li>
+<li>In the Replace dialog, fill find and replace-with, then activate
+<strong>Replace All</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The same native Replace dialog opens (Replace All is its button).
+Running it announces "Replaced N occurrence(s)" (or "No replacements
+made"); a bad pattern shows a spoken error message box. The document
+text updates accordingly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-48--follow-link-editfollow_link-ctrlenter">EDIT-48 — Follow
+Link (<code>edit.follow_link</code>, Ctrl+Enter)</h2>
+<p><em>What &amp; why.</em> Open the hyperlink under the caret in your
+web browser.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (it contains a <strong>QUILL
+project</strong> hyperlink). Put the caret on the link text. Network
+available to actually load it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Enter</strong> (or <strong>Edit menu ▸ Follow
+Link</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL detects the link and announces "Opening <host>…", then the
+system browser opens the URL. With no link at the caret it says "No link
+at cursor"; a bare in-page anchor (<code>#…</code>) says "Anchor links
+are not yet supported". If no network is available, the browser may fail
+to load — mark <strong>Blocked</strong> if you cannot verify the
+open.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-49--insert-link-editinsert_link-ctrlaltk">EDIT-49 — Insert
+Link… (<code>edit.insert_link</code>, Ctrl+Alt+K)</h2>
+<p><em>What &amp; why.</em> Insert a hyperlink in the document's markup
+style, with display text and a URL.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>. Optionally select a word to prefill
+the display text.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+K</strong> (or <strong>Edit menu ▸ Insert
+Link…</strong>).</li>
+<li>In the "Insert Link" form, fill the <strong>Display text</strong>
+field and the <strong>URL</strong> field (default
+<code>https://</code>); activate <strong>Insert</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The form's fields are labelled and keyboard-complete (display text
+prefilled from any selection). On Insert, the link snippet is inserted
+and the caret lands after it; QUILL announces "Inserted link
+(<markup kind>)". Cancel or a blank URL announces "Insert link
+cancelled".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-50--insert-equation-editinsert_equation-ctrlshifte">EDIT-50
+— Insert Equation… (<code>edit.insert_equation</code>,
+Ctrl+Shift+E)</h2>
+<p><em>What &amp; why.</em> Insert a LaTeX or MathML equation, inline or
+as a display block.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>math.md</code> (a math sample). Caret where the equation
+should go.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+E</strong> (or <strong>Edit menu ▸ Insert
+Equation…</strong>).</li>
+<li>In the "Insert Equation" form, type LaTeX (e.g.
+<strong><code>E = mc^2</code></strong>) in the equation textarea; choose
+<strong>Display mode</strong> (Inline or Block); activate
+<strong>Insert</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The equation textarea and the Inline/Block select are labelled and
+keyboard-complete (prefilled if a selection held an equation). On Insert
+the snippet is inserted with the caret after it; QUILL announces
+"Inserted equation". Cancel announces "Insert equation cancelled".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-51--insert-citation-editinsert_citation">EDIT-51 — Insert
+Citation… (<code>edit.insert_citation</code>)</h2>
+<p><em>What &amp; why.</em> Build a formatted citation from fields you
+fill in, inserting a bibliography entry, an in-text citation, or
+both.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>. Have a reference in mind (author,
+title, year).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Insert Citation…</strong> (or Command
+Palette).</li>
+<li>In the "Insert Citation" form, choose <strong>Source type</strong>,
+<strong>Citation style</strong> (e.g. MLA), and what to
+<strong>Insert</strong> (Bibliography / In-text / Both); fill Author(s),
+Title, Year, and any other fields; activate
+<strong>Insert</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Every select and field is labelled and reachable by keyboard. On
+Insert, the formatted citation text is inserted into the document.
+Cancel announces "Insert citation cancelled".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-52--insert-emoji-editinsert_emoji-alt">EDIT-52 — Insert
+Emoji… (<code>edit.insert_emoji</code>, Alt+.)</h2>
+<p><em>What &amp; why.</em> Pick an emoji from an accessible, searchable
+picker and insert it at the caret.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; caret where the emoji should go.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+.</strong> (Alt plus the period/full-stop key), or
+<strong>Edit menu ▸ Insert Emoji…</strong>.</li>
+<li>Choose a category, or type in the search field (names, keywords, or
+typed smileys like <code>:)</code> or <code>&lt;3</code>); arrow to a
+result; activate <strong>Insert</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The Emoji Picker opens with a category list (Favorites, Recent, and
+Unicode categories), a search field, a results list, a description
+read-out, an Add/Remove Favorite button, and Insert — all
+keyboard-operable and announced. On Insert QUILL announces "Inserted
+<name>" and the emoji appears at the caret. If the catalog cannot load,
+a message box points you to the OS emoji input (Windows key + period)
+instead of failing silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-53--word-prediction-editword_prediction-ctrl">EDIT-53 —
+Word Prediction… (<code>edit.word_prediction</code>, Ctrl+.)</h2>
+<p><em>What &amp; why.</em> Manually pop up word-completion suggestions
+for the fragment you are typing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; type the start of a word (e.g.
+<strong><code>docu</code></strong>) and leave the caret right after it.
+Word prediction depends on the <code>core.intellisense</code> feature
+being enabled in the current profile.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+.</strong> (Ctrl plus period), or <strong>Edit
+menu ▸ Word Prediction…</strong>.</li>
+<li>If suggestions appear, arrow to one and accept it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A prediction popup appears near the caret listing up to eight
+completions; QUILL announces "{N} prediction(s). {first suggestion}" and
+accepting one inserts it, editor keeping focus. With no candidates it
+says "No predictions available". If the feature is off in this profile
+it says "Word prediction is unavailable in this profile" — mark
+<strong>N/A</strong> for that profile.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-54--read-all-editread_all-altf8">EDIT-54 — Read All
+(<code>edit.read_all</code>, Alt+F8)</h2>
+<p><em>What &amp; why.</em> Read the whole document aloud from the top —
+a quick "read it back to me."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>reading-order.txt</code>. <strong>Not available in Safe
+Mode.</strong></li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+F8</strong> (or <strong>Edit menu ▸ Read
+All</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Any in-progress read-aloud stops, the caret moves to the very top,
+and QUILL reads the document aloud from the beginning. In Safe Mode this
+is a no-op — mark <strong>N/A</strong> if you are testing Safe
+Mode.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<p>The next six commands are <strong>line transforms</strong>. They
+share one rule: if text is selected they act on every line the selection
+touches; if nothing is selected they act only on the <strong>current
+line</strong> (not the whole document). Each replaces the target block
+and re-selects the transformed result, announcing what it did.</p>
+<h2 id="edit-55--sort-lines-ascending-editsort_lines_ascending">EDIT-55
+— Sort Lines Ascending (<code>edit.sort_lines_ascending</code>)</h2>
+<p><em>What &amp; why.</em> Sort the target lines A→Z
+(case-insensitive).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; select a few lines in mixed order (or
+type a short unsorted list and select it).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Sort Lines Ascending</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The lines are reordered ascending and QUILL announces "Sorted lines
+ascending"; the sorted block is re-selected. If the format feature is
+off it says "…is unavailable in this profile"; a read-only document says
+"Document is read-only".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-56--sort-lines-descending-editsort_lines_descending">EDIT-56 —
+Sort Lines Descending (<code>edit.sort_lines_descending</code>)</h2>
+<p><em>What &amp; why.</em> Sort the target lines Z→A.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Select a few unsorted lines in <code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Sort Lines Descending</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The lines are reordered descending and QUILL announces "Sorted lines
+descending"; the sorted block is re-selected.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-57--reverse-lines-editreverse_lines-altshiftz">EDIT-57 —
+Reverse Lines (<code>edit.reverse_lines</code>, Alt+Shift+Z)</h2>
+<p><em>What &amp; why.</em> Flip the order of the target lines
+top-to-bottom.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Select several lines in <code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+Z</strong> (or <strong>Edit menu ▸ Reverse
+Lines</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line order is reversed and QUILL announces "Reversed lines"; the
+block is re-selected.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-58--remove-duplicate-lines-editremove_duplicate_lines">EDIT-58
+— Remove Duplicate Lines (<code>edit.remove_duplicate_lines</code>)</h2>
+<p><em>What &amp; why.</em> Drop repeated lines, keeping the first
+occurrence of each.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>In <code>plain.txt</code>, type a list with some exact duplicate
+lines and select it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Remove Duplicate Lines</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Duplicate lines are removed (first kept) and QUILL announces
+"Removed duplicate lines"; the result is re-selected.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-59--quote-lines-editquote_lines-ctrlshiftq">EDIT-59 — Quote
+Lines (<code>edit.quote_lines</code>, Ctrl+Shift+Q)</h2>
+<p><em>What &amp; why.</em> Prefix each non-empty target line with
+<code>&gt; </code> — email-style block quoting.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Select a few lines in <code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Q</strong> (or <strong>Edit menu ▸ Quote
+Lines</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Every non-empty line gains a leading <code>&gt; </code> (blank lines
+untouched) and QUILL announces "Quoted lines"; the block is
+re-selected.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="edit-60--unquote-lines-editunquote_lines-ctrlshiftk">EDIT-60 —
+Unquote Lines (<code>edit.unquote_lines</code>, Ctrl+Shift+K)</h2>
+<p><em>What &amp; why.</em> Remove a leading <code>&gt; </code> quote
+prefix from each target line — the reverse of Quote Lines.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Continue from EDIT-59 (lines now prefixed with <code>&gt; </code>),
+keeping them selected.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+K</strong> (or <strong>Edit menu ▸ Unquote
+Lines</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The leading <code>&gt; </code> (or bare <code>&gt;</code>) is
+stripped from each line and QUILL announces "Unquoted lines"; the block
+is re-selected.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<p>The final four commands are <strong>[GATED future.cleanup]</strong> —
+they appear only when the Unicode Cleanup feature is enabled (a
+dev/admin build). On a public 1.0 build they are absent: mark them
+<strong>N/A</strong> rather than failing them. Like the other line
+transforms they act on the selection, or the current line when nothing
+is selected.</p>
+<h2
+id="edit-61--trim-trailing-whitespace-edittrim_trailing_whitespace-gated-futurecleanup">EDIT-61
+— Trim Trailing Whitespace (<code>edit.trim_trailing_whitespace</code>)
+[GATED future.cleanup]</h2>
+<p><em>What &amp; why.</em> Remove trailing spaces and tabs from the end
+of each target line.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> <code>future.cleanup</code> feature
+enabled. If absent, mark <strong>N/A</strong>.</li>
+<li>Select lines that have trailing spaces (add some to
+<code>plain.txt</code> first).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Trim Trailing Whitespace</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Trailing whitespace is removed and QUILL announces "Trimmed trailing
+whitespace"; the block is re-selected. Absent on a public build
+(<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-62--normalize-whitespace-editnormalize_whitespace-gated-futurecleanup">EDIT-62
+— Normalize Whitespace (<code>edit.normalize_whitespace</code>) [GATED
+future.cleanup]</h2>
+<p><em>What &amp; why.</em> Collapse runs of internal whitespace to
+single spaces and trim each line's ends, keeping blank lines.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> <code>future.cleanup</code> enabled
+(else <strong>N/A</strong>).</li>
+<li>Select lines with doubled spaces / stray tabs.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Normalize Whitespace</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Internal whitespace is collapsed and ends trimmed; QUILL announces
+"Normalized whitespace"; the block is re-selected. Absent on a public
+build (<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-63--convert-indentation-to-spaces-editconvert_indentation_to_spaces-gated-futurecleanup">EDIT-63
+— Convert Indentation to Spaces
+(<code>edit.convert_indentation_to_spaces</code>) [GATED
+future.cleanup]</h2>
+<p><em>What &amp; why.</em> Turn leading tabs into spaces at the
+profile's indent width (leading indentation only).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> <code>future.cleanup</code> enabled
+(else <strong>N/A</strong>).</li>
+<li>Select tab-indented lines.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Convert Indentation to Spaces</strong> (or
+Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Leading tabs become spaces and QUILL announces "Converted
+indentation to spaces"; the block is re-selected. Absent on a public
+build (<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="edit-64--convert-indentation-to-tabs-editconvert_indentation_to_tabs-gated-futurecleanup">EDIT-64
+— Convert Indentation to Tabs
+(<code>edit.convert_indentation_to_tabs</code>) [GATED
+future.cleanup]</h2>
+<p><em>What &amp; why.</em> Turn leading spaces into tabs at the
+profile's indent width (leading indentation only) — the reverse of
+EDIT-63.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> <code>future.cleanup</code> enabled
+(else <strong>N/A</strong>).</li>
+<li>Select space-indented lines.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Convert Indentation to Tabs</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Leading spaces become tabs and QUILL announces "Converted
+indentation to tabs"; the block is re-selected. Absent on a public build
+(<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 86</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

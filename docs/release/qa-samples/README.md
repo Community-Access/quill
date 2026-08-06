@@ -21,6 +21,10 @@ alt text, and screen-reader wording, so editing a sample silently invalidates th
 | `reading-order.txt` | Improve Reading Order AI journey; provider-confirm prompt; wording preserved | A four-step tea recipe printed **out of order** with one step broken across a mid-sentence line break; the file also states the intended correct order (steps First→Second→Third→Fourth). After the AI runs, a **new unsaved** document should read the four steps in order with the **same wording** |
 | `plain.txt` | Baseline open / read / Save-As round-trip | Three plain paragraphs, no markup; text that comes back out of a Save-As must match character for character |
 | `sample.html` | HTML import; Paste HTML as Markdown | An HTML doc with one `h1` ("Trip Checklist"), a paragraph, a 3-item unordered list, a 2-column table (Day/City) with two body rows, one link labelled **QUILL project**, and one `<img>` with alt **"Red circle"** |
+| `compare-original.txt` and `compare-revised.txt` | Compare tools (`tools.compare_*`) in the Acceptance Test Book | A known before/after pair with **exactly three differences**: line 2 changes **March → April**; line 3 gains **"and performance"**; the revised file adds a fourth line **"A follow-up review is scheduled for February."** Compare must report these three and nothing else |
+| `data.csv` | CSV / Table Studio (`tools.csv_studio`) and Calculator document stats | A 3-column CSV (Region/Units/Revenue) with **4 data rows** (North/South/East/West). Known totals: **Units = 465**, **Revenue = 9300**; row count 4, column count 3 |
+| `encoding-cp1252.txt` | Choose Encoding (`file.choose_encoding`) | Text saved in **Windows-1252**, not UTF-8: `Café résumé — naïve façade. Prices in £ and €.` Opened as UTF-8 it shows mojibake; re-reading as **Windows-1252** restores the accents and currency symbols correctly |
+| `line-endings-crlf.txt` | Toggle Line Endings (`file.toggle_line_endings`) | Three lines (`Line one` / `Line two` / `Line three`) terminated with **Windows CRLF** (`\r\n`). QUILL should report CRLF; toggling to LF and saving rewrites the endings |
 
 ## Notes for the tester
 
@@ -30,5 +34,11 @@ alt text, and screen-reader wording, so editing a sample silently invalidates th
   image **reference** — the alt text is what QA checks, so the binary image file
   is not required for any journey to pass (a broken-image placeholder with the
   correct alt is the expected non-blocking outcome).
+- The last four rows above (`compare-*`, `data.csv`, `encoding-cp1252.txt`,
+  `line-endings-crlf.txt`) back specific scenarios in the **Acceptance Test Book**
+  (`../acceptance/`). `encoding-cp1252.txt` and `line-endings-crlf.txt` are
+  **byte-specific** — copy them as-is; do not open and re-save them in an editor
+  that would rewrite the encoding or the line endings, or the scenario they support
+  becomes untestable.
 - If you must edit a sample, update the matching "Expected" cell here **and** the
-  affected step in `qa-core-journeys.md` in the same change.
+  affected step in `qa-core-journeys.md` (and `../acceptance/`) in the same change.

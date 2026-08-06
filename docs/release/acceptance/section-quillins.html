@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-quillins</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="section--quillins-extensions-system">Section — Quillins
+(extensions system)</h1>
+<p><strong>Quillins</strong> are QUILL's extensions: small add-ons that
+contribute commands, menu items, hotkeys, snippets, abbreviations,
+status-bar cells, preferences pages, and background/document-event
+handlers. QUILL ships a set of <strong>bundled</strong> Quillins
+(trusted, first-party) that always load. <strong>Third-party</strong>
+Quillins are a separate, locked-off capability in a public 1.0 build
+(security gate <strong>SEC-8</strong>): a shipping build discovers and
+runs nothing third-party, but the Manager still opens and is fully
+operable, and every bundled Quillin runs normally.</p>
+<p>This section proves the whole Quillin lifecycle: opening the Manager,
+seeing what bundled Quillins ship, running each observable one,
+confirming contributed menu items/commands/hotkeys appear and work,
+enabling/disabling, installing a user Quillin (locked in public),
+surfacing manifest errors, Safe Mode disabling all contributions, and
+removing a Quillin. Finish <strong>Part 0</strong> first. Read §2–§3 of
+<code>README.md</code> for the scenario layout and the
+Pass/Fail/Blocked/N-A + Works/Surface-exact/Accessible boxes; read §5
+for what <strong>[GATED]</strong> means.</p>
+<p>The <strong>bundled editor Quillins</strong> that ship (the ones this
+section walks) are: <strong>Insert Tools</strong>, <strong>Insert
+Character</strong>, <strong>Line Tools</strong>, <strong>Markdown
+Helpers</strong>, <strong>Text Tools</strong>, <strong>Math
+Equations</strong>, <strong>Smart Insert</strong>, <strong>Word Count
+(Node)</strong>, <strong>Status Scribe</strong>, <strong>Document
+Guardian</strong>, <strong>Journal Stamp</strong>, <strong>BRF
+Tools</strong>, <strong>Daily Stamp</strong>, <strong>AI Writing
+Prompts</strong>, and <strong>AI Writing Skills</strong>. Five more
+bundled Quillins ship for the <strong>companion apps</strong> (Radio
+Community Directory, Cast Premium Auth, Weather Extra Alerts, Studio
+Normalizer, Beacon Transit Resolver) plus three cloud transcription
+providers; those do <strong>not</strong> appear in the editor's Manager
+because they target other apps.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <code>plain.txt</code>,
+<code>formatting.md</code>.</p>
+<hr />
+<h2 id="qln-01--open-the-quillins-manager-toolsquillins_manager">QLN-01
+— Open the Quillins Manager (<code>tools.quillins_manager</code>)</h2>
+<p><em>What &amp; why.</em> The Manager is the one place to see every
+installed Quillin, read its details, and act on it. It must open by
+keyboard and be fully announced.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL open, any document. A normal (public) build.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt</strong> to reach the menu bar, open the
+<strong>Tools menu</strong>, then the <strong>Quillins</strong> submenu,
+then choose <strong>Manage Quillins…</strong>. (You can also run it from
+the Command Palette → "Manage Quillins".)</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>Quillins Manager</strong> opens; focus lands
+in a list named <strong>Installed Quillins</strong>. Below the list are
+a read-only <strong>Details</strong> text area and buttons
+<strong>Enable</strong>, <strong>Disable</strong>, <strong>Configure
+Events…</strong>, <strong>Reload</strong>, <strong>Remove…</strong>,
+<strong>Install from Folder…</strong>, and <strong>Close</strong>.</li>
+<li>At the top, an intro line is announced. On a <strong>public</strong>
+build it reads in substance: <em>"Bundled Quillins ship enabled and run
+normally. Third-party Quillins are disabled in this build and are listed
+for review only. Choose a Quillin to read its details."</em> (On a dev
+build with third-party enabled it instead offers
+Enable/Disable/Reload/Remove.)</li>
+<li><strong>Tab</strong> reaches every control; <strong>Escape</strong>
+closes the dialog and returns focus to the Tools menu / the control that
+opened it.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-02--the-bundled-quillins-that-ship-list--details">QLN-02 —
+The bundled Quillins that ship (list + details)</h2>
+<p><em>What &amp; why.</em> A release must prove the expected
+first-party Quillins are present, named correctly, and describe
+themselves accurately — including their signature status, capabilities,
+and contributed commands.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Quillins Manager open (QLN-01).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Down/Up arrow</strong> through the <strong>Installed
+Quillins</strong> list, reading each entry.</li>
+<li>On a few entries, <strong>Tab</strong> to the
+<strong>Details</strong> area and read it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each list item is announced as <strong>name plus state</strong>,
+e.g. "Insert Tools (enabled)", "Markdown Helpers (enabled)". The bundled
+editor Quillins listed in the section intro above are all present and
+marked <strong>enabled</strong>; none is marked
+<strong>(invalid)</strong>.</li>
+<li>The <strong>Details</strong> area for a selected Quillin reads its
+<strong>Id, Folder, Name, Version, Author, Description, Categories,
+Capabilities, Type</strong> (snippet-only vs Python/Node handler), its
+contributed <strong>Commands</strong>, any <strong>Events</strong>, an
+<strong>Enabled: yes/no</strong> line, and a <strong>Signature</strong>
+line — for a shipped bundled Quillin this should say <strong>"Signature:
+verified, signed by …"</strong> (or, if the build is unsigned,
+"Signature: unsigned. This Quillin is not publisher-attested.").</li>
+<li>The companion-app Quillins (Radio/Cast/Weather/Studio/Beacon) and
+the cloud transcription providers do <strong>not</strong> appear here —
+correct, because they target other apps, not the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="qln-03--a-contributed-menu-item-appears-and-runs-insert-tools">QLN-03
+— A contributed menu item appears and runs: Insert Tools</h2>
+<p><em>What &amp; why.</em> Insert Tools is a pure snippet Quillin (no
+capabilities, so it can never touch files, network, or clipboard). It
+proves a Quillin's declared <strong>menu placement</strong> actually
+lands in the host menu and runs.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document open with the caret in the editor.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Insert menu</strong> and find the <strong>Date and
+Time</strong> submenu.</li>
+<li>Choose <strong>Insert Date</strong>. Repeat with <strong>Insert
+Time</strong> and <strong>Insert Date and Time</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The <strong>Insert ▸ Date and Time</strong> submenu contains
+<strong>Insert Date</strong>, <strong>Insert Time</strong>, and
+<strong>Insert Date and Time</strong> (contributed by the Quillin).
+Activating one inserts today's date / current time / both at the caret,
+and QUILL announces <strong>"Quillin snippet inserted."</strong> The
+caret sits after the inserted text.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-04--line-tools-handler-commands-on-the-edit-menu">QLN-04 —
+Line Tools: handler commands on the Edit menu</h2>
+<p><em>What &amp; why.</em> Line Tools is a Python-handler Quillin that
+edits text with cursor-aware operations. It proves handler commands
+(out-of-process) work and land on the <strong>Edit</strong> menu.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Put the caret on a line with some
+text.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Edit menu</strong>. Confirm it lists
+<strong>Duplicate Line</strong>, <strong>Delete Line</strong>,
+<strong>Move Line Up</strong>, <strong>Move Line Down</strong>,
+<strong>Join Paragraph Lines</strong>, and <strong>Join with Next
+Line</strong>.</li>
+<li>Choose <strong>Duplicate Line</strong>. Then <strong>Move Line
+Down</strong>. Then <strong>Delete Line</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>Duplicate Line</strong> adds an identical copy of the
+current line below it. <strong>Move Line Down</strong> swaps the current
+line with the one below. <strong>Delete Line</strong> removes the
+current line. Each result is spoken (the changed text is read where
+focus lands); no error, no crash, and focus stays in the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-05--insert-character-menu-context-menu-and-a-prompt">QLN-05
+— Insert Character: menu, context menu, and a prompt</h2>
+<p><em>What &amp; why.</em> Insert Character proves a Quillin can
+contribute to both a top-level menu <strong>and</strong> the editor
+context menu, and prompt for input.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document open with the caret in the editor.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Insert menu</strong> and choose <strong>Insert
+Special Character…</strong>. (It is also on the editor <strong>context
+menu</strong> — open that with the <strong>Menu/Applications
+key</strong> or <strong>Shift+F10</strong> and choose the same
+item.)</li>
+<li>In the prompt, type a code point — e.g.
+<strong><code>U+2764</code></strong> (a heart), or
+<strong><code>2764</code></strong> hex, or a decimal value;
+confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled prompt asks for the character/code point; on confirm the
+matching Unicode character is inserted at the caret and the action is
+announced. A bad or empty value is reported clearly, not silently
+ignored. The command is reachable from <strong>both</strong> the Insert
+menu and the context menu.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="qln-06--math-equations-insert-equation-hotkey-abbreviations-gallery">QLN-06
+— Math Equations: Insert Equation, hotkey, abbreviations, gallery</h2>
+<p><em>What &amp; why.</em> Math Equations is a rich handler Quillin: a
+dialog, a hotkey, dozens of Math-AutoCorrect abbreviations, and Snippet
+Gallery formulas. It proves the hotkey and abbreviation contribution
+paths.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document open with the caret in the editor.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+E</strong> (or <strong>Insert menu ▸ Insert
+Equation…</strong>). Enter a simple LaTeX formula, e.g.
+<code>a^2 + b^2 = c^2</code>; choose inline or display; confirm.</li>
+<li>Back in the editor, type a math abbreviation followed by a
+delimiter, e.g. type <strong><code>\alpha</code></strong> then a space;
+then <strong><code>\ne</code></strong> then a space.</li>
+<li>Select a formula you inserted, then use <strong>Explore Equation
+Structure…</strong> (<strong>Ctrl+Shift+Grave</strong> then
+<strong>F</strong>, or Insert menu / context menu).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Insert Equation inserts the LaTeX wrapped as inline
+<code>\(…\)</code> or display <code>$$…$$</code> (or MathML verbatim),
+and announces it. The abbreviation <code>\alpha</code> expands to
+<strong>α</strong> and <code>\ne</code> to <strong>≠</strong> on the
+delimiter. Explore Equation Structure steps through the formula's parts
+with a plain-English reading of each. The Snippet Gallery (Insert ▸
+Snippet Gallery…) lists this Quillin's formulas (Quadratic Formula,
+Pythagorean Theorem, etc.).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="qln-07--markdown-helpers-format-menu-a-hotkey-and-a-guarded-context-item">QLN-07
+— Markdown Helpers: Format menu, a hotkey, and a guarded context
+item</h2>
+<p><em>What &amp; why.</em> Markdown Helpers mixes a Layer-1 snippet and
+a Layer-2 handler, and declares a hotkey plus a
+<strong>selection-only</strong> context-menu entry — proving the
+<code>when: editor.hasSelection</code> guard.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A Markdown document open (e.g. copy <code>formatting.md</code>).
+Some text present.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Format menu</strong> and confirm it lists
+<strong>Wrap Selection in Bold</strong> and <strong>Insert Markdown
+Front Matter</strong>.</li>
+<li>Select a word, then press <strong>Ctrl+Shift+B</strong>.</li>
+<li>With text <strong>selected</strong>, open the editor <strong>context
+menu</strong> (<strong>Shift+F10</strong>) and confirm <strong>Wrap
+Selection in Bold</strong> is present; with <strong>no</strong>
+selection, open it again and confirm the item is
+<strong>absent</strong>.</li>
+<li>With the caret at the top of the document, choose <strong>Insert
+Markdown Front Matter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>Ctrl+Shift+B</strong> wraps the selection in
+<code>**…**</code> and announces it. The context menu shows Wrap
+Selection in Bold <strong>only when text is selected</strong> (the guard
+works). Insert Markdown Front Matter inserts a <code>---</code> YAML
+block seeded with the filename and today's date, then leaves the caret
+below it, announced as a snippet insertion.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="qln-08--text-tools-commands-across-format-search-and-edit">QLN-08 —
+Text Tools: commands across Format, Search, and Edit</h2>
+<p><em>What &amp; why.</em> Text Tools contributes to three different
+host menus at once, and one command reads the clipboard — proving
+multi-menu placement and a capability-scoped handler.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open with several lines of text.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Number Lines</strong>.</li>
+<li><strong>Format menu ▸ Hard-Wrap Lines</strong>.</li>
+<li><strong>Search menu ▸ Count Regular Expression Matches</strong>;
+enter a simple pattern (e.g. <code>\w+</code>); confirm.</li>
+<li>Copy some HTML to the clipboard from a browser, then <strong>Edit
+menu ▸ Paste Clipboard HTML as Markdown</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Number Lines prefixes each line with a number. Hard-Wrap reflows
+long lines. The regex count reports how many matches were found
+(spoken). Paste HTML as Markdown converts the clipboard HTML to Markdown
+at the caret. Each command is announced; the Search-menu ones prompt
+with labelled fields.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-09--smart-insert-smart-triggers-and-abbreviations">QLN-09 —
+Smart Insert: smart triggers and abbreviations</h2>
+<p><em>What &amp; why.</em> Smart Insert proves the two typed-automation
+contribution paths: a <code>=name()</code> <strong>smart
+trigger</strong> fired on Enter, and a <strong>contributed
+abbreviation</strong> expanded after a delimiter.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A new empty document, caret in the editor.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>On a blank line type <strong><code>=todo(3)</code></strong> and
+press <strong>Enter</strong>.</li>
+<li>On a new line type <strong><code>=bug()</code></strong> and press
+<strong>Enter</strong>.</li>
+<li>On a new line type <strong><code>qbug</code></strong> then press
+<strong>Space</strong> (or another delimiter).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><code>=todo(3)</code> is replaced in place by a 3-item to-do
+checklist; <code>=bug()</code> is replaced by a bug-report skeleton
+(Title / Steps / Expected / Actual). The typed trigger text is removed
+and the generated text inserted where it was — Enter is consumed (no
+stray blank line). The <code>qbug</code> abbreviation expands to the
+QUILL bug-report template. These triggers/abbreviations can be turned
+off individually in Smart Insert's preferences (see QLN-13).</li>
+<li><strong>Note.</strong> These commands are also on the <strong>Insert
+menu</strong> (Insert Bug Report Template, Insert Meeting Notes
+Template, etc.) if you prefer menus to typing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-10--word-count-node-a-nodejs-runtime-quillin">QLN-10 — Word
+Count (Node): a Node.js runtime Quillin</h2>
+<p><em>What &amp; why.</em> Most bundled Quillins run on QUILL's
+embedded Python worker; <strong>Word Count (Node)</strong> runs on a
+spawned Node.js subprocess. It proves the Node runtime path
+end-to-end.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> Node.js available to QUILL (it is one
+of the allowlisted engine executables). If Node is not
+installed/allowed, mark <strong>Blocked</strong>.</li>
+<li><code>plain.txt</code> open with several words; optionally select a
+phrase.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Word Count (Node)</strong> (also in the Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces the word count of the current selection, or of the
+whole document when nothing is selected. The result is spoken; no
+console window flashes and the editor never blocks. If Node is
+unavailable, QUILL reports the failure in substance ("Quillin error: …")
+rather than crashing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-11--status-scribe-a-contributed-status-bar-cell">QLN-11 —
+Status Scribe: a contributed status-bar cell</h2>
+<p><em>What &amp; why.</em> Status Scribe contributes a live word-count
+<strong>status-bar cell</strong> that refreshes after every save and
+when switching tabs. It proves the <code>status_bar</code> and
+<code>schedule</code> contribution paths and lifecycle events.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Note the status bar.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Read the status bar (with your screen reader's status-review
+command, e.g. NVDA <strong>Insert+End</strong> on the desktop layout)
+and find the <strong>Words:</strong> cell.</li>
+<li>Type a few words, then <strong>Ctrl+S</strong> to save.</li>
+<li>Read the status cell again.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A status cell shows the count (e.g. "Words: 42"); its tooltip/name
+is announced when it receives focus. After a save the count updates to
+match the new content; switching to another tab updates the cell to that
+document's count. (Counting mode — words / characters / sentences — and
+optional spoken feedback are set in Status Scribe's preferences.)</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="qln-12--document-guardian-document-lifecycle-events--configure-events">QLN-12
+— Document Guardian: document-lifecycle events + Configure Events…</h2>
+<p><em>What &amp; why.</em> Document Guardian reacts to document
+lifecycle events (before-close, before-save, after-save). It proves
+event dispatch and the Manager's <strong>Configure Events…</strong>
+per-event on/off control.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Quillins Manager open. Document Guardian is enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open a <strong>new</strong> document, type only one or two words (a
+"work in progress"), and press <strong>Ctrl+W</strong> to close it.</li>
+<li>In the Manager, select <strong>Document Guardian</strong> and press
+<strong>Configure Events…</strong>. Read the checkbox list of its
+events; <strong>uncheck</strong> "Warn before closing short documents";
+press <strong>Save</strong>.</li>
+<li>Repeat step 1 and confirm the warning no longer speaks.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Closing the very short unsaved document speaks a <strong>warning
+that it looks unfinished</strong> — it does not block the close, it just
+makes sure you heard it.</li>
+<li><strong>Configure Events…</strong> opens a dialog titled
+<em>Configure Events — com.quill.docguardian</em> listing each event
+with a title, the event id, a description, and a checkbox reflecting its
+current state. Unchecking one and saving stops that handler from firing;
+the Details area then shows that event as <strong>off</strong>.
+<strong>Escape/Cancel</strong> makes no change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-13--configure-a-quillins-preferences-multi-tab-page">QLN-13
+— Configure a Quillin's preferences (multi-tab page)</h2>
+<p><em>What &amp; why.</em> Quillins declare preferences as data; QUILL
+renders them with accessible stock controls. This proves a multi-tab
+Quillin preferences page is keyboard-complete and announced.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A Quillin that contributes preferences (e.g. <strong>Smart
+Insert</strong>, <strong>Document Guardian</strong>, <strong>Status
+Scribe</strong>, or <strong>BRF Tools</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the Quillin's preferences (from
+<strong>Preferences/Settings</strong>, find the Quillin's page — e.g.
+Smart Insert under Editing ▸ Insert Automation — or use the Manager's
+detail view to locate it).</li>
+<li><strong>Tab</strong>/<strong>Shift+Tab</strong> through the
+controls; move between tabs with <strong>Ctrl+Tab</strong> or the arrow
+keys on the tab strip.</li>
+<li>Change one setting (e.g. Smart Insert's "Default to-do list length",
+or a trigger's Enable checkbox); confirm; reopen to verify it
+persisted.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The page has named <strong>tabs</strong> (e.g. Smart Insert:
+General, Log Mode, Smart Triggers, Abbreviations, BRF Testing). Every
+control (checkbox, choice, integer spinner, text field) is labelled and
+reachable by keyboard; its role, state, and value are announced.
+Conditional fields appear/enable only when their controlling setting
+matches (e.g. a "Custom pattern" field shows only when the format choice
+is Custom). Changes persist across a reopen.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-14--quillin-permission-consent-prompt">QLN-14 — Quillin
+permission (consent) prompt</h2>
+<p><em>What &amp; why.</em> A Quillin action that needs a
+privacy-sensitive capability must ask first, in a dialog you can hear
+and cancel — QUILL never lets a Quillin act behind your back.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A Quillin command that exercises a consent-gated capability at
+runtime.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run such a command (e.g. a handler that reads the clipboard, writes
+a file, or makes a network request).</li>
+<li>Read the permission dialog; choose <strong>No</strong> once (confirm
+it is refused), then run again and choose <strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog titled <strong>Quillin Permission Request</strong> appears,
+announcing in substance: <em>"A Quillin is requesting the '<capability>'
+capability for: <detail>. Allow this action?"</em> with
+<strong>Yes/No</strong> buttons (No is the default). Choosing
+<strong>No</strong> refuses and the action does not happen;
+<strong>Yes</strong> allows it. <strong>Escape</strong> cancels.</li>
+<li><strong>Note.</strong> The prompt only appears for capabilities that
+require consent; a Quillin whose capabilities are pre-granted may act
+without prompting. If no bundled command triggers a prompt in your
+build, mark <strong>N/A</strong> and note which capabilities were
+exercised silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-15--enable--disable-a-quillin-gated">QLN-15 — Enable /
+Disable a Quillin <strong>[GATED]</strong></h2>
+<p><em>What &amp; why.</em> Enabling/disabling toggles whether a
+Quillin's contributions load. The announced result must be clear.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Quillins Manager open. <strong>Note the gate:</strong> in a
+<strong>public</strong> build the <strong>Enable</strong> and
+<strong>Disable</strong> buttons are present but <strong>not
+operable</strong> (greyed) — bundled Quillins ship enabled and
+third-party ones are locked off, so there is nothing to toggle. These
+buttons become operable only in a <strong>dev/admin build</strong> with
+the third-party flag on (<code>QUILL_DEV_BUILD=1</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Select a Quillin. Confirm <strong>Enable/Disable</strong> are
+<strong>disabled</strong> on a public build (mark <strong>N/A</strong>
+for the toggle here).</li>
+<li><strong>[Dev build only]</strong> Select an enabled Quillin, press
+<strong>Disable</strong>; then press <strong>Enable</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>Public build:</strong> the Enable/Disable buttons are greyed
+and cannot be activated; the intro line explains why. Mark
+<strong>N/A</strong>.</li>
+<li><strong>Dev build:</strong> Disable speaks <strong>"Disabled
+<id>."</strong> and Enable speaks <strong>"Enabled <id>."</strong>; the
+menus rebuild so the Quillin's contributed items disappear on disable
+and reappear on enable, and the list state updates.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-16--install-a-user-quillin-from-a-folder-gated">QLN-16 —
+Install a user Quillin from a folder <strong>[GATED]</strong></h2>
+<p><em>What &amp; why.</em> Third-party install is the untrusted path.
+For 1.0 it is <strong>locked off</strong> (SEC-8): a user Quillin never
+loads or runs in a public build. This proves the lock holds.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A folder containing a valid third-party <code>manifest.json</code>
+(a simple snippet Quillin is fine). A <strong>public</strong>
+build.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>In the Manager, press <strong>Install from Folder…</strong>; pick
+the folder; confirm.</li>
+<li>Look for the Quillin in the list; try to run any command it
+declares.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>On a <strong>public</strong> build, even though the files may be
+copied, the installed third-party Quillin <strong>does not
+appear</strong> in the Manager list and <strong>its commands never
+run</strong> — third-party discovery returns nothing while the SEC-8
+flag is locked off. The Manager intro states third-party Quillins are
+disabled; if you reach a third-party command by any path, QUILL says
+<strong>"Third-party Quillins are disabled in this build."</strong> Mark
+this scenario <strong>N/A</strong> for the "installed Quillin runs"
+outcome and record the locked message you heard.</li>
+<li><strong>[Dev build only]</strong> With the third-party flag on, the
+installed Quillin appears in the list (announced <strong>"Installed
+<id>."</strong>) and its commands run.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-17--manifest-validation-errors-are-surfaced-clearly">QLN-17
+— Manifest validation errors are surfaced clearly</h2>
+<p><em>What &amp; why.</em> A broken Quillin must never fail silently or
+crash the editor — its problems must be readable.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A folder with an <strong>invalid</strong> <code>manifest.json</code>
+(e.g. missing the required <code>name</code> field, or a malformed
+<code>version</code>). This exercises the same validation whether or not
+third-party install is unlocked.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>In the Manager, press <strong>Install from Folder…</strong> and pick
+the invalid folder.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The install is <strong>rejected before anything is copied</strong>,
+with a spoken error message box titled <strong>Install Quillin</strong>
+reading in substance <strong>"Install failed: …"</strong> followed by
+the specific problem(s). The editor keeps running.</li>
+<li><strong>Cross-check (dev build):</strong> an already-installed
+Quillin with a bad manifest shows in the list as
+<strong>"(invalid)"</strong>, and its Details area ends with a
+<strong>"Problems:"</strong> section listing each error. It is visible
+for review but does not load.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="qln-18--safe-mode-disables-all-quillin-contributions-cross-ref-inst-07">QLN-18
+— Safe Mode disables all Quillin contributions (cross-ref INST-07)</h2>
+<p><em>What &amp; why.</em> Safe Mode is the recovery lifeline: it must
+strip <strong>every</strong> Quillin contribution (commands, menus,
+status cells, event handlers, timers) while still letting you open the
+Manager. This is a non-negotiable invariant.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Ability to launch QUILL in <strong>Safe Mode</strong>: the
+<strong><code>--safe-mode</code></strong> flag or
+<strong><code>QUILL_SAFE_MODE=1</code></strong>. See install-matrix
+<strong>INST-07</strong> (Safe Mode is identical in portable and system
+builds).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Launch QUILL in Safe Mode.</li>
+<li>Open <strong>Tools ▸ Quillins ▸ Manage Quillins…</strong>.</li>
+<li>Check the menus that normally carry Quillin items (Insert ▸ Date and
+Time, Edit, Format, Search) and try a smart trigger like
+<strong><code>=todo()</code></strong> + Enter.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>No Quillin-contributed commands, menu items, hotkeys, status cells,
+smart triggers, or abbreviations are present or active —
+<code>=todo()</code> does <strong>not</strong> expand.</li>
+<li>The <strong>Manager still opens</strong> and is operable; it
+announces in substance <strong>"Quillins are disabled in Safe
+Mode."</strong> rather than loading anything. No error, no crash.
+Restarting normally restores all bundled Quillins.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="qln-19--remove-a-quillin-gated">QLN-19 — Remove a Quillin
+<strong>[GATED]</strong></h2>
+<p><em>What &amp; why.</em> Removing uninstalls a user Quillin from
+disk, guarded by a confirmation you can cancel. Bundled Quillins are
+trusted first-party and are not deletable from the Manager.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>[Dev build]</strong> A user-installed Quillin present in the
+list (from QLN-16 with the third-party flag on). On a
+<strong>public</strong> build there are no user Quillins to remove —
+mark <strong>N/A</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Select the user Quillin and press <strong>Remove…</strong>.</li>
+<li>In the confirmation, choose <strong>No</strong> first (confirm it is
+kept), then <strong>Remove…</strong> again and choose
+<strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A confirmation titled <strong>Remove Quillin</strong> asks in
+substance <strong>"Remove the Quillin '<id>'? This deletes it from
+disk."</strong> with <strong>Yes/No</strong> (No default).
+<strong>No</strong> keeps it. <strong>Yes</strong> deletes its folder,
+rebuilds the menus, and announces <strong>"Removed <id>."</strong>; it
+disappears from the list.</li>
+<li><strong>Note.</strong> Selecting a <strong>bundled</strong> Quillin
+and pressing Remove does not delete it from the trusted install tree —
+it reappears on the next Reload. Do not fail this for bundled Quillins
+persisting; that is by design.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 19</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

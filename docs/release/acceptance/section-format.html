@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-format</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="section--format--insert-format-56-commands">Section — Format
+&amp; Insert (<code>format.*</code>, 56 commands)</h1>
+<p>Everything about <strong>shaping</strong> a document: making words
+bold or italic, adding headings, lists, tables, quotes and code,
+changing case, moving lines and sections, and — the part screen-reader
+users lean on hardest — <strong>hearing what formatting is at the
+cursor</strong>. Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>format.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes.</p>
+<p>Two things that recur below, so they are explained once here:</p>
+<ul>
+<li><strong>The menus.</strong> These commands live in two menu bar
+menus. <strong>Format menu (Alt, O)</strong> holds
+bold/italic/underline, case changes, indent, comments, and line/section
+moves. <strong>Insert menu (Alt, I)</strong> holds the
+<em>structural</em> inserts — its <strong>Heading</strong> and
+<strong>List</strong> submenus, plus tables, quotes, code, rules,
+snippets and abbreviations. A few commands have <strong>no menu
+entry</strong>; reach those through the <strong>Command Palette</strong>
+(<strong>Ctrl+Shift+P</strong>, then type the command name).</li>
+<li><strong>The chord shortcuts.</strong> Some shortcuts are a two-key
+<em>chord</em>: press <strong>Ctrl+Shift+Grave</strong> (Grave is the
+backtick <code>`</code> key, top-left), release, then the second key.
+Where a scenario uses one it is spelled out.</li>
+<li><strong>Markdown vs rich text.</strong> Most of these behave in a
+<strong>Markdown</strong> document by inserting literal Markdown/HTML
+markup (so bold becomes <code>**word**</code>), and the spoken
+confirmation names the surface, e.g. "(markdown)". In a rich-text
+document the same command applies real styling and speaks the bare style
+name. Every scenario below is written for the <strong>Markdown</strong>
+sample so the outcomes are concrete; if you test in rich text, expect
+the rich-text wording instead.</li>
+</ul>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first): <strong><code>formatting.md</code></strong>
+(the ideal input — it already contains bold/italic/
+underline/strikethrough words, bullet and numbered lists, a blockquote,
+inline and fenced code, a link, and an image) and
+<strong><code>plain.txt</code></strong>.</p>
+<hr />
+<h2 id="fmt-01--bold-formatbold-ctrlb">FMT-01 — Bold
+(<code>format.bold</code>, Ctrl+B)</h2>
+<p><em>What &amp; why.</em> Make selected text bold — the most-used
+emphasis, and the first place to prove "what I formatted was
+announced."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong>. In the first
+paragraph, select the word <strong><code>sample</code></strong>
+(double-click by keyboard is not available — use
+<strong>Shift+Ctrl+Right</strong> from the word start, or Shift+arrows,
+to select exactly <code>sample</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+B</strong>, or <strong>Format menu (Alt, O) ▸
+Bold</strong>.</li>
+<li>Now test "off": select the just-bolded text <strong>including its
+<code>**</code> markers</strong> and read it with the review cursor;
+delete the markers (or re-select and Clear Formatting, FMT-06) to
+confirm emphasis can be removed.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection is wrapped as <code>**sample**</code>; QUILL announces
+the action in substance — "Applied bold (markdown)" (in a rich-text
+document it speaks "Bold" instead). The change is <em>not</em> silent.
+Note: in Markdown, bold is expressed as literal <code>**</code> markers,
+not a hidden on/off attribute — so "turning it off" means removing those
+markers, and re-applying bold does not report a spoken "bold off" state.
+If the profile forbids it you hear "Bold is unavailable in this profile"
+(mark <strong>N/A</strong>, not Fail).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-02--italic-formatitalic-ctrli">FMT-02 — Italic
+(<code>format.italic</code>, Ctrl+I)</h2>
+<p><em>What &amp; why.</em> Make selected text italic.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Select the word
+<strong><code>exercises</code></strong> in the first paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+I</strong>, or <strong>Format menu ▸
+Italic</strong>.</li>
+<li>Test "off" as in FMT-01: inspect the <code>*…*</code> markers and
+remove them to confirm the emphasis is reversible.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection is wrapped as <code>*exercises*</code>; QUILL
+announces "Applied italic (markdown)" (rich text: "Italic"). Not silent.
+Disabled profile: "Italic is unavailable in this profile" →
+<strong>N/A</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-03--underline-formatunderline">FMT-03 — Underline
+(<code>format.underline</code>)</h2>
+<p><em>What &amp; why.</em> Underline selected text. There is <strong>no
+default shortcut</strong> — reach it from the menu or palette.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Select the word
+<strong><code>inline</code></strong> in the first paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Underline</strong> (or Command Palette →
+"Underline").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection is wrapped with an HTML underline tag,
+<code>&lt;u&gt;inline&lt;/u&gt;</code> (underline has no plain-Markdown
+form, so it is inserted as inline HTML in both Markdown and HTML
+documents); QUILL announces "Applied underline (markdown)" (rich text:
+"Underline"). Not silent. Disabled profile: "Underline is unavailable in
+this profile" → <strong>N/A</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-04--describe-formatting-at-cursor-formatdescribe_formatting-ctrlshiftd">FMT-04
+— Describe Formatting at Cursor
+(<code>format.describe_formatting</code>, Ctrl+Shift+D)</h2>
+<p><em>What &amp; why.</em> Speak the formatting <strong>at the
+caret</strong> on demand — the single most important accessibility
+command in this section. This is the manual version of core-journey
+TC-001d.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong>. The first
+paragraph contains four styled words: <strong>bold</strong>
+(<code>**bold**</code>), <strong>italic</strong>
+(<code>*italic*</code>), <strong>underline</strong>
+(<code>&lt;u&gt;underline&lt;/u&gt;</code>), and <strong>strike</strong>
+(<code>~~strike~~</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Place the caret <strong>inside the word <code>bold</code></strong>.
+Press <strong>Ctrl+Shift+D</strong> (or Command Palette → "Describe
+Formatting at Cursor").</li>
+<li>Repeat with the caret inside <strong><code>italic</code></strong>,
+then <strong><code>underline</code></strong>, then
+<strong><code>strike</code></strong>.</li>
+<li>Finally, place the caret in an <strong>unstyled</strong> word (e.g.
+<code>paragraph</code>) and press <strong>Ctrl+Shift+D</strong>
+again.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each invocation speaks a formatting phrase, led by "Formatting: …":
+<strong>bold</strong> reads as <strong>bold</strong>,
+<strong>italic</strong> as <strong>italic</strong>,
+<strong>underline</strong> as <strong>underlined</strong>,
+<strong>strike</strong> as <strong>strikethrough</strong> — each state
+is <em>named</em>, none is silent (matching TC-001d). On a heading line
+the phrase begins with "heading level N"; inside a list it says
+"bullet". On the unstyled word it reports the equivalent of
+<strong>"plain text, no formatting"</strong>. In a non-Markdown/rich
+document that cannot be described it says formatting description is
+available in Markdown documents.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-05--announce-formatting-on-cursor-move-formattoggle_announce_formatting">FMT-05
+— Announce Formatting on Cursor Move
+(<code>format.toggle_announce_formatting</code>)</h2>
+<p><em>What &amp; why.</em> Turn on continuous formatting announcements:
+as you arrow through text, QUILL speaks only the <em>change</em>
+(entering bold, leaving bold), so you always know what you are standing
+in without asking. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open, caret at the top
+(<strong>Ctrl+Home</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → <strong>"Announce Formatting on Cursor
+Move"</strong> (this is the label for
+<code>format.toggle_announce_formatting</code>). Note the spoken
+state.</li>
+<li>Arrow <strong>Right</strong> through the first paragraph, crossing
+into and out of the <code>bold</code> word.</li>
+<li>Invoke the command a second time to turn it back off; confirm the
+spoken state flips.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Toggling announces the new state in substance: "Formatting
+announcements on cursor move: on" then, on the second invocation, "…:
+off". While <strong>on</strong>, moving the caret into <code>bold</code>
+speaks the change (e.g. "bold") and moving out speaks the return to
+plain — a delta, not the whole phrase. While <strong>off</strong>,
+arrowing is silent about formatting again.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-06--clear-formatting-formatclear_formatting">FMT-06 — Clear
+Formatting (<code>format.clear_formatting</code>)</h2>
+<p><em>What &amp; why.</em> Strip run-level formatting from the
+selection (or the current paragraph), returning it to plain text. No
+default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Select the bold word (with its
+markers) or place the caret in a styled paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → <strong>"Clear Formatting"</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The formatting is removed and QUILL announces "Formatting cleared"
+(spoken, not silent). In a non-Markdown document it reports that clear
+formatting is only available in Markdown documents; a disabled profile
+says clear formatting is unavailable in this profile
+(<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-07--font-formatfont_dialog">FMT-07 — Font…
+(<code>format.font_dialog</code>)</h2>
+<p><em>What &amp; why.</em> Open an accessible Font dialog to set
+family, size, and colour. No default shortcut. Most meaningful in
+rich-text documents.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open (Markdown), plus — if you have one —
+a rich-text/<code>.docx</code> document to see the applied font.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → <strong>"Font..."</strong>.</li>
+<li>Tab through the family, size, and colour controls by keyboard;
+choose a value; confirm with <strong>Enter</strong> (or
+<strong>Escape</strong> to cancel).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog's controls are labelled and keyboard-complete. On confirm
+QUILL announces "Font applied"; with no change it says "Font unchanged"
+/ "No font changes selected". In a Markdown document it may report that
+font is only available in Markdown documents / a disabled profile says
+font tools are unavailable (<strong>N/A</strong>). Escape cancels with
+no change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-08--upper-case-formatupper_case">FMT-08 — Upper Case
+(<code>format.upper_case</code>)</h2>
+<p><em>What &amp; why.</em> Convert the selection (or, with no
+selection, the current word) to UPPER CASE. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Select a short phrase, e.g.
+<strong><code>the quick brown fox</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Upper Case</strong> (or Command Palette →
+"Upper Case").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text becomes <code>THE QUICK BROWN FOX</code>; QUILL announces
+in substance "Upper case applied to selection" (with no selection:
+"…applied to current word"). With neither a selection nor a word under
+the caret it says "No current word to transform" rather than doing
+nothing silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-09--lower-case-formatlower_case">FMT-09 — Lower Case
+(<code>format.lower_case</code>)</h2>
+<p><em>What &amp; why.</em> Convert the selection/current word to lower
+case. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Select
+<strong><code>THE QUICK BROWN FOX</code></strong> (reuse FMT-08's
+result).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Lower Case</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text becomes <code>the quick brown fox</code>; QUILL announces
+"Lower case applied to selection" (or "…to current word"). Empty target:
+"No current word to transform".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-10--title-case-formattitle_case">FMT-10 — Title Case
+(<code>format.title_case</code>)</h2>
+<p><em>What &amp; why.</em> Capitalise the first letter of each word. No
+default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Select
+<strong><code>the quick brown fox</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Title Case</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text becomes <code>The Quick Brown Fox</code>; QUILL announces
+"Title case applied to selection" (or "…to current word").</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-11--sentence-case-formatsentence_case">FMT-11 — Sentence
+Case (<code>format.sentence_case</code>)</h2>
+<p><em>What &amp; why.</em> Capitalise only the first letter of the
+selection/sentence. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Select
+<strong><code>THE QUICK BROWN FOX</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Sentence Case</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text becomes <code>The quick brown fox</code>; QUILL announces
+"Sentence case applied to selection" (or "…to current word").</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-12--toggle-case-formattoggle_case">FMT-12 — Toggle Case
+(<code>format.toggle_case</code>)</h2>
+<p><em>What &amp; why.</em> Invert the case of each letter (upper
+becomes lower and vice-versa). No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Select
+<strong><code>The Quick</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Toggle Case</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The text becomes <code>tHE qUICK</code>; QUILL announces "Toggle
+case applied to selection" (or "…to current word"). Invoking again
+returns to the original.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-13--fmt-18--insert-heading-1-through-6-formatheading_1formatheading_6-ctrlalt1--ctrlalt6">FMT-13
+… FMT-18 — Insert Heading 1 through 6
+(<code>format.heading_1</code>…<code>format.heading_6</code>, Ctrl+Alt+1
+… Ctrl+Alt+6)</h2>
+<p><em>What &amp; why.</em> Turn the current line into a heading of the
+chosen level — the backbone of a navigable document. Six commands, one
+per level; each has its own sign-off below.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a <strong>new Markdown document</strong> (Ctrl+N). Type six
+short lines, one per level, e.g. <code>Alpha</code>, <code>Bravo</code>,
+<code>Charlie</code>, <code>Delta</code>, <code>Echo</code>,
+<code>Foxtrot</code>, each on its own line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Put the caret on the first line. Press <strong>Ctrl+Alt+1</strong>,
+or <strong>Insert menu (Alt, I) ▸ Heading ▸ Heading 1</strong>.</li>
+<li>Move to the next line; press <strong>Ctrl+Alt+2</strong> (Heading
+2). Continue <strong>Ctrl+Alt+3</strong>, <strong>Ctrl+Alt+4</strong>,
+<strong>Ctrl+Alt+5</strong>, <strong>Ctrl+Alt+6</strong> on lines
+3–6.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each command prefixes the line with the right number of
+<code>#</code> marks (<code>#</code> … <code>######</code>) and
+announces in substance "Inserted heading N (markdown)" (rich text speaks
+"Heading N"). Afterwards, the screen reader's heading quick-key
+<strong>H</strong> should walk all six in order, each spoken with its
+level — confirming the levels are real, not cosmetic. Disabled profile:
+"Heading tools are unavailable in this profile"
+(<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off (Heading 1 — <code>format.heading_1</code>,
+Ctrl+Alt+1)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Heading 2 — <code>format.heading_2</code>,
+Ctrl+Alt+2)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Heading 3 — <code>format.heading_3</code>,
+Ctrl+Alt+3)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Heading 4 — <code>format.heading_4</code>,
+Ctrl+Alt+4)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Heading 5 — <code>format.heading_5</code>,
+Ctrl+Alt+5)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Heading 6 — <code>format.heading_6</code>,
+Ctrl+Alt+6)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-19--increase-heading-level-formatincrease_heading_level-altshiftright">FMT-19
+— Increase Heading Level (<code>format.increase_heading_level</code>,
+Alt+Shift+Right)</h2>
+<p><em>What &amp; why.</em> Demote the heading on the current line by
+one level (H2 → H3), without retyping the <code>#</code> marks.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>The document from FMT-13…18 (or <code>formatting.md</code>). Put the
+caret on a <strong>Heading 2</strong> line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+Right</strong>, or <strong>Insert menu ▸
+Heading ▸ Increase Level</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line gains one <code>#</code> (H2 becomes H3); QUILL announces
+"Adjusted heading level". At the deepest level it says "Heading already
+at maximum level"; off a heading line, "Place cursor on a heading line
+to adjust its level"; in a non-markup document, "Headings are only
+available in Markdown or HTML documents".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-20--decrease-heading-level-formatdecrease_heading_level-altshiftleft">FMT-20
+— Decrease Heading Level (<code>format.decrease_heading_level</code>,
+Alt+Shift+Left)</h2>
+<p><em>What &amp; why.</em> Promote the heading on the current line by
+one level (H3 → H2).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Caret on the <strong>Heading 3</strong> line you just made in
+FMT-19.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+Left</strong>, or <strong>Insert menu ▸
+Heading ▸ Decrease Level</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line loses one <code>#</code> (H3 becomes H2); QUILL announces
+"Adjusted heading level". At the top level it says "Heading already at
+minimum level"; the same off-heading and non-markup messages as FMT-19
+apply.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-21--style-headings-formatstyle_headings">FMT-21 — Style
+Headings… (<code>format.style_headings</code>)</h2>
+<p><em>What &amp; why.</em> Apply a heading <em>style</em> across the
+whole document by level (bulk restyle rather than line-by-line). No
+default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open (it has all six heading
+levels).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ Heading ▸ Style Headings…</strong> (or Command
+Palette → "Style Headings").</li>
+<li>Choose the level scope and a style in the dialog by keyboard;
+confirm (or <strong>Escape</strong> to cancel).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog controls are labelled and keyboard-navigable. On confirm
+QUILL announces how many were changed — "Styled 1 heading" / "Styled N
+headings"; with no matches, "No headings matched the selected level";
+Escape reports "Heading styling cancelled". In a non-markup document it
+says headings are only available in Markdown or HTML documents.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-22--insert-bullet-list-formatinsert_bullet_list">FMT-22 —
+Insert Bullet List (<code>format.insert_bullet_list</code>)</h2>
+<p><em>What &amp; why.</em> Insert an unordered (bulleted) list at the
+caret. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document, caret on an empty line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu (Alt, I) ▸ List ▸ Bullet</strong> (or Command
+Palette → "Insert Bullet List").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A bullet list marker (<code>- </code>) is inserted; QUILL announces
+"Inserted bullet list (markdown)". In a non-markup document it says
+"Bullet List is only available in Markdown or HTML documents".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-23--insert-numbered-list-formatinsert_numbered_list">FMT-23
+— Insert Numbered List (<code>format.insert_numbered_list</code>)</h2>
+<p><em>What &amp; why.</em> Insert an ordered (numbered) list at the
+caret. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document, caret on an empty line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ List ▸ Numbered</strong> (or Command Palette →
+"Insert Numbered List").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A numbered marker (<code>1. </code>) is inserted; QUILL announces
+"Inserted numbered list (markdown)".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-24--toggle-bullet-list-formattoggle_bullet_list-ctrlaltb">FMT-24
+— Toggle Bullet List (<code>format.toggle_bullet_list</code>,
+Ctrl+Alt+B)</h2>
+<p><em>What &amp; why.</em> One command that <strong>adds</strong>
+bullets if the caret is on a plain line and <strong>removes</strong>
+them if it is already inside a bullet list.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> and put the caret
+inside the unordered list under "Heading Two — Lists" (e.g. on the
+<code>Apples</code> line). Then, for the add path, put the caret on a
+plain paragraph line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>On the plain line, press <strong>Ctrl+Alt+B</strong> (or
+<strong>Insert menu ▸ List ▸ Toggle Bullet</strong>) to
+<strong>add</strong> bullets.</li>
+<li>On an existing bullet line, press <strong>Ctrl+Alt+B</strong> again
+to <strong>remove</strong> them.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Adding announces "Inserted bullet list (markdown)"; removing (caret
+already in a bullet list) strips the markers and announces "Bullet List
+removed". Non-markup document: "Bullet List is only available in
+Markdown or HTML documents".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-25--toggle-numbered-list-formattoggle_numbered_list-ctrlaltn">FMT-25
+— Toggle Numbered List (<code>format.toggle_numbered_list</code>,
+Ctrl+Alt+N)</h2>
+<p><em>What &amp; why.</em> Add numbering to plain lines, or strip it
+from a numbered list — and, when adding, it can auto-number the lines
+that follow.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Use the ordered list under "Heading
+Two — Lists" (the <code>First / Second / Third</code> lines) for the
+remove path, and a plain multi-line block for the add path.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>On plain lines, press <strong>Ctrl+Alt+N</strong> (or <strong>Insert
+menu ▸ List ▸ Toggle Numbered</strong>) to <strong>add</strong>
+numbering.</li>
+<li>Inside the existing numbered list, press <strong>Ctrl+Alt+N</strong>
+again to <strong>remove</strong> it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Adding announces "Inserted numbered list (markdown)"; if the
+auto-fill path fires it says "Numbered list applied (with numbers)" and
+arms auto-numbering for a few minutes. Removing announces "Numbered List
+removed".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-26--insert-task-list-formatinsert_task_list">FMT-26 — Insert
+Task List (<code>format.insert_task_list</code>)</h2>
+<p><em>What &amp; why.</em> Insert a checkbox (task) list item
+(<code>- [ ] </code>). No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document, caret on an empty line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ List ▸ Task</strong> (or Command Palette →
+"Insert Task List").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A task-list item is inserted; QUILL announces "Inserted task list
+(markdown)".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-27--list-manager-formatlist_manager-ctrlshiftgrave-then-l">FMT-27
+— List Manager… (<code>format.list_manager</code>, Ctrl+Shift+Grave then
+L)</h2>
+<p><em>What &amp; why.</em> Open a dialog to edit the Markdown list the
+caret is inside — reorder, renumber, change marker — by keyboard.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open, caret <strong>inside</strong> the
+bullet list under "Heading Two".</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>L</strong> — or <strong>Insert menu ▸ List ▸ List
+Manager…</strong>.</li>
+<li>Make a change in the dialog by keyboard; confirm (or
+<strong>Escape</strong> to cancel).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog is labelled and keyboard-operable. On confirm QUILL
+announces "Applied list manager changes"; Escape says "List Manager
+cancelled"; a no-op confirm says "List Manager closed without changes".
+If the caret is <strong>not</strong> in a list it says "Place the cursor
+inside a Markdown list to open List Manager"; in a non-Markdown
+document, "List Manager is only available in Markdown documents";
+disabled profile, "List Manager is unavailable in this profile"
+(<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-28--structured-list-studio-formatlist_studio-f2">FMT-28 —
+Structured List Studio (<code>format.list_studio</code>, F2)</h2>
+<p><em>What &amp; why.</em> A richer list-building workspace: turn a
+selection (or the list at the caret, or nothing) into a structured,
+multi-level list with a full undo path.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Select the three bullet lines under
+"Heading Two", or place the caret in that list.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>F2</strong>, or <strong>Insert menu ▸ List ▸
+Structured List Studio…</strong>.</li>
+<li>Build/adjust the list by keyboard; confirm with the dialog's OK (or
+<strong>Escape</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Studio opens as a keyboard-navigable, announced surface. On OK it
+inserts or replaces and speaks a summary followed by "Inserted. Press
+Control+Z to undo." or "Replaced. Press Control+Z to undo."; Escape says
+"Structured List Studio cancelled"; an empty build says "Structured List
+Studio: nothing to insert"; a validation failure says "…list not
+inserted (validation)". Disabled profile / read-only document are
+announced ("…unavailable in this profile" → <strong>N/A</strong>;
+"Document is read-only").</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-29--structured-list-studio-settings-formatlist_studio_settings">FMT-29
+— Structured List Studio Settings
+(<code>format.list_studio_settings</code>)</h2>
+<p><em>What &amp; why.</em> Edit the defaults Structured List Studio
+uses, with an all-documents or this-document scope. No default
+shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ List ▸ List Studio Settings…</strong> (or
+Command Palette).</li>
+<li>Change a default; choose a scope; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The settings dialog is labelled and keyboard-complete. Saving
+announces the scope: "List Studio settings saved for all documents" or
+"…saved for this document"; clearing a document override says "…for this
+document cleared (back to defaults)"; a no-change confirm says "List
+Studio settings unchanged".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-30--insert-code-block-formatinsert_code_block">FMT-30 —
+Insert Code Block (<code>format.insert_code_block</code>)</h2>
+<p><em>What &amp; why.</em> Wrap the selection in a fenced code block,
+optionally with a language hint (like the Python block in the sample).
+No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document. Type and select a line, e.g.
+<code>print("hello")</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu (Alt, I) ▸ Insert Code Block</strong> (or
+Command Palette).</li>
+<li>At the language prompt, type <strong><code>python</code></strong>
+(or leave blank); confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection is wrapped in a <code>```</code> fence; QUILL
+announces "Inserted code block (markdown, python)" (blank language
+reports "…plain"); Escape at the prompt says "Insert code block
+cancelled". Non-markup document: "Code Block is only available in
+Markdown or HTML documents".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-31--insert-footnote-formatinsert_footnote">FMT-31 — Insert
+Footnote (<code>format.insert_footnote</code>)</h2>
+<p><em>What &amp; why.</em> Insert a Markdown footnote reference and its
+definition. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document, caret at the end of a sentence.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ Insert Footnote</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A footnote marker and definition stub are inserted; QUILL announces
+"Inserted footnote (markdown)".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-32--insert-table-formatinsert_table-ctrlaltt">FMT-32 —
+Insert Table (<code>format.insert_table</code>, Ctrl+Alt+T)</h2>
+<p><em>What &amp; why.</em> Insert a Markdown table of chosen size, with
+or without a header row.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document, caret on an empty line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+T</strong>, or <strong>Insert menu ▸ Insert
+Table…</strong>.</li>
+<li>In the prompt, choose <strong>3</strong> rows, <strong>4</strong>
+columns, header <strong>yes</strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A 3×4 Markdown table is inserted; QUILL announces "Inserted 3x4
+table (markdown)"; Escape says "Insert table cancelled". (You can later
+verify cell navigation in the Table section.)</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-33--insert-block-quote-formatblockquote-ctrlaltq">FMT-33 —
+Insert Block Quote (<code>format.blockquote</code>, Ctrl+Alt+Q)</h2>
+<p><em>What &amp; why.</em> Wrap the selection as a blockquote
+(<code>&gt; </code>) — like the quote line in the sample.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document. Type and select a sentence, e.g.
+<code>The quick brown fox jumps over the lazy dog.</code></li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Q</strong>, or <strong>Insert menu ▸ Insert
+Block Quote</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line is prefixed with <code>&gt; </code>; QUILL announces
+"Inserted block quote (markdown)"; Escape (if a prompt appears) says
+"Insert block quote cancelled".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-34--insert-horizontal-rule-formathorizontal_rule-ctrlalth">FMT-34
+— Insert Horizontal Rule (<code>format.horizontal_rule</code>,
+Ctrl+Alt+H)</h2>
+<p><em>What &amp; why.</em> Insert a thematic break (<code>---</code>)
+between sections.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document, caret on an empty line between two
+paragraphs.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+H</strong>, or <strong>Insert menu ▸ Insert
+Horizontal Rule</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <code>---</code> rule is inserted on its own line; QUILL announces
+"Inserted horizontal rule (markdown)"; a cancel says "Insert horizontal
+rule cancelled".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-35--insert-page-break-formatinsert_page_break">FMT-35 —
+Insert Page Break (<code>format.insert_page_break</code>)</h2>
+<p><em>What &amp; why.</em> Insert an export-only page-break marker (it
+shows up in print/export, not as visible text). No default shortcut;
+Markdown documents only.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open (Markdown), caret on an empty
+line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → <strong>"Insert Page Break"</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A page-break marker is inserted on its own line; QUILL announces
+"Page break inserted". In a non-Markdown document it says "Page break is
+only available in Markdown documents"; a disabled profile says "Page
+break is unavailable in this profile" (<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-36--insert-html-tag-formatinsert_html_tag-ctrlshiftgrave-then-h">FMT-36
+— Insert HTML Tag… (<code>format.insert_html_tag</code>,
+Ctrl+Shift+Grave then H)</h2>
+<p><em>What &amp; why.</em> Pick an HTML tag from a searchable list and
+wrap the selection in it, with optional attributes.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document. Type and select a word, e.g.
+<code>emphasis</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>H</strong> — or <strong>Insert menu ▸ Insert HTML
+Tag…</strong>.</li>
+<li>Search/select a tag (e.g. <code>span</code>), fill any attributes by
+keyboard; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection is wrapped in the chosen tag; QUILL announces
+"Inserted HTML tag <span>" (the tag name reflects your choice). A
+disabled profile says "HTML tag tools are unavailable in this profile"
+(<strong>N/A</strong>); cancel returns quietly to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-37--insert-markdown-tag-formatinsert_markdown_tag">FMT-37 —
+Insert Markdown Tag… (<code>format.insert_markdown_tag</code>)</h2>
+<p><em>What &amp; why.</em> Pick a Markdown construct (link, image,
+emphasis, etc.) from a searchable list; for link/image it prompts for
+the URL. No default shortcut. This is the ideal way to reproduce the
+sample's <code>[QUILL project](…)</code> link and
+<code>![Red circle]</code> image.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New Markdown document. To make a link, type and select the link text
+<code>QUILL project</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ Insert Markdown Tag…</strong> (or Command
+Palette).</li>
+<li>Choose <strong>Link</strong>; at the URL prompt type
+<code>https://example.com/quill</code>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A Markdown link
+<code>[QUILL project](https://example.com/quill)</code> is inserted;
+QUILL announces "Inserted markdown link" (the kind reflects your choice,
+e.g. "…image"). A disabled profile says "Markdown tag tools are
+unavailable in this profile" (<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-38--insert-snippet-formatinsert_snippet-ctrlshiftgrave-then-s">FMT-38
+— Insert Snippet… (<code>format.insert_snippet</code>, Ctrl+Shift+Grave
+then S)</h2>
+<p><em>What &amp; why.</em> Insert a saved snippet, filling any
+placeholders as you go.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>At least one snippet defined (see FMT-39 to create one if none
+exist). New Markdown document, caret on an empty line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>S</strong> — or <strong>Insert menu ▸ Insert
+Snippet…</strong>.</li>
+<li>Pick a snippet; fill any placeholder prompts; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The rendered snippet is inserted; QUILL announces
+<code>Inserted snippet "&lt;name&gt;".</code>. If none are defined it
+says "No snippets available. Open Manage Snippets to add one."; Escape
+says "Snippet insertion cancelled"; a bad placeholder is reported, not
+crashed.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-39--manage-snippets-formatmanage_snippets-ctrlshiftgrave-then-shifts">FMT-39
+— Manage Snippets… (<code>format.manage_snippets</code>,
+Ctrl+Shift+Grave then Shift+S)</h2>
+<p><em>What &amp; why.</em> Create, edit, delete, import, or export
+snippets.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Shift+S</strong> — or <strong>Insert menu ▸ Manage
+Snippets…</strong>.</li>
+<li>Add a snippet by keyboard; save; then reopen to confirm it
+persisted.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The manager's action chooser (create/edit/delete/import/export) is
+labelled and keyboard-operable; a cancel says "Manage snippets
+cancelled". Import outcomes are spoken clearly (e.g. "No snippets found
+in selected file", "Snippet import cancelled"). The snippet you add is
+available in FMT-38.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-40--indent-formatindent-ctrl">FMT-40 — Indent
+(<code>format.indent</code>, Ctrl+])</h2>
+<p><em>What &amp; why.</em> Indent the selected line(s) by one indent
+unit.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Put the caret on a line (or select
+several lines).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+]</strong>, or <strong>Format menu (Alt, O) ▸
+Indent</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line(s) shift right by one indent unit; QUILL announces
+"Indented lines" (force-announced, never silent).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-41--outdent-formatoutdent-ctrl">FMT-41 — Outdent
+(<code>format.outdent</code>, Ctrl+[)</h2>
+<p><em>What &amp; why.</em> Remove one indent unit from the selected
+line(s).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Reuse the indented line from FMT-40.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+[</strong>, or <strong>Format menu ▸
+Outdent</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line(s) shift left by one indent unit; QUILL announces
+"Outdented lines" (force-announced).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-42--toggle-tab-key-mode-indent--tab-character-formattoggle_tab_insert_mode-ctrlshiftgrave-then-u">FMT-42
+— Toggle Tab Key Mode (Indent / Tab Character)
+(<code>format.toggle_tab_insert_mode</code>, Ctrl+Shift+Grave then
+U)</h2>
+<p><em>What &amp; why.</em> Switch what the <strong>Tab</strong> key
+does: insert a literal tab character, or indent the current line.
+Matters for code vs prose.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>U</strong> — or <strong>Format menu ▸ Tab Key Inserts Tab
+Character</strong> (the menu item toggles this mode).</li>
+<li>Press <strong>Tab</strong> on a line and observe the behaviour;
+invoke the toggle again and press <strong>Tab</strong> to see the other
+behaviour.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Toggling announces the new mode: "Tab key inserts a tab character"
+or "Tab key indents the line". Pressing <strong>Tab</strong> then does
+exactly what was announced.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-43--auto-indent-newline-formatauto_indent_newline">FMT-43 —
+Auto-Indent Newline (<code>format.auto_indent_newline</code>)</h2>
+<p><em>What &amp; why.</em> Insert a newline that keeps the current
+line's leading whitespace (and adds one level after a trailing
+<code>:</code> or <code>{</code>) — the smart-Enter used while writing
+indented text. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Type an indented line, e.g. four spaces
+then <code>item:</code> , and leave the caret at the end of it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → <strong>"Auto-Indent Newline"</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A new line is created that carries the previous line's indentation
+(and one extra level after the <code>:</code>); QUILL announces
+"Auto-indent newline". The caret lands ready to type at the new
+indent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-44--toggle-line-comment-formattoggle_line_comment-ctrl">FMT-44 —
+Toggle Line Comment (<code>format.toggle_line_comment</code>,
+Ctrl+/)</h2>
+<p><em>What &amp; why.</em> Comment or uncomment the selected line(s)
+using the document language's line-comment syntax.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a document whose language has line comments (e.g. a
+<code>.py</code> file, or paste a line of Python). Put the caret on a
+line (or select several).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+/</strong>, or <strong>Format menu ▸ Comments ▸
+Toggle Line Comment</strong>.</li>
+<li>Press <strong>Ctrl+/</strong> again on the same line(s) to
+uncomment.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line(s) gain (then lose) the language's comment marker; QUILL
+announces "Toggled line comment" each time.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-45--toggle-block-comment-formattoggle_block_comment-shiftalta">FMT-45
+— Toggle Block Comment (<code>format.toggle_block_comment</code>,
+Shift+Alt+A)</h2>
+<p><em>What &amp; why.</em> Wrap (or unwrap) the selection in a block
+comment.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same code document as FMT-44; select a few lines.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+Alt+A</strong>, or <strong>Format menu ▸
+Comments ▸ Toggle Block Comment</strong>.</li>
+<li>Repeat to unwrap.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selection is wrapped (then unwrapped) in a block comment; QUILL
+announces "Toggled block comment".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-46--move-line-up-formatmove_line_up">FMT-46 — Move Line Up
+(<code>format.move_line_up</code>)</h2>
+<p><em>What &amp; why.</em> Swap the current line (or selected block)
+with the line above. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> with several lines; caret on the
+<strong>second</strong> line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Move Line Up</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line moves up one position; QUILL announces "Moved line up" (or
+"Moved N lines up" for a multi-line selection). At the top it says
+"Already at the top" rather than doing nothing silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-47--move-line-down-formatmove_line_down">FMT-47 — Move Line
+Down (<code>format.move_line_down</code>)</h2>
+<p><em>What &amp; why.</em> Swap the current line (or selected block)
+with the line below. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code>; caret on a line that is <strong>not</strong>
+the last.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Move Line Down</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The line moves down one position; QUILL announces "Moved line down"
+(or "Moved N lines down"). At the bottom it says "Already at the
+bottom".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-48--duplicate-line-formatduplicate_line">FMT-48 — Duplicate
+Line (<code>format.duplicate_line</code>)</h2>
+<p><em>What &amp; why.</em> Copy the current line and paste the copy
+directly below. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code>; caret on any non-empty line.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Duplicate Line</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>An identical line appears below the current one; QUILL announces
+"Duplicated line".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-49--delete-line-formatdelete_line">FMT-49 — Delete Line
+(<code>format.delete_line</code>)</h2>
+<p><em>What &amp; why.</em> Delete the entire current line. No default
+shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code>; caret on the line you duplicated in
+FMT-48.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Delete Line</strong> (or Command
+Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The whole line is removed and the caret lands sensibly on an
+adjacent line; QUILL announces "Deleted line". (Undo with
+<strong>Ctrl+Z</strong> to confirm it is recoverable.)</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-50--join-lines-formatjoin_lines">FMT-50 — Join Lines
+(<code>format.join_lines</code>)</h2>
+<p><em>What &amp; why.</em> Merge the selected lines (or the current
+paragraph) into a single line. No default shortcut.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code>; select two or three consecutive lines.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Join Lines</strong> (or Command Palette).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The selected lines become one; QUILL announces "Joined N lines" (or
+"Joined lines"). With nothing to join it says "No lines to join".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="fmt-51--move-section-up-formatmove_section_up-altshiftup">FMT-51
+— Move Section Up (<code>format.move_section_up</code>,
+Alt+Shift+Up)</h2>
+<p><em>What &amp; why.</em> Move an entire heading section (the heading
+and everything under it, down to the next sibling) above its previous
+sibling — restructuring by ear. Markdown/HTML only.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong>. Put the caret on
+the <strong>"Heading Two — Lists"</strong> heading line (it has a
+sibling section above and below it).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+Up</strong>, or <strong>Format menu ▸ Move
+Section Up</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The whole "Heading Two" section swaps above the section before it;
+QUILL speaks "Section moved above <sibling>" (naming the section it
+jumped over). At the top it says "Top!"; with no sibling, "No sibling to
+swap with"; off a heading, "No section to move"; in a non-markup
+document, "Section move is only available in Markdown or HTML
+documents".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-52--move-section-down-formatmove_section_down-altshiftdown">FMT-52
+— Move Section Down (<code>format.move_section_down</code>,
+Alt+Shift+Down)</h2>
+<p><em>What &amp; why.</em> Move a heading section below its next
+sibling. Markdown/HTML only.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open; caret on the <strong>"Heading Two —
+Lists"</strong> heading line (or wherever it now sits after
+FMT-51).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+Down</strong>, or <strong>Format menu ▸ Move
+Section Down</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The section swaps below the next one; QUILL speaks "Section moved
+below <sibling>". At the bottom it says "Bottom!"; the same no-op /
+non-markup messages as FMT-51 apply.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-53--expand-abbreviation-formatexpand_abbreviation-ctrlshiftgrave-then-a">FMT-53
+— Expand Abbreviation (<code>format.expand_abbreviation</code>,
+Ctrl+Shift+Grave then A)</h2>
+<p><em>What &amp; why.</em> Expand the abbreviation before the caret
+into its full text (like a text-expander). [GATED] Present only when the
+<strong>Abbreviations</strong> feature is enabled; otherwise mark
+<strong>N/A</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>An abbreviation defined (add one via FMT-54 first, e.g.
+<code>qq</code> → <code>QUILL Quick Test</code>). New document; type
+<strong><code>qq</code></strong> and leave the caret right after
+it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>A</strong> — or <strong>Insert menu ▸ Expand
+Abbreviation</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The <code>qq</code> is replaced by its expansion; QUILL speaks
+"Expanded to: <preview>" (the preview is truncated with "…" if long). If
+expansion is disabled it says "Abbreviation expansion is disabled"; with
+nothing before the caret, "No word before cursor"; with no match, "No
+abbreviation match".</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-54--manage-abbreviations-formatmanage_abbreviations-ctrlshiftgrave-then-shifta">FMT-54
+— Manage Abbreviations… (<code>format.manage_abbreviations</code>,
+Ctrl+Shift+Grave then Shift+A)</h2>
+<p><em>What &amp; why.</em> Create, edit, and remove abbreviations.
+[GATED] Abbreviations feature only; else <strong>N/A</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Shift+A</strong> — or <strong>Insert menu ▸ Manage
+Abbreviations…</strong>.</li>
+<li>Add an abbreviation (e.g. <code>qq</code> →
+<code>QUILL Quick Test</code>) by keyboard; save.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The manager is labelled and keyboard-operable; on save QUILL
+announces "Abbreviations updated". The abbreviation you add is then
+usable in FMT-53.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-55--toggle-abbreviation-expansion-formattoggle_abbreviation_expansion-ctrlshiftgrave-then-e">FMT-55
+— Toggle Abbreviation Expansion
+(<code>format.toggle_abbreviation_expansion</code>, Ctrl+Shift+Grave
+then E)</h2>
+<p><em>What &amp; why.</em> Turn automatic abbreviation expansion on or
+off. [GATED] Abbreviations feature only; else <strong>N/A</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>E</strong> — or <strong>Insert menu ▸ Toggle Abbreviation
+Expansion</strong>.</li>
+<li>Invoke again to flip it back.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL speaks "Abbreviation expansion on" then, on the second
+invocation, "Abbreviation expansion off" (status line: "Abbreviations
+on" / "Abbreviations off"). The state genuinely changes — with it off,
+typing an abbreviation does not auto-expand.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="fmt-56--switch-document-format-formatswitch_document_format-ctrlshiftgrave-then-k">FMT-56
+— Switch Document Format (<code>format.switch_document_format</code>,
+Ctrl+Shift+Grave then K)</h2>
+<p><em>What &amp; why.</em> Change how the current document is
+treated/saved (e.g. Markdown vs plain text vs rich) from a quick menu —
+this is what decides whether the format commands above insert Markdown
+markup or apply real styling.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Note it is currently a Markdown
+document.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press the chord <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>K</strong> — or <strong>Format menu (Alt, O) ▸ Document
+Format…</strong>.</li>
+<li>Arrow the radio menu of formats; pick a <strong>different</strong>
+format and activate it.</li>
+<li>Reopen the menu and re-select the <strong>current</strong> format to
+confirm the no-op path.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The format menu is a native radio list whose items and checked state
+the screen reader announces as you arrow. Choosing a new format converts
+the document and announces the change in substance (e.g. "Now saving as
+<format>"); choosing the format it already is says "Already editing as
+<format>". An unknown target is reported, not applied silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 56</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

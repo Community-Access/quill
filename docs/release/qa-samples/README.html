@@ -257,6 +257,43 @@ paragraph, a 3-item unordered list, a 2-column table (Day/City) with two
 body rows, one link labelled <strong>QUILL project</strong>, and one
 <code>&lt;img&gt;</code> with alt <strong>"Red circle"</strong></td>
 </tr>
+<tr>
+<td><code>compare-original.txt</code> and
+<code>compare-revised.txt</code></td>
+<td>Compare tools (<code>tools.compare_*</code>) in the Acceptance Test
+Book</td>
+<td>A known before/after pair with <strong>exactly three
+differences</strong>: line 2 changes <strong>March → April</strong>;
+line 3 gains <strong>"and performance"</strong>; the revised file adds a
+fourth line <strong>"A follow-up review is scheduled for
+February."</strong> Compare must report these three and nothing
+else</td>
+</tr>
+<tr>
+<td><code>data.csv</code></td>
+<td>CSV / Table Studio (<code>tools.csv_studio</code>) and Calculator
+document stats</td>
+<td>A 3-column CSV (Region/Units/Revenue) with <strong>4 data
+rows</strong> (North/South/East/West). Known totals: <strong>Units =
+465</strong>, <strong>Revenue = 9300</strong>; row count 4, column count
+3</td>
+</tr>
+<tr>
+<td><code>encoding-cp1252.txt</code></td>
+<td>Choose Encoding (<code>file.choose_encoding</code>)</td>
+<td>Text saved in <strong>Windows-1252</strong>, not UTF-8:
+<code>Café résumé — naïve façade. Prices in £ and €.</code> Opened as
+UTF-8 it shows mojibake; re-reading as <strong>Windows-1252</strong>
+restores the accents and currency symbols correctly</td>
+</tr>
+<tr>
+<td><code>line-endings-crlf.txt</code></td>
+<td>Toggle Line Endings (<code>file.toggle_line_endings</code>)</td>
+<td>Three lines (<code>Line one</code> / <code>Line two</code> /
+<code>Line three</code>) terminated with <strong>Windows CRLF</strong>
+(<code>\r\n</code>). QUILL should report CRLF; toggling to LF and saving
+rewrites the endings</td>
+</tr>
 </tbody>
 </table>
 <h2 id="notes-for-the-tester">Notes for the tester</h2>
@@ -270,9 +307,18 @@ machine under test.</li>
 binary image file is not required for any journey to pass (a
 broken-image placeholder with the correct alt is the expected
 non-blocking outcome).</li>
+<li>The last four rows above (<code>compare-*</code>,
+<code>data.csv</code>, <code>encoding-cp1252.txt</code>,
+<code>line-endings-crlf.txt</code>) back specific scenarios in the
+<strong>Acceptance Test Book</strong> (<code>../acceptance/</code>).
+<code>encoding-cp1252.txt</code> and <code>line-endings-crlf.txt</code>
+are <strong>byte-specific</strong> — copy them as-is; do not open and
+re-save them in an editor that would rewrite the encoding or the line
+endings, or the scenario they support becomes untestable.</li>
 <li>If you must edit a sample, update the matching "Expected" cell here
 <strong>and</strong> the affected step in
-<code>qa-core-journeys.md</code> in the same change.</li>
+<code>qa-core-journeys.md</code> (and <code>../acceptance/</code>) in
+the same change.</li>
 </ul>
 </body>
 </html>

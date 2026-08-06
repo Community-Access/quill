@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100--acceptance-test-book-hand-held-exhaustive">QUILL
+1.0.0 — Acceptance Test Book (hand-held, exhaustive)</h1>
+<p>This book exists to answer one question before we ship: <strong>does
+every feature in QUILL actually work, for a real person, by keyboard and
+by ear?</strong></p>
+<p>It is written for a tester <strong>who has never used QUILL</strong>.
+You do not need to know the app, the menus, or the shortcuts in advance.
+Every scenario tells you exactly what to set up, exactly which keys to
+press or menu to open, exactly what you should see and hear, and gives
+you one box to sign when it happened. If a step assumes knowledge you do
+not have, that is a bug in this book — report it.</p>
+<p>Where the machine-generated inventories in
+<code>../../planning/signoff/</code> list <em>that</em> a command exists
+(one line each, 718 of them), this book proves <em>that each one
+works</em>, in plain language, step by step. The two are companions: the
+inventory is the map, this book is the guided walk.</p>
+<hr />
+<h2 id="1-who-runs-this-and-what-you-need">1. Who runs this, and what
+you need</h2>
+<p>You do not need to be a developer. You need:</p>
+<ul>
+<li>A <strong>real, packaged QUILL 1.0.0 build</strong> installed on the
+machine — either the <strong>system installer</strong>
+(<code>Quill-Setup-*.exe</code>) or the <strong>portable ZIP</strong> (a
+folder you unzip and run). Both are tested; they are separate runs (see
+the environment matrix in the master plan,
+<code>../../planning/signoff/QUILL-1.0.0-SIGNOFF.md</code> §A).</li>
+<li>A <strong>screen reader</strong> you can hear: <strong>NVDA</strong>
+(free, nvaccess.org) or <strong>JAWS</strong> on Windows;
+<strong>Narrator</strong> and <strong>VoiceOver</strong> where a
+scenario says so. QUILL is built for screen-reader users first, so most
+outcomes are things you <em>hear</em>, not just see.</li>
+<li>Headphones or speakers, and about a day per environment. Take breaks
+— an alert tester catches what a tired one misses.</li>
+<li>The <strong>sample documents</strong> in
+<code>../qa-samples/</code>. Copy that whole folder onto the test
+machine before you start and read its <code>README.md</code> once, so
+you know what each sample is <em>supposed</em> to contain. Scenarios
+that open a sample name it exactly; do not substitute your own
+file.</li>
+</ul>
+<p>Keep a notebook (paper or a second document) for the <strong>actual
+spoken text</strong> and anything surprising. "It said something" is not
+a pass; "it said the right thing" is.</p>
+<hr />
+<h2 id="2-how-to-read-a-scenario">2. How to read a scenario</h2>
+<p>Every feature is written as one <strong>scenario</strong> with the
+same five parts, always in this order. Here is the anatomy, with what
+each part is for:</p>
+<blockquote>
+<h3 id="file-07--save-your-work-filesave-ctrls">FILE-07 — Save your work
+(<code>file.save</code>, Ctrl+S)</h3>
+<p><em>What &amp; why.</em> One or two plain sentences: what this
+feature is for, and why a real user cares. No jargon.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>The exact starting state (what is open, what is selected, which
+settings).</li>
+<li>The exact <strong>inputs</strong> you will type or choose, spelled
+out. If a sample file is used, it is named here.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Numbered, literal actions. Every keystroke <em>and</em> the menu
+path are given, e.g. "Press <strong>Ctrl+S</strong>, or open
+<strong>File menu ▸ Save</strong>." Never "just save."</li>
+<li>One action per step. If a dialog opens, the next steps walk its
+fields in Tab order.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The <strong>projected outcome</strong>: the announcement (what the
+screen reader says), where focus lands, what the title bar / status bar
+shows, and — if a file is written — what the file should contain. Exact
+wording varies by screen reader; the <strong>field name, role, state,
+and load-bearing values</strong> (counts, names, format labels) must be
+present and correct.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+</blockquote>
+<p>The three small boxes are the same three axes the whole release is
+judged on:</p>
+<ul>
+<li><strong>Works</strong> — the action does what it says; no error, no
+crash.</li>
+<li><strong>Surface-exact</strong> — the label, the menu path, and the
+shortcut match what this book prints. If the menu says something
+different, the surface is wrong even if the action works — fail
+<strong>Surface-exact</strong> and write down what it actually
+said.</li>
+<li><strong>Accessible</strong> — you could do the whole thing
+<strong>by keyboard alone</strong>, focus went where it should, and the
+outcome was <strong>announced out loud</strong> (and in braille where a
+display is attached). A silent success is an accessibility failure.</li>
+</ul>
+<p><strong>What counts as a fail (any one of these):</strong> focus is
+lost or lands somewhere senseless · a value is wrong · the outcome is
+silent · an error happens with no spoken message · the file written does
+not match the projected structure · you had to reach for the mouse to
+complete a step.</p>
+<p>Mark <strong>Blocked</strong> if you could not run it (a prerequisite
+app or provider was missing) and say why. Mark <strong>N/A</strong> if
+the item is gated out of the build you are testing (see §5).</p>
+<hr />
+<h2 id="3-the-universal-keyboard-contract-true-in-every-scenario">3. The
+universal keyboard contract (true in every scenario)</h2>
+<p>You should be able to assume these everywhere. If any scenario breaks
+one, that is a fail even if the feature "worked":</p>
+<ul>
+<li><strong>Tab</strong> / <strong>Shift+Tab</strong> move forward/back
+through controls in a sensible order.</li>
+<li><strong>Escape</strong> cancels a dialog and returns focus to where
+you were.</li>
+<li><strong>Enter</strong> activates the default button.</li>
+<li><strong>Alt</strong> opens the menu bar; underlined letters are
+mnemonics.</li>
+<li>Closing a dialog returns focus to the control that opened it.</li>
+<li><strong>No destructive action</strong> (overwrite, delete, discard
+unsaved work) happens without a confirmation you can hear and
+cancel.</li>
+</ul>
+<p>Run each UI scenario <strong>twice</strong>: once <strong>with the
+mouse physically unplugged</strong> (keyboard only), then again reading
+with your screen reader's review / virtual cursor. Both must pass.</p>
+<hr />
+<h2 id="4-the-order-to-run-this-book">4. The order to run this book</h2>
+<ol type="1">
+<li><strong>Part 0 — Getting Started</strong>
+(<code>00-getting-started.md</code>). Do this first, once per machine.
+It installs, launches, sets up the screen reader, orients you to the
+window, and walks your very first document. Everything else assumes you
+have finished Part 0.</li>
+<li><strong>The feature sections</strong> (<code>section-*.md</code>),
+in any order, but File → Edit → Navigate → Format → View first is the
+gentlest path for a newcomer.</li>
+<li><strong>The public companion apps</strong> — Quill Radio
+(<code>app-radio.md</code>) and Quill Weather
+(<code>app-weather.md</code>).</li>
+<li><strong>Gated-absence</strong> (<code>gated-absence.md</code>) —
+prove the not-for-1.0 apps and features are truly gone from a public
+build.</li>
+<li><strong>The required companion plans</strong> already in the repo —
+the core-journey plan (<code>../qa-core-journeys.md</code>), the
+screen-reader plan (<code>../screen-reader-test-plan.md</code>), and the
+UAT/regression runbooks. This book does not replace them; it surrounds
+them.</li>
+</ol>
+<hr />
+<h2 id="5-gated-features--what-you-will-and-will-not-see">5. Gated
+features — what you will and will not see</h2>
+<p>QUILL 1.0.0 ships the <strong>editor</strong> plus the standalone
+<strong>Quill Radio</strong> and <strong>Quill Weather</strong> apps.
+Several things are <strong>gated off</strong> for the public 1.0 release
+and must <strong>not</strong> appear in a public build: the
+editor-embedded <strong>Internet Radio</strong>,
+<strong>Podcasts</strong>, and <strong>Book Library</strong>, and the
+<strong>Cast / Studio / Converter / Beacon</strong> companion apps and
+the <strong>Media Player</strong>.</p>
+<ul>
+<li>In a normal (public) build these are <strong>absent</strong>;
+scenarios for them are marked <strong>N/A</strong> and you instead
+confirm their absence in <code>gated-absence.md</code>.</li>
+<li>A scenario tagged <strong>[GATED]</strong> only appears if a feature
+flag is on (a dev/admin build, e.g. <code>QUILL_DEV_BUILD=1</code>). If
+you are on a public build, mark it <strong>N/A</strong>; do not fail it
+for being missing.</li>
+</ul>
+<hr />
+<h2 id="6-coverage-index-every-surface-this-book-must-touch">6. Coverage
+index (every surface this book must touch)</h2>
+<p>A section is <strong>Drafted</strong> when its scenarios exist to the
+standard above, and <strong>Signed off</strong> only when every scenario
+in it passes on every applicable environment. Keep this table current —
+it is the book's own completeness gate.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Surface</th>
+<th>Scenarios</th>
+<th>Drafted</th>
+<th>Signed off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>00-getting-started.md</code></td>
+<td>Install, launch, SR setup, first document</td>
+<td>10</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-file.md</code></td>
+<td><code>file.*</code> — File menu</td>
+<td>29</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-edit.md</code></td>
+<td><code>edit.*</code> — Edit / insert / find (incl. 12-slot Copy
+Tray)</td>
+<td>86</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-navigate.md</code></td>
+<td><code>navigate.*</code> — movement &amp; bookmarks</td>
+<td>28</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-format.md</code></td>
+<td><code>format.*</code> — formatting</td>
+<td>56</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-view.md</code></td>
+<td><code>view.*</code> <code>window.*</code> <code>verbosity.*</code> —
+view/window/speech verbosity</td>
+<td>38</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-table.md</code></td>
+<td><code>table.*</code> <code>reveal.*</code> <code>notes.*</code> +
+<code>document/sync/ai/media</code></td>
+<td>22</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-editor-behaviors.md</code></td>
+<td>Editor/document behaviors that aren't single commands (autosave,
+recovery, tabs, status bar, live spell-check, watch folder,
+encoding/line-ending detection)</td>
+<td>24</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-tools-ai.md</code></td>
+<td><code>tools.*</code> — AI writing/analysis tools</td>
+<td>31</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-tools-speech.md</code></td>
+<td><code>tools.*</code> — dictation, OCR, read-aloud, speech,
+dictionary</td>
+<td>38</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-tools-misc.md</code></td>
+<td><code>tools.*</code> — compare, keymap, macros, utilities, GLOW</td>
+<td>63</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-power.md</code></td>
+<td><code>power.*</code> — power-user commands</td>
+<td>75</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-braille.md</code></td>
+<td><code>braille.*</code> — braille display &amp; tables</td>
+<td>45</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-vault.md</code></td>
+<td><code>vault.*</code> — knowledge-base <strong>note vault</strong>
+(wikilinks, backlinks, daily notes, git sync) — <em>not</em> an
+encrypted secrets store</td>
+<td>22</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-help.md</code></td>
+<td><code>help.*</code> — help, about, updates</td>
+<td>21</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-github.md</code></td>
+<td><code>github.*</code> <code>localgit.*</code>
+<code>publishing.*</code> — VCS &amp; publishing</td>
+<td>40</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-settings.md</code></td>
+<td>Settings / Preferences — every pane</td>
+<td>23</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-quillins.md</code></td>
+<td>Quillins (extension) system + bundled Quillins</td>
+<td>19</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-whisperer.md</code></td>
+<td><code>whisperer.*</code> — BITS Whisperer [GATED]</td>
+<td>12</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-app-adp.md</code></td>
+<td><code>app.*</code> <code>adp.*</code> — app launcher &amp; ADP</td>
+<td>12</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>section-accessibility.md</code></td>
+<td>Cross-cutting accessibility contract (master §F)</td>
+<td>13</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>app-radio.md</code></td>
+<td>Quill Radio (public standalone app)</td>
+<td>41</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>app-weather.md</code></td>
+<td>Quill Weather (public standalone app)</td>
+<td>27</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>gated-absence.md</code></td>
+<td>Non-public apps/features absent from public build</td>
+<td>7</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>dialogs.md</code></td>
+<td>Dialog contract, every dialog checkbox by area</td>
+<td>647</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+<tr>
+<td><code>install-matrix.md</code></td>
+<td>Portable vs system, secrets, updates, migration</td>
+<td>9 (×E1–E6)</td>
+<td>✅</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<p>Namespace counts come from
+<code>../../planning/signoff/SIGNOFF-editor.md</code>; that file is the
+authoritative surface list (command id, label, shortcut) each section is
+written against. <strong>Command coverage is verified:</strong> every
+one of the 645 core-editor command ids in that inventory has a hand-held
+scenario with a sign-off box here (the three
+<code>section-tools-*</code> files together cover all 159
+<code>tools.*</code> commands). The remaining 73 of QUILL's 718 commands
+belong to the companion apps and gated features, covered in
+<code>app-radio.md</code>, <code>app-weather.md</code>, and
+<code>gated-absence.md</code>.</p>
+<hr />
+<h2 id="7-section-sign-off-footer-copy-into-each-section">7. Section
+sign-off footer (copy into each section)</h2>
+<p>Every section ends with this block so a partial run is never mistaken
+for a full one:</p>
+<pre><code>### Section sign-off
+- Tester:
+- Screen reader(s) + version(s):
+- Build / commit tested:
+- Environment (E1–E6):
+- Date:
+- Scenarios passed / total:
+- Release blockers found (must be zero to ship):
+- Result: Pass / Pass-with-notes / Fail
+- Notes:</code></pre>
+</body>
+</html>

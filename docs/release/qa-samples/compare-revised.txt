@@ -1,0 +1,4 @@
+Meeting notes for the Q1 planning session.
+We will ship the editor in April.
+The team agreed to focus on accessibility and performance first.
+A follow-up review is scheduled for February.
