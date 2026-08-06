@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>talk</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="talkmd--always-on-voice-hey-player-specification">talk.md —
+Always-On Voice ("Hey Player") Specification</h1>
+<blockquote>
+<p><strong>The one decisive question:</strong> are we willing to keep a
+microphone open and run speech recognition continuously on the user's
+machine — and can we make that state <em>unmistakable, at all times,
+without a screen</em>? If yes, this ships. If not, push-to-talk
+(Ctrl+Shift+L, already built) is the honest ceiling.</p>
+</blockquote>
+<p>This document specifies <strong>always-on voice control</strong> —
+hands-free listening with no key press to begin — for QUILL's speech
+surfaces, focused on the <strong>Quill Media Player</strong> where it is
+the one remaining voice item. It is written to be built against
+directly. It reuses the offline stack that already ships (#617) and the
+push-to-talk feature already built for the player; it adds only the
+<em>continuous</em> listening loop and the wake-phrase gate in front of
+it.</p>
+<p>Status of the pieces this builds on (all shipping today):</p>
+<ul>
+<li><strong>Push-to-talk in the player</strong> —
+<code>quill/ui/media/listen_mixin.py</code>,
+<code>quill/ui/media/voice_capture.py</code> (capture → transcribe →
+parse → dispatch).</li>
+<li><strong>The command grammar</strong> —
+<code>quill/core/media/voice.py</code>
+(<code>parse_voice_command</code>),
+<code>quill/ui/media/voice_control.py</code>
+(<code>apply_voice_intent</code>).</li>
+<li><strong>The wake-word policy engine</strong> —
+<code>quill/core/speech/wakeword.py</code>
+(<code>WakeController</code>), already used by the editor's "Hey QUILL".
+Pure, wx-free, string-driven, fully unit-testable. <strong>This spec's
+core reuses it unchanged.</strong></li>
+<li><strong>Offline recognition</strong> — <code>MicRecorder</code>,
+<code>VoiceServices</code>, Whisper/Nemotron/Vosk.</li>
+<li><strong>The safety allowlist</strong> — voice only ever reaches
+non-destructive commands.</li>
+</ul>
+<hr />
+<h2 id="1-goal-and-the-one-hard-problem">1. Goal, and the one hard
+problem</h2>
+<p><strong>Goal.</strong> Let a user say a wake phrase — <em>"Hey
+Player"</em> — and then a command (<em>"next chapter"</em>, <em>"skip
+back thirty"</em>), with <strong>no key press at any point</strong>,
+fully offline, and control the player entirely by voice while their
+hands and attention are elsewhere.</p>
+<p><strong>The hard problem is not recognition. It is
+perceivability.</strong> A sighted user knows an always-on mic is live
+from an on-screen indicator. A blind user cannot. An always-open
+microphone that the user has <em>forgotten is open</em> is the single
+most serious failure mode of this feature — worse than a missed command,
+worse than a misfire. Everything below is organized around making "the
+mic is listening" a fact the user can perceive at any instant and review
+on demand, and around never letting that state persist silently.</p>
+<p><strong>Non-goals (v1):</strong> dictating document text hands-free
+(that is Locked Dictation); multi-turn conversation in the player;
+wake-word training/personalization; any cloud recognition; running when
+the player is not the foreground intent.</p>
+<hr />
+<h2 id="2-the-shape-a-two-stage-gate">2. The shape: a two-stage
+gate</h2>
+<p>Always-on voice is two nested listeners:</p>
+<pre><code>        ┌─────────────────────────  ALWAYS-LISTENING LOOP  ─────────────────────────┐
+        │                                                                            │
+   mic ─┼─▶ rolling window ─▶ recognizer ─▶ WakeController.on_window(text)           │
+        │        (~2.5 s)         (STT)            │                                  │
+        │                                          ├─ no wake  → keep listening       │
+        │                                          │            (+ periodic reminder) │
+        │                                          ├─ &quot;hey player&quot; alone → ARM        │
+        │                                          │            → capture ONE command │
+        │                                          │              window → parse →    │
+        │                                          │              apply_voice_intent  │
+        │                                          └─ &quot;hey player NEXT CHAPTER&quot;        │
+        │                                                     → DISPATCH the trailing  │
+        │                                                       command immediately    │
+        └────────────────────────────────────────────────────────────────────────────┘</code></pre>
+<p>Stage 1 (the wake gate) is
+<strong><code>WakeController</code></strong> — already built, already
+tested. It consumes transcribed windows and emits ordered
+<code>WakeEffect</code>s
+(<code>sound | announce | arm | dispatch | listen_again | reminder | stop_listen</code>).
+It never runs a command; it emits <code>arm</code>/<code>dispatch</code>
+and the UI validates against the allowlist and executes. The player
+supplies the <em>effects executor</em> and the capture loop; the
+<em>decision logic</em> is imported wholesale.</p>
+<p>Stage 2 (the command) is the <strong>push-to-talk pipeline already
+built</strong>: on <code>arm</code>, open a single capture window,
+<code>stop_and_transcribe</code>, <code>dispatch_transcript</code> →
+<code>parse_voice_command</code> → <code>apply_voice_intent</code>. On
+<code>dispatch</code> (an inline command after the wake phrase), skip
+capture and feed the trailing text straight through.</p>
+<p><strong>Design consequence:</strong> almost nothing new is
+<em>logic</em>. What is new is a <strong>continuous capture
+loop</strong> and its <strong>accessibility skin</strong>. That is the
+whole job.</p>
+<hr />
+<h2 id="3-the-wake-phrase">3. The wake phrase</h2>
+<ul>
+<li><strong>Default:</strong> <code>"hey player"</code>. Configurable to
+<code>"hey quill"</code> (shared with the editor loop) or a user phrase,
+via settings.</li>
+<li><strong>Matching</strong> reuses
+<code>voice_commands.extract_transcript_body</code>: it strips a leading
+wake phrase and returns the remainder — <code>""</code> for a bare wake
+("arm and wait"), the trailing text when a command follows inline,
+<code>None</code> when the window did not address the player at all.
+<code>WAKE_PHRASES</code> gains <code>"hey player"</code>.</li>
+<li><strong>Phrase choice is a real accuracy lever.</strong> Two
+syllables with distinct consonants ("hey player") resist false-accepts
+far better than a single common word. The settings UI should warn
+against single-word or very common phrases (they will trigger on the
+audiobook's own narration).</li>
+<li><strong>The audiobook is the adversary.</strong> Because a book is
+playing, its narration is the dominant false-accept source. Mitigations:
+(a) the phrase must be uncommon in prose; (b) duck-while-listening
+lowers the book under the mic (§6); (c) the cooldown after a wake
+prevents the wake utterance's own tail from re-triggering
+(<code>WakeController.cooldown_windows</code>).</li>
+</ul>
+<hr />
+<h2 id="4-recognition-pipeline--endpointing">4. Recognition pipeline
+&amp; endpointing</h2>
+<p>There are two implementable engines behind the same
+<code>WakeController</code>. Ship the first; the second is the
+documented performance upgrade.</p>
+<h3 id="4a-transcription-based-wake-v1--buildable-today">4a.
+Transcription-based wake (v1 — buildable today)</h3>
+<p>Continuously record short rolling windows (~2.5 s, ~0.5 s overlap),
+transcribe each with the small Whisper/Nemotron model already resolved
+by <code>build_media_voice_services</code>, and feed the text to
+<code>WakeController.on_window</code>. This is exactly what the editor's
+"Hey QUILL" does today, so it is proven — but see §7: it runs full STT
+continuously, which is <strong>CPU/battery-heavy</strong>. Bound it
+hard.</p>
+<ul>
+<li><strong>Command endpointing after wake:</strong> apply
+<strong>VAD</strong> (<code>core/speech/vad.py</code>,
+<code>SilenceDetector</code>) to the <em>command</em> window so the turn
+ends when the user stops speaking, rather than a fixed timeout that
+clips long commands. (The editor loop does not yet do this for its
+command window — a known gap in the #617 audit; the player should do it
+from the start.)</li>
+<li><strong>Sample rate is the frame rate.</strong> Feed
+<code>SilenceDetector(sample_rate=SAMPLE_RATE)</code> — never
+<code>SAMPLE_RATE * CHANNELS</code> (a bug the audit found and fixed
+elsewhere).</li>
+</ul>
+<h3
+id="4b-low-power-keyword-spotter-v2--the-real-destination-part-two">4b.
+Low-power keyword spotter (v2 — the real destination, "Part Two")</h3>
+<p>Replace the "transcribe every window" front end with a
+<strong>three-tier cascade</strong> so the expensive model almost never
+runs. Each tier only invokes the next when it must:</p>
+<pre><code>  mic ─▶ [Tier 0: VAD gate] ──speech?──▶ [Tier 1: keyword spotter] ──&quot;hey player&quot;?──▶ [Tier 2: full STT]
+              onnx, ~1 MB          no │        onnx, tiny, text-keyworded      no │      Whisper/Nemotron
+              negligible CPU          ▼                                           ▼      (command only)
+              (idle = free)      keep gating                                  keep listening</code></pre>
+<ul>
+<li><strong>Tier 0 — VAD gate (Silero VAD, ONNX, MIT, ~1 MB).</strong>
+Suppress everything downstream during silence. A quiet room costs
+~nothing; nothing else spins up until someone actually speaks.
+<code>core/speech/vad.py</code> already provides the endpointing
+primitive; add a tiny always-on energy/VAD front gate.</li>
+<li><strong>Tier 1 — keyword spotter.</strong> Runs only on speech
+frames, decides "was the wake phrase said?", and is the piece that
+replaces continuous Whisper. <strong>Recommended model: the sherpa-onnx
+keyword spotter</strong> — see below.</li>
+<li><strong>Tier 2 — full STT (already built).</strong> Whisper-small /
+Nemotron, fired <strong>only</strong> after a wake hit, to transcribe
+the actual command. This is where the real cost lives, and now it is
+on-demand instead of continuous.</li>
+</ul>
+<p>This slots in behind <code>WakeController</code> with <strong>zero
+change to the policy or the command stage</strong> — Tier 1 simply
+produces the transcribed/greenlit window the controller already
+consumes.</p>
+<h4 id="the-model-recommendation-and-why-it-scales">The model
+recommendation, and why it scales</h4>
+<p><strong>Primary: sherpa-onnx keyword spotting.</strong> QUILL
+<em>already bundles the sherpa-onnx runtime</em> (it powers Nemotron) —
+<strong>torch-free, ONNX, CPU-only</strong>, consistent with the project
+rule that speech engines never require torch (see
+<code>feedback_tts_no_torch</code>,
+<code>project_nemotron_dictation</code>). Two properties make it the
+right pick:</p>
+<ol type="1">
+<li><strong>No new heavy dependency.</strong> The runtime is present; a
+keyword-spotting model is a small streaming zipformer-transducer with
+real-time factor well under 1 on a laptop CPU.</li>
+<li><strong>Keywords are plain text, not trained models.</strong> The
+wake phrase(s) live in a <code>keywords.txt</code> with a per-keyword
+detection threshold/boost. <code>"hey player"</code>,
+<code>"hey radio"</code>, <code>"hey quill"</code>,
+<code>"hey weather"</code> are <em>lines in a file</em>. <strong>This is
+the scaling story:</strong> every app in the QuillVille family gets its
+own wake word at zero marginal model cost, and a user can add or tune a
+phrase without any retraining.</li>
+</ol>
+<p><strong>Alternative: openWakeWord (Apache-2.0, ONNX).</strong> Higher
+raw wake accuracy via a shared audio-embedding feature extractor plus a
+tiny (~hundreds of KB) per-word classifier head — so it also scales by
+<em>adding small heads</em>, one per phrase. Trade- off: a genuinely
+custom phrase needs a synthetic-data training step, and it adds ONNX
+models to the bundle. Keep it as the fallback if sherpa-onnx KWS
+accuracy proves marginal for the chosen phrase.</p>
+<p><strong>Avoid for bundling: Picovoice Porcupine</strong> — excellent
+and very light, but proprietary licensing makes it a poor fit for a
+bundled open app. <strong>microWakeWord</strong> (TFLite-micro, for
+ESP32-class devices) is not the pick either, but it is proof the cascade
+architecture scales all the way down to a microcontroller — useful as a
+"how low can this go" reference.</p>
+<h4 id="scaling-in-two-dimensions">Scaling, in two dimensions</h4>
+<ul>
+<li><strong>Across phrases/apps:</strong> a text-keyworded spotter
+(sherpa-onnx) or a shared- embedding spotter (openWakeWord) makes each
+additional wake word ~free — a text line or a tiny head — so the whole
+app family and per-user custom phrases cost nothing extra. Contrast the
+v1 approach, where "listening" means a full STT pass every window
+regardless of phrase.</li>
+<li><strong>Across machines:</strong> the cascade's idle cost is a ~1 MB
+VAD, so weak hardware stays responsive; the heavy model is gated behind
+two cheap tiers and runs only on a real hit. Degrade cleanly — if Tier 1
+is unavailable, fall back to v1 (transcription- based) with the
+CPU/battery disclosure, or to push-to-talk.</li>
+</ul>
+<h4
+id="recommended-first-build-later-work-a-pure-swappable-spotter-adapter">Recommended
+first build (later work): a pure, swappable spotter adapter</h4>
+<p>Build Part Two the way the rest of this stack was built —
+<strong>pure core first, testable with plain strings, no live
+audio</strong> — so the engine can be validated and swapped without a
+microphone. The recommendation for the <em>first</em> increment:</p>
+<ul>
+<li><strong>Add a <code>KeywordSpotter</code> protocol and a text-driven
+adapter</strong>, e.g.
+<code>quill/core/speech/keyword_spotter.py</code>, wx-free and
+unit-tested. It exposes the same string-in / effects-out contract the
+rest of the wake path already uses: frames (or an already-transcribed
+window, in the v1 shim) go in, and it reports whether the wake phrase
+fired and with what trailing text — the exact shape
+<code>WakeController.on_window</code> already consumes. So the spotter
+drops in front of the controller with <strong>zero change to policy or
+the command stage</strong>.</li>
+<li><strong>Keep the engine behind the protocol.</strong> A
+<code>SherpaKeywordSpotter</code> implementation wraps the sherpa-onnx
+keyword-spotting model and reads its wake phrase(s) from a
+<code>keywords.txt</code> (the scaling property, §above). A
+<code>TranscriptionKeywordSpotter</code> wraps the v1 "transcribe every
+window then string-match" path. Both satisfy the same protocol, so v1 →
+v2 is a constructor swap, and tests target the protocol.</li>
+<li><strong>Unit-test with plain text, today.</strong> Because the
+adapter's decision surface is strings + a threshold, the whole thing is
+testable now (phrase hit, near-miss below threshold, inline trailing
+command, cooldown interaction) without any audio — mirroring how
+<code>WakeController</code> and <code>parse_voice_command</code> are
+tested. The live sherpa-onnx model is then the only piece that needs
+on-device validation.</li>
+<li><strong>Cost/telemetry hook.</strong> Give the adapter a cheap "was
+Tier 2 invoked?" signal so the duty-cycle (how often the full STT
+actually fires) can be measured and the CPU/battery claims verified on
+real hardware rather than asserted.</li>
+</ul>
+<p>This makes Part Two land in the same low-risk, verifiable way as Part
+One: the policy and the command grammar are already proven; the only
+genuinely new, device-only piece is the acoustic model behind a tested
+seam.</p>
+<p><strong>v1 must not pretend to be v2:</strong> if we ship
+transcription-based always-on first, settings and docs state plainly
+that it uses more CPU/battery than push-to-talk, and that this cascade
+is the fix.</p>
+<hr />
+<h2 id="5-state-machine">5. State machine</h2>
+<p>Reuse <code>WakeState</code> (<code>OFF | LISTENING | WOKEN</code>)
+and extend the player's own listening states for the command stage. Full
+lifecycle:</p>
+<pre><code>OFF ──(enable always-on)──▶ LISTENING ──(wake, bare)──▶ WOKEN/ARMED
+ ▲                              │  ▲                         │
+ │                              │  │                         ▼
+ │                       (periodic reminder)          CAPTURING_COMMAND
+ │                              │  │                         │
+ │                              │  └────(resume_listening)───┤
+ │                              │                            ▼
+ └──(disable / Safe Mode / ────┘                       TRANSCRIBING
+     app close / instant off)                               │
+                                                            ▼
+                                                    EXECUTED / NOT_RECOGNIZED
+                                                    / NO_SPEECH → resume LISTENING</code></pre>
+<p>Inline wake (<code>"hey player next chapter"</code>) shortcuts WOKEN
+→ TRANSCRIBING by feeding the trailing text directly (no command capture
+window).</p>
+<hr />
+<h2 id="6-accessibility--the-specifications-core">6. Accessibility — the
+specification's core</h2>
+<p>This is not a section; it is the reason the feature is hard.
+Requirements are <strong>MUST</strong> unless noted. They extend the
+push-to-talk model already built (<code>VoiceCommandEvent</code> +
+<code>event_style</code>) and the Desktop-Accessibility guidance the
+player already follows. Route <strong>all</strong> speech through the
+app's <code>_announce(message, *, force, sound)</code> so braille
+mirroring and screen-reader-aware interrupt/queue come for free — never
+a second TTS path.</p>
+<h3 id="61-the-live-mic-state-must-be-continuously-perceivable">6.1 The
+live-mic state must be continuously perceivable</h3>
+<ul>
+<li><strong>Open/close earcons (MUST).</strong> A distinct rising cue
+when always-listening starts and a falling cue when it stops — reusing
+<code>SoundEvent.CONVERSATION_ON</code> / <code>CONVERSATION_OFF</code>.
+Played even when speech is suppressed; the pair is the primary "mic is
+armed / mic is closed" signal.</li>
+<li><strong>Periodic "still listening" reminder (MUST).</strong>
+<code>WakeController</code> already emits a <code>reminder</code> effect
+every <code>reminder_every</code> idle windows. Execute it as a soft cue
+(<code>SoundEvent.CONVERSATION_IDLE</code>) and/or a brief spoken "still
+listening," <strong>user- configurable</strong> (interval, and cue-only
+vs cue+speech). This is what makes a <em>long</em> quiet period
+distinguishable from "it silently died." Default: on.</li>
+<li><strong>Reviewable status (MUST).</strong> While armed, the status
+field reads <em>"Listening for 'Hey Player'"</em> (from
+<code>WakeController.status_text()</code>); WOKEN reads <em>"Awake — say
+your command"</em>; OFF clears to <em>"Ready."</em> A screen-reader user
+reviews this on demand (NVDA <code>Insert+End</code>, JAWS status read);
+braille mirrors it persistently via <code>_announce</code>.</li>
+<li><strong>Menu check state (MUST).</strong> The toggle is a
+<code>wx.ITEM_CHECK</code> item; its checkmark mirrors the armed state,
+giving a role-native second signal the reader announces.</li>
+</ul>
+<h3 id="62-the-wake-and-command-moments">6.2 The wake and command
+moments</h3>
+<p>Announcement/earcon/interrupt table (extends the push-to-talk
+<code>event_style</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Moment</th>
+<th>Speak (concise)</th>
+<th>Earcon</th>
+<th>Interrupt?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Always-listening started</td>
+<td>"Listening for Hey Player."</td>
+<td><code>CONVERSATION_ON</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Woke (phrase heard)</td>
+<td><em>(earcon only; speech is noise here)</em></td>
+<td><code>CONVERSATION_WAKE</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Armed, waiting for command</td>
+<td>"Yes?" (short)</td>
+<td><code>CONVERSATION_LISTEN</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Command recognized + run</td>
+<td>the <strong>effect</strong> — "Paused." / "Skipped forward
+thirty."</td>
+<td><code>CONVERSATION_READY</code></td>
+<td><strong>no (queue)</strong></td>
+</tr>
+<tr>
+<td>Not recognized</td>
+<td>"Didn't catch a command. Heard: '…'."</td>
+<td><code>CONVERSATION_ERROR</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>No speech after wake</td>
+<td>"No command heard."</td>
+<td><code>CONVERSATION_IDLE</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Still listening (periodic)</td>
+<td><em>(cue; optional speech)</em></td>
+<td><code>CONVERSATION_IDLE</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Stopped / disabled</td>
+<td>"Stopped listening."</td>
+<td><code>CONVERSATION_OFF</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Mic unavailable / error</td>
+<td>"Microphone unavailable." / "Voice failed."</td>
+<td><code>CONVERSATION_ERROR</code></td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Principles carried from push-to-talk: announce the
+<strong>result</strong>, not the mechanism; routine success queues
+politely behind the reader; failures interrupt; echo the transcript
+<strong>only</strong> on failure.</p>
+<h3
+id="63-the-screen-reader-captures-itself-problem-amplified-by-always-on">6.3
+The screen-reader-captures-itself problem (amplified by always-on)</h3>
+<p>With a mic open continuously, the screen reader's own speech and the
+audiobook are <em>always</em> candidates to be transcribed as a false
+wake.</p>
+<ul>
+<li><strong>Duck the book while a wake is being evaluated and during
+command capture</strong>
+(<code>PlayerPanel.duck()</code>/<code>unduck()</code>, already built) —
+not paused; restored in a <code>finally</code> path. Duck
+<strong>before</strong> the wake earcon.</li>
+<li><strong>Gate capture around your own announcements.</strong> When
+the player itself is announcing ("Yes?", a result), do not feed those
+windows to the wake matcher — a short post-announcement mute prevents
+the player's own voice from waking it.</li>
+<li><strong>Prefer a headset in docs</strong>, but design for a laptop
+mic.</li>
+<li><strong>Never steal focus.</strong> No modal "listening" dialog; the
+entire feature is transient announcements + status text + braille. Focus
+stays where the user put it.</li>
+</ul>
+<h3 id="64-instant-reliable-off">6.4 Instant, reliable off</h3>
+<ul>
+<li>Re-invoking the toggle, saying the stop phrase, closing the app, or
+entering Safe Mode all stop always-listening immediately and play
+<code>CONVERSATION_OFF</code>.</li>
+<li>Always-listening <strong>does not survive app close</strong> unless
+the user explicitly opts into persistence (and even then, never across
+Safe Mode).</li>
+</ul>
+<hr />
+<h2 id="7-performance-battery-and-honesty">7. Performance, battery, and
+honesty</h2>
+<p>Transcription-based always-on runs the STT model on every window —
+real CPU, real battery, real heat on a laptop. This spec
+<strong>requires</strong> the cost be bounded and disclosed:</p>
+<ul>
+<li><strong>Duty-cycle / gate.</strong> Use VAD/energy to skip STT on
+clearly-silent windows so an idle room does not pin a core. (Even a
+coarse RMS gate helps.)</li>
+<li><strong>Model.</strong> Use the <em>smallest</em> installed model
+for the wake loop (Tiny/Base) via the existing
+<code>preferred_command_model</code>; accuracy of the <em>phrase</em>
+matters less than latency and cost.</li>
+<li><strong>Bound it.</strong> A hard idle cap that drops out of
+always-listening after a long quiet stretch (configurable; announced
+when it happens), so a forgotten session cannot run the CPU
+indefinitely.</li>
+<li><strong>Disclose it.</strong> Settings and docs state plainly that
+always-on uses more CPU/battery than push-to-talk, and that v2 (keyword
+spotter, §4b) is the fix.</li>
+<li><strong>Degrade.</strong> If capture or the engine fails mid-loop,
+fall back to OFF with a clear announcement — never a silent dead loop
+that looks armed but hears nothing.</li>
+</ul>
+<hr />
+<h2 id="8-privacy-consent-and-safety">8. Privacy, consent, and
+safety</h2>
+<ul>
+<li><strong>On-device only.</strong> No audio and no transcript leaves
+the machine. No network call is on this path; the network-egress audit
+stays unchanged.</li>
+<li><strong>Off by default; explicit opt-in.</strong> Enabling always-on
+requires a one-time, screen-reader-clear consent that names the trade
+precisely: <em>"Always-on voice keeps your microphone open and listens
+continuously on this computer for the wake phrase. Nothing is uploaded.
+This uses more battery than press-to-talk."</em></li>
+<li><strong>Safe Mode disables it</strong> entirely, like every voice
+surface.</li>
+<li><strong>Allowlist.</strong> The command stage reaches only the
+player's own command grammar (<code>parse_voice_command</code>) — itself
+a curated, non-destructive set. Saying the wrong thing cannot delete,
+send, or overwrite anything.</li>
+<li><strong>Perceivable = consentful.</strong> The continuous cues
+(§6.1) are not just UX; they are how ongoing consent stays informed. A
+user must never be able to <em>forget</em> it is on.</li>
+</ul>
+<hr />
+<h2 id="9-settings">9. Settings</h2>
+<p>All with real static-text labels; all off/conservative by
+default.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_always_listen_enabled</code></td>
+<td>off</td>
+<td>The master switch (behind the consent gate).</td>
+</tr>
+<tr>
+<td><code>player_wake_phrase</code></td>
+<td>"hey player"</td>
+<td>Warn on single-word / common phrases.</td>
+</tr>
+<tr>
+<td><code>player_wake_reminder_windows</code></td>
+<td>12</td>
+<td>Idle windows between "still listening" cues (0 = off).</td>
+</tr>
+<tr>
+<td><code>player_wake_reminder_speak</code></td>
+<td>off</td>
+<td>Cue-only vs cue+speech for the reminder.</td>
+</tr>
+<tr>
+<td><code>player_wake_duck_level</code></td>
+<td>20</td>
+<td>Book volume % while evaluating a wake / capturing.</td>
+</tr>
+<tr>
+<td><code>player_wake_idle_cap_seconds</code></td>
+<td>600</td>
+<td>Auto-stop after this much continuous quiet.</td>
+</tr>
+<tr>
+<td><code>player_wake_persist</code></td>
+<td>off</td>
+<td>Re-arm on next launch (never across Safe Mode).</td>
+</tr>
+<tr>
+<td>speech engine/model</td>
+<td>inherited</td>
+<td>Uses <code>settings.speech_provider</code>
+(Whisper/Nemotron/Vosk).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-proposed-module-layout">10. Proposed module layout</h2>
+<p>Keep the wx-free policy pure and testable; keep the wx loop thin.</p>
+<ul>
+<li><strong>Reused unchanged:</strong>
+<code>quill/core/speech/wakeword.py</code>
+(<code>WakeController</code>),
+<code>quill/core/speech/voice_commands.py</code>
+(<code>extract_transcript_body</code>, <code>WAKE_PHRASES</code> += "hey
+player"), <code>quill/core/speech/vad.py</code>,
+<code>quill/core/media/voice.py</code>,
+<code>quill/ui/media/voice_control.py</code>,
+<code>quill/ui/media/voice_capture.py</code>.</li>
+<li><strong>New, pure/core:</strong>
+<code>quill/core/media/wake_session.py</code> — a thin, testable adapter
+that owns a <code>WakeController</code> + duty-cycle policy and maps its
+effects to the player's intent vocabulary (so effect→action is
+unit-tested with plain strings, no audio). Optional;
+<code>WakeController</code> may suffice.</li>
+<li><strong>New, UI (mixin, under the size budget):</strong>
+<code>quill/ui/media/always_listen_mixin.py</code> — the continuous
+rolling-window capture loop (a <code>wx.Timer</code> + background STT
+worker via <code>wx.CallAfter</code>), the effects executor
+(earcon/announce/status/duck/dispatch), the consent gate, and the
+<code>wx.ITEM_CHECK</code> menu wiring. Mirrors
+<code>listen_mixin.py</code>; the player frame inherits both.</li>
+<li><strong>Menu/keymap:</strong> <em>Playback ▸ Always Listen for
+Commands</em> (<code>wx.ITEM_CHECK</code>), an optional accelerator, and
+a keymap entry so it shows in Preferences.</li>
+</ul>
+<hr />
+<h2 id="11-edge-cases">11. Edge cases</h2>
+<ul>
+<li><strong>Wake fires on the audiobook's narration</strong> → duck +
+uncommon phrase + cooldown; a false wake that captures no real command
+lands on NO_SPEECH and resumes quietly.</li>
+<li><strong>Wake with an unrecognized trailing command</strong> ("hey
+player do a barrel roll") → NOT_RECOGNIZED, echoes what was heard,
+resumes listening.</li>
+<li><strong>User speaks during the player's own announcement</strong> →
+capture is gated around announcements (§6.3) so the player does not hear
+itself.</li>
+<li><strong>Mic seized by another app mid-loop</strong> →
+MIC_UNAVAILABLE, fall to OFF, announce.</li>
+<li><strong>Focus is elsewhere entirely</strong> → fine; the feature
+never depends on focus and never steals it. The toggle accelerator still
+stops it from anywhere in the app.</li>
+<li><strong>Two voice features at once</strong> (push-to-talk +
+always-on) → mutually exclusive; starting one suspends the other.</li>
+<li><strong>Long quiet</strong> → idle cap fires, announces "Stopped
+listening," plays <code>CONVERSATION_OFF</code>.</li>
+</ul>
+<hr />
+<h2 id="12-testing">12. Testing</h2>
+<ul>
+<li><strong>Pure policy (no audio):</strong> <code>WakeController</code>
+is already covered; add player-specific tests for the effect→intent
+adapter with plain-string windows — bare wake arms, inline command
+dispatches, cooldown suppresses the wake tail, reminder cadence,
+unrecognized trailing command. Deterministic, fast, no mic.</li>
+<li><strong>Feedback styling:</strong> every lifecycle event maps to a
+<code>(force, earcon)</code> and a concise phrase (extend the
+<code>event_style</code> table test).</li>
+<li><strong>Construction:</strong> the player frame builds with the
+always-listen <code>wx.ITEM_CHECK</code> item and its handlers;
+resolution returns cleanly when no mic/model is present.</li>
+<li><strong>Live (device, human):</strong> wake-accuracy against a
+playing audiobook; the screen-reader-captures-itself case on a laptop
+mic; battery/CPU under a real quiet room; NVDA/JAWS/Narrator
+perceivability of every state and the periodic reminder; braille
+persistence of the armed state. This is the promotion gate and cannot be
+faked headless.</li>
+</ul>
+<hr />
+<h2 id="13-phased-rollout">13. Phased rollout</h2>
+<ol type="1">
+<li><strong>P1 — Wake gate on the built pipeline.</strong> Continuous
+rolling-window loop feeding <code>WakeController</code>; bare-wake → the
+existing command capture; full a11y skin (open/close/reminder cues,
+status, check state, duck-around-capture); consent gate; Safe-Mode off;
+idle cap. Ships transcription-based, disclosed as such.</li>
+<li><strong>P2 — Inline commands + VAD endpointing.</strong> "hey player
+next chapter" in one breath; VAD-bounded command windows;
+announcement-gated capture hardening.</li>
+<li><strong>P3 — Low-power keyword spotter (§4b).</strong> Replace the
+STT-every-window front end; drop CPU/battery to always-on-friendly
+levels. No change to policy or commands.</li>
+<li><strong>P4 — Unify with "Hey QUILL."</strong> Share the wake
+loop/config across the editor and the player; one wake-phrase setting;
+consistent cues everywhere.</li>
+</ol>
+<hr />
+<h2 id="14-open-questions">14. Open questions</h2>
+<ol type="1">
+<li><strong>Default wake phrase</strong> — "hey player" (app-specific,
+distinct) vs "hey quill" (one phrase family-wide)? Recommendation:
+app-specific default, shared option.</li>
+<li><strong>v1 without the keyword spotter</strong> — acceptable to ship
+transcription-based always-on (heavier CPU) if clearly disclosed, or
+hold always-on until P3? Recommendation: ship P1 disclosed; it is
+genuinely useful and honest.</li>
+<li><strong>Persistence across launches</strong> — off by default is
+clear; is an opt-in worth the "armed at startup" perceivability burden
+(must announce loudly on launch)?</li>
+<li><strong>One mic, many apps</strong> — if several QuillVille apps
+offer always-on, do they coordinate the microphone, or is it
+last-armed-wins with a clear announcement?</li>
+</ol>
+<hr />
+<h2 id="15-what-this-reuses-vs-adds-summary">15. What this reuses vs
+adds (summary)</h2>
+<p><strong>Reused, unchanged:</strong> <code>WakeController</code>
+(policy), <code>extract_transcript_body</code> (phrase match), the
+command grammar + dispatch, <code>build_media_voice_services</code>
+(Whisper/Nemotron/Vosk resolution), VAD, the <code>CONVERSATION_*</code>
+earcons, <code>duck()</code>/ <code>unduck()</code>,
+<code>_announce(force, sound)</code>, the safe-command allowlist.</p>
+<p><strong>Added:</strong> a continuous rolling-window capture loop; its
+accessibility skin (open/close/periodic cues, reviewable status, check
+state, announcement gating); the consent gate and settings; and — as the
+real destination — a low-power keyword spotter to make "always"
+affordable.</p>
+<p>The logic is mostly already written and tested. What remains is the
+capture loop and, above all, making a mic that never sleeps something a
+blind user can always hear, review, and trust — which is the whole point
+of doing it right.</p>
+</body>
+</html>

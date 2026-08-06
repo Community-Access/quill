@@ -158,9 +158,10 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # 0.9.0: +2 Clip Library commands (#895), +2 Send/Copy as Email (#900),
     # +2 AutoOutline commands (#894), +2 image alt-text commands (#899).
     # post-0.9.0: +1 Sort Lines by Date (power.sort_lines_by_date).
+    # post-0.9.0: +1 Paste Markdown as HTML (power.paste_markdown_as_html).
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    assert len(POWER_TOOLS_COMMANDS) == 79
-    assert len(registry.commands) == 79
+    assert len(POWER_TOOLS_COMMANDS) == 80
+    assert len(registry.commands) == 80
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS
