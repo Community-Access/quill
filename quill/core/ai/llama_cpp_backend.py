@@ -87,6 +87,7 @@ def _extract_message_content(response: object) -> str:
 
 class LlamaCppBackend(AIBackend):
     name = "llama.cpp (local CPU)"
+    is_local = True
 
     def __init__(
         self,

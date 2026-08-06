@@ -17,6 +17,13 @@ class ContextWindowExceeded(CodedError):
 class AIBackend(ABC):
     name: str = "ai"
 
+    #: True for small on-device models (llama.cpp, Apple Foundation Models),
+    #: whose consistent failure modes justify the extra output-quality shaping
+    #: in :mod:`quill.core.ai.quality_filter` (#1319). Cloud provider backends
+    #: leave this False so they never pay for the negative-example prompt or the
+    #: post-filter retry.
+    is_local: bool = False
+
     @abstractmethod
     def is_available(self) -> tuple[bool, str | None]:
         """Return (available, reason). reason is a message when unavailable."""
