@@ -373,9 +373,27 @@ appears. **Search in Files** (**Ctrl+Shift+F**) and **Replace Across Files**
 (**Ctrl+Shift+R**) work over a folder.
 
 The **Regular Expression Helper** exists because regular expressions are the least
-speakable syntax in common use. It offers ready-made presets, explains what a pattern
-does in plain language, and previews it against sample text before you turn it loose on
-a document.
+speakable syntax in common use, and version 2.0 grows it from a short flat list of
+presets into a **category tree of more than 100 recipes** — cleanup, words, lines,
+numbers, dates, contact and web, Markdown, HTML, punctuation, writing checks, OCR scan
+cleanup, code identifiers, and capture-and-replace transformations that come with ready
+replace templates. Its **plain-language explain engine** narrates any pattern step by
+step ("One or more digits. Optionally: a period...") — whether you typed it or chose it
+— and diagnoses a broken pattern in words at the exact character that breaks it. The
+preview reads every match as a sentence with its line and column, shows the replace
+result for transformation recipes, and **Use in Find All Matches** sends the pattern
+straight into the search flow with regex mode already on, with no clipboard hop.
+
+QUILL now also ships its **own accessible Find and Replace dialog**, built for
+screen-reader users, as an option. Turn on **Settings > Use QUILL's own Find dialog**
+(setting `find_use_quill_dialog`) and Ctrl+F and Ctrl+H open it instead of the native
+Windows one. An **Extended mode** searches for characters you cannot easily type (`\n`,
+`\t`, `\xNN`, named characters, and a picker of forty special characters); the **match
+count is spoken as you type**; **peek navigation** (Ctrl+Up/Down) walks the matches
+while your focus stays in the search field, each announced as the sentence around it;
+wrap-around is announced when it happens; and a Direction radio group whose name is
+actually spoken. It **ships off by default** — the native dialog stays the default and
+remains available — until the JAWS and NVDA validation pass is complete.
 
 Line-level tools round it out: sort ascending, descending, by length, numerically, or by
 date; reverse; shuffle; remove duplicates; quote and unquote; and **Number Lines
@@ -1146,6 +1164,19 @@ spacing-only changes are never announced as word edits.
 - **Custom Instructions** override the system prompt per task across the built-in tasks,
   so the assistant can be told once how you want it to behave rather than every time.
 - **Train Writing Style** conditions the assistant on your own writing.
+- On the **on-device model** — the free, offline path — the generative writing tools
+  (Rewrite, Summarize, Expand, Continue, Shorten) now come out cleaner. Small local
+  models have consistent, catchable habits, so QUILL primes each prompt with a few
+  wrong-then-corrected examples and then runs a deterministic pass over the model's
+  answer that catches hedging ("it seems", "arguably"), editorializing ("clearly",
+  "obviously"), and filler openers ("In today's world", "It is important to note"),
+  doing one quick retry to remove them. Faithful transforms like Fix Grammar and Improve
+  Reading Order are left out, so a word that is genuinely in your source is never
+  rewritten. Cloud providers are untouched and answer exactly as before.
+- On the on-device model, **Summarize now works in two passes** — one to pull the plain
+  observations out of your text, a second to write the summary from those observations
+  with the source out of view — which sharply reduces the interpretation small models
+  otherwise invent. It stays a single pass on cloud providers, which do not need it.
 - **Suggest Document Metadata** proposes a title, a summary, topic tags, and a category,
   and hands every decision back to you field by field: you hear the field, what it says
   now, and what the AI proposes, and choose Accept, Accept and Next, Skip, or just copy

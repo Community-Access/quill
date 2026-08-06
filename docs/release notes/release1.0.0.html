@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>release1.0.0</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -576,10 +572,34 @@ times a term appears. <strong>Search in Files</strong>
 (<strong>Ctrl+Shift+F</strong>) and <strong>Replace Across
 Files</strong> (<strong>Ctrl+Shift+R</strong>) work over a folder.</p>
 <p>The <strong>Regular Expression Helper</strong> exists because regular
-expressions are the least speakable syntax in common use. It offers
-ready-made presets, explains what a pattern does in plain language, and
-previews it against sample text before you turn it loose on a
-document.</p>
+expressions are the least speakable syntax in common use, and version
+2.0 grows it from a short flat list of presets into a <strong>category
+tree of more than 100 recipes</strong> — cleanup, words, lines, numbers,
+dates, contact and web, Markdown, HTML, punctuation, writing checks, OCR
+scan cleanup, code identifiers, and capture-and-replace transformations
+that come with ready replace templates. Its <strong>plain-language
+explain engine</strong> narrates any pattern step by step ("One or more
+digits. Optionally: a period...") — whether you typed it or chose it —
+and diagnoses a broken pattern in words at the exact character that
+breaks it. The preview reads every match as a sentence with its line and
+column, shows the replace result for transformation recipes, and
+<strong>Use in Find All Matches</strong> sends the pattern straight into
+the search flow with regex mode already on, with no clipboard hop.</p>
+<p>QUILL now also ships its <strong>own accessible Find and Replace
+dialog</strong>, built for screen-reader users, as an option. Turn on
+<strong>Settings &gt; Use QUILL's own Find dialog</strong> (setting
+<code>find_use_quill_dialog</code>) and Ctrl+F and Ctrl+H open it
+instead of the native Windows one. An <strong>Extended mode</strong>
+searches for characters you cannot easily type (<code>\n</code>,
+<code>\t</code>, <code>\xNN</code>, named characters, and a picker of
+forty special characters); the <strong>match count is spoken as you
+type</strong>; <strong>peek navigation</strong> (Ctrl+Up/Down) walks the
+matches while your focus stays in the search field, each announced as
+the sentence around it; wrap-around is announced when it happens; and a
+Direction radio group whose name is actually spoken. It <strong>ships
+off by default</strong> — the native dialog stays the default and
+remains available — until the JAWS and NVDA validation pass is
+complete.</p>
 <p>Line-level tools round it out: sort ascending, descending, by length,
 numerically, or by date; reverse; shuffle; remove duplicates; quote and
 unquote; and <strong>Number Lines (Advanced)</strong> with a
@@ -1460,6 +1480,23 @@ task across the built-in tasks, so the assistant can be told once how
 you want it to behave rather than every time.</li>
 <li><strong>Train Writing Style</strong> conditions the assistant on
 your own writing.</li>
+<li>On the <strong>on-device model</strong> — the free, offline path —
+the generative writing tools (Rewrite, Summarize, Expand, Continue,
+Shorten) now come out cleaner. Small local models have consistent,
+catchable habits, so QUILL primes each prompt with a few
+wrong-then-corrected examples and then runs a deterministic pass over
+the model's answer that catches hedging ("it seems", "arguably"),
+editorializing ("clearly", "obviously"), and filler openers ("In today's
+world", "It is important to note"), doing one quick retry to remove
+them. Faithful transforms like Fix Grammar and Improve Reading Order are
+left out, so a word that is genuinely in your source is never rewritten.
+Cloud providers are untouched and answer exactly as before.</li>
+<li>On the on-device model, <strong>Summarize now works in two
+passes</strong> — one to pull the plain observations out of your text, a
+second to write the summary from those observations with the source out
+of view — which sharply reduces the interpretation small models
+otherwise invent. It stays a single pass on cloud providers, which do
+not need it.</li>
 <li><strong>Suggest Document Metadata</strong> proposes a title, a
 summary, topic tags, and a category, and hands every decision back to
 you field by field: you hear the field, what it says now, and what the
