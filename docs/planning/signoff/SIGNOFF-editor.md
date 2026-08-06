@@ -1,6 +1,6 @@
 # QUILL 1.0.0 Sign-off — Editor commands
 
-**644 core-editor commands** (of 717 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
+**645 core-editor commands** (of 718 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
 
 > `[GATED ...]` = only present when its feature flag is on; scope in/out of the pass explicitly.
 
@@ -253,7 +253,7 @@
 - [ ] W  [ ] S  [ ] A  `edit.unselect_all` — Unselect All  `Ctrl+Shift+A`
 - [ ] W  [ ] S  [ ] A  `edit.word_prediction` — Word Prediction...  `Ctrl+.`
 
-## `power.*` (74)
+## `power.*` (75)
 - [ ] W  [ ] S  [ ] A  `power.analyze_encoding_requirements` — Analyze Encoding Requirements
 - [ ] W  [ ] S  [ ] A  `power.apply_auto_outline_numbering` — Update Outline Numbering
 - [ ] W  [ ] S  [ ] A  `power.collect_clipboard_now` — Collect Clipboard Now
@@ -299,6 +299,7 @@
 - [ ] W  [ ] S  [ ] A  `power.number_lines_advanced` — Number Lines (Advanced)
 - [ ] W  [ ] S  [ ] A  `power.open_snippet_gallery` — Snippet Gallery...  `Ctrl+Shift+Grave, Shift+G`
 - [ ] W  [ ] S  [ ] A  `power.paste_html_as_markdown` — Paste HTML as Markdown  `Ctrl+Shift+Grave, M`
+- [ ] W  [ ] S  [ ] A  `power.paste_markdown_as_html` — Paste Markdown as HTML
 - [ ] W  [ ] S  [ ] A  `power.preview_abbreviation` — Preview Abbreviation
 - [ ] W  [ ] S  [ ] A  `power.read_markdown_status` — Read Markdown Processing Status
 - [ ] W  [ ] S  [ ] A  `power.reencode_file` — Re-encode As

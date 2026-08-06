@@ -226,6 +226,22 @@ class PowerToolsActionsMixin:
             return
         self._power_tools_insert_at_cursor(markdown, "Pasted HTML as Markdown")
 
+    # ------------------------------------------- Markdown clipboard -> HTML
+    def paste_markdown_as_html(self) -> None:
+        """Reverse of :meth:`paste_html_as_markdown`: render clipboard Markdown
+        to a clean HTML body fragment (same renderer as preview/export)."""
+        from quill.core.browser_preview import render_preview_body
+
+        markdown = self._power_tools_clipboard_text()
+        if not markdown.strip():
+            self._set_status("Clipboard is empty")
+            return
+        fragment = render_preview_body(markdown, "markdown")
+        if not fragment.strip():
+            self._set_status("No Markdown content to convert")
+            return
+        self._power_tools_insert_at_cursor(fragment, "Pasted Markdown as HTML")
+
     # ----------------------------------------------------------- EDS-1 unicode
     def insert_special_character(self) -> None:
         raw = self._power_tools_prompt_single(

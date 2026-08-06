@@ -385,6 +385,9 @@ Quill then goes further with selection- and navigation-aware editing:
 - **Selection** submenu includes Select Line, Select Paragraph, Select Block, Select to Start or End of Line, Select to Start or End of Document, and a nested **Recent Marks (Ring)** group (set a temporary mark, jump to previous marks, swap cursor and mark, list recent marks).
 - **Follow Link** opens the link under the caret. (Link *insertion* now lives in the **Insert** menu.)
 - **Paste HTML as Markdown** converts rich clipboard HTML to Markdown as it pastes.
+- **Paste Markdown as HTML** does the reverse: clipboard Markdown is rendered to a
+  clean HTML fragment (the same renderer as the live preview and HTML export) and
+  inserted at the cursor. Unbound by default; give it a key in the Keymap Editor.
 - The deletion group — **Delete to Line Start**, **Delete to Line End**, **Delete to Document Top**, **Delete to Document Bottom**, and **Delete Paragraph** — removes text relative to the cursor.
 
 **Preferences...** and **Customize Menus...** live with the rest of Quill's configuration under **Tools -> Customize & Support**.

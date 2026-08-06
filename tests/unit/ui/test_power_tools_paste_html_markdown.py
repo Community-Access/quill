@@ -69,3 +69,27 @@ def test_paste_non_html_text_with_no_markup_still_inserts() -> None:
     harness.paste_html_as_markdown()
     assert harness.inserted is not None
     assert "just words" in harness.inserted
+
+
+def test_paste_markdown_inserts_html_fragment() -> None:
+    harness = _Harness(plain="# Title\n\nBody with **bold**.")
+    harness.paste_markdown_as_html()
+    assert harness.inserted is not None
+    assert "<h1" in harness.inserted and "Title" in harness.inserted
+    assert "<strong>bold</strong>" in harness.inserted
+    assert "<html" not in harness.inserted, "must be a body fragment, not a page"
+    assert harness.status == "Pasted Markdown as HTML"
+
+
+def test_paste_markdown_empty_clipboard_reports_status() -> None:
+    harness = _Harness(plain="")
+    harness.paste_markdown_as_html()
+    assert harness.inserted is None
+    assert harness.status == "Clipboard is empty"
+
+
+def test_paste_markdown_respects_read_only_guard() -> None:
+    harness = _Harness(plain="# Title", read_only=True)
+    harness.paste_markdown_as_html()
+    assert harness.inserted is None
+    assert harness.status == "Document is read-only"

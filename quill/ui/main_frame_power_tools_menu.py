@@ -98,6 +98,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         separator_before=False,
     )
     add(
+        id="power.paste_markdown_as_html",
+        title="Paste Markdown as HTML",
+        top_level="Edit",
+        group="edit",
+        label="Paste Mar&kdown as HTML",
+        separator_before=False,
+    )
+    add(
         id="power.new_document_from_clipboard",
         title="New Document from Clipboard",
         top_level="Edit",

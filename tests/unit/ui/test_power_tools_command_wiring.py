@@ -48,6 +48,7 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.describe_character",
     "power.describe_image_at_cursor",
     "power.paste_html_as_markdown",
+    "power.paste_markdown_as_html",
     "power.number_lines",
     "power.hard_wrap_lines",
     "power.delete_to_line_start",
@@ -312,6 +313,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         ],
         "edit": [
             "power.paste_html_as_markdown",
+            "power.paste_markdown_as_html",
             "power.new_document_from_clipboard",
             "power.expand_abbreviation",
             "power.preview_abbreviation",
