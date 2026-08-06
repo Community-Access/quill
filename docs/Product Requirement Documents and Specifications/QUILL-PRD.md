@@ -4118,6 +4118,15 @@ on demand so the base app stays lean.
 
 ### 5.84f Internet Radio (shipped)
 
+**Release scope (1.0.0).** The **editor-embedded** Internet Radio is
+**developer-build-only** in the public 1.0.0 build (gated with `QUILL_DEV_BUILD`,
+exactly like Podcasts): no `Tools > Media` radio items, palette `radio.*`
+commands, status-bar mini-player, or tray radio controls. Internet radio ships
+to users as the standalone **Quill Radio** app (§5.89e), one keystroke from QUILL
+via the QuillVille switcher — which is unchanged. The rest of this section
+describes the feature as it stands in a developer build and in that standalone
+app.
+
 **Goal.** Let a QUILL user listen to live internet radio in the background
 while writing, without ever leaving the keyboard or the editor, and without
 depending on an undocumented commercial API.
@@ -4739,8 +4748,10 @@ unaffected.
 duplicating it per-feature would mean two timers, two dialogs, and no guarantee
 they agree on what "active" means; and a way to launch QUILL automatically at
 login, requested alongside the media work though unrelated to it in scope. In
-the public 1.0.0 build the only active player is Internet Radio (§5.84f); the
-Podcasts half of the contract is recorded in `docs/apps/cast/README.md`.
+the public 1.0.0 build both editor-embedded players — Internet Radio (§5.84f)
+and Podcasts — are held back to developer builds (`QUILL_DEV_BUILD`); internet
+radio ships to users as the standalone Quill Radio app (§5.89e). The Podcasts
+half of the contract is recorded in `docs/apps/cast/README.md`.
 
 **Sleep timer (`quill/ui/media_sleep_timer.py`).** `SleepTimerController`
 is owned by `MainFrame`, not either media mixin, and takes `get_radio_
@@ -5803,6 +5814,15 @@ structure explorer, Browser Preview, and the Word round trip.
 ---
 
 ### 5.95 NLS BARD catalogue search (Book Library source, shipped)
+
+**Release scope (1.0.0).** The Book Library (`core.library`) is
+**developer-build-only** in the public 1.0.0 build, held back by the same
+`QUILL_DEV_BUILD` switch as Podcasts and Internet Radio, and is **moving to the
+forthcoming QUILL Social app** where the authenticated online libraries on the
+roadmap belong. A public build surfaces no `Tools > Media > Book Library` item
+and no `library.*` palette commands; `QUILL_DEV_BUILD=1` restores them. This
+section (and the BARD source below) describes the feature as it stands in a
+developer build.
 
 The Book Library gains **NLS BARD** as a search source alongside Project Gutenberg, Google Books, and the OPDS catalogues. BARD is the collection of the National Library Service for the Blind and Print Disabled (Library of Congress), and NLS publishes a free, no-key **public catalogue API** over its metadata.
 

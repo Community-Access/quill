@@ -427,16 +427,17 @@ def _developer_build(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("QUILL_DEV_BUILD", "1")
 
 
-def test_unreleased_editor_features_are_podcasts_and_internet_radio() -> None:
+def test_unreleased_editor_features_are_podcasts_radio_and_book_library() -> None:
     from quill.core.feature_catalog import FEATURE_DEFINITIONS, UNRELEASED_FEATURE_IDS
 
-    # Book Library still ships in the editor. Two features are held back from the
-    # public editor: the podcast manager (waits on the Quill Cast app) and the
-    # embedded Internet Radio (moved to the standalone Quill Radio app, reachable
-    # via the QuillVille switcher). Developer builds keep both.
-    assert UNRELEASED_FEATURE_IDS == frozenset({"core.podcasts", "core.radio"})
+    # Three editor features are held back from the public build, reachable only in
+    # a developer build: the podcast manager (waits on the Quill Cast app), the
+    # embedded Internet Radio (moved to the standalone Quill Radio app), and the
+    # Book Library (moving to QUILL Social).
+    assert UNRELEASED_FEATURE_IDS == frozenset({"core.podcasts", "core.radio", "core.library"})
     assert FEATURE_DEFINITIONS["core.podcasts"].released is False
     assert FEATURE_DEFINITIONS["core.radio"].released is False
+    assert FEATURE_DEFINITIONS["core.library"].released is False
 
 
 def test_podcasts_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -477,7 +478,7 @@ def test_podcasts_is_hidden_from_manage_individual_features(
     }
     assert "core.podcasts" not in toggleable
     assert "core.radio" not in toggleable  # now gated out of the public editor
-    assert "core.library" in toggleable
+    assert "core.library" not in toggleable  # gated too, moving to QUILL Social
 
     _developer_build(monkeypatch)
     toggleable_dev = {
@@ -487,6 +488,7 @@ def test_podcasts_is_hidden_from_manage_individual_features(
     }
     assert "core.podcasts" in toggleable_dev
     assert "core.radio" in toggleable_dev  # a developer build keeps embedded radio
+    assert "core.library" in toggleable_dev  # ...and the Book Library
 
 
 def test_internet_radio_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -502,7 +504,7 @@ def test_internet_radio_is_available_in_a_developer_build(monkeypatch: pytest.Mo
     _developer_build(monkeypatch)
     manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
     assert manager.is_enabled("core.radio") is True
-    # Book Library ships in the editor regardless of build.
+    # A developer build keeps the Book Library too.
     assert manager.is_enabled("core.library") is True
 
 
@@ -516,21 +518,13 @@ def test_developer_build_restores_podcasts(monkeypatch: pytest.MonkeyPatch) -> N
     assert manager.is_visible("core.podcasts") is True
 
 
-def test_book_library_is_unaffected_by_the_build_gate(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    from quill.core.feature_catalog import FEATURE_DEFINITIONS
-
+def test_book_library_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
     _public_build(monkeypatch)
-    manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
-    # Book Library ships in the editor; only Internet Radio and Podcasts moved
-    # out to their standalone apps.
-    for feature_id in ("core.library",):
-        assert FEATURE_DEFINITIONS[feature_id].released is True, feature_id
-        assert FEATURE_DEFINITIONS[feature_id].is_locked_off is False, feature_id
-        assert manager.state_for(feature_id) == FEATURE_STATE_ON, feature_id
-        assert manager.is_enabled(feature_id) is True, feature_id
-        assert manager.is_visible(feature_id) is True, feature_id
+    for profile_id in PROFILE_DEFINITIONS:
+        manager = FeatureManager(active_profile_id=profile_id)
+        assert manager.state_for("core.library") == FEATURE_STATE_OFF, profile_id
+        assert manager.is_enabled("core.library") is False, profile_id
+        assert manager.is_visible("core.library") is False, profile_id
 
 
 def test_podcast_commands_are_not_visible_in_the_palette(

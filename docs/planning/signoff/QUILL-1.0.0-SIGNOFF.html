@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL-1.0.0-SIGNOFF</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -189,11 +185,13 @@ feature sub-items across 22 areas · 3 menu bars (~480–500 editor leaves
 + Radio ~10 / Weather ~7 top menus) · 227 distinct custom dialogs + 376
 native + 7 web-form. Companion apps Cast / Studio / Converter / Beacon,
 the Media Player, and the editor-embedded <strong>Podcasts</strong>
-feature (<code>core.podcasts</code>) are <strong>gated (dev/admin
+(<code>core.podcasts</code>), <strong>Internet Radio</strong>
+(<code>core.radio</code>), and <strong>Book Library</strong>
+(<code>core.library</code>) features are <strong>gated (dev/admin
 only)</strong> for 1.0.0 and are verified only for <em>absence</em> from
-public surfaces (§G) — do <strong>not</strong> sign them off as public
-editor features. Internet Radio and the Book Library are public and are
-signed off in full.</p>
+public editor surfaces (§G) — do <strong>not</strong> sign them off as
+public editor features. (The standalone Quill Radio and Quill Weather
+apps are unaffected and are signed off in full in §C/§D.)</p>
 <h2 id="how-to-use-this-pack">How to use this pack</h2>
 <p>Each checklist item is verified on three axes:</p>
 <ul>
@@ -400,10 +398,20 @@ Podcasts chords on the QUILL-key cheat sheet, and no Podcasts row in
 <code>Manage Individual Features</code>. The background new-episode
 check never runs. (<code>QUILL_DEV_BUILD=1</code> restores all of
 it.)</label></li>
-<li><label><input type="checkbox" />Radio + Weather remain fully public
-and unaffected; <strong>Book Library</strong>
-(<code>core.library</code>) remains public — <code>Tools ▸ Media</code>
-carries Radio, Book Library, and Sleep Timer.</label></li>
+<li><label><input type="checkbox" /><strong>Internet Radio
+(<code>core.radio</code>)</strong> and <strong>Book Library
+(<code>core.library</code>)</strong> are absent from the editor: no
+<code>Tools ▸ Media ▸ Internet Radio</code> or
+<code>Tools ▸ Media ▸ Book Library</code> items, no
+<code>radio.*</code>/<code>library.*</code> commands in the command
+palette, no Radio status-bar mini-player or tray radio controls, and no
+Book Library entries anywhere. With Radio, Podcasts, and Book Library
+all gated, the <strong><code>Tools ▸ Media</code> submenu is omitted
+entirely</strong> in a public build — confirm it is not shown.
+(<code>QUILL_DEV_BUILD=1</code> restores all of it.) The
+<strong>standalone Quill Radio and Quill Weather apps are
+unaffected</strong> and remain launchable via the QuillVille switcher
+(see the check above).</label></li>
 <li><label><input type="checkbox" />Automated test asserts gated apps
 are absent from public surfaces when the flag is off (Phase 2
 deliverable).</label></li>

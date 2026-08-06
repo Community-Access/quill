@@ -42,7 +42,7 @@ Install-mode behavior is governed by **three independent "portable" signals that
 ## 5. Safe Mode (install-mode-independent — verify it does NOT differ)
 - [ ] `QUILL_SAFE_MODE=1` / `--safe-mode` disables plugins, AI, network, restore, indexing, watchers, themes, snippets — identical in portable and system.
 - [ ] Verbosity Safe Mode (`QUILL_VERBOSITY_SAFE_MODE=1`) ignores custom verbosity — mode-independent.
-- [ ] Book Library, Radio, Weather network features all refuse in Safe Mode.
+- [ ] Radio and Weather network features all refuse in Safe Mode.
 
 ## 6. Portable-specific behaviors
 - [ ] Everything (data, settings, secrets, logs) stays inside the app folder **only when all three signals agree** (E2). Document any case where they don't.
