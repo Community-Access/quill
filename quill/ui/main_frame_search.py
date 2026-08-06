@@ -105,6 +105,9 @@ class SearchCommandsMixin:
         case-sensitive + whole-word + direction; regex and wildcard searches
         stay available via Find All Matches / Search in Files.
         """
+        if getattr(self.settings, "find_use_quill_dialog", False):
+            self._open_quill_find_dialog(replace)
+            return
         wx = self._wx
         existing = getattr(self, "_find_replace_dialog", None)
         if existing is not None:
@@ -135,6 +138,16 @@ class SearchCommandsMixin:
         self._find_replace_dialog = dialog
         dialog.Show(True)
         dialog.Raise()
+
+    def _open_quill_find_dialog(self, replace: bool) -> None:
+        """Open (or refocus) QUILL's own Find dialog (#1327 F1, opt-in setting).
+
+        The host wiring lives with the dialog (find_dialog.open_for_main_frame)
+        so this mixin stays a thin dispatcher.
+        """
+        from quill.ui.find_dialog import open_for_main_frame
+
+        open_for_main_frame(self, replace=replace)
 
     def _search_options_from_flags(self, flags: int) -> SearchOptions:
         wx = self._wx

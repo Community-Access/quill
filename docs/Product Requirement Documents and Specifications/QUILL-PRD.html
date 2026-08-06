@@ -1117,9 +1117,42 @@ not power-user extras.</p>
 <li><strong>Search modes</strong>: Find, Find All, Replace, Replace All,
 Find in Selection, and saved search recipes support plain text, whole
 word, regular expression, and wildcard modes.</li>
-<li><strong>Regex helper</strong>: a screen-reader-friendly helper
-provides recipe presets, plain-language explanations, editable sample
-text, live match previews, and copy-pattern actions.</li>
+<li><strong>Regex helper (2.0 as of 1.0.0, #1328 P1)</strong>: a
+category tree of 100+ recipes across 14 categories (cleanup, words,
+lines, numbers, dates, contact/web, Markdown, HTML, punctuation, writing
+checks, OCR cleanup, code identifiers, capture-and-replace with ready
+templates), a deterministic <strong>plain-language explain
+engine</strong> that narrates any pattern step by step and diagnoses
+broken patterns at the exact character position, sentence-style match
+previews with replace previews, and <strong>Use in Find All
+Matches</strong> (seeds the search flow with regex mode on — no
+clipboard hop). Architecture: wx-free strict-typed
+<code>quill/core/regex_helper/</code> (<code>catalog.py</code> data +
+schema tests that compile and match-verify every recipe,
+<code>explain.py</code>, <code>runner.py</code> with bounded execution
+and zero-width-safety), dialog in
+<code>quill/ui/regex_helper_dialog.py</code> (the former inline
+main_frame implementation was removed, −162 lines).</li>
+<li><strong>QUILL Find dialog (unified search F1, #1327,
+opt-in)</strong>: behind <code>settings.find_use_quill_dialog</code>
+(default off until the JAWS/NVDA validation pass), Ctrl+F/Ctrl+H open
+<code>quill/ui/find_dialog.py::QuillFindDialog</code> instead of the
+native <code>wx.FindReplaceDialog</code>. Document scope; Normal +
+<strong>Extended</strong> modes (escape translator
+<code>\n \t \xNN \uNNNN \N{NAME}</code> plus a 40-entry named
+special-character picker); debounced spoken incremental count;
+<strong>peek navigation</strong> (Ctrl+Up/Down walk matches while focus
+stays in the query field); spoken sentence context for every match; wrap
+announced; labeled <strong>Direction</strong> RadioBox (the
+group-name-announcement report that opened #1327); Count button;
+range-based replacements that preserve editor undo; Ctrl+F refocuses /
+Ctrl+H switches action in place / Ctrl+L returns to the query field.
+Match logic is wx-free <code>quill/core/find_model.py</code>
+(strict-typed, 52 tests); the dialog talks to its host only through the
+<code>FindHost</code> callback bundle, so every behavior is unit-tested
+with a stub host plus real-widget tests. Later phases (results list,
+files/Vault scopes, history, Extract, the Settings &gt; Search page) are
+specified in #1327.</li>
 <li><strong>Plain-English errors</strong>: regex errors are reported in
 single-sentence form with character positions and no traceback.</li>
 <li><strong>Match review</strong>: users can review captured groups for
