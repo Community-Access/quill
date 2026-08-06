@@ -41,7 +41,7 @@
 
 ### Phase 5 — Branch consolidation  ✅ DONE
 - [x] Merge every `feat/*` branch to `main` (each verified: merges cleanly + gates pass). Final two (`feat/gate-podcasts-library`, `docs/consolidate-1.0.0`) landed 2026-08-05.
-- [x] Delete merged branches (local + origin; only `main` remains, plus `origin/fix/document-readers-and-office-packaging`, superseded — its content landed via other commits — kept pending a confirming diff before deletion).
+- [x] Delete merged branches (local + origin; only `main` remains). `fix/document-readers-and-office-packaging` was verified superseded — three of its five commits patch-equivalent on main (`git cherry`), the converter standalone and every doc addition present on main in newer form — and deleted 2026-08-05.
 
 ### Phase 6 — Readiness gate
 - [ ] All sign-off items checked → **announce ready to test.**

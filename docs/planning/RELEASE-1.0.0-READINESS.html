@@ -323,10 +323,12 @@ cleanly + gates pass). Final two
 (<code>feat/gate-podcasts-library</code>,
 <code>docs/consolidate-1.0.0</code>) landed 2026-08-05.</label></li>
 <li><label><input type="checkbox" checked="" />Delete merged branches
-(local + origin; only <code>main</code> remains, plus
-<code>origin/fix/document-readers-and-office-packaging</code>,
-superseded — its content landed via other commits — kept pending a
-confirming diff before deletion).</label></li>
+(local + origin; only <code>main</code> remains).
+<code>fix/document-readers-and-office-packaging</code> was verified
+superseded — three of its five commits patch-equivalent on main
+(<code>git cherry</code>), the converter standalone and every doc
+addition present on main in newer form — and deleted
+2026-08-05.</label></li>
 </ul>
 <h3 id="phase-6--readiness-gate">Phase 6 — Readiness gate</h3>
 <ul class="task-list">
