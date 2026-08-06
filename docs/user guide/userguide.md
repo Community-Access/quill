@@ -380,6 +380,39 @@ Standard clipboard commands are here:
 Quill then goes further with selection- and navigation-aware editing:
 
 - **Find...**, **Replace...**, **Find Next**, **Find Previous**, and **Find All Matches** all live here. Replace includes a **Replace All** action in its dialog, so bulk replacement stays in one place.
+
+  By default **Ctrl+F** and **Ctrl+H** open the standard Windows Find and Replace
+  dialog. Turn on **Settings > Use QUILL's own Find dialog** and they open
+  QUILL's accessible Find dialog instead — everything the Windows one does, plus:
+
+  - **Extended mode (special characters).** Choose *Extended* in the Mode list and
+    search for characters you cannot type: `\n` for a line break, `\t` for a tab,
+    `\xNN` or `\uNNNN` by code, or `\N{EM DASH}` by name. The **Insert Special
+    Character...** button offers forty named characters — non-breaking space,
+    curly quotes, zero-width space, soft hyphen, and more — so the invisible
+    characters that quietly wreck a document become findable, nameable things.
+    Replacements understand the same escapes, so "replace every non-breaking
+    space with a plain space" is a first-class, two-field operation.
+  - **A spoken match count as you type.** Pause for a moment and QUILL says
+    "17 matches" — you know the query is right before you commit to it.
+  - **Peek navigation.** **Ctrl+Down** and **Ctrl+Up** step through matches while
+    focus stays in the search field: each step speaks the match in its sentence
+    and selects it in the editor, and you can keep typing at any moment. Browse
+    first, then press Enter when the query is right.
+  - **Spoken match context.** Every found match is announced as the sentence
+    around it ("line 40: ...the quick brown fox..."), not a bare position, and
+    wrapping past the end of the document is always announced.
+  - **A Direction group that announces its name.** The Up/Down choice is a real
+    labeled group, so your screen reader says "Direction" when you reach it.
+  - **One dialog, always.** Ctrl+F while it is open returns you to the search
+    field; Ctrl+H switches it to Replace in place; **Ctrl+L** jumps back to the
+    search field from anywhere in the dialog; Escape closes and returns to your
+    text. **Count** answers "how many?" without moving anywhere.
+
+  The setting ships off while the dialog is validated with every screen reader —
+  the Windows dialog remains exactly as it was, and you can switch back at any
+  time. This is the first phase of the unified search plan; scopes beyond the
+  current document (folders, the Vault) arrive in later phases.
 - **Word Prediction...** opens inline word and tag suggestions.
 - **Extend Selection Mode** turns selection growth into a dedicated mode.
 - **Selection** submenu includes Select Line, Select Paragraph, Select Block, Select to Start or End of Line, Select to Start or End of Document, and a nested **Recent Marks (Ring)** group (set a temporary mark, jump to previous marks, swap cursor and mark, list recent marks).
@@ -5886,7 +5919,23 @@ Macros are ideal for repetitive cleanup: record once, replay as many times as ne
 
 **Authoring utilities:**
 
-- **Regex Helper...** — full accessible dialog with recipe presets, plain-language pattern explanations, editable sample text, match previews with offsets, and one-step copy-to-Find-Replace.
+- **Regex Helper...** — the guided home for regular expressions, built so you never
+  face punctuation soup alone. A **category tree** holds more than a hundred ready
+  recipes — cleanup (multiple spaces, smart quotes, zero-width characters), words
+  and phrases, lines, numbers, dates, email and web addresses, Markdown and HTML
+  structure, punctuation and dialogue, writing and editing checks, OCR and scan
+  cleanup, code identifiers, and capture-and-replace transformations with ready
+  replace templates. Pick a recipe and three things happen at once: the pattern
+  lands in the pattern box, a **plain-language explanation** appears ("One or more
+  digits. Optionally: a period..."), and a **preview** runs against sample text
+  seeded from your selection, with every match read as a sentence ("Match 3:
+  line 4, column 7: foo@bar.com") and replace previews for the transformation
+  recipes. The explanation is live: type or paste **any** pattern and QUILL
+  explains it step by step — and a broken pattern is diagnosed in words, naming
+  the exact character position ("Unclosed group: the open-parenthesis at
+  character 4 has no matching close"). When the pattern is right, **Use in Find
+  All Matches** carries it straight into the search flow with regex mode on — no
+  clipboard hop — and **Copy Pattern** remains for everywhere else.
 - **Pandoc Conversion Wizard...** — converts supported source files into Markdown, HTML, or plain text that opens directly as a Quill tab.
 - **External Tools and Format Support...** — explains what each supported helper unlocks, whether Quill can already see it, and the best first-touch setup path.
 - **YAML Structure Editor...** — inspects and edits YAML front matter and structure files.

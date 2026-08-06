@@ -1,6 +1,6 @@
 # QUILL 1.0.0 Sign-off — Dialog surfaces (A11Y-4 registry)
 
-**645 dialog call-sites** from `tests/unit/ui/fixtures/dialog_inventory.json`. Each: opens, keyboard-complete, correct accessible name/role, Escape/Close contract, announces outcome. `native`=stock OS dialog, `hardened_custom`=QUILL dialog, `web`=HTML-form dialog.
+**647 dialog call-sites** from `tests/unit/ui/fixtures/dialog_inventory.json`. Each: opens, keyboard-complete, correct accessible name/role, Escape/Close contract, announces outcome. `native`=stock OS dialog, `hardened_custom`=QUILL dialog, `web`=HTML-form dialog.
 
 ## CORE-EDITOR (485) — native:279, hardened_custom:199, web:7
 - [ ] W  [ ] S  [ ] A  `quill/devtools/console_window.py::ConsoleWindow._save_transcript::wx.FileDialog`  _(native)_
@@ -91,6 +91,8 @@
 - [ ] W  [ ] S  [ ] A  `quill/ui/github_dialogs.py::GitHubManageAccountsDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/github_dialogs.py::GitHubRepositoryBrowserDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/github_dialogs.py::GitHubSignInDialog.__init__::wx.Dialog`  _(hardened_custom)_
+- [ ] W  [ ] S  [ ] A  `quill/ui/find_dialog.py::QuillFindDialog.__init__::wx.Dialog`  _(hardened_custom)_  **[GATED find_use_quill_dialog — #1327 F1]**
+- [ ] W  [ ] S  [ ] A  `quill/ui/find_dialog.py::QuillFindDialog.insert_special_character::wx.SingleChoiceDialog`  _(native)_  **[GATED find_use_quill_dialog]**
 - [ ] W  [ ] S  [ ] A  `quill/ui/github_items_dialog.py::GitHubItemsDialog.__init__::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/github_items_dialog.py::GitHubItemsDialog._confirm_action::wx.MessageDialog`  _(native)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/github_items_dialog.py::GitHubItemsDialog._edit_current_comment::wx.TextEntryDialog`  _(native)_
@@ -226,7 +228,7 @@
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_external_tools_dialog::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_feature_explanation::wx.TextEntryDialog`  _(native)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_lookup_dialog::wx.Dialog`  _(hardened_custom)_
-- [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_regex_helper::wx.Dialog`  _(hardened_custom)_
+- [ ] W  [ ] S  [ ] A  `quill/ui/regex_helper_dialog.py::open_regex_helper::wx.Dialog`  _(hardened_custom)_  **[was main_frame.show_regex_helper — Regex Helper 2.0, #1328]**
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_spoken_echo::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.show_watch_folder_status::wx.Dialog`  _(hardened_custom)_
 - [ ] W  [ ] S  [ ] A  `quill/ui/main_frame.py::MainFrame.start_macro_recording::wx.TextEntryDialog`  _(native)_

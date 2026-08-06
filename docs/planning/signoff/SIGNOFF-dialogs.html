@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>SIGNOFF-dialogs</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -174,7 +178,7 @@
 <body>
 <h1 id="quill-100-sign-off--dialog-surfaces-a11y-4-registry">QUILL 1.0.0
 Sign-off — Dialog surfaces (A11Y-4 registry)</h1>
-<p><strong>645 dialog call-sites</strong> from
+<p><strong>647 dialog call-sites</strong> from
 <code>tests/unit/ui/fixtures/dialog_inventory.json</code>. Each: opens,
 keyboard-complete, correct accessible name/role, Escape/Close contract,
 announces outcome. <code>native</code>=stock OS dialog,
@@ -447,6 +451,14 @@ dialog.</p>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>quill/ui/github_dialogs.py::GitHubSignInDialog.__init__::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/find_dialog.py::QuillFindDialog.__init__::wx.Dialog</code>
+<em>(hardened_custom)</em> <strong>[GATED find_use_quill_dialog — #1327
+F1]</strong></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>quill/ui/find_dialog.py::QuillFindDialog.insert_special_character::wx.SingleChoiceDialog</code>
+<em>(native)</em> <strong>[GATED
+find_use_quill_dialog]</strong></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>quill/ui/github_items_dialog.py::GitHubItemsDialog.__init__::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
@@ -853,8 +865,9 @@ dialog.</p>
 <code>quill/ui/main_frame.py::MainFrame.show_lookup_dialog::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>quill/ui/main_frame.py::MainFrame.show_regex_helper::wx.Dialog</code>
-<em>(hardened_custom)</em></label></li>
+<code>quill/ui/regex_helper_dialog.py::open_regex_helper::wx.Dialog</code>
+<em>(hardened_custom)</em> <strong>[was main_frame.show_regex_helper —
+Regex Helper 2.0, #1328]</strong></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>quill/ui/main_frame.py::MainFrame.show_spoken_echo::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>

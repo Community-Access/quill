@@ -971,33 +971,77 @@ explicit. Nothing important is hidden behind a side effect.</p>
 <p>Quill then goes further with selection- and navigation-aware
 editing:</p>
 <ul>
-<li><strong>Find...</strong>, <strong>Replace...</strong>, <strong>Find
-Next</strong>, <strong>Find Previous</strong>, and <strong>Find All
-Matches</strong> all live here. Replace includes a <strong>Replace
-All</strong> action in its dialog, so bulk replacement stays in one
-place.</li>
-<li><strong>Word Prediction...</strong> opens inline word and tag
-suggestions.</li>
-<li><strong>Extend Selection Mode</strong> turns selection growth into a
-dedicated mode.</li>
-<li><strong>Selection</strong> submenu includes Select Line, Select
+<li><p><strong>Find...</strong>, <strong>Replace...</strong>,
+<strong>Find Next</strong>, <strong>Find Previous</strong>, and
+<strong>Find All Matches</strong> all live here. Replace includes a
+<strong>Replace All</strong> action in its dialog, so bulk replacement
+stays in one place.</p>
+<p>By default <strong>Ctrl+F</strong> and <strong>Ctrl+H</strong> open
+the standard Windows Find and Replace dialog. Turn on <strong>Settings
+&gt; Use QUILL's own Find dialog</strong> and they open QUILL's
+accessible Find dialog instead — everything the Windows one does,
+plus:</p>
+<ul>
+<li><strong>Extended mode (special characters).</strong> Choose
+<em>Extended</em> in the Mode list and search for characters you cannot
+type: <code>\n</code> for a line break, <code>\t</code> for a tab,
+<code>\xNN</code> or <code>\uNNNN</code> by code, or
+<code>\N{EM DASH}</code> by name. The <strong>Insert Special
+Character...</strong> button offers forty named characters —
+non-breaking space, curly quotes, zero-width space, soft hyphen, and
+more — so the invisible characters that quietly wreck a document become
+findable, nameable things. Replacements understand the same escapes, so
+"replace every non-breaking space with a plain space" is a first-class,
+two-field operation.</li>
+<li><strong>A spoken match count as you type.</strong> Pause for a
+moment and QUILL says "17 matches" — you know the query is right before
+you commit to it.</li>
+<li><strong>Peek navigation.</strong> <strong>Ctrl+Down</strong> and
+<strong>Ctrl+Up</strong> step through matches while focus stays in the
+search field: each step speaks the match in its sentence and selects it
+in the editor, and you can keep typing at any moment. Browse first, then
+press Enter when the query is right.</li>
+<li><strong>Spoken match context.</strong> Every found match is
+announced as the sentence around it ("line 40: ...the quick brown
+fox..."), not a bare position, and wrapping past the end of the document
+is always announced.</li>
+<li><strong>A Direction group that announces its name.</strong> The
+Up/Down choice is a real labeled group, so your screen reader says
+"Direction" when you reach it.</li>
+<li><strong>One dialog, always.</strong> Ctrl+F while it is open returns
+you to the search field; Ctrl+H switches it to Replace in place;
+<strong>Ctrl+L</strong> jumps back to the search field from anywhere in
+the dialog; Escape closes and returns to your text.
+<strong>Count</strong> answers "how many?" without moving anywhere.</li>
+</ul>
+<p>The setting ships off while the dialog is validated with every screen
+reader — the Windows dialog remains exactly as it was, and you can
+switch back at any time. This is the first phase of the unified search
+plan; scopes beyond the current document (folders, the Vault) arrive in
+later phases.</p></li>
+<li><p><strong>Word Prediction...</strong> opens inline word and tag
+suggestions.</p></li>
+<li><p><strong>Extend Selection Mode</strong> turns selection growth
+into a dedicated mode.</p></li>
+<li><p><strong>Selection</strong> submenu includes Select Line, Select
 Paragraph, Select Block, Select to Start or End of Line, Select to Start
 or End of Document, and a nested <strong>Recent Marks (Ring)</strong>
 group (set a temporary mark, jump to previous marks, swap cursor and
-mark, list recent marks).</li>
-<li><strong>Follow Link</strong> opens the link under the caret. (Link
-<em>insertion</em> now lives in the <strong>Insert</strong> menu.)</li>
-<li><strong>Paste HTML as Markdown</strong> converts rich clipboard HTML
-to Markdown as it pastes.</li>
-<li><strong>Paste Markdown as HTML</strong> does the reverse: clipboard
-Markdown is rendered to a clean HTML fragment (the same renderer as the
-live preview and HTML export) and inserted at the cursor. Unbound by
-default; give it a key in the Keymap Editor.</li>
-<li>The deletion group — <strong>Delete to Line Start</strong>,
+mark, list recent marks).</p></li>
+<li><p><strong>Follow Link</strong> opens the link under the caret.
+(Link <em>insertion</em> now lives in the <strong>Insert</strong>
+menu.)</p></li>
+<li><p><strong>Paste HTML as Markdown</strong> converts rich clipboard
+HTML to Markdown as it pastes.</p></li>
+<li><p><strong>Paste Markdown as HTML</strong> does the reverse:
+clipboard Markdown is rendered to a clean HTML fragment (the same
+renderer as the live preview and HTML export) and inserted at the
+cursor. Unbound by default; give it a key in the Keymap Editor.</p></li>
+<li><p>The deletion group — <strong>Delete to Line Start</strong>,
 <strong>Delete to Line End</strong>, <strong>Delete to Document
 Top</strong>, <strong>Delete to Document Bottom</strong>, and
 <strong>Delete Paragraph</strong> — removes text relative to the
-cursor.</li>
+cursor.</p></li>
 </ul>
 <p><strong>Preferences...</strong> and <strong>Customize
 Menus...</strong> live with the rest of Quill's configuration under
@@ -26350,10 +26394,28 @@ macros.</li>
 times as needed.</p>
 <p><strong>Authoring utilities:</strong></p>
 <ul>
-<li><strong>Regex Helper...</strong> — full accessible dialog with
-recipe presets, plain-language pattern explanations, editable sample
-text, match previews with offsets, and one-step
-copy-to-Find-Replace.</li>
+<li><strong>Regex Helper...</strong> — the guided home for regular
+expressions, built so you never face punctuation soup alone. A
+<strong>category tree</strong> holds more than a hundred ready recipes —
+cleanup (multiple spaces, smart quotes, zero-width characters), words
+and phrases, lines, numbers, dates, email and web addresses, Markdown
+and HTML structure, punctuation and dialogue, writing and editing
+checks, OCR and scan cleanup, code identifiers, and capture-and-replace
+transformations with ready replace templates. Pick a recipe and three
+things happen at once: the pattern lands in the pattern box, a
+<strong>plain-language explanation</strong> appears ("One or more
+digits. Optionally: a period..."), and a <strong>preview</strong> runs
+against sample text seeded from your selection, with every match read as
+a sentence ("Match 3: line 4, column 7: <a
+href="mailto:foo@bar.com">foo@bar.com</a>") and replace previews for the
+transformation recipes. The explanation is live: type or paste
+<strong>any</strong> pattern and QUILL explains it step by step — and a
+broken pattern is diagnosed in words, naming the exact character
+position ("Unclosed group: the open-parenthesis at character 4 has no
+matching close"). When the pattern is right, <strong>Use in Find All
+Matches</strong> carries it straight into the search flow with regex
+mode on — no clipboard hop — and <strong>Copy Pattern</strong> remains
+for everywhere else.</li>
 <li><strong>Pandoc Conversion Wizard...</strong> — converts supported
 source files into Markdown, HTML, or plain text that opens directly as a
 Quill tab.</li>
