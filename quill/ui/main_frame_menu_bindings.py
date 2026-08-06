@@ -1160,26 +1160,6 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
-            lambda _e: self.compare_start_with_file(),
-            id=self._id_compare_start_with_file,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.compare_dialog_next(),
-            id=self._id_compare_next,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.compare_dialog_previous(),
-            id=self._id_compare_previous,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.compare_current_summary(),
-            id=self._id_compare_current,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
             lambda _e: self.compare_toggle_ignore_whitespace(),
             id=self._id_compare_toggle_whitespace,
         )

@@ -3224,7 +3224,7 @@ engine a general-purpose home, adding only what Vault didn't need:
   the way Vault's own always-`main` convention does — a general folder may
   plausibly be on `master` or any other branch name.
 
-**Tools → GitHub → Sync Folder with GitHub...** (`sync.sync_folder`, empty default
+**Tools → Git and GitHub → GitHub → Sync Folder with GitHub...** (`sync.sync_folder`, empty default
 keymap chord, assignable) prompts for a folder (remembered in
 `Settings.git_sync_last_folder` for next time), checks its status in the
 background, and either syncs directly (already a git repo with a remote) or
@@ -3423,8 +3423,8 @@ A deliberately small way to publish a status to Mastodon from the editor — not
 
 Quill provides two complementary comparison workflows: an accessible interactive compare session and a generated diff report.
 
-- **Compare commands** (`Tools → Comparison`): `Compare with File…`, `Compare Open Documents…`, `Next Difference`, `Previous Difference`, `Announce Current Difference`, `Difference List…`, `Toggle Synchronized Navigation`, `Compare Options…`, `Create Difference Summary`, `Copy Current Difference`, `Copy All Differences`. A `Navigate → Compare` submenu carries the same commands under the `tools.compare_*` ids.
-- **Core navigation** (`Navigate → Compare`, post-#357 chord class): `Ctrl+Alt+Shift+.` next difference, `Ctrl+Alt+Shift+,` previous difference, `Ctrl+Alt+Shift+D` read current difference. The Difference List and Toggle Synchronized Navigation have no default key; assign them in the Keymap Editor.
+- **Compare commands** (`Tools → Comparison`, the single canonical home): `Compare with File…`, `Compare Open Documents…`, `Next Difference`, `Previous Difference`, `Announce Current Difference`, `Difference List…`, `Toggle Synchronized Navigation`, `Toggle Ignore Whitespace`, `Compare Options…`, `Generate Accessible Report`, `Create Difference Summary`, `Copy Current Difference`, `Copy All Differences`. (The former `Navigate → Compare` duplicate submenu was removed in 1.0.0 — it repeated a subset of these under separate ids and mislabeled two of them; its two unique items, Toggle Ignore Whitespace and Generate Accessible Report, moved into Tools → Comparison.)
+- **Core navigation** (post-#357 chord class): `Ctrl+Alt+Shift+.` next difference, `Ctrl+Alt+Shift+,` previous difference, `Ctrl+Alt+Shift+D` read current difference. The Difference List and Toggle Synchronized Navigation have no default key; assign them in the Keymap Editor.
 - **Interactive session**: focus stays in the active editor; moving to a difference places the cursor on the changed line and announces both sides in plain language.
 - **Difference List**: a stock list control containing all differences with document names, line numbers, type, and a short preview; Enter jumps to the selected difference.
 - **Compare options**: ignore leading/trailing spaces, all whitespace, blank lines, line endings, case, punctuation, repeated spaces, Markdown heading markers, HTML tag differences, and normalized Unicode.
@@ -4775,11 +4775,18 @@ existing pattern).
 
 ---
 
-### 5.84z Signed offline unlock codes (Help > Redeem Unlock Code...)
+### 5.84z Signed offline unlock codes (developer builds only as of 1.0.0)
 
 **Goal.** Enable a locked feature (`FeatureDefinition.locked_off`) for a
 specific user — early testers, partners, staged rollouts — without a build,
 a server, or an account. A code is a signed capability, not a serial number.
+
+**Public visibility (2026-08-06).** The redeem surface (the Help-menu item and
+the `help.redeem_unlock_code` palette command) is gated behind
+`is_dev_build()` and hidden from public builds of every app; it was also
+removed from the user guide and release notes. Redeemed codes are still
+honored by the feature layer in all builds — only the way to enter one is
+tester-only.
 
 **Model (`quill/core/unlock_codes.py`, wx-free).** A code is
 `QUILL-<base32(payload || Ed25519 signature)>` where the payload is
@@ -7850,7 +7857,7 @@ File > Open from Remote
 
 All five GitHub commands are also available through the Command Palette.
 (Repository lifecycle commands — create, fork, rename, and more — live in a
-separate **Tools > GitHub** submenu; see §25.13.)
+separate **Tools > Git and GitHub > GitHub** submenu; see §25.13.)
 
 ### §25.3 Feature Flag
 
@@ -7951,7 +7958,7 @@ The tab's `source_label` is set to `GitHub: owner/repo (branch)` and shown in th
 | `quill/core/github/local_repo.py` | Local git sync: `owner/repo` from the document's own checkout |
 | `quill/core/github/repo_admin.py` | `GitHubRepoAdminProvider` — repository lifecycle actions (§25.13, Beta 3) |
 | `quill/ui/github_repo_admin_dialogs.py` | Typed-confirm, create-repository, branch-protection wizard dialogs (§25.13) |
-| `quill/ui/main_frame_github_admin.py` | `GitHubAdminMixin` — Tools > GitHub command handlers (§25.13) |
+| `quill/ui/main_frame_github_admin.py` | `GitHubAdminMixin` — Tools > Git and GitHub > GitHub command handlers (§25.13) |
 
 ### §25.11 Implementation Status
 
@@ -8172,7 +8179,7 @@ new/changed item is visible immediately.
 
 ### §25.13 Repository Administration (0.9.0 Beta 3)
 
-**Tools > GitHub** is a new submenu (alongside **Tools > Sync Folder with
+**Tools > Git and GitHub > GitHub** is a new submenu (alongside **Tools > Sync Folder with
 GitHub...**) with eight commands covering the repository lifecycle actions
 GitHub's REST API supports but neither the single-file browser (§25.1-§25.11)
 nor the items viewer (§25.12) ever touched: creating and forking repositories,
@@ -8260,7 +8267,7 @@ so it is maintained by hand alongside every other GitHub entry point).
 
 ### §25.14 Local Git Accessibility (0.9.0 Beta 3)
 
-**Tools > Local Git** is the crown-jewel work from the git/gh integration
+**Tools > Git and GitHub > Local Git** is the crown-jewel work from the git/gh integration
 PRD (`docs/planning/github.md` section 4): a genuinely accessible local git
 experience, built specifically because interactive rebase and merge-conflict
 resolution are among the most screen-reader-hostile workflows in mainstream
@@ -8349,7 +8356,7 @@ QUILL-managed vendor copy from §2 of `docs/planning/github.md`).
 
 **Keybindings.** None by default — the single-letter QUILL Key leader-chord
 space is fully claimed by existing commands (see §25.13's chord table).
-Reachable via **Tools > Local Git** and the Command Palette; freely
+Reachable via **Tools > Git and GitHub > Local Git** and the Command Palette; freely
 assignable in Preferences > Keyboard Shortcuts.
 
 ### §25.14a Git Worktrees (1.0.0)
@@ -8379,7 +8386,7 @@ optional reason), or **prunable** (its folder is gone from disk).
 sentence, which is what the list dialog uses as its row text; four narrow
 columns would be four arrow-key journeys per row.
 
-**Commands (Tools > Local Git):**
+**Commands (Tools > Git and GitHub > Local Git):**
 
 - **Worktrees...** (`localgit.worktrees`) — the list dialog. Announces the
   count on open; each row is a `describe()` sentence; actions are **New
@@ -8464,7 +8471,7 @@ was confirmed by direct introspection of the installed `github` package
 (not assumed), specifically to catch the cases below where PyGithub's
 actual surface didn't match what the plan first hoped for.
 
-**Five new commands (Tools > GitHub):**
+**Five new commands (Tools > Git and GitHub > GitHub):**
 
 - **Browse Organization Repositories...** — lists the organizations the
   signed-in account belongs to, then that organization's repositories;
@@ -8536,7 +8543,7 @@ API), this tier shells out to the user's own `gh` CLI, because Codespaces
 and Copilot CLI have no REST/PyGithub equivalent — `gh` is the only
 supported client.
 
-**Four new commands (Tools > GitHub):**
+**Four new commands (Tools > Git and GitHub > GitHub):**
 
 - **Codespaces...** — lists the signed-in account's active Codespaces
   (name, repository, state); selecting one opens a menu to **Stop** or
@@ -8576,7 +8583,7 @@ notification channel in §... — see the Beta 3 release notes).
 
 **Feature mapping.** All four commands map to `core.github_remote`, same as
 every other GitHub command; no default keybindings (the leader-chord space
-is fully claimed), reachable via the Tools > GitHub menu and the Command
+is fully claimed), reachable via the Tools > Git and GitHub > GitHub menu and the Command
 Palette.
 
 ### §25.17 Packaging: self-hosted git and gh binaries (0.9.0 Beta 3)
@@ -8689,7 +8696,7 @@ Runs** view (§25.12's Views table), which shows run *history*. **Enter** on
 a row, or **Actions... > Run `<name>` on Branch...**, calls
 `GitHubWorkflowsMixin._run_selected_workflow`: prompts for a branch,
 confirms, and dispatches through the already-shipped
-`GitHubItemsProvider.dispatch_workflow` (§25.15's sibling **Tools > GitHub
+`GitHubItemsProvider.dispatch_workflow` (§25.15's sibling **Tools > Git and GitHub > GitHub
 > Dispatch Workflow...** command uses the same method). Requires a
 signed-in account; GitHub's own refusal for a workflow that doesn't accept
 manual (`workflow_dispatch`) runs is reported verbatim rather than QUILL

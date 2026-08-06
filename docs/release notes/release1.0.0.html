@@ -1734,17 +1734,17 @@ QUILL blocks the automatic redirect, reads the target itself, and makes
 exactly one more request to that address with no authorization header
 attached. Your token only ever goes to github.com.</p>
 <h3 id="administering-a-repository">Administering a repository</h3>
-<p><strong>Tools &gt; GitHub</strong> is a command center for the
-operations that would otherwise send you to a browser: <strong>Create
-Repository</strong> (with an immediate offer to synchronize a local
-folder, so you go from nothing to a folder pushing to GitHub without
-opening a browser), <strong>Fork Repository</strong>, <strong>Rename
-Repository</strong>, <strong>Change Repository Visibility</strong>,
-<strong>Change Default Branch</strong>, <strong>Delete Branch</strong>,
-<strong>Configure Branch Protection</strong>, and <strong>Commit
-Multiple Files</strong> (several local files in one atomic commit, which
-is deliberately different from Save to GitHub's single open
-document).</p>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> is a command
+center for the operations that would otherwise send you to a browser:
+<strong>Create Repository</strong> (with an immediate offer to
+synchronize a local folder, so you go from nothing to a folder pushing
+to GitHub without opening a browser), <strong>Fork Repository</strong>,
+<strong>Rename Repository</strong>, <strong>Change Repository
+Visibility</strong>, <strong>Change Default Branch</strong>,
+<strong>Delete Branch</strong>, <strong>Configure Branch
+Protection</strong>, and <strong>Commit Multiple Files</strong> (several
+local files in one atomic commit, which is deliberately different from
+Save to GitHub's single open document).</p>
 <p>Alongside them: <strong>Browse Organization Repositories</strong>,
 <strong>Create Release</strong> (with GitHub's auto-generated notes from
 merged pull requests as an option, published or left as a draft),
@@ -1830,25 +1830,25 @@ Nothing under your cursor ever changes, because the two never share a
 file. Switching context becomes "open a different file", something you
 choose and hear yourself doing, instead of "this file is now a different
 file", which happens to you without a sound.</p>
-<p><strong>Tools &gt; Local Git &gt; Worktrees</strong> announces the
-count as it opens, and every row is a whole sentence you hear once and
-understand ("Linked worktree at D:\usb\quill-spike, on branch spike,
-locked: on a USB drive") rather than four narrow columns you would have
-to arrow across. <strong>New Worktree</strong> asks where the folder
-goes and which branch it holds, or creates a brand-new branch with an
-optional starting point, and its folder field takes whatever you
-actually paste. QUILL checks before it runs git, so a mistake is a
-sentence you hear rather than an error you decode: the folder already
-has files in it, the folder is inside the repository, or that branch is
-already open in another worktree, and in that last case QUILL tells you
-which folder has it. <strong>Open in QUILL</strong> opens the same
-document you are reading from the worktree you picked, and offers a file
-picker pointed at the right folder if that file does not exist on that
-branch. <strong>Remove</strong> deletes the folder, never the branch,
-defaults to No, and if git refuses because of uncommitted changes it
-passes that on in plain language and asks a second, separate question
-rather than forcing it. <strong>Lock</strong> and
-<strong>Unlock</strong> protect a worktree on a USB drive or network
+<p><strong>Tools &gt; Git and GitHub &gt; Local Git &gt;
+Worktrees</strong> announces the count as it opens, and every row is a
+whole sentence you hear once and understand ("Linked worktree at
+D:\usb\quill-spike, on branch spike, locked: on a USB drive") rather
+than four narrow columns you would have to arrow across. <strong>New
+Worktree</strong> asks where the folder goes and which branch it holds,
+or creates a brand-new branch with an optional starting point, and its
+folder field takes whatever you actually paste. QUILL checks before it
+runs git, so a mistake is a sentence you hear rather than an error you
+decode: the folder already has files in it, the folder is inside the
+repository, or that branch is already open in another worktree, and in
+that last case QUILL tells you which folder has it. <strong>Open in
+QUILL</strong> opens the same document you are reading from the worktree
+you picked, and offers a file picker pointed at the right folder if that
+file does not exist on that branch. <strong>Remove</strong> deletes the
+folder, never the branch, defaults to No, and if git refuses because of
+uncommitted changes it passes that on in plain language and asks a
+second, separate question rather than forcing it. <strong>Lock</strong>
+and <strong>Unlock</strong> protect a worktree on a USB drive or network
 share that git would otherwise think had vanished, with a reason you can
 record and hear later. <strong>Prune</strong> clears records for folders
 that really are gone and says which ones it tidied, or that nothing
@@ -1857,15 +1857,15 @@ needed doing.</p>
 Every message is a finished sentence written to be spoken. None of these
 commands contacts GitHub or any network service.</p>
 <h3 id="synchronizing-a-folder">Synchronizing a folder</h3>
-<p><strong>Tools &gt; GitHub &gt; Sync Folder with GitHub</strong> works
-with any folder: notes, a writing project, source code, a whole body of
-work. If it is already a git repository with a remote, QUILL commits,
-pulls, and pushes in the background. If it is not, QUILL explains
-exactly what it proposes ("this runs <code>git init</code>, then adds
-the remote repository you provide as origin") and changes nothing until
-you approve. If the same file changed in both places, it lists the
-conflicts by name and stops; it never resolves a conflict by silently
-overwriting.</p>
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Sync Folder with
+GitHub</strong> works with any folder: notes, a writing project, source
+code, a whole body of work. If it is already a git repository with a
+remote, QUILL commits, pulls, and pushes in the background. If it is
+not, QUILL explains exactly what it proposes ("this runs
+<code>git init</code>, then adds the remote repository you provide as
+origin") and changes nothing until you approve. If the same file changed
+in both places, it lists the conflicts by name and stops; it never
+resolves a conflict by silently overwriting.</p>
 <p>QUILL uses your installed git and the credentials git already knows,
 an SSH key or your system's git credential manager. It creates no second
 set of credentials. The behavior mirrors a normal <code>git push</code>
@@ -2314,14 +2314,6 @@ disable one specific misbehaving feature, in a way that is announced,
 reversible, honored offline, and overridable locally. A menu item
 disabled by an advisory explains itself right there in the menu rather
 than being mysteriously greyed out.</li>
-<li><strong>Unlock codes</strong> switch on staged features: paste a
-code beginning with <code>QUILL-</code> into <strong>Help &gt; Redeem
-Unlock Code</strong>, and QUILL verifies its signature entirely on your
-machine, with no network call, no account, and nothing transmitted, then
-announces which feature was unlocked. Codes re-verify on every launch,
-and an expired or tampered code stops working and says why. If you never
-receive one, nothing changes for you: every standard feature works
-without one.</li>
 </ul>
 <h3 id="resetting-and-moving">Resetting and moving</h3>
 <p><strong>Reset Everything to Factory Defaults</strong> puts settings,

@@ -7134,9 +7134,9 @@ the branch to sync from the repository itself
 convention does — a general folder may plausibly be on
 <code>master</code> or any other branch name.</li>
 </ul>
-<p><strong>Tools → GitHub → Sync Folder with GitHub...</strong>
-(<code>sync.sync_folder</code>, empty default keymap chord, assignable)
-prompts for a folder (remembered in
+<p><strong>Tools → Git and GitHub → GitHub → Sync Folder with
+GitHub...</strong> (<code>sync.sync_folder</code>, empty default keymap
+chord, assignable) prompts for a folder (remembered in
 <code>Settings.git_sync_last_folder</code> for next time), checks its
 status in the background, and either syncs directly (already a git repo
 with a remote) or explains exactly what setup is needed and asks first:
@@ -7549,17 +7549,22 @@ never document content or API keys.</li>
 <p>Quill provides two complementary comparison workflows: an accessible
 interactive compare session and a generated diff report.</p>
 <ul>
-<li><strong>Compare commands</strong> (<code>Tools → Comparison</code>):
-<code>Compare with File…</code>, <code>Compare Open Documents…</code>,
-<code>Next Difference</code>, <code>Previous Difference</code>,
+<li><strong>Compare commands</strong> (<code>Tools → Comparison</code>,
+the single canonical home): <code>Compare with File…</code>,
+<code>Compare Open Documents…</code>, <code>Next Difference</code>,
+<code>Previous Difference</code>,
 <code>Announce Current Difference</code>, <code>Difference List…</code>,
 <code>Toggle Synchronized Navigation</code>,
-<code>Compare Options…</code>, <code>Create Difference Summary</code>,
+<code>Toggle Ignore Whitespace</code>, <code>Compare Options…</code>,
+<code>Generate Accessible Report</code>,
+<code>Create Difference Summary</code>,
 <code>Copy Current Difference</code>, <code>Copy All Differences</code>.
-A <code>Navigate → Compare</code> submenu carries the same commands
-under the <code>tools.compare_*</code> ids.</li>
-<li><strong>Core navigation</strong> (<code>Navigate → Compare</code>,
-post-#357 chord class): <code>Ctrl+Alt+Shift+.</code> next difference,
+(The former <code>Navigate → Compare</code> duplicate submenu was
+removed in 1.0.0 — it repeated a subset of these under separate ids and
+mislabeled two of them; its two unique items, Toggle Ignore Whitespace
+and Generate Accessible Report, moved into Tools → Comparison.)</li>
+<li><strong>Core navigation</strong> (post-#357 chord class):
+<code>Ctrl+Alt+Shift+.</code> next difference,
 <code>Ctrl+Alt+Shift+,</code> previous difference,
 <code>Ctrl+Alt+Shift+D</code> read current difference. The Difference
 List and Toggle Synchronized Navigation have no default key; assign them
@@ -9503,11 +9508,18 @@ existing pattern).
 
 ---
 
-### 5.84z Signed offline unlock codes (Help &gt; Redeem Unlock Code...)
+### 5.84z Signed offline unlock codes (developer builds only as of 1.0.0)
 
 **Goal.** Enable a locked feature (`FeatureDefinition.locked_off`) for a
 specific user — early testers, partners, staged rollouts — without a build,
 a server, or an account. A code is a signed capability, not a serial number.
+
+**Public visibility (2026-08-06).** The redeem surface (the Help-menu item and
+the `help.redeem_unlock_code` palette command) is gated behind
+`is_dev_build()` and hidden from public builds of every app; it was also
+removed from the user guide and release notes. Redeemed codes are still
+honored by the feature layer in all builds — only the way to enter one is
+tester-only.
 
 **Model (`quill/core/unlock_codes.py`, wx-free).** A code is
 `QUILL-&lt;base32(payload || Ed25519 signature)&gt;` where the payload is
@@ -15272,8 +15284,8 @@ submenu:</p>
   Manage GitHub Accounts...</code></pre>
 <p>All five GitHub commands are also available through the Command
 Palette. (Repository lifecycle commands — create, fork, rename, and more
-— live in a separate <strong>Tools &gt; GitHub</strong> submenu; see
-§25.13.)</p>
+— live in a separate <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong> submenu; see §25.13.)</p>
 <h3 id="253-feature-flag">§25.3 Feature Flag</h3>
 <p>Feature ID: <code>core.github_remote</code><br />
 Category: <code>core</code><br />
@@ -15463,8 +15475,8 @@ checkout</td>
 </tr>
 <tr>
 <td><code>quill/ui/main_frame_github_admin.py</code></td>
-<td><code>GitHubAdminMixin</code> — Tools &gt; GitHub command handlers
-(§25.13)</td>
+<td><code>GitHubAdminMixin</code> — Tools &gt; Git and GitHub &gt;
+GitHub command handlers (§25.13)</td>
 </tr>
 </tbody>
 </table>
@@ -15765,18 +15777,19 @@ and reload the list on success so the new/changed item is visible
 immediately.</p>
 <h3 id="2513-repository-administration-090-beta-3">§25.13 Repository
 Administration (0.9.0 Beta 3)</h3>
-<p><strong>Tools &gt; GitHub</strong> is a new submenu (alongside
-<strong>Tools &gt; Sync Folder with GitHub...</strong>) with eight
-commands covering the repository lifecycle actions GitHub's REST API
-supports but neither the single-file browser (§25.1-§25.11) nor the
-items viewer (§25.12) ever touched: creating and forking repositories,
-renaming, changing visibility and default branch, branch protection,
-deleting a branch, and committing several files in one atomic commit.
-See <code>docs/planning/github.md</code> (retired once this section
-shipped) for the full design rationale — extending the existing PyGithub
-provider rather than shelling out to the <code>gh</code> CLI, and why
-repository create/fork/rename never existed before this release (the
-provider was deliberately built narrow, not blocked by any scope or API
+<p><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> is a new
+submenu (alongside <strong>Tools &gt; Sync Folder with
+GitHub...</strong>) with eight commands covering the repository
+lifecycle actions GitHub's REST API supports but neither the single-file
+browser (§25.1-§25.11) nor the items viewer (§25.12) ever touched:
+creating and forking repositories, renaming, changing visibility and
+default branch, branch protection, deleting a branch, and committing
+several files in one atomic commit. See
+<code>docs/planning/github.md</code> (retired once this section shipped)
+for the full design rationale — extending the existing PyGithub provider
+rather than shelling out to the <code>gh</code> CLI, and why repository
+create/fork/rename never existed before this release (the provider was
+deliberately built narrow, not blocked by any scope or API
 limitation).</p>
 <p>Every command in this submenu:</p>
 <ol type="1">
@@ -15933,17 +15946,17 @@ AST-scannable, so it is maintained by hand alongside every other GitHub
 entry point).</p>
 <h3 id="2514-local-git-accessibility-090-beta-3">§25.14 Local Git
 Accessibility (0.9.0 Beta 3)</h3>
-<p><strong>Tools &gt; Local Git</strong> is the crown-jewel work from
-the git/gh integration PRD (<code>docs/planning/github.md</code> section
-4): a genuinely accessible local git experience, built specifically
-because interactive rebase and merge-conflict resolution are among the
-most screen-reader-hostile workflows in mainstream software, and no
-existing tool — not the <code>git</code> CLI, not a GUI client — was
-built with that problem in mind. This is entirely local; it never talks
-to GitHub's API (that stays in <code>quill/core/github/*</code>) and
-never pushes or pulls a remote (that stays in
-<code>git_sync.py</code>/<code>vault/sync.py</code>) — it only operates
-on the working copy and its own history.</p>
+<p><strong>Tools &gt; Git and GitHub &gt; Local Git</strong> is the
+crown-jewel work from the git/gh integration PRD
+(<code>docs/planning/github.md</code> section 4): a genuinely accessible
+local git experience, built specifically because interactive rebase and
+merge-conflict resolution are among the most screen-reader-hostile
+workflows in mainstream software, and no existing tool — not the
+<code>git</code> CLI, not a GUI client — was built with that problem in
+mind. This is entirely local; it never talks to GitHub's API (that stays
+in <code>quill/core/github/*</code>) and never pushes or pulls a remote
+(that stays in <code>git_sync.py</code>/<code>vault/sync.py</code>) — it
+only operates on the working copy and its own history.</p>
 <p><strong>Repository resolution.</strong> Every command resolves a
 repository root the same way: the nearest enclosing <code>.git</code>
 above the current document (walking up, following the same logic
@@ -16059,9 +16072,9 @@ GitHub account and touch no network, so they are not gated by
 vendor copy from §2 of <code>docs/planning/github.md</code>).</p>
 <p><strong>Keybindings.</strong> None by default — the single-letter
 QUILL Key leader-chord space is fully claimed by existing commands (see
-§25.13's chord table). Reachable via <strong>Tools &gt; Local
-Git</strong> and the Command Palette; freely assignable in Preferences
-&gt; Keyboard Shortcuts.</p>
+§25.13's chord table). Reachable via <strong>Tools &gt; Git and GitHub
+&gt; Local Git</strong> and the Command Palette; freely assignable in
+Preferences &gt; Keyboard Shortcuts.</p>
 <h3 id="2514a-git-worktrees-100">§25.14a Git Worktrees (1.0.0)</h3>
 <p><strong>Why worktrees are an accessibility feature, not a power-user
 feature.</strong> Checking out a branch in place rewrites every file in
@@ -16090,7 +16103,8 @@ reason), or <strong>prunable</strong> (its folder is gone from disk).
 <code>WorktreeEntry.describe()</code> renders exactly this state as one
 spoken sentence, which is what the list dialog uses as its row text;
 four narrow columns would be four arrow-key journeys per row.</p>
-<p><strong>Commands (Tools &gt; Local Git):</strong></p>
+<p><strong>Commands (Tools &gt; Git and GitHub &gt; Local
+Git):</strong></p>
 <ul>
 <li><strong>Worktrees...</strong> (<code>localgit.worktrees</code>) —
 the list dialog. Announces the count on open; each row is a
@@ -16206,7 +16220,8 @@ confirmed by direct introspection of the installed <code>github</code>
 package (not assumed), specifically to catch the cases below where
 PyGithub's actual surface didn't match what the plan first hoped
 for.</p>
-<p><strong>Five new commands (Tools &gt; GitHub):</strong></p>
+<p><strong>Five new commands (Tools &gt; Git and GitHub &gt;
+GitHub):</strong></p>
 <ul>
 <li><strong>Browse Organization Repositories...</strong> — lists the
 organizations the signed-in account belongs to, then that organization's
@@ -16315,7 +16330,8 @@ against the REST API), this tier shells out to the user's own
 <code>gh</code> CLI, because Codespaces and Copilot CLI have no
 REST/PyGithub equivalent — <code>gh</code> is the only supported
 client.</p>
-<p><strong>Four new commands (Tools &gt; GitHub):</strong></p>
+<p><strong>Four new commands (Tools &gt; Git and GitHub &gt;
+GitHub):</strong></p>
 <ul>
 <li><strong>Codespaces...</strong> — lists the signed-in account's
 active Codespaces (name, repository, state); selecting one opens a menu
@@ -16361,7 +16377,8 @@ the same caveat (e.g. Narrator's direct UIA notification channel in §...
 <p><strong>Feature mapping.</strong> All four commands map to
 <code>core.github_remote</code>, same as every other GitHub command; no
 default keybindings (the leader-chord space is fully claimed), reachable
-via the Tools &gt; GitHub menu and the Command Palette.</p>
+via the Tools &gt; Git and GitHub &gt; GitHub menu and the Command
+Palette.</p>
 <h3
 id="2517-packaging-self-hosted-git-and-gh-binaries-090-beta-3">§25.17
 Packaging: self-hosted git and gh binaries (0.9.0 Beta 3)</h3>
@@ -16521,7 +16538,7 @@ Branch...</strong>, calls
 <code>GitHubWorkflowsMixin._run_selected_workflow</code>: prompts for a
 branch, confirms, and dispatches through the already-shipped
 <code>GitHubItemsProvider.dispatch_workflow</code> (§25.15's sibling
-**Tools &gt; GitHub</p>
+**Tools &gt; Git and GitHub &gt; GitHub</p>
 <blockquote>
 <p>Dispatch Workflow...** command uses the same method). Requires a
 signed-in account; GitHub's own refusal for a workflow that doesn't

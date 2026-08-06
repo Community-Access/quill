@@ -39,6 +39,12 @@ class UnlockCodesMixin:
         )
 
     def _register_unlock_code_commands(self) -> None:
+        from quill.core.app_launcher import is_dev_build
+
+        # Tester-only surface (hidden from public builds, matching the Help
+        # menu item): redeemed codes are still honored by the feature layer.
+        if not is_dev_build():
+            return
         self.commands.try_register(
             "help.redeem_unlock_code",
             "Help: Redeem Unlock Code...",

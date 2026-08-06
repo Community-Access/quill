@@ -1396,7 +1396,7 @@ attached. Your token only ever goes to github.com.
 
 ### Administering a repository
 
-**Tools > GitHub** is a command center for the operations that would otherwise send you to a
+**Tools > Git and GitHub > GitHub** is a command center for the operations that would otherwise send you to a
 browser: **Create Repository** (with an immediate offer to synchronize a local folder, so
 you go from nothing to a folder pushing to GitHub without opening a browser), **Fork
 Repository**, **Rename Repository**, **Change Repository Visibility**, **Change Default
@@ -1478,7 +1478,7 @@ never share a file. Switching context becomes "open a different file", something
 and hear yourself doing, instead of "this file is now a different file", which happens to you
 without a sound.
 
-**Tools > Local Git > Worktrees** announces the count as it opens, and every row is a whole
+**Tools > Git and GitHub > Local Git > Worktrees** announces the count as it opens, and every row is a whole
 sentence you hear once and understand ("Linked worktree at D:\usb\quill-spike, on branch
 spike, locked: on a USB drive") rather than four narrow columns you would have to arrow
 across. **New Worktree** asks where the folder goes and which branch it holds, or creates a
@@ -1500,7 +1500,7 @@ sentence written to be spoken. None of these commands contacts GitHub or any net
 
 ### Synchronizing a folder
 
-**Tools > GitHub > Sync Folder with GitHub** works with any folder: notes, a writing project, source
+**Tools > Git and GitHub > GitHub > Sync Folder with GitHub** works with any folder: notes, a writing project, source
 code, a whole body of work. If it is already a git repository with a remote, QUILL commits,
 pulls, and pushes in the background. If it is not, QUILL explains exactly what it proposes
 ("this runs `git init`, then adds the remote repository you provide as origin") and changes
@@ -1891,12 +1891,6 @@ glance at the screen to catch it.
   way that is announced, reversible, honored offline, and overridable locally. A menu item
   disabled by an advisory explains itself right there in the menu rather than being mysteriously
   greyed out.
-- **Unlock codes** switch on staged features: paste a code beginning with `QUILL-` into **Help >
-  Redeem Unlock Code**, and QUILL verifies its signature entirely on your machine, with no
-  network call, no account, and nothing transmitted, then announces which feature was unlocked.
-  Codes re-verify on every launch, and an expired or tampered code stops working and says why. If
-  you never receive one, nothing changes for you: every standard feature works without one.
-
 ### Resetting and moving
 
 **Reset Everything to Factory Defaults** puts settings, shortcuts, menu customizations, and the

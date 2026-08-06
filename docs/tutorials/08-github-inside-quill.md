@@ -142,7 +142,7 @@ action and the exact item numbers before anything changes.
 Try it: load a repo you maintain, select **New Issue...**, give it a title,
 and watch it appear in the list after you confirm.
 
-## 4. Repository administration (Tools > GitHub)
+## 4. Repository administration (Tools > Git and GitHub > GitHub)
 
 Everything above works on repositories that already exist. **Tools >
 GitHub** creates and configures them.
@@ -172,7 +172,7 @@ Branch = Shift+X, Commit Multiple Files = Shift+U.
 
 ### Organizations, releases, workflows, notifications, security
 
-Five more commands round out **Tools > GitHub**:
+Five more commands round out **Tools > Git and GitHub > GitHub**:
 
 - **Browse Organization Repositories...** — pick an organization you
   belong to, then one of its repositories, and QUILL opens it straight
@@ -190,7 +190,7 @@ Five more commands round out **Tools > GitHub**:
 
 ## 5. Local Git: resolving conflicts and rebasing, out loud
 
-Switch gears entirely — **Tools > Local Git** needs no GitHub account and
+Switch gears entirely — **Tools > Git and GitHub > Local Git** needs no GitHub account and
 touches no network. It works on the working copy of any git repository on
 your machine, and it exists because two of git's most common tasks —
 resolving a merge conflict and reordering commits with an interactive
@@ -238,7 +238,7 @@ Rebase** restores your branch exactly as it was if you change your mind.
 
 None of the ten Local Git commands have a default keyboard shortcut — every
 letter on the QUILL Key leader is already claimed elsewhere — but all ten
-are in the Command Palette and the **Tools > Local Git** menu, and you can
+are in the Command Palette and the **Tools > Git and GitHub > Local Git** menu, and you can
 assign your own shortcuts in **Preferences > Keyboard Shortcuts**.
 
 ## 6. Syncing a whole folder
@@ -255,8 +255,8 @@ on any folder you point it at.
 
 Browse and save individual files without an account; sign in once for
 everything else. The Items viewer's **Batch...** and **Actions...** menus
-cover day-to-day issue/PR work; **Tools > GitHub** covers repository
-lifecycle and the rest of the API; **Tools > Local Git** covers the parts
+cover day-to-day issue/PR work; **Tools > Git and GitHub > GitHub** covers repository
+lifecycle and the rest of the API; **Tools > Git and GitHub > Local Git** covers the parts
 that were never about GitHub at all — and are, as far as we can tell, the
 first genuinely accessible interactive rebase and merge-conflict experience
 anywhere.

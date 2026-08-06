@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import sys
 
-from quill.core.app_launcher import is_app_released
+from quill.core.app_launcher import is_app_released, is_dev_build
 from quill.core.i18n import _
 
 
@@ -839,10 +839,6 @@ class MenuBuilderMixin:
         self._id_speak_window_title = wx.NewIdRef()
         self._id_speak_full_path = wx.NewIdRef()
         self._id_speak_status_summary = wx.NewIdRef()
-        self._id_compare_start_with_file = wx.NewIdRef()
-        self._id_compare_next = wx.NewIdRef()
-        self._id_compare_previous = wx.NewIdRef()
-        self._id_compare_current = wx.NewIdRef()
         self._id_compare_toggle_whitespace = wx.NewIdRef()
         self._id_compare_generate_report = wx.NewIdRef()
         self._id_next_structure = wx.NewIdRef()
@@ -932,42 +928,8 @@ class MenuBuilderMixin:
             self._menu_label(_("Speak &Status Summary"), "navigate.speak_status_summary"),
         )
         navigate_menu.AppendSeparator()
-        compare_menu = wx.Menu()
-        compare_menu.Append(
-            self._id_compare_start_with_file,
-            self._menu_label(_("&Compare with File..."), "tools.compare_with_file"),
-        )
-        compare_menu.AppendSeparator()
-        # #357 keymap consolidation: command ids use the tools.compare_*
-        # namespace and the F8/Shift+F8/Ctrl+F8 inline accelerators were
-        # stripped; the canonical bindings now live in DEFAULT_KEYMAP as
-        # Ctrl+Alt+Shift+> / < / D (see quill/core/keymap.py).
-        compare_menu.Append(
-            self._id_compare_next,
-            self._menu_label(_("&Next Difference"), "tools.compare_next_difference"),
-        )
-        compare_menu.Append(
-            self._id_compare_previous,
-            self._menu_label(_("&Previous Difference"), "tools.compare_previous_difference"),
-        )
-        compare_menu.Append(
-            self._id_compare_current,
-            self._menu_label(
-                _("Read &Current Difference"),
-                "tools.compare_announce_difference",
-            ),
-        )
-        compare_menu.AppendSeparator()
-        compare_menu.Append(
-            self._id_compare_toggle_whitespace,
-            self._menu_label(_("Toggle &Ignore Whitespace"), "tools.compare_toggle_sync"),
-        )
-        compare_menu.Append(
-            self._id_compare_generate_report,
-            self._menu_label(_("&Generate Accessible Report"), "tools.compare_options"),
-        )
-        navigate_menu.AppendSubMenu(compare_menu, _("&Compare"))
-        navigate_menu.AppendSeparator()
+        # Compare lives only under Tools > Comparison (the canonical, complete
+        # submenu); the old Navigate > Compare duplicate is gone.
         navigate_menu.Append(
             self._id_outline_navigator,
             self._menu_label(_("Outline &Navigator..."), "navigate.outline_navigator"),
@@ -977,22 +939,43 @@ class MenuBuilderMixin:
             self._menu_label(_("&Heading Organizer..."), "navigate.heading_organizer"),
         )
         navigate_menu.AppendSeparator()
-        navigate_menu.Append(
+        folding_menu = wx.Menu()
+        folding_menu.Append(
             self._id_toggle_fold,
             self._menu_label(_("Toggle &Fold"), "edit.toggle_fold"),
         )
-        navigate_menu.Append(
+        folding_menu.Append(
             self._id_next_fold,
             self._menu_label(_("Ne&xt Fold"), "navigate.next_fold"),
         )
-        navigate_menu.Append(
+        folding_menu.Append(
             self._id_previous_fold,
             self._menu_label(_("Pre&vious Fold"), "navigate.previous_fold"),
         )
-        navigate_menu.Append(
+        folding_menu.Append(
             self._id_list_folds,
-            self._menu_label(_("List &Folds..."), "tools.list_folds"),
+            self._menu_label(_("&List Folds..."), "tools.list_folds"),
         )
+        navigate_menu.AppendSubMenu(folding_menu, _("Fol&ding"))
+        # Sticky Notes are position-anchored annotations, so they live with the
+        # navigation surfaces rather than under Tools.
+        self._id_sticky_notes = wx.NewIdRef()
+        self._id_new_sticky_note = wx.NewIdRef()
+        sticky_menu = wx.Menu()
+        sticky_menu.Append(
+            self._id_sticky_notes,
+            self._menu_label(_("&Sticky Notes..."), "tools.sticky_notes"),
+        )
+        sticky_menu.Append(
+            self._id_new_sticky_note,
+            self._menu_label(_("&New Sticky Note..."), "tools.sticky_note_capture"),
+        )
+        self._id_sticky_browser = wx.NewIdRef()
+        sticky_menu.Append(
+            self._id_sticky_browser,
+            self._menu_label(_("Sticky Notes &Browser..."), "notes.sticky_browser"),
+        )
+        navigate_menu.AppendSubMenu(sticky_menu, _("Stick&y Notes"))
         navigate_menu.AppendSeparator()
         navigate_menu.Append(
             self._id_follow_link,
@@ -1517,8 +1500,6 @@ class MenuBuilderMixin:
         self._id_word_count = wx.NewIdRef()
         self._id_quill_eraser = wx.NewIdRef()
         self._id_quill_eraser_selection = wx.NewIdRef()
-        self._id_sticky_notes = wx.NewIdRef()
-        self._id_new_sticky_note = wx.NewIdRef()
         self._id_spell_check = wx.NewIdRef()
         self._id_spell_check_ranked = wx.NewIdRef()
         self._id_spell_check_word = wx.NewIdRef()
@@ -1928,7 +1909,8 @@ class MenuBuilderMixin:
             self._id_github_copilot_explain,
             self._menu_label(_("Explain a Command..."), "github.copilot_explain"),
         )
-        tools_menu.AppendSubMenu(github_admin_menu, _("&GitHub"))
+        git_family_menu = wx.Menu()
+        git_family_menu.AppendSubMenu(github_admin_menu, _("Git&Hub"))
         local_git_menu = wx.Menu()
         local_git_menu.Append(
             self._id_localgit_uncommitted,
@@ -1983,7 +1965,8 @@ class MenuBuilderMixin:
             self._id_localgit_new_worktree,
             self._menu_label(_("&New Worktree..."), "localgit.new_worktree"),
         )
-        tools_menu.AppendSubMenu(local_git_menu, _("&Local Git"))
+        git_family_menu.AppendSubMenu(local_git_menu, _("&Local Git"))
+        tools_menu.AppendSubMenu(git_family_menu, _("&Git and GitHub"))
         tools_menu.AppendSeparator()
 
         # Writing & Language -----------------------------------------------
@@ -2664,7 +2647,9 @@ class MenuBuilderMixin:
         compare_menu.Append(self._id_compare_announce_difference, _("&Announce Current Difference"))
         compare_menu.Append(self._id_compare_difference_list, _("Difference &List..."))
         compare_menu.Append(self._id_compare_toggle_sync, _("Toggle &Synchronized Navigation"))
+        compare_menu.Append(self._id_compare_toggle_whitespace, _("Toggle &Ignore Whitespace"))
         compare_menu.Append(self._id_compare_options, _("Compare O&ptions..."))
+        compare_menu.Append(self._id_compare_generate_report, _("&Generate Accessible Report"))
         compare_menu.AppendSeparator()
         compare_menu.Append(self._id_compare_create_summary, _("Create Difference &Summary"))
         compare_menu.Append(self._id_compare_copy_current, _("Copy &Current Difference"))
@@ -3040,21 +3025,6 @@ class MenuBuilderMixin:
         )
         tools_menu.AppendSubMenu(share_menu, _("&Share"))
 
-        # Sticky Notes -------------------------------------------------------
-        tools_menu.AppendSeparator()
-        tools_menu.Append(
-            self._id_sticky_notes,
-            self._menu_label(_("Sticky &Notes..."), "tools.sticky_notes"),
-        )
-        tools_menu.Append(
-            self._id_new_sticky_note,
-            self._menu_label(_("New Sticky &Note..."), "tools.sticky_note_capture"),
-        )
-        self._id_sticky_browser = wx.NewIdRef()
-        tools_menu.Append(
-            self._id_sticky_browser,
-            self._menu_label(_("Sticky Notes &Browser..."), "notes.sticky_browser"),
-        )
         self._id_global_hotkeys = wx.NewIdRef()
         tools_menu.Append(
             self._id_global_hotkeys,
@@ -3231,10 +3201,13 @@ class MenuBuilderMixin:
             self._menu_label(_("&Download Optional Components..."), "help.download_components"),
         )
         self._id_redeem_unlock_code = wx.NewIdRef()
-        help_menu.Append(
-            self._id_redeem_unlock_code,
-            self._menu_label(_("Redeem &Unlock Code..."), "help.redeem_unlock_code"),
-        )
+        if is_dev_build():
+            # Tester-only surface: redeemed codes are still honored everywhere,
+            # but the redeem entry is hidden from public builds (all apps).
+            help_menu.Append(
+                self._id_redeem_unlock_code,
+                self._menu_label(_("Redeem &Unlock Code..."), "help.redeem_unlock_code"),
+            )
         help_menu.AppendSeparator()
         self._id_open_user_guide = wx.NewIdRef()
         self._id_open_third_party_notices = wx.NewIdRef()

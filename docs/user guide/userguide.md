@@ -4668,7 +4668,7 @@ QUILL does not run its own sync service — no QUILL cloud account, no QUILL-hos
 
 **Sync your settings via a folder.** Open **Help → Personalise QUILL** (or **Preferences**) and look at "Where should QUILL store your data?" — the same page the first-run wizard shows. Choose **"Choose a folder:"** and pick a folder that OneDrive, Dropbox, Google Drive, or iCloud already keeps in sync across your devices (or a folder on a USB drive you carry between computers). QUILL writes its settings, snippets, dictionaries, and keymap there; your cloud provider or removable drive carries them to your other devices the same way it already carries everything else in that folder. There is nothing new to learn about QUILL for this — it is the existing Data Location setting, now documented as a sync strategy because that is exactly what it already does. One important limit: QUILL has no way to merge changes made on two devices at once, so don't run QUILL from two machines pointed at the same synced folder at the same time — treat it like any shared file, one writer at a time.
 
-**Sync a folder with GitHub.** **Tools → GitHub → Sync Folder with GitHub...** works on any folder — a writing project, a research folder, anything — not just a Vault. Point it at a folder:
+**Sync a folder with GitHub.** **Tools → Git and GitHub → GitHub → Sync Folder with GitHub...** works on any folder — a writing project, a research folder, anything — not just a Vault. Point it at a folder:
 
 - If the folder is already a git repository with a remote configured, QUILL commits your changes, pulls anyone else's, and pushes, all in the background, and tells you when it's done.
 - If it isn't set up yet, QUILL says so plainly and asks first — for example, *"This folder is not a git repository yet. QUILL can set it up: this runs 'git init' in the folder, then adds the remote repository you provide as 'origin'. Continue?"* Say yes, paste in your repository's URL (for example `https://github.com/you/your-repo.git`), and QUILL sets it up and syncs.
@@ -5336,7 +5336,7 @@ covering Whisper.cpp, Faster Whisper, and Vosk — see below), **Kokoro** and
 playback & chapters** (FFmpeg for exporting compressed audio, the mpv playback
 engine, and MP3 audiobook chapter markers — all in one place, each piece fetched
 only when its feature is first used), the **MathCAT** math-speech engine, **Git**
-and the **GitHub CLI** (portable fallback copies for Tools > Local Git and Tools >
+and the **GitHub CLI** (portable fallback copies for Tools > Git and GitHub > Local Git and Tools >
 GitHub's Codespaces/Copilot commands — see [Downloading git and the GitHub
 CLI](#downloading-git-and-the-github-cli) below), the
 **Node.js** runtime (for Node Quillins and the Developer Console's TypeScript
@@ -8068,7 +8068,7 @@ Every one of these needs a signed-in account (the same as Batch operations); the
 
 One detail worth knowing even though it doesn't change how you use the feature: GitHub's artifact download link redirects to a different, short-lived signed address (typically hosted on Azure Blob Storage) to actually serve the file. QUILL never lets your GitHub token follow that redirect — it deliberately intercepts the redirect itself and re-requests the new address without your sign-in token attached, so the token is only ever sent to github.com.
 
-**Repository administration (0.9.0 Beta 3).** Beyond browsing and the Items viewer, **Tools > GitHub** has eight commands for the repository itself — the things you'd otherwise have to open a browser for:
+**Repository administration (0.9.0 Beta 3).** Beyond browsing and the Items viewer, **Tools > Git and GitHub > GitHub** has eight commands for the repository itself — the things you'd otherwise have to open a browser for:
 
 - **Create Repository...** — name, description, private or public, and an optional organization. Right after creating it, QUILL offers to set up a local folder synced to the new repository in one step, using the same folder-sync engine as **Sync Folder with GitHub** (see "QUILL Sync" above) — so starting a brand-new project never means leaving QUILL.
 - **Fork Repository...** — forks into your account or an organization you choose, with the same offer to sync it locally afterward.
@@ -8087,7 +8087,7 @@ All eight commands are in the Command Palette too, and all have default keyboard
 
 GitHub's file API is limited to 1 MB. Files larger than that must be downloaded manually from github.com.
 
-**Organizations, releases, workflows, notifications, and security alerts (0.9.0 Beta 3).** Five more commands under **Tools > GitHub**:
+**Organizations, releases, workflows, notifications, and security alerts (0.9.0 Beta 3).** Five more commands under **Tools > Git and GitHub > GitHub**:
 
 - **Browse Organization Repositories...** lists the organizations your signed-in account belongs to, then that organization's repositories; pick one to open it straight into the GitHub Items viewer. This is repository browsing only — QUILL does not manage organization teams or team permissions.
 - **Create Release...** asks for a tag and an optional title, then either your own release notes or GitHub's own auto-generated notes (summarizing merged pull requests since the last release), and whether to save it as a draft or publish immediately.
@@ -8095,7 +8095,7 @@ GitHub's file API is limited to 1 MB. Files larger than that must be downloaded 
 - **Notifications...** is a real inbox: every notification for your account across every repository, not just the one you have loaded, each one telling you whether it's read or unread, which repository it's from, and why you got it. Selecting one opens your GitHub notifications page and marks it read.
 - **Security Alerts...** lists a repository's open Dependabot alerts — severity, the affected package, and a summary — so you can see what needs attention without opening a browser.
 
-**Codespaces and Copilot CLI (0.9.0 Beta 3, needs live-device verification).** Four more commands under **Tools > GitHub**, built on your own installed `gh` command-line tool rather than QUILL's usual GitHub connection — see [Downloading git and the GitHub CLI](#downloading-git-and-the-github-cli) below if you don't already have `gh`:
+**Codespaces and Copilot CLI (0.9.0 Beta 3, needs live-device verification).** Four more commands under **Tools > Git and GitHub > GitHub**, built on your own installed `gh` command-line tool rather than QUILL's usual GitHub connection — see [Downloading git and the GitHub CLI](#downloading-git-and-the-github-cli) below if you don't already have `gh`:
 
 - **Codespaces...** lists your active Codespaces (name, repository, and state); select one for a menu to **Stop** or **Delete** it.
 - **Create Codespace...** asks for a repository and an optional branch, then creates a new Codespace. **Codespaces use GitHub compute and storage minutes and may cost money** — this is the one GitHub command in QUILL that says so explicitly, and it asks for confirmation naming that cost before doing anything.
@@ -8110,7 +8110,7 @@ GitHub remote access is controlled by the feature flag `core.github_remote`. If 
 
 ## Local Git: accessible merge conflicts and interactive rebase
 
-**Tools > Local Git** brings the two hardest parts of everyday git work — resolving a merge conflict and reordering commits with an interactive rebase — into QUILL as genuinely accessible, guided flows. Nothing here needs a GitHub account or touches the network; it works on any local git repository.
+**Tools > Git and GitHub > Local Git** brings the two hardest parts of everyday git work — resolving a merge conflict and reordering commits with an interactive rebase — into QUILL as genuinely accessible, guided flows. Nothing here needs a GitHub account or touches the network; it works on any local git repository.
 
 **Uncommitted Changes...** shows every file you've changed since your last commit, split into staged and unstaged, with an accessible difference view for whichever file you select — the same reading style as Compare Documents, not a raw diff. Select a file and press **Stage** or **Unstage**, or **Stage All** to stage everything at once.
 
@@ -8125,7 +8125,7 @@ GitHub remote access is controlled by the feature flag `core.github_remote`. If 
 - **Who Wrote This Line...** runs `git blame` on wherever your cursor is in the current file and tells you who last touched that line, when, and the commit's summary.
 - **Start Bisect... / End Bisect** guides you through a `git bisect` session as a plain question-and-answer loop: QUILL checks out a commit and asks "Is this version good or bad?" — answer, and it narrows the search until it announces exactly which commit introduced the problem.
 
-None of these commands have a default keyboard shortcut — every letter on the QUILL Key leader chord is already claimed by another command — but all twelve are in the Command Palette and in the **Tools > Local Git** menu, and you can assign your own shortcut to any of them in **Preferences > Keyboard Shortcuts**.
+None of these commands have a default keyboard shortcut — every letter on the QUILL Key leader chord is already claimed by another command — but all twelve are in the Command Palette and in the **Tools > Git and GitHub > Local Git** menu, and you can assign your own shortcut to any of them in **Preferences > Keyboard Shortcuts**.
 
 ### Worktrees: one folder per branch, so your open document never changes underneath you
 
@@ -8139,7 +8139,7 @@ With a worktree, nothing under your cursor ever changes. Switching context becom
 
 #### Seeing what you have
 
-**Tools > Local Git > Worktrees...** opens the list. QUILL announces how many worktrees the repository has as the dialog opens, and each row reads as a complete sentence rather than a set of columns you have to arrow across:
+**Tools > Git and GitHub > Local Git > Worktrees...** opens the list. QUILL announces how many worktrees the repository has as the dialog opens, and each row reads as a complete sentence rather than a set of columns you have to arrow across:
 
 - *"Main worktree at S:\code\quill, on branch main"*
 - *"Linked worktree at S:\code\quill-feature-x, on branch feature/x"*
@@ -8176,17 +8176,17 @@ Select a worktree and press **Open in QUILL** (or just press Enter on the row). 
 - **A branch can only be checked out in one worktree at a time.** This is git's rule, not QUILL's. If you pick a branch that is already open somewhere else, QUILL tells you exactly which folder has it so you can open that folder instead.
 - **A worktree cannot live inside the repository it belongs to.** Put it beside the repository folder, not within it.
 - **Removing a worktree with uncommitted changes is refused** unless you confirm twice, as above.
-- **Worktrees need `git`**, like everything else under Tools > Local Git, and they are disabled in Safe Mode.
+- **Worktrees need `git`**, like everything else under Tools > Git and GitHub > Local Git, and they are disabled in Safe Mode.
 
 #### Keystrokes
 
-Neither command has a default shortcut, for the same reason the other Local Git commands do not — the leader-chord letters are all taken. Both are in **Tools > Local Git** and in the Command Palette (**Local Git: Worktrees...** and **Local Git: New Worktree...**), and you can assign any shortcut you like to either in **Preferences > Keyboard Shortcuts**.
+Neither command has a default shortcut, for the same reason the other Local Git commands do not — the leader-chord letters are all taken. Both are in **Tools > Git and GitHub > Local Git** and in the Command Palette (**Local Git: Worktrees...** and **Local Git: New Worktree...**), and you can assign any shortcut you like to either in **Preferences > Keyboard Shortcuts**.
 
 Inside the Worktrees dialog: **Tab** and **Shift+Tab** move between the list and the buttons, **Up** and **Down** arrow move through the worktrees, **Enter** or **Space** on a row is the same as **Open in QUILL**, each button has its own access key (**Alt+N** New Worktree, **Alt+O** Open in QUILL, **Alt+R** Remove, **Alt+L** Lock or Unlock, **Alt+P** Prune), and **Escape** closes the dialog. Inside **New Worktree**: **Alt+F** the folder field, **Alt+B** Browse, **Alt+C** the branch chooser, **Alt+N** the "create a new branch" checkbox, **Alt+A** the new branch name, **Alt+R** the starting point, **Enter** creates the worktree, and **Escape** cancels.
 
 #### Downloading git and the GitHub CLI
 
-Tools > Local Git and Tools > GitHub's Codespaces/Copilot commands need `git` and `gh` (the GitHub CLI) to actually be present on your computer. QUILL always looks for a copy you already have installed first — if `git` or `gh` is already on your system PATH, QUILL uses it directly and nothing more is needed.
+Tools > Git and GitHub > Local Git and Tools > Git and GitHub > GitHub's Codespaces/Copilot commands need `git` and `gh` (the GitHub CLI) to actually be present on your computer. QUILL always looks for a copy you already have installed first — if `git` or `gh` is already on your system PATH, QUILL uses it directly and nothing more is needed.
 
 If you don't have them, **Help > Download Optional Components** has two rows for exactly this: **Git** (Windows only — a portable copy of Git for Windows, about 40 MB) and **GitHub CLI** (Windows and macOS, about 14 MB). Both are byte-identical re-publishes of the official releases, checksum-verified the same way every other optional component is. Download either one and the matching commands work immediately, with nothing else to configure — no separate install, no PATH changes, no restart. Remove either independently later from the same dialog; removing one never affects the other, even though they share a storage location.
 
@@ -8362,11 +8362,8 @@ Quill includes several layers of help because confidence does not come from memo
 - **Open Keyboard Reference** when you want exact current bindings.
 - **What Can I Do Here?** when you need immediate, contextual guidance.
 - **Why Don't I See a Feature?** when a command seems to have disappeared.
-- **Redeem Unlock Code...** when you have been given a QUILL unlock code.
 
 That "Why Don't I See a Feature?" command matters more than it first appears. It turns feature visibility from a mystery into an explanation.
-
-**Redeem Unlock Code... (Help menu).** Some QUILL capabilities ship locked until they are ready for general use, and are switched on selectively — for early testers, partners, or staged rollouts — with a signed unlock code. If you have one, choose **Help > Redeem Unlock Code...**, paste or type the code (it starts with `QUILL-`), and press OK. The code is verified by digital signature entirely on your machine — no network call, nothing sent anywhere — and QUILL announces exactly what was unlocked. Redeemed codes persist across restarts; a mistyped or expired code is rejected with a spoken reason. If you don't have a code, nothing here affects you: every standard feature is available without one.
 
 ### Context-Sensitive Help (F1)
 

@@ -1377,11 +1377,11 @@ class PreferencesMixin:
 
             def _on_page_changed(_evt: object) -> None:
                 _build_page(notebook.GetSelection())
-                # Switching pages (Ctrl+Tab/Ctrl+Shift+Tab or clicking a tab) otherwise
-                # leaves focus on the tab strip or wherever it was, so a screen reader
-                # announces only "Panel" instead of landing on the new page's first
-                # control -- reuse the same routing the dialog's own initial focus uses.
-                focus_primary_control(dialog)
+                # Ctrl+Tab from inside a page lands on the new page's first
+                # control; but while ARROWING along the tab strip itself, focus
+                # must stay on the tabs so the tab names can be browsed.
+                if wx.Window.FindFocus() is not notebook:
+                    focus_primary_control(dialog)
 
             notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, _on_page_changed)
 

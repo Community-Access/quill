@@ -24614,10 +24614,10 @@ because that is exactly what it already does. One important limit: QUILL
 has no way to merge changes made on two devices at once, so don't run
 QUILL from two machines pointed at the same synced folder at the same
 time — treat it like any shared file, one writer at a time.</p>
-<p><strong>Sync a folder with GitHub.</strong> <strong>Tools → GitHub →
-Sync Folder with GitHub...</strong> works on any folder — a writing
-project, a research folder, anything — not just a Vault. Point it at a
-folder:</p>
+<p><strong>Sync a folder with GitHub.</strong> <strong>Tools → Git and
+GitHub → GitHub → Sync Folder with GitHub...</strong> works on any
+folder — a writing project, a research folder, anything — not just a
+Vault. Point it at a folder:</p>
 <ul>
 <li>If the folder is already a git repository with a remote configured,
 QUILL commits your changes, pulls anyone else's, and pushes, all in the
@@ -25492,8 +25492,8 @@ exporting compressed audio, the mpv playback engine, and MP3 audiobook
 chapter markers — all in one place, each piece fetched only when its
 feature is first used), the <strong>MathCAT</strong> math-speech engine,
 <strong>Git</strong> and the <strong>GitHub CLI</strong> (portable
-fallback copies for Tools &gt; Local Git and Tools &gt; GitHub's
-Codespaces/Copilot commands — see <a
+fallback copies for Tools &gt; Git and GitHub &gt; Local Git and Tools
+&gt; GitHub's Codespaces/Copilot commands — see <a
 href="#downloading-git-and-the-github-cli">Downloading git and the
 GitHub CLI</a> below), the <strong>Node.js</strong> runtime (for Node
 Quillins and the Developer Console's TypeScript interface — listed last,
@@ -31453,9 +31453,9 @@ redirect — it deliberately intercepts the redirect itself and
 re-requests the new address without your sign-in token attached, so the
 token is only ever sent to github.com.</p>
 <p><strong>Repository administration (0.9.0 Beta 3).</strong> Beyond
-browsing and the Items viewer, <strong>Tools &gt; GitHub</strong> has
-eight commands for the repository itself — the things you'd otherwise
-have to open a browser for:</p>
+browsing and the Items viewer, <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong> has eight commands for the repository itself — the
+things you'd otherwise have to open a browser for:</p>
 <ul>
 <li><strong>Create Repository...</strong> — name, description, private
 or public, and an optional organization. Right after creating it, QUILL
@@ -31513,7 +31513,7 @@ something else.</p>
 downloaded manually from github.com.</p>
 <p><strong>Organizations, releases, workflows, notifications, and
 security alerts (0.9.0 Beta 3).</strong> Five more commands under
-<strong>Tools &gt; GitHub</strong>:</p>
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>:</p>
 <ul>
 <li><strong>Browse Organization Repositories...</strong> lists the
 organizations your signed-in account belongs to, then that
@@ -31538,9 +31538,10 @@ Dependabot alerts — severity, the affected package, and a summary — so
 you can see what needs attention without opening a browser.</li>
 </ul>
 <p><strong>Codespaces and Copilot CLI (0.9.0 Beta 3, needs live-device
-verification).</strong> Four more commands under <strong>Tools &gt;
-GitHub</strong>, built on your own installed <code>gh</code>
-command-line tool rather than QUILL's usual GitHub connection — see <a
+verification).</strong> Four more commands under <strong>Tools &gt; Git
+and GitHub &gt; GitHub</strong>, built on your own installed
+<code>gh</code> command-line tool rather than QUILL's usual GitHub
+connection — see <a
 href="#downloading-git-and-the-github-cli">Downloading git and the
 GitHub CLI</a> below if you don't already have <code>gh</code>:</p>
 <ul>
@@ -31573,11 +31574,11 @@ how to install it: <code>pip install "quill[github]"</code>.</p>
 <h2
 id="local-git-accessible-merge-conflicts-and-interactive-rebase">Local
 Git: accessible merge conflicts and interactive rebase</h2>
-<p><strong>Tools &gt; Local Git</strong> brings the two hardest parts of
-everyday git work — resolving a merge conflict and reordering commits
-with an interactive rebase — into QUILL as genuinely accessible, guided
-flows. Nothing here needs a GitHub account or touches the network; it
-works on any local git repository.</p>
+<p><strong>Tools &gt; Git and GitHub &gt; Local Git</strong> brings the
+two hardest parts of everyday git work — resolving a merge conflict and
+reordering commits with an interactive rebase — into QUILL as genuinely
+accessible, guided flows. Nothing here needs a GitHub account or touches
+the network; it works on any local git repository.</p>
 <p><strong>Uncommitted Changes...</strong> shows every file you've
 changed since your last commit, split into staged and unstaged, with an
 accessible difference view for whichever file you select — the same
@@ -31631,9 +31632,9 @@ commit introduced the problem.</li>
 <p>None of these commands have a default keyboard shortcut — every
 letter on the QUILL Key leader chord is already claimed by another
 command — but all twelve are in the Command Palette and in the
-<strong>Tools &gt; Local Git</strong> menu, and you can assign your own
-shortcut to any of them in <strong>Preferences &gt; Keyboard
-Shortcuts</strong>.</p>
+<strong>Tools &gt; Git and GitHub &gt; Local Git</strong> menu, and you
+can assign your own shortcut to any of them in <strong>Preferences &gt;
+Keyboard Shortcuts</strong>.</p>
 <h3
 id="worktrees-one-folder-per-branch-so-your-open-document-never-changes-underneath-you">Worktrees:
 one folder per branch, so your open document never changes underneath
@@ -31665,10 +31666,10 @@ something that happens to you. That is the whole accessibility argument
 for worktrees, and it is why QUILL supports them properly rather than
 leaving them to the command line.</p>
 <h4 id="seeing-what-you-have">Seeing what you have</h4>
-<p><strong>Tools &gt; Local Git &gt; Worktrees...</strong> opens the
-list. QUILL announces how many worktrees the repository has as the
-dialog opens, and each row reads as a complete sentence rather than a
-set of columns you have to arrow across:</p>
+<p><strong>Tools &gt; Git and GitHub &gt; Local Git &gt;
+Worktrees...</strong> opens the list. QUILL announces how many worktrees
+the repository has as the dialog opens, and each row reads as a complete
+sentence rather than a set of columns you have to arrow across:</p>
 <ul>
 <li><em>"Main worktree at S:\code\quill, on branch main"</em></li>
 <li><em>"Linked worktree at S:\code\quill-feature-x, on branch
@@ -31755,16 +31756,17 @@ to.</strong> Put it beside the repository folder, not within it.</li>
 <li><strong>Removing a worktree with uncommitted changes is
 refused</strong> unless you confirm twice, as above.</li>
 <li><strong>Worktrees need <code>git</code></strong>, like everything
-else under Tools &gt; Local Git, and they are disabled in Safe
-Mode.</li>
+else under Tools &gt; Git and GitHub &gt; Local Git, and they are
+disabled in Safe Mode.</li>
 </ul>
 <h4 id="keystrokes">Keystrokes</h4>
 <p>Neither command has a default shortcut, for the same reason the other
 Local Git commands do not — the leader-chord letters are all taken. Both
-are in <strong>Tools &gt; Local Git</strong> and in the Command Palette
-(<strong>Local Git: Worktrees...</strong> and <strong>Local Git: New
-Worktree...</strong>), and you can assign any shortcut you like to
-either in <strong>Preferences &gt; Keyboard Shortcuts</strong>.</p>
+are in <strong>Tools &gt; Git and GitHub &gt; Local Git</strong> and in
+the Command Palette (<strong>Local Git: Worktrees...</strong> and
+<strong>Local Git: New Worktree...</strong>), and you can assign any
+shortcut you like to either in <strong>Preferences &gt; Keyboard
+Shortcuts</strong>.</p>
 <p>Inside the Worktrees dialog: <strong>Tab</strong> and
 <strong>Shift+Tab</strong> move between the list and the buttons,
 <strong>Up</strong> and <strong>Down</strong> arrow move through the
@@ -31782,12 +31784,12 @@ starting point, <strong>Enter</strong> creates the worktree, and
 <strong>Escape</strong> cancels.</p>
 <h4 id="downloading-git-and-the-github-cli">Downloading git and the
 GitHub CLI</h4>
-<p>Tools &gt; Local Git and Tools &gt; GitHub's Codespaces/Copilot
-commands need <code>git</code> and <code>gh</code> (the GitHub CLI) to
-actually be present on your computer. QUILL always looks for a copy you
-already have installed first — if <code>git</code> or <code>gh</code> is
-already on your system PATH, QUILL uses it directly and nothing more is
-needed.</p>
+<p>Tools &gt; Git and GitHub &gt; Local Git and Tools &gt; Git and
+GitHub &gt; GitHub's Codespaces/Copilot commands need <code>git</code>
+and <code>gh</code> (the GitHub CLI) to actually be present on your
+computer. QUILL always looks for a copy you already have installed first
+— if <code>git</code> or <code>gh</code> is already on your system PATH,
+QUILL uses it directly and nothing more is needed.</p>
 <p>If you don't have them, <strong>Help &gt; Download Optional
 Components</strong> has two rows for exactly this: <strong>Git</strong>
 (Windows only — a portable copy of Git for Windows, about 40 MB) and
@@ -32338,23 +32340,10 @@ bindings.</li>
 contextual guidance.</li>
 <li><strong>Why Don't I See a Feature?</strong> when a command seems to
 have disappeared.</li>
-<li><strong>Redeem Unlock Code...</strong> when you have been given a
-QUILL unlock code.</li>
 </ul>
 <p>That "Why Don't I See a Feature?" command matters more than it first
 appears. It turns feature visibility from a mystery into an
 explanation.</p>
-<p><strong>Redeem Unlock Code... (Help menu).</strong> Some QUILL
-capabilities ship locked until they are ready for general use, and are
-switched on selectively — for early testers, partners, or staged
-rollouts — with a signed unlock code. If you have one, choose
-<strong>Help &gt; Redeem Unlock Code...</strong>, paste or type the code
-(it starts with <code>QUILL-</code>), and press OK. The code is verified
-by digital signature entirely on your machine — no network call, nothing
-sent anywhere — and QUILL announces exactly what was unlocked. Redeemed
-codes persist across restarts; a mistyped or expired code is rejected
-with a spoken reason. If you don't have a code, nothing here affects
-you: every standard feature is available without one.</p>
 <h3 id="context-sensitive-help-f1">Context-Sensitive Help (F1)</h3>
 <p>Press <code>F1</code> on any focusable control in QUILL and a small
 dialog opens that describes:</p>
