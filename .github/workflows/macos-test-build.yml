@@ -37,6 +37,10 @@ jobs:
         run: |
           python tools/generate_build_info.py || echo "no build/version.toml - unversioned test build"
           python tools/generate_feedback_token.py
+          # Lenient: without QUILL_ADP_CLIENT_KEY this bakes an empty ADP key
+          # (Ask ADP falls back to a key pasted in ADP Settings) -- fine for a
+          # test build. Release builds set QUILL_ADP_CLIENT_KEY to ship the key.
+          python tools/generate_adp_client_key.py
 
       - name: Build .app with py2app (unsigned)
         run: python scripts/setup_macos.py py2app

@@ -102,9 +102,16 @@ def test_client_key_prefers_the_user_override_then_the_bundled_key(monkeypatch) 
     assert load_client_key() == ""
 
 
-def test_bundled_client_key_is_empty_without_the_generated_module() -> None:
+def test_bundled_client_key_is_empty_without_the_generated_module(monkeypatch) -> None:
     # In an unbuilt checkout quill/_adp_client_key.py does not exist; the import
-    # failure must read as "no bundled key," never raise.
+    # failure must read as "no bundled key," never raise. Force the absent-module
+    # path explicitly (a local packaging build may have baked a key into the
+    # gitignored module) so this asserts the graceful-fallback behaviour itself,
+    # not the incidental filesystem state: None in sys.modules makes the
+    # ``from quill._adp_client_key import ...`` raise ImportError.
+    import sys
+
+    monkeypatch.setitem(sys.modules, "quill._adp_client_key", None)
     assert adp_client._bundled_client_key() == ""
 
 
