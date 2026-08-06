@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="quill-converter----the-standalone-audio-converter-app-not-part-of-public-quill-10">Quill
+Converter -- the standalone audio converter app (not part of public
+QUILL 1.0)</h1>
+<blockquote>
+<p><strong>Not part of the public 1.0 product.</strong> Quill Converter
+is one of the five companion apps gated behind
+<code>RELEASED_APPS</code> (<code>quill/core/app_launcher.py</code>) for
+QUILL 1.0.0. It is not in the QuillVille menu, not in the command
+palette, and its Windows Explorer <strong>"Convert with Quill"</strong>
+shell verb is never registered in a public build
+(<code>quill/core/shell_verbs.py</code> skips the <code>convert</code>
+verb unless <code>is_app_released("converter")</code>).</p>
+<p>The <em>engine</em> is public. QUILL's editor-embedded Universal
+Audio Converter -- the <strong>Voices &gt; Convert Audio...</strong>
+dialog, the headless <code>quill convert</code> CLI, and <strong>Convert
+from URL...</strong> -- stays fully documented in the public user guide
+and PRD. Only the standalone app's own surfaces were relocated here,
+during the 1.0.0 documentation consolidation. Nothing was deleted.</p>
+</blockquote>
+<p><strong>Where each part came from</strong></p>
+<table>
+<thead>
+<tr>
+<th>Relocated from</th>
+<th>Source section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/user guide/userguide.md</code></td>
+<td>"The Universal Audio Converter" -- the standalone-app door and the
+Explorer shell-verb door</td>
+</tr>
+<tr>
+<td><code>docs/user guide/userguide.md</code></td>
+<td>"The Universal Audio Converter" -- the Advanced-mode standalone
+clause</td>
+</tr>
+<tr>
+<td><code>QUILL-PRD.md</code></td>
+<td><code>### 5.25g Universal Audio Converter</code> -- the standalone
+surfaces and the deferred build entry</td>
+</tr>
+<tr>
+<td><code>QUILL-PRD.md</code></td>
+<td><code>§35.1 The apps</code> -- the Quill Converter family entry</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="part-1----relocated-user-guide-material">Part 1 -- relocated
+user guide material</h1>
+<p><em>Moved from the user guide's "The Universal Audio Converter"
+section, which stays public and now describes <strong>three</strong>
+doors (the dialog, the CLI, and Convert from URL) instead of
+five.</em></p>
+<h2 id="the-standalone-app-as-a-door-onto-the-shared-engine">The
+standalone app, as a door onto the shared engine</h2>
+<ul>
+<li><strong>Quill Converter</strong> -- a standalone tray app, launched
+with <code>python -m quill.apps.converter</code> (or its own icon). It
+carries the QuillVille menu like the other family apps, minimizes to the
+tray, and has its own show/hide hotkey (Ctrl+Alt+Shift+C).</li>
+<li><strong>Windows Explorer</strong> -- turn on <strong>Settings -&gt;
+Integration -&gt; Offer "Convert with QUILL"</strong> and right-clicking
+an audio or video file gains a <strong>Convert with Quill</strong> entry
+that opens the standalone converter with that file already queued.</li>
+</ul>
+<h2 id="advanced-mode-in-the-standalone-app">Advanced mode in the
+standalone app</h2>
+<p>The user guide's Advanced-mode paragraph described the panel as "a
+checkbox that reveals more controls, or the <strong>Advanced...</strong>
+button in the standalone app". The public text now names only the
+checkbox; the standalone app reaches the same full processing catalog --
+bit rate, sample rate, channels, bit depth, loudness targets, gain,
+high-pass, trim silence, speed, compressor, leveler, and fades --
+through its <strong>Advanced...</strong> button.</p>
+<hr />
+<h1 id="part-2----relocated-prd-material">Part 2 -- relocated PRD
+material</h1>
+<p><em>Moved from
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>.
+The PRD keeps 5.25g for the public engine and its three public surfaces
+and points here for the app.</em></p>
+<h2 id="prd-525g----the-standalone-surfaces">PRD 5.25g -- the standalone
+surfaces</h2>
+<p>The single wx-free engine (<code>core/audio/convert.py</code>,
+<code>presets.py</code>, <code>dsp.py</code>,
+<code>url_import.py</code>, <code>convert_cli.py</code>) is also
+surfaced through:</p>
+<ul>
+<li>a standalone <strong>Quill Converter</strong> app
+(<code>apps/converter.py</code>, an <code>AppShellFrame</code>
+registered in <code>core/app_launcher.py</code>);</li>
+<li>a Windows Explorer <strong>"Convert with Quill"</strong> shell verb
+(<code>core/shell_verbs.py</code>, gated by
+<code>shell_verb_convert</code>, routed through
+<code>--action convert</code> to the converter app). For 1.0.0 the verb
+is additionally gated on <code>is_app_released("converter")</code>, so a
+public build never registers it.</li>
+</ul>
+<p><strong>Deferred:</strong> the standalone app's PyInstaller build
+entry + launcher tile icon (after the build refactor settles); the app
+runs today via <code>python -m quill.apps.converter</code>.</p>
+<h2 id="prd-351-the-quill-converter-family-entry">PRD 35.1 The Quill
+Converter family entry</h2>
+<p><em>Moved from <code>## 35. The QuillVille family</code> /
+<code>### 35.1 The apps</code>, whose inventory now lists only the
+publicly released apps and points here for the gated ones.</em></p>
+<ul>
+<li><strong>Quill Converter</strong>
+(<code>quill/apps/converter.py</code>) -- the Universal Audio Converter
+as its own app. Was to ship as a standalone product from 1.0.0:
+<code>standalone/converter/</code> is the wrapper (launcher package,
+tile icon + regenerable
+<code>assets/make_quill_converter_icon.py</code>, PyInstaller spec,
+<code>pyproject.toml</code>), <code>build_portable.py</code> carries a
+<code>converter</code> product entry (<code>QuillConverter.exe</code>,
+ffmpeg staged, no speech engines and no mpv -- the conversion work is
+entirely FFmpeg's), and <code>QuillConverter.exe</code> is in
+<code>storage_mode</code>'s portable-evidence allowlist so a portable
+bundle keeps its data next to the exe like every sibling. yt-dlp is
+never bundled: URL import installs it on demand with consent.
+<strong>Held back from the public QUILL 1.0.0 release</strong> via
+<code>RELEASED_APPS</code>.</li>
+</ul>
+</body>
+</html>

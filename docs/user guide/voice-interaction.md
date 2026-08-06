@@ -208,9 +208,8 @@ save everything => file.save_all
 - **Commands** — add your own spoken phrases for existing commands, as
   `phrase => command.id`. These still obey the same safe-command allowlist.
 
-The profile applies everywhere dictation transcribes: **Locked Dictation**, the
-**Dictate (Offline)** toggle, and the **Media Player's** hands-free voice
-commands.
+The profile applies everywhere dictation transcribes: **Locked Dictation** and
+the **Dictate (Offline)** toggle.
 
 ### Choosing a speech engine and model
 
@@ -224,10 +223,6 @@ can install and choose:
 - **Nemotron** (NVIDIA, via sherpa-onnx) — a strong offline English engine that
   runs without heavy dependencies.
 - **Vosk** and **Faster Whisper** — additional offline options.
-
-The engine you set as default in QUILL is the one the Media Player uses for
-hands-free voice too. For short commands the player automatically prefers a small,
-fast model.
 
 ## Privacy and control at a glance
 
@@ -249,7 +244,6 @@ fast model.
 Voice interaction shipped in four phases, and the polish refinements followed:
 true silence detection (your turn ends when you stop speaking), personalized
 and optionally-spoken prompts with screen-reader parity, the Speak Voice Status
-check, hands-free voice commands in the **Media Player**, and the editable
-**dictation profile** (`dictation.md`) are all in place. The one genuinely future
+check, and the editable **dictation profile** (`dictation.md`) are all in place. The one genuinely future
 item is a dedicated low-power keyword spotter for the wake word (so
 always-listening costs even less than it does today).

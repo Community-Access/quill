@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="companion-apps-that-are-not-part-of-public-quill-10">Companion
+apps that are not part of public QUILL 1.0</h1>
+<p>QUILL 1.0.0 ships as the editor plus <strong>two</strong> public
+companion apps: <strong>Quill Radio</strong> and <strong>Quill
+Weather</strong>. Everything documented in this folder is gated out of a
+public build and is verified only for <em>absence</em> from public
+surfaces (<code>docs/planning/signoff/QUILL-1.0.0-SIGNOFF.md</code>,
+section G).</p>
+<p>The gate is <code>RELEASED_APPS</code> in
+<code>quill/core/app_launcher.py</code>
+(<code>{"quill", "radio", "weather"}</code>), plus
+<code>QUILL_DEV_BUILD=1</code> for developers. With the flag off, the
+QuillVille menu, the command palette, the Explorer shell verb, and the
+build products for these apps are all hidden.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Docs</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quill Cast (podcast client) + the editor-embedded Podcasts
+feature</td>
+<td><a href="cast/README.md"><code>cast/README.md</code></a></td>
+<td><code>RELEASED_APPS</code>; <code>core.podcasts</code> is
+dev-build-only for 1.0</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td><a href="player/README.md"><code>player/README.md</code></a></td>
+<td><code>is_app_released("player")</code> on
+<code>app.open_media_player</code></td>
+</tr>
+<tr>
+<td>Quill Converter (standalone audio converter)</td>
+<td><a
+href="converter/README.md"><code>converter/README.md</code></a></td>
+<td><code>RELEASED_APPS</code>; the "Convert with Quill" shell verb is
+gated with it</td>
+</tr>
+<tr>
+<td>QuillBeacon</td>
+<td><a href="beacon/README.md"><code>beacon/README.md</code></a></td>
+<td><code>RELEASED_APPS</code>; still an independent repo</td>
+</tr>
+<tr>
+<td>Audio Studio (standalone app)</td>
+<td><a
+href="../audio-studio/README.md"><code>../audio-studio/README.md</code></a></td>
+<td><code>RELEASED_APPS</code></td>
+</tr>
+</tbody>
+</table>
+<p>Each file here holds the user-guide and PRD material that was
+<strong>relocated, not deleted</strong>, out of the public docs during
+the 1.0.0 documentation consolidation. When an app ships publicly, its
+file is the material to promote back.</p>
+<p><strong>Two things this folder is not:</strong></p>
+<ul>
+<li><code>docs/podcast/</code> is the 54-episode audio course
+<em>about</em> QUILL, not Quill Cast's documentation. The name collision
+is unfortunate; the app's docs are in <a
+href="cast/README.md"><code>cast/</code></a>.</li>
+<li>The <em>editor-embedded</em> audio tools stay public and stay in the
+user guide: <strong>Tools &gt; Speech &gt; Audiobook &amp; Batch
+Speech...</strong>, the Chapter Workbench, <strong>Export to Translated
+Speech Audio</strong>, the <strong>Voices &gt; Convert Audio...</strong>
+dialog, the <code>quill convert</code> CLI, and the <strong>Book
+Library</strong>. Only the standalone apps moved.</li>
+</ul>
+</body>
+</html>

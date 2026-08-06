@@ -349,6 +349,98 @@ release</li>
 <li><a href="CHANGELOG.md">Changelog</a></li>
 <li><a href="prd.md">Product Requirements</a></li>
 </ul>
+<hr />
+<h2
+id="relocated-from-the-public-quill-docs-100-consolidation">Relocated
+from the public QUILL docs (1.0.0 consolidation)</h2>
+<blockquote>
+<p><strong>Not part of the public QUILL 1.0 product.</strong> The
+standalone Audio Studio app is one of the five companion apps gated
+behind <code>RELEASED_APPS</code>
+(<code>quill/core/app_launcher.py</code>) for QUILL 1.0.0; its
+QuillVille launcher is hidden in a public build.</p>
+<p>The <em>editor-embedded</em> audio tooling is <strong>not</strong>
+gated and stays fully documented in QUILL's public user guide and PRD:
+<strong>Tools &gt; Speech &gt; Audiobook &amp; Batch Speech...</strong>
+(<code>tools.speech_batch_export</code>), the Chapter Workbench it
+opens, <strong>Export to Translated Speech Audio</strong>, and the
+Universal Audio Converter dialog. Only the standalone app's own material
+was relocated here, during the 1.0.0 documentation consolidation.
+Nothing was deleted.</p>
+<p>Sign-off note: the embedded wizard's menu label was changed from
+"Audio Studio..." to "Audiobook &amp; Batch Speech..." precisely to
+remove the name clash with this app
+(<code>docs/planning/signoff/QUILL-1.0.0-SIGNOFF.md</code>, section
+G).</p>
+</blockquote>
+<h3 id="from-quill-prdmd-351----the-audio-studio-family-entry">From
+<code>QUILL-PRD.md</code> 35.1 -- the Audio Studio family entry</h3>
+<p><em>The PRD's family inventory now lists only the publicly released
+apps and points here for the gated ones.</em></p>
+<ul>
+<li><strong>Audio Studio</strong> (<code>quill/apps/studio.py</code>) --
+the audiobook/narration studio. Reverse-vendored from the former
+standalone <code>quill-audio-studio</code> repo (Option D); targets a
+clean <strong>1.0.0</strong>. Held back from the public QUILL 1.0.0
+release via <code>RELEASED_APPS</code>.</li>
+</ul>
+<p>The consolidation roadmap that stays in the PRD (<code>35.5</code>)
+carries this app's two remaining steps: the Audio Studio reverse-vendor
+(<code>quill/apps/studio.py</code>, Phase A landed under the GATE suite,
+then the thin-wrapper cutover and closure deletion), and the packaging
+toolkit -- one parameterized spec/installer/build script consumed by
+QUILL, Radio, Cast, and Audio Studio, retiring the four forks.
+<code>35.3</code> also reserves SQLite for app-private indexes such as a
+future Audio Studio library index.</p>
+<h3
+id="from-quill-prdmd-525e----what-the-standalone-shell-wires-up">From
+<code>QUILL-PRD.md</code> 5.25e -- what the standalone shell wires
+up</h3>
+<p><em>The PRD keeps the shared-module half of this bullet (the embedded
+Chapter Workbench uses the same code); the standalone-only half is
+below.</em></p>
+<p><code>open_book_in_workbench</code> and
+<code>ChapterWorkbenchDialog</code> thread optional host callbacks --
+<code>on_player_ready(player, path)</code>,
+<code>on_finished(path)</code>, <code>on_volume(path, pct)</code>,
+<code>on_mute(path, muted)</code>,
+<code>on_closed(path, position_ms, chapter)</code> -- down to
+<code>PlayerPanel</code>. Embedded QUILL passes none (fully backward
+compatible -- its single call site is unchanged), and the
+<strong>standalone QUILL-AS Studio shell</strong> wires them to route
+media keys (Play/Pause, Stop, Next/Previous chapter via
+<code>RegisterHotKey</code>), persist per-book volume/mute, stamp
+Recently Played history, and auto-advance the play queue on
+finish-then-close. The wx-free stores in
+<code>quill/core/audio_studio/</code> -- <code>library.py</code> (book
+entries + user folders), <code>history.py</code> (Recently Played),
+<code>play_queue.py</code> (ordered queue + <code>next_entry</code>),
+<code>sleep_timer.py</code> (<code>SleepTimerSetting</code> +
+<code>SleepTimerWatcher</code>) -- and the shared UI
+(<code>library_tree.py</code>, <code>play_queue_dialog.py</code>,
+<code>sleep_timer_dialog.py</code>) are all vendored into QUILL-AS.</p>
+<h3 id="from-quill-prdmd-589e----the-standalone-apps-non-goal">From
+<code>QUILL-PRD.md</code> 5.89e -- the standalone-apps non-goal</h3>
+<p><em>The PRD's standalone companion-app section is now Quill Radio
+only.</em></p>
+<p><strong>Non-goals (v1).</strong> No single-instance enforcement; no
+Audio Studio standalone app yet -- the phased plan, including those,
+lives in <code>docs/planning/apps.md</code>.</p>
+<h3
+id="from-docsuser-guideuserguidemd----the-shared-announcement-mentions">From
+<code>docs/user guide/userguide.md</code> -- the shared-announcement
+mentions</h3>
+<p><em>The public user guide's announcement and earcon sections now name
+only the publicly released apps.</em></p>
+<ul>
+<li><strong>The four announcement channels.</strong> The same
+announcement service carries speech, braille, sound and status in Audio
+Studio as well as in QUILL, Quill Radio and Quill Weather, so an
+announcement behaves the same wherever you are.</li>
+<li><strong>Sound cues in the companion apps.</strong> The accessibility
+setting that turns on earcons in the companion apps covers Audio Studio
+along with the rest.</li>
+</ul>
 <h2 id="license">License</h2>
 <p>MIT, same as QUILL.</p>
 </body>

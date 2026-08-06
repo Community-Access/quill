@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quillbeacon----not-part-of-public-quill-10">QuillBeacon -- not
+part of public QUILL 1.0</h1>
+<blockquote>
+<p><strong>Not part of the public 1.0 product.</strong> QuillBeacon is
+one of the five companion apps gated behind <code>RELEASED_APPS</code>
+(<code>quill/core/app_launcher.py</code>) for QUILL 1.0.0. It is also
+the one family member that does not yet live in this repository at all:
+it is still an independent project (<code>quille-beacon</code>, with its
+own SQLite store) and converges onto the shared app shell only after its
+data-integrity and security fixes land.</p>
+<p>QuillBeacon had no chapter in the user guide and no section of its
+own in the PRD -- only passing mentions inside otherwise public prose
+about the shared announcement service and the shared sound events. Those
+sentences were rewritten to drop the mention during the 1.0.0
+documentation consolidation, and the removed material is preserved here.
+Nothing was deleted.</p>
+</blockquote>
+<p><strong>Where each part came from</strong></p>
+<table>
+<thead>
+<tr>
+<th>Relocated from</th>
+<th>Source section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/user guide/userguide.md</code></td>
+<td>"The four announcement channels" -- the family list</td>
+</tr>
+<tr>
+<td><code>docs/user guide/userguide.md</code></td>
+<td>"Sound notifications and earcons" -- the Beacon clause</td>
+</tr>
+<tr>
+<td><code>QUILL-PRD.md</code></td>
+<td>"Shell adoption of the announcement service" -- the
+<code>Announcer.say</code> paragraph</td>
+</tr>
+<tr>
+<td><code>QUILL-PRD.md</code></td>
+<td><code>§35.1 The apps</code> -- the QUILL Beacon family entry</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="relocated-material">Relocated material</h1>
+<h2 id="the-announcement-service-reaches-beacon-too">The announcement
+service reaches Beacon too</h2>
+<p><em>From the user guide's "The four announcement channels" section,
+which now names only the publicly released apps.</em></p>
+<p>The same announcement service carries all four channels -- speech,
+braille, sound, and status -- in QuillBeacon as well as in QUILL, Quill
+Radio and Quill Weather, so an announcement behaves the same wherever
+you are.</p>
+<h2 id="beacons-sound-events">Beacon's sound events</h2>
+<p><em>From the user guide's "The companion apps have their own voice"
+bullet under sound notifications and earcons, which stays public for
+Quill Radio and Quill Weather.</em></p>
+<p>Beacon marks an item captured and a sync finishing. Each is a
+<strong>Sound Event</strong> you can turn off individually, and each
+fires on a real change of state.</p>
+<h2 id="prd-beacons-adoption-of-the-announcement-service">PRD: Beacon's
+adoption of the announcement service</h2>
+<p><em>From the PRD's "Shell adoption of the announcement service
+(#1298-#1307)" passage, which stays in the PRD for QUILL itself and the
+shared <code>AppShellFrame</code>.</em></p>
+<p><code>Announcer.say</code> in QuillBeacon keeps its signature (~40
+call sites untouched) while gaining speech, braille and cues -- Beacon
+previously had <strong>no screen-reader speech at all</strong>, writing
+the status bar or the window title, which no reader announces on its
+own.</p>
+<p>Beacon was also one of the shells covered by the destructive-default
+gate sweep recorded in the PRD's trust-and-verification section: 27
+pre-existing Yes/No confirmation sites across QUILL, Radio, Cast, and
+Beacon were given <code>wx.NO_DEFAULT</code> in the same pass.</p>
+<h2 id="prd-351-the-quill-beacon-family-entry">PRD 35.1 The QUILL Beacon
+family entry</h2>
+<p><em>Moved from <code>## 35. The QuillVille family</code> /
+<code>### 35.1 The apps</code>, whose inventory now lists only the
+publicly released apps and points here for the gated ones.</em></p>
+<ul>
+<li><strong>QUILL Beacon</strong> -- location beacons and QuillSync.
+Currently an independent repo (<code>quille-beacon</code>, own SQLite
+store); converges to <code>quill/apps/beacon.py</code> on the shared
+shell once its data-integrity and security fixes land (staged; not
+before its Tier-1 fixes). Not part of the public QUILL 1.0.0
+release.</li>
+</ul>
+<p>Beacon's convergence is step 6 of the consolidation roadmap that
+stays in the PRD (<code>§35.5</code>): after Beacon's data-loss and
+security fixes, fold it into <code>quill/apps/beacon.py</code> on the
+shared shell, at which point QuillSync becomes the family handshake
+(adapter order: Beacon, then radio favorites, then
+settings/keymaps).</p>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>voice-interaction</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -558,8 +562,8 @@ commands, as <code>phrase =&gt; command.id</code>. These still obey the
 same safe-command allowlist.</li>
 </ul>
 <p>The profile applies everywhere dictation transcribes: <strong>Locked
-Dictation</strong>, the <strong>Dictate (Offline)</strong> toggle, and
-the <strong>Media Player's</strong> hands-free voice commands.</p>
+Dictation</strong> and the <strong>Dictate (Offline)</strong>
+toggle.</p>
 <h3 id="choosing-a-speech-engine-and-model">Choosing a speech engine and
 model</h3>
 <p>Dictation is engine-agnostic and fully offline. In <strong>Manage
@@ -576,9 +580,6 @@ offline English engine that runs without heavy dependencies.</li>
 <li><strong>Vosk</strong> and <strong>Faster Whisper</strong> —
 additional offline options.</li>
 </ul>
-<p>The engine you set as default in QUILL is the one the Media Player
-uses for hands-free voice too. For short commands the player
-automatically prefers a small, fast model.</p>
 <h2 id="privacy-and-control-at-a-glance">Privacy and control at a
 glance</h2>
 <ul>
@@ -603,8 +604,7 @@ knowable.</li>
 <p>Voice interaction shipped in four phases, and the polish refinements
 followed: true silence detection (your turn ends when you stop
 speaking), personalized and optionally-spoken prompts with screen-reader
-parity, the Speak Voice Status check, hands-free voice commands in the
-<strong>Media Player</strong>, and the editable <strong>dictation
+parity, the Speak Voice Status check, and the editable <strong>dictation
 profile</strong> (<code>dictation.md</code>) are all in place. The one
 genuinely future item is a dedicated low-power keyword spotter for the
 wake word (so always-listening costs even less than it does today).</p>

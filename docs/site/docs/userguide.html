@@ -318,7 +318,6 @@ SFTP, HTTPS, WebDAV, S3)</a></li>
 <li><a href="#github-remote-files">GitHub Remote Files</a></li>
 </ul></li>
 <li><a href="#internet-radio">Internet Radio</a></li>
-<li><a href="#podcasts">Podcasts</a></li>
 <li><a href="#sleep-timer">Sleep Timer</a></li>
 <li><a href="#starting-quill-automatically">Starting QUILL
 automatically</a></li>
@@ -24217,18 +24216,21 @@ and needs nothing from you.</p>
 <h5 id="temporary-bookmark-one-keystroke-no-dialog">Temporary bookmark
 (one keystroke, no dialog)</h5>
 <p>For the times you just want to mark "right here" and come straight
-back — no name, no picker — use the temporary bookmark:</p>
+back — no name, no picker, no dialog — use the temporary bookmark. Both
+commands are on the <strong>Navigate</strong> menu, just under
+<strong>List Bookmarks...</strong>, and in the command palette:</p>
 <ul>
-<li><strong>Ctrl+J</strong> (<strong>Navigate &gt; Set Temporary
-Bookmark</strong>) sets it at the cursor.</li>
-<li><strong>Ctrl+Shift+J</strong> (<strong>Navigate &gt; Go to Temporary
-Bookmark</strong>) jumps back to it.</li>
+<li><strong>Set Temporary Bookmark</strong> (<strong>Ctrl+J</strong>)
+sets it at the cursor.</li>
+<li><strong>Go to Temporary Bookmark</strong>
+(<strong>Ctrl+Shift+J</strong>) jumps back to it.</li>
 </ul>
 <p>(During the 0.9.0 betas these lived on <code>Ctrl+Shift+K</code> and
 <code>Alt+Shift+K</code>; those chords now belong to Unquote Lines and
 Keep Unique Lines, so the temporary bookmark moved to the J chords for
 1.0.0.)</p>
-<p>Setting a new temporary bookmark silently replaces the old one, and
+<p>It is a one-shot, unnamed jump point: set it, move away, jump back.
+Setting a new temporary bookmark silently replaces the old one, and
 unlike named bookmarks, it does <strong>not</strong> persist between
 sessions — it is disposable scratch state by design, not a place you'd
 want to find again next week. Use named bookmarks for that; use the
@@ -25654,10 +25656,10 @@ lost.</li>
 lets you add your own vocabulary (so names and jargon come back spelled
 right), spoken-to-written replacements (like "new line" → an actual line
 break), and custom spoken command phrases. It applies to Locked
-Dictation, the Dictate (Offline) toggle, and the Media Player's
-hands-free voice. See the <strong>Voice Interaction</strong> guide,
-"Teaching dictation your words," for the format and for choosing a
-speech engine (Whisper's small models, or Nemotron).</li>
+Dictation and the Dictate (Offline) toggle. See the <strong>Voice
+Interaction</strong> guide, "Teaching dictation your words," for the
+format and for choosing a speech engine (Whisper's small models, or
+Nemotron).</li>
 <li><strong>Distinct sound, one-time hint.</strong> Locked Dictation
 plays its own earcons, and the very first time you dictate QUILL speaks
 a brief one-time hint about the keys.</li>
@@ -28391,9 +28393,8 @@ expect.</li>
 <li><strong>Status</strong> — the status bar, always, as the visual
 floor.</li>
 </ul>
-<p>The same service carries all four in <strong>QUILL, Quill Radio,
-Quill Cast, Audio Studio, Quill Converter, Quill Weather and
-QuillBeacon</strong>, so an announcement behaves the same wherever you
+<p>The same service carries all four in <strong>QUILL, Quill Radio and
+Quill Weather</strong>, so an announcement behaves the same wherever you
 are.</p>
 <p><strong>Three commands worth knowing</strong> (all in the command
 palette; give them shortcuts in the Keymap Editor if you use them
@@ -28427,8 +28428,8 @@ speech, or the compact position-first form
 <li><strong>Hold errors on the braille display</strong> — keeps an error
 under your fingers instead of letting the next message flash past
 it.</li>
-<li><strong>Sound cues in the companion apps</strong> — earcons in
-Radio, Cast, Audio Studio and the rest.</li>
+<li><strong>Sound cues in the companion apps</strong> — earcons in Quill
+Radio and Quill Weather.</li>
 <li><strong>Confirm with a sound in Quiet Mode</strong> — hear that
 something worked without QUILL speaking.</li>
 <li><strong>Keep an announcement history</strong> — what Repeat Last
@@ -28444,10 +28445,10 @@ your fingers.</p>
 display</h3>
 <p>Everything QUILL announces - "Saved", "Now playing: ...", "Weather
 updated", recording started and stopped - goes to a connected
-<strong>braille display</strong> as well as to speech, in QUILL, Quill
-Radio, and Quill Cast alike. It works through whichever screen reader
-you use: JAWS and NVDA both accept a flash message, and Narrator
-brailles the notifications QUILL already posts.</p>
+<strong>braille display</strong> as well as to speech, in QUILL and
+Quill Radio alike. It works through whichever screen reader you use:
+JAWS and NVDA both accept a flash message, and Narrator brailles the
+notifications QUILL already posts.</p>
 <p>Four things are deliberate:</p>
 <ul>
 <li><strong>Braille never costs you speech.</strong> If the display is
@@ -29148,14 +29149,16 @@ that service — pick an on-device voice to keep everything local. The
 reader page (which contains your document text) is written to QUILL's
 app-data folder and deleted when you close QUILL, so no plaintext copy
 is left behind.</p>
-<h3 id="quill-audio-studio">QUILL Audio Studio</h3>
-<p><strong>Tools → Speech → Audio Studio…</strong> is the guided home
-for audio production: it converts a whole folder of documents to speech
-audio in one pass, and it builds chaptered audiobooks — from documents,
-from a folder of recordings, or both. It replaced the old single-page
-Batch Export to Speech Audio dialog with a wizard that asks one thing at
-a time; every option below is still there, just spread across clear
-steps, and your saved project settings still pre-fill everything.</p>
+<h3 id="audiobook--batch-speech-the-audio-production-wizard">Audiobook
+&amp; Batch Speech (the audio production wizard)</h3>
+<p><strong>Tools → Speech → Audiobook &amp; Batch Speech…</strong> is
+the guided home for audio production: it converts a whole folder of
+documents to speech audio in one pass, and it builds chaptered
+audiobooks — from documents, from a folder of recordings, or both. It
+replaced the old single-page Batch Export to Speech Audio dialog with a
+wizard that asks one thing at a time; every option below is still there,
+just spread across clear steps, and your saved project settings still
+pre-fill everything.</p>
 <p>The first page asks what you want to make:</p>
 <ul>
 <li><strong>Narrate documents into an audiobook or speech audio</strong>
@@ -29177,7 +29180,7 @@ M4B and it opens in the <strong>Chapter Workbench</strong> (below). A
 file with no chapter markers opens as a single chapter, ready to split
 up.</li>
 </ul>
-<p>Two automation extras round the Studio out. <strong>Library
+<p>Two automation extras round the wizard out. <strong>Library
 mode</strong> (a checkbox on the combine-audio journey) builds every
 subfolder as its own audiobook in one unattended run — point it at a
 folder of book folders and come back to a shelf of masters, each titled
@@ -29185,7 +29188,7 @@ after its folder. And a new <strong>watch action, "Build audiobook from
 the folder"</strong>, keeps a drop folder alive: whenever new recordings
 land in a watched folder, its chaptered master is rebuilt automatically
 (a batch of files triggers one rebuild, not many).</p>
-<p>A few reach-shortcuts have grown around the Studio. <strong>The first
+<p>A few reach-shortcuts have grown around the wizard. <strong>The first
 page remembers which journey you used last</strong> (documents / audio /
 edit) and pre-selects that radio, so the second run lands on the same
 first page without a click. The source pages show a <strong>combo of
@@ -29193,7 +29196,7 @@ recent source folders</strong>, and the <strong>edit</strong> journey's
 file picker remembers <strong>recently opened audiobooks</strong> — both
 lists persist across sessions and are independent from the
 recent-document list, so they never grow without bound. The
-<strong>default key binding</strong> for the Studio is
+<strong>default key binding</strong> for the wizard is
 <code>Ctrl+Shift+Grave, Y</code>; the entry shows up in the command
 palette under "Audio Studio...". The <strong>Export to Translated Speech
 Audio</strong> dialog has an <strong>"Open in Audio Studio"</strong>
@@ -29213,15 +29216,11 @@ Converter</h3>
 <strong>audio converter</strong>: it changes audio files between formats
 — and pulls the audio track out of video files — entirely on your
 machine through the bundled ffmpeg, so it works in Safe Mode and never
-uploads anything. There is one converter engine behind five doors, so
+uploads anything. There is one converter engine behind three doors, so
 you can reach it however you already work:</p>
 <ul>
-<li><strong>Audio Studio → Voices → Convert Audio…</strong> — the dialog
-form.</li>
-<li><strong>Quill Converter</strong> — a standalone tray app, launched
-with <code>python -m quill.apps.converter</code> (or its own icon). It
-carries the QuillVille menu like the other family apps, minimizes to the
-tray, and has its own show/hide hotkey (Ctrl+Alt+Shift+C).</li>
+<li><strong>Voices → Convert Audio…</strong> — the dialog form, from the
+audiobook and batch-speech wizard.</li>
 <li><strong><code>quill convert</code></strong> — a headless command for
 scripts:
 <code>quill convert *.wav --to mp3 --preset podcast --out ./done</code>.
@@ -29232,10 +29231,6 @@ options (<code>--bitrate</code>, <code>--sample-rate</code>,
 <code>--high-pass</code>, <code>--trim-silence</code>,
 <code>--speed</code>, <code>--compress</code>, <code>--level</code>,
 <code>--fade-in</code>, <code>--fade-out</code>).</li>
-<li><strong>Windows Explorer</strong> — turn on <strong>Settings →
-Integration → Offer "Convert with QUILL"</strong> and right-clicking an
-audio or video file gains a <strong>Convert with Quill</strong> entry
-that opens the standalone converter with that file already queued.</li>
 <li><strong>Convert from URL…</strong> — paste a link (YouTube and the
 many sites yt-dlp supports) and QUILL downloads the best-audio stream,
 then hands it to the converter. This is the one part that uses the
@@ -29261,9 +29256,8 @@ responsive; progress shows in the status bar and, when minimized, in the
 tray tooltip, and the final summary is spoken and always names any files
 that failed rather than reporting a silent success.</p>
 <p><strong>Advanced mode.</strong> An <strong>Advanced options</strong>
-panel (a checkbox that reveals more controls, or the
-<strong>Advanced…</strong> button in the standalone app) exposes the
-full processing catalog on top of the preset: exact <strong>bit
+panel (a checkbox that reveals more controls) exposes the full
+processing catalog on top of the preset: exact <strong>bit
 rate</strong>, <strong>sample rate</strong>, <strong>channels</strong>
 (keep / mono / stereo), and <strong>bit depth</strong>;
 loudness-normalize to an <strong>audiobook</strong> (−20 LUFS, ACX) or
@@ -29607,13 +29601,14 @@ tool, a <strong>combined cost estimate</strong> is shown before any
 metered cloud run.</p>
 <h3 id="build-an-audiobook-from-a-folder-of-recordings">Build an
 audiobook from a folder of recordings</h3>
-<p>The Audio Studio's <strong>Combine audio files</strong> journey
-(<code>Tools → Speech → Audio Studio…</code>, second choice on the first
-page) combines a folder of existing audio files into one chaptered
-audiobook — the kind your audiobook or podcast app navigates track by
-track. It complements the narrate-documents journey: where that converts
-documents to speech, this stitches a folder of audio (your own
-recordings, or speech QUILL exported earlier) into a single master.</p>
+<p>The wizard's <strong>Combine audio files</strong> journey
+(<code>Tools → Speech → Audiobook &amp; Batch Speech…</code>, second
+choice on the first page) combines a folder of existing audio files into
+one chaptered audiobook — the kind your audiobook or podcast app
+navigates track by track. It complements the narrate-documents journey:
+where that converts documents to speech, this stitches a folder of audio
+(your own recordings, or speech QUILL exported earlier) into a single
+master.</p>
 <ul>
 <li>Point it at a <strong>folder of audio files</strong>; each file
 becomes one <strong>chapter</strong>, in natural-sorted order, with the
@@ -30020,20 +30015,16 @@ with F8 plays a rising two-note gate and completing it plays the mirror
 image; reaching the very top of the document gives a high ceiling tick,
 and the very end a low floor thud.</li>
 <li><strong>The companion apps have their own voice.</strong> Quill
-Radio, QUILL Cast, Quill Weather and QuillBeacon now cue the moments you
-used to have to guess at from silence. Radio marks connecting, the
-stream actually starting, a mid-stream stall, stopping, a stream that
-failed, a recording beginning and being saved, and a station added to
-Favourites — so you know a station is coming rather than dead, and you
-can tell "still buffering" from "gone". Cast marks downloads beginning,
-each episode landing on disk, and an episode reaching its end. Weather
-plays its alert cue only when an alert is genuinely new — never on a
-routine check, and never again for one it has already told you about.
-Beacon marks an item captured and a sync finishing. Each of the fourteen
-is a <strong>Sound Event</strong> you can turn off individually, and
-each fires on a real change of state: a stream that stalls ten times in
-a row makes one sound, not ten, and a forty-episode download batch says
-"downloading" once.</li>
+Radio and Quill Weather now cue the moments you used to have to guess at
+from silence. Radio marks connecting, the stream actually starting, a
+mid-stream stall, stopping, a stream that failed, a recording beginning
+and being saved, and a station added to Favourites — so you know a
+station is coming rather than dead, and you can tell "still buffering"
+from "gone". Weather plays its alert cue only when an alert is genuinely
+new — never on a routine check, and never again for one it has already
+told you about. Each is a <strong>Sound Event</strong> you can turn off
+individually, and each fires on a real change of state: a stream that
+stalls ten times in a row makes one sound, not ten.</li>
 <li><strong>Keep the sound device awake.</strong> Some USB and Bluetooth
 audio devices power down after a few silent seconds and clip the start
 of the next sound. If the first moment of your earcons or speech gets
@@ -30067,11 +30058,11 @@ packs."</p>
 <h3 id="background-checks-how-often-how-loud-how-urgent">Background
 checks: how often, how loud, how urgent</h3>
 <p>Quill quietly watches a few things for you: a watched folder, the
-weather, your podcast feeds, and (if you use it) your GitHub account.
-Every one of those now offers the <strong>same three controls</strong>,
-so once you have set up one of them you already know how the others
-work. Find them in <strong>Preferences → Settings</strong> and search
-for the monitor's name, or for "tick", "interrupt", or "check".</p>
+weather, and (if you use it) your GitHub account. Every one of those now
+offers the <strong>same three controls</strong>, so once you have set up
+one of them you already know how the others work. Find them in
+<strong>Preferences → Settings</strong> and search for the monitor's
+name, or for "tick", "interrupt", or "check".</p>
 <ul>
 <li><strong>How often it checks.</strong> The poll interval. Watched
 folders are measured in seconds, because a file you just dropped in
@@ -30092,22 +30083,16 @@ on for the one or two watchers you actually want to feel running.</li>
 <li><strong>Whether a result interrupts speech.</strong> Turn on
 <strong>Let results interrupt speech</strong> and that monitor's
 announcements cut across whatever is currently being spoken. Leave it
-off (the default) and they wait their turn, so a new-episode notice
-never chops a sentence in half while you are reading. This is a
-preference, not a property of the message: some people want the weather
-to interrupt and podcasts to wait, and some want the opposite. Genuine
+off (the default) and they wait their turn, so a new-result notice never
+chops a sentence in half while you are reading. This is a preference,
+not a property of the message: some people want the weather to interrupt
+and the watched folder to wait, and some want the opposite. Genuine
 errors always interrupt regardless — no setting can silence the message
 that says something broke.</li>
 </ul>
 <p>Quill describes the combination back to you as one plain sentence
 rather than making you assemble it from three checkboxes: <em>"Checks
 every 15 minutes, ticks audibly, does not interrupt speech."</em></p>
-<p>One monitor is new: <strong>Check podcast feeds in the
-background</strong>. Until now, podcast feeds were only read when you
-asked for a refresh. Turn this on and Quill checks your subscriptions on
-your chosen cadence and tells you what arrived. It is off by default, it
-only reads the feeds (nothing is downloaded unless your show settings
-already say to), and it never runs in Safe Mode.</p>
 <h3 id="startup-speech-is-opt-in-not-automatic">Startup speech is
 opt-in, not automatic</h3>
 <p>By default, QUILL speaks only the <code>QUILL Ready</code> line at
@@ -31969,10 +31954,11 @@ volume the next time you launch. A favorite with its own remembered
 level still wins for that station.</p>
 <h3 id="recording-a-station">Recording a station</h3>
 <p>Recording needs the <strong>FFmpeg</strong> optional component — the
-same one the Audio Studio uses for compressed audio exports. If it isn't
-installed yet, the recording commands are simply not there; install it
-from <strong>Help &gt; Download Optional Components</strong> (the
-"Audio: export, playback &amp; chapters" entry) and they appear.</p>
+same one QUILL's audiobook and batch-speech tools use for compressed
+audio exports. If it isn't installed yet, the recording commands are
+simply not there; install it from <strong>Help &gt; Download Optional
+Components</strong> (the "Audio: export, playback &amp; chapters" entry)
+and they appear.</p>
 <ul>
 <li><strong>Record Now</strong> (Tools &gt; Media &gt; Internet Radio,
 the Radio status bar cell's context menu, or the tray) starts recording
@@ -32093,343 +32079,25 @@ recordings capture the filtered audio too.</p>
 sources (they appear blended into your search results, above) — through
 open, no-key, no-account backends that resolve only the stations you
 actually search for, never a bulk scrape. YouTube audio is still not
-supported. Podcasts, described next, are a separate feature that ships
-alongside Internet Radio.</p>
-<h2 id="podcasts">Podcasts</h2>
-<p><strong>Tools &gt; Media &gt; Podcasts...</strong> is QUILL's podcast
-client: subscribe to shows, organize them into folders, download
-episodes for offline listening, and resume exactly where you left off.
-It shares Internet Radio's core idea — one player that keeps going after
-you close the dialog — and is disabled entirely in Safe Mode, since it
-is a network feature.</p>
-<h3 id="subscribing-to-a-podcast">Subscribing to a podcast</h3>
-<p>The Podcasts dialog's <strong>Add Podcast...</strong> button opens a
-dialog with three ways in:</p>
-<ul>
-<li><strong>Search.</strong> Type a show name and press
-<strong>Search</strong> to query Apple's free, keyless iTunes Search
-directory. Arrow to a result and press <strong>Subscribe to
-Selected</strong>.</li>
-<li><strong>Add by Feed URL.</strong> If you already know a show's
-RSS/Atom feed address (or it isn't in iTunes' directory), paste it into
-the URL field and press <strong>Add</strong>.</li>
-<li><strong>Import OPML...</strong> reads a whole subscription list —
-including its folder structure — exported from another podcast app, so
-switching to QUILL doesn't mean starting over. <strong>Export
-OPML...</strong>, back on the main Podcasts dialog, writes your library
-out the same way.</li>
-</ul>
-<h3 id="organizing-your-library">Organizing your library</h3>
-<p>The Podcasts dialog shows a folder tree on the left and, for whatever
-folder or show is selected, an episode list on the right — the same
-tree-and-list shape Internet Radio's dialogs use.</p>
-<ul>
-<li><strong>New Folder...</strong> creates a folder, nested under
-whatever's currently selected in the tree.</li>
-<li>A show's right-click context menu (or Menu/Shift+F10) offers
-<strong>Refresh Feed</strong> (check for new episodes now),
-<strong>Pause/Resume Downloads for This Podcast</strong> (keeps the
-show, its episodes, and any downloads in your library, but stops
-fetching or downloading anything new until you resume it), and
-<strong>Unsubscribe</strong>.</li>
-<li><strong>Unsubscribe</strong> also works with the
-<strong>Delete</strong> key on a selected show. What happens to that
-show's downloaded files depends on <strong>Podcast Settings...</strong>
-(below): ask each time, always delete them, or never delete them.</li>
-</ul>
-<h3 id="podcast-settings">Podcast Settings</h3>
-<p>The <strong>Podcast Settings...</strong> button opens the global
-defaults every newly subscribed show starts with: default playback mode
-(download or stream), default retention, default speed, a default
-download location, and the delete-on-unsubscribe policy used above. Any
-individual podcast can still override any of these from its own context
-menu — these are only where a new subscription begins.</p>
-<h3 id="downloading-episodes">Downloading episodes</h3>
-<p>Select an episode and press <strong>Download</strong>, or use its
-context menu. Downloads run on their own dedicated background thread, so
-a large backlog never slows down AI calls, transcription, or anything
-else QUILL is doing in the background.</p>
-<p>Pausing a download is two separate controls, not one setting doing
-two jobs:</p>
-<ul>
-<li><strong>Pause All Downloads</strong> / <strong>Resume All
-Downloads</strong> (from the tray menu, the status bar's Podcasts cell,
-or the Podcasts dialog) stops the queue from <em>starting</em> anything
-new. Anything already mid-transfer keeps running to completion.</li>
-<li>Pausing <strong>one specific episode</strong> (its context menu, or
-the <strong>Pause Download</strong> button) halts that transfer
-immediately, wherever it is. Resuming it later continues from the exact
-byte it left off, rather than starting over.</li>
-</ul>
-<p><strong>Retention</strong> — what happens to a downloaded file over
-time — is a setting per podcast, or a global default: keep every
-episode, keep only the most recent few, or delete a file automatically
-once you finish listening to it.</p>
-<h3 id="playing-an-episode">Playing an episode</h3>
-<p>Select an episode and press <strong>Play/Pause</strong>, double-click
-it, or use its context menu. Playing a different episode always replaces
-whatever was playing — QUILL never plays two things at once, the same
-rule Internet Radio follows. Closing the Podcasts dialog never stops
-playback.</p>
-<p>Your position within an episode is saved automatically, so returning
-to it later — even from a different session — resumes exactly where you
-stopped. That position is stored the same way QUILL Sync already carries
-your settings between machines, so it travels with you if you sync your
-data folder.</p>
-<p>A <strong>Speed</strong> control on the Podcasts dialog's player row
-sets playback rate for the selected podcast, from 0.75x to 2.0x,
-remembered the next time you open that show.</p>
-<h3 id="chapters">Chapters</h3>
-<p>If an episode carries Podcasting 2.0 chapter data, its
-<strong>Chapters...</strong> button is enabled. Press it to see a list
-of chapter markers by name and timestamp; select one and press
-<strong>Jump To Chapter</strong> to go straight there — this works
-whether or not that episode is already playing. <strong>Podcasts: Next
-Chapter</strong> and <strong>Podcasts: Previous Chapter</strong>, in the
-Command Palette, jump between chapter boundaries in whatever episode is
-currently playing, from anywhere in QUILL.</p>
-<h3 id="sound-enhancements-1">Sound Enhancements</h3>
-<p><strong>Episode &gt; Sound Enhancements...</strong> applies live, on
-top of whatever is playing: a three-band equalizer (Bass, Mid, Treble
-sliders, -12 to +12 dB each) plus a "Quick preset" shortcut (Flat, Bass
-Boost, Voice Clarity, Podcast) that sets all three at once, a compressor
-("Even Out Volume"), and <strong>Smart Speed</strong> (trims silence
-between words and sentences, distinct from the one-time leading/trailing
-silence trim Downloads can already do to the saved file — Smart Speed is
-reversible and live, on any episode, any time). All of it needs FFmpeg;
-if it's missing, playback continues unfiltered and QUILL tells you why.
-Turning anything on or off, or scrubbing the seek bar while enhanced,
-briefly reconnects — QUILL restarts the filter at your exact position,
-so you never lose your place, and pausing/resuming works normally
-throughout.</p>
-<p>Every setting here is <strong>per-podcast</strong>: open Sound
-Enhancements while an episode is playing to set that show's own sound,
-or with nothing playing to set the shared default every other show
-follows.</p>
-<h3 id="skip-forward-skip-back-and-auto-skip-introoutro">Skip Forward,
-Skip Back, and auto-skip intro/outro</h3>
-<p><strong>Episode &gt; Skip Forward</strong> and <strong>Skip
-Back</strong> jump the current episode by a configurable number of
-seconds (30 forward, 15 back, by default) — different from Next/Previous
-Chapter, which jump to the nearest chapter boundary instead of a fixed
-distance. <strong>Episode &gt; Skip Settings...</strong> edits how far
-each jumps: open it while an episode is playing to set that show's own
-skip distance, or with nothing playing to set the shared default.</p>
-<p>The same dialog also offers, only when a podcast is loaded,
-<strong>auto-skip intro</strong> and <strong>auto-skip outro</strong> (0
-= off, per podcast only — a global "skip N seconds of every show"
-default isn't something anyone wants). Auto-skip intro jumps forward
-that many seconds automatically the moment an episode starts fresh —
-never when resuming a checkpointed position, so you never lose your
-place. Auto-skip outro ends the episode that many seconds before its own
-true end, exactly as if it had finished naturally: auto-advance to the
-next queued episode, delete-after-play, and everything else that happens
-when an episode finishes still happens.</p>
-<h3 id="sorting-and-finding-whats-unheard">Sorting and finding what's
-unheard</h3>
-<p><strong>Sort episodes</strong>, above the episode list, offers newest
-first, oldest first, title A-Z, longest first, shortest first, or
-unplayed first. <strong>Sort shows</strong>, above the folder tree,
-offers title A-Z, most unheard first, or recently updated first. Every
-folder and show name in the tree also shows its own unheard-episode
-count in parentheses, so you can see where you're behind without opening
-each show.</p>
-<h3 id="show-notes">Show notes</h3>
-<p>An episode's right-click context menu includes <strong>View Show
-Notes...</strong>, which opens its description either as <strong>Plain
-text</strong> (HTML stripped out, real paragraph line breaks so a screen
-reader's line-by-line navigation moves by line rather than word-by-word
-through one wrapped line, and links written as
-<code>link text (https://...)</code>) or as <strong>Rich text</strong>
-(formatted, with any images removed so opening show notes can never
-trigger a network image fetch QUILL didn't audit). <strong>Send to
-Editor</strong>, in the same dialog, or <strong>Send Show Notes to
-Editor</strong> on the episode's context menu, opens the plain-text
-version as a new QUILL document.</p>
-<h3 id="controlling-playback-without-opening-a-dialog-1">Controlling
-playback without opening a dialog</h3>
-<ul>
-<li><strong>The status bar.</strong> A <strong>Podcasts</strong> cell
-appears the first time you play an episode (hidden until then). Press
-Enter on it, or click it, to play or pause. Its context menu adds Stop
-and Pause/Resume All Downloads.</li>
-<li><strong>The system tray.</strong> Minimize QUILL to the tray and its
-right-click menu carries the same Play/Pause, Stop, and download-pause
-controls.</li>
-<li><strong>Keyboard shortcuts.</strong> With QUILL focused,
-<strong>Ctrl+Shift+Grave</strong> (the QUILL Key), then
-<strong>8</strong>, toggles play/pause; then <strong>7</strong> stops.
-Like every QUILL Key chord, these are remappable in <strong>Preferences
-&gt; Keyboard Shortcuts</strong>.</li>
-</ul>
-<h3 id="rich-context-menus">Rich context menus</h3>
-<p>Right-click an episode (or open its context menu from the keyboard)
-for: Play/Pause, Stop, Download, Pause/Resume Download, Remove
-Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show
-Notes..., and Send Show Notes to Editor. Right-click a show in the tree
-for: Refresh Feed, Pause/Resume This Podcast's Downloads, and
-Unsubscribe. Right-click a folder for: New Folder.</p>
-<h3
-id="the-pinned-views-favorites-new-episodes-continue-listening-and-the-inbox">The
-pinned views: Favorites, New Episodes, Continue Listening, and the
-Inbox</h3>
-<p>The top of the Podcast Manager's folder tree carries four pinned
-views, above your own folders, each with a live count:</p>
-<ul>
-<li><strong>Favorites</strong> — every show you've marked as a favorite
-(right-click a show &gt; <strong>Add to Favorites</strong>), all
-episodes together.</li>
-<li><strong>New Episodes</strong> — every unplayed episode across every
-subscription, so "what's new" is one selection away.</li>
-<li><strong>Continue Listening</strong> — every episode you're partway
-through, because QUILL remembers your position in each one.</li>
-<li><strong>Inbox</strong> — a personal triage space, described
-next.</li>
-</ul>
-<p>In any pinned view, each row carries both the episode and show name,
-so cross-show lists stay unambiguous.</p>
-<h3 id="the-inbox-organize-episodes-not-shows">The Inbox: organize
-episodes, not shows</h3>
-<p>The Inbox organizes <em>episodes</em>, cutting across your library
-folders entirely. Right-click a show and choose <strong>Route New
-Episodes to Inbox</strong>: its unplayed episodes now appear in the
-Inbox view, regardless of where the show lives in your folder tree.
-Inside the Inbox you can create your own nested folders and file
-episodes into them: right-click an episode &gt; <strong>File to Inbox
-Folder...</strong> opens the same searchable folder picker used
-elsewhere. The first time you file an episode from a given show, QUILL
-remembers that folder and auto-files that show's future episodes there —
-the announcement tells you so — and <strong>Forget Remembered Inbox
-Folder</strong> (on the show's menu) reverts to manual filing. Deleting
-an Inbox folder only moves its episodes up a level; Inbox actions never
-delete an episode. The Inbox is deliberately excluded from OPML in both
-directions: it's your local curation, not part of the subscription
-list.</p>
-<h3 id="the-play-queue">The Play Queue</h3>
-<p>Any episode's right-click menu offers <strong>Play Next</strong>
-(front of the queue) and <strong>Add to Queue</strong> (back). When an
-episode finishes, the queue's next episode starts automatically —
-including across different shows. The <strong>Play Queue...</strong>
-button opens the queue itself: Enter or <strong>Play Now</strong> plays
-the selected item immediately, <strong>Move Up/Down</strong> nudges one
-slot, and for long moves, <strong>Mark for Move</strong> then
-<strong>Move Marked Above/Below</strong> places the marked item exactly
-where you want it relative to the selection — the same accessible
-reordering pattern as Interactive Rebase's commit list. Queued episodes
-that disappear (an unsubscribed show, a pruned episode) simply skip;
-nothing crashes. The queue survives restarts.</p>
-<h3 id="playlists">Playlists</h3>
-<p>Below the Play Queue in the Podcast Manager's tree sits
-<strong>Playlists</strong> — saved, named episode lists, distinct from
-the transient Play Queue (which empties as it plays) and the four fixed
-pinned views (which you can't customize). Right-click
-<strong>Playlists</strong> for two kinds:</p>
-<ul>
-<li><strong>New Playlist...</strong> creates a manually curated list.
-Build it from any episode's context menu: <strong>Add to
-Playlist...</strong> picks an existing playlist (or lets you create one
-on the spot) and appends that episode. Order is exactly how you added
-things; a playlist keeps working even if you later unsubscribe from one
-of its shows or an episode disappears — that one entry just drops
-out.</li>
-<li><strong>New Smart Playlist...</strong> creates a rule-based list
-that re-resolves live every time you open it — the same idea as New
-Episodes or Continue Listening, but with rules you set: which shows
-(leave none checked for every show), episode status (any, unplayed, in
-progress, played), how recently published, a minimum and maximum length,
-and how to sort the result. <strong>Edit Rules...</strong> on any Smart
-Playlist's context menu reopens the same dialog to change them
-later.</li>
-</ul>
-<p>Selecting a playlist in the tree fills the episode list exactly like
-a pinned view does, with each row's episode and show name both visible.
-<strong>Rename Playlist...</strong> (also F2) and <strong>Delete
-Playlist...</strong> round out the context menu; deleting a playlist
-never deletes or unsubscribes anything, it only forgets the saved list
-itself.</p>
-<h3 id="filters-and-search-everywhere">Filters and Search
-Everywhere</h3>
-<p>Above the manager's tree: an <strong>Episodes</strong> filter (All,
-Unplayed, Played, Downloaded, Not downloaded), a <strong>Shows</strong>
-filter (All, Favorites only, Has unplayed), and <strong>Search
-Everywhere...</strong> — one search across every subscription, every
-episode, your episode notes, and every transcript you've already fetched
-(never a network call), grouped by type. Enter on a result jumps the
-manager straight to it.</p>
-<h3 id="transcripts">Transcripts</h3>
-<p>When a feed provides an episode transcript (Podcasting 2.0), the
-episode's right-click menu offers <strong>Save Transcript As...</strong>
-and <strong>Open Transcript in Editor</strong> — the transcript arrives
-as plain readable text (VTT/SRT/JSON formats handled), and once fetched
-it's cached locally so Search Everywhere can search it and reopening is
-instant.</p>
-<h3 id="episode-notes">Episode notes</h3>
-<p><strong>Podcasts: Add Episode Note...</strong> (command palette, or
-QUILL Cast's Episode menu) saves a timestamped note on whatever is
-playing, at the current position. An episode's right-click menu &gt;
-<strong>Episode Notes...</strong> lists its notes; Enter on one jumps
-playback to that moment — starting the episode first if it isn't
-playing.</p>
-<h3 id="local-podcasts-and-watched-folders">Local podcasts and watched
-folders</h3>
-<p><strong>Podcasts: Add Local Podcast...</strong> turns your own audio
-files into a show — one episode per file, titles guessed from filenames.
-Local shows live <em>outside</em> your synced data folder by design, so
-pointing QUILL Sync at a cloud folder never tries to sync gigabytes of
-audio. Give a local show a <strong>watched folder</strong> and
-<strong>Scan Watched Folders</strong> picks up any new audio files
-dropped there as new episodes. Local shows never appear in OPML
-export.</p>
-<h3 id="acb-media-podcasts-in-one-command">ACB Media Podcasts, in one
-command</h3>
-<p><strong>Podcasts: Subscribe to ACB Media Podcasts</strong> fetches
-ACB's live podcast directory and subscribes to all of it, inside its own
-"ACB Media Podcasts" folder. It's idempotent — run it again later and
-only genuinely new shows are added — and every arriving show is set to
-stream (not download), so one command never queues three dozen shows'
-downloads.</p>
-<h3 id="always-sync-and-downloaded-audio-processing">Always Sync, and
-downloaded-audio processing</h3>
-<p>Podcast Settings gains three per-show-overridable switches.
-<strong>Always sync the full catalog</strong>: beyond the routine
-"what's new" refresh, a download-mode show backfills and downloads every
-episode the live feed still offers — and because backfilling a catalog
-while keep-last-N retention prunes it would fight itself, ticking it
-nudges retention to keep-all (announced, never silent).
-<strong>Auto-trim silence</strong> and <strong>Normalize
-loudness</strong> process each finished download using the same ffmpeg
-passes the Audio Studio's audiobook builder uses. And for quiet audio
-right now, the manager's <strong>volume boost</strong> control
-(1.5x/2x/3x) raises playback gain live without touching your saved
-volume — the Sleep Timer still restores the true, unboosted level.</p>
-<h3 id="whats-not-in-podcasts">What's not in Podcasts</h3>
-<p>No video podcasts — QUILL plays audio only, on every platform, and
-that is a promise rather than a gap.</p>
-<h2 id="quill-radio-and-quill-cast-the-standalone-apps">Quill Radio and
-QUILL Cast: the standalone apps</h2>
+supported.</p>
+<h2 id="quill-radio-the-standalone-app">Quill Radio: the standalone
+app</h2>
 <p>You don't have to open the full QUILL editor to listen. <strong>Quill
-Radio</strong> and <strong>QUILL Cast</strong> run Internet Radio and
-Podcasts as small standalone apps — their own window, their own menu
-bar, their own system tray icon.</p>
-<p>They are the same features, not copies: both apps run the exact same
-code QUILL itself uses, and read the same settings, favorites, and
-podcast subscriptions from the same place on disk. A station you
-favorite in Quill Radio is a favorite in QUILL; a show you subscribe to
-in QUILL Cast is subscribed everywhere. Everything described in the
-Internet Radio and Podcasts chapters above — the station browser, the
-link finder, recording and scheduled recording, the Podcast Manager,
-OPML import/export, downloads with pause/resume, chapter navigation —
+Radio</strong> runs Internet Radio as a small standalone app — its own
+window, its own menu bar, its own system tray icon.</p>
+<p>It is the same feature, not a copy: the app runs the exact same code
+QUILL itself uses, and reads the same settings and favorites from the
+same place on disk. A station you favorite in Quill Radio is a favorite
+in QUILL. Everything described in the Internet Radio chapter above — the
+station browser, the link finder, recording and scheduled recording —
 works identically here.</p>
-<p><strong>Starting the apps.</strong> On an installed QUILL, both apps
-are in the Start Menu — <strong>Quill Radio</strong> and <strong>QUILL
-Cast</strong>, right next to QUILL itself. The installer also offers
-optional desktop icons for them (a checkbox during setup; unchecked by
-default so your desktop stays yours). From a source checkout or the
-portable build, use <code>run-quill-radio.bat</code> and
-<code>run-quill-cast.bat</code>, or
-<code>python -m quill.apps.radio</code> /
-<code>python -m quill.apps.podcasts</code>.</p>
-<p><strong>Everything is keyboard-first.</strong> Each app opens on a
+<p><strong>Starting the app.</strong> On an installed QUILL, Quill Radio
+is in the Start Menu, right next to QUILL itself. The installer also
+offers an optional desktop icon for it (a checkbox during setup;
+unchecked by default so your desktop stays yours). From a source
+checkout or the portable build, use <code>run-quill-radio.bat</code>, or
+<code>python -m quill.apps.radio</code>.</p>
+<p><strong>Everything is keyboard-first.</strong> The app opens on a
 real main panel, not an empty window: focus lands on the app's most
 important list the moment it opens.</p>
 <ul>
@@ -32443,41 +32111,26 @@ switching is one keystroke), <strong>Playback</strong> (a live
 now-playing line, Play/Pause with Ctrl+P, Stop, Mute, volume),
 <strong>Record</strong> (Record Now / Stop, Schedule Recording,
 Recording Settings), and <strong>Help</strong>.</li>
-<li><strong>QUILL Cast</strong> — focus starts in your
-<strong>Subscribed shows</strong> list: press <strong>Enter</strong> on
-a show to open the full Podcast Manager, where all episode-level work
-happens. Tab reaches Open Manager, Add Podcast, Play/Pause, and Stop
-buttons, with the live now-playing line above. Menus:
-<strong>Subscriptions</strong> (Open Podcast Manager with Ctrl+M, Add
-Podcast, Import/Export OPML, Podcast Settings), <strong>Episode</strong>
-(a live now-playing line, Play/Pause, Stop, Next/Previous Chapter),
-<strong>Downloads</strong> (Pause All / Resume All), and
-<strong>Help</strong>. One difference from inside QUILL: "Send Show
-Notes to Editor" copies the notes to the clipboard instead — there is no
-editor buffer standalone — and announces that it did.</li>
 </ul>
-<p>Both apps put an icon in the system tray with the same radio or
-podcast controls QUILL's own tray icon offers, plus
-<strong>Show</strong> (double-click also works) and
-<strong>Exit</strong>. And when you decide you want the full editor
-after all, <strong>Help &gt; Open in Quill</strong> launches it.</p>
-<p>The apps respect Safe Mode (<code>QUILL_SAFE_MODE=1</code>) and skip
+<p>Quill Radio puts an icon in the system tray with the same radio
+controls QUILL's own tray icon offers, plus <strong>Show</strong>
+(double-click also works) and <strong>Exit</strong>. And when you decide
+you want the full editor after all, <strong>Help &gt; Open in
+Quill</strong> launches it.</p>
+<p>The app respects Safe Mode (<code>QUILL_SAFE_MODE=1</code>) and skips
 the tray icon on macOS, where the system has no equivalent
 notification-area icon (the same rule QUILL itself follows).</p>
 <h2 id="sleep-timer">Sleep Timer</h2>
-<p><strong>Tools &gt; Media &gt; Sleep Timer...</strong> covers both
-Internet Radio and Podcasts from one place, since it isn't specific to
-either. Choose a preset (15, 30, 45, 60, or 90 minutes) or type a custom
-number of minutes, then press <strong>Start</strong>. Over the final 20
-seconds, whichever of Radio or Podcasts is currently playing fades
+<p><strong>Tools &gt; Media &gt; Sleep Timer...</strong> stops whatever
+is playing after a while, from one place. Choose a preset (15, 30, 45,
+60, or 90 minutes) or type a custom number of minutes, then press
+<strong>Start</strong>. Over the final 20 seconds, Internet Radio fades
 gently down rather than cutting off abruptly, then stops; your volume is
 set back to what it was before the fade started, so pressing play again
 later isn't unexpectedly quiet. Open the dialog again while a timer is
 running to see how much time is left, or press <strong>Cancel Sleep
 Timer</strong> (also in the Command Palette as <strong>Media: Cancel
-Sleep Timer</strong>) to stop the countdown early. Since Radio and
-Podcasts are independent players, the timer fades and stops whichever of
-the two is actually active.</p>
+Sleep Timer</strong>) to stop the countdown early.</p>
 <h2 id="starting-quill-automatically">Starting QUILL automatically</h2>
 <p><strong>Preferences &gt; General</strong> has a <strong>Start QUILL
 when Windows starts</strong> checkbox, right next to <strong>Enable
@@ -36443,7 +36096,6 @@ inactive until you pick something else.</p>
 these commands can be bound, and the list is enforced in code:</p>
 <ul>
 <li>Radio: Play/Pause, Stop, Mute/Unmute, Volume Up, Volume Down</li>
-<li>Podcasts: Play/Pause, Stop</li>
 <li>New Sticky Note</li>
 <li>Sticky Notes Browser</li>
 <li>Post to Mastodon — this opens the compose window; nothing is ever

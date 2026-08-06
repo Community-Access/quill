@@ -902,8 +902,8 @@ failure result the caller must speak ("No match for X").</li>
 <code>tools/dialog_button_contract.py</code> now also fails the build
 for any Yes/No confirmation whose text reads as destructive
 (delete/remove/discard/overwrite/reset/...) without
-<code>wx.NO_DEFAULT</code>; 27 pre-existing sites across QUILL, Radio,
-Cast, and Beacon were fixed in the same pass. Dynamic message text is
+<code>wx.NO_DEFAULT</code>; 27 pre-existing sites across QUILL and the
+companion apps were fixed in the same pass. Dynamic message text is
 invisible to the AST audit, so the review rule stands: a destructive
 confirmation defaults to No.</li>
 </ul>
@@ -3937,22 +3937,28 @@ default <code>Alt+Shift+B</code> for List Bookmarks) live in
 name→position pairs per document via <code>DocumentMemory</code>.
 Reconciling this section with the shipped design is a separate
 follow-up; the two additions below are accurate as of 0.9.0 Beta 3.</p>
-<p><strong>Temporary bookmark — shipped 0.9.0 Beta 3; re-registered for
+<p><strong>Temporary bookmark — shipped 0.9.0 Beta 3; re-registered
 1.0.0 (#1317).</strong> A single unnamed, one-shot jump point, distinct
-from named bookmarks: <code>Ctrl+J</code> (Navigate &gt; Set Temporary
-Bookmark) sets it at the cursor with no dialog;
-<code>Ctrl+Shift+J</code> (Navigate &gt; Go to Temporary Bookmark) jumps
-to it with no picker. The original Beta 3 chords
-(<code>Ctrl+Shift+K</code> / <code>Alt+Shift+K</code>) were later
-reassigned to Unquote Lines and Keep Unique Lines, which left the
-commands unregistered until issue #1317 restored them on the J chords
-with Navigate-menu items, palette entries, and F1 topics (commit
-4f9d3bb, 2026-08-05). Session-only by design (never written to
-<code>DocumentMemory</code>) — it is disposable scratch state, not a
-durable anchor; it stores a raw caret position and does not re-anchor to
-surrounding text the way persistent bookmarks do. Implemented as
+from named bookmarks: <strong>Set Temporary Bookmark</strong>
+(<code>navigate.set_temp_bookmark</code>, <code>Ctrl+J</code>) sets it
+at the cursor with no dialog; <strong>Go to Temporary Bookmark</strong>
+(<code>navigate.go_to_temp_bookmark</code>, <code>Ctrl+Shift+J</code>)
+jumps to it with no picker. Both are Navigate-menu items (immediately
+after List Bookmarks) and command-palette entries. Session-only by
+design (never written to <code>DocumentMemory</code>) — it is disposable
+scratch state, not a durable anchor; it stores a raw caret position and
+does not re-anchor to surrounding text the way persistent bookmarks do.
+Implemented as
 <code>MainFrame.set_temp_bookmark</code>/<code>go_to_temp_bookmark</code>,
-aliased per-tab exactly like the named-bookmark dict.</p>
+aliased per-tab exactly like the named-bookmark dict. The handlers
+shipped in 0.9.0 Beta 3 but lost their registration when their
+historical chords were reassigned — <code>Ctrl+Shift+K</code> to Unquote
+Lines (<code>edit.unquote_lines</code>, #608) and
+<code>Alt+Shift+K</code> to Keep Unique Lines
+(<code>power.keep_unique_lines</code>, §4.22) — leaving the feature
+unreachable from the UI; 1.0.0 restores the command ids, keymap entries,
+menu items, palette labels, and F1 topics on the previously-unbound
+<code>Ctrl+J</code> / <code>Ctrl+Shift+J</code>.</p>
 <p><strong>Numbered quick bookmarks — shipped 0.9.0 Beta 3.</strong> Ten
 fixed slots (0-9). The original design (see the now-superseded PRD draft
 in <code>x.md</code>) proposed routing set/jump through Quick Nav's
@@ -4260,34 +4266,39 @@ block; <code>Ctrl+Alt+E</code> to the end.</li>
 operations</h3>
 <p>VS Code-style editor productivity, all standard text-control
 operations:</p>
-<p><strong>Shipped note (1.0.0):</strong> the chords in this list are
-the original spec; by 1.0.0 the default keymap had reassigned them
-elsewhere — <code>Ctrl+Shift+K</code> is Unquote Lines,
-<code>Ctrl+J</code> / <code>Ctrl+Shift+J</code> are the temporary
-bookmark (#1317), <code>Ctrl+Shift+D</code> is Describe Formatting, and
-<code>Alt+Up</code> / <code>Alt+Down</code> are structural navigation.
-The operations themselves all shipped (Move Line Up/Down, Duplicate
-Line, Delete Line, Select Line, Join Lines, indent/outdent, comment
-toggles — on the menus and command palette) but are unbound in the
-default keymap; bind them in the Keymap Editor or via an optional
-keyboard pack.</p>
 <ul>
-<li><code>Alt+Up</code> / <code>Alt+Down</code>: move the current line
-(or all selected lines) up or down. Announces the swap.</li>
-<li><code>Ctrl+Shift+D</code>: duplicate the current line or
+<li><strong>Move Line Up / Move Line Down</strong>
+(<code>format.move_line_up</code> / <code>format.move_line_down</code>):
+move the current line (or all selected lines) up or down. Announces the
+swap.</li>
+<li><strong>Duplicate Line</strong>
+(<code>format.duplicate_line</code>): duplicate the current line or
 selection.</li>
-<li><code>Ctrl+Shift+K</code>: delete the entire current line.</li>
-<li><code>Ctrl+L</code>: select the current line (repeat to extend by
-line).</li>
-<li><code>Ctrl+J</code>: join the current and next line with a single
-space.</li>
+<li><strong>Delete Line</strong> (<code>format.delete_line</code>):
+delete the entire current line.</li>
+<li><strong>Select Line</strong> (<code>edit.select_line</code>): select
+the current line (repeat to extend by line).</li>
+<li><strong>Join Lines</strong> (<code>format.join_lines</code>): join
+the current and next line with a single space.</li>
 <li><code>Tab</code> / <code>Shift+Tab</code> on a multi-line selection:
 indent or outdent.</li>
 <li><code>Ctrl+/</code>: toggle line comment using the current
 document's comment marker (<code>#</code>, <code>//</code>,
 <code>&lt;!-- --&gt;</code>, etc.).</li>
-<li><code>Ctrl+Shift+/</code>: toggle block comment where
-supported.</li>
+<li><code>Shift+Alt+A</code>: toggle block comment where supported.</li>
+</ul>
+<p>The five line-manipulation commands above ship <strong>unbound in the
+default keymap</strong> — every VS Code-style chord this section once
+claimed for them (<code>Ctrl+Shift+D</code>, <code>Ctrl+Shift+K</code>,
+<code>Ctrl+L</code>, <code>Ctrl+J</code>) is now spoken for by a
+different command (<code>format.describe_formatting</code>,
+<code>edit.unquote_lines</code>, per-pack, and
+<code>navigate.set_temp_bookmark</code> respectively). They are
+reachable from the Format menu and the command palette, carry ready-made
+chords in the <strong>Notepad++</strong> and <strong>VS Code</strong>
+keyboard packs (<code>quill/core/keymap_packs.py</code>), and can be
+bound to anything in Preferences &gt; Keyboard Shortcuts.</p>
+<ul>
 <li><strong>Tools menu</strong>: Sort Selected Lines
 (ascending/descending, case-sensitive option, natural-numeric option),
 Remove Duplicate Lines, Reverse Lines, Trim Trailing Whitespace, Convert
@@ -5228,24 +5239,25 @@ are tracked in <a
 href="../../planning/roadmap.md"><code>roadmap.md</code></a> §1.2). All
 synthesis logic is wx-free and headless-testable; the UI wraps it on the
 background task pool.</p>
-<p><strong>QUILL Audio Studio
-(<code>Tools → Speech → Audio Studio…</code>).</strong> A guided,
-journey-aware wizard (it replaced the single-page Batch Export to Speech
-Audio dialog at full option parity; the
-<code>tools.speech_batch_export</code> command id is unchanged so
-keymaps and menu customizations keep working). The start page picks a
-journey — <em>narrate documents</em> or <em>combine audio files into one
-chaptered audiobook</em> — and the following pages adapt: What should I
-read? (folder, types, filters) → Who should read it? (engine, voice +
-preview, pace, round-robin rotation, translated editions) → How should
-chapters work? (mode, spoken headings, the transition sounder + volume,
-article/sentence/tail gaps) → Output and diagnostics (format,
-existing-file policy, ACX loudness, dry run, spoken-text sidecars, temp
-folder) → the book page → a plain-sentence summary. Back/Next/Start
-follow the standard wizard keyboard contract, every step is announced
-("Step 2 of 7: What should I read?"), and <strong>Skip to
-summary</strong> fast-forwards a returning user whose project profile
-already fills every page. <code>AudioStudioWizard</code>
+<p><strong>QUILL's audiobook and batch-speech wizard
+(<code>Tools → Speech → Audiobook &amp; Batch Speech…</code>; the menu
+label was "Audio Studio…" until 1.0.0, renamed to remove the clash with
+the standalone app's name).</strong> A guided, journey-aware wizard (it
+replaced the single-page Batch Export to Speech Audio dialog at full
+option parity; the <code>tools.speech_batch_export</code> command id is
+unchanged so keymaps and menu customizations keep working). The start
+page picks a journey — <em>narrate documents</em> or <em>combine audio
+files into one chaptered audiobook</em> — and the following pages adapt:
+What should I read? (folder, types, filters) → Who should read it?
+(engine, voice + preview, pace, round-robin rotation, translated
+editions) → How should chapters work? (mode, spoken headings, the
+transition sounder + volume, article/sentence/tail gaps) → Output and
+diagnostics (format, existing-file policy, ACX loudness, dry run,
+spoken-text sidecars, temp folder) → the book page → a plain-sentence
+summary. Back/Next/Start follow the standard wizard keyboard contract,
+every step is announced ("Step 2 of 7: What should I read?"), and
+<strong>Skip to summary</strong> fast-forwards a returning user whose
+project profile already fills every page. <code>AudioStudioWizard</code>
 (<code>quill/ui/audio_studio/</code>) collects the same
 <code>BatchSpeechRequest</code> the classic dialog produced, so the
 tested runner and profile persistence are unchanged. The run reports
@@ -5414,11 +5426,11 @@ Build Audiobook from Folder — ChapterForge surface (shipped)</h3>
 <p>The ChapterForge-aligned "folder of audio → one chaptered master"
 feature (design source: the sibling ChapterForge project; only the
 surfaces that fit QUILL's audiobook vision are ported). Audiobook
-building is folded into the <strong>Audio Studio</strong>
-(<code>Tools → Speech → Audio Studio…</code>) — the <em>combine audio
-files</em> journey goes straight to it, and in the <em>narrate
-documents</em> journey the book page's <strong>Assemble the results into
-one audiobook</strong> reveals the book tags
+building is folded into the <strong>Audio Studio</strong> wizard
+(<code>Tools → Speech → Audiobook &amp; Batch Speech…</code>) — the
+<em>combine audio files</em> journey goes straight to it, and in the
+<em>narrate documents</em> journey the book page's <strong>Assemble the
+results into one audiobook</strong> reveals the book tags
 (title/author/narrator/genre/year), a cover-image picker, the book
 format, and a save-as path. After the documents are synthesized (one
 chapter per document), the produced — plus any pre-recorded — audio in
@@ -5656,9 +5668,8 @@ chapter-list import/export and in-place tag editing. Saving: MP3
 <strong>lossless <code>-c copy</code> re-mux</strong>
 (<code>save_m4b_book_as</code>; in-place is refused with a speakable
 message). Long saves run on the background pool.</li>
-<li><strong>Audio Studio shared listening modules + workbench
-player-observation contract (shipped, surfaced by the
-standalone).</strong> The Workbench player
+<li><strong>Shared listening modules + workbench player-observation
+contract (shipped).</strong> The Workbench player
 (<code>player_panel.py</code>) gained a <strong>Mute</strong> button
 (caches the pre-mute volume, restores on unmute, announces the state),
 public transport
@@ -5671,12 +5682,8 @@ and per-book volume/mute applied on load via <code>BookPrefs</code>
 <code>on_finished(path)</code>, <code>on_volume(path, pct)</code>,
 <code>on_mute(path, muted)</code>,
 <code>on_closed(path, position_ms, chapter)</code> — down to
-<code>PlayerPanel</code>; embedded QUILL passes none (fully backward
-compatible — its single call site is unchanged), and the standalone
-QUILL-AS Studio shell wires them to route media keys (Play/Pause, Stop,
-Next/Previous chapter via <code>RegisterHotKey</code>), persist per-book
-volume/mute, stamp Recently Played history, and auto-advance the play
-queue on finish-then-close. New wx-free stores in
+<code>PlayerPanel</code>; embedded QUILL passes none, so its single call
+site is unchanged and fully backward compatible. New wx-free stores in
 <code>quill/core/audio_studio/</code>: <code>library.py</code> (book
 entries + user folders), <code>history.py</code> (Recently Played),
 <code>play_queue.py</code> (ordered queue + <code>next_entry</code>),
@@ -5685,15 +5692,16 @@ entries + user folders), <code>history.py</code> (Recently Played),
 <code>library_tree.py</code> (Favorites / In Progress / Recently Played
 / Inbox groups + folders + a keyboard-complete context menu),
 <code>play_queue_dialog.py</code>, <code>sleep_timer_dialog.py</code>.
-All are vendored into QUILL-AS; each <code>save_*</code> site is
-classified <code>content</code> in the persistence audit, every
-focusable control carries an accessible name (audited by
-<code>accessible_name_audit</code>), and each new dialog is registered
-in the dialog inventory. The two Workbench helper dialogs
+Each <code>save_*</code> site is classified <code>content</code> in the
+persistence audit, every focusable control carries an accessible name
+(audited by <code>accessible_name_audit</code>), and each new dialog is
+registered in the dialog inventory. The two Workbench helper dialogs
 (<code>SilenceParamsDialog</code>, <code>AcxResultDialog</code>) moved
 to <code>chapter_workbench_dialogs.py</code> to keep
 <code>chapter_workbench.py</code> within the GATE-11 size ratchet (the
-ratchet only decreases).</li>
+ratchet only decreases). <em>(What the gated standalone Studio shell
+wires those host callbacks up to is recorded in
+<code>docs/audio-studio/README.md</code>.)</em></li>
 <li><strong>Chapter power tools (core).</strong>
 <code>quill/core/speech/chapter_io.py</code> imports/exports chapter
 lists in five formats (Audacity labels, plain timestamps, CUE,
@@ -5745,21 +5753,18 @@ audiobook/speech pipeline — that changes audio files between formats and
 extracts audio from video, entirely on-device through the bundled
 FFmpeg.</p>
 <ul>
-<li><strong>One engine, five surfaces.</strong> A single wx-free engine
-(<code>core/audio/convert.py</code>, <code>presets.py</code>,
+<li><strong>One engine, three public surfaces.</strong> A single wx-free
+engine (<code>core/audio/convert.py</code>, <code>presets.py</code>,
 <code>dsp.py</code>, <code>url_import.py</code>,
-<code>convert_cli.py</code>) is surfaced through: the Audio Studio
-dialog (<strong>Voices → Convert Audio…</strong>,
-<code>ui/audio_studio/convert_audio_dialog.py</code>); a standalone
-<strong>Quill Converter</strong> app (<code>apps/converter.py</code>, an
-<code>AppShellFrame</code> registered in
-<code>core/app_launcher.py</code>); a headless
-<code>quill convert</code> CLI; a Windows Explorer <strong>"Convert with
-Quill"</strong> shell verb (<code>core/shell_verbs.py</code>, gated by
-<code>shell_verb_convert</code>, routed through
-<code>--action convert</code> to the converter app); and <strong>Convert
-from URL</strong> (on-demand <code>yt-dlp</code>, consent-gated,
-egress-audited).</li>
+<code>convert_cli.py</code>) is surfaced through: the
+audiobook/batch-speech dialog (<strong>Voices → Convert Audio…</strong>,
+<code>ui/audio_studio/convert_audio_dialog.py</code>); a headless
+<code>quill convert</code> CLI; and <strong>Convert from URL</strong>
+(on-demand <code>yt-dlp</code>, consent-gated, egress-audited). <em>(Two
+further surfaces — the standalone <strong>Quill Converter</strong> app
+and the Windows Explorer "Convert with Quill" shell verb — are gated out
+of the public 1.0.0 build and are documented in
+<code>docs/apps/converter/README.md</code>.)</em></li>
 <li><strong>Formats &amp; capability probe.</strong> Output formats are
 filtered to what the resolved FFmpeg can actually encode
 (<code>available_output_formats</code> parses
@@ -5787,9 +5792,9 @@ available in Safe Mode. Only URL import touches the network:
 <code>yt-dlp</code> is never bundled, installs on demand after an
 explicit consent + rights notice, is recorded in the network-egress
 audit (<code>YoutubeDL</code> marker), and is refused in Safe Mode.</li>
-<li><strong>Deferred:</strong> the standalone app's PyInstaller build
-entry + launcher tile icon (after the build refactor settles); the app
-runs today via <code>python -m quill.apps.converter</code>.</li>
+<li><strong>Gated for 1.0.0:</strong> the standalone app and its
+Explorer shell verb, with the remaining build work, are recorded in
+<code>docs/apps/converter/README.md</code>.</li>
 </ul>
 <h3
 id="525a-speech-experience-platform-planned-before-implementation">5.25a
@@ -9023,7 +9028,7 @@ what it copied. Both hosts&#39; clipboard helpers return `bool`.
 announcements. Speech lived in two of three shells, braille lived nowhere,
 earcons lived only in QUILL, and the verbosity system (Quiet Mode, Meeting Mode,
 profile suppression, repetition collapse, the announcement budget) was wired
-into `MainFrame` alone -- so six companion apps and Beacon could mute,
+into `MainFrame` alone -- so the companion apps could mute,
 brailleize or record nothing, and severity was a single `force_speech` boolean
 that made an error indistinguishable from a routine confirmation.
 
@@ -9071,11 +9076,9 @@ probe says so rather than pretending.
 `MainFrame._announce` keeps its verbosity gate -- suppression, repetition
 collapse and the budget still decide -- and hands the result to the service;
 **delivery moved, policy did not**, which is what makes the swap low-risk.
-`AppShellFrame._announce` does the same for all six companion apps at once.
-`Announcer.say` in QuillBeacon keeps its signature (~40 call sites untouched)
-while gaining speech, braille and cues -- Beacon previously had **no
-screen-reader speech at all**, writing the status bar or the window title, which
-no reader announces on its own.
+`AppShellFrame._announce` does the same for every companion app at once. (The
+same pass also gave the out-of-repo family member its first screen-reader speech;
+that half is recorded in `docs/apps/beacon/README.md`.)
 
 One hand-off deserves recording: the #1289 braille dispatch lives inside
 `AnnouncementEngine.announce`, so the factory disables it and installs a
@@ -9126,7 +9129,7 @@ accessible_output2&#39;s per-reader implementations (JAWS `BrailleString`, NVDA
 `nvdaController_brailleMessage`) -- and QUILL called only `speak()` on each.
 
 Braille routes at the same choke point as speech
-(`AnnouncementEngine.announce`), so QUILL, Quill Radio, and Quill Cast are fixed
+(`AnnouncementEngine.announce`), so QUILL and every companion app are fixed
 by one change with no per-call-site edits; the standalone apps construct the same
 engine through `AppShellFrame`. The dispatch lives in its own module with three
 invariants: (1) **braille never costs speech** -- every call is wrapped, a
@@ -9429,416 +9432,42 @@ both shipped — see the mpv playback engine above and What&#39;s Playing.)
 
 **Value.** A genuine, on-mission &quot;why QUILL and not a dedicated player&quot;
 answer for a screen-reader-first audience: the ACB Media category exists
-nowhere else this convenient, and podcasts (§5.84g) chain a downloaded
-episode directly into the Listening Companion (§5.84b) for transcribe-and-
-summarize, which no standalone radio/podcast app offers.
+nowhere else this convenient, and a recorded stream chains directly into the
+Listening Companion (§5.84b) for transcribe-and-summarize, which no standalone
+radio app offers.
 
 ---
 
-### 5.84g Podcasts (Phase 1-2, shipped)
+### 5.84g Podcasts — relocated (not part of public 1.0)
 
-**Goal.** Subscribe to, organize, download, and play podcasts inside QUILL,
-sharing Internet Radio&#39;s (§5.84f) proven &quot;one player that outlives any
-dialog&quot; architecture rather than inventing a second one. Covers Phase 1 of
-the original 5-phase plan (discovery, subscriptions,
-nested folders, OPML, two-control downloads, retention, playback with
-per-show speed and resume position) plus chapters, sorting, and rich
-context menus pulled forward from Phase 3. Transcript UI, the Inbox, the
-Play Queue, and local (imported-file) podcasts remain later phases in that
-same document.
+**Status for 1.0.0: gated.** The editor-embedded Podcasts feature
+(`core.podcasts`) is dev-build-only for QUILL 1.0.0, and the standalone Quill
+Cast app that shares its code is gated behind `RELEASED_APPS`
+(`quill/core/app_launcher.py`). Neither is reachable in a public build.
 
-**Data model (`quill/core/podcasts/models.py`).** `PodcastShow` (one per
-subscription, or one `is_local` show for a later phase) owns a flat list of
-`PodcastEpisode` and an optional `PodcastSettings` override; `PodcastFolder`
-is a plain adjacency-list node (`parent_folder_id`), letting a show nest
-arbitrarily deep. `PodcastEpisode` carries `chapters_url`/`transcript_url`/
-`transcript_type` today as forward schema the feed reader already populates,
-even though Phase 1 has no UI that reads them yet — landing the on-disk
-shape now means the later chapters/transcript phase needs no migration.
-`position_ms` is the resume-position field the plan&#39;s sync design (§5.84f&#39;s
-persistence note) already anticipated.
+The full requirements — data model, discovery and subscription, OPML, downloads,
+retention, playback, chapters, sorting, show notes, settings, the Phase 4-8
+surfaces (pinned views, Inbox, Play Queue, playlists, filters and Search
+Everywhere, transcripts, episode notes, local podcasts, the ACB Media directory,
+per-podcast Sound Enhancements and skip settings) and the non-goals — were moved
+verbatim to **`docs/apps/cast/README.md`**, Part 2. Nothing was deleted, and this
+section number is kept so that every existing `§5.84g` cross-reference in this
+PRD and in the code comments still resolves.
 
-**Discovery and subscription.** `core/podcasts/itunes_search.py` queries
-Apple&#39;s free, keyless iTunes Search API — the same starting point FastPlay
-uses — for `search_podcasts()`. `core/podcasts/feed_reader.py` is a
-deliberate two-step design: QUILL fetches feed bytes itself
-(`_fetch_feed_bytes`, the one reviewed egress site, HTTPS-only, optional
-HTTP Basic auth for private feeds sent preemptively), then hands those bytes
-to `feedparser` for parsing only — never letting `feedparser`&#39;s own fetch
-path make the network call, which would move it outside QUILL&#39;s audited
-egress surface. Podcasting 2.0&#39;s `&lt;podcast:chapters&gt;`/`&lt;podcast:transcript&gt;`
-tags aren&#39;t reliably exposed by `feedparser` across versions, so those two
-are extracted with a tolerant regex pass scoped per-`&lt;item&gt;` fragment as a
-fallback that doesn&#39;t depend on guessing `feedparser`&#39;s internal key
-mapping. `core/podcasts/subscriptions.py`&#39;s `PodcastLibrary` is the one
-atomic-JSON store (shows, folders, global settings); `merge_episodes()`
-refreshes a known episode&#39;s feed-supplied metadata but never drops one just
-because a refreshed feed no longer lists it, and never resets its local
-state (played, position, downloaded file, mode override) — an old episode
-scrolling off a feed&#39;s live listing must not erase what you already did
-with it.
+Radio (§5.84f) and the shared Sleep Timer (§5.84h) remain public and are
+unaffected.
 
-**OPML (`core/podcasts/opml.py`).** Export walks the folder tree into nested
-`&lt;outline&gt;` elements (local shows excluded — they have no feed URL to
-export); import reconstructs that same tree from the nesting and reuses
-`PodcastLibrary.add_show`&#39;s existing duplicate-feed-URL detection, so
-re-importing a list you already have adds nothing twice. Untrusted OPML is
-parsed through `quill.core.safe_xml` (entity-expansion attacks disabled),
-never the bare stdlib parser; exporting uses plain `ElementTree`
-construction, which is not a parsing-of-untrusted-input operation.
-
-**Downloads (`core/podcasts/download_queue.py`).** One dedicated worker
-thread per process (not the shared `QuillTaskManager` pool), so a backlog of
-podcast downloads never competes with AI calls or transcription for a pool
-slot. Two independent pause controls, matching the plan&#39;s explicit
-requirement that this not be one setting wearing two hats:
-`pause_all`/`resume_all` stop the worker from *starting* new transfers,
-letting anything mid-transfer finish; `pause_item`/`resume_item` halt one
-specific transfer immediately via a per-item `threading.Event`, checked
-between each bounded chunk read so pause takes effect within a chunk, not
-only between whole-file attempts. Resuming reads the partial file&#39;s size and
-sends an HTTP `Range` request, falling back to a clean restart when the
-server doesn&#39;t honor it. `core/podcasts/retention.py` applies
-`keep_last_n` pruning after every completed download and
-`delete_after_play` after every finished episode — pure functions, testable
-without a real download or a real file.
-
-**Playback (`quill/ui/podcasts/player_controller.py`).** One
-`PodcastPlayerController`, owned by `MainFrame` for the process&#39;s lifetime —
-the exact same shape as `RadioPlayerController` (§5.84f), including the
-&quot;every dialog drives the shared controller, none of them own it&quot; rule that
-makes closing the Podcasts dialog never stop playback, and makes starting a
-new episode always replace whatever was playing rather than layering two
-streams. Unlike Radio, podcast episodes are bounded files (even mid-stream,
-the enclosure reports a real `Content-Length`), so this uses Audio Studio&#39;s
-normal `create_engine()` (mpv-preferred, `WxMediaEngine` fallback) rather
-than being restricted to Radio&#39;s wx.media-only backend. Per-show playback
-speed (`PodcastSettings.speed`, 0.75x-2.0x in the UI) is applied via
-`set_rate()` once the engine reports loaded, not before — some backends
-only accept a rate change after a file is open. Finishing an episode marks
-it played and applies `delete_after_play` before the state resets.
-
-**Surfaces.** `Tools &gt; Media &gt; Podcasts...` (Podcast Manager: folder tree +
-episode list, Add Podcast/New Folder/Import/Export OPML, Download/Pause
-Download/Remove Download, Unsubscribe) registers eight commands in
-`CommandRegistry` (`feature_id=&quot;core.podcasts&quot;`), command-palette visible.
-Rich context menus close the plan&#39;s explicit &quot;even playback and pause, etc.&quot;
-requirement: the episode list&#39;s menu covers Play/Pause, Stop, Download,
-Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, and
-Copy Episode Link; the folder tree&#39;s menu covers Refresh Feed, Pause/Resume
-Downloads for This Podcast (keeps the show and its episodes in the library
-while stopping new fetches — the plan&#39;s &quot;mark a podcast to not download but
-keep in the library&quot; ask), Unsubscribe, and New Folder. A `podcast_player`
-status-bar cell (auto-surfaces on first play, same pattern as Radio&#39;s cell)
-and a system-tray section (Play/Pause, Stop, Pause/Resume All Downloads)
-both drive the shared controller. Two QUILL-key chords
-(`Ctrl+Shift+Grave, 8/7` for play-pause/stop) sit adjacent to, not
-overlapping, Radio&#39;s `N/0/9`.
-
-**Chapters (`core/podcasts/chapters.py`).** Fetches and parses the
-Podcasting 2.0 JSON chapters format the feed&#39;s `&lt;podcast:chapters&gt;` tag
-points at, the same fetch-then-parse split `feed_reader.py` uses (one
-reviewed egress site, pure parsing). `chapter_at_position()`/
-`next_chapter()`/`previous_chapter()` are pure functions over a sorted
-chapter list, driving both the Chapters dialog&#39;s jump action and the
-global `podcasts.next_chapter`/`podcasts.previous_chapter` commands.
-Chapters for the currently-playing episode are fetched once per episode
-change (tracked by a `(show_id, episode_guid)` key, not re-fetched on every
-play/pause toggle) via a background `_task_manager.submit()` call, never
-blocking playback.
-
-**Sorting and unheard counts (`core/podcasts/sorting.py`).** Pure
-`sort_episodes()`/`sort_shows()` functions — six episode sort modes
-(newest/oldest/title/duration-longest/duration-shortest/unplayed-first) and
-three show sort modes (title/most-unheard-first/recently-updated-first),
-each with a sensible fallback for an unrecognized mode rather than raising.
-Publish dates are parsed via `email.utils.parsedate_to_datetime` (the
-typical RSS `pubDate` format), falling back to the oldest possible sort
-position for an unparseable or missing date rather than erroring. Unheard
-counts are computed recursively per folder (a folder&#39;s count includes every
-subfolder&#39;s shows) and per show, rendered as `&quot;{name} (N unheard)&quot;` in the
-tree only when non-zero.
-
-**Show notes (`core/podcasts/show_notes.py`).** `html_to_plain_text()`
-converts an episode&#39;s HTML description to plain text with real paragraph
-line breaks (block-level tag ends become newlines) so a screen reader&#39;s
-line-by-line navigation moves by line, not by wrapping a single giant line
-word by word — the specific, named failure mode this was built to avoid.
-Links become `text (url)` rather than being silently dropped.
-`strip_html_images()` removes every `&lt;img&gt;` tag before any HTML is handed
-to the &quot;rich&quot; `wx.html.HtmlWindow` view: an HTML renderer that itself
-fetches `&lt;img src=&quot;...&quot;&gt;` would be a silent, unreviewed network egress site
-invisible to a static audit of QUILL&#39;s own `urlopen` call sites, so images
-are removed rather than rendered. **Send Show Notes to Editor** reuses the
-existing `_power_tools_open_text_in_new_buffer()` new-document path (the
-same one AI transcribe/translate use).
-
-**Global settings and delete-on-remove (`PodcastSettings.
-delete_files_on_remove`).** A new `&quot;ask&quot;`/`&quot;always&quot;`/`&quot;never&quot;` field,
-consulted in the Unsubscribe flow via `effective_settings()` (so a show&#39;s
-own override wins over the library global): `&quot;ask&quot;` prompts a second
-confirmation naming the downloaded-episode count only when there are any to
-delete; `&quot;always&quot;`/`&quot;never&quot;` act without asking. `PodcastLibrary.settings`
-(playback mode, retention, speed, download root) existed in the data model
-since Phase 1 but had no UI until this pass&#39;s Podcast Settings dialog.
-
-**Non-goals (deliberate).** Video podcasts, in any form — audio only,
-matching every other QUILL playback surface; this was an explicit,
-repeated constraint during planning, not an oversight. TuneIn/iHeartRadio
-apply to Radio, not here; podcast feeds are an open standard (RSS/Atom),
-so there is no equivalent commercial-API question for this feature.
-
-**Planned next (Phase 3+), not yet built.** Transcript viewing/export/
-QUILL-transcription (the feed already parses the URL; §5.84b&#39;s
-transcription engines are the intended target), a separate Inbox view with
-its own folder tree, a cross-show reorderable Play Queue, local
-(imported-file) podcasts and watched folders, virtual views
-(Favorites/New Episodes/Continue Listening), and rich filtering (including
-Search Everywhere) — all shipped; see the Phase 4 block below for the full
-plan.
-
-**Value.** Closes the other half of the &quot;why QUILL and not a dedicated
-player&quot; answer §5.84f opened: a downloaded episode chains directly into the
-Listening Companion (§5.84b) for transcribe-and-summarize, something no
-standalone podcast app offers, and the same QUILL Sync story that already
-carries settings between machines now carries listening position too.
-
-#### Phase 4 (shipped): views, Inbox, queue, transcripts, notes, local, sync
-
-Everything the original phased plan deferred, now shipped. Every core is
-wx-free and unit-tested; the manager UI additions live in
-``quill/ui/podcasts/manager_phase4.py`` (a mixin, per the manager&#39;s CQ-1
-decomposition note) and ``play_queue_dialog.py``; standalone QUILL Cast
-(§5.89e) inherits all of it and adds matching menu items.
-
-- **Pinned virtual views (P4-1).** Favorites / New Episodes / Continue
-  Listening / Inbox sit above the folder tree with live counts
-  (``virtual_views.py``; Favorites via ``PodcastShow.is_favorite``, toggled
-  from the show context menu). Cross-show rows always carry the show name.
-- **The Inbox (P4-2, ``inbox.py``).** An episode-level curation layer:
-  ``route_to_inbox`` shows surface unplayed episodes in the Inbox regardless
-  of library folder; a second, independent nested folder tree
-  (``PodcastLibrary.inbox_folders``) files episodes
-  (``inbox_assignments``); the first manual filing per show is remembered
-  (``inbox_default_folder_id``, announced) with Forget to revert. Folder
-  deletion only promotes contents; Inbox actions never delete an episode;
-  the whole layer is excluded from OPML both directions.
-- **Play Queue (P4-3, ``queue.py`` + ``PlayQueueDialog``).** Cross-show
-  ordered queue persisted on the library; Play Next / Add to Queue on any
-  episode; auto-advance on natural finish via ``pop_next_playable`` (stale
-  slots self-heal); reordering is nudge (Move Up/Down) plus mark-and-move
-  (Move Marked Above/Below) -- the Interactive Rebase pattern.
-- **Search Everywhere + filters (P4-4, ``filtering.py``).** One query over
-  shows, episodes, episode notes, and cached transcripts (never a network
-  fetch), grouped by type with jump-to-result; episode-state and show
-  filters narrow the manager live.
-- **Transcripts (P4-5, ``transcripts.py``).** Feed-provided Podcasting 2.0
-  transcripts (VTT/SRT/JSON parsed to plain text) save to a file or open in
-  the editor; fetched transcripts cache locally (searchable, instant
-  reopen).
-- **Episode notes (P4-6, ``episode_notes.py``).** Timestamped notes on the
-  playing episode; the notes dialog jumps playback to a note&#39;s moment.
-- **Local podcasts + watched folders (P4-7, ``local_import.py``).** Audio
-  files become an ``is_local`` show (one episode per file); stored under
-  ``~/.quill-local/podcasts`` -- outside the syncable data directory *by
-  construction*, per the sync-safety requirement. A per-show
-  ``watched_folder`` turns dropped files into episodes on scan. Never
-  exported to OPML.
-- **ACB Media directory (P4-8, ``acb_media_podcasts.py``).** One idempotent
-  command subscribes the live ACB directory into its own folder, every
-  arrival stream-only (``import_opml``&#39;s ``stream_only``/``into_folder``).
-- **Always Sync (P4-9).** ``always_sync_full_catalog`` (per-show
-  overridable): refresh backfills the catalog and queues downloads for
-  download-mode shows; the settings checkbox nudges retention to keep-all
-  (announced) since backfill fights keep-last-N.
-- **Download processing + volume boost (P4-10, ``audio_processing.py``).**
-  Optional auto-trim-silence and loudness-normalization on each finished
-  download (the audiobook builder&#39;s ffmpeg passes, off-thread);
-  ``set_volume_boost`` (0.5x-3.0x clamp) scales live gain only --
-  ``volume_percent`` stays unboosted so the Sleep Timer&#39;s restore is honest.
-- **Position checkpoints (P4-11).** ``on_position_checkpoint`` fires with
-  the outgoing episode&#39;s position at pause/stop/switch/shutdown and the
-  mixin persists it -- the write half of resume, which previously only read.
-- **Status page rows (P4-12, ``status_report.py``).** Podcast library
-  summary rows and download-task rows (with started/finished timestamps)
-  for the Help Status page.
-
-#### Phase 5 (shipped): Sound Enhancements + Smart Speed
-
-Shares Radio&#39;s ``core/audio_enhance.py`` (§5.84f) rather than duplicating
-it, with the one real wrinkle Radio doesn&#39;t have: episodes support seeking
-and a duration/scrub bar, which a live one-way ffmpeg relay has neither of
-natively. Full parity was built, not a degraded no-seek mode.
-
-- **Three-band EQ + compressor.** Same as Radio (§5.84f): Bass/Mid/Treble
-  sliders plus a compressor, applied live via the shared relay. Off by
-  default; a &quot;Quick preset&quot; shortcut still sets all three sliders at once
-  from the four original named presets.
-- **Smart Speed (podcasts only).** A ``silenceremove`` filter trims silence
-  anywhere in the audio (not just leading/trailing), for the gaps between
-  sentences a spoken-word episode is full of -- reversible and live, not the
-  one-time, permanent leading/trailing trim ``audio_processing.py`` (P4-10)
-  already does to a saved download. Not exposed for Radio: a live stream has
-  no fixed content to trim ahead of time, and &quot;silence&quot; in music is often
-  intentional.
-- **Seek while enhanced (``player_controller.py``).** There is no way to
-  seek within an already-running relay, so scrubbing restarts it with an
-  ffmpeg ``-ss`` offset -- an async reload, not the engine&#39;s normal instant
-  seek. ``_pending_play_after_load`` carries play/pause intent through that
-  reload so scrubbing or toggling enhancement mid-episode never forces a
-  paused episode to resume.
-- **Duration (``probe_source_duration_ms``).** The relay&#39;s own MP3 output
-  never declares a length for the engine to compute a scrub bar from, so
-  duration comes from an independent ``ffprobe`` call instead.
-
-#### Phase 6 (shipped): Download All Episodes / Remove All Episodes
-
-Two new show-level context-menu actions, implemented once in
-``quill/ui/podcasts/show_actions.py`` and called from both surfaces that act
-on a subscribed show (the Podcast Manager dialog and QUILL Cast&#39;s own
-library tree) rather than duplicating the logic a third time.
-
-- **Download All Episodes.** Queues every not-yet-downloaded,
-  not-already-queued episode of a show -- purely additive, no confirmation,
-  matching the existing single-episode Download action&#39;s own behavior.
-- **Remove All Episodes.** A two-step confirm mirroring Unsubscribe&#39;s shape:
-  confirm the removal, then -- only if any episode has a downloaded file --
-  a follow-up asking whether to also delete those files. The show stays
-  subscribed (unlike Unsubscribe); a future feed refresh can repopulate its
-  episode list from the feed itself. Cancels any in-flight/queued download
-  for a removed episode first, so nothing is left running against a guid
-  about to disappear.
-
-#### Phase 7 (shipped): Inbox grouping + per-podcast sort for every cross-show view
-
-The Inbox (and every other cross-show virtual view -- New Episodes,
-Continue Listening, Favorites) previously rendered ``(show, episode)``
-pairs in raw feed-fetch order, with the Podcast Manager&#39;s existing &quot;Sort
-episodes&quot; control silently doing nothing outside a single show&#39;s own
-episode list. Root-caused from a direct user question about whether Inbox
-episodes were grouped by show or interleaved, and whether that order could
-be controlled; the first shipped design (a single &quot;Group by Show&quot; checkbox)
-was corrected mid-review into the fuller shape below once it became clear
-&quot;folder&quot; meant a real tree, and &quot;resettable per podcast&quot; meant a genuine
-per-show override, not a global-only toggle.
-
-- **``PodcastSettings.episode_list_view_mode``** (global only -- a single
-  show has no &quot;grouped vs flat&quot; shape of its own): ``&quot;flat&quot;`` (one stream
-  sorted by the library&#39;s global sort mode across every show), ``&quot;grouped&quot;``
-  (the pre-existing look -- pairs grouped contiguously by show, shows
-  ordered by title), or ``&quot;folders&quot;`` (the same per-show grouping, presented
-  as real expandable tree nodes instead of a flat list). Default
-  ``&quot;grouped&quot;`` matches the pre-existing de-facto order.
-- **``PodcastSettings.episode_sort_mode``**, per-show overridable the same
-  way ``speed`` already was. **``core/podcasts/sorting.py::sort_pairs``**
-  (pure, unit-tested): in ``&quot;flat&quot;`` mode every pair sorts by the one global
-  mode (per-show overrides don&#39;t apply -- there&#39;s no single well-defined
-  order once different shows compare by different keys); in
-  ``&quot;grouped&quot;``/``&quot;folders&quot;`` mode each show&#39;s own group sorts by *that
-  show&#39;s* effective mode, so one podcast can read oldest-first while
-  another reads newest-first.
-- **``PodcastLibrary.apply_show_override``**, the one correct way to write
-  any per-show settings override: clones the currently effective settings
-  (the show&#39;s own override if it has one, else the global default) via
-  ``dataclasses.replace``, so setting one field never resets sibling
-  overrides to class defaults. Also fixed ``_on_speed_choice``, which
-  predates this and hand-cloned only 5 of the (now) 14 ``PodcastSettings``
-  fields -- setting a show&#39;s playback speed silently wiped any other
-  override that show already had.
-- **UI (``manager_dialog.py``, ``manager_phase4.py``).** A &quot;View cross-show
-  lists as&quot; combo box (Flat list / Grouped in list / Folders per podcast)
-  and a context-aware &quot;Sort episodes&quot; control: it reads and writes the
-  selected podcast&#39;s own override when a single show (or its Folders tree
-  node) is selected, or the shared global default otherwise.
-  ``_add_virtual_view_show_children`` builds the Folders mode&#39;s per-podcast
-  tree nodes fresh on every ``refresh_tree()`` -- auto-generated, never
-  persisted, distinct from the existing manual freeform Inbox folder tree.
-
-#### Phase 8 (shipped): per-podcast Sound Enhancements, Skip Forward/Back, auto-skip intro/outro
-
-A competitive pass against Downcast/Overcast/Pocket Casts/Castro surfaced two
-gaps: Sound Enhancements (Phase 5, above) was global-only, and there was no
-skip-by-N-seconds command at all (only absolute chapter-boundary seeks).
-
-- **Per-podcast Sound Enhancements.** ``PodcastSettings`` gained
-  ``eq_bass_db``/``eq_mid_db``/``eq_treble_db``/``compressor_enabled``/
-  ``smart_speed_enabled``, per-show overridable via ``apply_show_override``
-  exactly like ``episode_sort_mode`` (Phase 7). Opening Sound Enhancements
-  while an episode is playing edits that show&#39;s own override; with nothing
-  playing, it edits the shared default. Every ``play_episode`` call site (6,
-  across the Manager, the Play Queue, Recently Played, and both standalone
-  apps) resolves ``effective_settings(show)`` and passes the result through
-  new optional ``bass_db``/``mid_db``/``treble_db``/``compressor_enabled``/
-  ``smart_speed_enabled`` kwargs.
-- **Skip Forward / Skip Back.** ``PodcastSettings.skip_forward_seconds``/
-  ``skip_back_seconds`` (global default + per-show override, 30/15 by
-  default) back two new commands (``podcasts.skip_forward``/``skip_back``,
-  Episode-menu items, default chords) that jump the player controller&#39;s
-  position by that many seconds, clamped to ``[0, length_ms]``.
-- **Auto-skip intro/outro** (``auto_skip_intro_seconds``/
-  ``auto_skip_outro_seconds``, per-show only -- a global &quot;skip N seconds of
-  every podcast&quot; default isn&#39;t a thing anyone wants). Intro-skip applies
-  once, only on a fresh start (``resume_ms &lt;= 0``) -- a checkpointed
-  position is never jumped past. Outro-skip is a new 1-second
-  ``PodcastPlayerController`` position poll that ends the episode early
-  through the exact same ``_on_finished`` path a natural end uses, so
-  auto-advance and delete-after-play still fire.
-- **New context-aware Skip Settings... dialog** (``skip_settings_dialog.py``)
-  mirrors Sound Enhancements exactly: edits the currently-loaded show&#39;s
-  override, or the shared default with the intro/outro fields hidden
-  entirely when nothing is loaded (they have no meaningful global value).
-- Also fixed a real bug found while touching ``PodcastSettingsDialog``:
-  ``_on_save`` built a fresh ``PodcastSettings(...)`` that silently reset 7
-  unedited fields (view mode, sort mode, EQ, smart speed) to class defaults
-  on every save. Now ``dataclasses.replace(self._settings, **edits)``, the
-  same pattern ``apply_show_override`` already uses.
-
-#### Phase 9 (shipped): saved Playlists -- Smart (rule-based) and manual
-
-The other half of the same competitive pass: no way to save a curated or
-rule-based cross-show episode list, only the four fixed pinned views and the
-transient Play Queue -- a real gap against Pocket Casts&#39; Smart Playlists/
-Filters and curated Playlists.
-
-- **``Playlist``/``PlaylistRules``** (``models.py``, mirrors ``QueueItem``&#39;s
-  own data-class-in-``models.py``/operations-in-a-sibling-module split).
-  ``kind=&quot;smart&quot;`` resolves live against ``rules`` every time it&#39;s opened
-  (which shows -- empty means every show, episode status, published-within-
-  days, min/max duration, sort mode, reusing ``sorting.py``&#39;s own sort-key
-  builder so results order exactly like every other episode list in the
-  app); ``kind=&quot;manual&quot;`` is a named, ordered, persistent list of specific
-  episode references (``QueueItem``s) -- the saved counterpart to the
-  transient Play Queue, self-healing against a since-unsubscribed show or
-  vanished episode the same way the Play Queue already does.
-  ``core/podcasts/playlists.py::resolve_playlist`` is pure and fully unit
-  tested.
-- **``PodcastLibrary.playlists``** + find/add/remove/rename CRUD, persisted
-  the same hand-rolled-dict way ``queue``/``inbox_folders`` already are.
-- **Tree integration** (``manager_phase4.py``) mirrors the existing
-  pinned-views/Inbox-folder pattern exactly: a &quot;Playlists&quot; node (context
-  menu: New Smart Playlist.../New Playlist...), one child per saved
-  playlist showing its live-resolved count, Edit Rules.../Rename/Delete on
-  each, F2 rename support, and the episode list fills via
-  ``resolve_playlist`` the same way a virtual view fills via
-  ``virtual_view_pairs``.
-- **New ``playlist_rules_dialog.py``** (the Smart Playlist rule editor) uses
-  individual ``wx.CheckBox`` controls in a ``wx.ScrolledWindow`` for the show
-  picker, not ``wx.CheckListBox`` -- caught by the banned-patterns gate
-  (A11Y-SR-1: screen readers do not announce ``CheckListBox`` item checked
-  state as it&#39;s navigated, only the label text).
-- Episode context menu gained &quot;Add to Playlist...&quot; (a native
-  ``wx.SingleChoiceDialog`` among existing manual playlists, or create one
-  inline).
 
 ---
 
 ### 5.84h Shared media Sleep Timer, and start-at-Windows-login
 
-**Goal.** A sleep timer that covers both Internet Radio (§5.84f) and
-Podcasts (§5.84g) from one place, since duplicating it per-feature would
-mean two timers, two dialogs, and no guarantee they agree on what &quot;active&quot;
-means; and a way to launch QUILL automatically at login, requested
-alongside the media work though unrelated to it in scope.
+**Goal.** One sleep timer that covers every media feature from one place, since
+duplicating it per-feature would mean two timers, two dialogs, and no guarantee
+they agree on what &quot;active&quot; means; and a way to launch QUILL automatically at
+login, requested alongside the media work though unrelated to it in scope. In
+the public 1.0.0 build the only active player is Internet Radio (§5.84f); the
+Podcasts half of the contract is recorded in `docs/apps/cast/README.md`.
 
 **Sleep timer (`quill/ui/media_sleep_timer.py`).** `SleepTimerController`
 is owned by `MainFrame`, not either media mixin, and takes `get_radio_
@@ -9851,12 +9480,10 @@ SECONDS` (20) of the countdown, every controller currently in a
 the pre-fade level exactly, not whatever the fade had reached). At zero,
 every active controller is stopped, then every faded controller&#39;s volume is
 restored — stopping first, then restoring, so the fade-out is never briefly
-audible again between &quot;stopped&quot; and &quot;volume restored.&quot; Radio and Podcasts
-are independent players (nothing stops one when the other starts), so both
-are faded/stopped if both happen to be active at once. `PodcastPlayerController`
-gained a `volume_percent` property/tracked field for this — Phase 1 shipped
-with a `set_volume()` method but no readable state, since nothing needed to
-read it back before the sleep timer did.
+audible again between &quot;stopped&quot; and &quot;volume restored.&quot; Media players are
+independent of each other (nothing stops one when another starts), so every
+controller that is active at the moment the countdown lands is faded and
+stopped.
 
 **Start at Windows login (`quill/platform/windows/startup.py`).**
 `set_launch_at_startup()`/`is_launch_at_startup_enabled()` read/write a
@@ -10162,17 +9789,21 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 
 ---
 
-### 5.89e Standalone companion apps — Quill Radio and QUILL Cast
+### 5.89e Standalone companion app — Quill Radio
 
-**Goal.** Radio and Podcasts are useful without the editor: someone who wants
-to listen to internet radio or manage a podcast queue should not have to load
-all of QUILL to do it. Quill Radio and QUILL Cast are small standalone
-executables — their own window, their own menu bar, their own system tray
-icon — that reuse QUILL&#39;s feature code *unchanged* rather than forking it.
+&gt; The gated companion apps that this section once described alongside Quill
+&gt; Radio are documented outside the public PRD for 1.0.0: **QUILL Cast** in
+&gt; `docs/apps/cast/README.md` and the standalone **Audio Studio** in
+&gt; `docs/audio-studio/README.md`.
+
+**Goal.** Radio is useful without the editor: someone who wants to listen to
+internet radio should not have to load all of QUILL to do it. Quill Radio is a
+small standalone executable — its own window, its own menu bar, its own system
+tray icon — that reuses QUILL&#39;s feature code *unchanged* rather than forking it.
 
 **Architecture (`quill/ui/app_shell.py` + `quill/apps/`).** The feature
-mixins `MainFrame` already uses (`RadioMixin`, `PodcastsMixin`) only ever
-touch a small, fixed host protocol on their owner: `self.frame`, `self._wx`,
+mixin `MainFrame` already uses (`RadioMixin`) only ever
+touches a small, fixed host protocol on its owner: `self.frame`, `self._wx`,
 `self._safe_mode`, `self._task_manager`, `self._announce`,
 `self._show_message_box`, `self._set_status`, `self.settings`,
 `self.commands`, `self._binding_for`, `self._refresh_statusbar`.
@@ -10181,18 +9812,18 @@ touch a small, fixed host protocol on their owner: `self.frame`, `self._wx`,
 commands, dialogs, favorites, recording, scheduling — with zero changes to
 the mixin. Consequences that matter:
 
-- **No fork, ever.** A bug fix or feature added to `quill/core/radio`,
-  `quill/core/podcasts`, or the shared dialogs lands in the standalone apps
-  automatically — same modules, same imports.
-- **One data store.** The apps load the same `core.settings`/`core.keymap`
-  and read/write the same favorites, subscription library, and download
-  state under `app_data_dir()` — what you subscribe to in QUILL Cast is
-  subscribed in QUILL, with no sync layer.
+- **No fork, ever.** A bug fix or feature added to `quill/core/radio` or the
+  shared dialogs lands in the standalone app automatically — same modules, same
+  imports.
+- **One data store.** The app loads the same `core.settings`/`core.keymap`
+  and reads/writes the same favorites, history, recordings, and schedules
+  under `app_data_dir()` — what you favorite in Quill Radio is a favorite in
+  QUILL, with no sync layer.
 - **Same accessibility contract.** Announcements route through the same
   `AnnouncementEngine`; dialogs keep their existing keyboard/naming
   behavior because they are the same dialog classes.
 
-**Per-app surfaces.**
+**Per-app surface.**
 
 - **Quill Radio** (`python -m quill.apps.radio`; `run-quill-radio.bat` from
   source). Menu bar: Station (Browse Stations, Add Custom Station, Find
@@ -10201,41 +9832,31 @@ the mixin. Consequences that matter:
   (Record Now/Stop, Schedule Recording, Recording Settings), Help (Open in
   Quill, About). Tray icon: Show/Exit plus the same radio section
   (`_build_radio_tray_menu`) QUILL&#39;s own tray shows.
-- **QUILL Cast** (`python -m quill.apps.podcasts`; `run-quill-cast.bat`).
-  Menu bar: Subscriptions (Open Podcast Manager, Add Podcast, Import/Export
-  OPML, Podcast Settings), Episode (now-playing line, Play/Pause, Stop,
-  Next/Previous Chapter), Downloads (Pause All / Resume All), Help. Tray
-  icon mirrors QUILL&#39;s podcast tray section. One behavioral override: &quot;Send
-  Show Notes to Editor&quot; copies to the clipboard instead (there is no editor
-  buffer standalone), announced as such.
-
-**Open in Quill.** Both apps carry a Help &gt; Open in Quill command that
+**Open in Quill.** The app carries a Help &gt; Open in Quill command that
 launches the full editor as a separate process (v1: always a new process; a
 focus-existing-instance IPC variant is deliberately deferred — see
 `docs/planning/apps.md`).
 
 **Platform notes.** The tray icon follows `MainFrame`&#39;s own rule: on macOS,
 `wx.adv.TaskBarIcon` produces a Dock tile rather than a menu-bar extra, so
-the apps skip the tray there instead of misrepresenting it. `QUILL_SAFE_MODE`
+the app skips the tray there instead of misrepresenting it. `QUILL_SAFE_MODE`
 is honored on launch.
 
-**Installer integration.** The Windows installer creates Start Menu entries
-for both companion apps (&quot;Quill Radio&quot;, &quot;QUILL Cast&quot;) alongside QUILL&#39;s own,
-launching them via the bundled Python runtime (`-m quill.apps.radio` /
-`-m quill.apps.podcasts`), with both launcher variants (bundled runtime and
-exe) covered. Desktop icons for the companions are an opt-in installer task
-(`companionicons`, unchecked by default) so a default install never adds
+**Installer integration.** The Windows installer creates a Start Menu entry
+for Quill Radio alongside QUILL&#39;s own, launching it via the bundled Python
+runtime (`-m quill.apps.radio`), with both launcher variants (bundled runtime
+and exe) covered. The desktop icon for the companion is an opt-in installer
+task (`companionicons`, unchecked by default) so a default install never adds
 desktop clutter unasked. Defined in the `.iss` generator
 (`scripts/build_windows_distribution.py`), never the generated script.
 
-**Keyboard-first main panel.** Each app opens on a real, tabbable main
-surface — never a bare frame: a live now-playing line, the app&#39;s primary
-list (favorite stations / subscribed shows) focused on launch with Enter to
-act, and its core action buttons, every control named via
-`dialog_contract.set_accessible_name`.
+**Keyboard-first main panel.** The app opens on a real, tabbable main
+surface — never a bare frame: a live now-playing line, the favorite-stations
+list focused on launch with Enter to act, and its core action buttons, every
+control named via `dialog_contract.set_accessible_name`.
 
-**Non-goals (v1).** No single-instance enforcement; no Audio Studio
-standalone app yet — the phased plan, including those, lives in
+**Non-goals (v1).** No single-instance enforcement. The phased plan for the
+rest of the family, including the apps gated out of 1.0.0, lives in
 `docs/planning/apps.md`.
 
 ---
@@ -18010,45 +17631,51 @@ record, this is the contract.</p>
 <p>All app front-ends live in <code>quill/apps/</code> as small frames
 on the shared <code>quill.ui.app_shell.AppShellFrame</code>, reusing the
 same feature mixins QUILL uses:</p>
+<p><strong>Public in QUILL 1.0.0:</strong></p>
 <ul>
 <li><strong>QUILL</strong> (<code>quill.__main__</code>) — the writing
-and document environment; the full <code>MainFrame</code>. Version 0.9.0
-(final feature beta before 1.0).</li>
+and document environment; the full <code>MainFrame</code>. Version
+1.0.0.</li>
 <li><strong>Quill Radio</strong> (<code>quill/apps/radio.py</code>) —
 accessible internet radio. Shipping; <strong>2.1.1</strong>
 current.</li>
+<li><strong>Quill Weather</strong> (<code>quill/apps/weather.py</code>)
+— accessible forecasts, alerts, and background severe-weather checks.
+Shipping.</li>
+</ul>
+<p><strong>Gated out of the public 1.0.0 build</strong>
+(<code>RELEASED_APPS</code> in <code>quill/core/app_launcher.py</code>
+admits only <code>quill</code>, <code>radio</code>, and
+<code>weather</code>; a developer build with
+<code>QUILL_DEV_BUILD=1</code> sees the rest). Each app's own
+requirements, surfaces, and remaining work live in its per-app doc
+bundle rather than in this PRD:</p>
+<ul>
 <li><strong>Quill Cast</strong> (<code>quill/apps/podcasts.py</code>) —
-the podcast client. Not yet shipped; targets a clean
-<strong>1.0.0</strong>.</li>
+the podcast client, together with the editor-embedded Podcasts feature.
+See <code>docs/apps/cast/README.md</code>.</li>
 <li><strong>Audio Studio</strong> (<code>quill/apps/studio.py</code>) —
-the audiobook/narration studio. Reverse-vendored from the former
-standalone <code>quill-audio-studio</code> repo (Option D); targets a
-clean <strong>1.0.0</strong>.</li>
-<li><strong>QUILL Beacon</strong> — location beacons and QuillSync.
-Currently an independent repo (<code>quille-beacon</code>, own SQLite
-store); converges to <code>quill/apps/beacon.py</code> on the shared
-shell once its data-integrity and security fixes land (staged; not
-before its Tier-1 fixes).</li>
+the standalone audiobook/narration studio. See
+<code>docs/audio-studio/README.md</code>. (The <em>editor-embedded</em>
+audiobook and batch-speech tooling stays public — §5.25d/e/g
+above.)</li>
 <li><strong>Quill Converter</strong>
 (<code>quill/apps/converter.py</code>) — the Universal Audio Converter
-as its own app (§4.7). Shipping as a standalone product from 1.0.0:
-<code>standalone/converter/</code> is the wrapper (launcher package,
-tile icon + regenerable
-<code>assets/make_quill_converter_icon.py</code>, PyInstaller spec,
-<code>pyproject.toml</code>), <code>build_portable.py</code> carries a
-<code>converter</code> product entry (<code>QuillConverter.exe</code>,
-ffmpeg staged, no speech engines and no mpv — the conversion work is
-entirely FFmpeg's), and <code>QuillConverter.exe</code> is in
-<code>storage_mode</code>'s portable-evidence allowlist so a portable
-bundle keeps its data next to the exe like every sibling. yt-dlp is
-never bundled: URL import installs it on demand with consent.</li>
+as its own app. See <code>docs/apps/converter/README.md</code>. (The
+converter <em>engine</em> and its three in-editor surfaces stay public —
+§5.25g.)</li>
+<li><strong>QUILL Beacon</strong> — location beacons and QuillSync;
+still an independent repo (<code>quille-beacon</code>). See
+<code>docs/apps/beacon/README.md</code>.</li>
+<li><strong>Media Player</strong> (<code>app.open_media_player</code>) —
+a gated editor command rather than an app of its own. See
+<code>docs/apps/player/README.md</code>.</li>
 </ul>
 <p>Each standalone app is a <strong>thin wrapper repo</strong> (launcher
 + PyInstaller spec + installer + docs) that pins
 <code>quill @ &lt;tag&gt;</code> and calls
-<code>quill.apps.&lt;app&gt;:main</code>. Quill Radio and Quill Cast
-already follow this shape; Audio Studio adopts it as its reverse-vendor
-completes.</p>
+<code>quill.apps.&lt;app&gt;:main</code>. Quill Radio already follows
+this shape; the gated apps adopt it as they converge.</p>
 <h3
 id="352-code-sharing-model-build-time-not-a-runtime-shared-library">§35.2
 Code sharing model: build-time, not a runtime shared library</h3>
@@ -18071,7 +17698,7 @@ each app "duplicates" is tens of megabytes, the smallest part of an
 install, so a shared code runtime would trade a small disk win for a
 real side-by-side-versioning and support burden.</li>
 </ul>
-<p>A single shared Python runtime on disk (so Radio and Cast would not
+<p>A single shared Python runtime on disk (so two family apps would not
 each carry Python) is therefore <strong>explicitly not the near-term
 model</strong>. If it is ever pursued, it must be <strong>side-by-side
 versioned</strong> (per-app compat floors, GC of old versions) so
@@ -18103,20 +17730,19 @@ rewrite, rewrite-on-load only when genuinely legacy, and stamp
 (every <code>%APPDATA%\Quill</code> file, its schema owner, and its
 readers). Shared core state stays shared; each app gets
 <strong>namespaced keys</strong> for its private state. SQLite is
-permitted for app-private indexes (Beacon's engine, a future Audio
-Studio library index) in per-app namespaces; the shared contract files
-stay JSON under the hardened versioned-store rules.</p>
+permitted for app-private indexes (a location-beacon engine, a future
+audiobook library index) in per-app namespaces; the shared contract
+files stay JSON under the hardened versioned-store rules.</p>
 <h3 id="354-suite-versioning">§35.4 Suite versioning</h3>
 <p>Each app carries its own version; the <strong>QuillVille
 suite</strong> carries a major version above them as the compatibility
 anchor. Every app released under suite major <em>N</em> honors the same
 <code>FAMILY-DATA.md</code> schemas and the same core API line; apps
-version independently within a suite major (Audio Studio 1.0.0, Radio
-2.1.1, Cast 1.0.0 can all be QuillVille 1). A suite-major bump is the
-only place breaking changes to shared spaces are allowed, coordinated
-across all apps. About boxes and diagnostics show both ("Quill Radio
-2.1.1 — QuillVille 1") so support knows the contract vintage at a
-glance.</p>
+version independently within a suite major (QUILL 1.0.0 and Quill Radio
+2.1.1 can both be QuillVille 1). A suite-major bump is the only place
+breaking changes to shared spaces are allowed, coordinated across all
+apps. About boxes and diagnostics show both ("Quill Radio 2.1.1 —
+QuillVille 1") so support knows the contract vintage at a glance.</p>
 <h3 id="355-consolidation-roadmap">§35.5 Consolidation roadmap</h3>
 <ol type="1">
 <li><strong>Tier 0 hygiene</strong> — commit stray working trees;
@@ -18125,29 +17751,24 @@ the GATE suite green in each repo. (Largely done.)</li>
 <li><strong>Tier 1 data-store hardening +
 <code>FAMILY-DATA.md</code></strong> — the prerequisite for everything
 below.</li>
-<li><strong>Audio Studio reverse-vendor</strong> —
-<code>quill/apps/studio.py</code> (Phase A landed under the GATE suite),
-then the thin-wrapper cutover and closure deletion (Phase B/C, validated
-build).</li>
-<li><strong>Cast 1.0.0</strong> — Cast has never shipped: reset the
-version chaos to a single 1.0.0 (pyproject,
-<code>apps/podcasts.py</code> <code>_VERSION</code>, installer
-AppVersion + VersionInfoVersion, changelog), add the missing libmpv
-staging, ship one clean release.</li>
 <li><strong>Packaging toolkit</strong> — one parameterized
-spec/installer/build script consumed by QUILL, Radio, Cast, and Audio
-Studio, retiring the four forks; PyInstaller onedir for
-Radio/Cast/Beacon, embeddable-CPython for apps with on-demand engine
-installs (Audio Studio, QUILL).</li>
-<li><strong>Beacon convergence</strong> — after Beacon's data-loss and
-security fixes, fold it into <code>quill/apps/beacon.py</code> on the
-shared shell; QuillSync becomes the family handshake (adapter order:
-Beacon, then radio favorites, then settings/keymaps).</li>
+spec/installer/build script consumed by every app in the family,
+retiring the per-app forks; PyInstaller onedir for the light apps,
+embeddable-CPython for apps with on-demand engine installs.</li>
+<li><strong>Per-app convergence</strong> — the reverse-vendor,
+first-release, and fold-onto-the-shared-shell steps for the apps gated
+out of QUILL 1.0.0. Each app's remaining steps are recorded in its own
+doc bundle (<code>docs/apps/cast/README.md</code>,
+<code>docs/apps/converter/README.md</code>,
+<code>docs/apps/beacon/README.md</code>,
+<code>docs/audio-studio/README.md</code>) rather than in this PRD, and
+an app rejoins <code>RELEASED_APPS</code> only when its steps are
+done.</li>
 </ol>
 <h3 id="356-one-update-path-and-one-feedback-path">§35.6 One update path
 and one feedback path</h3>
-<p>Every app resolves updates from its own GitHub Releases
-(Radio/Cast/Studio read
+<p>Every app resolves updates from its own GitHub Releases (the
+companion apps read
 <code>api.github.com/repos/&lt;repo&gt;/releases</code>; QUILL uses the
 signed manifest feed). The target is <strong>one shared, signed-manifest
 update module</strong> (Ed25519) with per-app repo slugs, adopted as
