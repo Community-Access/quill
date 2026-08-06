@@ -4737,7 +4737,7 @@ The Writing Assistant shell ranks Quill commands from your prompt, offers preset
 The quick writing actions work with or without a selection:
 
 - **Rewrite Selection** and **Fix Grammar** act on your selection if you have one; otherwise they use the paragraph at the cursor.
-- **Summarize Selection** acts on your selection if you have one; otherwise it summarizes the whole document.
+- **Summarize Selection** acts on your selection if you have one; otherwise it summarizes the whole document. On the **on-device model**, Summarize works in two passes — one pass pulls the plain observations out of your text, and a second pass writes a short, word-budgeted summary from those observations with the source out of view. This keeps a small local model much closer to what your text actually says, instead of inventing interpretation. Cloud providers keep a single pass, which they do not need this for.
 - **Continue Writing** uses your selection as the lead-in if you have one; otherwise it continues from the full document.
 - Quill announces the scope it chose, for example "Rewrite paragraph (42 words)", so you always know what the action will change.
 - If there is nothing to act on, Quill says so (for example "Nothing to rewrite") instead of sending an empty request.
@@ -5246,6 +5246,15 @@ A few honest notes so there are no surprises:
   so it answers rather than stalling. The most involved multi-step agent tasks are
   where a stronger (paid) model still shows its advantage — QUILL will tell you when
   a task would benefit from one, but never blocks you from trying on a free model.
+- **QUILL cleans up on-device output for you.** Small on-device models have a few
+  predictable habits, so when you use the generative writing tools — Rewrite,
+  Summarize, Expand, Continue, Shorten — on the on-device model, QUILL primes the
+  model with worked examples and then quietly checks its answer for hedging ("it
+  seems", "arguably"), editorializing ("clearly", "obviously"), and filler openers
+  ("In today's world", "It is important to note"), doing one quick retry to remove
+  them. Fix Grammar and Improve Reading Order are left alone, so your own wording is
+  never changed. This runs only on the on-device model; cloud providers already write
+  cleanly and are left untouched.
 
 You can change your provider or model any time from **Set Up AI** or the **AI Hub**.
 
@@ -5761,6 +5770,14 @@ spellings. You can extend, replace, or turn off these instructions.
 | Document Q&A | Grounded answers only; "not in document" stated explicitly |
 | Research Agent | Key points, assumptions, gaps, and suggested next actions |
 | Accessibility Tune-Up | Plain language, short sentences, descriptive text suggestions |
+
+The Summarize default above is the system prompt used on cloud providers, where the
+summary is produced in a single pass and aimed at roughly one-fifth of the original
+length. On the **on-device model**, Summarize instead runs a two-pass
+observe-then-rewrite: the second pass writes to a fixed **word budget** (about 150
+words) rather than a fraction of the source, which keeps a small local model from
+padding or inventing. Your custom instruction still applies to how that final summary
+reads.
 
 **Sharing instructions:**
 Custom instructions are stored in `<AppData>/Quill/ai_custom_instructions.json`.

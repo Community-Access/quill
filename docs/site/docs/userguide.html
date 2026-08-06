@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>userguide</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -24725,7 +24721,13 @@ Writing Assistant.</p>
 act on your selection if you have one; otherwise they use the paragraph
 at the cursor.</li>
 <li><strong>Summarize Selection</strong> acts on your selection if you
-have one; otherwise it summarizes the whole document.</li>
+have one; otherwise it summarizes the whole document. On the
+<strong>on-device model</strong>, Summarize works in two passes — one
+pass pulls the plain observations out of your text, and a second pass
+writes a short, word-budgeted summary from those observations with the
+source out of view. This keeps a small local model much closer to what
+your text actually says, instead of inventing interpretation. Cloud
+providers keep a single pass, which they do not need this for.</li>
 <li><strong>Continue Writing</strong> uses your selection as the lead-in
 if you have one; otherwise it continues from the full document.</li>
 <li>Quill announces the scope it chose, for example "Rewrite paragraph
@@ -25391,6 +25393,16 @@ than stalling. The most involved multi-step agent tasks are where a
 stronger (paid) model still shows its advantage — QUILL will tell you
 when a task would benefit from one, but never blocks you from trying on
 a free model.</li>
+<li><strong>QUILL cleans up on-device output for you.</strong> Small
+on-device models have a few predictable habits, so when you use the
+generative writing tools — Rewrite, Summarize, Expand, Continue, Shorten
+— on the on-device model, QUILL primes the model with worked examples
+and then quietly checks its answer for hedging ("it seems", "arguably"),
+editorializing ("clearly", "obviously"), and filler openers ("In today's
+world", "It is important to note"), doing one quick retry to remove
+them. Fix Grammar and Improve Reading Order are left alone, so your own
+wording is never changed. This runs only on the on-device model; cloud
+providers already write cleanly and are left untouched.</li>
 </ul>
 <p>You can change your provider or model any time from <strong>Set Up
 AI</strong> or the <strong>AI Hub</strong>.</p>
@@ -26074,6 +26086,14 @@ noted</td>
 </tr>
 </tbody>
 </table>
+<p>The Summarize default above is the system prompt used on cloud
+providers, where the summary is produced in a single pass and aimed at
+roughly one-fifth of the original length. On the <strong>on-device
+model</strong>, Summarize instead runs a two-pass observe-then-rewrite:
+the second pass writes to a fixed <strong>word budget</strong> (about
+150 words) rather than a fraction of the source, which keeps a small
+local model from padding or inventing. Your custom instruction still
+applies to how that final summary reads.</p>
 <p><strong>Sharing instructions:</strong> Custom instructions are stored
 in <code>&lt;AppData&gt;/Quill/ai_custom_instructions.json</code>. You
 can copy this file between machines or share individual task prompts
