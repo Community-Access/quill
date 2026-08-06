@@ -287,6 +287,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "controls."
         ),
         category="core",
+        released=False,  # dev-build-only in the editor; radio -> standalone Quill Radio app
     ),
     "core.podcasts": FeatureDefinition(
         "core.podcasts",
@@ -299,9 +300,8 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "status bar mini-player and system tray controls."
         ),
         category="core",
-        # Held back from the public 1.0.0 release until its companion app
-        # (Quill Cast) ships; developer builds keep it. Internet Radio and Book
-        # Library are unaffected -- both ship publicly.
+        # Held back from the public 1.0.0 release until Quill Cast ships;
+        # developer builds keep it. Book Library still ships in the editor.
         released=False,
     ),
     "core.library": FeatureDefinition(

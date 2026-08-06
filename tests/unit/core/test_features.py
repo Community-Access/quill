@@ -427,13 +427,16 @@ def _developer_build(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("QUILL_DEV_BUILD", "1")
 
 
-def test_podcasts_is_the_only_unreleased_feature() -> None:
+def test_unreleased_editor_features_are_podcasts_and_internet_radio() -> None:
     from quill.core.feature_catalog import FEATURE_DEFINITIONS, UNRELEASED_FEATURE_IDS
 
-    # Book Library and Internet Radio ship publicly; only the editor-embedded
-    # podcast manager waits on its companion app.
-    assert UNRELEASED_FEATURE_IDS == frozenset({"core.podcasts"})
+    # Book Library still ships in the editor. Two features are held back from the
+    # public editor: the podcast manager (waits on the Quill Cast app) and the
+    # embedded Internet Radio (moved to the standalone Quill Radio app, reachable
+    # via the QuillVille switcher). Developer builds keep both.
+    assert UNRELEASED_FEATURE_IDS == frozenset({"core.podcasts", "core.radio"})
     assert FEATURE_DEFINITIONS["core.podcasts"].released is False
+    assert FEATURE_DEFINITIONS["core.radio"].released is False
 
 
 def test_podcasts_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -473,7 +476,7 @@ def test_podcasts_is_hidden_from_manage_individual_features(
         if not definition.locked_on and not definition.is_locked_off
     }
     assert "core.podcasts" not in toggleable
-    assert "core.radio" in toggleable
+    assert "core.radio" not in toggleable  # now gated out of the public editor
     assert "core.library" in toggleable
 
     _developer_build(monkeypatch)
@@ -483,6 +486,24 @@ def test_podcasts_is_hidden_from_manage_individual_features(
         if not definition.locked_on and not definition.is_locked_off
     }
     assert "core.podcasts" in toggleable_dev
+    assert "core.radio" in toggleable_dev  # a developer build keeps embedded radio
+
+
+def test_internet_radio_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    _public_build(monkeypatch)
+    for profile_id in PROFILE_DEFINITIONS:
+        manager = FeatureManager(active_profile_id=profile_id)
+        assert manager.state_for("core.radio") == FEATURE_STATE_OFF, profile_id
+        assert manager.is_enabled("core.radio") is False, profile_id
+        assert manager.is_visible("core.radio") is False, profile_id
+
+
+def test_internet_radio_is_available_in_a_developer_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    _developer_build(monkeypatch)
+    manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
+    assert manager.is_enabled("core.radio") is True
+    # Book Library ships in the editor regardless of build.
+    assert manager.is_enabled("core.library") is True
 
 
 def test_developer_build_restores_podcasts(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -495,14 +516,16 @@ def test_developer_build_restores_podcasts(monkeypatch: pytest.MonkeyPatch) -> N
     assert manager.is_visible("core.podcasts") is True
 
 
-def test_radio_and_book_library_are_unaffected_by_the_build_gate(
+def test_book_library_is_unaffected_by_the_build_gate(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from quill.core.feature_catalog import FEATURE_DEFINITIONS
 
     _public_build(monkeypatch)
     manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
-    for feature_id in ("core.radio", "core.library"):
+    # Book Library ships in the editor; only Internet Radio and Podcasts moved
+    # out to their standalone apps.
+    for feature_id in ("core.library",):
         assert FEATURE_DEFINITIONS[feature_id].released is True, feature_id
         assert FEATURE_DEFINITIONS[feature_id].is_locked_off is False, feature_id
         assert manager.state_for(feature_id) == FEATURE_STATE_ON, feature_id
@@ -530,4 +553,4 @@ def test_podcast_commands_are_not_visible_in_the_palette(
     manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
     visible = {command.id for command in registry.list(manager)}
     assert "podcasts.open_manager" not in visible
-    assert "radio.browse" in visible
+    assert "radio.browse" not in visible  # Internet Radio is gated out of the editor too
