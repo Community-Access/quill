@@ -19,6 +19,7 @@ from quill.core.ai.quality_filter import (
     retry_instruction,
 )
 from quill.core.ai.tools import AITool, build_tools_from_registry, run_tool
+from quill.core.ai.two_pass import DEFAULT_WORD_BUDGET, observe_prompt, rewrite_prompt
 
 if TYPE_CHECKING:
     from quill.core.ai.agent import AgentDecision
@@ -232,6 +233,13 @@ class Assistant:
         self.backend = backend
         self._style_preamble = ""
         self._instructions_preamble = ""
+        #: Two-pass observe-then-rewrite for summarize on a local model (#1320):
+        #: pass 1 extracts observations, pass 2 rewrites them under a word budget
+        #: without the source, cutting hallucination. Defaults on but only ever
+        #: fires on a local backend; the UI's single-pass escape hatch flips this
+        #: off to preserve speed on slow CPUs.
+        self.two_pass_summarize = True
+        self.summary_word_budget = DEFAULT_WORD_BUDGET
         #: After answer()/answer_stream()/write_for_document(): a user-facing
         #: sentence describing any silent trimming that shaped the request
         #: ("The answer used the first N of the document's M characters."),
@@ -294,6 +302,8 @@ class Assistant:
         template = _OPERATION_PROMPTS[operation]
         shape = operation in _GENERATIVE_OPS
         if len(text) <= _CHUNK_CHARS:
+            if operation == "summarize":
+                return self._summarize(text)
             return self._respond_quality(self._wrap(template.format(text=text)), shape=shape)
         # Input is larger than the window: process in chunks.
         chunks = _split_into_chunks(text, _CHUNK_CHARS)
@@ -305,8 +315,34 @@ class Assistant:
             combined = "\n\n".join(pieces)
             if len(combined) > _CHUNK_CHARS:
                 combined = combined[:_CHUNK_CHARS]
-            return self._respond_quality(self._wrap(template.format(text=combined)), shape=shape)
+            return self._summarize(combined)
         return "\n".join(pieces)
+
+    def _use_two_pass_summarize(self) -> bool:
+        # Only ever on a local backend; cloud models don't need it and would just
+        # pay for a second call. ``getattr`` tolerates a backend without the
+        # ``is_local`` marker (treated as cloud).
+        return self.two_pass_summarize and bool(getattr(self.backend, "is_local", False))
+
+    def _summarize(self, text: str) -> str:
+        """Summarize *text*, two-pass observe-then-rewrite on a local backend.
+
+        Pass 1 extracts plain observations (source visible, unwrapped -- it is
+        faithful extraction, not user-voiced writing); pass 2 rewrites them under
+        the word budget with the source unseen, wrapped so the user's
+        instructions/style still shape the final summary. Falls back to the
+        single-pass summary on a cloud backend or when disabled.
+        """
+        if self._use_two_pass_summarize():
+            observations = self.backend.respond(observe_prompt(text, kind="text"))
+            return self._respond_quality(
+                self._wrap(rewrite_prompt(observations, word_budget=self.summary_word_budget)),
+                shape=True,
+            )
+        # Single-pass summary still gets the #1319 hedging/filler shaping.
+        return self._respond_quality(
+            self._wrap(_OPERATION_PROMPTS["summarize"].format(text=text)), shape=True
+        )
 
     def change_tone(self, text: str, tone: str) -> str:
         prompt = (
