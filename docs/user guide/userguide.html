@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>userguide</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -24187,6 +24191,9 @@ reorder, and heading validation</li>
 <li><strong>Set Bookmark...</strong></li>
 <li><strong>Go To Bookmark...</strong></li>
 <li><strong>List Bookmarks...</strong></li>
+<li><strong>Set Temporary Bookmark</strong> (<code>Ctrl+J</code>)</li>
+<li><strong>Go to Temporary Bookmark</strong>
+(<code>Ctrl+Shift+J</code>)</li>
 <li><strong>Go to Percent...</strong></li>
 <li><strong>First Non-Blank</strong></li>
 <li><strong>Last Non-Blank</strong></li>
@@ -24212,9 +24219,15 @@ and needs nothing from you.</p>
 <p>For the times you just want to mark "right here" and come straight
 back — no name, no picker — use the temporary bookmark:</p>
 <ul>
-<li><strong>Ctrl+Shift+K</strong> sets it at the cursor.</li>
-<li><strong>Alt+Shift+K</strong> jumps back to it.</li>
+<li><strong>Ctrl+J</strong> (<strong>Navigate &gt; Set Temporary
+Bookmark</strong>) sets it at the cursor.</li>
+<li><strong>Ctrl+Shift+J</strong> (<strong>Navigate &gt; Go to Temporary
+Bookmark</strong>) jumps back to it.</li>
 </ul>
+<p>(During the 0.9.0 betas these lived on <code>Ctrl+Shift+K</code> and
+<code>Alt+Shift+K</code>; those chords now belong to Unquote Lines and
+Keep Unique Lines, so the temporary bookmark moved to the J chords for
+1.0.0.)</p>
 <p>Setting a new temporary bookmark silently replaces the old one, and
 unlike named bookmarks, it does <strong>not</strong> persist between
 sessions — it is disposable scratch state by design, not a place you'd

@@ -4393,6 +4393,8 @@ Bookmark and position commands:
 - **Set Bookmark...**
 - **Go To Bookmark...**
 - **List Bookmarks...**
+- **Set Temporary Bookmark** (`Ctrl+J`)
+- **Go to Temporary Bookmark** (`Ctrl+Shift+J`)
 - **Go to Percent...**
 - **First Non-Blank**
 - **Last Non-Blank**
@@ -4416,8 +4418,12 @@ named bookmarks and the numbered quick bookmarks alike, and needs nothing from y
 For the times you just want to mark "right here" and come straight back — no name,
 no picker — use the temporary bookmark:
 
-- **Ctrl+Shift+K** sets it at the cursor.
-- **Alt+Shift+K** jumps back to it.
+- **Ctrl+J** (**Navigate > Set Temporary Bookmark**) sets it at the cursor.
+- **Ctrl+Shift+J** (**Navigate > Go to Temporary Bookmark**) jumps back to it.
+
+(During the 0.9.0 betas these lived on `Ctrl+Shift+K` and `Alt+Shift+K`; those
+chords now belong to Unquote Lines and Keep Unique Lines, so the temporary
+bookmark moved to the J chords for 1.0.0.)
 
 Setting a new temporary bookmark silently replaces the old one, and unlike named
 bookmarks, it does **not** persist between sessions — it is disposable scratch state

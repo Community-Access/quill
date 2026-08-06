@@ -509,7 +509,7 @@ nothing.</p>
 <p>The very top and the very end of a document answer with a high
 ceiling tick and a low floor thud, so hitting an edge is something you
 hear rather than something you infer from silence.</p>
-<h3 id="bookmarks-three-kinds">Bookmarks, three kinds</h3>
+<h3 id="bookmarks-four-kinds">Bookmarks, four kinds</h3>
 <ul>
 <li><strong>Named bookmarks.</strong> Unlimited and persistent.
 <strong>Set Bookmark</strong>, <strong>Go To Bookmark</strong>, and
@@ -523,10 +523,16 @@ slots zero through nine; <strong>Ctrl+Alt+Shift+0</strong> through
 <strong>Ctrl+Alt+Shift+9</strong> jump to them. Direct chords, no mode
 to enter. They persist per document like named bookmarks, because that
 is what they are underneath.</li>
+<li><strong>One temporary bookmark.</strong> <strong>Ctrl+J</strong>
+sets it at the cursor — no dialog, no name — and
+<strong>Ctrl+Shift+J</strong> jumps back to it. Setting a new one
+silently replaces the old, and it does not persist between sessions, by
+design: it is disposable scratch state for "step away and come right
+back."</li>
 </ul>
-<p>All of them re-anchor to the text around them, so inserting or
-deleting above a bookmark moves the bookmark with its sentence instead
-of leaving it pointing at a line number that now means something
+<p>The persistent kinds re-anchor to the text around them, so inserting
+or deleting above a bookmark moves the bookmark with its sentence
+instead of leaving it pointing at a line number that now means something
 else.</p>
 <h3 id="structured-authoring">Structured authoring</h3>
 <p>Headings, lists, links, tables, code blocks, block quotes, horizontal

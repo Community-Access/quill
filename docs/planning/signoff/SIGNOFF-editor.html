@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>SIGNOFF-editor</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -174,7 +178,7 @@
 <body>
 <h1 id="quill-100-sign-off--editor-commands">QUILL 1.0.0 Sign-off —
 Editor commands</h1>
-<p><strong>642 core-editor commands</strong> (of 715 total). Legend per
+<p><strong>644 core-editor commands</strong> (of 717 total). Legend per
 item: <strong>W</strong>=Works · <strong>S</strong>=Surface-exact
 (label/shortcut/menu path + accessible name) ·
 <strong>A</strong>=Accessible (keyboard + announced). Verify each across
@@ -1420,7 +1424,7 @@ Manager...</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>file.toggle_line_endings</code> — Toggle Line Endings</label></li>
 </ul>
-<h2 id="navigate-26"><code>navigate.*</code> (26)</h2>
+<h2 id="navigate-28"><code>navigate.*</code> (28)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>navigate.back_location</code> — Back Location
@@ -1439,6 +1443,9 @@ Manager...</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>navigate.go_to_page</code> — Go To Page...
 <code>Ctrl+Shift+G</code></label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.go_to_temp_bookmark</code> — Go to Temporary Bookmark
+<code>Ctrl+Shift+J</code></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>navigate.heading_organizer</code> — Heading Organizer...
 <code>Ctrl+Shift+Grave, O</code></label></li>
@@ -1483,6 +1490,9 @@ Anything)</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>navigate.set_language</code> — Set Document
 Language...</label></li>
+<li><label><input type="checkbox" />W [ ] S [ ] A
+<code>navigate.set_temp_bookmark</code> — Set Temporary Bookmark
+<code>Ctrl+J</code></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>navigate.speak_full_path</code> — Speak Full Path
 <code>Ctrl+Shift+Grave, P</code></label></li>

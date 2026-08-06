@@ -1,6 +1,6 @@
 # QUILL 1.0.0 Sign-off — Editor commands
 
-**642 core-editor commands** (of 715 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
+**644 core-editor commands** (of 717 total). Legend per item: **W**=Works · **S**=Surface-exact (label/shortcut/menu path + accessible name) · **A**=Accessible (keyboard + announced). Verify each across every §A environment in the master plan.
 
 > `[GATED ...]` = only present when its feature flag is on; scope in/out of the pass explicitly.
 
@@ -465,13 +465,14 @@
 - [ ] W  [ ] S  [ ] A  `file.ssh_site_manager` — Open over SSH: Site Manager...
 - [ ] W  [ ] S  [ ] A  `file.toggle_line_endings` — Toggle Line Endings
 
-## `navigate.*` (26)
+## `navigate.*` (28)
 - [ ] W  [ ] S  [ ] A  `navigate.back_location` — Back Location  `Alt+Left`
 - [ ] W  [ ] S  [ ] A  `navigate.forward_location` — Forward Location  `Alt+Right`
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_anything` — Go to Anything  `Ctrl+Shift+Grave, G`
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_bookmark` — Go To Bookmark...
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_line` — Go To Line...  `Ctrl+G`
 - [ ] W  [ ] S  [ ] A  `navigate.go_to_page` — Go To Page...  `Ctrl+Shift+G`
+- [ ] W  [ ] S  [ ] A  `navigate.go_to_temp_bookmark` — Go to Temporary Bookmark  `Ctrl+Shift+J`
 - [ ] W  [ ] S  [ ] A  `navigate.heading_organizer` — Heading Organizer...  `Ctrl+Shift+Grave, O`
 - [ ] W  [ ] S  [ ] A  `navigate.list_bookmarks` — List Bookmarks...  `Alt+Shift+B`
 - [ ] W  [ ] S  [ ] A  `navigate.match_bracket` — Match Bracket  `Ctrl+Shift+\`
@@ -489,6 +490,7 @@
 - [ ] W  [ ] S  [ ] A  `navigate.quick_nav` — Quick Nav (Go to Anything)
 - [ ] W  [ ] S  [ ] A  `navigate.set_bookmark` — Set Bookmark...
 - [ ] W  [ ] S  [ ] A  `navigate.set_language` — Set Document Language...
+- [ ] W  [ ] S  [ ] A  `navigate.set_temp_bookmark` — Set Temporary Bookmark  `Ctrl+J`
 - [ ] W  [ ] S  [ ] A  `navigate.speak_full_path` — Speak Full Path  `Ctrl+Shift+Grave, P`
 - [ ] W  [ ] S  [ ] A  `navigate.speak_status_summary` — Speak Status Summary  `Ctrl+Shift+Grave, Q`
 - [ ] W  [ ] S  [ ] A  `navigate.speak_window_title` — Speak Window Title  `Ctrl+Shift+Grave, F`

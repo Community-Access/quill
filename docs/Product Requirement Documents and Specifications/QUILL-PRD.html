@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL-PRD</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -3933,12 +3937,20 @@ default <code>Alt+Shift+B</code> for List Bookmarks) live in
 name→position pairs per document via <code>DocumentMemory</code>.
 Reconciling this section with the shipped design is a separate
 follow-up; the two additions below are accurate as of 0.9.0 Beta 3.</p>
-<p><strong>Temporary bookmark — shipped 0.9.0 Beta 3.</strong> A single
-unnamed, one-shot jump point, distinct from named bookmarks:
-<code>Ctrl+Shift+K</code> sets it at the cursor with no dialog;
-<code>Alt+Shift+K</code> jumps to it with no picker. Session-only by
-design (never written to <code>DocumentMemory</code>) — it is disposable
-scratch state, not a durable anchor. Implemented as
+<p><strong>Temporary bookmark — shipped 0.9.0 Beta 3; re-registered for
+1.0.0 (#1317).</strong> A single unnamed, one-shot jump point, distinct
+from named bookmarks: <code>Ctrl+J</code> (Navigate &gt; Set Temporary
+Bookmark) sets it at the cursor with no dialog;
+<code>Ctrl+Shift+J</code> (Navigate &gt; Go to Temporary Bookmark) jumps
+to it with no picker. The original Beta 3 chords
+(<code>Ctrl+Shift+K</code> / <code>Alt+Shift+K</code>) were later
+reassigned to Unquote Lines and Keep Unique Lines, which left the
+commands unregistered until issue #1317 restored them on the J chords
+with Navigate-menu items, palette entries, and F1 topics (commit
+4f9d3bb, 2026-08-05). Session-only by design (never written to
+<code>DocumentMemory</code>) — it is disposable scratch state, not a
+durable anchor; it stores a raw caret position and does not re-anchor to
+surrounding text the way persistent bookmarks do. Implemented as
 <code>MainFrame.set_temp_bookmark</code>/<code>go_to_temp_bookmark</code>,
 aliased per-tab exactly like the named-bookmark dict.</p>
 <p><strong>Numbered quick bookmarks — shipped 0.9.0 Beta 3.</strong> Ten
@@ -4248,6 +4260,17 @@ block; <code>Ctrl+Alt+E</code> to the end.</li>
 operations</h3>
 <p>VS Code-style editor productivity, all standard text-control
 operations:</p>
+<p><strong>Shipped note (1.0.0):</strong> the chords in this list are
+the original spec; by 1.0.0 the default keymap had reassigned them
+elsewhere — <code>Ctrl+Shift+K</code> is Unquote Lines,
+<code>Ctrl+J</code> / <code>Ctrl+Shift+J</code> are the temporary
+bookmark (#1317), <code>Ctrl+Shift+D</code> is Describe Formatting, and
+<code>Alt+Up</code> / <code>Alt+Down</code> are structural navigation.
+The operations themselves all shipped (Move Line Up/Down, Duplicate
+Line, Delete Line, Select Line, Join Lines, indent/outdent, comment
+toggles — on the menus and command palette) but are unbound in the
+default keymap; bind them in the Keymap Editor or via an optional
+keyboard pack.</p>
 <ul>
 <li><code>Alt+Up</code> / <code>Alt+Down</code>: move the current line
 (or all selected lines) up or down. Announces the swap.</li>

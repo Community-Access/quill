@@ -29,10 +29,10 @@
 - [ ] Verify the **user guide** and **PRD** are complete and accurate for the editor + public apps.
 
 ### Phase 4 — Exhaustive 1.0.0 sign-off test plan  ← the check-off list  ✅ BUILT
-- [x] Complete **feature / command / surface inventory** generated from the codebase (715 commands, 645 dialog surfaces, ~290 feature sub-items, 3 menu bars).
+- [x] Complete **feature / command / surface inventory** generated from the codebase (717 commands, 645 dialog surfaces, ~290 feature sub-items, 3 menu bars).
 - [x] **Sign-off pack under `docs/planning/signoff/`** — each item has **Works · Surface-exact · Accessible** boxes, grouped, counted, generated from the real registry (not memory):
   - `QUILL-1.0.0-SIGNOFF.md` — master (env matrix, cross-cutting a11y + gating + readiness).
-  - `SIGNOFF-editor.md` (642 editor commands) · `SIGNOFF-radio.md` (29 + dialogs + scenarios) · `SIGNOFF-weather.md` (11 menu + chrome + scenarios).
+  - `SIGNOFF-editor.md` (644 editor commands) · `SIGNOFF-radio.md` (29 + dialogs + scenarios) · `SIGNOFF-weather.md` (11 menu + chrome + scenarios).
   - `SIGNOFF-dialogs.md` (all 645 dialog surfaces) · `SIGNOFF-gated-apps.md` (44 gated-app commands to verify ABSENT).
   - `SIGNOFF-install-matrix.md` — portable vs system under all scenarios (E1–E6, all three portable signals), per app.
 - [ ] Human execution: check off every box across environments E1–E6 (this is the readiness gate).

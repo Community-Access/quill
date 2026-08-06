@@ -314,7 +314,7 @@ The very top and the very end of a document answer with a high ceiling tick and 
 floor thud, so hitting an edge is something you hear rather than something you infer
 from silence.
 
-### Bookmarks, three kinds
+### Bookmarks, four kinds
 
 - **Named bookmarks.** Unlimited and persistent. **Set Bookmark**, **Go To Bookmark**,
   and **List Bookmarks** (**Alt+Shift+B**), plus a Bookmarks Manager.
@@ -324,10 +324,14 @@ from silence.
   zero through nine; **Ctrl+Alt+Shift+0** through **Ctrl+Alt+Shift+9** jump to them.
   Direct chords, no mode to enter. They persist per document like named bookmarks,
   because that is what they are underneath.
+- **One temporary bookmark.** **Ctrl+J** sets it at the cursor — no dialog, no name —
+  and **Ctrl+Shift+J** jumps back to it. Setting a new one silently replaces the old,
+  and it does not persist between sessions, by design: it is disposable scratch state
+  for "step away and come right back."
 
-All of them re-anchor to the text around them, so inserting or deleting above a bookmark
-moves the bookmark with its sentence instead of leaving it pointing at a line number that
-now means something else.
+The persistent kinds re-anchor to the text around them, so inserting or deleting above
+a bookmark moves the bookmark with its sentence instead of leaving it pointing at a
+line number that now means something else.
 
 ### Structured authoring
 
