@@ -249,6 +249,11 @@ glow = ["quill-glow-core[glow]>=0.1.1", "acb-large-print>=8.0.0"]
 math = ["latex2mathml>=3.81.0"]
 # macOS build + runtime. py2app 0.28.x is incompatible with setuptools >= 83
 # (the build aborts with "install_requires is no longer supported"), so pin it.
+# Security note (Dependabot alert 14, GHSA setuptools < 83 MANIFEST.in exclusion
+# bypass on APFS/HFS+): accepted. The vulnerable path is building sdists on
+# macOS with security-relevant MANIFEST.in exclusions; QUILL builds .app
+# bundles via py2app, never sdists, and no newer py2app supports setuptools 83
+# (0.28.10, 2026-02, is current). Re-check when py2app moves.
 # pyobjc powers the macOS platform layer; apple-fm-sdk is the Foundation Models
 # backend used by Ask Quill on macOS.
 macos = [

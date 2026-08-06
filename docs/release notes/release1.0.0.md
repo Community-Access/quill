@@ -295,10 +295,10 @@ rather than something you have to remember you are in.
 
 Long-document navigation moves you between headings, paragraphs, blocks, links, lists,
 tables, bookmarks, code blocks, and search results. The **Outline Navigator**
-(**Ctrl+Shift+O**) presents the whole structure at once: headings, bookmarks, sticky
-notes, and search matches in one navigable tree. **Go to Anything** is a single search
-panel across commands, headings, links, lists, tables, block quotes, bookmarks, code
-blocks, misspellings, and live search hits. Back and Forward walk your location
+(**Ctrl+Shift+O**) presents the document's heading structure as one navigable tree.
+**Go to Anything** is a single search panel across commands and headings; the
+element-by-element index — links, lists, tables, block quotes, bookmarks, code
+blocks — belongs to Quick Nav below. Back and Forward walk your location
 history. Match Bracket, Next and Previous Token, and structure and region movement fill
 in the rest.
 
@@ -316,7 +316,7 @@ from silence.
 ### Bookmarks, four kinds
 
 - **Named bookmarks.** Unlimited and persistent. **Set Bookmark**, **Go To Bookmark**,
-  and **List Bookmarks** (**Alt+Shift+B**), plus a Bookmarks Manager.
+  and **List Bookmarks** (**Alt+Shift+B**).
 - **Named marks and a mark stack**, for the code-editor habit of setting a mark, going
   somewhere, and popping back.
 - **Ten numbered quick bookmarks.** **Alt+Shift+0** through **Alt+Shift+9** set slots
@@ -369,7 +369,8 @@ section numbers rather than a rendering trick.
 The find and replace suite covers plain search, wildcard search, regular expressions,
 search history, and a find-all report. **Multi Replace** runs up to four search and
 replace pairs in a single pass. **Count Occurrences** speaks how many times a term
-appears. **Search and Replace Across Files** works over a folder.
+appears. **Search in Files** (**Ctrl+Shift+F**) and **Replace Across Files**
+(**Ctrl+Shift+R**) work over a folder.
 
 The **Regular Expression Helper** exists because regular expressions are the least
 speakable syntax in common use. It offers ready-made presets, explains what a pattern
@@ -458,9 +459,8 @@ window restored first so it genuinely appears.
 **Ctrl+Alt+Shift+Comma** move to the next and previous difference, and
 **Ctrl+Alt+Shift+D** re-announces the current one. Word-level detail and a
 whitespace-sensitivity toggle are available alongside them. Differences are described in
-words with character-level precision, each kind of change has its own sound cue, and
-**Compare Selection With Clipboard** handles the common small case without needing two
-files. From the command line, `--diff` opens two files straight into compare mode, and
+words with character-level precision, and each kind of change has its own sound cue.
+From the command line, `--diff` opens two files straight into compare mode, and
 `--goto` opens a file at a position.
 
 ### Folding without losing anything
@@ -768,9 +768,6 @@ braille fix is applied, whether the border is hidden, and whether braille output
 and through which backend. Nothing from your document is included. If braille ever looks
 wrong, run this first and paste what it says into a report; "braille starts in cell 2"
 plus that one sentence is a report that can be investigated immediately.
-
-You can also choose the underlying editor control (RichEdit 3.0, RichEdit 2.0, or a plain
-edit control) if a particular display or driver prefers a different one.
 
 ### Translation, without being quizzed
 
@@ -1133,7 +1130,7 @@ spacing-only changes are never announced as word edits.
 
 - **Rewrite**, **Summarize**, **Expand**, **Continue**, and **Fix Grammar** work with or
   without a selection, falling back to the paragraph or the whole document.
-- **Check Grammar with AI** and **Check Spelling with AI** produce a structured list of
+- **Check Grammar with AI** and **AI Spell Check** produce a structured list of
   issues with the original phrasing, the proposed fix, and an explanation of why. With no
   AI configured, they fall back to the lexical spell checker rather than failing.
 - The **AI Thesaurus** (**Ctrl+Alt+Shift+H**) gives synonyms with usage notes about
@@ -1651,8 +1648,8 @@ listening. Its menu bar carries a Station menu (Browse Stations, Add Custom Stat
 Streams from a Website, and your favorites listed right in the menu for one-keystroke
 switching), a Playback menu with a live now-playing line, and a Record menu. Its Browse,
 Favorites, Schedule, and Weather windows are modeless frames sharing one menu bar, one Window
-menu, and Ctrl+Tab cycling between them. **Help > Open in Quill** is there for the moment you
-decide you do want the full editor after all.
+menu, and Ctrl+Tab cycling between them. The **QuillVille** menu's **Open Quill** is there for
+the moment you decide you do want the full editor after all.
 
 ### Recording
 
@@ -1945,8 +1942,10 @@ Some things are too small for a section of their own and too useful to leave out
 - **Keep the sound device awake.** If your USB or Bluetooth speakers clip the first instant of
   sound after a quiet pause, a common power-saving quirk, this setting keeps the device listening
   with a silent pulse.
-- **Dark mode**, contrast-ratio announcement, soft wrap, overwrite mode, and tab-control toggles
-  live on the View menu, with system dark-mode and high-contrast detection on both platforms.
+- **Soft wrap and tab-control toggles** live on the View menu; **dark mode** is chosen in
+  Settings, with system dark-mode and high-contrast detection on both platforms; and the
+  contrast-ratio announcement and overwrite-mode toggle are command-palette commands you can
+  bind to keys.
 - **QUILL can be Thunderbird's external editor.** QUILL's one-process-per-file model matches what
   Thunderbird's External Editor Revived add-on expects: point the add-on at `quill.exe`, press
   **Ctrl+E** in a compose window, write in the full QUILL environment, save and close, and the

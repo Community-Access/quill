@@ -201,55 +201,78 @@ in QUILL</strong>, derived from the code (commands, menus, dialogs,
 keymap) so nothing is missed.</li>
 </ul>
 <h2 id="phases">Phases</h2>
-<h3 id="phase-1--stabilize-the-tree--land-in-flight-work">Phase 1 —
-Stabilize the tree &amp; land in-flight work</h3>
+<h3
+id="phase-1--stabilize-the-tree--land-in-flight-work-white_check_mark-done">Phase
+1 — Stabilize the tree &amp; land in-flight work ✅ DONE</h3>
 <ul class="task-list">
-<li><label><input type="checkbox" />Commit the large uncommitted WIP
-(media-player / voice / secrets / auth) onto its own branch, fixing its
-gate violations so pre-commit passes:</label>
-<ul class="task-list">
-<li><label><input type="checkbox" />Register the new media dialogs
-(<code>quill/apps/player.py</code>, <code>quill/ui/media/*</code>) in
-the A11Y-4 dialog inventory.</label></li>
-<li><label><input type="checkbox" />Resolve GATE-11 size caps
-(<code>quill/apps/player.py</code> 1034 &gt; 600; split or reviewed
-budget entry).</label></li>
-</ul></li>
-<li><label><input type="checkbox" />Fix GATE-11 on
-<code>quill/tools/network_egress_audit.py</code> (BARD egress entry
-pushed it 11 over budget — slim the entry).</label></li>
-<li><label><input type="checkbox" />Land the <strong>NLS BARD catalogue
-search</strong> commit (code + tests already green; docs land with the
-doc-consolidation commit).</label></li>
+<li><label><input type="checkbox" checked="" />Commit the large
+uncommitted WIP (media-player / voice / secrets / auth) onto its own
+branch, fixing its gate violations so pre-commit passes (landed as
+fabc213).</label></li>
+<li><label><input type="checkbox" checked="" />Fix GATE-11 on
+<code>quill/tools/network_egress_audit.py</code>.</label></li>
+<li><label><input type="checkbox" checked="" />Land the <strong>NLS BARD
+catalogue search</strong> commit (4e15cc9).</label></li>
 </ul>
-<h3 id="phase-2--gate-non-public-apps-radio--weather-stay-public">Phase
-2 — Gate non-public apps (Radio + Weather stay public)</h3>
+<h3
+id="phase-2--gate-non-public-apps-radio--weather-stay-public-white_check_mark-done">Phase
+2 — Gate non-public apps (Radio + Weather stay public) ✅ DONE</h3>
 <ul class="task-list">
-<li><label><input type="checkbox" />Gate <strong>Player, Converter,
-Cast, Audio Studio, Beacon</strong> behind a dev/admin flag: launchers,
-menu/QuillVille entries, command-palette commands, Explorer shell verbs,
-and build products all respect the flag.</label></li>
-<li><label><input type="checkbox" />Confirm Radio + Weather remain fully
-public and unaffected.</label></li>
-<li><label><input type="checkbox" />Tests assert the gated apps are
-absent from public surfaces when the flag is off.</label></li>
+<li><label><input type="checkbox" checked="" />Gate <strong>Player,
+Converter, Cast, Audio Studio, Beacon</strong> behind
+<code>RELEASED_APPS</code> / <code>is_app_released()</code> (25e6611);
+the editor-embedded <strong>Podcasts</strong> feature joined the gate
+via <code>FeatureDefinition.released</code> (595f553).</label></li>
+<li><label><input type="checkbox" checked="" />Confirm Radio + Weather
+remain fully public and unaffected.</label></li>
+<li><label><input type="checkbox" checked="" />Tests assert the gated
+apps are absent from public surfaces when the flag is off
+(<code>tests/unit/core/test_features.py</code>,
+<code>test_global_hotkeys.py</code>,
+<code>test_main_frame_quill_key.py</code>).</label></li>
+<li><label><input type="checkbox" checked="" />Installer creates
+shortcuts only for public apps — the QUILL Cast Start-menu/desktop
+entries were removed from
+<code>scripts/build_windows_distribution.py</code> (2026-08-05).
+Standalone builds are published only for the editor, Quill Radio, and
+Quill Weather.</label></li>
 </ul>
-<h3 id="phase-3--docs-consolidation-editor-first">Phase 3 — Docs
-consolidation (editor-first)</h3>
+<h3
+id="phase-3--docs-consolidation-editor-first-white_check_mark-done">Phase
+3 — Docs consolidation (editor-first) ✅ DONE</h3>
 <ul class="task-list">
-<li><label><input type="checkbox" />Archive all <strong>beta</strong>
-release notes under <code>docs/release notes/archived/</code> (keep
-1.0.0 live).</label></li>
-<li><label><input type="checkbox" />Write a <strong>new 1.0.0
-announcement about the QUILL editor features only</strong> (no
-companion-app content).</label></li>
-<li><label><input type="checkbox" />Move <strong>other-app</strong>
-sections (Player/Converter/Cast/Studio/Beacon) out of the user guide,
-PRD, and release notes into their own per-app docs; keep Radio + Weather
-where publicly relevant.</label></li>
-<li><label><input type="checkbox" />Verify the <strong>user
+<li><label><input type="checkbox" checked="" />Archive all
+<strong>beta</strong> release notes under
+<code>docs/release notes/archived/</code> (keep 1.0.0
+live).</label></li>
+<li><label><input type="checkbox" checked="" />Write a <strong>new 1.0.0
+announcement about the QUILL editor features only</strong>
+(<code>docs/release notes/announcement-1.0.0.md</code>,
+77d395c).</label></li>
+<li><label><input type="checkbox" checked="" />Move
+<strong>other-app</strong> sections
+(Player/Converter/Cast/Studio/Beacon) out of the user guide, PRD, and
+release notes into per-app docs under <code>docs/apps/</code> (Audio
+Studio's joined <code>docs/audio-studio/</code>); Radio + Weather kept
+public (02a8968).</label></li>
+<li><label><input type="checkbox" checked="" />Verify the <strong>user
 guide</strong> and <strong>PRD</strong> are complete and accurate for
 the editor + public apps.</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Release-notes
+fact-check audit (2026-08-05):</strong> ~420 concrete claims (commands,
+chords, menu paths, dialogs, settings) verified against code surfaces by
+a two-agent sweep. 9 discrepancies found and fixed in
+<code>release1.0.0.md</code>: Outline Navigator scope (headings only),
+Go to Anything scope (commands + headings; the element index is Quick
+Nav), no "Bookmarks Manager" surface, Search in Files / Replace Across
+Files naming, no clipboard-compare command, the retired editor-control
+chooser, "AI Spell Check" naming, Radio's cross-app launcher lives on
+the QuillVille menu, and the View-menu vs Settings vs palette split for
+dark mode / overwrite / contrast. One in-app status string that pointed
+at the nonexistent "Bookmarks Manager (Ctrl+Shift+G)" was corrected to
+"List Bookmarks (Alt+Shift+B)" (<code>quill/ui/main_frame.py</code>).
+Everything else verified, including all Radio/Weather chords, catalog
+counts, and gated-app absence.</label></li>
 </ul>
 <h3
 id="phase-4--exhaustive-100-sign-off-test-plan--the-check-off-list-white_check_mark-built">Phase
@@ -291,18 +314,42 @@ Keychain), settings location, first-run, updates, Safe Mode, and every
 portable-only vs system-only behavior. Cross-cut this matrix across the
 editor, Radio, and Weather.</label></li>
 </ul>
-<h3 id="phase-5--branch-consolidation">Phase 5 — Branch
-consolidation</h3>
+<h3 id="phase-5--branch-consolidation-white_check_mark-done">Phase 5 —
+Branch consolidation ✅ DONE</h3>
 <ul class="task-list">
-<li><label><input type="checkbox" />Merge every <code>feat/*</code>
-branch to <code>main</code> (each verified: merges cleanly + gates
-pass).</label></li>
-<li><label><input type="checkbox" />Delete merged branches.</label></li>
+<li><label><input type="checkbox" checked="" />Merge every
+<code>feat/*</code> branch to <code>main</code> (each verified: merges
+cleanly + gates pass). Final two
+(<code>feat/gate-podcasts-library</code>,
+<code>docs/consolidate-1.0.0</code>) landed 2026-08-05.</label></li>
+<li><label><input type="checkbox" checked="" />Delete merged branches
+(local + origin; only <code>main</code> remains, plus
+<code>origin/fix/document-readers-and-office-packaging</code>,
+superseded — its content landed via other commits — kept pending a
+confirming diff before deletion).</label></li>
 </ul>
 <h3 id="phase-6--readiness-gate">Phase 6 — Readiness gate</h3>
 <ul class="task-list">
 <li><label><input type="checkbox" />All sign-off items checked →
 <strong>announce ready to test.</strong></label></li>
+</ul>
+<h2 id="housekeeping-record-2026-08-05">Housekeeping record
+(2026-08-05)</h2>
+<ul>
+<li><strong>Dependabot:</strong> the high alert was fixed by the ab6d910
+dependency bumps. The remaining moderate (alert 14, setuptools &lt; 83
+MANIFEST.in bypass on macOS filesystems) is <strong>dismissed as
+tolerable risk</strong>: the macOS <code>setuptools&lt;83</code> pin is
+forced by py2app 0.28.x (latest 0.28.10 breaks on setuptools &gt;= 83),
+and the vulnerable path — building sdists on APFS/HFS+ — is one QUILL
+never exercises (py2app builds .app bundles). Rationale recorded in
+<code>pyproject.toml</code>; re-check when py2app supports setuptools
+83.</li>
+<li><strong>ppp.md retired:</strong> the interim 1.0.0 plan-of-record
+file at the repo root is deleted; this document is the tracked home for
+what remains. <strong>Remaining work = Phase 4 human sign-off execution
+(E1–E6, editor + Radio + Weather, portable and system) and the Phase 6
+gate.</strong></li>
 </ul>
 <hr />
 <p><em>The per-feature sign-off checklist lives in

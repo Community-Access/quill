@@ -11482,8 +11482,8 @@ class MainFrame(
 
     def _import_pdf_outline_bookmarks(self, loaded: object, suffix: str) -> None:
         """Import a PDF's embedded outline (Adobe bookmarks) into the document's
-        bookmark store on first open, so they show up in the Bookmarks Manager
-        (Ctrl+Shift+G) — QUILL already imports Word/EPUB structure; this closes the
+        bookmark store on first open, so they show up in List Bookmarks
+        (Alt+Shift+B) — QUILL already imports Word/EPUB structure; this closes the
         PDF gap.
 
         Each outline entry (title + destination page) is resolved to a character
@@ -11530,7 +11530,7 @@ class MainFrame(
         count = len(bookmarks)
         self._set_status(
             f"Imported {count} bookmark{'s' if count != 1 else ''} from the PDF outline "
-            f"(open the Bookmarks Manager with Ctrl+Shift+G)"
+            f"(open List Bookmarks with Alt+Shift+B)"
         )
 
     def _resolve_bookmark_target(self, name: str) -> int | None:

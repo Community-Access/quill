@@ -488,13 +488,13 @@ audible rather than something you have to remember you are in.</p>
 <p>Long-document navigation moves you between headings, paragraphs,
 blocks, links, lists, tables, bookmarks, code blocks, and search
 results. The <strong>Outline Navigator</strong>
-(<strong>Ctrl+Shift+O</strong>) presents the whole structure at once:
-headings, bookmarks, sticky notes, and search matches in one navigable
-tree. <strong>Go to Anything</strong> is a single search panel across
-commands, headings, links, lists, tables, block quotes, bookmarks, code
-blocks, misspellings, and live search hits. Back and Forward walk your
-location history. Match Bracket, Next and Previous Token, and structure
-and region movement fill in the rest.</p>
+(<strong>Ctrl+Shift+O</strong>) presents the document's heading
+structure as one navigable tree. <strong>Go to Anything</strong> is a
+single search panel across commands and headings; the element-by-element
+index — links, lists, tables, block quotes, bookmarks, code blocks —
+belongs to Quick Nav below. Back and Forward walk your location history.
+Match Bracket, Next and Previous Token, and structure and region
+movement fill in the rest.</p>
 <p><strong>QUILL Quick Nav</strong> is a browse-style cursor mode,
 entered from the QUILL Key, with single-key element movement in the
 tradition your screen reader already taught you: <strong>H</strong> for
@@ -512,8 +512,7 @@ hear rather than something you infer from silence.</p>
 <ul>
 <li><strong>Named bookmarks.</strong> Unlimited and persistent.
 <strong>Set Bookmark</strong>, <strong>Go To Bookmark</strong>, and
-<strong>List Bookmarks</strong> (<strong>Alt+Shift+B</strong>), plus a
-Bookmarks Manager.</li>
+<strong>List Bookmarks</strong> (<strong>Alt+Shift+B</strong>).</li>
 <li><strong>Named marks and a mark stack</strong>, for the code-editor
 habit of setting a mark, going somewhere, and popping back.</li>
 <li><strong>Ten numbered quick bookmarks.</strong>
@@ -573,8 +572,9 @@ than a rendering trick.</p>
 regular expressions, search history, and a find-all report.
 <strong>Multi Replace</strong> runs up to four search and replace pairs
 in a single pass. <strong>Count Occurrences</strong> speaks how many
-times a term appears. <strong>Search and Replace Across Files</strong>
-works over a folder.</p>
+times a term appears. <strong>Search in Files</strong>
+(<strong>Ctrl+Shift+F</strong>) and <strong>Replace Across
+Files</strong> (<strong>Ctrl+Shift+R</strong>) work over a folder.</p>
 <p>The <strong>Regular Expression Helper</strong> exists because regular
 expressions are the least speakable syntax in common use. It offers
 ready-made presets, explains what a pattern does in plain language, and
@@ -674,11 +674,10 @@ genuinely appears.</p>
 difference, and <strong>Ctrl+Alt+Shift+D</strong> re-announces the
 current one. Word-level detail and a whitespace-sensitivity toggle are
 available alongside them. Differences are described in words with
-character-level precision, each kind of change has its own sound cue,
-and <strong>Compare Selection With Clipboard</strong> handles the common
-small case without needing two files. From the command line,
-<code>--diff</code> opens two files straight into compare mode, and
-<code>--goto</code> opens a file at a position.</p>
+character-level precision, and each kind of change has its own sound
+cue. From the command line, <code>--diff</code> opens two files straight
+into compare mode, and <code>--goto</code> opens a file at a
+position.</p>
 <h3 id="folding-without-losing-anything">Folding without losing
 anything</h3>
 <p>QUILL folds heading sections and fenced code blocks, and the
@@ -1047,9 +1046,6 @@ through which backend. Nothing from your document is included. If
 braille ever looks wrong, run this first and paste what it says into a
 report; "braille starts in cell 2" plus that one sentence is a report
 that can be investigated immediately.</p>
-<p>You can also choose the underlying editor control (RichEdit 3.0,
-RichEdit 2.0, or a plain edit control) if a particular display or driver
-prefers a different one.</p>
 <h3 id="translation-without-being-quizzed">Translation, without being
 quizzed</h3>
 <p>Back-translating a braille file elsewhere requires that you already
@@ -1440,8 +1436,8 @@ never announced as word edits.</p>
 <strong>Expand</strong>, <strong>Continue</strong>, and <strong>Fix
 Grammar</strong> work with or without a selection, falling back to the
 paragraph or the whole document.</li>
-<li><strong>Check Grammar with AI</strong> and <strong>Check Spelling
-with AI</strong> produce a structured list of issues with the original
+<li><strong>Check Grammar with AI</strong> and <strong>AI Spell
+Check</strong> produce a structured list of issues with the original
 phrasing, the proposed fix, and an explanation of why. With no AI
 configured, they fall back to the lexical spell checker rather than
 failing.</li>
@@ -2032,8 +2028,9 @@ Website, and your favorites listed right in the menu for one-keystroke
 switching), a Playback menu with a live now-playing line, and a Record
 menu. Its Browse, Favorites, Schedule, and Weather windows are modeless
 frames sharing one menu bar, one Window menu, and Ctrl+Tab cycling
-between them. <strong>Help &gt; Open in Quill</strong> is there for the
-moment you decide you do want the full editor after all.</p>
+between them. The <strong>QuillVille</strong> menu's <strong>Open
+Quill</strong> is there for the moment you decide you do want the full
+editor after all.</p>
 <h3 id="recording">Recording</h3>
 <p>With FFmpeg installed (an on-demand optional component),
 <strong>Record Now</strong> captures whatever is playing straight to a
@@ -2385,9 +2382,11 @@ picture.</li>
 Bluetooth speakers clip the first instant of sound after a quiet pause,
 a common power-saving quirk, this setting keeps the device listening
 with a silent pulse.</li>
-<li><strong>Dark mode</strong>, contrast-ratio announcement, soft wrap,
-overwrite mode, and tab-control toggles live on the View menu, with
-system dark-mode and high-contrast detection on both platforms.</li>
+<li><strong>Soft wrap and tab-control toggles</strong> live on the View
+menu; <strong>dark mode</strong> is chosen in Settings, with system
+dark-mode and high-contrast detection on both platforms; and the
+contrast-ratio announcement and overwrite-mode toggle are
+command-palette commands you can bind to keys.</li>
 <li><strong>QUILL can be Thunderbird's external editor.</strong> QUILL's
 one-process-per-file model matches what Thunderbird's External Editor
 Revived add-on expects: point the add-on at <code>quill.exe</code>,
