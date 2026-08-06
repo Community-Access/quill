@@ -13,6 +13,11 @@ from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING
 
 from quill.core.ai.backend import AIBackend, ContextWindowExceeded
+from quill.core.ai.quality_filter import (
+    find_quality_issues,
+    negative_examples_block,
+    retry_instruction,
+)
 from quill.core.ai.tools import AITool, build_tools_from_registry, run_tool
 
 if TYPE_CHECKING:
@@ -108,6 +113,15 @@ _OPERATION_PROMPTS: dict[str, str] = {
     "summarize, add, remove, or invent content. Return only the Markdown, with no "
     "preamble:\n\n{text}",
 }
+
+
+#: Generative operations whose output the small-local-model quality shaping
+#: (#1319) applies to: the model *writes* here, so negative-example prompting
+#: and the hedging/filler post-filter help. The faithful transforms
+#: (``fix_grammar``, ``structure``, ``reading_order``) are deliberately excluded
+#: -- they must preserve the source exactly, so a "banned word" that is in the
+#: source must never trigger a rewrite.
+_GENERATIVE_OPS: frozenset[str] = frozenset({"rewrite", "summarize", "continue", "shorten"})
 
 
 #: Set by :func:`make_default_backend` when resolution fell back past a
@@ -245,6 +259,29 @@ class Assistant:
             return prompt
         return "\n\n".join([*segments, prompt])
 
+    def _respond_quality(self, prompt: str, *, shape: bool) -> str:
+        """Respond, applying small-local-model quality shaping when ``shape``.
+
+        On a local backend (#1319): prepend negative worked examples to teach
+        concision, then run the deterministic hedging/filler post-filter on the
+        output and, on a hit, do exactly one cheap retry naming the offending
+        phrases. Cloud backends and faithful transforms skip all of this and
+        get the plain response, byte-for-byte as before.
+        """
+        local = shape and bool(getattr(self.backend, "is_local", False))
+        if local:
+            prompt = f"{negative_examples_block()}\n\n{prompt}"
+        result = self.backend.respond(prompt)
+        if local:
+            issues = find_quality_issues(result)
+            if issues:
+                revised = self.backend.respond(
+                    f"{retry_instruction(issues)}\n\nYour previous answer:\n{result}"
+                )
+                if revised.strip():
+                    return revised
+        return result
+
     def is_available(self) -> tuple[bool, str | None]:
         return self.backend.is_available()
 
@@ -255,17 +292,20 @@ class Assistant:
         if operation not in _OPERATION_PROMPTS:
             raise ValueError(f"Unknown operation: {operation}")
         template = _OPERATION_PROMPTS[operation]
+        shape = operation in _GENERATIVE_OPS
         if len(text) <= _CHUNK_CHARS:
-            return self.backend.respond(self._wrap(template.format(text=text)))
+            return self._respond_quality(self._wrap(template.format(text=text)), shape=shape)
         # Input is larger than the window: process in chunks.
         chunks = _split_into_chunks(text, _CHUNK_CHARS)
-        pieces = [self.backend.respond(self._wrap(template.format(text=c))) for c in chunks]
+        pieces = [
+            self._respond_quality(self._wrap(template.format(text=c)), shape=shape) for c in chunks
+        ]
         if operation == "summarize":
             # Map-reduce: summarize the combined chunk summaries.
             combined = "\n\n".join(pieces)
             if len(combined) > _CHUNK_CHARS:
                 combined = combined[:_CHUNK_CHARS]
-            return self.backend.respond(self._wrap(template.format(text=combined)))
+            return self._respond_quality(self._wrap(template.format(text=combined)), shape=shape)
         return "\n".join(pieces)
 
     def change_tone(self, text: str, tone: str) -> str:
@@ -273,7 +313,7 @@ class Assistant:
             f"Rewrite the following text in a {tone} tone. "
             f"Return only the rewritten text:\n\n{text}"
         )
-        return self.backend.respond(self._wrap(prompt))
+        return self._respond_quality(self._wrap(prompt), shape=True)
 
     def ask(self, prompt: str) -> str:
         return self.backend.respond(self._wrap(prompt))
