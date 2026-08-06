@@ -3224,7 +3224,7 @@ engine a general-purpose home, adding only what Vault didn't need:
   the way Vault's own always-`main` convention does — a general folder may
   plausibly be on `master` or any other branch name.
 
-**Tools → Sync Folder with GitHub...** (`sync.sync_folder`, empty default
+**Tools → GitHub → Sync Folder with GitHub...** (`sync.sync_folder`, empty default
 keymap chord, assignable) prompts for a folder (remembered in
 `Settings.git_sync_last_folder` for next time), checks its status in the
 background, and either syncs directly (already a git repo with a remote) or

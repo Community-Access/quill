@@ -1500,7 +1500,7 @@ sentence written to be spoken. None of these commands contacts GitHub or any net
 
 ### Synchronizing a folder
 
-**Tools > Sync Folder with GitHub** works with any folder: notes, a writing project, source
+**Tools > GitHub > Sync Folder with GitHub** works with any folder: notes, a writing project, source
 code, a whole body of work. If it is already a git repository with a remote, QUILL commits,
 pulls, and pushes in the background. If it is not, QUILL explains exactly what it proposes
 ("this runs `git init`, then adds the remote repository you provide as origin") and changes

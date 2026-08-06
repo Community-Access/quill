@@ -1841,10 +1841,6 @@ class MenuBuilderMixin:
             self._id_vault_settings, self._menu_label(_("Vault Se&ttings..."), "vault.settings")
         )
         tools_menu.AppendSubMenu(vault_menu, _("&Vault"))
-        tools_menu.Append(
-            self._id_git_sync_folder,
-            self._menu_label(_("S&ync Folder with GitHub..."), "sync.sync_folder"),
-        )
         github_admin_menu = wx.Menu()
         # Open/browse a repository -- the everyday "I just want to open a repo"
         # action, alongside the admin operations. Reuses the same command (and its
@@ -1852,6 +1848,12 @@ class MenuBuilderMixin:
         github_admin_menu.Append(
             self._id_github_repository,
             self._menu_label(_("&Open a Repository..."), "file.open_github_repository"),
+        )
+        # Sync Folder lives inside the GitHub submenu so Tools carries exactly
+        # one GitHub entry (a loose item next to the submenu read as two).
+        github_admin_menu.Append(
+            self._id_git_sync_folder,
+            self._menu_label(_("S&ync Folder with GitHub..."), "sync.sync_folder"),
         )
         github_admin_menu.AppendSeparator()
         github_admin_menu.Append(

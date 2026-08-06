@@ -20,7 +20,7 @@ class LibraryMixin:
         dest = paths.app_data_dir() / "library"
         safe_mode = os.environ.get("QUILL_SAFE_MODE") == "1"
         dialog = LibraryDialog(
-            self,
+            self.frame,
             dest_dir=dest,
             announce=lambda text: self._announce(text),
             on_open=lambda path: self.open_file(path),
