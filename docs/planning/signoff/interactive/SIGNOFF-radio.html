@@ -7,21 +7,30 @@
 <style>
   body { font-family: system-ui, sans-serif; max-width: 60em; margin: 0 auto;
          padding: 1em; line-height: 1.5; }
+  /* Keep a focus target clear of the sticky bar when scrolled to (WCAG 2.4.11
+     Focus Not Obscured) -- matters now that hiding an item moves focus. */
+  html { scroll-padding-top: 4em; }
   li { margin: 0.35em 0; }
   input.so { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
   .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
           border-bottom: 1px solid GrayText; }
   @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
     .bar { background: #111; } }
+  .bar button, .bar a { margin-right: 0.5em; }
+  li[hidden] { display: none; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
+    padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 </style>
 </head>
 <body>
 <div class="bar" role="group" aria-label="Sign-off progress and state">
   <span id="progress" role="status">Loading…</span>
+  <button id="toggleHide" type="button" aria-pressed="false">Hide checked items</button>
   <button id="export">Export progress…</button>
   <button id="import">Import progress…</button>
   <input type="file" id="importFile" accept=".json" hidden>
   <a href="index.html">All checklists</a>
+  <span id="hideStatus" class="visually-hidden" aria-live="polite"></span>
 </div>
 <h1>QUILL 1.0.0 Sign-off — Quill Radio (public app)</h1>
 <p><strong>29 commands</strong> + <strong>36 dialog surfaces.</strong> Run across every §A environment (portable + system, Windows + macoS). Legend: W/S/A as in the master.</p>
@@ -109,12 +118,52 @@
 <script>
 (function () {
   var PREFIX = "quill-signoff:";
+  var HIDE_KEY = PREFIX + "__hideChecked__";
   var boxes = document.querySelectorAll("input.so");
+  var toggleBtn = document.getElementById("toggleHide");
+  var hideStatus = document.getElementById("hideStatus");
+  var checkItems = [];
+  document.querySelectorAll("li").forEach(function (li) {
+    if (li.querySelector("input.so")) checkItems.push(li);
+  });
   function refresh() {
     var done = 0;
     boxes.forEach(function (b) { if (b.checked) done++; });
     document.getElementById("progress").textContent =
       done + " of " + boxes.length + " boxes checked";
+  }
+  // An item is "checked off" only when every checkbox on it (Works / Surface /
+  // Accessible) is ticked; a partly-done item stays visible.
+  function itemDone(li) {
+    var bs = li.querySelectorAll("input.so");
+    if (bs.length === 0) return false;
+    for (var i = 0; i < bs.length; i++) { if (!bs[i].checked) return false; }
+    return true;
+  }
+  function hideActive() { return localStorage.getItem(HIDE_KEY) === "1"; }
+  function applyHide() {
+    var on = hideActive();
+    var hidden = 0;
+    checkItems.forEach(function (li) {
+      li.hidden = on && itemDone(li);
+      if (li.hidden) hidden++;
+    });
+    if (toggleBtn) toggleBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    return hidden;
+  }
+  // When ticking a box hides the item the user is standing on, move focus off
+  // the now-hidden control to the next visible box (else the previous, else the
+  // toggle) so keyboard/screen-reader focus is never stranded.
+  function focusAfterHide(box) {
+    var arr = Array.prototype.slice.call(boxes);
+    var start = arr.indexOf(box);
+    for (var i = start + 1; i < arr.length; i++) {
+      if (!arr[i].closest("li").hidden) { arr[i].focus(); return; }
+    }
+    for (var j = start - 1; j >= 0; j--) {
+      if (!arr[j].closest("li").hidden) { arr[j].focus(); return; }
+    }
+    if (toggleBtn) toggleBtn.focus();
   }
   boxes.forEach(function (b) {
     var key = PREFIX + b.dataset.key;
@@ -123,9 +172,34 @@
       if (b.checked) localStorage.setItem(key, "1");
       else localStorage.removeItem(key);
       refresh();
+      if (hideActive()) {
+        var li = b.closest("li");
+        var willHide = b.checked && li && itemDone(li);
+        applyHide();
+        if (willHide && li.hidden) {
+          // The item the user just completed is vanishing; say so (brief), then
+          // move focus off the now-hidden control.
+          if (hideStatus) hideStatus.textContent = "Item completed and hidden.";
+          focusAfterHide(b);
+        }
+      }
     });
   });
   refresh();
+  if (toggleBtn && boxes.length > 0) {
+    applyHide();
+    toggleBtn.addEventListener("click", function () {
+      localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
+      var hidden = applyHide();
+      if (hideStatus) {
+        hideStatus.textContent = hideActive()
+          ? (hidden + (hidden === 1 ? " checked item hidden." : " checked items hidden."))
+          : "Showing all items.";
+      }
+    });
+  } else if (toggleBtn) {
+    toggleBtn.hidden = true;  // no checkboxes on this page (e.g. the index)
+  }
   document.getElementById("export").addEventListener("click", function () {
     var state = {};
     for (var i = 0; i < localStorage.length; i++) {
