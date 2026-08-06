@@ -197,6 +197,14 @@ def signature_status(artifact_path: Path, sidecar: Path | None = None) -> Signat
     """
     import os
 
+    # A missing sidecar means "unsigned" -- knowable from the filesystem alone,
+    # without the public key or even PyNaCl. Decide it here so a build/env where
+    # the key or nacl is unavailable reports an unsigned artifact as unsigned,
+    # not (wrongly) as signed-but-unverifiable via the key-load error paths below.
+    resolved_sidecar = sidecar if sidecar is not None else sidecar_path(artifact_path)
+    if not resolved_sidecar.exists():
+        return SignatureStatus(False, False, None, "no sidecar .minisig")
+
     env_path = os.environ.get("SIGNING_PUBLIC_KEY_PATH")
     if env_path and Path(env_path).exists():
         try:
