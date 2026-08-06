@@ -188,7 +188,13 @@ def _install_optional(service: AnnouncementService, host: Any) -> None:
     if play is not None:
         service.add_sink(SoundSink(play, is_enabled=_sound_enabled_check(host)))
 
-    show = getattr(host, "_set_status", None)
+    # The status sink must be a QUIET status write. MainFrame._set_status
+    # speaks (it routes back into sr_announce, whose handler is _announce),
+    # so wiring it here closes an announce -> status -> announce cycle that
+    # recursed until the UI heartbeat declared a hang (calculator, 2026-08-05
+    # thread dump). Prefer the explicit quiet setter; the companion shells'
+    # _set_status is already a bare SetStatusText and stays a valid fallback.
+    show = getattr(host, "_set_status_quiet", None) or getattr(host, "_set_status", None)
     if callable(show):
         service.add_sink(VisualSink(show))
 

@@ -5569,6 +5569,19 @@ class MainFrame(
         notification recording and the transcript from one call site instead
         of four scattered ones. ``sound`` is a SoundEvent id to lead with (#1302).
         """
+        # Reentrancy guard: a sink must never be able to route back into this
+        # method (announce -> status sink -> sr_announce handler -> announce
+        # recursed to a hard UI hang before the wiring fix). Structural cycles
+        # are fixed at the wiring; this guard makes the whole class impossible.
+        if getattr(self, "_announce_in_progress", False):
+            return
+        self._announce_in_progress = True
+        try:
+            self._announce_locked(message, force=force, sound=sound)
+        finally:
+            self._announce_in_progress = False
+
+    def _announce_locked(self, message: str, *, force: bool = False, sound: str = "") -> None:
         self._status_message = message
         self._record_spoken(message)
         self._refresh_statusbar()
