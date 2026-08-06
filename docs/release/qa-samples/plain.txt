@@ -1,0 +1,11 @@
+Field Notes
+
+The lighthouse keeper logged the weather every morning at six o'clock. Wind from
+the northwest, seas moderate, visibility four miles.
+
+By noon the fog had rolled in and the horn ran on its two-minute cycle. Nothing
+passed the point until the mail boat at half past three.
+
+This is a plain text file with no headings, lists, or markup. It is the baseline
+for open, read, and Save-As round-trip checks: the text that comes back out must
+match the text that went in, character for character.

@@ -220,7 +220,87 @@ apps.</li>
 (generated from the A11Y-4 registry).</li>
 <li><code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system
 scenario deep-dive.</li>
+<li><code>../release/qa-core-journeys.md</code> — the hand-held,
+rigorous <strong>core-journey</strong> test plan (open/heading nav,
+table cell nav, Save-As fidelity, Insert Equation, Improve Reading
+Order, Find/Replace + Regex, Read Aloud, open-from-URL). A required
+companion (see §0).</li>
+<li><code>../release/qa-samples/</code> — the <strong>QA sample-document
+corpus</strong> the journeys open (known-content inputs for manual QA);
+manifest in <code>../release/qa-samples/README.md</code>.</li>
 </ul>
+<hr />
+<h2 id="0-how-to-run-this-sign-off--the-hand-held-procedure">§0. How to
+run this sign-off — the hand-held procedure</h2>
+<p>This pack is more than a checklist: it is an <strong>ordered
+process</strong>. Run it in the sequence below, on every §A environment.
+Do not treat the companion QA plans as optional reading — they are part
+of the pass and are listed here as <strong>mandatory</strong>.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>A <strong>real Windows build</strong> of the 1.0.0 candidate,
+installed per the §A environment under test (portable and system
+installs are different runs — see §A).</li>
+<li><strong>NVDA and JAWS</strong> both installed and speaking (Narrator
+and, on E5, VoiceOver where a case calls for them).</li>
+<li><strong>Mouse unplugged</strong> for the first pass of every UI step
+— keyboard-only — then a second pass reading with the screen reader's
+review/virtual cursor.</li>
+<li>The <strong><code>qa-samples/</code> corpus</strong> copied onto the
+machine (<code>../release/qa-samples/</code>); read its
+<code>README.md</code> so the "correct" content of each sample is known
+before you start. AI configured with a working provider
+<strong>only</strong> for the Improve Reading Order journey.</li>
+</ul>
+<h3 id="the-ordered-run">The ordered run</h3>
+<ol type="1">
+<li><strong>Install / environment</strong> — set up the machine for the
+§A environment under test (E1–E6); record data-dir, secrets backend, and
+update path. Re-run the whole pack once per environment.</li>
+<li><strong>Smoke-launch</strong> — launch the build; confirm the window
+is announced on foreground, no crash dialog, and Help &gt; About reads
+the 1.0.0 candidate version and build stamp. A failed smoke-launch stops
+the run for that environment.</li>
+<li><strong>Per-area checklists §B–§D</strong> — work the editor (§B,
+<code>signoff/SIGNOFF-editor.md</code>), Quill Radio (§C,
+<code>signoff/SIGNOFF-radio.md</code>), and Quill Weather (§D,
+<code>signoff/SIGNOFF-weather.md</code>), triple-checking every
+applicable item (Works · Surface-exact · A11y).</li>
+<li><strong>Required companion QA plans (MANDATORY — not
+optional)</strong> — run each of these in full and sign off its footer:
+<ul>
+<li><code>../release/qa-core-journeys.md</code> — the hand-held
+core-journey plan, opened against the <code>qa-samples/</code> corpus
+(heading nav, table cell nav, Save-As fidelity, Insert Equation, Improve
+Reading Order, Find/Replace + Regex, Read Aloud, open-from-URL).</li>
+<li><code>../release/screen-reader-test-plan.md</code> — every
+accessibility/focus/keyboard case.</li>
+<li><code>../release/user-acceptance-test-plan-0.8.0.md</code> — the
+continuous 236-step UAT runbook (feature coverage end to end).</li>
+<li><code>../release/fresh-install-regression-0.8.0.md</code> —
+brand-new-user install.</li>
+<li><code>../release/upgrade-path-regression-0.8.0.md</code> —
+install-on-top upgrade chain, no data loss.</li>
+</ul></li>
+<li><strong>§G gated-absence</strong> — with the public build flag OFF,
+confirm the gated apps and editor-embedded Podcasts / Internet Radio /
+Book Library are <strong>absent</strong> from every public surface (the
+<code>Tools ▸ Media</code> submenu omitted entirely, no palette
+commands, no status-bar/tray cells).</li>
+<li><strong>Readiness gate</strong> — fill §H; the candidate is ready to
+test only when every box in §A–§G is checked on every environment
+<strong>and</strong> every companion plan above is signed off.</li>
+</ol>
+<h3 id="definition-of-done">Definition of done</h3>
+<p>A feature is signed off only when <strong>every applicable checklist
+box is triple-checked (Works · Surface-exact · A11y) on every §A
+environment (E1–E6)</strong>, <strong>and</strong> every required
+companion plan in step 4 is signed off, <strong>with the
+<code>qa-samples/</code> corpus used for the feature journeys</strong>.
+Confidence comes from following the steps + expected results + named
+sample inputs — not from memory or a glance. A box is checked only when
+the outcome happened in front of you, announced out loud, on the build
+under test.</p>
 <hr />
 <h2 id="a-environment-matrix--run-the-whole-pack-in-each">§A.
 Environment matrix — run the whole pack in EACH</h2>

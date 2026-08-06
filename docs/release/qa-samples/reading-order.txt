@@ -1,0 +1,21 @@
+Making Tea
+
+pour the boiling water over the leaves and let them
+Fourth, strain the tea into a cup and add milk or sugar to taste.
+steep for three to five minutes.
+First, fill the kettle with fresh water and bring it to a boil.
+Third,
+Second, place one teaspoon of loose leaves in the warmed pot.
+
+--- INTENDED CORRECT ORDER (for the tester; do not send this note to the AI) ---
+
+The passage above is a four-step recipe printed out of sequence, with one step
+("Third, ... steep ...") broken across a mid-sentence line break, the way a
+multi-column or text-box PDF extracts. After Improve Reading Order the new
+unsaved document should read, in this order, with the same wording:
+
+1. First, fill the kettle with fresh water and bring it to a boil.
+2. Second, place one teaspoon of loose leaves in the warmed pot.
+3. Third, pour the boiling water over the leaves and let them steep for three to
+   five minutes.
+4. Fourth, strain the tea into a cup and add milk or sugar to taste.

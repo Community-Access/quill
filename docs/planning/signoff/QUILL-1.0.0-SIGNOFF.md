@@ -18,6 +18,69 @@ Files in this pack:
 - `signoff/SIGNOFF-radio.md` · `signoff/SIGNOFF-weather.md` — the public companion apps.
 - `signoff/SIGNOFF-dialogs.md` — every dialog surface (generated from the A11Y-4 registry).
 - `signoff/SIGNOFF-install-matrix.md` — the portable/system scenario deep-dive.
+- `../release/qa-core-journeys.md` — the hand-held, rigorous **core-journey** test plan (open/heading nav, table cell nav, Save-As fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read Aloud, open-from-URL). A required companion (see §0).
+- `../release/qa-samples/` — the **QA sample-document corpus** the journeys open (known-content inputs for manual QA); manifest in `../release/qa-samples/README.md`.
+
+---
+
+## §0. How to run this sign-off — the hand-held procedure
+
+This pack is more than a checklist: it is an **ordered process**. Run it in the
+sequence below, on every §A environment. Do not treat the companion QA plans as
+optional reading — they are part of the pass and are listed here as **mandatory**.
+
+### Prerequisites
+- A **real Windows build** of the 1.0.0 candidate, installed per the §A environment
+  under test (portable and system installs are different runs — see §A).
+- **NVDA and JAWS** both installed and speaking (Narrator and, on E5, VoiceOver
+  where a case calls for them).
+- **Mouse unplugged** for the first pass of every UI step — keyboard-only — then a
+  second pass reading with the screen reader's review/virtual cursor.
+- The **`qa-samples/` corpus** copied onto the machine (`../release/qa-samples/`);
+  read its `README.md` so the "correct" content of each sample is known before you
+  start. AI configured with a working provider **only** for the Improve Reading
+  Order journey.
+
+### The ordered run
+1. **Install / environment** — set up the machine for the §A environment under
+   test (E1–E6); record data-dir, secrets backend, and update path. Re-run the
+   whole pack once per environment.
+2. **Smoke-launch** — launch the build; confirm the window is announced on
+   foreground, no crash dialog, and Help > About reads the 1.0.0 candidate version
+   and build stamp. A failed smoke-launch stops the run for that environment.
+3. **Per-area checklists §B–§D** — work the editor (§B, `signoff/SIGNOFF-editor.md`),
+   Quill Radio (§C, `signoff/SIGNOFF-radio.md`), and Quill Weather (§D,
+   `signoff/SIGNOFF-weather.md`), triple-checking every applicable item
+   (Works · Surface-exact · A11y).
+4. **Required companion QA plans (MANDATORY — not optional)** — run each of these
+   in full and sign off its footer:
+   - `../release/qa-core-journeys.md` — the hand-held core-journey plan, opened
+     against the `qa-samples/` corpus (heading nav, table cell nav, Save-As
+     fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read
+     Aloud, open-from-URL).
+   - `../release/screen-reader-test-plan.md` — every accessibility/focus/keyboard
+     case.
+   - `../release/user-acceptance-test-plan-0.8.0.md` — the continuous 236-step UAT
+     runbook (feature coverage end to end).
+   - `../release/fresh-install-regression-0.8.0.md` — brand-new-user install.
+   - `../release/upgrade-path-regression-0.8.0.md` — install-on-top upgrade chain,
+     no data loss.
+5. **§G gated-absence** — with the public build flag OFF, confirm the gated apps
+   and editor-embedded Podcasts / Internet Radio / Book Library are **absent** from
+   every public surface (the `Tools ▸ Media` submenu omitted entirely, no palette
+   commands, no status-bar/tray cells).
+6. **Readiness gate** — fill §H; the candidate is ready to test only when every box
+   in §A–§G is checked on every environment **and** every companion plan above is
+   signed off.
+
+### Definition of done
+A feature is signed off only when **every applicable checklist box is
+triple-checked (Works · Surface-exact · A11y) on every §A environment (E1–E6)**,
+**and** every required companion plan in step 4 is signed off, **with the
+`qa-samples/` corpus used for the feature journeys**. Confidence comes from
+following the steps + expected results + named sample inputs — not from memory or a
+glance. A box is checked only when the outcome happened in front of you, announced
+out loud, on the build under test.
 
 ---
 
