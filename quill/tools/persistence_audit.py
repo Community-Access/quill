@@ -140,6 +140,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/sessions.py::clear_recent_sessions": "cache",
     "core/watch_queue.py::_save_locked": "cache",
     "core/ai/activity_log.py::append": "cache",
+    # Resumable batch-run record (#1323): regenerable model results keyed by unit
+    # id so an interrupted bulk run resumes instead of restarting. It stamps its
+    # own version + a run signature and drops the record wholesale on any mismatch
+    # (start clean, never migrate/blend), so losing it just recomputes -- no
+    # schema-migration concern.
+    "core/ai/resume_record.py::_write": "cache",
     # --- marker / small state flags ---
     # Radio's active-recording resume marker (R1-R4): transient state written
     # when a recording starts and cleared on clean stop; absent by default, and
