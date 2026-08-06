@@ -27,6 +27,6 @@ class LibraryMixin:
             safe_mode=safe_mode,
         )
         try:
-            self._show_modal_dialog(dialog)
+            self._show_modal_dialog(dialog, "Book Library")
         finally:
             dialog.Destroy()

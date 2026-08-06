@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest  # type: ignore[import-not-found]
+
 from quill.ui.main_frame_library import LibraryMixin
 
 
@@ -30,8 +32,12 @@ class _Host(LibraryMixin):
     def open_file(self, path: Path) -> None:
         self.opened.append(path)
 
-    def _show_modal_dialog(self, dialog: object) -> int:
-        self.shown.append(dialog)
+    def _show_modal_dialog(
+        self, dialog: object, label: str, *, restore_editor_focus: bool = True
+    ) -> int:
+        # Mirror MainFrame._show_modal_dialog's real signature exactly — the
+        # first regression (#1325) hid behind a stub that accepted fewer args.
+        self.shown.append((dialog, label))
         return 0
 
 
@@ -59,4 +65,31 @@ def test_library_dialog_is_parented_on_the_frame(tmp_path: Path, monkeypatch) ->
     parent, kwargs = _DialogProbe.calls[0]
     assert parent is host.frame, "dialog parent must be the wx frame, not the controller (#1318)"
     assert kwargs["dest_dir"] == tmp_path / "library"
-    assert host.shown, "the dialog goes through _show_modal_dialog"
+    assert len(host.shown) == 1
+    assert host.shown[0][1] == "Book Library", "_show_modal_dialog gets the label (#1325)"
+
+
+def test_open_library_dialog_end_to_end_with_real_widgets(tmp_path: Path, monkeypatch) -> None:
+    """Run the whole command with the real wx dialog — no dialog stub.
+
+    Both field crashes in this path (#1318 wrong parent type, #1325 missing
+    _show_modal_dialog label) only reproduce with the genuine constructor and
+    call signature, so this test deliberately builds the real LibraryDialog.
+    """
+    wx = pytest.importorskip("wx")
+    monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: tmp_path)
+
+    app = wx.App()
+    try:
+        host = _Host()
+        host.frame = wx.Frame(None)
+        try:
+            host.open_library_dialog()
+            assert len(host.shown) == 1
+            dialog, label = host.shown[0]
+            assert label == "Book Library"
+            assert dialog.GetParent() is host.frame
+        finally:
+            host.frame.Destroy()
+    finally:
+        app.Destroy()
