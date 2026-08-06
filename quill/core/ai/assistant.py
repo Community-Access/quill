@@ -233,6 +233,7 @@ class Assistant:
         self.backend = backend
         self._style_preamble = ""
         self._instructions_preamble = ""
+        self._context_preamble = ""
         #: Two-pass observe-then-rewrite for summarize on a local model (#1320):
         #: pass 1 extracts observations, pass 2 rewrites them under a word budget
         #: without the source, cutting hallucination. Defaults on but only ever
@@ -257,11 +258,22 @@ class Assistant:
         """Pin the user's durable writing instructions (AI-21; empty to disable)."""
         self._instructions_preamble = preamble or ""
 
+    def set_context_preamble(self, preamble: str) -> None:
+        """Pin auto-loaded sidecar reference context (#1322; empty to disable)."""
+        self._context_preamble = preamble or ""
+
     def _wrap(self, prompt: str) -> str:
         # Instructions (explicit user rules) lead, then the trained style
-        # (voice), then the task. Both are visible, user-owned conditioning.
+        # (voice), then the sidecar reference context (facts), then the task —
+        # all visible, user-owned conditioning.
         segments = [
-            segment for segment in (self._instructions_preamble, self._style_preamble) if segment
+            segment
+            for segment in (
+                self._instructions_preamble,
+                self._style_preamble,
+                self._context_preamble,
+            )
+            if segment
         ]
         if not segments:
             return prompt
