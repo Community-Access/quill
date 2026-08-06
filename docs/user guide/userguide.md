@@ -4387,13 +4387,14 @@ Structural movement commands:
 - **Next Region**
 - **Previous Region**
 
-Bookmark and position commands:
+Bookmark and position commands. The bookmark commands live together in the
+**Bookmarks** submenu:
 
-- **Set Bookmark...**
-- **Go To Bookmark...**
-- **List Bookmarks...**
-- **Set Temporary Bookmark** (`Ctrl+J`)
-- **Go to Temporary Bookmark** (`Ctrl+Shift+J`)
+- **Bookmarks > Set Bookmark...**
+- **Bookmarks > Go To Bookmark...**
+- **Bookmarks > List Bookmarks...**
+- **Bookmarks > Set Temporary Bookmark** (`Ctrl+J`)
+- **Bookmarks > Go to Temporary Bookmark** (`Ctrl+Shift+J`)
 - **Go to Percent...**
 - **First Non-Blank**
 - **Last Non-Blank**
@@ -4416,7 +4417,7 @@ named bookmarks and the numbered quick bookmarks alike, and needs nothing from y
 
 For the times you just want to mark "right here" and come straight back — no name,
 no picker, no dialog — use the temporary bookmark. Both commands are on the
-**Navigate** menu, just under **List Bookmarks...**, and in the command palette:
+**Navigate > Bookmarks** submenu, just under **List Bookmarks...**, and in the command palette:
 
 - **Set Temporary Bookmark** (**Ctrl+J**) sets it at the cursor.
 - **Go to Temporary Bookmark** (**Ctrl+Shift+J**) jumps back to it.
@@ -7721,7 +7722,7 @@ A **Notebook** is a named collection of documents that belong together — a nov
 
 **Creating a Notebook.** Use **File > Notebook > New Notebook** to create an empty notebook and give it a name. Use **File > Notebook > New from Folder** to import an entire folder at once — Quill walks the folder recursively and creates one entry per supported file. You can filter by extension (the default set covers Markdown, plain text, HTML, and source code).
 
-**Opening and navigating entries.** Once a Notebook is open, **Navigate > Go to Entry in Notebook** opens the tree navigator, which groups entries by subdirectory. Select an entry and press Enter (or click "Open Entry") to open that file. For headings, **Navigate > Go to Heading in Notebook** scans every entry file and presents a two-level tree.
+**Opening and navigating entries.** Once a Notebook is open, **Navigate > Notebook > Go to Entry...** opens the tree navigator, which groups entries by subdirectory. Select an entry and press Enter (or click "Open Entry") to open that file. For headings, **Navigate > Notebook > Go to Heading...** scans every entry file and presents a two-level tree.
 
 **Opening a Notebook from WSL or a network location.** The Open Notebook dialog is the standard Windows file dialog, so it can reach anywhere Windows can — including the WSL filesystem and UNC network shares. There is no "WSL" button because Windows itself presents those locations. To open a notebook stored in WSL, type or paste the UNC path into the dialog's address bar, for example `\\wsl.localhost\Ubuntu\home\you\writing\my.quillnotebook` (the older `\\wsl$\Ubuntu\...` form also works). Quill stores whatever path you give it, so the notebook file and the documents it references can all live in the WSL filesystem. You do not need to connect over SSH to reach your own WSL files. Note that file I/O across the WSL bridge is slower than native Windows paths, and live file-watch refresh may behave differently there; for a notebook you edit heavily, keeping it on a native Windows path is snappier. SSH is the right tool only when the files live on a *separate* Linux machine you want to edit remotely.
 

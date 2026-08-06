@@ -327,7 +327,7 @@ from silence.
   unnamed jump point at the cursor with no dialog, and **Go to Temporary Bookmark**
   (**Ctrl+Shift+J**) returns to it. Setting it again just moves it, and it is deliberately
   forgotten when QUILL closes: it is the come-right-back-here marker, not something to
-  keep. Both are on the Navigate menu.
+  keep. Both live in the Navigate menu's Bookmarks submenu.
 
 The persistent kinds re-anchor to the text around them, so inserting or deleting above
 a bookmark moves the bookmark with its sentence instead of leaving it pointing at a

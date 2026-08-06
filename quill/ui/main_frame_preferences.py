@@ -1422,7 +1422,7 @@ class PreferencesMixin:
             self._settings_dialog_apply_refresh("Reset settings to factory defaults")
             return
         if mode != "ok":
-            self._set_status("Settings cancelled")
+            self._set_status_quiet("Settings cancelled")
             return
 
         updated = self.settings

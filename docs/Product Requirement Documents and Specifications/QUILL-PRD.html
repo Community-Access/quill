@@ -3943,12 +3943,12 @@ from named bookmarks: <strong>Set Temporary Bookmark</strong>
 (<code>navigate.set_temp_bookmark</code>, <code>Ctrl+J</code>) sets it
 at the cursor with no dialog; <strong>Go to Temporary Bookmark</strong>
 (<code>navigate.go_to_temp_bookmark</code>, <code>Ctrl+Shift+J</code>)
-jumps to it with no picker. Both are Navigate-menu items (immediately
-after List Bookmarks) and command-palette entries. Session-only by
-design (never written to <code>DocumentMemory</code>) — it is disposable
-scratch state, not a durable anchor; it stores a raw caret position and
-does not re-anchor to surrounding text the way persistent bookmarks do.
-Implemented as
+jumps to it with no picker. Both live in the Navigate &gt; Bookmarks
+submenu (immediately after List Bookmarks) and the command palette.
+Session-only by design (never written to <code>DocumentMemory</code>) —
+it is disposable scratch state, not a durable anchor; it stores a raw
+caret position and does not re-anchor to surrounding text the way
+persistent bookmarks do. Implemented as
 <code>MainFrame.set_temp_bookmark</code>/<code>go_to_temp_bookmark</code>,
 aliased per-tab exactly like the named-bookmark dict. The handlers
 shipped in 0.9.0 Beta 3 but lost their registration when their

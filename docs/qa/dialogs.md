@@ -326,9 +326,9 @@ Multi-document workspace commands (§10.4 Milestone 2). All custom surfaces are
 - [ ] Manage Snapshots (list with Rename / Delete buttons): `hardened_custom`
   (wires `apply_modal_ids`): File > Notebook > Manage Snapshots
 - [ ] Go to Entry in Notebook (tree navigator — `_show_tree_navigator`):
-  Navigate > Go to Entry in Notebook
+  Navigate > Notebook > Go to Entry...
 - [ ] Go to Heading in Notebook (tree navigator — `_show_tree_navigator`):
-  Navigate > Go to Heading in Notebook
+  Navigate > Notebook > Go to Heading...
 
 ## Y. Startup-only dialogs
 

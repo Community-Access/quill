@@ -982,49 +982,48 @@ class MenuBuilderMixin:
             self._menu_label(_("&Follow Link"), "edit.follow_link"),
         )
         navigate_menu.AppendSeparator()
-        navigate_menu.Append(
+        bookmarks_menu = wx.Menu()
+        bookmarks_menu.Append(
             self._id_set_bookmark,
-            self._menu_label(_("Set &Bookmark..."), "navigate.set_bookmark"),
+            self._menu_label(_("&Set Bookmark..."), "navigate.set_bookmark"),
         )
-        navigate_menu.Append(
+        bookmarks_menu.Append(
             self._id_go_to_bookmark,
-            self._menu_label(_("Go To &Bookmark..."), "navigate.go_to_bookmark"),
+            self._menu_label(_("&Go To Bookmark..."), "navigate.go_to_bookmark"),
         )
-        navigate_menu.Append(
+        bookmarks_menu.Append(
             self._id_list_bookmarks,
-            self._menu_label(_("List B&ookmarks..."), "navigate.list_bookmarks"),
+            self._menu_label(_("&List Bookmarks..."), "navigate.list_bookmarks"),
         )
-        navigate_menu.Append(
+        bookmarks_menu.AppendSeparator()
+        bookmarks_menu.Append(
             self._id_set_temp_bookmark,
-            self._menu_label(_("Set Te&mporary Bookmark"), "navigate.set_temp_bookmark"),
+            self._menu_label(_("Set &Temporary Bookmark"), "navigate.set_temp_bookmark"),
         )
-        navigate_menu.Append(
+        bookmarks_menu.Append(
             self._id_go_to_temp_bookmark,
             self._menu_label(_("Go to Temporar&y Bookmark"), "navigate.go_to_temp_bookmark"),
         )
+        navigate_menu.AppendSubMenu(bookmarks_menu, _("Book&marks"))
         navigate_menu.AppendSeparator()
-        navigate_menu.Append(
+        notebook_nav_menu = wx.Menu()
+        notebook_nav_menu.Append(
             self._id_go_to_entry_in_notebook,
-            self._menu_label(_("Go to &Entry in Notebook..."), "navigate.go_to_entry_in_notebook"),
+            self._menu_label(_("Go to &Entry..."), "navigate.go_to_entry_in_notebook"),
         )
-        navigate_menu.Append(
+        notebook_nav_menu.Append(
             self._id_go_to_heading_in_notebook,
-            self._menu_label(
-                _("Go to &Heading in Notebook..."), "navigate.go_to_heading_in_notebook"
-            ),
+            self._menu_label(_("Go to &Heading..."), "navigate.go_to_heading_in_notebook"),
         )
-        navigate_menu.Append(
+        notebook_nav_menu.Append(
             self._id_go_to_bookmark_in_notebook,
-            self._menu_label(
-                _("Go to &Bookmark in Notebook..."), "navigate.go_to_bookmark_in_notebook"
-            ),
+            self._menu_label(_("Go to &Bookmark..."), "navigate.go_to_bookmark_in_notebook"),
         )
-        navigate_menu.Append(
+        notebook_nav_menu.Append(
             self._id_go_to_sticky_note_in_notebook,
-            self._menu_label(
-                _("Go to Sticky &Note in Notebook..."), "navigate.go_to_sticky_note_in_notebook"
-            ),
+            self._menu_label(_("Go to Sticky &Note..."), "navigate.go_to_sticky_note_in_notebook"),
         )
+        navigate_menu.AppendSubMenu(notebook_nav_menu, _("Noteboo&k"))
         self._id_insert_html_tag = wx.NewIdRef()
         self._id_insert_markdown_tag = wx.NewIdRef()
         self._id_insert_snippet = wx.NewIdRef()
