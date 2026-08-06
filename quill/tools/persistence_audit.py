@@ -167,6 +167,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/ai/sessions.py::save_session": "content",
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
+    # Per-book media time-point bookmarks (position_ms + optional label/note),
+    # keyed by book. User-created, additive/self-describing, tolerant loader
+    # (a corrupt file degrades to {}) -- same shape as core/bookmarks.py::save.
+    "core/media/bookmarks.py::_write": "content",
     "core/clip_library.py::_save": "content",
     "core/copy_tray.py::_save": "content",
     "core/favorite_folders.py::save": "content",
