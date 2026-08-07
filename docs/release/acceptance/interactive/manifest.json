@@ -8,11 +8,11 @@
   "boxes": 0
  },
  "section-file": {
-  "scenarios": 27,
+  "scenarios": 29,
   "boxes": 0
  },
  "section-edit": {
-  "scenarios": 62,
+  "scenarios": 86,
   "boxes": 0
  },
  "section-navigate": {
@@ -20,11 +20,11 @@
   "boxes": 0
  },
  "section-format": {
-  "scenarios": 50,
+  "scenarios": 56,
   "boxes": 0
  },
  "section-view": {
-  "scenarios": 28,
+  "scenarios": 29,
   "boxes": 0
  },
  "section-table": {
@@ -44,11 +44,11 @@
   "boxes": 0
  },
  "section-tools-misc": {
-  "scenarios": 56,
+  "scenarios": 73,
   "boxes": 0
  },
  "section-power": {
-  "scenarios": 56,
+  "scenarios": 75,
   "boxes": 0
  },
  "section-braille": {

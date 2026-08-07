@@ -1517,7 +1517,7 @@ text, whether it is decorative, and its source — without any AI.
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 56
+- Scenarios passed / total: ___ / 75
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

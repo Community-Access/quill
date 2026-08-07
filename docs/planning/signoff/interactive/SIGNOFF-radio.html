@@ -18,6 +18,9 @@
     .bar { background: #111; } }
   .bar button, .bar a { margin-right: 0.5em; }
   li[hidden] { display: none; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
     padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 </style>
@@ -221,14 +224,29 @@
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        if (hideStatus) hideStatus.textContent = "Import failed: not a valid progress file.";
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
+      if (!applied) {
+        if (hideStatus) hideStatus.textContent = "Import failed: no sign-off progress found.";
+        return;
+      }
       boxes.forEach(function (b) {
         b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
       });
       refresh();
+      if (boxes.length > 0) applyHide();
+      if (hideStatus) hideStatus.textContent = "Progress imported.";
+    }, function () {
+      if (hideStatus) hideStatus.textContent = "Import failed: the file could not be read.";
     });
   });
 })();

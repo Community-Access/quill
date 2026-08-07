@@ -85,31 +85,55 @@ def _convert(md_path: Path) -> str:
     slug = md_path.stem
     seen: dict[str, int] = {}
     out: list[str] = []
-    in_list = False
-    for line in md_path.read_text(encoding="utf-8").splitlines():
-        item = _convert_item(line, slug, seen)
-        if item is not None:
-            if not in_list:
-                out.append("<ul>")
-                in_list = True
-            out.append(item)
+    lines = md_path.read_text(encoding="utf-8").splitlines()
+    i = 0
+    n = len(lines)
+    while i < n:
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped or stripped == "---":
+            i += 1
             continue
-        if in_list and (line.startswith("- ") or line.strip() == ""):
-            if line.startswith("- "):
-                out.append(f"<li>{_inline(line[2:])}</li>")
-                continue
-        if in_list:
+        # Table -> a real <table> (the environment matrix must be readable as
+        # tabular data by a screen reader, not "| E1 | ..." paragraphs).
+        is_table = stripped.startswith("|") and i + 1 < n
+        if is_table and re.match(r"^\|[\s:|-]+\|$", lines[i + 1].strip()):
+            header = [c.strip() for c in stripped.strip("|").split("|")]
+            i += 2
+            rows: list[list[str]] = []
+            while i < n and lines[i].strip().startswith("|"):
+                rows.append([c.strip() for c in lines[i].strip().strip("|").split("|")])
+                i += 1
+            out.append('<div class="tablewrap"><table>')
+            out.append(
+                "<thead><tr>" + "".join(f"<th>{_inline(c)}</th>" for c in header) + "</tr></thead>"
+            )
+            out.append("<tbody>")
+            for row in rows:
+                out.append("<tr>" + "".join(f"<td>{_inline(c)}</td>" for c in row) + "</tr>")
+            out.append("</tbody></table></div>")
+            continue
+        # Any bullet list (checkbox items become persistent checkboxes; plain
+        # bullets keep real list semantics instead of degrading to <p>- ...</p>).
+        if stripped.startswith("- "):
+            out.append("<ul>")
+            while i < n and lines[i].strip().startswith("- "):
+                item = _convert_item(lines[i], slug, seen)
+                if item is not None:
+                    out.append(item)
+                else:
+                    out.append(f"<li>{_inline(lines[i].strip()[2:])}</li>")
+                i += 1
             out.append("</ul>")
-            in_list = False
-        if line.startswith("#"):
-            level = min(len(line) - len(line.lstrip("#")), 6)
-            out.append(f"<h{level}>{_inline(line.lstrip('#').strip())}</h{level}>")
-        elif line.startswith(">"):
-            out.append(f"<blockquote><p>{_inline(line.lstrip('> '))}</p></blockquote>")
-        elif line.strip():
-            out.append(f"<p>{_inline(line)}</p>")
-    if in_list:
-        out.append("</ul>")
+            continue
+        if stripped.startswith("#"):
+            level = min(len(stripped) - len(stripped.lstrip("#")), 6)
+            out.append(f"<h{level}>{_inline(stripped.lstrip('#').strip())}</h{level}>")
+        elif stripped.startswith(">"):
+            out.append(f"<blockquote><p>{_inline(stripped.lstrip('> '))}</p></blockquote>")
+        else:
+            out.append(f"<p>{_inline(stripped)}</p>")
+        i += 1
     return "\n".join(out)
 
 
@@ -133,6 +157,9 @@ _PAGE = """<!DOCTYPE html>
     .bar {{ background: #111; }} }}
   .bar button, .bar a {{ margin-right: 0.5em; }}
   li[hidden] {{ display: none; }}
+  .tablewrap {{ overflow-x: auto; }}
+  table {{ border-collapse: collapse; }}
+  th, td {{ border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }}
   .visually-hidden {{ position: absolute; width: 1px; height: 1px; margin: -1px;
     padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }}
 </style>
@@ -254,14 +281,29 @@ _PAGE = """<!DOCTYPE html>
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {{
-      var state = JSON.parse(text);
+      var state;
+      try {{
+        state = JSON.parse(text);
+      }} catch (e) {{
+        if (hideStatus) hideStatus.textContent = "Import failed: not a valid progress file.";
+        return;
+      }}
+      var applied = 0;
       Object.keys(state).forEach(function (k) {{
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) {{ localStorage.setItem(k, state[k]); applied++; }}
       }});
+      if (!applied) {{
+        if (hideStatus) hideStatus.textContent = "Import failed: no sign-off progress found.";
+        return;
+      }}
       boxes.forEach(function (b) {{
         b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
       }});
       refresh();
+      if (boxes.length > 0) applyHide();
+      if (hideStatus) hideStatus.textContent = "Progress imported.";
+    }}, function () {{
+      if (hideStatus) hideStatus.textContent = "Import failed: the file could not be read.";
     }});
   }});
 }})();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Section — File menu (file., 29 commands) (interactive acceptance)</title>
+<title>Section — File menu (file.*, 29 commands) (interactive acceptance)</title>
 <style>
   body { font-family: system-ui, sans-serif; max-width: 62em; margin: 0 auto;
          padding: 1em; line-height: 1.5; }
@@ -38,7 +38,7 @@
 <body>
 
 <div class="bar" role="group" aria-label="Progress and controls">
-  <span id="progress" role="status">Loading...</span><br>
+  <span id="progress">Loading...</span><br>
   <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
   <button id="expandAll" type="button">Expand all</button>
   <button id="collapseAll" type="button">Collapse all</button>
@@ -49,7 +49,7 @@
   <span id="live" class="visually-hidden" aria-live="polite"></span>
 </div>
 
-<h1>Section — File menu (file., 29 commands)</h1>
+<h1>Section — File menu (file.*, 29 commands)</h1>
 <p>Everything about getting documents <strong>in and out</strong> of QUILL: new, open, save, close, print, and the remote/GitHub/SSH ways of doing the same. Finish <strong>Part 0</strong> first.</p>
 <p>Surface reference (label + shortcut) is <code>../../planning/signoff/SIGNOFF-editor.md</code> → <code>file.*</code>. Read §2–§3 of <code>README.md</code> for the scenario layout and the Pass/Fail/Blocked/N-A + Works/Surface-exact/Accessible boxes.</p>
 <p>Common inputs used below (copy the <code>../qa-samples/</code> folder onto the machine first): <code>plain.txt</code>, <code>formatting.md</code>, <code>table.md</code>.</p>
@@ -73,7 +73,7 @@
 <details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-18 — Print Studio… (<code>file.print_studio</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> QUILL's richer print/preview workspace (layout and options beyond the system dialog).</p><p><strong>Before you start</strong></p><ul><li><code>formatting.md</code> open.</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Print Studio…</strong>.</li><li>Explore its controls by keyboard; trigger a preview if offered; close with <strong>Escape</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Print Studio opens as a keyboard-navigable, announced surface; its options are labelled; a preview reflects the document. Escape/Close returns focus to the editor.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-18" data-sid="FILE-18"><legend>Sign off - FILE-18 — Print Studio… (file.print_studio)</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-18 — Print Studio… (file.print_studio)"><label><input type="radio" class="outcome" name="section-file:scn:FILE-18:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-18:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-18:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-18:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-18:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-18:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-18:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-18:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-18:notes"></label></div></fieldset></div></details>
 <details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-19 — Convert File… (<code>file.convert_file</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Convert a document on disk from one format to another without opening it for editing.</p><p><strong>Before you start</strong></p><ul><li><code>formatting.md</code> on disk. Target: convert to <strong><code>.docx</code></strong>.</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Convert File…</strong>.</li><li>Pick the source <strong><code>formatting.md</code></strong>, choose target <strong>Word</strong>, confirm the output location.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Source and target are chosen with labelled, keyboard-navigable controls; the conversion runs and reports success with the output path. The result opens in Word as a faithful <code>.docx</code>.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-19" data-sid="FILE-19"><legend>Sign off - FILE-19 — Convert File… (file.convert_file)</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-19 — Convert File… (file.convert_file)"><label><input type="radio" class="outcome" name="section-file:scn:FILE-19:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-19:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-19:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-19:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-19:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-19:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-19:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-19:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-19:notes"></label></div></fieldset></div></details>
 <details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-20 — Import / Convert Document (OCR) (<code>file.import_convert</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Bring in a scanned/image PDF and OCR it into editable text.</p><p><strong>Before you start</strong></p><ul><li>A scanned/image PDF (or image) available. <strong>Precondition:</strong> an OCR engine installed (Tesseract via <code>tools.install_local_ocr</code>, or a configured OCR service). If none, mark <strong>Blocked</strong>.</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Import / Convert Document (OCR)</strong>.</li><li>Pick the image/PDF; run the import.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Progress is announced; on success the recognized text opens as a document. With no OCR engine, QUILL points you to install one rather than failing silently.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-20" data-sid="FILE-20"><legend>Sign off - FILE-20 — Import / Convert Document (OCR) (file.import_convert)</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-20 — Import / Convert Document (OCR) (file.import_convert)"><label><input type="radio" class="outcome" name="section-file:scn:FILE-20:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-20:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-20:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-20:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-20:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-20:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-20:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-20:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-20:notes"></label></div></fieldset></div></details>
-<details class="sec" open data-kind="plain"><summary><h2>FILE-21 — Save Session… (<code>file.save_session</code>) and FILE-22 — Open Session… (<code>file.open_session</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Save the whole set of open documents (a "session") and restore it later — your desk exactly as you left it.</p><p><strong>Before you start</strong></p><ul><li>Two or three documents open (e.g. <code>plain.txt</code>, <code>formatting.md</code>, <code>table.md</code>).</li><li>A session name: <strong><code>qa-session</code></strong>.</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Save Session…</strong>; name it <strong><code>qa-session</code></strong>; confirm.</li><li>Close all documents (<strong>Ctrl+W</strong> each).</li><li><strong>File menu ▸ Open Session…</strong>; pick <strong><code>qa-session</code></strong>; confirm.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Save announces the session was saved. Open restores <strong>all</strong> the documents from the session with focus in a sensible one; the set matches what you saved.</li></ul><p><strong>Sign off (Save Session)</strong> — <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code> <code>[ ] Works</code> <code>[ ] Surface-exact</code> <code>[ ] Accessible</code>  · Notes: ____________________</p><p><strong>Sign off (Open Session)</strong> — <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code> <code>[ ] Works</code> <code>[ ] Surface-exact</code> <code>[ ] Accessible</code>  · Notes: ____________________</p></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-21 — Save Session… (<code>file.save_session</code>) and FILE-22 — Open Session… (<code>file.open_session</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Save the whole set of open documents (a "session") and restore it later — your desk exactly as you left it.</p><p><strong>Before you start</strong></p><ul><li>Two or three documents open (e.g. <code>plain.txt</code>, <code>formatting.md</code>, <code>table.md</code>).</li><li>A session name: <strong><code>qa-session</code></strong>.</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Save Session…</strong>; name it <strong><code>qa-session</code></strong>; confirm.</li><li>Close all documents (<strong>Ctrl+W</strong> each).</li><li><strong>File menu ▸ Open Session…</strong>; pick <strong><code>qa-session</code></strong>; confirm.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Save announces the session was saved. Open restores <strong>all</strong> the documents from the session with focus in a sensible one; the set matches what you saved.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-21:save-session" data-sid="FILE-21:save-session"><legend>Sign off - FILE-21 — Save Session… (file.save_session) and FILE-22 — Open Session… (file.open_session) - Save Session</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-21 — Save Session… (file.save_session) and FILE-22 — Open Session… (file.open_session) - Save Session"><label><input type="radio" class="outcome" name="section-file:scn:FILE-21:save-session:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:save-session:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:save-session:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:save-session:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:save-session:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-21:save-session:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-21:save-session:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-21:save-session:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-21:save-session:notes"></label></div></fieldset><fieldset class="scn" data-base="section-file:scn:FILE-21:open-session" data-sid="FILE-21:open-session"><legend>Sign off - FILE-21 — Save Session… (file.save_session) and FILE-22 — Open Session… (file.open_session) - Open Session</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-21 — Save Session… (file.save_session) and FILE-22 — Open Session… (file.open_session) - Open Session"><label><input type="radio" class="outcome" name="section-file:scn:FILE-21:open-session:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:open-session:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:open-session:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:open-session:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-21:open-session:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-21:open-session:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-21:open-session:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-21:open-session:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-21:open-session:notes"></label></div></fieldset></div></details>
 <details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-23 — Open over SSH: Quick Connect… (<code>file.ssh_quick_connect</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Open a file on a remote server over SSH by entering the connection once.</p><p><strong>Before you start</strong></p><ul><li><strong>Precondition:</strong> an SSH server you can reach with credentials. If none, mark <strong>Blocked</strong>. Note QUILL rejects unknown host keys by default (trust-on-first-use is opt-in).</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Open over SSH: Quick Connect…</strong>.</li><li>Enter host, username, and credentials by keyboard; connect; browse to a file and open it.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Fields are labelled and keyboard-complete. An <strong>unknown host key</strong> is refused with a clear spoken message unless you have enabled trust-first-use — it does not silently connect. On success the remote file opens.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-23" data-sid="FILE-23"><legend>Sign off - FILE-23 — Open over SSH: Quick Connect… (file.ssh_quick_connect)</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-23 — Open over SSH: Quick Connect… (file.ssh_quick_connect)"><label><input type="radio" class="outcome" name="section-file:scn:FILE-23:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-23:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-23:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-23:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-23:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-23:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-23:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-23:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-23:notes"></label></div></fieldset></div></details>
 <details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-24 — Open over SSH: Site Manager… (<code>file.ssh_site_manager</code>)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Save and manage named SSH sites for repeat connections.</p><p><strong>Before you start</strong></p><ul><li>Same SSH precondition as FILE-23 (else <strong>Blocked</strong>).</li></ul><p><strong>Do this</strong></p><ol><li><strong>File menu ▸ Open over SSH: Site Manager…</strong>.</li><li>Add a site (host/user), save it, then connect from the saved entry.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The site list and its add/edit/remove controls are labelled and keyboard-operable; a saved site connects on activation. Secrets are stored via the platform secret store, not in plain text.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-24" data-sid="FILE-24"><legend>Sign off - FILE-24 — Open over SSH: Site Manager… (file.ssh_site_manager)</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-24 — Open over SSH: Site Manager… (file.ssh_site_manager)"><label><input type="radio" class="outcome" name="section-file:scn:FILE-24:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-24:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-24:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-24:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-24:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-24:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-24:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-24:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-24:notes"></label></div></fieldset></div></details>
 <details class="sec scenario" open data-kind="scenario"><summary><h2>FILE-25 — Save to GitHub… (<code>file.github_save_back</code>, Ctrl+Shift+Grave then Shift+Q)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Commit the current document back to a GitHub repository.</p><p><strong>Before you start</strong></p><ul><li><strong>Precondition:</strong> a GitHub account connected (see FILE-28) and a document opened from a repo. If not connected, mark <strong>Blocked</strong>.</li><li>The chord shortcut is a two-step: press <strong>Ctrl+Shift+Grave</strong>, release, then <strong>Shift+Q</strong>. (Grave is the backtick key.)</li></ul><p><strong>Do this</strong></p><ol><li>Open the command via the chord, or <strong>File menu ▸ Save to GitHub…</strong>.</li><li>Enter a commit message by keyboard; confirm.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A labelled commit-message field; on confirm QUILL reports the commit/push result (success or a clear error). Nothing is pushed without your confirmation.</li></ul><fieldset class="scn" data-base="section-file:scn:FILE-25" data-sid="FILE-25"><legend>Sign off - FILE-25 — Save to GitHub… (file.github_save_back, Ctrl+Shift+Grave then Shift+Q)</legend><div class="row" role="radiogroup" aria-label="Outcome for FILE-25 — Save to GitHub… (file.github_save_back, Ctrl+Shift+Grave then Shift+Q)"><label><input type="radio" class="outcome" name="section-file:scn:FILE-25:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-25:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-25:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-25:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-file:scn:FILE-25:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-25:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-25:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-file:scn:FILE-25:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-file:scn:FILE-25:notes"></label></div></fieldset></div></details>
@@ -88,7 +88,7 @@
 <li><label>Build / commit tested: <input type="text" class="meta" size="40" data-key="section-file:meta:53295e384ade" value=""></label></li>
 <li><label>Environment (E1–E6): <input type="text" class="meta" size="40" data-key="section-file:meta:267597b92b20" value=""></label></li>
 <li><label>Date: <input type="text" class="meta" size="40" data-key="section-file:meta:eb9a4bc1c0c1" value=""></label></li>
-<li><label>Scenarios passed / total: <input type="text" class="meta" size="40" data-key="section-file:meta:0ce6deb713bd" value="___ / 27"></label></li>
+<li><label>Scenarios passed / total: <input type="text" class="meta" size="40" data-key="section-file:meta:0ce6deb713bd" value="___ / 29"></label></li>
 <li><label>Release blockers found (must be zero to ship): <input type="text" class="meta" size="40" data-key="section-file:meta:1dbaf858fd79" value=""></label></li>
 <li><label>Result: <input type="text" class="meta" size="40" data-key="section-file:meta:5faa59d4bc37" value="Pass / Pass-with-notes / Fail"></label></li>
 <li><label>Notes: <input type="text" class="meta" size="40" data-key="section-file:meta:70440046a3dc" value=""></label></li>
@@ -97,7 +97,9 @@
 <script>
 (function () {
   var PREFIX = "quill-acceptance:";
+  var SLUG = "section-file";
   var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var SUM_KEY = PREFIX + SLUG + ":__sum__";
   var live = document.getElementById("live");
   var toggleBtn = document.getElementById("toggleHide");
   var cbs = Array.prototype.slice.call(document.querySelectorAll("input.cb"));
@@ -107,16 +109,24 @@
   var scns = Array.prototype.slice.call(document.querySelectorAll("fieldset.scn"));
   var secs = Array.prototype.slice.call(document.querySelectorAll("details.sec"));
 
+  function announce(text) { if (live) { live.textContent = ""; live.textContent = text; } }
   function outcomeOf(scn) {
     var r = scn.querySelector('input.outcome:checked');
     return r ? r.value : "";
   }
-  function setStatusBadge(scn) {
-    var det = scn.closest("details.sec");
-    if (!det) return;
+  function setStatusBadge(det) {
     var st = det.querySelector(".st");
-    var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
-    if (st) st.textContent = labels[outcomeOf(scn)] || "";
+    if (!st) return;
+    var fs = det.querySelectorAll("fieldset.scn");
+    if (fs.length === 0) { st.textContent = ""; return; }
+    if (fs.length === 1) {
+      var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
+      st.textContent = labels[outcomeOf(fs[0])] || "";
+      return;
+    }
+    var rec = 0;
+    for (var i = 0; i < fs.length; i++) { if (outcomeOf(fs[i])) rec++; }
+    st.textContent = rec ? rec + " of " + fs.length + " recorded" : "";
   }
   function secDone(det) {
     var kind = det.getAttribute("data-kind");
@@ -125,12 +135,14 @@
       for (var i = 0; i < fs.length; i++) {
         if (!outcomeOf(fs[i])) return false;
       }
+      var bs = det.querySelectorAll("input.cb");
+      for (var k = 0; k < bs.length; k++) { if (!bs[k].checked) return false; }
       return fs.length > 0;
     }
     if (kind === "checklist") {
-      var bs = det.querySelectorAll("input.cb");
-      for (var j = 0; j < bs.length; j++) { if (!bs[j].checked) return false; }
-      return bs.length > 0;
+      var boxes = det.querySelectorAll("input.cb");
+      for (var j = 0; j < boxes.length; j++) { if (!boxes[j].checked) return false; }
+      return boxes.length > 0;
     }
     return false;
   }
@@ -143,6 +155,7 @@
   function markDone() {
     secs.forEach(function (d) {
       d.setAttribute("data-done", secDone(d) ? "1" : "0");
+      setStatusBadge(d);
     });
     document.querySelectorAll("li.check").forEach(function (li) {
       li.setAttribute("data-done", itemDone(li) ? "1" : "0");
@@ -163,29 +176,38 @@
     cbs.forEach(function (b) { if (b.checked) done++; });
     var bits = [];
     if (scns.length) {
-      bits.push(recorded + " of " + scns.length + " scenarios recorded (" +
+      bits.push(recorded + " of " + scns.length + " sign-offs recorded (" +
         counts.pass + " pass, " + counts.fail + " fail, " +
         counts.blocked + " blocked, " + counts.na + " n/a)");
     }
     if (cbs.length) { bits.push(done + " of " + cbs.length + " boxes checked"); }
     document.getElementById("progress").textContent =
       bits.length ? bits.join("; ") : "Nothing to sign off on this page.";
+    // Authoritative per-page summary for the index (immune to stale keys).
+    try {
+      localStorage.setItem(SUM_KEY, JSON.stringify({ scn: recorded, cb: done }));
+    } catch (e) { /* storage full: index falls back to key counting */ }
   }
-  // Focus rescue: when hiding removes the element under focus, land on the
-  // next visible section summary (else previous, else the toggle button).
+  // Focus rescue: whenever the element under focus just went display:none
+  // (hidden item OR hidden section), land on the nearest visible checkbox or
+  // outcome radio in document order, else a visible section summary, else the
+  // toggle button. Focus must never silently fall to <body>.
+  function isVisible(el) {
+    return !!el && el.offsetParent !== null;
+  }
   function rescueFocus(fromEl) {
-    var det = fromEl && fromEl.closest ? fromEl.closest("details.sec") : null;
-    if (det && getComputedStyle(det).display !== "none") return; // still visible
-    var idx = det ? secs.indexOf(det) : -1;
-    for (var j = idx + 1; j < secs.length; j++) {
-      if (getComputedStyle(secs[j]).display !== "none") {
-        secs[j].querySelector("summary").focus(); return;
-      }
+    if (isVisible(fromEl)) return;
+    var focusables = Array.prototype.slice.call(
+      document.querySelectorAll("input.cb, input.outcome"));
+    var idx = focusables.indexOf(fromEl);
+    for (var j = idx + 1; j < focusables.length; j++) {
+      if (isVisible(focusables[j])) { focusables[j].focus(); return; }
     }
     for (var k = idx - 1; k >= 0; k--) {
-      if (getComputedStyle(secs[k]).display !== "none") {
-        secs[k].querySelector("summary").focus(); return;
-      }
+      if (isVisible(focusables[k])) { focusables[k].focus(); return; }
+    }
+    for (var s = 0; s < secs.length; s++) {
+      if (isVisible(secs[s])) { secs[s].querySelector("summary").focus(); return; }
     }
     if (toggleBtn) toggleBtn.focus();
   }
@@ -198,15 +220,9 @@
       if (b.checked) localStorage.setItem(key, "1");
       else localStorage.removeItem(key);
       markDone(); refresh();
-      if (hideActive()) {
-        var li = b.closest("li.check");
-        var det = b.closest("details.sec");
-        var hid = (li && li.getAttribute("data-done") === "1") ||
-                  (det && det.getAttribute("data-done") === "1");
-        if (hid) {
-          if (live) live.textContent = "Completed and hidden.";
-          rescueFocus(b);
-        }
+      if (hideActive() && !isVisible(b)) {
+        announce("Completed and hidden.");
+        rescueFocus(b);
       }
     });
   });
@@ -222,14 +238,12 @@
         if (!r.checked) return;
         if (r.value) localStorage.setItem(base, r.value);
         else localStorage.removeItem(base);
-        setStatusBadge(scn); markDone(); refresh();
-        var det = scn.closest("details.sec");
-        if (hideActive() && det && det.getAttribute("data-done") === "1") {
-          if (live) live.textContent =
-            "Scenario recorded as " + (r.value || "not run") + " and hidden.";
-          rescueFocus(scn);
-        } else if (live) {
-          live.textContent = "Recorded: " + (r.value || "not run") + ".";
+        markDone(); refresh();
+        if (hideActive() && !isVisible(r)) {
+          announce("Sign-off recorded as " + (r.value || "not run") + " and hidden.");
+          rescueFocus(r);
+        } else {
+          announce("Recorded: " + (r.value || "not run") + ".");
         }
       });
     });
@@ -237,7 +251,6 @@
       var nr = scn.querySelector('input.outcome[value=""]');
       if (nr) nr.checked = true;
     }
-    setStatusBadge(scn);
   });
 
   // Restore + wire text fields (notes, section sign-off metadata).
@@ -256,6 +269,10 @@
   });
 
   markDone(); refresh(); applyHide();
+  if (sessionStorage.getItem("quill-acceptance-imported") === "1") {
+    sessionStorage.removeItem("quill-acceptance-imported");
+    announce("Progress imported.");
+  }
 
   if (toggleBtn) {
     if (scns.length === 0 && cbs.length === 0) {
@@ -264,12 +281,10 @@
       toggleBtn.addEventListener("click", function () {
         localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
         applyHide();
-        var hidden = secs.filter(function (d) {
-          return getComputedStyle(d).display === "none";
-        }).length;
-        if (live) live.textContent = hideActive()
+        var hidden = secs.filter(function (d) { return !isVisible(d); }).length;
+        announce(hideActive()
           ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
-          : "Showing all sections.";
+          : "Showing all sections.");
       });
     }
   }
@@ -277,11 +292,11 @@
   var co = document.getElementById("collapseAll");
   if (ex) ex.addEventListener("click", function () {
     secs.forEach(function (d) { d.open = true; });
-    if (live) live.textContent = "All sections expanded.";
+    announce("All sections expanded.");
   });
   if (co) co.addEventListener("click", function () {
     secs.forEach(function (d) { d.open = false; });
-    if (live) live.textContent = "All sections collapsed.";
+    announce("All sections collapsed.");
   });
 
   document.getElementById("export").addEventListener("click", function () {
@@ -296,6 +311,7 @@
     a.href = URL.createObjectURL(blob);
     a.download = "quill-acceptance-progress.json";
     a.click();
+    announce("Progress exported.");
   });
   var fileInput = document.getElementById("importFile");
   document.getElementById("import").addEventListener("click", function () {
@@ -305,11 +321,25 @@
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        announce("Import failed: not a valid progress file.");
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
+      if (!applied) {
+        announce("Import failed: no acceptance progress in that file.");
+        return;
+      }
+      sessionStorage.setItem("quill-acceptance-imported", "1");
       location.reload();
+    }, function () {
+      announce("Import failed: the file could not be read.");
     });
   });
 })();

@@ -38,7 +38,7 @@
 <body>
 
 <div class="bar" role="group" aria-label="Progress and controls">
-  <span id="progress" role="status">Loading...</span><br>
+  <span id="progress">Loading...</span><br>
   <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
   <button id="expandAll" type="button">Expand all</button>
   <button id="collapseAll" type="button">Collapse all</button>
@@ -77,7 +77,9 @@
 <script>
 (function () {
   var PREFIX = "quill-acceptance:";
+  var SLUG = "dialogs";
   var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var SUM_KEY = PREFIX + SLUG + ":__sum__";
   var live = document.getElementById("live");
   var toggleBtn = document.getElementById("toggleHide");
   var cbs = Array.prototype.slice.call(document.querySelectorAll("input.cb"));
@@ -87,16 +89,24 @@
   var scns = Array.prototype.slice.call(document.querySelectorAll("fieldset.scn"));
   var secs = Array.prototype.slice.call(document.querySelectorAll("details.sec"));
 
+  function announce(text) { if (live) { live.textContent = ""; live.textContent = text; } }
   function outcomeOf(scn) {
     var r = scn.querySelector('input.outcome:checked');
     return r ? r.value : "";
   }
-  function setStatusBadge(scn) {
-    var det = scn.closest("details.sec");
-    if (!det) return;
+  function setStatusBadge(det) {
     var st = det.querySelector(".st");
-    var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
-    if (st) st.textContent = labels[outcomeOf(scn)] || "";
+    if (!st) return;
+    var fs = det.querySelectorAll("fieldset.scn");
+    if (fs.length === 0) { st.textContent = ""; return; }
+    if (fs.length === 1) {
+      var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
+      st.textContent = labels[outcomeOf(fs[0])] || "";
+      return;
+    }
+    var rec = 0;
+    for (var i = 0; i < fs.length; i++) { if (outcomeOf(fs[i])) rec++; }
+    st.textContent = rec ? rec + " of " + fs.length + " recorded" : "";
   }
   function secDone(det) {
     var kind = det.getAttribute("data-kind");
@@ -105,12 +115,14 @@
       for (var i = 0; i < fs.length; i++) {
         if (!outcomeOf(fs[i])) return false;
       }
+      var bs = det.querySelectorAll("input.cb");
+      for (var k = 0; k < bs.length; k++) { if (!bs[k].checked) return false; }
       return fs.length > 0;
     }
     if (kind === "checklist") {
-      var bs = det.querySelectorAll("input.cb");
-      for (var j = 0; j < bs.length; j++) { if (!bs[j].checked) return false; }
-      return bs.length > 0;
+      var boxes = det.querySelectorAll("input.cb");
+      for (var j = 0; j < boxes.length; j++) { if (!boxes[j].checked) return false; }
+      return boxes.length > 0;
     }
     return false;
   }
@@ -123,6 +135,7 @@
   function markDone() {
     secs.forEach(function (d) {
       d.setAttribute("data-done", secDone(d) ? "1" : "0");
+      setStatusBadge(d);
     });
     document.querySelectorAll("li.check").forEach(function (li) {
       li.setAttribute("data-done", itemDone(li) ? "1" : "0");
@@ -143,29 +156,38 @@
     cbs.forEach(function (b) { if (b.checked) done++; });
     var bits = [];
     if (scns.length) {
-      bits.push(recorded + " of " + scns.length + " scenarios recorded (" +
+      bits.push(recorded + " of " + scns.length + " sign-offs recorded (" +
         counts.pass + " pass, " + counts.fail + " fail, " +
         counts.blocked + " blocked, " + counts.na + " n/a)");
     }
     if (cbs.length) { bits.push(done + " of " + cbs.length + " boxes checked"); }
     document.getElementById("progress").textContent =
       bits.length ? bits.join("; ") : "Nothing to sign off on this page.";
+    // Authoritative per-page summary for the index (immune to stale keys).
+    try {
+      localStorage.setItem(SUM_KEY, JSON.stringify({ scn: recorded, cb: done }));
+    } catch (e) { /* storage full: index falls back to key counting */ }
   }
-  // Focus rescue: when hiding removes the element under focus, land on the
-  // next visible section summary (else previous, else the toggle button).
+  // Focus rescue: whenever the element under focus just went display:none
+  // (hidden item OR hidden section), land on the nearest visible checkbox or
+  // outcome radio in document order, else a visible section summary, else the
+  // toggle button. Focus must never silently fall to <body>.
+  function isVisible(el) {
+    return !!el && el.offsetParent !== null;
+  }
   function rescueFocus(fromEl) {
-    var det = fromEl && fromEl.closest ? fromEl.closest("details.sec") : null;
-    if (det && getComputedStyle(det).display !== "none") return; // still visible
-    var idx = det ? secs.indexOf(det) : -1;
-    for (var j = idx + 1; j < secs.length; j++) {
-      if (getComputedStyle(secs[j]).display !== "none") {
-        secs[j].querySelector("summary").focus(); return;
-      }
+    if (isVisible(fromEl)) return;
+    var focusables = Array.prototype.slice.call(
+      document.querySelectorAll("input.cb, input.outcome"));
+    var idx = focusables.indexOf(fromEl);
+    for (var j = idx + 1; j < focusables.length; j++) {
+      if (isVisible(focusables[j])) { focusables[j].focus(); return; }
     }
     for (var k = idx - 1; k >= 0; k--) {
-      if (getComputedStyle(secs[k]).display !== "none") {
-        secs[k].querySelector("summary").focus(); return;
-      }
+      if (isVisible(focusables[k])) { focusables[k].focus(); return; }
+    }
+    for (var s = 0; s < secs.length; s++) {
+      if (isVisible(secs[s])) { secs[s].querySelector("summary").focus(); return; }
     }
     if (toggleBtn) toggleBtn.focus();
   }
@@ -178,15 +200,9 @@
       if (b.checked) localStorage.setItem(key, "1");
       else localStorage.removeItem(key);
       markDone(); refresh();
-      if (hideActive()) {
-        var li = b.closest("li.check");
-        var det = b.closest("details.sec");
-        var hid = (li && li.getAttribute("data-done") === "1") ||
-                  (det && det.getAttribute("data-done") === "1");
-        if (hid) {
-          if (live) live.textContent = "Completed and hidden.";
-          rescueFocus(b);
-        }
+      if (hideActive() && !isVisible(b)) {
+        announce("Completed and hidden.");
+        rescueFocus(b);
       }
     });
   });
@@ -202,14 +218,12 @@
         if (!r.checked) return;
         if (r.value) localStorage.setItem(base, r.value);
         else localStorage.removeItem(base);
-        setStatusBadge(scn); markDone(); refresh();
-        var det = scn.closest("details.sec");
-        if (hideActive() && det && det.getAttribute("data-done") === "1") {
-          if (live) live.textContent =
-            "Scenario recorded as " + (r.value || "not run") + " and hidden.";
-          rescueFocus(scn);
-        } else if (live) {
-          live.textContent = "Recorded: " + (r.value || "not run") + ".";
+        markDone(); refresh();
+        if (hideActive() && !isVisible(r)) {
+          announce("Sign-off recorded as " + (r.value || "not run") + " and hidden.");
+          rescueFocus(r);
+        } else {
+          announce("Recorded: " + (r.value || "not run") + ".");
         }
       });
     });
@@ -217,7 +231,6 @@
       var nr = scn.querySelector('input.outcome[value=""]');
       if (nr) nr.checked = true;
     }
-    setStatusBadge(scn);
   });
 
   // Restore + wire text fields (notes, section sign-off metadata).
@@ -236,6 +249,10 @@
   });
 
   markDone(); refresh(); applyHide();
+  if (sessionStorage.getItem("quill-acceptance-imported") === "1") {
+    sessionStorage.removeItem("quill-acceptance-imported");
+    announce("Progress imported.");
+  }
 
   if (toggleBtn) {
     if (scns.length === 0 && cbs.length === 0) {
@@ -244,12 +261,10 @@
       toggleBtn.addEventListener("click", function () {
         localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
         applyHide();
-        var hidden = secs.filter(function (d) {
-          return getComputedStyle(d).display === "none";
-        }).length;
-        if (live) live.textContent = hideActive()
+        var hidden = secs.filter(function (d) { return !isVisible(d); }).length;
+        announce(hideActive()
           ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
-          : "Showing all sections.";
+          : "Showing all sections.");
       });
     }
   }
@@ -257,11 +272,11 @@
   var co = document.getElementById("collapseAll");
   if (ex) ex.addEventListener("click", function () {
     secs.forEach(function (d) { d.open = true; });
-    if (live) live.textContent = "All sections expanded.";
+    announce("All sections expanded.");
   });
   if (co) co.addEventListener("click", function () {
     secs.forEach(function (d) { d.open = false; });
-    if (live) live.textContent = "All sections collapsed.";
+    announce("All sections collapsed.");
   });
 
   document.getElementById("export").addEventListener("click", function () {
@@ -276,6 +291,7 @@
     a.href = URL.createObjectURL(blob);
     a.download = "quill-acceptance-progress.json";
     a.click();
+    announce("Progress exported.");
   });
   var fileInput = document.getElementById("importFile");
   document.getElementById("import").addEventListener("click", function () {
@@ -285,11 +301,25 @@
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        announce("Import failed: not a valid progress file.");
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
+      if (!applied) {
+        announce("Import failed: no acceptance progress in that file.");
+        return;
+      }
+      sessionStorage.setItem("quill-acceptance-imported", "1");
       location.reload();
+    }, function () {
+      announce("Import failed: the file could not be read.");
     });
   });
 })();

@@ -258,3 +258,50 @@ def test_unrelated_ctrl_key_is_passed_through(wx_app) -> None:
         assert event.skipped
     finally:
         _teardown(dialog, frame)
+
+
+def test_find_previous_repeats_progress_backwards(wx_app) -> None:
+    # Regression: anchoring a backwards repeat at the last match's END re-found
+    # the same match forever; it must anchor at its START and step back.
+    buffer, dialog, frame = _make(wx_app, "fox one fox two fox")
+    try:
+        buffer.caret = len(buffer.text)
+        dialog.query.SetValue("fox")
+        dialog.find(backwards=True)
+        assert buffer.selections[-1] == (16, 19)
+        dialog.find(backwards=True)
+        assert buffer.selections[-1] == (8, 11)
+        dialog.find(backwards=True)
+        assert buffer.selections[-1] == (0, 3)
+    finally:
+        _teardown(dialog, frame)
+
+
+def test_peek_reverse_steps_back_not_repeat(wx_app) -> None:
+    buffer, dialog, frame = _make(wx_app, "fox one fox two fox")
+    try:
+        dialog.query.SetValue("fox")
+        dialog.peek(backwards=False)
+        assert buffer.selections[-1] == (0, 3)
+        dialog.peek(backwards=False)
+        assert buffer.selections[-1] == (8, 11)
+        dialog.peek(backwards=True)
+        assert buffer.selections[-1] == (0, 3)
+    finally:
+        _teardown(dialog, frame)
+
+
+def test_successful_find_syncs_global_repeat_state(wx_app) -> None:
+    remembered: list[tuple[str, bool, bool]] = []
+    frame = wx.Frame(None)
+    buffer = _Buffer("alpha beta")
+    host = buffer.host()
+    host.remember_query = lambda q, c, w: remembered.append((q, c, w))
+    dialog = QuillFindDialog(frame, host, wx=wx)
+    try:
+        dialog.query.SetValue("beta")
+        dialog.case.SetValue(True)
+        dialog.find(backwards=False)
+        assert remembered == [("beta", True, False)]
+    finally:
+        _teardown(dialog, frame)

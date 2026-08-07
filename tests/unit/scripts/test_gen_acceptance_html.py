@@ -95,3 +95,35 @@ def test_fences_and_blockquotes_stay_literal(tmp_path: Path) -> None:
     assert page.checkbox_count == 0
     assert "input" not in body
     assert "[ ] this checkbox is inside a fence" in body
+
+
+_QUALIFIED_MD = """# Section — Q
+
+## Q-01 — Twin scenario
+
+**Do this**
+1. Step.
+
+**Sign off (First half)** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____
+
+**Sign off (Second half)** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____
+"""
+
+
+def test_qualified_signoff_lines_each_get_controls(tmp_path: Path) -> None:
+    body, page = _convert_text(tmp_path, "section-q.md", _QUALIFIED_MD)
+    assert page.scenario_count == 2
+    assert 'data-sid="Q-01:first-half"' in body
+    assert 'data-sid="Q-01:second-half"' in body
+    assert "**Sign off" not in body
+
+
+def test_inline_keeps_code_globs_and_bold_around_code() -> None:
+    from scripts.gen_acceptance_html import _inline
+
+    got = _inline("(`navigate.*`, `verbosity.*`) and **`Book Library`**")
+    assert "<code>navigate.*</code>" in got
+    assert "<code>verbosity.*</code>" in got
+    assert "<strong><code>Book Library</code></strong>" in got

@@ -18,6 +18,9 @@
     .bar { background: #111; } }
   .bar button, .bar a { margin-right: 0.5em; }
   li[hidden] { display: none; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
     padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 </style>
@@ -44,60 +47,77 @@
 </ul>
 <p>Run the <strong>entire pass once per environment</strong> in §A. A feature is "signed off" only when it passes on <strong>every applicable environment</strong>.</p>
 <p>Files in this pack:</p>
-<p>- <code>QUILL-1.0.0-SIGNOFF.md</code> — this master (harness + cross-cutting matrices + readiness summary).</p>
-<p>- <code>signoff/SIGNOFF-editor.md</code> — every editor menu/command/dialog (generated).</p>
-<p>- <code>signoff/SIGNOFF-radio.md</code> · <code>signoff/SIGNOFF-weather.md</code> — the public companion apps.</p>
-<p>- <code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface (generated from the A11Y-4 registry).</p>
-<p>- <code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system scenario deep-dive.</p>
-<p>- <code>../release/qa-core-journeys.md</code> — the hand-held, rigorous <strong>core-journey</strong> test plan (open/heading nav, table cell nav, Save-As fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read Aloud, open-from-URL). A required companion (see §0).</p>
-<p>- <code>../release/qa-samples/</code> — the <strong>QA sample-document corpus</strong> the journeys open (known-content inputs for manual QA); manifest in <code>../release/qa-samples/README.md</code>.</p>
-<p>---</p>
+<ul>
+<li><code>QUILL-1.0.0-SIGNOFF.md</code> — this master (harness + cross-cutting matrices + readiness summary).</li>
+<li><code>signoff/SIGNOFF-editor.md</code> — every editor menu/command/dialog (generated).</li>
+<li><code>signoff/SIGNOFF-radio.md</code> · <code>signoff/SIGNOFF-weather.md</code> — the public companion apps.</li>
+<li><code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface (generated from the A11Y-4 registry).</li>
+<li><code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system scenario deep-dive.</li>
+<li><code>../release/qa-core-journeys.md</code> — the hand-held, rigorous <strong>core-journey</strong> test plan (open/heading nav, table cell nav, Save-As fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read Aloud, open-from-URL). A required companion (see §0).</li>
+<li><code>../release/qa-samples/</code> — the <strong>QA sample-document corpus</strong> the journeys open (known-content inputs for manual QA); manifest in <code>../release/qa-samples/README.md</code>.</li>
+</ul>
 <h2>§0. How to run this sign-off — the hand-held procedure</h2>
 <p>This pack is more than a checklist: it is an <strong>ordered process</strong>. Run it in the</p>
 <p>sequence below, on every §A environment. Do not treat the companion QA plans as</p>
 <p>optional reading — they are part of the pass and are listed here as <strong>mandatory</strong>.</p>
 <h3>Prerequisites</h3>
-<p>- A <strong>real Windows build</strong> of the 1.0.0 candidate, installed per the §A environment</p>
-<p>  under test (portable and system installs are different runs — see §A).</p>
-<p>- <strong>NVDA and JAWS</strong> both installed and speaking (Narrator and, on E5, VoiceOver</p>
-<p>  where a case calls for them).</p>
-<p>- <strong>Mouse unplugged</strong> for the first pass of every UI step — keyboard-only — then a</p>
-<p>  second pass reading with the screen reader's review/virtual cursor.</p>
-<p>- The <strong><code>qa-samples/</code> corpus</strong> copied onto the machine (<code>../release/qa-samples/</code>);</p>
-<p>  read its <code>README.md</code> so the "correct" content of each sample is known before you</p>
-<p>  start. AI configured with a working provider <strong>only</strong> for the Improve Reading</p>
-<p>  Order journey.</p>
+<ul>
+<li>A <strong>real Windows build</strong> of the 1.0.0 candidate, installed per the §A environment</li>
+</ul>
+<p>under test (portable and system installs are different runs — see §A).</p>
+<ul>
+<li><strong>NVDA and JAWS</strong> both installed and speaking (Narrator and, on E5, VoiceOver</li>
+</ul>
+<p>where a case calls for them).</p>
+<ul>
+<li><strong>Mouse unplugged</strong> for the first pass of every UI step — keyboard-only — then a</li>
+</ul>
+<p>second pass reading with the screen reader's review/virtual cursor.</p>
+<ul>
+<li>The <strong><code>qa-samples/</code> corpus</strong> copied onto the machine (<code>../release/qa-samples/</code>);</li>
+</ul>
+<p>read its <code>README.md</code> so the "correct" content of each sample is known before you</p>
+<p>start. AI configured with a working provider <strong>only</strong> for the Improve Reading</p>
+<p>Order journey.</p>
 <h3>The ordered run</h3>
 <p>1. <strong>Install / environment</strong> — set up the machine for the §A environment under</p>
-<p>   test (E1–E6); record data-dir, secrets backend, and update path. Re-run the</p>
-<p>   whole pack once per environment.</p>
+<p>test (E1–E6); record data-dir, secrets backend, and update path. Re-run the</p>
+<p>whole pack once per environment.</p>
 <p>2. <strong>Smoke-launch</strong> — launch the build; confirm the window is announced on</p>
-<p>   foreground, no crash dialog, and Help &gt; About reads the 1.0.0 candidate version</p>
-<p>   and build stamp. A failed smoke-launch stops the run for that environment.</p>
+<p>foreground, no crash dialog, and Help &gt; About reads the 1.0.0 candidate version</p>
+<p>and build stamp. A failed smoke-launch stops the run for that environment.</p>
 <p>3. <strong>Per-area checklists §B–§D</strong> — work the editor (§B, <code>signoff/SIGNOFF-editor.md</code>),</p>
-<p>   Quill Radio (§C, <code>signoff/SIGNOFF-radio.md</code>), and Quill Weather (§D,</p>
-<p>   <code>signoff/SIGNOFF-weather.md</code>), triple-checking every applicable item</p>
-<p>   (Works · Surface-exact · A11y).</p>
+<p>Quill Radio (§C, <code>signoff/SIGNOFF-radio.md</code>), and Quill Weather (§D,</p>
+<p><code>signoff/SIGNOFF-weather.md</code>), triple-checking every applicable item</p>
+<p>(Works · Surface-exact · A11y).</p>
 <p>4. <strong>Required companion QA plans (MANDATORY — not optional)</strong> — run each of these</p>
-<p>   in full and sign off its footer:</p>
-<p>   - <code>../release/qa-core-journeys.md</code> — the hand-held core-journey plan, opened</p>
-<p>     against the <code>qa-samples/</code> corpus (heading nav, table cell nav, Save-As</p>
-<p>     fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read</p>
-<p>     Aloud, open-from-URL).</p>
-<p>   - <code>../release/screen-reader-test-plan.md</code> — every accessibility/focus/keyboard</p>
-<p>     case.</p>
-<p>   - <code>../release/user-acceptance-test-plan-0.8.0.md</code> — the continuous 236-step UAT</p>
-<p>     runbook (feature coverage end to end).</p>
-<p>   - <code>../release/fresh-install-regression-0.8.0.md</code> — brand-new-user install.</p>
-<p>   - <code>../release/upgrade-path-regression-0.8.0.md</code> — install-on-top upgrade chain,</p>
-<p>     no data loss.</p>
+<p>in full and sign off its footer:</p>
+<ul>
+<li><code>../release/qa-core-journeys.md</code> — the hand-held core-journey plan, opened</li>
+</ul>
+<p>against the <code>qa-samples/</code> corpus (heading nav, table cell nav, Save-As</p>
+<p>fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read</p>
+<p>Aloud, open-from-URL).</p>
+<ul>
+<li><code>../release/screen-reader-test-plan.md</code> — every accessibility/focus/keyboard</li>
+</ul>
+<p>case.</p>
+<ul>
+<li><code>../release/user-acceptance-test-plan-0.8.0.md</code> — the continuous 236-step UAT</li>
+</ul>
+<p>runbook (feature coverage end to end).</p>
+<ul>
+<li><code>../release/fresh-install-regression-0.8.0.md</code> — brand-new-user install.</li>
+<li><code>../release/upgrade-path-regression-0.8.0.md</code> — install-on-top upgrade chain,</li>
+</ul>
+<p>no data loss.</p>
 <p>5. <strong>§G gated-absence</strong> — with the public build flag OFF, confirm the gated apps</p>
-<p>   and editor-embedded Podcasts / Internet Radio / Book Library are <strong>absent</strong> from</p>
-<p>   every public surface (the <code>Tools ▸ Media</code> submenu omitted entirely, no palette</p>
-<p>   commands, no status-bar/tray cells).</p>
+<p>and editor-embedded Podcasts / Internet Radio / Book Library are <strong>absent</strong> from</p>
+<p>every public surface (the <code>Tools ▸ Media</code> submenu omitted entirely, no palette</p>
+<p>commands, no status-bar/tray cells).</p>
 <p>6. <strong>Readiness gate</strong> — fill §H; the candidate is ready to test only when every box</p>
-<p>   in §A–§G is checked on every environment <strong>and</strong> every companion plan above is</p>
-<p>   signed off.</p>
+<p>in §A–§G is checked on every environment <strong>and</strong> every companion plan above is</p>
+<p>signed off.</p>
 <h3>Definition of done</h3>
 <p>A feature is signed off only when **every applicable checklist box is</p>
 <p>triple-checked (Works · Surface-exact · A11y) on every §A environment (E1–E6)**,</p>
@@ -106,23 +126,23 @@
 <p>following the steps + expected results + named sample inputs — not from memory or a</p>
 <p>glance. A box is checked only when the outcome happened in front of you, announced</p>
 <p>out loud, on the build under test.</p>
-<p>---</p>
 <h2>§A. Environment matrix — run the whole pack in EACH</h2>
 <p>Because install-mode behavior is governed by <strong>three independent "portable" signals that can disagree</strong> (data-dir, secrets/<code>QUILL_PORTABLE</code>, update-asset), each must be exercised, per OS.</p>
-<p>| # | Environment | Data dir | Secrets backend | Update path | Must run |</p>
-<p>|---|---|---|---|---|---|</p>
-<p>| E1 | <strong>Windows — system install</strong> (Inno, no <code>data/</code>) | <code>%APPDATA%\Quill</code> | Windows Credential Manager | installer <code>setup.exe</code> | ✅ |</p>
-<p>| E2 | <strong>Windows — portable ZIP</strong> (<code>data/</code> beside exe, <code>QUILL_PORTABLE=1</code>) | <code>&lt;app&gt;\data</code> | DPAPI <code>keys.enc</code> (<code>quill-portable-keys-v1</code>) | portable <code>.zip</code> robocopy | ✅ |</p>
-<p>| E3 | <strong>Windows — installed but ships <code>data/</code></strong> (the split-signal case, #1100) | resolves per <code>storage-mode.json</code> | <strong>DPAPI <code>keys.enc</code></strong> even if data is <code>%APPDATA%</code> | installer (via <code>unins000</code> marker) | ✅ |</p>
-<p>| E4 | <strong>Windows — custom data location</strong> (<code>Settings ▸ data location</code>) | user-chosen path | per <code>QUILL_PORTABLE</code> | per detection | ✅ |</p>
-<p>| E5 | <strong>macOS — app bundle</strong> | <code>~/.quill</code> (or chosen) | login <strong>Keychain</strong> (no portable single-folder store — expect the one-time warning) | <code>.dmg</code>/<code>.pkg</code> | ✅ |</p>
-<p>| E6 | <strong>Safe Mode</strong> (<code>QUILL_SAFE_MODE=1</code>, both portable + system) | as above | as above | n/a | ✅ (network/AI/plugins off) |</p>
+<div class="tablewrap"><table>
+<thead><tr><th>#</th><th>Environment</th><th>Data dir</th><th>Secrets backend</th><th>Update path</th><th>Must run</th></tr></thead>
+<tbody>
+<tr><td>E1</td><td><strong>Windows — system install</strong> (Inno, no <code>data/</code>)</td><td><code>%APPDATA%\Quill</code></td><td>Windows Credential Manager</td><td>installer <code>setup.exe</code></td><td>✅</td></tr>
+<tr><td>E2</td><td><strong>Windows — portable ZIP</strong> (<code>data/</code> beside exe, <code>QUILL_PORTABLE=1</code>)</td><td><code>&lt;app&gt;\data</code></td><td>DPAPI <code>keys.enc</code> (<code>quill-portable-keys-v1</code>)</td><td>portable <code>.zip</code> robocopy</td><td>✅</td></tr>
+<tr><td>E3</td><td><strong>Windows — installed but ships <code>data/</code></strong> (the split-signal case, #1100)</td><td>resolves per <code>storage-mode.json</code></td><td><strong>DPAPI <code>keys.enc</code></strong> even if data is <code>%APPDATA%</code></td><td>installer (via <code>unins000</code> marker)</td><td>✅</td></tr>
+<tr><td>E4</td><td><strong>Windows — custom data location</strong> (<code>Settings ▸ data location</code>)</td><td>user-chosen path</td><td>per <code>QUILL_PORTABLE</code></td><td>per detection</td><td>✅</td></tr>
+<tr><td>E5</td><td><strong>macOS — app bundle</strong></td><td><code>~/.quill</code> (or chosen)</td><td>login <strong>Keychain</strong> (no portable single-folder store — expect the one-time warning)</td><td><code>.dmg</code>/<code>.pkg</code></td><td>✅</td></tr>
+<tr><td>E6</td><td><strong>Safe Mode</strong> (<code>QUILL_SAFE_MODE=1</code>, both portable + system)</td><td>as above</td><td>as above</td><td>n/a</td><td>✅ (network/AI/plugins off)</td></tr>
+</tbody></table></div>
 <ul>
 <li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:0" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E1 pass complete  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:1" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E2  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:2" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E3  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:3" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E4  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:4" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E5  <input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:7e4ef363196b:0:5" aria-label="Done: E1 pass complete E2 E3 E4 E5 E6"> E6</li>
 <li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:ff29dd9f0b01:0:0" aria-label="Done: Cross-signal check: in E3, confirm keys.enc lands where product intent expects (it follows the resolved data dir, so an appdata data-dir + QUILL_PORTABLE=1 writ"> <strong>Cross-signal check:</strong> in E3, confirm <code>keys.enc</code> lands where product intent expects (it follows the *resolved data dir*, so an appdata data-dir + <code>QUILL_PORTABLE=1</code> writes <code>%APPDATA%\Quill\keys.enc</code>). Record actual vs. intended.</li>
 </ul>
 <p>Full per-scenario cases: <strong><code>signoff/SIGNOFF-install-matrix.md</code></strong>.</p>
-<p>---</p>
 <h2>§B. Editor — feature/command/surface sign-off</h2>
 <p>Every editor menu (File · Edit · View · Insert · Format · Navigate · Search · Tools · AI · [ADP] · Window · QuillVille · Help) with each leaf item and dialog. See <strong><code>signoff/SIGNOFF-editor.md</code></strong> (generated from the command registry + menu tree + dialog registry). Section is complete when every item there is triple-checked across §A environments.</p>
 <h2>§C. Quill Radio (public) — sign-off</h2>
@@ -131,7 +151,6 @@
 <p>File · Weather · Options · [ADP] · QuillVille · Help. Every item + WeatherCenter/AddLocation/Settings dialogs. See <strong><code>signoff/SIGNOFF-weather.md</code></strong>. Include: background Scheduled-Task alert check (no process running), severe-weather poll tightening, alert sounder options, Test Alert, "already-told-you" dedupe across live + background.</p>
 <h2>§E. Dialogs — every surface</h2>
 <p>All 227 custom + 376 native + 7 web-form dialogs, grouped by area, each verified: opens, keyboard-complete, accessible name/role, Escape/Close contract, announces its outcome. See <strong><code>signoff/SIGNOFF-dialogs.md</code></strong> (generated).</p>
-<p>---</p>
 <h2>§F. Cross-cutting — accessibility (applies to every item above)</h2>
 <ul>
 <li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:ab517fdbe049:0:0" aria-label="Done: Every focusable control has an accessible name (audited by accessible_name_audit)."> Every focusable control has an accessible <strong>name</strong> (audited by <code>accessible_name_audit</code>).</li>
@@ -154,17 +173,18 @@
 <li><input type="checkbox" class="so" data-key="QUILL-1.0.0-SIGNOFF:fc22c1a38ad6:0:0" aria-label="Accessible: Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable)."> Automated test asserts gated apps are absent from public surfaces when the flag is off (Phase 2 deliverable).</li>
 </ul>
 <p>Already-gated (verify still correct): Podcasts (<code>core.podcasts</code>, unreleased in public builds — see above), ADP (<code>future.adp_assistant</code>, default ON — decide for 1.0), Publishing send half (<code>future.publishing</code>), Spotify (<code>future.spotify</code>), GLOW (<code>core.glow</code>), BITS Whisperer (<code>core.bw_whisperer</code>), third-party Quillins (locked; bundled load regardless).</p>
-<p>---</p>
 <h2>§H. Readiness summary (fill as sections complete)</h2>
-<p>| Area | Items | Signed off (E1–E6) |</p>
-<p>|---|---|---|</p>
-<p>| Editor (§B) | ~500 menu + 179 dialogs | ☐ |</p>
-<p>| Radio (§C) | ~10 menus + 15 dialogs | ☐ |</p>
-<p>| Weather (§D) | ~7 menus + 3 dialogs | ☐ |</p>
-<p>| Dialogs (§E) | 227 custom + 376 native + 7 web | ☐ |</p>
-<p>| Accessibility (§F) | cross-cutting | ☐ |</p>
-<p>| Gating (§G) | non-public absent | ☐ |</p>
-<p>| Install matrix | E1–E6 all scenarios | ☐ |</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Area</th><th>Items</th><th>Signed off (E1–E6)</th></tr></thead>
+<tbody>
+<tr><td>Editor (§B)</td><td>~500 menu + 179 dialogs</td><td>☐</td></tr>
+<tr><td>Radio (§C)</td><td>~10 menus + 15 dialogs</td><td>☐</td></tr>
+<tr><td>Weather (§D)</td><td>~7 menus + 3 dialogs</td><td>☐</td></tr>
+<tr><td>Dialogs (§E)</td><td>227 custom + 376 native + 7 web</td><td>☐</td></tr>
+<tr><td>Accessibility (§F)</td><td>cross-cutting</td><td>☐</td></tr>
+<tr><td>Gating (§G)</td><td>non-public absent</td><td>☐</td></tr>
+<tr><td>Install matrix</td><td>E1–E6 all scenarios</td><td>☐</td></tr>
+</tbody></table></div>
 <p><strong>1.0.0 is ready to test when every box in §A–§G is checked and this table is all ✅.</strong></p>
 <script>
 (function () {
@@ -272,14 +292,29 @@
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        if (hideStatus) hideStatus.textContent = "Import failed: not a valid progress file.";
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
+      if (!applied) {
+        if (hideStatus) hideStatus.textContent = "Import failed: no sign-off progress found.";
+        return;
+      }
       boxes.forEach(function (b) {
         b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
       });
       refresh();
+      if (boxes.length > 0) applyHide();
+      if (hideStatus) hideStatus.textContent = "Progress imported.";
+    }, function () {
+      if (hideStatus) hideStatus.textContent = "Import failed: the file could not be read.";
     });
   });
 })();
