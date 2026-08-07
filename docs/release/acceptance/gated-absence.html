@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>gated-absence</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="section--gated-absence-prove-the-non-10-features-are-gone">Section —
+Gated-absence (prove the non-1.0 features are gone)</h1>
+<p>Some things in the codebase are <strong>deliberately not
+shipped</strong> in QUILL 1.0.0. The editor-embedded <strong>Internet
+Radio</strong>, <strong>Podcasts</strong>, and <strong>Book
+Library</strong>, the companion apps <strong>Cast / Studio / Converter /
+Beacon</strong>, the <strong>Media Player</strong>, and a few
+experimental features are <strong>gated off</strong> for the public
+release. This section does the opposite of the rest of the book: instead
+of proving a feature works, you prove a feature is
+<strong>absent</strong> — invisible and unreachable — in a normal public
+build.</p>
+<p>Why it matters: a half-hidden feature (missing from the menu but
+still in the command palette, or still firing a background check) is a
+leak. A public user must have <strong>no path</strong> to a gated
+feature.</p>
+<p><strong>Before you start (whole section).</strong> Use a
+<strong>public build</strong> — the default installer/portable, with
+<strong>no</strong> developer flag set. If you are unsure, this section
+also includes a final scenario that flips <code>QUILL_DEV_BUILD=1</code>
+to prove the features <em>reappear</em> — which is what tells you the
+gating is a live switch, not just an empty menu. Standalone
+<strong>Quill Radio</strong> and <strong>Quill Weather</strong> are
+<em>public</em> apps and must stay reachable — do <strong>not</strong>
+flag them here.</p>
+<p>Read §5 of <code>README.md</code> for the gated-feature rules and
+§2–§3 for the scenario/box layout.</p>
+<hr />
+<h2
+id="gate-01--quillville-app-switcher-lists-only-the-public-apps">GATE-01
+— QuillVille app switcher lists only the public apps</h2>
+<p><em>What &amp; why.</em> The QuillVille switcher is how a user
+launches sibling apps. In a public build it must offer only the three
+that ship.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Public build, QUILL open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>QuillVille menu</strong> (from the menu bar,
+<strong>Alt</strong> then across to <strong>QuillVille</strong>), or run
+the app switcher command from the Command Palette
+(<strong>Ctrl+Shift+P</strong>, type "QuillVille").</li>
+<li>Read every entry with your screen reader.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The list contains <strong>only</strong>: Open QUILL, Quill Radio,
+Quill Weather. <strong>Cast, Studio, Converter, and Beacon are
+absent</strong> (per the <code>RELEASED_APPS</code> allowlist). Nothing
+hints at a hidden app.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="gate-02--media-player-is-not-present">GATE-02 — Media Player is
+not present</h2>
+<p><em>What &amp; why.</em> The embedded Media Player
+(<code>app.open_media_player</code>) is gated.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Public build, QUILL open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Look under <strong>Tools ▸ Media</strong> (if that submenu exists at
+all — see GATE-05).</li>
+<li>In the Command Palette, type
+<strong><code>Media Player</code></strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>There is <strong>no Media Player</strong> menu item and
+<strong>no</strong> command-palette result for it.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="gate-03--the-standalone-audio-studio-launcher-is-gated-but-batch-speech-stays">GATE-03
+— The standalone Audio Studio launcher is gated (but batch speech
+stays)</h2>
+<p><em>What &amp; why.</em> The standalone <strong>Quill Audio
+Studio</strong> app is gated. Do not confuse it with the editor-embedded
+<strong>Audiobook &amp; Batch Speech…</strong> wizard
+(<code>tools.speech_batch_export</code>), which is a <em>different</em>
+feature that <strong>does</strong> ship (it was renamed to remove the
+name clash).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Public build, QUILL open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>In the QuillVille switcher (GATE-01), confirm no
+<strong>Studio</strong> launcher.</li>
+<li>Under <strong>Tools ▸ Speech</strong>, find <strong>Audiobook &amp;
+Batch Speech…</strong> and confirm it <strong>is</strong> present and
+opens.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>No standalone Audio Studio launcher anywhere; <strong>Audiobook
+&amp; Batch Speech…</strong> is present and works (its full test lives
+in the speech-tools section).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="gate-04--cast--converter--beacon-are-unreachable-everywhere">GATE-04
+— Cast / Converter / Beacon are unreachable everywhere</h2>
+<p><em>What &amp; why.</em> These companion apps are gated across every
+entry point, including the Windows Explorer shell integration.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Public build. Have a document file visible in File Explorer.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Confirm no Cast / Converter / Beacon in the QuillVille switcher
+(GATE-01).</li>
+<li>In the Command Palette, type <strong><code>Cast</code></strong>,
+then <strong><code>Converter</code></strong>, then
+<strong><code>Beacon</code></strong>.</li>
+<li>In File Explorer, right-click a document and read the context
+menu.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>No launcher, <strong>no command-palette commands</strong>, and
+<strong>no "Convert with Quill"</strong> (or similar) shell verb in the
+Explorer menu. None of these apps are installed as a build product in a
+public install.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="gate-05--podcasts-internet-radio-and-book-library-are-absent--and-the-whole-media-submenu-is-gone">GATE-05
+— Podcasts, Internet Radio, and Book Library are absent — and the whole
+Media submenu is gone</h2>
+<p><em>What &amp; why.</em> All three editor-embedded media features are
+gated. With every child gated, the <strong><code>Tools ▸ Media</code>
+submenu is omitted entirely</strong> — a good single tell.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Public build, QUILL open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Tools</strong> menu and look for a
+<strong>Media</strong> submenu.</li>
+<li>In the Command Palette, type each of:
+<strong><code>Podcasts</code></strong>,
+<strong><code>Internet Radio</code></strong>,
+<strong><code>Book Library</code></strong>, and the raw prefixes
+<strong><code>podcasts.</code></strong>,
+<strong><code>radio.</code></strong>,
+<strong><code>library.</code></strong>.</li>
+<li>Read the <strong>status bar</strong> end to end (no Radio
+mini-player, no Podcasts cell).</li>
+<li>Open the system <strong>tray</strong> icon menu and read it (no
+radio controls, no Podcasts section).</li>
+<li>Open <strong>Tools ▸ Global Hotkeys</strong> and <strong>Tools ▸
+Manage Individual Features</strong> and scan for any Podcasts / Radio /
+Book Library rows.</li>
+<li>Enter QUILL-key mode (<strong>Ctrl+Shift+Grave</strong>) and press
+<strong>?</strong> to read the chord cheat sheet.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>No <code>Tools ▸ Media</code> submenu at all.</strong> No
+palette results for any of the three (and none for the
+<code>podcasts.</code>/<code>radio.</code>/<code>library.</code>
+prefixes). No status-bar cell, no tray controls, no Global-Hotkeys
+entries, no Manage-Individual-Features rows, and <strong>no
+Podcasts/Radio/Book-Library chords</strong> on the cheat sheet. The
+background new-episode check never runs.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="gate-06--other-already-gated-features-stay-gated">GATE-06 —
+Other already-gated features stay gated</h2>
+<p><em>What &amp; why.</em> A grab-bag of experimental/optional features
+must remain off (or in their documented default) for 1.0.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Public build, QUILL open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>In the Command Palette, search for
+<strong><code>Spotify</code></strong>,
+<strong><code>GLOW</code></strong>, and
+<strong><code>BITS Whisperer</code></strong> (or
+<code>whisperer.</code>).</li>
+<li>Note the state of <strong>ADP</strong>
+(<code>future.adp_assistant</code>, currently default ON — a product
+decision for 1.0; record whether it is present).</li>
+<li>Note the <strong>Publishing</strong> send half
+(<code>future.publishing</code>) — the compose/preview may exist but the
+send step should be gated.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>Spotify</strong> absent (<code>future.spotify</code>);
+<strong>GLOW</strong> absent (<code>core.glow</code>); <strong>BITS
+Whisperer</strong> absent (<code>core.bw_whisperer</code>). Third-party
+Quillins are locked (bundled ones still load). Record ADP and Publishing
+states for the release decision.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="gate-07--dev-flag-restores-everything-proves-gating-is-a-live-switch">GATE-07
+— Dev flag restores everything (proves gating is a live switch)</h2>
+<p><em>What &amp; why.</em> The gated features are hidden by a flag, not
+deleted. Flipping the developer flag must bring them all back — that is
+what proves the gate works.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A build you can relaunch with an environment variable set. Set
+<strong><code>QUILL_DEV_BUILD=1</code></strong> and launch QUILL. (This
+is the only scenario in this section that is <strong>not</strong> run on
+a plain public build.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Relaunch with <code>QUILL_DEV_BUILD=1</code>.</li>
+<li>Re-check GATE-01, GATE-02, and GATE-05: the QuillVille switcher, the
+Media Player, and the <code>Tools ▸ Media</code> submenu with Podcasts /
+Internet Radio / Book Library.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With the flag on, the gated apps and the <code>Tools ▸ Media</code>
+submenu <strong>reappear</strong> and are reachable. Quitting and
+relaunching <strong>without</strong> the flag hides them again. This
+confirms 1.0 gating is a runtime switch, and the public build genuinely
+has the flag off.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 7</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

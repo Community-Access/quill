@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-qa-sample-document-corpus">QUILL QA sample-document
+corpus</h1>
+<p>Small, purpose-built input documents for <strong>manual</strong>
+release QA. Each file has <strong>known, fixed content</strong> so
+"correct" is unambiguous: a tester opens the file in QUILL, runs the
+referenced journey, and compares what QUILL says and writes against the
+expected structure below.</p>
+<p>These files are for <strong>manual QA only</strong> — they are inputs
+a human opens by hand while following <code>qa-core-journeys.md</code>
+and the master sign-off pack. They are not fixtures for the automated
+suite and nothing here is asserted by CI.</p>
+<p>Keep every file byte-stable: the journeys quote exact counts, cell
+contents, alt text, and screen-reader wording, so editing a sample
+silently invalidates the "Expected" fields that depend on it.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Features / journeys it exercises</th>
+<th>Expected structure / outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>formatting.md</code></td>
+<td>Heading navigation (QUILL Next/Previous Heading and the screen
+reader's <code>H</code> / <code>Shift+H</code>);
+bold/italic/underline/strikethrough; ordered and unordered lists;
+blockquote; inline + fenced code; link; image alt; Save-As fidelity;
+Find/Replace + Regex Helper; Read Aloud</td>
+<td>Six headings, one of each level <strong>H1–H6</strong> in order
+(<code>H</code>/Next Heading reaches all six); the words
+<strong>bold</strong>, <em>italic</em>, underlined
+<code>underline</code> (via <code>&lt;u&gt;</code>), and struck
+<code>strike</code>; one unordered list (Apples/Oranges/Pears) and one
+ordered list (First/Second/Third); one blockquote ("The quick brown
+fox…"); inline code <code>print("hello")</code> and one fenced
+<code>python</code> code block; one link labelled <strong>QUILL
+project</strong>; one image with alt <strong>"Red circle"</strong></td>
+</tr>
+<tr>
+<td><code>table.md</code></td>
+<td>Table cell navigation (<code>Ctrl+Alt+Arrows</code>); pipe-escaping
+in a cell; Save-As table fidelity</td>
+<td>One caption sentence above a <strong>3-column</strong> table with a
+header row (Region/Device/Notes) and <strong>3 body rows</strong>; the
+South row's Device cell contains the literal pipe
+<strong><code>Phone | Watch</code></strong> (must stay one cell, not
+split); last cell is East/Laptop/Backordered so the "end of table" edge
+is reachable</td>
+</tr>
+<tr>
+<td><code>math.md</code></td>
+<td>Insert Equation (inline vs block); math reading (Read this part
+aloud / MathCAT); MathML round-trip</td>
+<td>Two inline equations in <code>\(...\)</code> — <code>E = mc^2</code>
+and <code>a^2 + b^2 = c^2</code>; one block equation in
+<code>$$...$$</code> — <code>\int_0^1 x^2 \, dx = \frac{1}{3}</code>
+(equals one third); one <code>&lt;math&gt;</code> MathML block stating x
+= 1/2</td>
+</tr>
+<tr>
+<td><code>reading-order.txt</code></td>
+<td>Improve Reading Order AI journey; provider-confirm prompt; wording
+preserved</td>
+<td>A four-step tea recipe printed <strong>out of order</strong> with
+one step broken across a mid-sentence line break; the file also states
+the intended correct order (steps First→Second→Third→Fourth). After the
+AI runs, a <strong>new unsaved</strong> document should read the four
+steps in order with the <strong>same wording</strong></td>
+</tr>
+<tr>
+<td><code>plain.txt</code></td>
+<td>Baseline open / read / Save-As round-trip</td>
+<td>Three plain paragraphs, no markup; text that comes back out of a
+Save-As must match character for character</td>
+</tr>
+<tr>
+<td><code>sample.html</code></td>
+<td>HTML import; Paste HTML as Markdown</td>
+<td>An HTML doc with one <code>h1</code> ("Trip Checklist"), a
+paragraph, a 3-item unordered list, a 2-column table (Day/City) with two
+body rows, one link labelled <strong>QUILL project</strong>, and one
+<code>&lt;img&gt;</code> with alt <strong>"Red circle"</strong></td>
+</tr>
+<tr>
+<td><code>compare-original.txt</code> and
+<code>compare-revised.txt</code></td>
+<td>Compare tools (<code>tools.compare_*</code>) in the Acceptance Test
+Book</td>
+<td>A known before/after pair with <strong>exactly three
+differences</strong>: line 2 changes <strong>March → April</strong>;
+line 3 gains <strong>"and performance"</strong>; the revised file adds a
+fourth line <strong>"A follow-up review is scheduled for
+February."</strong> Compare must report these three and nothing
+else</td>
+</tr>
+<tr>
+<td><code>data.csv</code></td>
+<td>CSV / Table Studio (<code>tools.csv_studio</code>) and Calculator
+document stats</td>
+<td>A 3-column CSV (Region/Units/Revenue) with <strong>4 data
+rows</strong> (North/South/East/West). Known totals: <strong>Units =
+465</strong>, <strong>Revenue = 9300</strong>; row count 4, column count
+3</td>
+</tr>
+<tr>
+<td><code>encoding-cp1252.txt</code></td>
+<td>Choose Encoding (<code>file.choose_encoding</code>)</td>
+<td>Text saved in <strong>Windows-1252</strong>, not UTF-8:
+<code>Café résumé — naïve façade. Prices in £ and €.</code> Opened as
+UTF-8 it shows mojibake; re-reading as <strong>Windows-1252</strong>
+restores the accents and currency symbols correctly</td>
+</tr>
+<tr>
+<td><code>line-endings-crlf.txt</code></td>
+<td>Toggle Line Endings (<code>file.toggle_line_endings</code>)</td>
+<td>Three lines (<code>Line one</code> / <code>Line two</code> /
+<code>Line three</code>) terminated with <strong>Windows CRLF</strong>
+(<code>\r\n</code>). QUILL should report CRLF; toggling to LF and saving
+rewrites the endings</td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes-for-the-tester">Notes for the tester</h2>
+<ul>
+<li>Paths quoted in the journeys are relative to this folder
+(<code>docs/release/qa-samples/</code>). Copy the whole folder onto the
+machine under test.</li>
+<li><code>red-circle.png</code> is referenced by
+<code>formatting.md</code> and <code>sample.html</code> only as an image
+<strong>reference</strong> — the alt text is what QA checks, so the
+binary image file is not required for any journey to pass (a
+broken-image placeholder with the correct alt is the expected
+non-blocking outcome).</li>
+<li>The last four rows above (<code>compare-*</code>,
+<code>data.csv</code>, <code>encoding-cp1252.txt</code>,
+<code>line-endings-crlf.txt</code>) back specific scenarios in the
+<strong>Acceptance Test Book</strong> (<code>../acceptance/</code>).
+<code>encoding-cp1252.txt</code> and <code>line-endings-crlf.txt</code>
+are <strong>byte-specific</strong> — copy them as-is; do not open and
+re-save them in an editor that would rewrite the encoding or the line
+endings, or the scenario they support becomes untestable.</li>
+<li>If you must edit a sample, update the matching "Expected" cell here
+<strong>and</strong> the affected step in
+<code>qa-core-journeys.md</code> (and <code>../acceptance/</code>) in
+the same change.</li>
+</ul>
+</body>
+</html>

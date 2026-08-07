@@ -12,12 +12,15 @@ documents in a screen-reader-friendly environment.
 
 **QUILL for All: A quality, usable, inclusive, lightweight, and literate editor built for everyone who writes, codes, learns, and creates.**
 
+New to the repository? **[REPO-GUIDE.md](REPO-GUIDE.md)** is the map: what
+every folder is for, where the documentation lives, and how to run the
+release acceptance tests.
+
 ## The Quillin Hub
 
 Expand your editor's powers with the [Quillin Hub](https://hub.quillforall.org). Discover a curated gallery of community-created extensions -- from research tools to accessibility auditors -- all verified for security and WCAG 2.2 AA compliance.
 
 ## What Quill is
-
 
 Quill is a screen-reader-first writing and document environment for **Windows and macOS**, focused on practical keyboard workflows, stable editing, and accessible diagnostics/support flows.
 

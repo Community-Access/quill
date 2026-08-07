@@ -46,7 +46,7 @@ python scripts/build_native_launcher.py --product weather --out dist\QuillWeathe
 python scripts/build_native_launcher.py --product studio --out dist\QuillAudioStudio
 
 # Main QUILL (run from the quill repo root):
-python scripts/build_native_launcher.py --product quill --out windows-distribution\portable
+python scripts/build_native_launcher.py --product quill --out dist\windows\portable
 ```
 
 The wrapper detects MSVC 2022 (the `BuildTools` edition first, then

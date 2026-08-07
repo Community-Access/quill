@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-tools-speech</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="section--speech-dictation-read-aloud--ocr-tools-36-commands">Section
+— Speech, Dictation, Read Aloud &amp; OCR (<code>tools.*</code>, 36
+commands)</h1>
+<p>Everything QUILL does with <strong>your voice and your ears</strong>:
+reading the document aloud in a TTS voice, turning that speech into
+audio files, <strong>dictating</strong> by microphone, driving QUILL
+hands-free with <strong>voice commands</strong> and "Hey QUILL", pulling
+text out of images and the screen with <strong>OCR</strong>, choosing
+how spoken announcements are routed, and checking the <strong>dictionary
+/ spelling</strong> status. Finish <strong>Part 0</strong> first.</p>
+<p>This is a <strong>sibling</strong> of
+<code>section-tools-ai.md</code> (AI writing/analysis) and
+<code>section-tools-misc.md</code> (compare, keymap, macros). Those own
+the <code>tools.ai_*</code> and utility commands; this section owns only
+speech, dictation, read-aloud, OCR, and the announcement/dictionary
+tools listed below.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>tools.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A + Works/Surface-exact/
+Accessible boxes. The Read Aloud journey is also walked end-to-end in
+<code>../qa-core-journeys.md</code> → <strong>JOURNEY-007 (Read
+Aloud)</strong>; use this section for the per-command detail and that
+journey for the whole-feature flow.</p>
+<p><strong>Read this before you begin — the three big
+preconditions</strong></p>
+<ul>
+<li><strong>A distinct TTS voice for Read Aloud.</strong> Read Aloud
+speaks through QUILL's own chosen TTS engine/voice (SAPI5, Piper,
+Kokoro, DECtalk, eSpeak-NG, ElevenLabs, or the OS voice) —
+<strong>not</strong> your screen reader. Have at least one Windows/SAPI
+voice installed. When Read Aloud and your screen reader would talk at
+once, the point of the test is that you can tell the two voices
+apart.</li>
+<li><strong>A working microphone + the offline speech engine + a
+model</strong> for anything that <em>listens</em> (Dictate, Locked
+Dictation, Voice Command, Conversation, Hey QUILL, Transcribe,
+Captions). QUILL uses an on-device (offline) engine plus a downloaded
+speech <strong>model</strong>; microphone capture needs the optional
+<code>sounddevice</code> package. If capture support, the engine, or a
+model is missing, QUILL says exactly what to install — mark those
+scenarios <strong>Blocked</strong> and note which piece was absent.</li>
+<li><strong>An OCR engine</strong> for OCR. <em>OCR Image / Clipboard /
+Screen</em> use the <strong>built-in Windows OCR engine</strong>
+(Windows 10/11) — no extra install on Windows. The
+<em>document-conversion and services</em> path can additionally use
+<strong>Tesseract</strong> (free, local — install via <strong>Install
+Local OCR Engine</strong>) or a configured cloud service. If no OCR
+engine is available on the platform at all, mark
+<strong>Blocked</strong>.</li>
+</ul>
+<p>Common inputs used below (copy <code>../qa-samples/</code> onto the
+machine first): <code>plain.txt</code>, <code>formatting.md</code>. You
+will also need a short <strong>audio or video clip</strong> with clear
+speech, an <strong>image containing text</strong> (a screenshot of a
+paragraph is fine), and a quiet room to speak in.</p>
+<p>Open the <strong>Command Palette</strong> with
+<strong>Ctrl+Shift+P</strong> wherever a scenario offers it.</p>
+<hr />
+<h2
+id="tsp-01--read-aloud-start--pause-toolsread_aloud_start_pause-ctrlshiftgrave-r">TSP-01
+— Read Aloud: Start / Pause (<code>tools.read_aloud_start_pause</code>,
+Ctrl+Shift+Grave, R)</h2>
+<p><em>What &amp; why.</em> Read the document out loud in QUILL's TTS
+voice from the caret (or from your selection), and pause/resume on the
+same key. The everyday "read this back to me."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code>. Put the caret at the very top
+(<strong>Ctrl+Home</strong>).</li>
+<li>At least one TTS voice installed (see preconditions).</li>
+<li>The chord is a two-step: press <strong>Ctrl+Shift+Grave</strong>
+(Grave is the backtick key), release, then <strong>R</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Trigger the chord <strong>Ctrl+Shift+Grave, R</strong>, or open
+<strong>Tools menu (Alt, T) ▸ Reading and Dictation ▸ Read Aloud ▸ Start
+/ Pause</strong>.</li>
+<li>Let it read a few lines, then trigger the same chord again to
+<strong>pause</strong>.</li>
+<li>Trigger it once more to <strong>resume</strong> from where it
+paused.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Reading begins from the caret in the <strong>Read Aloud TTS
+voice</strong> (audibly a different voice from your screen reader); the
+status bar shows <strong>"Read aloud started"</strong>. The second press
+pauses (status <strong>"Read aloud paused"</strong>) and the third
+resumes from the pause point, not the top. If a range was selected, only
+that range is read. If no TTS voice is available, a spoken/OK message
+says so rather than failing silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-02--read-aloud-stop-toolsread_aloud_stop-ctrlshiftgrave-shiftr">TSP-02
+— Read Aloud: Stop (<code>tools.read_aloud_stop</code>,
+Ctrl+Shift+Grave, Shift+R)</h2>
+<p><em>What &amp; why.</em> Stop reading entirely (not pause) and reset
+to the top of the next read.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Start a Read Aloud (TSP-01) so speech is playing.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+R</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Trigger <strong>Ctrl+Shift+Grave, Shift+R</strong>, or <strong>Tools
+menu ▸ Reading and Dictation ▸ Stop Reading</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Speech stops immediately; the status bar shows <strong>"Read aloud
+stopped"</strong>. A fresh <strong>Start / Pause</strong> afterwards
+begins from the caret/selection again (it does <strong>not</strong>
+resume the stopped position — that is what Pause is for).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-03--read-aloud-voice-toolsread_aloud_voice">TSP-03 — Read
+Aloud: Voice… (<code>tools.read_aloud_voice</code>)</h2>
+<p><em>What &amp; why.</em> Choose which engine and voice Read Aloud
+uses (and its rate, pitch, volume). This is where you pick a voice
+<strong>distinct from your screen reader</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ Read Aloud ▸
+Voice…</strong>.</li>
+<li>Tab through the engine/voice controls; pick a voice; adjust the
+rate; confirm with <strong>OK</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The Read Aloud configuration dialog opens (this is the <strong>same
+dialog</strong> as <em>Settings…</em> in TSP-04); every control is
+labelled and keyboard-reachable. The choice is saved and a subsequent
+<strong>Start / Pause</strong> (TSP-01) uses the new voice.
+<strong>Escape</strong> cancels with no change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-04--read-aloud-settings-toolsread_aloud_settings">TSP-04 —
+Read Aloud: Settings… (<code>tools.read_aloud_settings</code>)</h2>
+<p><em>What &amp; why.</em> The full Read Aloud configuration surface
+(engine, voice, rate, pitch, volume, sentence pause, pronunciation
+dictionaries).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ Read Aloud ▸
+Settings…</strong>.</li>
+<li>Change one setting (for example the rate), confirm, then do a short
+<strong>Start / Pause</strong> to hear the effect.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The same labelled, keyboard-complete configuration dialog as
+<em>Voice…</em> opens; changes are saved and take effect on the next
+read. <strong>Note:</strong> because <em>Voice…</em> and
+<em>Settings…</em> open one shared dialog, a difference between the two
+menu labels is a surface note, not a behavior fault.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-05--read-aloud-generate-audio-toolsread_aloud_generate_audio">TSP-05
+— Read Aloud: Generate Audio…
+(<code>tools.read_aloud_generate_audio</code>)</h2>
+<p><em>What &amp; why.</em> Synthesize the current document (or your
+selection) to an <strong>audio file</strong> you can keep or share — a
+one-shot "save this as speech."</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (or select a paragraph in any
+document).</li>
+<li>For compressed formats (MP3, M4A, M4B, OGG, Opus, FLAC) you need
+<strong>ffmpeg</strong> installed (TSP-18); plain <strong>WAV</strong>
+always works without it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ Read Aloud ▸ Generate
+Audio…</strong>.</li>
+<li>In the Save dialog, choose a format (WAV, or a compressed format if
+offered), name it, and confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If nothing is open/typed, QUILL says <strong>"There is nothing to
+export…"</strong> rather than writing an empty file. Otherwise it
+synthesizes off the UI thread and writes the chosen file; markup like
+<code>#</code>, <code>**</code>, and links is cleaned before synthesis
+so it is not spoken as symbols. The compressed formats appear in the
+type list <strong>only</strong> when ffmpeg is present. The written file
+plays back the document text in the Read Aloud voice.
+<strong>Note:</strong> the Tools ▸ Speech ▸ <em>Export to Speech
+Audio…</em> item is the same feature reached from the Speech menu.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-06--read-in-browser-experimental-toolsread_aloud_edge-gated">TSP-06
+— Read in Browser (Experimental) (<code>tools.read_aloud_edge</code>)
+[GATED]</h2>
+<p><em>What &amp; why.</em> Open an accessible reader page in your real
+browser, where the full online/natural voices (e.g. Edge's Online
+voices) are available — richer than the embedded voices.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>This is <strong>experimental and opt-in</strong>. It appears in the
+menu (and is runnable) <strong>only</strong> after you enable it under
+<strong>Preferences ▸ Experimental</strong> ("Read the document aloud in
+your browser") and acknowledge the experimental notice. If it is off,
+mark <strong>N/A</strong> (do not fail it for being missing).</li>
+<li>Some document text open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Enable the setting under <strong>Preferences ▸ Experimental</strong>
+(takes effect at once), then <strong>Tools menu ▸ Reading and Dictation
+▸ Read Aloud ▸ Read in Browser (Experimental)</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If the setting is off, running it (e.g. from the palette) shows a
+message telling you to turn it on under Preferences ▸ Experimental — it
+does not error. When on, QUILL writes a self-contained accessible reader
+page and opens it in your chosen browser; the status bar names the
+browser and says to pick a voice and press Play. The reader page itself
+has a labelled voice picker and Play/Pause/Stop.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-07--audiobook--batch-speech-toolsspeech_batch_export">TSP-07
+— Audiobook &amp; Batch Speech…
+(<code>tools.speech_batch_export</code>)</h2>
+<p><em>What &amp; why.</em> The <strong>Audio Studio</strong> wizard:
+turn one or many documents (or a whole folder) into speech audio in a
+batch — the audiobook/production path, beyond the one-shot Generate
+Audio.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A TTS voice available (as for Read Aloud). Have
+<code>formatting.md</code> (or a folder of documents) ready as a
+source.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Audiobook &amp; Batch
+Speech…</strong>.</li>
+<li>Walk the wizard by keyboard: choose the source(s), the voice/engine,
+and the output; start the run.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The Audio Studio wizard opens as a keyboard-navigable, announced
+multi-step surface; each step's controls are labelled. Cancelling any
+step reports <strong>"Audio Studio cancelled"</strong> and writes
+nothing. On completion the batch produces the audio file(s) and your
+choices/source are remembered for next time. Progress is announced; the
+UI never blocks.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-08--ocr-image-toolsocr_image">TSP-08 — OCR Image…
+(<code>tools.ocr_image</code>)</h2>
+<p><em>What &amp; why.</em> Read the text out of an image file into an
+editable document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>An <strong>image file that contains text</strong> (PNG/JPG/TIF/BMP).
+On Windows this uses the built-in OCR engine; if OCR is unavailable on
+the platform, mark <strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR
+Image…</strong>.</li>
+<li>Pick your image; when asked, <strong>confirm</strong> the local OCR
+run (<strong>Yes</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled file picker opens. Before recognizing, QUILL asks to run
+OCR <strong>locally with the built-in Windows engine</strong> and lets
+you decline (declining says <strong>"OCR cancelled"</strong>). On
+<strong>Yes</strong>, progress is announced off-thread and the
+recognized text appears in a review dialog / new document. It never
+uploads your image.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-09--ocr-clipboard-image-toolsocr_clipboard">TSP-09 — OCR
+Clipboard Image (<code>tools.ocr_clipboard</code>)</h2>
+<p><em>What &amp; why.</em> OCR whatever image is on the clipboard right
+now — grab a picture, copy it, read its text.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Copy an image to the clipboard</strong> first (e.g. Snip a
+region with Win+Shift+S). Same OCR-engine precondition as TSP-08.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR Clipboard
+Image</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With no image on the clipboard, QUILL says <strong>"There is no
+image on the clipboard. Copy an image first…"</strong> and stops — no
+crash. With an image, the status shows <strong>"Reading clipboard
+image…"</strong> and the recognized text opens in the review pipeline
+(no extra confirmation, because you already chose to run it).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-10--ocr-screen-capture-toolsocr_screen">TSP-10 — OCR Screen
+Capture… (<code>tools.ocr_screen</code>)</h2>
+<p><em>What &amp; why.</em> Capture the whole screen or just the active
+window and OCR it — read text that is only on screen (a dialog, another
+app).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Some on-screen text visible in another window. Same OCR-engine
+precondition.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR Screen
+Capture…</strong>.</li>
+<li>In the choice dialog choose <strong>The whole screen</strong> or
+<strong>The active window</strong> (default is the active window);
+confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled two-choice dialog (whole screen / active window) that is
+keyboard operable. On confirm the status shows <strong>"Reading screen
+capture…"</strong> and the recognized text opens in the review pipeline.
+A capture error is reported in a message box, not swallowed.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-11--install-local-ocr-engine-tesseract-toolsinstall_local_ocr">TSP-11
+— Install Local OCR Engine (Tesseract)
+(<code>tools.install_local_ocr</code>)</h2>
+<p><em>What &amp; why.</em> Download the free, local
+<strong>Tesseract</strong> OCR engine for the document conversion path —
+verified and opened for you, never installed silently.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Network available. Note whether Tesseract is already installed.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR and Document
+Conversion ▸ Install Local OCR Engine (Tesseract)…</strong>.</li>
+<li>Read the confirmation (version, size, "runs on this computer, never
+uploads") and choose <strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A clear confirmation stating the version, the download size (~MB),
+and that Tesseract is free and local; <strong>No</strong> cancels
+("Local OCR install cancelled"). On <strong>Yes</strong>, the download
+runs behind an announced status, is verified byte-for-byte, and the
+installer is <strong>opened</strong> for you to complete. A
+download/launch failure is reported as an <strong>install</strong>
+problem (not a conversion error). Afterwards QUILL finds the engine
+automatically for Import / Convert.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-12--ocr-and-conversion-services-toolsocr_services">TSP-12 —
+OCR and Conversion Services (<code>tools.ocr_services</code>)</h2>
+<p><em>What &amp; why.</em> A read-only overview page of every
+OCR/conversion path and whether each is ready (local engine installed?
+cloud service configured?).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR and Document
+Conversion ▸ OCR and Conversion Services…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A readable page that states the <strong>local OCR engine
+status</strong> ("installed (path)" or "not installed — free download
+available") and the <strong>cloud OCR status</strong> (Ready / needs an
+API key / disabled). It is navigable by keyboard and closes back to the
+editor. It only reports status; it changes nothing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-13--ocr-service-settings-toolsocr_service_settings">TSP-13 —
+OCR Service Settings (<code>tools.ocr_service_settings</code>)</h2>
+<p><em>What &amp; why.</em> Configure the OCR/conversion services (e.g.
+a cloud provider's key and options) used by the conversion path.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR and Document
+Conversion ▸ OCR Service Settings…</strong>.</li>
+<li>Tab through the fields; if you enter a key, confirm; otherwise
+<strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled, keyboard-complete settings surface for the OCR services;
+any secret (API key) is stored via the platform secret store, not
+printed in plain text. Escape cancels with no change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-14--delete-ocr-temporary-files-toolsdelete_ocr_temp">TSP-14
+— Delete OCR Temporary Files (<code>tools.delete_ocr_temp</code>)</h2>
+<p><em>What &amp; why.</em> Clear any leftover OCR job files (e.g. after
+a crash mid-conversion).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state (ideally after you have run at least one conversion).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ OCR and Document
+Conversion ▸ Delete OCR Temporary Files</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With nothing to clear, the status shows <strong>"No OCR temporary
+files to delete"</strong>. Otherwise QUILL announces <strong>"Deleted N
+OCR temporary item(s)."</strong> and the status shows <strong>"OCR
+temporary files deleted"</strong>. No confirmation prompt is needed
+because only QUILL's own temp folder is touched.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-15--speech-and-dictation-manage-speech-models-toolsspeech_models">TSP-15
+— Speech and Dictation (Manage Speech Models)
+(<code>tools.speech_models</code>)</h2>
+<p><em>What &amp; why.</em> The unified <strong>Speech Hub</strong>
+where you download/manage offline speech <strong>models</strong> and
+pick the dictation engine. Everything that <em>listens</em> depends on a
+model being installed here.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Network available (to download a model). Note whether any model is
+installed.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Speech and Dictation…</strong>.</li>
+<li>On the <strong>Dictation (Offline)</strong> tab, review the model
+list; download the recommended model if none is installed; set a
+default.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The Speech Hub opens on the Dictation (Offline) tab as a
+keyboard-navigable, announced dialog. Available and installed models are
+listed with sizes; downloading runs behind an announced progress and the
+model becomes selectable. This is the dialog other scenarios send you to
+when a model is missing.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-16--transcribe-audio-or-video-offline-toolsspeech_transcribe">TSP-16
+— Transcribe Audio or Video (Offline)
+(<code>tools.speech_transcribe</code>)</h2>
+<p><em>What &amp; why.</em> Turn a recording (audio or video) into a
+text transcript entirely on-device.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A short <strong>audio/video clip</strong> with clear speech. A
+speech model installed (TSP-15). For non-WAV inputs (MP3, MP4, M4A…) you
+need <strong>ffmpeg</strong> (TSP-18). If no model, mark
+<strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Transcribe Audio or Video
+(Offline)…</strong>.</li>
+<li>Choose the model and whether to label speakers (diarize); choose the
+output format (text / Markdown / HTML); pick the file; let it run.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If no model is installed, QUILL offers to open Manage Speech Models
+rather than failing. Otherwise it announces <strong>"Transcribing
+<name>. This can take a while…"</strong> behind a cancelable progress
+dialog; cancelling reports the cancel cleanly. On success a draft
+transcript opens in a new document and QUILL announces
+<strong>"Transcription complete[ with speaker labels]. N
+words."</strong></li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-17--generate-captions-offline-toolsspeech_captions">TSP-17 —
+Generate Captions (Offline) (<code>tools.speech_captions</code>)</h2>
+<p><em>What &amp; why.</em> Produce timed captions
+(<strong>.srt</strong> / <strong>.vtt</strong>) from a recording.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A short clip with speech; a model installed (else
+<strong>Blocked</strong>); ffmpeg for non-WAV inputs.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Generate Captions
+(Offline)…</strong>.</li>
+<li>Pick the clip; when it finishes, choose <strong>SubRip
+(.srt)</strong> or <strong>WebVTT (.vtt)</strong>; choose where to
+save.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Progress is announced (<strong>"Captioning <name>"</strong>). You
+are offered the two caption formats in a labelled choice dialog, then a
+Save dialog defaulting to
+<code>&lt;name&gt;.srt</code>/<code>.vtt</code>. On save QUILL announces
+<strong>"Captions saved to <name>."</strong> If the clip produced no
+timed segments, it says captions cannot be made rather than writing an
+empty file.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-18--download-ffmpeg-toolsspeech_ffmpeg">TSP-18 — Download
+FFmpeg (<code>tools.speech_ffmpeg</code>)</h2>
+<p><em>What &amp; why.</em> Fetch an official ffmpeg build so QUILL can
+read compressed audio/ video (MP3, M4A, MP4…) and write compressed
+speech audio. ffmpeg is not bundled.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Network available. <strong>Windows only</strong> for the automatic
+download.</li>
+<li>Reach the command via <strong>Command Palette (Ctrl+Shift+P) →
+"Download FFmpeg"</strong> (it is also offered under <strong>Help ▸
+Download Optional Components</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Download FFmpeg</strong>.</li>
+<li>Read the confirmation (~110 MB, open-source, fetched from the
+official builder) and choose <strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>On non-Windows, QUILL explains to install ffmpeg via Homebrew/your
+package manager instead — it does not error. If ffmpeg is already
+present it asks whether to fetch QUILL's own managed copy anyway. On
+<strong>Yes</strong> the download runs behind a cancelable, announced
+percentage; on success ffmpeg-only formats become available in
+TSP-05/16/17.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-19--hugging-face-token-toolsspeech_hf_token">TSP-19 —
+Hugging Face Token (<code>tools.speech_hf_token</code>)</h2>
+<p><em>What &amp; why.</em> Store an <strong>optional</strong> Hugging
+Face access token to raise model download rate limits. Not required —
+QUILL's models work without one.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Optionally a Hugging Face account and a <strong>Read</strong>-role
+token.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Hugging Face Token…</strong>.</li>
+<li>First time: read the numbered how-to and optionally let QUILL open
+the token page. Then paste the token into the <strong>masked</strong>
+field and confirm. To remove a saved token, leave the field
+<strong>blank</strong> and confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Clear guidance that the token is optional. The entry field is a
+<strong>password (masked)</strong> field. On save QUILL announces
+<strong>"Hugging Face token saved."</strong>; a blank value announces
+<strong>"Hugging Face token cleared."</strong> The token is saved to the
+<strong>OS credential store</strong>, not to settings and never
+printed.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-20--dictation-microphone-toolsspeech_microphone">TSP-20 —
+Dictation Microphone (<code>tools.speech_microphone</code>)</h2>
+<p><em>What &amp; why.</em> Choose which microphone dictation and voice
+features record from.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>At least one microphone connected. Capture support
+(<code>sounddevice</code>) installed.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Dictation Microphone…</strong>.</li>
+<li>Arrow the device list; pick a microphone; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With no microphones (or no capture support) QUILL says so plainly in
+a message box. Otherwise a labelled, keyboard-navigable device list
+appears; selecting one saves it and QUILL announces <strong>"Dictation
+microphone set to <name>."</strong> That device is used by all the
+listening features below.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-21--dictate-offline-toolsspeech_dictate-ctrlshiftgrave-shiftd">TSP-21
+— Dictate (Offline) (<code>tools.speech_dictate</code>,
+Ctrl+Shift+Grave, Shift+D)</h2>
+<p><em>What &amp; why.</em> Push-to-talk dictation: run it to start
+listening, run it again to stop and insert the recognized text at the
+caret. The main "type with your voice" feature.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Microphone + capture support + a speech model (TSP-15). If any is
+missing, mark <strong>Blocked</strong> — QUILL will tell you which.</li>
+<li>Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+D</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Put the caret where the text should land. Trigger
+<strong>Ctrl+Shift+Grave, Shift+D</strong> (or <strong>Tools menu ▸
+Speech ▸ Dictate (Offline)</strong>).</li>
+<li>Speak a sentence clearly.</li>
+<li>Trigger the same command again to stop and insert.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Without capture support QUILL explains what to install and does not
+record. With no model it offers to open Manage Speech Models. When it
+starts you hear a start earcon and <strong>"Listening. Run Dictate
+(Offline) again to stop and insert."</strong> After stopping you hear
+<strong>"Transcribing dictation…"</strong>, then the text is written at
+the caret and QUILL announces <strong>"Inserted N words. Press Control+Z
+to undo."</strong> If nothing was heard it says <strong>"No speech
+detected."</strong></li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-22--dictation-system-toolsdictation_toggle-ctrlshiftgrave-d">TSP-22
+— Dictation (system) (<code>tools.dictation_toggle</code>,
+Ctrl+Shift+Grave, D)</h2>
+<p><em>What &amp; why.</em> The legacy <strong>system</strong> dictation
+toggle. Offline dictation (TSP-21) and Locked Dictation (TSP-23) are the
+supported paths; this command is retained for back-compat and is not in
+the Speech menu.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Reach it via the chord <strong>Ctrl+Shift+Grave</strong> then
+<strong>D</strong>, or <strong>Command Palette →
+"Dictation"</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Trigger <strong>Ctrl+Shift+Grave, D</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If system dictation is unavailable on the machine (expected on most
+builds), a clear message box says <strong>"System dictation is
+unavailable on this system."</strong> — it must not crash or fail
+silently. Where it <em>is</em> available, focus goes to the editor and
+the status shows it started/stopped. If it reports unavailable, record
+that and mark <strong>Blocked</strong> for the system path (offline
+dictation TSP-21 is the one that must pass).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-23--locked-dictation-start--finish-toolsdictation_lock_toggle-ctrlf9">TSP-23
+— Locked Dictation start / finish
+(<code>tools.dictation_lock_toggle</code>, Ctrl+F9)</h2>
+<p><em>What &amp; why.</em> Hands-free <strong>locked</strong>
+dictation: start a session, speak as long as you like, finish to
+transcribe and insert as one undoable edit. The primary keyboard
+dictation workflow.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Microphone + capture + a model (else <strong>Blocked</strong>). The
+very first use speaks a one-time hint.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F9</strong> (or <strong>Tools menu ▸ Speech ▸
+Locked Dictation ▸ Locked Dictation (start/finish)</strong>).</li>
+<li>Speak a sentence or two.</li>
+<li>Press <strong>Ctrl+F9</strong> again (or <strong>Escape</strong>) to
+finish and insert.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A preflight guards it: Safe Mode ("Dictation is disabled in Safe
+Mode."), missing capture, missing engine (offers the ~8 MB verified
+download), or no model (points you at Speech and Dictation) each give a
+spoken message and stop. On first successful start you hear the one-time
+hint ("Press Control F9 to start… Escape to finish and insert; Shift
+Escape cancels."). Finishing transcribes off-thread and inserts the text
+as one undoable block.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-24--pause-or-resume-dictation-toolsdictation_pause-ctrlshiftf9">TSP-24
+— Pause or Resume Dictation (<code>tools.dictation_pause</code>,
+Ctrl+Shift+F9)</h2>
+<p><em>What &amp; why.</em> Temporarily pause a live Locked Dictation
+session (e.g. to think or cough) and resume without losing what you have
+said.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A <strong>live</strong> Locked Dictation session (start one via
+TSP-23).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+F9</strong> to pause; press it again to
+resume. (Also under <strong>Tools ▸ Speech ▸ Locked Dictation ▸ Pause or
+Resume</strong>.)</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The session pauses and resumes; the state change is perceivable
+(spoken/earcon and status). With no session active the key does nothing
+harmful. Speak, Status (TSP-25) confirms the paused/recording
+state.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-25--dictation-status-toolsdictation_status-altf9">TSP-25 —
+Dictation Status (<code>tools.dictation_status</code>, Alt+F9)</h2>
+<p><em>What &amp; why.</em> Speak what dictation is doing right now — a
+perceivability check for a feature whose state you cannot see.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Optional: start/pause a Locked Dictation session to compare
+states.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+F9</strong> (or <strong>Tools ▸ Speech ▸ Locked
+Dictation ▸ Speak Status</strong>), both when idle and during a live
+session.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>When nothing is running it says <strong>"Dictation is off."</strong>
+During a session it speaks the current state (recording / paused /
+transcribing). The message is <strong>forced</strong> so it is heard
+even while other speech is queued.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-26--stop-dictation-keep-speech-toolsdictation_emergency_stop-escape">TSP-26
+— Stop Dictation, keep speech
+(<code>tools.dictation_emergency_stop</code>, Escape)</h2>
+<p><em>What &amp; why.</em> Stop a live dictation session immediately
+but <strong>keep</strong> what you have already spoken (transcribe and
+insert it).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A <strong>live</strong> Locked Dictation session recording.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Escape</strong> while the session is active (or
+<strong>Tools ▸ Speech ▸ Locked Dictation ▸ Stop (keep
+speech)</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Recording stops and the captured speech is transcribed and inserted
+(not discarded). Crucially, <strong>Escape only does this while a
+session is active</strong> — at every other time Escape behaves normally
+(closes dialogs, etc.). Verify normal Escape still works with no session
+running.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-27--cancel-dictation-discard-toolsdictation_cancel-shiftescape">TSP-27
+— Cancel Dictation, discard (<code>tools.dictation_cancel</code>,
+Shift+Escape)</h2>
+<p><em>What &amp; why.</em> Abandon a live dictation session and
+<strong>discard</strong> the audio — nothing is inserted.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A <strong>live</strong> Locked Dictation session recording.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+Escape</strong> while the session is active (or
+<strong>Tools ▸ Speech ▸ Locked Dictation ▸ Cancel
+(discard)</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The session ends and <strong>no text is inserted</strong>; the
+discard is perceivable. Like Escape, <strong>Shift+Escape is only
+consumed while a session is active</strong>, so it does not interfere
+the rest of the time.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-28--voice-command-offline-toolsvoice_command">TSP-28 — Voice
+Command (Offline) (<code>tools.voice_command</code>)</h2>
+<p><em>What &amp; why.</em> Push-to-talk <strong>command by
+voice</strong>: speak one command ("save file") and QUILL runs it —
+offline, and only commands on a safety allowlist.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Voice commands are <strong>off by default</strong>; turn them on in
+<strong>Settings</strong> first (they are always off in Safe Mode).
+Microphone + capture + a model. Else <strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Voice Command (Offline)</strong>.</li>
+<li>Speak a simple command (e.g. "save file"); run the command again to
+stop and act.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If voice commands are off, QUILL says <strong>"Voice commands are
+off. Turn them on in Settings (they are disabled in Safe
+Mode)."</strong> When on, it announces <strong>"Listening for a command.
+Run the command again to stop and act."</strong> After you stop it
+recognizes the phrase and, <strong>only if</strong> the resolved command
+is on the safe allowlist, announces and runs it; an unrecognized or
+unsafe phrase is reported and <strong>not</strong> run. (If Conversation
+mode is enabled in Settings, one Voice Command hands off to Conversation
+— TSP-29.)</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-29--voice-conversation-mode-toolsvoice_conversation">TSP-29
+— Voice Conversation Mode (<code>tools.voice_conversation</code>)</h2>
+<p><em>What &amp; why.</em> Hands-free conversation loop: warm audio
+cues for each state, a brief cancel window before a command runs, and a
+follow-up window so commands chain without re-arming.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Voice commands enabled in Settings (off in Safe Mode); microphone +
+capture + a model. Else <strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Voice Conversation Mode</strong> to
+start; run it again to stop.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Same off/Safe-Mode/capture guards as TSP-28 (with spoken reasons).
+When it starts you hear state cues (earcons, and spoken cues if you
+enabled them <strong>and</strong> no screen reader is running — QUILL
+will not talk over your reader). Each recognized command has a cancel
+window and follow-ups chain. Running it again stops the loop with a
+closing cue.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-30--listen-for-hey-quill-wake-word-toolsvoice_wakeword">TSP-30 —
+Listen for Hey QUILL (Wake Word)
+(<code>tools.voice_wakeword</code>)</h2>
+<p><em>What &amp; why.</em> Always-listening for the phrase "Hey QUILL".
+"Hey QUILL, save file" runs a command inline; a bare "Hey QUILL" opens
+one command turn.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Voice commands enabled (off in Safe Mode); microphone + capture + a
+model. Else <strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Listen for Hey QUILL</strong> to
+start; run it again to stop.</li>
+<li>Say "Hey QUILL, save file" (with a document that can be saved).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Same guards as TSP-28/29 with spoken reasons. When on, the mic stays
+open in short windows; the live-mic state stays perceivable (visible
+status and a periodic reminder). An inline "Hey QUILL, <command>" runs
+the (allowlisted) command; a bare "Hey QUILL" opens one command turn.
+Running it again stops listening. <strong>Speak Voice Status</strong>
+(TSP-31) confirms it is live.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-31--speak-voice-status-toolsvoice_status">TSP-31 — Speak
+Voice Status (<code>tools.voice_status</code>)</h2>
+<p><em>What &amp; why.</em> Say out loud what the voice features are
+doing right now — the "is my mic live?" check.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Optionally start Conversation (TSP-29) or Hey QUILL (TSP-30) first
+to compare.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Speech ▸ Speak Voice Status</strong>, both
+while idle and while a voice feature is listening.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>When nothing is listening it says <strong>"Voice is not listening
+right now."</strong> When a wake/conversation/command session is active
+it speaks the live state(s) (e.g. "Listening for a command"). The same
+text also appears in the status bar.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-32--announcement-backend-toolsannouncement_backend">TSP-32 —
+Announcement Backend… (<code>tools.announcement_backend</code>)</h2>
+<p><em>What &amp; why.</em> Choose <strong>how</strong> QUILL routes its
+spoken announcements: <strong>Auto</strong>, <strong>Prism</strong> (the
+screen-reader bridge), or <strong>Status only</strong> (no speech,
+status bar text only).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A screen reader running so you can hear the difference.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ Read Aloud ▸
+Announcement Backend…</strong>.</li>
+<li>Arrow the three choices; pick one; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled single-choice dialog with exactly three options (Auto /
+Prism / Status only), pre-selected on the current setting;
+<strong>Escape</strong> cancels ("Announcement backend selection
+cancelled"). On confirm the routing changes and subsequent announcements
+follow it — e.g. <strong>Status only</strong> shows announcements as
+status-bar text without speaking them.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tsp-33--toggle-announcement-trace-capture-toolsannouncement_trace_toggle">TSP-33
+— Toggle Announcement Trace Capture
+(<code>tools.announcement_trace_toggle</code>)</h2>
+<p><em>What &amp; why.</em> Jump to where announcement-trace capture (a
+diagnostic log of what QUILL announced) is turned on/off.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Reading and Dictation ▸ Read Aloud ▸
+Announcement Trace (in Settings)…</strong> (or <strong>Command Palette →
+"Toggle Announcement Trace Capture"</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL opens <strong>Settings</strong> and the status bar says
+<strong>"Announcement trace setting is in Settings &gt;
+Accessibility"</strong> — it takes you to the toggle on the
+Accessibility tab rather than flipping it blindly. Settings is keyboard
+navigable and Escape closes it.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-34--dictionary-status-toolsdictionary_status">TSP-34 —
+Dictionary Status… (<code>tools.dictionary_status</code>)</h2>
+<p><em>What &amp; why.</em> Report the spell-check backend, the
+thesaurus availability, and how many custom words are in each dictionary
+scope (Personal / Document / Project), with where each is stored.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Optionally a <strong>saved</strong> document (so the Document-scope
+path can be shown).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Writing and Language ▸ Dictionary
+Status…</strong> (or <strong>Command Palette → "Dictionary
+Status"</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A readable report naming the <strong>spell-check backend</strong>
+and its detail, whether the <strong>thesaurus</strong> is installed, and
+the <strong>Personal / Document / Project</strong> word counts with each
+file's path (or "not created yet" / "not available until the document is
+saved"). Navigable by keyboard; closes back to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-35--misspelling-list-toolsmisspelling_list-altshiftl">TSP-35
+— Misspelling List… (<code>tools.misspelling_list</code>,
+Alt+Shift+L)</h2>
+<p><em>What &amp; why.</em> List every misspelling in the document and
+jump straight to any one.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Type a few obvious misspellings into a document (e.g. "teh",
+"recieve").</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+L</strong> (or <strong>Tools menu ▸ Writing
+and Language ▸ Misspelling List…</strong>).</li>
+<li>Arrow the list; press <strong>Enter</strong> on one.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With none, the status shows <strong>"No misspellings
+found"</strong>. Otherwise a keyboard-navigable navigator lists the
+misspelled words; selecting one moves the caret and
+<strong>selects</strong> that word in the editor (status:
+<code>Jumped to misspelling "&lt;word&gt;"</code>).
+<strong>Escape</strong> cancels ("Misspelling list cancelled") and
+leaves the caret where it was.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-36--next-misspelling-toolsnext_misspelling-ctrlf7">TSP-36 —
+Next Misspelling (<code>tools.next_misspelling</code>, Ctrl+F7)</h2>
+<p><em>What &amp; why.</em> Jump the caret to the next misspelled word
+after the cursor — review-as-you-go without opening a list.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document with at least one misspelling ahead of the caret.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F7</strong> (or <strong>Tools menu ▸ Writing and
+Language ▸ Next Misspelling</strong>).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves to the next misspelling and <strong>selects</strong>
+it; the status shows <code>Next misspelling: "&lt;word&gt;"</code>. When
+none remain ahead, QUILL announces a clear message (e.g. that there are
+none ahead, noting any behind the caret) rather than moving silently or
+erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-37--thesaurus-toolsthesaurus-shiftf7">TSP-37 — Thesaurus…
+(<code>tools.thesaurus</code>, Shift+F7)</h2>
+<p><em>What &amp; why.</em> The classic (non-AI) thesaurus: look up
+synonyms for the word at the caret and replace it. Works with no AI
+provider and offline.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>; put the caret in a common word (e.g.
+"quick").</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+F7</strong>, or open <strong>Tools ▸
+Thesaurus…</strong>.</li>
+<li>Arrow the synonym list; pick one; confirm to replace, or Escape to
+cancel.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A keyboard-navigable, announced list of synonyms for the word;
+choosing one replaces the word in the document and says so; Escape
+leaves the word unchanged. If the word has no entry, it says so rather
+than staying silent. <strong>Note:</strong> verify exact wording.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tsp-38--review-last-ocr-result-toolsreview_last_ocr">TSP-38 —
+Review Last OCR Result (<code>tools.review_last_ocr</code>)</h2>
+<p><em>What &amp; why.</em> Reopen the text from your most recent OCR
+run to review or correct it, without re-scanning.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>You have run an OCR command at least once this session (see the OCR
+scenarios above). If you have not, the command should say there is
+nothing to review — test that path too.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Run <strong>Review Last OCR Result</strong> (Tools, or Command
+Palette → "Review Last OCR").</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The last OCR output opens for review (in a dialog or a document) and
+is announced; with no prior OCR this session, QUILL says there is no
+result to review rather than erroring. <strong>Note:</strong> verify
+exact wording and where the result opens.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 38</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

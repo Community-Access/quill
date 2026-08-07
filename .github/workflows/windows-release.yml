@@ -77,12 +77,12 @@ jobs:
         # rather than silently shipping a broken reporter.
         env:
           QUILL_FEEDBACK_GITHUB_TOKEN: ${{ secrets.QUILL_FEEDBACK_GITHUB_TOKEN }}
-        run: python scripts/build_windows_distribution.py --bundle-python --compile-installer --require-feedback-token --iscc-path "$env:ISCC_PATH" --output-dir windows-distribution
+        run: python scripts/build_windows_distribution.py --bundle-python --compile-installer --require-feedback-token --iscc-path "$env:ISCC_PATH" --output-dir dist/windows
       - name: Generate release artifacts
-        run: python scripts/generate_release_artifacts.py --output-dir release-artifacts --include-optional
+        run: python scripts/generate_release_artifacts.py --output-dir dist/release-artifacts --include-optional
       - name: Generate SBOM
         run: |
-          cyclonedx-py environment --of JSON --output-file release-artifacts/sbom.json
+          cyclonedx-py environment --of JSON --output-file dist/release-artifacts/sbom.json
       - name: Fetch bootstrapper binaries
         run: python scripts/fetch_bootstrappers.py
       - name: Generate file manifest
@@ -93,32 +93,32 @@ jobs:
           python scripts/build_update_zip.py `
             --version ${{ github.ref_name }} `
             --platform windows `
-            --output release-artifacts/quill-${{ github.ref_name }}-update-windows.zip
+            --output dist/release-artifacts/quill-${{ github.ref_name }}-update-windows.zip
       - name: Upload update ZIP
         uses: actions/upload-artifact@v7
         with:
           name: quill-update-windows
-          path: release-artifacts/quill-*-update-windows.zip
+          path: dist/release-artifacts/quill-*-update-windows.zip
       - name: Upload portable bundle
         uses: actions/upload-artifact@v7
         with:
           name: quill-portable
-          path: windows-distribution/portable
+          path: dist/windows/portable
       - name: Upload installer executable
         uses: actions/upload-artifact@v7
         with:
           name: quill-installer
-          path: windows-distribution/installer/Output/Quill-for-All-Setup-*.exe
+          path: dist/windows/installer/Output/Quill-for-All-Setup-*.exe
       - name: Upload installer script
         uses: actions/upload-artifact@v7
         with:
           name: quill-installer-script
-          path: windows-distribution/installer/quill.iss
+          path: dist/windows/installer/quill.iss
       - name: Upload release artifacts
         uses: actions/upload-artifact@v7
         with:
           name: quill-release-artifacts
-          path: release-artifacts
+          path: dist/release-artifacts
 
   release:
     needs: build

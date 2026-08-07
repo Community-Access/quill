@@ -31,13 +31,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.storage import read_json, write_json_atomic
 
 _RECORD_VERSION = 1
 
 
-class MissingResult(KeyError):
+class MissingResult(CodedError, KeyError):
     """A rebuild needed a unit's result that the record does not contain."""
+
+    code = "QUILL-AI-RESUME-MISSING"
 
 
 @dataclass

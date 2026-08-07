@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>qa-core-journeys</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-100--core-journey-test-plan-hand-held">QUILL 1.0.0 —
+Core-Journey Test Plan (hand-held)</h1>
+<p>Rigorous, end-to-end validation of QUILL's critical editor journeys,
+each keyed to a known sample file in <code>qa-samples/</code>. Where the
+screen-reader plan (<code>screen-reader-test-plan.md</code>) proves a
+single fix is announced, this plan proves a whole task works from start
+to finish, on a real build, by ear and by keyboard.</p>
+<p>How to use this plan:</p>
+<ul>
+<li>Test with <strong>NVDA and JAWS</strong> on a real Windows build
+(Narrator where noted). Run each journey twice: once
+<strong>keyboard-only with the mouse unplugged</strong>, then again
+reading with the screen reader's review/virtual cursor.</li>
+<li>Copy the whole <code>qa-samples/</code> corpus onto the machine
+first. Every step names the exact sample file it opens; do not
+substitute your own document.</li>
+<li>Record <strong>Pass / Fail / Blocked / Not tested</strong> and the
+<strong>actual spoken text</strong> for each case. "Expected" describes
+the intended announcement; exact wording varies by screen reader, but
+the field name, role, state, and the load-bearing values (counts, cell
+contents, format labels) must be present and correct.</li>
+<li>A case fails if focus is lost, a value is wrong, an outcome is
+silent, an error is not announced, or the produced file does not match
+the "Expected" structure.</li>
+</ul>
+<p>General keyboard contract to confirm throughout: Tab / Shift+Tab move
+predictably, Escape cancels, Enter activates the default, and focus
+returns to a sensible place when a dialog closes. No destructive action
+happens without a confirmation you can hear.</p>
+<p>Preconditions common to every journey (confirm once, per
+environment):</p>
+<ul>
+<li>A packaged 1.0.0 build installed per the master sign-off §A
+environment matrix.</li>
+<li>NVDA or JAWS running and speaking.</li>
+<li>The <code>qa-samples/</code> folder present on a local disk; note
+its full path here: ______.</li>
+<li>AI configured with a working provider <strong>only</strong> for
+JOURNEY-005 (Improve Reading Order); all other journeys run with AI
+off.</li>
+</ul>
+<hr />
+<h2 id="journey-001--open-and-heading-navigation">JOURNEY-001 — Open and
+heading navigation</h2>
+<p>Sample: <code>formatting.md</code> (six headings, one of each level
+H1–H6, in order).</p>
+<ul>
+<li>TC-001a — Open the document
+<ul>
+<li>Precondition: no document open, or a scratch document.</li>
+<li>Steps: File &gt; Open (<code>file.open</code>, <code>Ctrl+O</code>);
+pick <code>qa-samples/formatting.md</code>; confirm the dialog with
+Enter.</li>
+<li>Expected: the file opens; focus lands in the editor, announced as
+"Document", edit/text-area role, multi-line (screen-reader TC-EDIT-001);
+the title bar reads <code>formatting.md - QUILL ...</code> with no
+"[modified]" marker.</li>
+</ul></li>
+<li>TC-001b — Walk all six heading levels forward
+<ul>
+<li>Steps: place the caret at the top (<code>Ctrl+Home</code>). Invoke
+<strong>Next Heading</strong> (<code>navigate.next_heading</code>,
+Navigate menu) six times; then use the screen reader's own quick key
+<code>H</code> from the top as a cross-check.</li>
+<li>Expected: each invocation lands on the next heading in turn and
+announces the heading text and its level — "Heading One — Formatting
+Sample, heading level 1", then level 2, 3, 4, 5, 6. All six are reached;
+a seventh invocation reports no further headings rather than wrapping
+silently.</li>
+</ul></li>
+<li>TC-001c — Walk headings backward
+<ul>
+<li>Steps: from the last heading (level 6), invoke <strong>Previous
+Heading</strong> (<code>navigate.previous_heading</code>) five times;
+cross-check with <code>Shift+H</code>.</li>
+<li>Expected: headings are announced in descending order level 6 → level
+1; the caret lands on each heading line; no level is skipped or
+repeated.</li>
+</ul></li>
+<li>TC-001d — Confirm the inline styles read correctly
+<ul>
+<li>Steps: read the first paragraph under Heading One with the review
+cursor; place the caret in each styled word and invoke <strong>Describe
+Formatting at Cursor</strong> (<code>format.describe_formatting</code>,
+<code>Ctrl+Shift+D</code>).</li>
+<li>Expected: <strong>bold</strong> reads/announces as bold,
+<em>italic</em> as italic, <code>underline</code> as underlined,
+<code>strike</code> as strikethrough — each state named, none
+silent.</li>
+</ul></li>
+</ul>
+<h2 id="journey-002--table-cell-navigation">JOURNEY-002 — Table cell
+navigation</h2>
+<p>Sample: <code>table.md</code> (caption sentence, then a 3-column
+table: header row + 3 body rows; the South row's Device cell holds the
+literal pipe <code>Phone \| Watch</code>).</p>
+<ul>
+<li>TC-002a — Enter the table and read the first cell
+<ul>
+<li>Steps: open <code>qa-samples/table.md</code>; place the caret on the
+header row; press <strong>Ctrl+Alt+Right</strong>
+(<code>table.next_cell</code>).</li>
+<li>Expected: the landing announcement leads with position then content
+— "Row 1 of 4, column 2 of 3: Device" (the table is 4 rows including the
+header). Position is spoken as well as the cell value.</li>
+</ul></li>
+<li>TC-002b — The escaped pipe stays one cell
+<ul>
+<li>Steps: navigate to the South row's Device cell (row 3): from the
+header, Ctrl+Alt+Down twice to reach row 3, then Ctrl+Alt+Right to
+column 2 as needed.</li>
+<li>Expected: the Device cell announces as <strong>one</strong> cell
+containing "Phone | Watch" — the escaped pipe <code>\|</code> is read as
+a literal pipe inside the cell and does <strong>not</strong> split it
+into two columns. Position stays "column 2 of 3".</li>
+</ul></li>
+<li>TC-002c — "End of row" vs "end of table"
+<ul>
+<li>Steps: from any body row's last cell (Notes column), press
+<strong>Ctrl+Alt+Right</strong>. Then navigate to the final cell of the
+final row (East / Backordered) and press <strong>Ctrl+Alt+Right</strong>
+again; also press <strong>Ctrl+Alt+Down</strong> there.</li>
+<li>Expected: at a non-final row's last cell, Ctrl+Alt+Right announces
+<strong>"No more cells"</strong> (the row ends, the table does not). At
+the final cell of the final row, Ctrl+Alt+Right announces <strong>"No
+more cells, end of table"</strong> and Ctrl+Alt+Down announces
+<strong>"No more rows, end of table"</strong>. The caret does not move
+past the edge in either case.</li>
+</ul></li>
+<li>TC-002d — Chord outside a table is harmless
+<ul>
+<li>Steps: move the caret up into the caption sentence above the table;
+press Ctrl+Alt+Right.</li>
+<li>Expected: QUILL says the caret is not in a table and leaves it where
+it is — no crash, no jump.</li>
+</ul></li>
+</ul>
+<h2 id="journey-003--save-as-format-fidelity">JOURNEY-003 — Save-As
+format fidelity</h2>
+<p>Sample: <code>formatting.md</code>. Verifies the CHANGELOG fidelity
+promise: headings, lists, links, the image, and a table survive Save-As
+to Word and HTML.</p>
+<ul>
+<li>TC-003a — Save As Word (.docx)
+<ul>
+<li>Steps: with <code>formatting.md</code> open, File &gt; Save As
+(<code>file.save_as</code>, <code>Ctrl+Shift+S</code>); switch the type
+to Word Document; name it <code>formatting.docx</code>; Enter.</li>
+<li>Expected: the converting-Save-As announcement speaks, in substance:
+"Saved as formatting.docx, Word format. You are still editing QUILL
+text; each save converts it to Word." The title bar updates to
+<code>formatting.docx</code> with no "[modified]"; a second
+<code>Ctrl+S</code> saves silently with no dialog.</li>
+<li>Expected (open the file in Word): all six headings map to Word
+heading styles 1–6; the bullet and numbered lists are real Word lists;
+the <strong>QUILL project</strong> link is a live hyperlink; the image
+carries alt text "Red circle"; bold / italic / underline / strikethrough
+are applied to the right words.</li>
+</ul></li>
+<li>TC-003b — Save As HTML (.html)
+<ul>
+<li>Steps: from the same document, Save As with type HTML; name it
+<code>formatting.html</code>; Enter.</li>
+<li>Expected: the status line speaks the HTML format label; a standalone
+HTML page is written. Opening it in a browser shows an
+<code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code> outline, a
+<code>&lt;ul&gt;</code> and an <code>&lt;ol&gt;</code>, a
+<code>&lt;blockquote&gt;</code>, a fenced block as
+<code>&lt;pre&gt;&lt;code&gt;</code>, the link as an
+<code>&lt;a href&gt;</code>, and an
+<code>&lt;img alt="Red circle"&gt;</code>.</li>
+</ul></li>
+<li>TC-003c — Round-trip a table's header row
+<ul>
+<li>Steps: open <code>qa-samples/table.md</code>; Save As Word
+(<code>table.docx</code>); open in Word.</li>
+<li>Expected: the 3-column table is a <strong>real, editable Word table
+with a repeating header row</strong>; the <code>Phone | Watch</code>
+cell is a single cell; no column split from the escaped pipe.</li>
+</ul></li>
+<li>TC-003d — Nothing is dropped silently
+<ul>
+<li>Steps: repeat TC-003a but Save As to a format that cannot hold rich
+formatting (e.g. plain <code>.txt</code> via
+<code>file.save_as_plain_text</code>).</li>
+<li>Expected: QUILL tells you before committing what will be dropped
+(per the Links-in-plain-text setting), rather than dropping it
+silently.</li>
+</ul></li>
+</ul>
+<h2 id="journey-004--insert-equation-and-math-reading">JOURNEY-004 —
+Insert Equation and math reading</h2>
+<p>Sample: <code>math.md</code> (two inline <code>\(...\)</code>
+equations, one <code>$$...$$</code> block, one MathML block).</p>
+<ul>
+<li>TC-004a — Insert an inline equation
+<ul>
+<li>Steps: open a scratch document; place the caret in a sentence;
+Insert Equation (<code>edit.insert_equation</code>,
+<code>Ctrl+Shift+E</code>); type <code>E=mc^2</code>; when the mode step
+appears, choose <strong>Inline</strong>.</li>
+<li>Expected: a mode step (inline vs block) is offered and announced; on
+confirm, <code>\(E=mc^2\)</code> is inserted at the caret in QUILL's
+default inline delimiters.</li>
+</ul></li>
+<li>TC-004b — Insert a block equation
+<ul>
+<li>Steps: repeat Ctrl+Shift+E; type
+<code>\int_0^1 x^2 \, dx = \frac{1}{3}</code>; choose
+<strong>Block</strong>.</li>
+<li>Expected: the formula is inserted wrapped in a single-line
+<code>$$...$$</code> block.</li>
+</ul></li>
+<li>TC-004c — MathML is inserted verbatim, no mode step
+<ul>
+<li>Steps: copy the <code>&lt;math&gt;...&lt;/math&gt;</code> block from
+<code>math.md</code>; Ctrl+Shift+E and paste the MathML fragment.</li>
+<li>Expected: the MathML is inserted verbatim with <strong>no</strong>
+inline/block mode step (it is already complete markup).</li>
+</ul></li>
+<li>TC-004d — Re-invoke on a selected LaTeX equation
+<ul>
+<li>Steps: in <code>math.md</code>, select the text of an existing
+<code>\(...\)</code> equation and press Ctrl+Shift+E.</li>
+<li>Expected: the delimiters are stripped and the bare formula pre-fills
+the prompt for editing.</li>
+</ul></li>
+<li>TC-004e — Read the math aloud
+<ul>
+<li>Steps: place the caret in the block equation; run "Read this part
+aloud".</li>
+<li>Expected: with the optional MathCAT engine installed, the equation
+is spoken as natural-language math (integral from 0 to 1 of x squared…);
+without it, the built-in template reading speaks it and nothing errors.
+Note which path ran.</li>
+</ul></li>
+</ul>
+<h2 id="journey-005--improve-reading-order-ai">JOURNEY-005 — Improve
+Reading Order (AI)</h2>
+<p>Sample: <code>reading-order.txt</code> (a four-step recipe printed
+out of order, one step broken across a mid-sentence line break; the file
+states the intended order).</p>
+<ul>
+<li>TC-005a — Precondition and confirm-before-send
+<ul>
+<li>Precondition: AI configured with a working provider; not Safe
+Mode.</li>
+<li>Steps: open <code>qa-samples/reading-order.txt</code>; Tools &gt;
+Improve Reading Order (<code>tools.ai_reading_order</code>).</li>
+<li>Expected: a confirmation dialog appears <strong>before anything is
+sent</strong>, naming the provider and the approximate size — in
+substance: "QUILL will send this document — about 1 page — to
+<provider name> to repair its reading order … The result opens as a new,
+unsaved document; your current document is not changed …. Send the
+document now?" Default is No. Cancelling announces "Improve Reading
+Order cancelled — nothing was sent."</li>
+</ul></li>
+<li>TC-005b — Run it and check the result opens unsaved
+<ul>
+<li>Steps: re-run and confirm Yes; wait for completion.</li>
+<li>Expected: a progress status speaks ("Improving reading order… this
+can take a moment."); on success a <strong>new, unsaved</strong>
+document opens, announced in substance "Reading order improved — opened
+as a new unsaved document (Save As to keep it)." The original
+<code>reading-order.txt</code> is unchanged on disk and in its tab.</li>
+</ul></li>
+<li>TC-005c — Wording is preserved, order is fixed
+<ul>
+<li>Steps: read the new document top to bottom.</li>
+<li>Expected: the four steps read in order <strong>First → Second →
+Third → Fourth</strong>, the broken "Third … steep …" step is rejoined
+into one sentence, and the wording matches the intended order recorded
+in the sample (no invented or dropped words). The tester's note block at
+the bottom of the sample is not treated as a step.</li>
+</ul></li>
+<li>TC-005d — Safe Mode and size guard
+<ul>
+<li>Steps: relaunch with <code>--safe-mode</code> and invoke the
+command; separately, lower <code>reading_order_max_pages</code> in
+Settings below the document's size and invoke it.</li>
+<li>Expected: in Safe Mode it says it is unavailable and sends nothing;
+over the page limit it refuses with the over-limit message and sends
+nothing.</li>
+</ul></li>
+</ul>
+<h2 id="journey-006--find-replace-and-regex-helper">JOURNEY-006 — Find,
+Replace, and Regex Helper</h2>
+<p>Sample: <code>formatting.md</code>.</p>
+<ul>
+<li>TC-006a — Find and Find Next
+<ul>
+<li>Steps: open <code>formatting.md</code>; Find
+(<code>edit.find</code>, <code>Ctrl+F</code>); search
+<code>Heading</code>; Enter; then Find Next
+(<code>edit.find_next</code>, <code>F3</code>) repeatedly.</li>
+<li>Expected: matches are found, counted, and announced; F3 steps
+through each "Heading" occurrence and reports position; at the end it
+reports wrap or end-of-document, not silence.</li>
+</ul></li>
+<li>TC-006b — Replace and Replace All
+<ul>
+<li>Steps: Replace (<code>edit.replace</code>, <code>Ctrl+H</code>);
+replace <code>Oranges</code> with <code>Lemons</code> (single); then
+Replace All (<code>edit.replace_all</code>, <code>Ctrl+Shift+H</code>)
+<code>Heading</code> with <code>Section</code>.</li>
+<li>Expected: the single replace changes exactly one word; Replace All
+announces the count of replacements (six headings → six changes); a
+single Undo (<code>Ctrl+Z</code>) reverts the bulk replace cleanly.</li>
+</ul></li>
+<li>TC-006c — Regex Helper builds a valid pattern
+<ul>
+<li>Steps: Tools &gt; Regular Expression Helper
+(<code>tools.regex_helper</code>); build a pattern that matches an
+ordered-list item (e.g. <code>^\d+\. </code>); apply it in Replace with
+regex mode on; then feed an <strong>invalid</strong> regex.</li>
+<li>Expected: the helper is keyboard/SR navigable and its fields are
+named; the valid pattern matches the three ordered-list lines; the
+invalid regex is reported as an error and does not crash.</li>
+</ul></li>
+</ul>
+<h2 id="journey-007--read-aloud">JOURNEY-007 — Read Aloud</h2>
+<p>Sample: <code>plain.txt</code> (baseline) and
+<code>formatting.md</code>.</p>
+<ul>
+<li>TC-007a — Start and pause
+<ul>
+<li>Steps: open <code>plain.txt</code>; Read Aloud Start/Pause
+(<code>tools.read_aloud_start_pause</code>,
+<code>Ctrl+Shift+Grave, R</code>); press it again to pause.</li>
+<li>Expected: QUILL speaks the document with the configured Read-Aloud
+voice (distinct from the screen reader); the second press pauses; state
+is announced, not silent.</li>
+</ul></li>
+<li>TC-007b — Stop is immediate
+<ul>
+<li>Steps: start Read Aloud, then Read Aloud Stop
+(<code>tools.read_aloud_stop</code>,
+<code>Ctrl+Shift+Grave, Shift+R</code>).</li>
+<li>Expected: speech stops immediately; a subsequent Start begins again
+from the document start or caret per the Read Aloud setting.</li>
+</ul></li>
+<li>TC-007c — Markup is spoken sensibly
+<ul>
+<li>Steps: open <code>formatting.md</code>; Read Aloud from the
+top.</li>
+<li>Expected: markup and the URL are spoken as sensible words/pauses,
+not as raw syntax character-by-character; the fenced code block is read
+as code, not as backtick noise.</li>
+</ul></li>
+</ul>
+<h2
+id="journey-008--open-from-url-and-paste-path-robustness">JOURNEY-008 —
+Open from URL and paste-path robustness</h2>
+<p>Sample: <code>plain.txt</code> (as the local comparison), plus a
+small text URL you provide.</p>
+<ul>
+<li>TC-008a — Open from URL confirms before writing
+<ul>
+<li>Precondition: network available; a small plain-text URL staged.</li>
+<li>Steps: File &gt; Open from URL (<code>file.open_url</code>); paste
+the URL; proceed.</li>
+<li>Expected: the host and expected size are confirmed
+<strong>before</strong> any download; nothing writes to disk before you
+confirm; a blocked/unreachable host is reported clearly, not
+silently.</li>
+</ul></li>
+<li>TC-008b — Pasting a file path does not misfire
+<ul>
+<li>Steps: copy the full local path to
+<code>qa-samples/plain.txt</code>; in the Open-from- URL field (and in
+the editor), paste it.</li>
+<li>Expected: a local path pasted into the URL field is handled
+gracefully (opened as a local file or reported as not a URL), and
+pasting a path <strong>into the editor</strong> inserts it as text — it
+does not silently trigger a network fetch.</li>
+</ul></li>
+<li>TC-008c — Paste HTML as Markdown
+<ul>
+<li>Steps: open <code>qa-samples/sample.html</code> in a browser and
+copy its rendered body; in a scratch QUILL document, Paste HTML as
+Markdown (<code>power.paste_html_as_markdown</code>,
+<code>Ctrl+Shift+Grave, M</code>).</li>
+<li>Expected: clean Markdown is inserted — an <code>#</code> heading
+"Trip Checklist", a <code>-</code> list of three items, a Markdown table
+(Day/City with two rows), the <strong>QUILL project</strong> link, and
+an image with alt "Red circle" — not raw HTML tags.</li>
+</ul></li>
+</ul>
+<h2
+id="journey-009--plain-text-round-trip-and-html-import-baseline">JOURNEY-009
+— Plain-text round-trip and HTML import (baseline)</h2>
+<p>Sample: <code>plain.txt</code>, <code>sample.html</code>.</p>
+<ul>
+<li>TC-009a — Plain text round-trip is byte-faithful
+<ul>
+<li>Steps: open <code>plain.txt</code>; without editing, Save As a new
+<code>.txt</code> (e.g. <code>plain-copy.txt</code>); reopen the copy
+and compare.</li>
+<li>Expected: the reopened copy matches the original <strong>character
+for character</strong> (including line breaks); no partial or zero-byte
+file is ever written.</li>
+</ul></li>
+<li>TC-009b — HTML import yields navigable structure
+<ul>
+<li>Steps: File &gt; Open <code>qa-samples/sample.html</code>.</li>
+<li>Expected: the document opens with a readable heading ("Trip
+Checklist"), the three-item list, the two-column table (Day/City)
+navigable with the table chords from JOURNEY-002, the <strong>QUILL
+project</strong> link, and the image alt "Red circle" — all as navigable
+text.</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="sign-off">Sign-off</h2>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) and version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (per master sign-off §A: E1–E6):</li>
+<li>Date:</li>
+<li>Journeys attempted (range) / total 9:</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Overall result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

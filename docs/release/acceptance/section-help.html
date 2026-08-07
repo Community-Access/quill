@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-help</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="section--help-menu-help-21-commands">Section — Help menu
+(<code>help.*</code>, 21 commands)</h1>
+<p>Everything about <strong>finding your way, proving the build, and
+getting unstuck</strong>: the About box, the user guide and keyboard
+help, diagnostics and bug reporting, the feature-profile controls, and
+the "what can I do here / why can't I see this" explainers. Finish
+<strong>Part 0</strong> first — several scenarios below cross-check what
+you recorded in <code>00-getting-started.md</code>.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>help.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes.</p>
+<p><strong>How to reach these commands.</strong> Most live on the
+<strong>Help menu</strong> (press <strong>Alt</strong> then
+<strong>H</strong>). A few sit elsewhere and are called out per
+scenario:</p>
+<ul>
+<li><strong>Open Logs Folder</strong> and <strong>Open Diagnostics
+Folder</strong> live under <strong>Tools menu ▸ Customize and
+Support</strong>.</li>
+<li><strong>Key Cheatsheet</strong> (Alt+Shift+/) and <strong>Why Is
+This Unavailable?</strong> (Alt+F1) have <strong>no menu entry</strong>
+— reach them by their shortcut or the Command Palette.</li>
+</ul>
+<p><strong>Surface note you will hit repeatedly.</strong> Several
+Help-menu <em>labels</em> are shorter than the command <em>titles</em>
+this book prints from the sign-off inventory. Where they differ, the
+scenario names the exact on-screen label so you can judge
+<strong>Surface-exact</strong> correctly. None of that is a bug by
+itself — it is only a Surface-exact fail if the label differs from what
+this book says it is.</p>
+<hr />
+<h2 id="help-01--about-quill-helpabout_quill">HELP-01 — About Quill
+(<code>help.about_quill</code>)</h2>
+<p><em>What &amp; why.</em> Proves exactly which build you are testing.
+Sign-off is only valid against a known version and build stamp — this is
+where you read them.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>QUILL open, any state. Have your notebook ready to copy the build
+line into.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Help menu (Alt, H) ▸ About Quill</strong>.</li>
+<li>With focus in the dialog, <strong>Tab</strong> to the tab strip and
+<strong>Left/Right arrow</strong> through the tabs:
+<strong>Overview</strong>, <strong>Dependencies</strong>,
+<strong>Links</strong> (and <strong>Golden Quills</strong>).</li>
+<li>On the Overview tab, find the <strong>Copy</strong> button and press
+it to put the build block on the clipboard; paste it into your
+notebook.</li>
+<li>Press <strong>Escape</strong> to close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A real tabbed dialog (not one flat blob): the first thing announced
+on Overview is the headline <strong>"QUILL for All 1.0.0"</strong>. The
+Copy block reports <strong>Product: QUILL for All</strong>,
+<strong>Version: 1.0.0</strong>, a <strong>Build</strong> stamp,
+<strong>Channel</strong> (a stable release reads
+<strong>Release</strong>), a <strong>Commit</strong> SHA, and a build
+date.</li>
+<li><strong>This must match GS-05</strong> in
+<code>00-getting-started.md</code>. If the version is not
+<strong>1.0.0</strong>, or the build stamp differs from what you
+recorded there, fail and write down both values.</li>
+<li>Tabs, links, and the <strong>Visit / Copy</strong> buttons are
+reachable by keyboard and announced with role and name.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-02--context-help-current-mode-keys-helpcontext_help-ctrlshiftgrave-then-shifth">HELP-02
+— Context Help: Current Mode Keys (<code>help.context_help</code>,
+Ctrl+Shift+Grave then Shift+H)</h2>
+<p><em>What &amp; why.</em> Speaks the handful of keys most useful
+<strong>right where you are</strong> — editor, QUILL browse mode, or the
+status bar — so you never have to memorise the whole map. This is an
+<strong>announcement</strong>, not a dialog.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open, focus in the editor. Chord: press
+<strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Shift+H</strong>. On the Help menu it is labelled
+<strong>Announce Mode Shortcuts</strong> (not "Context Help").</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>In the editor, fire the chord (or <strong>Help menu ▸ Announce Mode
+Shortcuts</strong>).</li>
+<li>Listen, then move focus to the status bar (if reachable) and fire it
+again to hear the status-bar key set.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>In the editor you hear an <strong>"Editor mode shortcuts"</strong>
+summary listing Save, Undo, Find, Go to line, Command palette, Go to
+anything, QUILL browse mode, Document summary, and Context help, each
+with its <strong>live key binding</strong> (the bindings are read from
+your current keymap, so they reflect any remaps).</li>
+<li>In QUILL browse mode it instead lists the single-letter browse keys
+(H, A, L, I, T, B, P, S, C). Nothing opens; focus does not move.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-03--enable-braille-mode-helpenable_braille_mode">HELP-03 —
+Enable Braille Mode… (<code>help.enable_braille_mode</code>)</h2>
+<p><em>What &amp; why.</em> Turns on the braille feature set (BRF/BRL
+support, Grade 1/2 translation, the braille status cell, and the Braille
+menu) for testers who did not select it during onboarding.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A build where <strong>Braille Mode is currently off</strong> — the
+menu item only appears when braille is not already active. If it is
+already on, the command is a spoken no-op; record that and mark
+Pass.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Enable Braille Mode…</strong>.</li>
+<li>Read the description dialog; its buttons are <strong>Enable Braille
+Mode</strong> and <strong>Not Now</strong>. Choose <strong>Not
+Now</strong> first (confirm nothing changes), then repeat and choose
+<strong>Enable Braille Mode</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog explains what braille mode adds and that the
+<strong>Braille Pack</strong> (translation engine) is a separate
+optional component. On <strong>Enable</strong>, QUILL announces
+<strong>"Braille Mode is now active. The Braille menu has been
+added."</strong>, the menu bar gains a <strong>Braille</strong> menu,
+and in a real install you may be offered a one-time Braille Pack
+install. On <strong>Not Now / Escape</strong>, nothing changes.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-04--feature-profile-health-check-helpfeature_profile_health_check">HELP-04
+— Feature Profile Health Check…
+(<code>help.feature_profile_health_check</code>)</h2>
+<p><em>What &amp; why.</em> Reports whether your active feature profile
+is internally consistent — e.g. commands that are visible but whose
+feature is off, or dependencies that are not satisfied.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Menu path: <strong>Help menu ▸ Feature Profiles ▸ Profile
+Health Check…</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Help menu ▸ Feature Profiles ▸ Profile Health
+Check…</strong>.</li>
+<li>Read the report; press <strong>Enter</strong> or
+<strong>Escape</strong> to close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>An information dialog titled <strong>Feature Profile Health
+Check</strong> containing a readable report (the active profile and any
+inconsistencies). The text is reachable by the screen reader's review
+cursor. Closing returns focus to the Help menu.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-05--key-cheatsheet-helpkey_cheatsheet-altshift">HELP-05 —
+Key Cheatsheet (<code>help.key_cheatsheet</code>, Alt+Shift+/)</h2>
+<p><em>What &amp; why.</em> One searchable list of <strong>every command
+and its current key binding</strong> — the fastest way to answer "what's
+the shortcut for…?".</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. This command has <strong>no menu entry</strong>: use
+<strong>Alt+Shift+/</strong> or the Command Palette → "Key
+Cheatsheet".</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+/</strong>.</li>
+<li>Focus lands with a <strong>search box</strong> at the top ("Search
+by command name or key binding"); type
+<strong><code>save</code></strong> and read the filtered results.</li>
+<li>Clear the search to see the full list; press <strong>Escape</strong>
+or the <strong>Close</strong> button.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Key Cheatsheet</strong> dialog with a labelled search
+field and a read-only, multi-line list of <code>Command: binding</code>
+rows (commands with no binding read "(no binding)"). Typing filters
+live; an empty match reads <strong>"No matching commands."</strong>
+Everything is keyboard-reachable and announced.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-06--open-logs-folder-helpopen_logs_folder">HELP-06 — Open
+Logs Folder (<code>help.open_logs_folder</code>)</h2>
+<p><em>What &amp; why.</em> Jumps straight to QUILL's log files in File
+Explorer — the first thing support will ask for.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Path: <strong>Tools menu ▸ Customize and Support ▸ Open
+Logs Folder</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools menu (Alt, T) ▸ Customize and Support ▸ Open Logs
+Folder</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>File Explorer opens on QUILL's logs folder (under your per-user
+app-data directory, e.g. <code>…\Quill\logs</code>). The folder is
+created if it does not exist yet, so the command never errors on a fresh
+install.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-07--open-diagnostics-folder-helpopen_diagnostics_folder">HELP-07
+— Open Diagnostics Folder
+(<code>help.open_diagnostics_folder</code>)</h2>
+<p><em>What &amp; why.</em> Opens the folder where saved diagnostics
+bundles land (see HELP-14).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Path: <strong>Tools menu ▸ Customize and Support ▸ Open
+Diagnostics Folder</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools menu (Alt, T) ▸ Customize and Support ▸ Open
+Diagnostics Folder</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>File Explorer opens on QUILL's diagnostics folder (e.g.
+<code>…\Quill\diagnostics</code>), created if absent. Any bundle you
+saved in HELP-14 should appear here.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-08--open-third-party-notices-helpopen_third_party_notices">HELP-08
+— Open Third-Party Notices
+(<code>help.open_third_party_notices</code>)</h2>
+<p><em>What &amp; why.</em> Shows the open-source licences QUILL depends
+on — a legal requirement, and a good read for what is bundled.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Path: <strong>Help menu ▸ Open Third-Party
+Notices</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Help menu ▸ Open Third-Party Notices</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new document tab</strong> opens containing the third-party
+notices (dependency names, versions, and licences), focus in the editor
+so you can read it with the screen reader like any document. If
+dependency metadata is unavailable in this build, it opens a short "not
+available in this build" note rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-09--open-user-guide-helpopen_user_guide-ctrlf1">HELP-09 —
+Open User Guide (<code>help.open_user_guide</code>, Ctrl+F1)</h2>
+<p><em>What &amp; why.</em> Opens the full bundled user guide, rendered
+to HTML, in your system browser.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A browser installed and set as default. Menu label is <strong>Open
+User Guide</strong> and carries the <strong>Ctrl+F1</strong>
+accelerator.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+F1</strong>, or <strong>Help menu ▸ Open User
+Guide</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL renders the guide to HTML (written under
+<code>…\Quill\user-guide</code>) and opens it in the browser; the status
+bar reports <strong>"Opened user guide in browser"</strong>. The page
+has a real heading outline you can navigate with your screen reader. If
+the guide file cannot be found, QUILL falls back to the in-app
+<strong>Welcome Guide</strong> and says so rather than failing
+silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-10--redeem-unlock-code-helpredeem_unlock_code-gated--dev-build-only">HELP-10
+— Redeem Unlock Code… (<code>help.redeem_unlock_code</code>) [GATED —
+dev build only]</h2>
+<p><em>What &amp; why.</em> Lets a trusted tester unlock a pre-release,
+locked-off feature with a signed code. It performs <strong>no network
+call</strong>. It is a <strong>tester-only</strong> surface.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Determine your build. In a <strong>public 1.0 build this command and
+its menu item must be ABSENT</strong> — verify it is not on the Help
+menu and not in the Command Palette, then mark this scenario
+<strong>N/A</strong> (its absence is proven here and in
+<code>gated-absence.md</code>). Only a <strong>dev/admin build</strong>
+(<code>QUILL_DEV_BUILD=1</code>) shows it.</li>
+</ul>
+<p><strong>Do this (dev build only)</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Redeem Unlock Code…</strong>.</li>
+<li>Enter a signed unlock code by keyboard; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Public build: <strong>not present</strong> anywhere →
+<strong>N/A</strong>. Dev build: a labelled, keyboard-complete
+code-entry dialog; a valid code unlocks its feature and is announced, an
+invalid code is rejected with a clear spoken message, and nothing
+touches the network.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-11--report-a-bug-helpreport_bug">HELP-11 — Report a Bug…
+(<code>help.report_bug</code>)</h2>
+<p><em>What &amp; why.</em> Files a bug without leaving QUILL.
+<strong>The behaviour depends on whether this build carries a feedback
+token</strong> — verify the path your build takes.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Network available (submission needs it). Note which build you are
+on: a normal <strong>public</strong> build ships a bundled, issues-only
+feedback token; a <strong>private or <code>-SkipToken</code></strong>
+build has none.</li>
+<li>Menu label: <strong>Report a Bug…</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Report a Bug…</strong>.</li>
+<li>If a form opens, fill the fields by keyboard and submit; if a
+browser opens instead, confirm the online form loads and the URL is on
+your clipboard.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>Public build (token present):</strong> an in-app
+<strong>feedback form</strong> opens (labelled fields,
+keyboard-complete). Submitting files a GitHub issue directly and QUILL
+records <strong>"Submitted feedback"</strong>. If submission fails for
+any reason, it must not strand you — it falls back to the online
+form.</li>
+<li><strong>Private / <code>-SkipToken</code> build (no token):</strong>
+QUILL says direct reporting isn't set up in this build, <strong>opens
+the online support form in your browser, copies the link to your
+clipboard</strong>, and speaks that it did so. Both paths end with a
+usable way to file the report — a dead-end at submit is a fail.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-12--reset-to-essential-profile-helpreset_feature_profile">HELP-12
+— Reset to Essential Profile
+(<code>help.reset_feature_profile</code>)</h2>
+<p><em>What &amp; why.</em> Returns the feature set to the safe
+<strong>Essential</strong> profile — the "put things back the simple
+way" button. Destructive to your current profile choice, so it confirms
+first.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Switch to a richer profile first (do HELP-17) so the reset has a
+visible effect. Path: <strong>Help menu ▸ Feature Profiles ▸ Reset to
+Essential Profile</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Feature Profiles ▸ Reset to Essential
+Profile</strong>.</li>
+<li>In the <strong>"Reset Quill to the Essential profile?"</strong>
+Yes/No prompt, choose <strong>No</strong> first (confirm nothing
+changes), then repeat and choose <strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A hearable Yes/No confirmation (No default). On
+<strong>Yes</strong>, the status bar reports <strong>"Reset to Essential
+profile"</strong>, the title/menus reflect the simpler profile, and
+menus rebuild. On <strong>No/Escape</strong>, nothing changes.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-13--startup-wizard-helprun_profile_onboarding">HELP-13 —
+Startup Wizard (<code>help.run_profile_onboarding</code>)</h2>
+<p><em>What &amp; why.</em> Re-runs the first-run <strong>setup /
+onboarding wizard</strong> on demand. This is the <strong>same
+wizard</strong> as HELP-15 (<code>help.startup_wizard</code>) — an alias
+command id used by the Command Palette and onboarding flow. Run it here
+from the palette to prove the alias resolves to the wizard.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Reach it via the <strong>Command Palette → "Startup
+Wizard"</strong> (<code>help.run_profile_onboarding</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the Command Palette and run <strong>Startup
+Wizard</strong>.</li>
+<li>Step through the wizard by keyboard; on the last step confirm, or
+<strong>Escape</strong> to abort.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The multi-step setup wizard opens (the same one described in
+HELP-15): each page is labelled and keyboard-complete, choices are
+announced, and completing it applies your profile/intent while aborting
+leaves settings unchanged.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-14--save-diagnostics-helpsave_diagnostics">HELP-14 — Save
+Diagnostics… (<code>help.save_diagnostics</code>)</h2>
+<p><em>What &amp; why.</em> Packages logs, settings, and environment
+into a single redacted ZIP you can hand to support — showing you what's
+inside first.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. You will choose a save location. Menu label: <strong>Save
+Diagnostics…</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Save Diagnostics…</strong>.</li>
+<li>In the <strong>Review Diagnostics Export</strong> dialog, read the
+preview; decide the <strong>"Include plain file paths in the
+bundle"</strong> checkbox; optionally press <strong>Copy
+Summary</strong>; press <strong>Continue</strong> (or
+<strong>Cancel</strong> to abort).</li>
+<li>In the file dialog, accept the suggested
+<code>quill-diagnostics-&lt;timestamp&gt;.zip</code> name and save.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The review dialog is keyboard-complete and its preview readable;
+<strong>Cancel</strong> at either step reports <strong>"Diagnostics
+export cancelled"</strong> and writes nothing. On Continue + Save, a ZIP
+is written and QUILL reports <strong>"Saved diagnostics bundle to
+…"</strong>; the file appears in the Diagnostics folder (HELP-07).
+Secrets are redacted and file paths are only included if you ticked the
+box.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-15--startup-wizard-helpstartup_wizard">HELP-15 — Startup
+Wizard… (<code>help.startup_wizard</code>)</h2>
+<p><em>What &amp; why.</em> The guided first-run setup — pick an
+intent/profile and opt into AI, braille, and automation. Re-runnable any
+time to reconfigure. On the Help menu the item is labelled
+<strong>Personalise QUILL…</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Menu path: <strong>Help menu ▸ Personalise
+QUILL…</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Personalise QUILL…</strong>.</li>
+<li>Step through each page by keyboard (make a deliberate choice, e.g.
+an intent and whether you want AI/braille/automation), and
+<strong>Finish</strong>; or <strong>Escape</strong> to abort.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A multi-step wizard whose every page is labelled, announced, and
+keyboard-only operable. Finishing applies your choices (profile + intent
++ optional Quillin/AI/braille setup) and says so; aborting changes
+nothing. This is the same wizard reached in HELP-13.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="help-16--status-page-helpstatus_page">HELP-16 — Status Page
+(<code>help.status_page</code>)</h2>
+<p><em>What &amp; why.</em> A live, at-a-glance panel of QUILL's runtime
+state — version, active profile, background tasks, queued notifications,
+and (when enabled) speech/BITS Whisperer readiness. Everything is read
+locally; <strong>no network is required</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Menu label: <strong>Status Page</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Status Page</strong>.</li>
+<li>Read the rows with your screen reader; if a <strong>Refresh</strong>
+control is present, activate it and confirm values update. Close with
+<strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Status Page</strong> dialog whose <strong>Version</strong>
+row reads <strong>1.0.0</strong> and which lists the active profile,
+background-task count, and queued-notification count (plus a
+speech/Whisperer block if that feature is on). Rows are
+keyboard-navigable and announced; the page updates live/on refresh;
+closing returns focus to Help.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-17--switch-feature-profile-helpswitch_feature_profile-altshiftp">HELP-17
+— Switch Feature Profile… (<code>help.switch_feature_profile</code>,
+Alt+Shift+P)</h2>
+<p><em>What &amp; why.</em> Opens the accessible profile picker to
+change how much of QUILL is exposed (Essential, and richer profiles). On
+the Help menu it is labelled <strong>Switch Profile…</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Shortcut <strong>Alt+Shift+P</strong>; menu path
+<strong>Help ▸ Feature Profiles ▸ Switch Profile…</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+P</strong>, or open <strong>Help menu ▸
+Feature Profiles ▸ Switch Profile…</strong>.</li>
+<li>Arrow through the profile list; read each profile's description;
+select one and confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A keyboard-navigable <strong>profile picker</strong> announcing each
+profile's name and description. Choosing one applies it (menus and
+available commands change to match) and announces the new profile. This
+is undoable via HELP-18.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-18--undo-last-profile-change-helpundo_last_profile_change">HELP-18
+— Undo Last Profile Change
+(<code>help.undo_last_profile_change</code>)</h2>
+<p><em>What &amp; why.</em> Reverts the most recent profile switch — a
+safety net after HELP-17 or HELP-12.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Do HELP-17 (switch to a different profile) immediately before this,
+so there is a change to undo. Path: <strong>Help ▸ Feature Profiles ▸
+Undo Last Profile Change</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Feature Profiles ▸ Undo Last Profile
+Change</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If there was a recent change, the status bar reports
+<strong>"Profile changed back to <name>"</strong> and menus rebuild to
+the previous profile. If there is nothing to undo, it says <strong>"No
+profile change to undo"</strong> rather than erroring.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-19--what-can-i-do-here-helpwhat_can_i_do_here-shiftf1">HELP-19
+— What Can I Do Here? (<code>help.what_can_i_do_here</code>,
+Shift+F1)</h2>
+<p><em>What &amp; why.</em> A plain-language explainer of the actions
+available for the current document and selection — orientation for a
+newcomer who is unsure what to try.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Select a few words so the report
+can mention selection-specific actions. Menu label <strong>What Can I Do
+Here?</strong> carries the <strong>Shift+F1</strong> accelerator.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+F1</strong>, or <strong>Help menu ▸ What Can I
+Do Here?</strong>.</li>
+<li>Read the report; press <strong>Enter</strong> or
+<strong>Escape</strong> to close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>An information dialog titled <strong>What Can I Do Here?</strong>
+describing what you can do with the current document (and, because text
+is selected, selection actions). The text is review-cursor readable;
+closing returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-20--why-dont-i-see-a-feature-helpwhy_dont_i_see_feature">HELP-20
+— Why Don't I See a Feature?
+(<code>help.why_dont_i_see_feature</code>)</h2>
+<p><em>What &amp; why.</em> Look up any feature or command by name and
+hear <strong>why</strong> it is or isn't showing — usually the active
+profile or a feature toggle.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Menu label: <strong>Why Don't I See a
+Feature?</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Help menu ▸ Why Don't I See a Feature?</strong>.</li>
+<li>In the text box (pre-filled with
+<strong><code>regex</code></strong>), type a feature/command/topic —
+e.g. <strong><code>podcasts</code></strong> or a tool you cannot find —
+and confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled text-entry dialog, then an information dialog reporting
+whether the feature exists, whether it is enabled, and which
+profile/toggle governs it (and how to turn it on). Cancelling reports
+<strong>"Feature lookup cancelled"</strong>. All keyboard-operable and
+announced.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="help-21--why-is-this-unavailable-helpwhy_unavailable-altf1">HELP-21
+— Why Is This Unavailable? (<code>help.why_unavailable</code>,
+Alt+F1)</h2>
+<p><em>What &amp; why.</em> Explains why the <strong>currently
+focused</strong> greyed-out button or menu item is disabled — answered
+in place, for the exact control you are on. Has <strong>no menu
+entry</strong>: use <strong>Alt+F1</strong> or the Command Palette.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Get onto a disabled control first: open a menu (or Tab to a
+toolbar/dialog control) that is greyed out in your current state, and
+leave focus on it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>With focus on the disabled item, press <strong>Alt+F1</strong>.</li>
+<li>Then, with focus <strong>nowhere useful</strong> (e.g. no target),
+press <strong>Alt+F1</strong> again to confirm the guidance
+message.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>On a disabled control, QUILL speaks/shows why it is unavailable
+(reading the control's help text / the reason it is gated). With nothing
+suitable focused, it guides you: <strong>"Focus the greyed-out button or
+menu item you are curious about, then press Alt+F1."</strong> — never a
+silent no-op or an error.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 21</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

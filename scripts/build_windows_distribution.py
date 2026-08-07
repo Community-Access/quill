@@ -1,6 +1,7 @@
 """Build a Windows distribution of Quill.
 
-Outputs under ``windows-distribution/``:
+Outputs under ``dist/windows/`` (the offline edition defaults to
+``dist/windows-offline/`` so both can coexist):
 
 * ``portable/`` — the runnable bundle (launcher, manifest, README, the
   Quill package source, and optionally an embedded Python runtime with
@@ -244,7 +245,7 @@ def main() -> int:
         description="Generate portable and Inno Setup packaging artefacts for Windows.",
     )
     parser.add_argument("--pyproject", type=Path, default=Path("pyproject.toml"))
-    parser.add_argument("--output-dir", type=Path, default=Path("windows-distribution"))
+    parser.add_argument("--output-dir", type=Path, default=Path("dist") / "windows")
     parser.add_argument(
         "--bundle-python",
         action="store_true",
@@ -368,11 +369,11 @@ def main() -> int:
     args = parser.parse_args()
 
     output_dir = args.output_dir
-    # The offline edition must never clobber a slim build's windows-distribution/
+    # The offline edition must never clobber a slim build's dist/windows/
     # output. When the caller did not override --output-dir, land it in its own
-    # windows-distribution-offline/ tree so both can coexist.
-    if args.bundle_offline and output_dir == Path("windows-distribution"):
-        output_dir = Path("windows-distribution-offline")
+    # dist/windows-offline/ tree so both can coexist.
+    if args.bundle_offline and output_dir == Path("dist") / "windows":
+        output_dir = Path("dist") / "windows-offline"
 
     bundle = build_windows_distribution(
         args.pyproject,

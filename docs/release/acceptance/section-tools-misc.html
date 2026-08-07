@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>section-tools-misc</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="section--tools-compare-keymap-macros--utilities-tools-73-commands">Section
+— Tools: compare, keymap, macros &amp; utilities (<code>tools.*</code>,
+73 commands)</h1>
+<p>The <strong>catch-all</strong> part of the Tools menu: everything
+under <code>tools.*</code> that is <strong>not</strong> an AI writing
+tool (those live in <code>section-tools-ai.md</code>) and
+<strong>not</strong> a dictation / OCR / read-aloud / speech /
+spell-check / dictionary tool (those live in
+<code>section-tools-speech.md</code>). What is left is the workbench:
+<strong>document compare</strong>, the <strong>keymap /
+keyboard-pack</strong> editor and import/export,
+<strong>macros</strong>, <strong>CSV / Table Studio</strong>, the
+<strong>Calculator</strong>, <strong>sticky notes</strong>,
+<strong>sound events</strong>, <strong>notifications</strong>,
+<strong>updates</strong>, <strong>watch-folder</strong>,
+<strong>profiles &amp; feature toggles</strong>, <strong>share /
+back-up</strong>, <strong>shell integration</strong>, the
+<strong>developer consoles</strong>, <strong>Quillins</strong>,
+<strong>Mastodon</strong>, the <strong>extraction-quality</strong>
+reports, and the experimental <strong>GLOW</strong> accessibility
+engine.</p>
+<p>Surface reference (label + shortcut) is
+<code>../../planning/signoff/SIGNOFF-editor.md</code> →
+<code>tools.*</code>. Read §2–§3 of <code>README.md</code> for the
+scenario layout and the Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible boxes, and §5 for what
+<strong>[GATED]</strong> means.</p>
+<p><strong>Reliable route to any command.</strong> Every command below
+can be reached from the <strong>Command Palette</strong> — press
+<strong>Ctrl+Shift+P</strong>, type the command name, press
+<strong>Enter</strong>. Where a command also has a menu entry it is
+given as <strong>Tools menu (Alt, T) ▸ …</strong>; where a command has a
+default keyboard shortcut it is printed in the heading. If a menu path
+differs from what this book prints, that is a
+<strong>Surface-exact</strong> failure — write down what the menu
+actually said.</p>
+<p>Common inputs used below (copy the <code>../qa-samples/</code> folder
+onto the machine first):</p>
+<ul>
+<li><strong><code>compare-original.txt</code></strong> and
+<strong><code>compare-revised.txt</code></strong> — a known before/after
+pair. There are <strong>three content edits</strong>: line 2
+<strong>March → April</strong>; line 3 gains <strong>“and
+performance”</strong>; the revised file adds a fourth line <strong>“A
+follow-up review is scheduled for February.”</strong></li>
+<li><strong><code>data.csv</code></strong> — three columns
+<strong>Region, Units, Revenue</strong>, four data rows
+(North/South/East/West). Known totals: <strong>Units = 465</strong>,
+<strong>Revenue = 9300</strong>; 4 rows, 3 columns.</li>
+</ul>
+<blockquote>
+<p><strong>Note on the compare engine (read before
+TMI-03…TMI-11).</strong> QUILL’s difference navigator groups
+<strong>contiguous</strong> differing lines into one <em>line
+group</em>. In the sample pair the three edits sit on adjacent lines (2,
+3, and the new 4), so the navigator reports them as <strong>one
+differing line group spanning lines 2–4</strong>, not as three separate
+stops. That is correct behaviour, not a miss — the three edits are all
+<em>inside</em> that one group, and the copied/summary text and the
+unified-diff preview spell out all three. Judge Compare on whether it
+finds the three edits and reports nothing spurious, <strong>not</strong>
+on a literal “3 differences” count.</p>
+</blockquote>
+<hr />
+<h2 id="tmi-01--calculator-toolscalculator">TMI-01 — Calculator
+(<code>tools.calculator</code>)</h2>
+<p><em>What &amp; why.</em> An accessible scientific calculator that
+also computes statistics over selected numbers, a pasted column, a CSV,
+or a table — and can insert the result at the cursor.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>data.csv</code></strong>. Select the whole
+document (<strong>Ctrl+A</strong>) so the four rows of numbers are the
+input.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Calculator…</strong> (Command Palette → “Calculator”,
+or <strong>Tools menu ▸ Calculator…</strong>). The current selection
+pre-fills the input box.</li>
+<li>Tab to the <strong>operation</strong> control and choose
+<strong>sum</strong>; Tab to the <strong>scope</strong> control and
+choose <strong>Down each column</strong>; activate the data/compute
+button.</li>
+<li>Read the result. Then change scope to <strong>Full summary</strong>
+and re-compute.</li>
+<li>Optionally use <strong>Insert</strong> to drop the result into the
+document, then <strong>Copy</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The dialog is fully labelled and keyboard-complete; the input,
+operation, and scope controls all announce their names and values.</li>
+<li>Sum <strong>down each column</strong> announces <strong>“Sum down
+each column. Column 2: 465; Column 3: 9300”</strong> (Column 1 is the
+non-numeric Region column and is skipped).</li>
+<li>A plain calculation (type <code>2+2</code>, compute) returns
+<strong>4</strong>. <strong>Full summary</strong> announces a
+count/sum/average line over the numbers.</li>
+<li><strong>Insert</strong> writes the last result at the cursor and
+says “Result inserted.”; <strong>Copy</strong> says “Result copied.”
+<strong>Escape</strong> / Close returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-02--word-count-toolsword_count-ctrlshiftw">TMI-02 — Word
+Count… (<code>tools.word_count</code>, Ctrl+Shift+W)</h2>
+<p><em>What &amp; why.</em> Report the document’s word, line, and
+character counts.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>plain.txt</code></strong> (three plain
+paragraphs).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+W</strong>, or Command Palette → “Word
+Count”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Word Count</strong> message box listing
+<strong>Words</strong>, <strong>Lines</strong>, and
+<strong>Characters</strong>; the status bar also announces “Word count:
+N words”. Dismissing the box (Enter / Escape) returns focus to the
+editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-03--compare-with-file-toolscompare_with_file">TMI-03 —
+Compare with File… (<code>tools.compare_with_file</code>)</h2>
+<p><em>What &amp; why.</em> Compare the document you are editing against
+another file on disk and start a keyboard-navigable difference
+session.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>compare-original.txt</code></strong>. Have
+<strong><code>compare-revised.txt</code></strong> on disk.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Compare with File”, or <strong>Tools menu ▸
+Compare with File…</strong>.</li>
+<li>In the file dialog pick
+<strong><code>compare-revised.txt</code></strong>; press
+<strong>Enter</strong>.</li>
+<li>Read the unified-diff preview box, then dismiss it (Enter /
+Escape).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The file dialog is keyboard-navigable. A <strong>Compare with
+File</strong> preview box shows a unified diff that reflects all three
+edits in substance (<strong>March → April</strong>, the added
+<strong>“and performance”</strong>, and the added <strong>“A follow-up
+review…”</strong> line).</li>
+<li>On dismiss, a compare session starts: the status announces something
+like <strong>“Compare session started. 2 documents. 1 differing line
+group found”</strong> and the first difference is announced (see the
+engine Note above). Status ends “Compared with
+compare-revised.txt”.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-04--compare-open-documents-toolscompare_open_documents">TMI-04 —
+Compare Open Documents… (<code>tools.compare_open_documents</code>)</h2>
+<p><em>What &amp; why.</em> Compare all currently open documents against
+each other (no file picker) and start the same difference session.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong>both</strong> <code>compare-original.txt</code> and
+<code>compare-revised.txt</code> as two tabs.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Compare Open Documents”, or <strong>Tools menu ▸
+Compare Open Documents…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With two open docs, a session starts and the status announces
+<strong>“Compare session started. 2 documents. 1 differing line groups
+found”</strong> and the first difference.</li>
+<li>With <strong>only one</strong> document open it says <strong>“Open
+at least two documents to compare”</strong> and does nothing
+destructive.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-05--compare-options-toolscompare_options">TMI-05 — Compare
+Options… (<code>tools.compare_options</code>)</h2>
+<p><em>What &amp; why.</em> Choose whether trailing spaces and
+CRLF-vs-LF line-ending differences are ignored when comparing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active (from TMI-03 or TMI-04).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Compare Options”, or <strong>Tools menu ▸ Compare
+Options…</strong>.</li>
+<li>Answer the two Yes/No prompts: <strong>Ignore trailing
+spaces?</strong> then <strong>Ignore line-ending differences (CRLF vs
+LF)?</strong></li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Two clearly spoken Yes/No questions, each cancellable. After
+answering, the active session is <strong>re-compared</strong> with the
+new options and the status says <strong>“Updated compare
+options”</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-06--next--previous-difference-toolscompare_next_difference-ctrlaltshift--toolscompare_previous_difference-ctrlaltshift">TMI-06
+— Next / Previous Difference
+(<code>tools.compare_next_difference</code>, Ctrl+Alt+Shift+. —
+<code>tools.compare_previous_difference</code>, Ctrl+Alt+Shift+,)</h2>
+<p><em>What &amp; why.</em> Step forward and back through the
+differences in the active session.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active (TMI-03/04).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+.</strong> (Next Difference) a few
+times; then <strong>Ctrl+Alt+Shift+,</strong> (Previous
+Difference).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press moves the current difference and <strong>announces
+it</strong> (“Difference 1 of
+<ol type="1">
+<li>changed. …lines 2–3 / lines 2–4 …”); navigation
+<strong>wraps</strong> at the ends. With only one group, a soft “no more
+differences” sound plays and the same difference is re-announced. With
+no active session, “No active compare session”.</li>
+</ol></li>
+<li><strong>Note:</strong> the session’s own status line references
+<strong>F8 / Shift+F8 / Ctrl+F8</strong> for next/previous/current. Try
+both the printed <code>Ctrl+Alt+Shift</code> shortcuts and the F8
+family; if the spoken hint and the working key disagree, flag
+<strong>Surface-exact</strong>.</li>
+</ul>
+<p><strong>Sign off (Next Difference)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Previous Difference)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-07--announce-current-difference-toolscompare_announce_difference-ctrlaltshiftd">TMI-07
+— Announce Current Difference
+(<code>tools.compare_announce_difference</code>, Ctrl+Alt+Shift+D)</h2>
+<p><em>What &amp; why.</em> Re-speak the current difference without
+moving, and (when synchronization is on) move the caret to that
+difference in the document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active with a difference selected.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+D</strong>, or Command Palette →
+“Announce Current Difference”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The current difference is re-announced (index, kind, and the
+affected lines/text). With synchronization on (TMI-11), the caret in the
+active document jumps to that difference’s starting line. With no
+session, “No active compare session”.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-08--open-difference-list-toolscompare_difference_list">TMI-08 —
+Open Difference List… (<code>tools.compare_difference_list</code>)</h2>
+<p><em>What &amp; why.</em> Jump to any difference from a single
+keyboard list.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open Difference List”, or <strong>Tools menu ▸
+Open Difference List…</strong>.</li>
+<li>Arrow through the list; select an entry; press
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Difference List</strong> single-choice dialog whose
+entries read like “Difference 1: changed at line 2. …”; the current one
+is pre-selected. Choosing one makes it current and announces it. Escape
+cancels with no change.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-09--copy-current--copy-all-differences-toolscompare_copy_current_difference--toolscompare_copy_all_differences">TMI-09
+— Copy Current / Copy All Differences
+(<code>tools.compare_copy_current_difference</code> —
+<code>tools.compare_copy_all_differences</code>)</h2>
+<p><em>What &amp; why.</em> Put the current difference, or the whole
+difference report, on the clipboard.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Copy Current Difference”, then paste
+(<strong>Ctrl+V</strong>) into a scratch document to inspect.</li>
+<li>Command Palette → “Copy All Differences”, then paste to
+inspect.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Copy Current says <strong>“Copied current difference”</strong>; the
+pasted text is that one difference (index, kind, per-document
+lines/text).</li>
+<li>Copy All says <strong>“Copied all differences”</strong>; the pasted
+text is the full <strong>Compare Summary</strong> (documents, options
+line, count, and every difference — spelling out the March→April, +“and
+performance”, and the added follow-up line). With no session: “No active
+compare session”.</li>
+</ul>
+<p><strong>Sign off (Copy Current Difference)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Copy All Differences)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-10--create-difference-summary-toolscompare_create_summary">TMI-10
+— Create Difference Summary
+(<code>tools.compare_create_summary</code>)</h2>
+<p><em>What &amp; why.</em> Open the full compare report as a new
+document you can read, save, or share.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Create Difference Summary”, or <strong>Tools menu
+▸ Create Difference Summary</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new document tab</strong> opens containing the Compare
+Summary (documents compared, the options line, the difference count, and
+each difference); status says <strong>“Opened compare summary
+document”</strong>. Focus lands in the new document.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-11--toggle-compare-synchronization-toolscompare_toggle_sync">TMI-11
+— Toggle Compare Synchronization
+(<code>tools.compare_toggle_sync</code>)</h2>
+<p><em>What &amp; why.</em> Turn on/off whether navigating differences
+also moves the caret in the document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A compare session active.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Toggle Compare Synchronization”. Then navigate a
+difference and observe whether the caret follows. Toggle again.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The status announces <strong>“Synchronized compare navigation
+on”</strong> / <strong>“…off”</strong>. With it on, TMI-07/TMI-06 move
+the caret to the difference; with it off, they only speak. With no
+session: “No active compare session”.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-12--open-csv-in-table-studio-toolscsv_studio-experimental">TMI-12
+— Open CSV in Table Studio (<code>tools.csv_studio</code>)
+[experimental]</h2>
+<p><em>What &amp; why.</em> Load a CSV into QUILL’s accessible table
+grid to read, edit, and re-insert it as Markdown/HTML.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Precondition:</strong> enable <strong>Preferences ▸
+Experimental ▸ Enable experimental features</strong> and <strong>Table
+Studio</strong>. If off, the command says “Table Studio is an
+experimental feature; enable it in Preferences &gt; Experimental” — mark
+<strong>N/A</strong> on a build where you cannot enable it.</li>
+<li>Have <strong><code>data.csv</code></strong> on disk.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open CSV in Table Studio”.</li>
+<li>Pick <strong><code>data.csv</code></strong>; press
+<strong>Enter</strong>. Navigate the grid by keyboard.</li>
+<li>Optionally choose <strong>Insert as Markdown</strong> (OK) or
+<strong>Insert as HTML</strong> (Apply).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The CSV opens in the accessible grid titled <strong>“Table Studio —
+…”</strong> with the header row <strong>Region / Units /
+Revenue</strong> and <strong>4 body rows</strong>; cells are announced
+with row/column context on arrow. Insert-as-Markdown says “Table
+inserted as Markdown” (Insert-as-HTML says “…as HTML”). A bad file
+reports an error, not a crash.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-13--table-studio-toolstable_studio-experimental">TMI-13 —
+Table Studio (<code>tools.table_studio</code>) [experimental]</h2>
+<p><em>What &amp; why.</em> Build a new table from scratch in the same
+accessible grid, then insert it.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same experimental precondition as TMI-12.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Table Studio”. A 3×3 grid titled <strong>“Table
+Studio”</strong> opens with a caption “New table”.</li>
+<li>Type into cells by keyboard; add/remove rows/columns via the
+labelled controls; choose <strong>Insert as Markdown</strong> or
+<strong>Insert as HTML</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The grid and its row/column controls are labelled and
+keyboard-complete; edits are announced. Insert drops a valid
+Markdown/HTML table at the cursor and says which format. Escape leaves
+the document unchanged.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-14--regular-expression-helper-toolsregex_helper">TMI-14 —
+Regular Expression Helper… (<code>tools.regex_helper</code>)</h2>
+<p><em>What &amp; why.</em> Build and test a regular expression against
+sample text, with a recipe library, before using it in Find/Replace.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Regular Expression Helper”, or <strong>Tools menu
+▸ Regular Expression Helper…</strong>.</li>
+<li>Browse the recipe categories; type a pattern and sample text; read
+the match results.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Regular Expression Helper</strong> dialog with labelled
+pattern, test-text, and results controls, plus a categorized recipe
+list; matches are reported in a screen-reader-readable way. Escape/Close
+returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-15--search-in-files-toolssearch_in_files-ctrlshiftf">TMI-15
+— Search in Files… (<code>tools.search_in_files</code>,
+Ctrl+Shift+F)</h2>
+<p><em>What &amp; why.</em> Search a folder tree for text or a regex and
+open the results as a report.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Point the search at the <strong><code>qa-samples</code></strong>
+folder. Search term: <strong><code>QUILL</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+F</strong>, or Command Palette → “Search in
+Files”.</li>
+<li>Fill in the search root (qa-samples), the query, and options; run
+it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled, keyboard-complete search prompt; progress is reported. A
+<strong>new results tab</strong> (“Search - QUILL”) opens and the status
+says <strong>“Search complete: N match(es) in M file(s)”</strong>.
+Cancelling before running says “Search in files cancelled”.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-16--replace-across-files-toolsreplace_in_files-ctrlshiftr">TMI-16
+— Replace Across Files… (<code>tools.replace_in_files</code>,
+Ctrl+Shift+R)</h2>
+<p><em>What &amp; why.</em> Find-and-replace text across a folder tree —
+with a <strong>preview</strong> before anything is written.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Work on a <strong>disposable copy</strong> of a folder (replacement
+edits files on disk). Do not run this against <code>qa-samples</code>
+you want to keep byte-stable.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+R</strong>, or Command Palette → “Replace
+Across Files”.</li>
+<li>Enter the search root, the pattern, and the replacement; keep
+<strong>preview</strong> on; run.</li>
+<li>Read the <strong>Replace Preview</strong> tab, then confirm to apply
+(or cancel).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>With preview on, a <strong>Replace Preview</strong> tab lists every
+prospective change before any file is touched; “No matches found” when
+there are none. Applying reports how many files/occurrences changed.
+Nothing is written without your confirmation.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-17--macros-start--stop-recording-play-last-toolsstart_macro_recording--toolsstop_macro_recording--toolsplay_last_macro">TMI-17
+— Macros: Start / Stop Recording, Play Last
+(<code>tools.start_macro_recording</code> —
+<code>tools.stop_macro_recording</code> —
+<code>tools.play_last_macro</code>)</h2>
+<p><em>What &amp; why.</em> Record a sequence of commands and replay it
+— automation without code.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Start Macro Recording”. Name it
+<strong><code>My Macro</code></strong>; confirm.</li>
+<li>Perform two or three commands (e.g. select a line, upper-case
+it).</li>
+<li>Command Palette → “Stop Macro Recording”.</li>
+<li>Move the caret elsewhere, then Command Palette → “Play Last
+Macro”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Start prompts for a <strong>name</strong> and then says
+<strong>“Recording macro My Macro”</strong>; an empty name is refused;
+starting twice says “Already recording …”.</li>
+<li>Stop says <strong>“Saved macro My Macro with N step(s)”</strong>;
+stopping when not recording says “No macro is being recorded”.</li>
+<li>Play Last replays the steps and says <strong>“Played macro My
+Macro”</strong>; with nothing recorded it says “No recorded macro to
+play”.</li>
+</ul>
+<p><strong>Sign off (Start Macro Recording)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Stop Macro Recording)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Play Last Macro)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-18--manage-macros-toolsmanage_macros">TMI-18 — Manage
+Macros… (<code>tools.manage_macros</code>)</h2>
+<p><em>What &amp; why.</em> View, play, and delete your recorded
+macros.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>At least one macro recorded (TMI-17).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Manage Macros”, or <strong>Tools menu ▸ Manage
+Macros…</strong>.</li>
+<li>Select a macro in the list; play it; delete another; close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Manage Macros</strong> dialog with a labelled macro list
+and Play/Delete controls, all keyboard-operable; actions are announced.
+Deleting is confirmed before it happens. Escape/Close returns focus to
+the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-19--keymap-editor-toolskeymap_editor">TMI-19 — Keymap
+Editor… (<code>tools.keymap_editor</code>)</h2>
+<p><em>What &amp; why.</em> Search commands by name, or by
+typing/recording a shortcut, and rebind any command’s key.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Keymap Editor”, or <strong>Tools menu ▸ Keymap
+Editor…</strong>.</li>
+<li>In <strong>Search</strong>, type a command name (e.g. “word count”);
+select it in the list.</li>
+<li>Choose <strong>Edit</strong> / <strong>Record Keys…</strong> to
+assign a shortcut; confirm; then close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Keymap Editor</strong> dialog with a labelled
+<strong>Search</strong> field, a <strong>Record Keys…</strong> button, a
+shortcut-status line, and a <strong>Keyboard shortcuts</strong> list.
+Typing a chord (e.g. Ctrl+M) reveals what it is bound to;
+recording/assigning a key is announced; conflicts are reported. Changes
+persist after Close.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-20--export--import-keymap-toolsexport_keymap--toolsimport_keymap">TMI-20
+— Export / Import Keymap… (<code>tools.export_keymap</code> —
+<code>tools.import_keymap</code>)</h2>
+<p><em>What &amp; why.</em> Save your keybindings to a
+<code>.json</code> file and load them back (e.g. onto another
+machine).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. Pick a scratch folder for the export.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Export Keymap”. Save as
+<strong><code>my-keymap.json</code></strong>.</li>
+<li>Change a binding in the Keymap Editor (TMI-19).</li>
+<li>Command Palette → “Import Keymap”. Choose
+<strong><code>my-keymap.json</code></strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Export writes the JSON and says <strong>“Exported keymap to
+my-keymap.json”</strong>.</li>
+<li>Import re-reads it, re-applies shortcuts live, and says
+<strong>“Imported keymap from my-keymap.json”</strong> — your changed
+binding reverts to the exported one.</li>
+</ul>
+<p><strong>Sign off (Export Keymap)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Import Keymap)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-21--export--import-keyboard-pack-kqp-toolsexport_keyboard_pack--toolsimport_keyboard_pack">TMI-21
+— Export / Import Keyboard Pack (.kqp)…
+(<code>tools.export_keyboard_pack</code> —
+<code>tools.import_keyboard_pack</code>)</h2>
+<p><em>What &amp; why.</em> Package your whole keyboard layout as a
+named, describable <strong><code>.kqp</code></strong> pack to share, and
+import someone else’s.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open; a scratch folder.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Export Keyboard Pack (.kqp)”. Give it a
+<strong>name</strong> and optional <strong>description</strong>; save
+the <code>.kqp</code>.</li>
+<li>Command Palette → “Import Keyboard Pack (.kqp)”. Choose the file you
+just saved.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Export first asks for <strong>Pack name</strong> and
+<strong>Description</strong> (both labelled), then a file picker that
+defaults the <code>.kqp</code> extension; status says <strong>“Exported
+keyboard pack to …”</strong>.</li>
+<li>Import merges and re-applies the pack live and says
+<strong>“Imported keyboard pack: <name>. <description>”</strong>; an
+invalid pack reports “Import Failed” rather than corrupting your
+keymap.</li>
+</ul>
+<p><strong>Sign off (Export Keyboard Pack)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (Import Keyboard Pack)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-22--reset-keymap-toolsreset_keymap">TMI-22 — Reset Keymap
+(<code>tools.reset_keymap</code>)</h2>
+<p><em>What &amp; why.</em> Restore every keybinding to the shipped
+defaults.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Have at least one custom binding (from TMI-19).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Reset Keymap”. Read the warning; choose
+<strong>Yes</strong> (try <strong>No</strong> first to confirm it
+cancels).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A spoken <strong>“Reset all keybindings to defaults?”</strong>
+confirmation you can cancel. On Yes, bindings return to defaults, the
+keyboard pack resets to the default pack, and status says <strong>“Reset
+keymap to defaults”</strong>. On No: “Reset keymap cancelled”.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-23--reset-everything-to-factory-defaults-toolsreset_all_defaults">TMI-23
+— Reset Everything to Factory Defaults…
+(<code>tools.reset_all_defaults</code>)</h2>
+<p><em>What &amp; why.</em> One command to reset settings, shortcuts,
+menu customizations, and the feature profile — documents are never
+touched.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state. Understand this is broad; run it near the end of a test
+pass.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Reset Everything to Factory Defaults”. Read the
+warning; choose <strong>No</strong> to confirm it cancels, then repeat
+and choose <strong>Yes</strong> if you intend to reset.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A single <strong>“Reset EVERYTHING to factory defaults?”</strong>
+warning that spells out what resets and states documents are
+<strong>not</strong> affected and that it <strong>cannot be
+undone</strong>; it is cancellable. On Yes,
+settings/shortcuts/menus/profile return to factory state and persist;
+your open documents, autosaves, and backups are untouched.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-24--undo-recent-shortcut-change-toolsundo_recommended_updates">TMI-24
+— Undo Recent Shortcut Change
+(<code>tools.undo_recommended_updates</code>)</h2>
+<p><em>What &amp; why.</em> If a QUILL upgrade re-mapped a shortcut (a
+“recommended update”, e.g. Find → Ctrl+F), restore your previous
+binding.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. This has something to undo only right after an
+upgrade that applied a recommended shortcut change; otherwise expect the
+“nothing to undo” path.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Undo Recent Shortcut Change”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If a change was applied this launch, it is reverted and QUILL says
+<strong>“Restored your previous keyboard shortcuts.”</strong> (and won’t
+re-apply it next launch). If there is nothing to undo, it says
+<strong>“Nothing to undo”</strong> — not an error.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-25--open-keyboard-reference-toolsopen_keyboard_reference">TMI-25
+— Open Keyboard Reference
+(<code>tools.open_keyboard_reference</code>)</h2>
+<p><em>What &amp; why.</em> Open an HTML table of every current shortcut
+in your browser (QUILL is highly configurable, so this reflects your
+live keymap).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A default browser available.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open Keyboard Reference”, or <strong>Tools menu ▸
+Open Keyboard Reference</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A self-contained, screen-reader-friendly HTML shortcut table opens
+in the browser; status says <strong>“Opened keyboard reference in
+browser”</strong>. A write/open failure is reported in the status, not
+silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-26--global-hotkeys-toolsglobal_hotkeys">TMI-26 — Global
+Hotkeys… (<code>tools.global_hotkeys</code>)</h2>
+<p><em>What &amp; why.</em> Assign <strong>system-wide</strong> hotkeys
+that trigger safe QUILL commands even when QUILL is in the background
+(Windows).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. (Global hotkeys are a Windows feature.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Global Hotkeys”, or <strong>Tools menu ▸ Global
+Hotkeys…</strong>.</li>
+<li>Assign a hotkey to a listed command; save; test it from another app;
+then clear it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Global Hotkeys</strong> dialog listing the commands that
+may be bound globally, with labelled, keyboard-operable assign/clear
+controls. A saved hotkey fires its command system-wide; conflicts are
+reported. Escape cancels cleanly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-27--sticky-notes-toolssticky_notes">TMI-27 — Sticky Notes…
+(<code>tools.sticky_notes</code>)</h2>
+<p><em>What &amp; why.</em> Browse and open your saved sticky notes.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open (create a note first via TMI-28 if you have
+none).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Sticky Notes”, or <strong>Tools menu ▸ Sticky
+Notes…</strong>.</li>
+<li>Read the list; open a note; close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A keyboard-navigable list of notes (announced with their
+text/titles); opening one shows its content; the dialog is fully
+labelled. Escape returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-28--new-sticky-note-toolssticky_note_capture-ctrlshiftgrave-then-shiftn">TMI-28
+— New Sticky Note… (<code>tools.sticky_note_capture</code>,
+Ctrl+Shift+Grave then Shift+N)</h2>
+<p><em>What &amp; why.</em> Capture a quick note without leaving your
+document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. Chord: <strong>Ctrl+Shift+Grave</strong>,
+release, then <strong>Shift+N</strong> (Grave is the backtick key).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command via the chord, or Command Palette → “New Sticky
+Note”.</li>
+<li>Type a short note; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled note editor opens; on confirm QUILL saves it and says
+<strong>“Note saved”</strong>. The note then appears in Sticky Notes
+(TMI-27). Escape discards with no note saved.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-29--toggle-sound-notifications-toolssound_toggle">TMI-29 —
+Toggle Sound Notifications (<code>tools.sound_toggle</code>)</h2>
+<p><em>What &amp; why.</em> Turn QUILL’s earcons (sound cues) on or
+off.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Speakers/headphones on.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Toggle Sound Notifications”. Toggle it
+twice.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning <strong>on</strong> plays the “sound on” cue; turning
+<strong>off</strong> plays the “sound off” cue first; either way it
+announces <strong>“Sound notifications on”</strong> /
+<strong>“…off”</strong> and the setting persists.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-30--manage-sound-events-toolssound_events">TMI-30 — Manage
+Sound Events (<code>tools.sound_events</code>)</h2>
+<p><em>What &amp; why.</em> Choose which individual events play a
+sound.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Manage Sound Events”, or <strong>Tools menu ▸
+Manage Sound Events</strong>.</li>
+<li>Disable one event; <strong>OK</strong>. Reopen to confirm it stuck;
+re-enable it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Sound Events</strong> dialog listing events with a
+per-event enable/disable control, all labelled and keyboard-operable. OK
+saves your choices (the disabled set persists); Cancel/Escape
+discards.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-31--open-notifications-toolsnotifications">TMI-31 — Open
+Notifications… (<code>tools.notifications</code>)</h2>
+<p><em>What &amp; why.</em> Read QUILL’s stored notifications (e.g.
+update or GLOW messages) and clear them.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open Notifications”, or <strong>Tools menu ▸ Open
+Notifications…</strong>.</li>
+<li>Read the list; use <strong>Clear</strong> if offered; close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Notifications</strong> dialog listing stored notifications
+(keyboard-navigable). Clear empties them and says <strong>“Cleared
+notifications”</strong>; with none, status says <strong>“No
+notifications”</strong>. Escape/Close returns focus to the editor.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-32--check-for-updates-toolscheck_updates">TMI-32 — Check for
+Updates… (<code>tools.check_updates</code>)</h2>
+<p><em>What &amp; why.</em> Ask whether a newer QUILL is available.
+Invoking it is your consent for this one network check; nothing installs
+without a further confirmation.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Network available. Note whether this is a <strong>portable</strong>
+or <strong>installer</strong> build.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Check for Updates”, or <strong>Tools menu ▸ Check
+for Updates…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL announces <strong>“Checking for updates”</strong>, then
+reports either <strong>up to date</strong> or a <strong>newer
+version</strong> with a download/apply prompt (portable offers the
+<code>.zip</code>, installer offers the setup). Nothing downloads or
+installs without your explicit confirmation; a network failure is
+reported clearly, not silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-33--watch-folder-monitoring-toolswatch_folder_toggle">TMI-33
+— Watch Folder Monitoring (<code>tools.watch_folder_toggle</code>)</h2>
+<p><em>What &amp; why.</em> Reach the setting that turns automatic
+watch-folder monitoring on/off.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Watch Folder Monitoring”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Settings opens at (or points you to) the <strong>Watch
+Folders</strong> area; status says <strong>“Watch folder monitoring
+setting is in Settings &gt; Watch Folders”</strong>. The toggle there is
+labelled and keyboard-operable.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-34--watch-folder-settings-toolswatch_folder_settings">TMI-34
+— Watch Folder Settings… (<code>tools.watch_folder_settings</code>)</h2>
+<p><em>What &amp; why.</em> Manage watch-folder
+<strong>profiles</strong> (which folders are watched and how).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Watch folder available in this feature profile (else it says “Watch
+folder is unavailable in this profile” — mark
+<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Watch Folder Settings”, or <strong>Tools menu ▸
+Watch Folder Settings…</strong>.</li>
+<li>Add/edit a profile; save; close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Watch Folder Profiles</strong> dialog with labelled,
+keyboard-operable add/edit/remove controls; changes save and persist.
+Escape cancels cleanly.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-35--watch-folder-status-toolswatch_folder_status">TMI-35 —
+Watch Folder Status… (<code>tools.watch_folder_status</code>)</h2>
+<p><em>What &amp; why.</em> Open the accessible Watch Queue Monitor to
+see what has been picked up.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Watch folder available in this profile (else it announces “Watch
+folder is unavailable in this profile” — mark
+<strong>N/A</strong>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Watch Folder Status”, or <strong>Tools menu ▸
+Watch Folder Status…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The <strong>Watch Queue Monitor</strong> opens (re-raised if already
+open) and is keyboard- and screen-reader-navigable. When the feature is
+off, the unavailability is <strong>spoken</strong>, not silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-36--cycle-autosave-interval-toolscycle_autosave_interval">TMI-36
+— Cycle Autosave Interval
+(<code>tools.cycle_autosave_interval</code>)</h2>
+<p><em>What &amp; why.</em> Step the autosave interval through its
+choices with one command.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Cycle Autosave Interval”. Invoke it several times
+to cycle through 15 s → 30 s → 60 s → 5 min → off → 15 s…</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each press announces the new interval — <strong>“Autosave every 15
+s”</strong>, <strong>“…every 30 s”</strong>, <strong>“…every 1
+min”</strong>, <strong>“…every 5 min”</strong>, <strong>“Autosave
+off”</strong> — and updates the status bar.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-37--status-bar-layout-toolsstatus_bar_settings">TMI-37 —
+Status Bar Layout… (<code>tools.status_bar_settings</code>)</h2>
+<p><em>What &amp; why.</em> Reorder and show/hide the status-bar
+cells.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Status Bar Layout”, or <strong>Tools menu ▸
+Status Bar Layout…</strong>.</li>
+<li>Hide one cell and reorder another; <strong>OK</strong>; confirm the
+status bar changed.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Status Bar Layout</strong> dialog with labelled
+order/visibility controls (and working OK/Cancel + Escape). OK applies
+and persists the layout; Escape discards.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-38--profiles-and-features-toolsprofiles_and_features_settings">TMI-38
+— Profiles and Features…
+(<code>tools.profiles_and_features_settings</code>)</h2>
+<p><em>What &amp; why.</em> The overview surface for feature
+<strong>profiles</strong> (Essential, etc.) and how they shape which
+features are available.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Profiles and Features”, or <strong>Tools menu ▸
+Profiles and Features…</strong>.</li>
+<li>Read the profile choices and their descriptions; close without
+changing (or switch and confirm the announcement).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Profiles and Features</strong> dialog explaining and
+letting you pick a profile, fully labelled and keyboard-operable; a
+profile change is announced and persists.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-39--manage-individual-features-toolsindividual_feature_toggles">TMI-39
+— Manage Individual Features…
+(<code>tools.individual_feature_toggles</code>)</h2>
+<p><em>What &amp; why.</em> Turn individual features on/off on top of
+the active profile.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Manage Individual Features”, or <strong>Tools
+menu ▸ Manage Individual Features…</strong>.</li>
+<li>Toggle one feature off; <strong>OK</strong>; reopen to confirm the
+state stuck; re-enable it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog listing user-toggleable features, each as a
+<strong>checkbox</strong> whose checked state your screen reader
+announces on arrow (locked-on/off features are omitted). A filter (e.g.
+“disabled only”) is offered. OK persists; Escape discards.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-40--work-personas-toolswork_personas">TMI-40 — Work
+Personas… (<code>tools.work_personas</code>)</h2>
+<p><em>What &amp; why.</em> Save and apply named “personas” — bundles of
+settings/feature choices you switch between for different kinds of
+work.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Work Personas”, or <strong>Tools menu ▸ Work
+Personas…</strong>.</li>
+<li>Create a persona; apply it; confirm the announced change; then
+delete it.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Work Persona</strong> manager with labelled
+create/apply/remove controls, all keyboard-operable; applying a persona
+is announced (and reconfigures the app); a missing persona is reported
+(“Work Persona ‘…’ was not found.”). Escape/Close returns focus.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-41--external-tools-and-format-support-toolsexternal_tools">TMI-41
+— External Tools and Format Support…
+(<code>tools.external_tools</code>)</h2>
+<p><em>What &amp; why.</em> See which optional external tools (e.g.
+converters) are installed and what each one unlocks — with safe install
+guidance.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “External Tools and Format Support”, or
+<strong>Tools menu ▸ External Tools and Format Support…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>An <strong>External Tools and Format Support</strong> dialog listing
+each tool with its status (installed / not), what it unlocks, and how to
+install it; fully labelled and keyboard-navigable. Escape/Close returns
+focus to the editor. Nothing is installed without your action.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-42--export-and-back-up-toolsshare_export">TMI-42 — Export
+and Back Up… (<code>tools.share_export</code>)</h2>
+<p><em>What &amp; why.</em> Package your settings, feature profile, and
+customizations — either a privacy-clean <strong>profile</strong> to
+share, or a full <strong>backup</strong> for yourself.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A scratch folder for the output.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Export and Back Up”, or <strong>Tools menu ▸
+Export and Back Up…</strong>.</li>
+<li>Choose <strong>Profile</strong> vs <strong>Backup</strong>; review
+what is included; write the package.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog that lets you pick the package <strong>kind</strong> and
+shows what each includes; labelled and keyboard-complete.
+<strong>Profile</strong> mode omits machine-specific paths and
+<strong>secrets</strong>; <strong>Backup</strong> keeps everything for
+personal restore. The package is written to the chosen path with a
+spoken confirmation.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-43--import-or-restore-toolsshare_import">TMI-43 — Import or
+Restore… (<code>tools.share_import</code>)</h2>
+<p><em>What &amp; why.</em> Load a package made by TMI-42 back into
+QUILL.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A package file created in TMI-42.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Import or Restore”, or <strong>Tools menu ▸
+Import or Restore…</strong>.</li>
+<li>Choose the package; review what will be applied; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog that names what the package contains and lets you confirm
+before applying; keyboard-complete. On confirm the
+settings/customizations are applied and the result is announced; a
+bad/incompatible package is reported, not silently ignored.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-44--install-shell-integration-toolsshell_install">TMI-44 —
+Install Shell Integration… (<code>tools.shell_install</code>)</h2>
+<p><em>What &amp; why.</em> Add per-user “Open with Quill” associations
+and Explorer verbs (Windows).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Windows. Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Install Shell Integration”, or <strong>Tools menu
+▸ Install Shell Integration…</strong>.</li>
+<li>Read the confirmation (which lists the paths/verbs); choose
+<strong>No</strong> to confirm it cancels, then repeat and choose
+<strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Shell Integration</strong> confirmation you can cancel
+(“…install cancelled”). On Yes, associations install and a box lists
+what was installed with <strong>“Installed shell integration”</strong>;
+a partial/no-op install reports <strong>why</strong> rather than a false
+success.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-45--remove-shell-integration-toolsshell_remove">TMI-45 —
+Remove Shell Integration (<code>tools.shell_remove</code>)</h2>
+<p><em>What &amp; why.</em> Undo TMI-44 for this user account.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Shell integration installed (TMI-44).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Remove Shell Integration”, or <strong>Tools menu
+▸ Remove Shell Integration</strong>.</li>
+<li>Confirm the removal (try <strong>No</strong> first).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Shell Integration</strong> removal confirmation you can
+cancel (“…removal cancelled”). On Yes, the associations and context-menu
+entries are removed and status says <strong>“Removed shell
+integration”</strong>.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-46--open-welcome-guide-toolsopen_welcome_guide">TMI-46 —
+Open Welcome Guide (<code>tools.open_welcome_guide</code>)</h2>
+<p><em>What &amp; why.</em> Open the built-in welcome/orientation
+document.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any state.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open Welcome Guide”, or <strong>Tools menu ▸ Open
+Welcome Guide</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A new document tab with the welcome guide opens, focus lands in it,
+and status says <strong>“Opened welcome guide”</strong>. Its content
+reflects your current feature set.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-47--document-intake-report-toolsdocument_intake_report-ctrlshifti">TMI-47
+— Document Intake Report… (<code>tools.document_intake_report</code>,
+Ctrl+Shift+I)</h2>
+<p><em>What &amp; why.</em> Show what QUILL learned when it
+opened/converted the current document — the “how did this come in?”
+report.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> (rich content) so
+there is something to report.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+I</strong>, or Command Palette → “Document
+Intake Report”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Document Intake Report</strong> message box describing the
+document’s source/format and intake details; keyboard-dismissable. It is
+content-about-the-document, not a change to it.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-48--review-extraction-quality-toolsreview_extraction_quality">TMI-48
+— Review Extraction Quality…
+(<code>tools.review_extraction_quality</code>)</h2>
+<p><em>What &amp; why.</em> Report how confident QUILL is that a
+converted/OCR’d document extracted cleanly.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A document that was imported/converted (e.g. open
+<code>formatting.html</code> or an OCR result). Any open document works
+to see the report shape.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Review Extraction Quality”, or <strong>Tools menu
+▸ Review Extraction Quality…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>An <strong>Extraction Quality Review</strong> message box
+summarizing extraction quality for the current document;
+keyboard-dismissable; read-only.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-49--report-bad-extraction-toolsreport_bad_extraction">TMI-49
+— Report Bad Extraction… (<code>tools.report_bad_extraction</code>)</h2>
+<p><em>What &amp; why.</em> Save a diagnostic report (JSON) when a
+document imported badly, to help fix the converter.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open; a scratch folder.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Report Bad Extraction”, or <strong>Tools menu ▸
+Report Bad Extraction…</strong>.</li>
+<li>In the save dialog, name the <code>.json</code>; confirm (try
+<strong>Cancel</strong> first).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A save dialog (JSON default). Cancel says <strong>“Bad extraction
+report cancelled”</strong>. On save it writes the report and says
+<strong>“Saved extraction report to <name>”</strong>. The report is a
+local file — nothing is sent anywhere automatically.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-50--copy-diagnostic-summary-toolscopy_diagnostic_summary">TMI-50
+— Copy Diagnostic Summary
+(<code>tools.copy_diagnostic_summary</code>)</h2>
+<p><em>What &amp; why.</em> Put a scrubbed environment/diagnostic
+summary on the clipboard for a bug report — no document content
+included.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Copy Diagnostic Summary”. Paste
+(<strong>Ctrl+V</strong>) into a scratch document to inspect.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL says <strong>“Diagnostic summary copied to
+clipboard.”</strong> The pasted text describes the build/environment and
+editor surface <strong>without</strong> your document’s text. If the
+clipboard cannot open it says so (“Could not open clipboard.”).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-51--open-python-console-toolsopen_python_console">TMI-51 —
+Open Python Console… (<code>tools.open_python_console</code>)</h2>
+<p><em>What &amp; why.</em> A scripting console over QUILL’s API
+(<code>q.help()</code> for the reference).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Preconditions:</strong> not in <strong>Safe Mode</strong>
+(<code>QUILL_SAFE_MODE=1</code> disables it) and the Developer Console
+enabled in settings. A first-run <strong>consent</strong> prompt may
+appear — approve it. If gated off, mark <strong>Blocked/N-A</strong> per
+the spoken reason.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open Python Console”, accept any consent
+prompt.</li>
+<li>Type <code>q.help()</code> and run it; read the output.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Safe Mode / disabled states are <strong>spoken</strong> (“Developer
+Console is disabled in Safe Mode.” / “…in settings.”). Otherwise the
+console window opens; on first open it announces <strong>“Python console
+ready. Type q.help() for the scripting API reference.”</strong>; history
+and a document-name status line are present.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-52--open-typescript-console-toolsopen_typescript_console">TMI-52
+— Open TypeScript Console…
+(<code>tools.open_typescript_console</code>)</h2>
+<p><em>What &amp; why.</em> The TypeScript-flavoured developer console
+(a background worker runs the code).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same Safe-Mode / enabled / consent preconditions as TMI-51.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Open TypeScript Console”, accept any consent
+prompt.</li>
+<li>Wait for the worker to start; run a simple expression.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Safe Mode / disabled states are spoken. Otherwise the console opens
+with a <strong>“Ready - TypeScript | <document>”</strong> status; the
+background worker starts and announces when ready before you can rely on
+it.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-53--restart-typescript-worker-toolsrestart_typescript_worker">TMI-53
+— Restart TypeScript Worker
+(<code>tools.restart_typescript_worker</code>)</h2>
+<p><em>What &amp; why.</em> Restart the TypeScript console’s background
+worker if it wedges.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open the TypeScript console first (TMI-52).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Restart TypeScript Worker”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If the console was never opened, status says <strong>“Open the
+TypeScript console first, then restart the worker.”</strong> Otherwise
+the worker restarts (and re-announces ready).</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-54--manage-quillins-toolsquillins_manager">TMI-54 — Manage
+Quillins (<code>tools.quillins_manager</code>)</h2>
+<p><em>What &amp; why.</em> Manage installed Quillins (QUILL’s sandboxed
+extensions): enable, disable, reload, remove, install.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. Note Quillin contributions are disabled in
+<strong>Safe Mode</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Manage Quillins”, or <strong>Tools menu ▸ Manage
+Quillins</strong>.</li>
+<li>Read the installed list and each Quillin’s detail (including its
+signature status); try enable/disable/reload on one; close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A hardened <strong>Manage Quillins</strong> dialog with a
+keyboard-navigable list; the detail pane names each Quillin and shows a
+<strong>Signature</strong> line (verified / invalid / unsigned).
+Enable/disable/reload/remove/install are labelled and confirmed;
+permission requests are spoken. In Safe Mode, contributions stay
+disabled.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-55--new-quillin-toolsquillin_wizard">TMI-55 — New Quillin
+(<code>tools.quillin_wizard</code>)</h2>
+<p><em>What &amp; why.</em> Scaffold a new Quillin manifest in-app.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A scratch folder for the new Quillin.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “New Quillin”, or <strong>Tools menu ▸ New
+Quillin</strong>.</li>
+<li>Walk the wizard fields (name, description, license, etc.) by
+keyboard; finish.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A wizard with labelled, keyboard-complete fields that produces a
+valid Quillin scaffold/manifest; the outcome is announced. Escape
+cancels with nothing written.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-56--submit-to-quillin-hub-toolsquillin_hub_submit">TMI-56 —
+Submit to Quillin Hub (<code>tools.quillin_hub_submit</code>)</h2>
+<p><em>What &amp; why.</em> Validate a shareable Quillin/artifact and
+guide you through submitting it to the Quillin Hub.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A Quillin to submit (e.g. from TMI-55).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Submit to Quillin Hub”, or <strong>Tools menu ▸
+Submit to Quillin Hub</strong>.</li>
+<li>Follow the validation and submission guidance.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The artifact is validated and any problems are reported clearly; the
+submission steps are labelled and keyboard-navigable. Nothing is
+published without your action.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-57--mastodon-accounts-toolsmanage_mastodon_accounts">TMI-57
+— Mastodon Accounts… (<code>tools.manage_mastodon_accounts</code>)</h2>
+<p><em>What &amp; why.</em> Connect, view, set default, and remove the
+Mastodon accounts the social commands use. Do this
+<strong>before</strong> TMI-58…TMI-60. Disabled in Safe Mode.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A Mastodon account (instance + sign-in) you can use. If none, mark
+<strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Mastodon Accounts”, or <strong>Tools menu ▸
+Mastodon Accounts…</strong>.</li>
+<li>Add an account by keyboard; set it default; then remove it to
+confirm removal.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>Mastodon Accounts</strong> dialog with labelled
+add/remove/set-default controls, all keyboard-operable; actions are
+announced. <strong>Tokens are stored in the platform secret
+store</strong>, never in plain text. In Safe Mode the feature is refused
+with a spoken reason.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-58--post-to-mastodon-toolspost_to_mastodon-ctrlshiftgrave-then-shiftp">TMI-58
+— Post to Mastodon… (<code>tools.post_to_mastodon</code>,
+Ctrl+Shift+Grave then Shift+P)</h2>
+<p><em>What &amp; why.</em> Publish the selection (or the whole
+document) to Mastodon. Disabled in Safe Mode.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A connected Mastodon account (TMI-57). Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+P</strong>.</li>
+<li>Select a short line of text to post.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command via the chord, or Command Palette → “Post to
+Mastodon”.</li>
+<li>Review/edit the compose text; choose the account; post.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>If no account is set up, QUILL says <strong>“Add a Mastodon account
+to post.”</strong> and opens the accounts manager first. Otherwise a
+labelled compose dialog opens pre-filled with your selection (or the
+whole document); on post it says <strong>“Posted to Mastodon.”</strong>
+(with the URL when available). Safe Mode refuses with a spoken
+message.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-59--add-a-user-to-a-mastodon-list-toolsmastodon_add_user_to_list">TMI-59
+— Add a User to a Mastodon List…
+(<code>tools.mastodon_add_user_to_list</code>)</h2>
+<p><em>What &amp; why.</em> Look up an account and add it to one of your
+Mastodon lists.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A connected Mastodon account (TMI-57).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Add a User to a Mastodon List”, or <strong>Tools
+menu ▸ Add a User to a Mastodon List…</strong>.</li>
+<li>Enter the handle; pick a list; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled handle prompt (“Looking up <handle> and your lists…” is
+spoken), then a list picker; the add is confirmed by voice. Mastodon
+requires you to <strong>follow</strong> the account first — if you
+don’t, QUILL reports that clearly rather than failing silently.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2 id="tmi-60--view-mastodon-profile-toolsview_mastodon_profile">TMI-60
+— View Mastodon Profile… (<code>tools.view_mastodon_profile</code>)</h2>
+<p><em>What &amp; why.</em> Look up an account, see your relationship
+both ways, and Follow/Unfollow.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A connected Mastodon account (TMI-57).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “View Mastodon Profile”, or <strong>Tools menu ▸
+View Mastodon Profile…</strong>.</li>
+<li>Enter a handle; read the profile; use Follow/Unfollow.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled handle prompt (“Looking up <handle>…” spoken), then a
+profile view that states the relationship (following / follows you) with
+a keyboard-operable <strong>Follow/Unfollow</strong> button whose action
+is announced.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-61--glow-audit-current-document--selection--file-toolsglow_audit_document--toolsglow_audit_selection--toolsglow_audit_file-gated-coreglow">TMI-61
+— GLOW Audit: Current Document / Selection / File
+(<code>tools.glow_audit_document</code> —
+<code>tools.glow_audit_selection</code> —
+<code>tools.glow_audit_file</code>) [GATED core.glow]</h2>
+<p><em>What &amp; why.</em> Run QUILL’s experimental
+<strong>GLOW</strong> accessibility auditor and open a scored
+report.</p>
+<p><strong>[GATED] precondition.</strong> GLOW is experimental. Enable
+<strong>Preferences ▸ Experimental ▸ Enable experimental
+features</strong>, then <strong>GLOW accessibility review and
+repair</strong>. If it is <strong>off</strong>, invoking any GLOW
+command shows an info box titled <strong>“GLOW (Experimental)”</strong>
+explaining how to turn it on — on a public build where you do not enable
+it, mark these <strong>N/A</strong> (do not fail for being gated).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>GLOW enabled. Open <strong><code>formatting.md</code></strong>. For
+the <em>selection</em> variant, select a heading/paragraph. For the
+<em>file</em> variant, have a structured file on disk.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Audit Current Document:</strong> Command Palette → “GLOW
+Audit Current Document”.</li>
+<li><strong>Audit Selection:</strong> select text, then “GLOW Audit
+Selection”.</li>
+<li><strong>Audit File:</strong> “GLOW Audit File”, pick a file.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each opens a <strong>GLOW Audit</strong> report in a new scratch
+tab; document/selection variants say <strong>“Opened GLOW audit for
+…”</strong>. The <strong>file</strong> variant runs in the background
+and then announces <strong>“GLOW audit for <file>: score N, grade X, K
+findings.”</strong> A gated invocation shows the enable-instructions box
+instead.</li>
+</ul>
+<p><strong>Sign off (GLOW Audit Current Document)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (GLOW Audit Selection)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (GLOW Audit File)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-62--glow-fix-current-document--selection--file-toolsglow_fix_document--toolsglow_fix_selection--toolsglow_fix_file-gated-coreglow">TMI-62
+— GLOW Fix: Current Document / Selection / File
+(<code>tools.glow_fix_document</code> —
+<code>tools.glow_fix_selection</code> —
+<code>tools.glow_fix_file</code>) [GATED core.glow]</h2>
+<p><em>What &amp; why.</em> Apply GLOW’s deterministic accessibility
+fixes — safely, with preview for the whole document and a
+non-destructive copy for files.</p>
+<p><strong>[GATED] precondition.</strong> Same as TMI-61 (enable
+Experimental ▸ GLOW; else the enable box appears and you mark
+<strong>N/A</strong> on a public build).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>GLOW enabled. Open a document with fixable issues (e.g.
+<code>formatting.md</code>); for <em>selection</em>, select part of it;
+for <em>file</em>, have a structured file on disk.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Fix Current Document:</strong> Command Palette → “GLOW Fix
+Current Document”.</li>
+<li><strong>Fix Selection:</strong> select text, then “GLOW Fix
+Selection”.</li>
+<li><strong>Fix File:</strong> “GLOW Fix File”, pick a file,
+read/confirm the copy path.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>Document:</strong> opens a <strong>GLOW Fix Preview</strong>
+tab and <strong>starts a compare session</strong> between the original
+and the fixed text; status names how many changes. If nothing is fixable
+it opens a report and says <strong>“No deterministic GLOW fixes were
+available”</strong> (the original is untouched).</li>
+<li><strong>Selection:</strong> applies the fixes in place, re-selects
+the result, and says <strong>“Applied N GLOW fixes to <scope>”</strong>
+(or the no-fixes message).</li>
+<li><strong>File:</strong> first shows a box stating it will write a
+<strong>new</strong> <code>-accessible</code> copy and that the
+<strong>original is never modified</strong>, and is cancellable; on
+success it opens a report and announces <strong>“GLOW applied N fixes.
+The repaired copy is <name>.”</strong></li>
+</ul>
+<p><strong>Sign off (GLOW Fix Current Document)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (GLOW Fix Selection)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<p><strong>Sign off (GLOW Fix File)</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="tmi-63--check-for-glow-updates-toolscheck_glow_updates-gated-coreglow">TMI-63
+— Check for GLOW Updates… (<code>tools.check_glow_updates</code>) [GATED
+core.glow]</h2>
+<p><em>What &amp; why.</em> Check for, and optionally install, a newer
+GLOW accessibility engine.</p>
+<p><strong>[GATED] precondition.</strong> Same as TMI-61 (enable
+Experimental ▸ GLOW). If off, the enable box appears — mark
+<strong>N/A</strong> on a public build. Network required.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>GLOW enabled; network available. Invoking is your consent for the
+network check.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Command Palette → “Check for GLOW Updates”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Status says <strong>“Checking for GLOW engine updates…”</strong>,
+then reports up-to-date or an available engine. A <strong>second
+confirmation</strong> is required before anything downloads; the engine
+is verified (signed manifest + per-wheel SHA-256) and installed offline,
+a failed install rolls back to the vendored wheels, and the new engine
+loads on restart. Network failures are reported, not silent.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h3 id="section-sign-off">Section sign-off</h3>
+<ul>
+<li>Tester:</li>
+<li>Screen reader(s) + version(s):</li>
+<li>Build / commit tested:</li>
+<li>Environment (E1–E6):</li>
+<li>Date:</li>
+<li>Scenarios passed / total: ___ / 56</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Result: Pass / Pass-with-notes / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

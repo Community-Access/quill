@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL-PRD</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -19372,13 +19376,13 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb43
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="co"># installer in one pass. --bundle-python makes the result self-contained.</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m scripts<span class="op">.</span><span class="fu">build_windows_distribution</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span></code></pre></div>
 <p>Expected:
-<code>windows-distribution\installer\Quill-Setup-&lt;version&gt;.exe</code>
+<code>dist\windows\installer\Quill-Setup-&lt;version&gt;.exe</code>
 (and/or <code>...\Output\Quill-Setup-&lt;version&gt;.exe</code>) is
 produced. If <code>--compile-installer</code> is not wired as a flag in
 your build, compile manually:</p>
 <div class="sourceCode" id="cb44"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span> `</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  windows-distribution\installer\quill<span class="op">.</span><span class="fu">iss</span></span></code></pre></div>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  dist\windows\installer\quill<span class="op">.</span><span class="fu">iss</span></span></code></pre></div>
 <h4 id="step-2--install-with-the-send-to-quill-verbs-enabled">Step 2 —
 Install with the "Send to Quill" verbs enabled</h4>
 <ol type="1">
@@ -20402,7 +20406,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb48
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>bundle-python `</span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>compile-installer `</span>
 <span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>iscc-path <span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span> `</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output-dir windows-distribution</span></code></pre></div>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output-dir dist<span class="op">/</span>windows</span></code></pre></div>
 <hr />
 <h2 id="update-mechanism-overview">Update mechanism overview</h2>
 <p>QUILL uses the AccessibleApps <code>autoupdate</code> library
@@ -20587,7 +20591,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb57
 <span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Build the delta update ZIP</span></span>
 <span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
 <span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: release-artifacts/quill-0.5.0-update-windows.zip</span></span></code></pre></div>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: dist/release-artifacts/quill-0.5.0-update-windows.zip</span></span></code></pre></div>
 <p>The CI <code>build</code> job runs all three steps automatically on
 each <code>v*</code> tag push.</p>
 <hr />

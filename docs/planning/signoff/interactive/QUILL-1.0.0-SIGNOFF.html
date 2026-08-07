@@ -49,6 +49,63 @@
 <p>- <code>signoff/SIGNOFF-radio.md</code> · <code>signoff/SIGNOFF-weather.md</code> — the public companion apps.</p>
 <p>- <code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface (generated from the A11Y-4 registry).</p>
 <p>- <code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system scenario deep-dive.</p>
+<p>- <code>../release/qa-core-journeys.md</code> — the hand-held, rigorous <strong>core-journey</strong> test plan (open/heading nav, table cell nav, Save-As fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read Aloud, open-from-URL). A required companion (see §0).</p>
+<p>- <code>../release/qa-samples/</code> — the <strong>QA sample-document corpus</strong> the journeys open (known-content inputs for manual QA); manifest in <code>../release/qa-samples/README.md</code>.</p>
+<p>---</p>
+<h2>§0. How to run this sign-off — the hand-held procedure</h2>
+<p>This pack is more than a checklist: it is an <strong>ordered process</strong>. Run it in the</p>
+<p>sequence below, on every §A environment. Do not treat the companion QA plans as</p>
+<p>optional reading — they are part of the pass and are listed here as <strong>mandatory</strong>.</p>
+<h3>Prerequisites</h3>
+<p>- A <strong>real Windows build</strong> of the 1.0.0 candidate, installed per the §A environment</p>
+<p>  under test (portable and system installs are different runs — see §A).</p>
+<p>- <strong>NVDA and JAWS</strong> both installed and speaking (Narrator and, on E5, VoiceOver</p>
+<p>  where a case calls for them).</p>
+<p>- <strong>Mouse unplugged</strong> for the first pass of every UI step — keyboard-only — then a</p>
+<p>  second pass reading with the screen reader's review/virtual cursor.</p>
+<p>- The <strong><code>qa-samples/</code> corpus</strong> copied onto the machine (<code>../release/qa-samples/</code>);</p>
+<p>  read its <code>README.md</code> so the "correct" content of each sample is known before you</p>
+<p>  start. AI configured with a working provider <strong>only</strong> for the Improve Reading</p>
+<p>  Order journey.</p>
+<h3>The ordered run</h3>
+<p>1. <strong>Install / environment</strong> — set up the machine for the §A environment under</p>
+<p>   test (E1–E6); record data-dir, secrets backend, and update path. Re-run the</p>
+<p>   whole pack once per environment.</p>
+<p>2. <strong>Smoke-launch</strong> — launch the build; confirm the window is announced on</p>
+<p>   foreground, no crash dialog, and Help &gt; About reads the 1.0.0 candidate version</p>
+<p>   and build stamp. A failed smoke-launch stops the run for that environment.</p>
+<p>3. <strong>Per-area checklists §B–§D</strong> — work the editor (§B, <code>signoff/SIGNOFF-editor.md</code>),</p>
+<p>   Quill Radio (§C, <code>signoff/SIGNOFF-radio.md</code>), and Quill Weather (§D,</p>
+<p>   <code>signoff/SIGNOFF-weather.md</code>), triple-checking every applicable item</p>
+<p>   (Works · Surface-exact · A11y).</p>
+<p>4. <strong>Required companion QA plans (MANDATORY — not optional)</strong> — run each of these</p>
+<p>   in full and sign off its footer:</p>
+<p>   - <code>../release/qa-core-journeys.md</code> — the hand-held core-journey plan, opened</p>
+<p>     against the <code>qa-samples/</code> corpus (heading nav, table cell nav, Save-As</p>
+<p>     fidelity, Insert Equation, Improve Reading Order, Find/Replace + Regex, Read</p>
+<p>     Aloud, open-from-URL).</p>
+<p>   - <code>../release/screen-reader-test-plan.md</code> — every accessibility/focus/keyboard</p>
+<p>     case.</p>
+<p>   - <code>../release/user-acceptance-test-plan-0.8.0.md</code> — the continuous 236-step UAT</p>
+<p>     runbook (feature coverage end to end).</p>
+<p>   - <code>../release/fresh-install-regression-0.8.0.md</code> — brand-new-user install.</p>
+<p>   - <code>../release/upgrade-path-regression-0.8.0.md</code> — install-on-top upgrade chain,</p>
+<p>     no data loss.</p>
+<p>5. <strong>§G gated-absence</strong> — with the public build flag OFF, confirm the gated apps</p>
+<p>   and editor-embedded Podcasts / Internet Radio / Book Library are <strong>absent</strong> from</p>
+<p>   every public surface (the <code>Tools ▸ Media</code> submenu omitted entirely, no palette</p>
+<p>   commands, no status-bar/tray cells).</p>
+<p>6. <strong>Readiness gate</strong> — fill §H; the candidate is ready to test only when every box</p>
+<p>   in §A–§G is checked on every environment <strong>and</strong> every companion plan above is</p>
+<p>   signed off.</p>
+<h3>Definition of done</h3>
+<p>A feature is signed off only when **every applicable checklist box is</p>
+<p>triple-checked (Works · Surface-exact · A11y) on every §A environment (E1–E6)**,</p>
+<p><strong>and</strong> every required companion plan in step 4 is signed off, **with the</p>
+<p><code>qa-samples/</code> corpus used for the feature journeys**. Confidence comes from</p>
+<p>following the steps + expected results + named sample inputs — not from memory or a</p>
+<p>glance. A box is checked only when the outcome happened in front of you, announced</p>
+<p>out loud, on the build under test.</p>
 <p>---</p>
 <h2>§A. Environment matrix — run the whole pack in EACH</h2>
 <p>Because install-mode behavior is governed by <strong>three independent "portable" signals that can disagree</strong> (data-dir, secrets/<code>QUILL_PORTABLE</code>, update-asset), each must be exercised, per OS.</p>
