@@ -86,6 +86,8 @@ accurate summary of the architecture).
 
 ## docs/ — all documentation
 
+`docs/README.md` is the in-tree index of everything below.
+
 - `docs/` (top level) — community and governance docs (`CONTRIBUTING.md`,
   `CODE_OF_CONDUCT.md`, `SECURITY.md`, `GOVERNANCE.md`, `MAINTAINERS.md`),
   plus `CONTROL_REFERENCE.md` (generated from `quill/core/help/topics.json`
