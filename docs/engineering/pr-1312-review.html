@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pr-1312-review</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="review-record--pr-1312-environment-api-key-fallback">Review
+record — PR #1312 (environment API key fallback)</h1>
+<p>Reviewed 2026-08-07 against main <code>9810e81</code>. PR: external
+contribution from <code>salorajan</code>, +131/-28 across 6 files,
+opened 2026-08-03. Verdict: <strong>request changes; not a 1.0.0 blocker
+— target 1.0.1.</strong></p>
+<h2 id="what-the-pr-does">What the PR does</h2>
+<p>Makes environment variables (<code>OPENAI_API_KEY</code>,
+<code>GEMINI_API_KEY</code> / <code>GOOGLE_API_KEY</code>,
+<code>ANTHROPIC_API_KEY</code> / <code>CLAUDE_API_KEY</code>,
+<code>OPENROUTER_API_KEY</code>, plus a generic
+<code>{PROVIDER}_API_KEY</code>) a last-resort key source:
+<code>load_provider_api_key()</code> and
+<code>load_assistant_api_key()</code> consult the credential store /
+DPAPI first and fall back to the environment only when storage is empty.
+Migration (<code>consolidate_provider_keys</code>) is re-pointed at
+storage-only internals so env keys are never migrated into persistent
+storage, and an autouse test fixture clears the named env vars
+suite-wide.</p>
+<p>The precedence design is sound, and isolating migration from
+env-sourced keys is exactly the subtlety most contributions would
+miss.</p>
+<h2 id="defect-must-fix">Defect (must fix)</h2>
+<ul>
+<li><code>quill/ui/assistant_tools.py:1353</code> prefills the editable
+key field with <code>load_provider_api_key(provider)</code>. With the
+fallback, an env-sourced key appears in that field and Save persists it
+to the credential store — defeating the migration guard by another road.
+Same risk at <code>ai_hub_dialog.py:143</code>. The load path must
+distinguish "stored" from "ambient" for UI purposes (a
+<code>provider_key_source()</code> helper, or prefill from
+<code>_cs_load</code> directly and label "using environment key").</li>
+</ul>
+<h2 id="policy-decisions-required-product-level">Policy decisions
+required (product-level)</h2>
+<ul>
+<li><strong>Ambient authorization.</strong> Key presence is treated as
+"configured" (<code>onboarding.py:417</code>, the setup wizard). An env
+var set by an unrelated tool would make a cloud provider silently ready
+to send data. Given QUILL's consent-first egress posture, gate the
+fallback behind an explicit setting, or at minimum announce "using
+OPENAI_API_KEY from the environment" in the AI Hub.</li>
+<li><strong>Harness cross-contamination.</strong>
+<code>harness_credentials. apply_all_stored_keys()</code> exports
+agent-pack keys to <code>OPENAI_API_KEY</code> /
+<code>ANTHROPIC_API_KEY</code> at startup, so storing a key for the
+Claude Agent SDK pack would implicitly configure the claude chat
+provider too. A coupling nobody opted into.</li>
+</ul>
+<h2 id="correctness-details">Correctness details</h2>
+<ul>
+<li>Env values returned unstripped; stored keys are stripped everywhere
+else. Add <code>.strip()</code>.</li>
+<li><code>load_assistant_api_key()</code> now falls through to env even
+when <code>assistant_secret_unlock_failed()</code> — partially masks the
+L-5 wrong-Windows-user UX contract; should be a conscious choice.</li>
+<li>No guard for non-cloud providers: <code>provider="ollama"</code>
+picks up a stray <code>OLLAMA_API_KEY</code>; <code>"off"</code> looks
+up <code>OFF_API_KEY</code>. Restrict the fallback to
+<code>_CLOUD_PROVIDERS</code>.</li>
+<li>Alias branches ("google", "anthropic") are dead given
+<code>_SUPPORTED_PROVIDERS</code>; the generic lookup re-checks names
+the specific branch already checked. A dict table matching
+<code>harness_credentials. _ENV_VARS</code> convention would halve the
+function.</li>
+</ul>
+<h2 id="tests">Tests</h2>
+<ul>
+<li>Present: precedence (env used when store empty; store wins once
+populated); suite-wide env clearing fixture.</li>
+<li>Missing: the key test — that
+<code>consolidate_provider_keys()</code> does NOT persist env keys;
+<code>load_keyed_provider_api_key</code> with env fallback; the
+unlock-failed + env case. The autouse fixture misses generic-pattern
+vars (e.g. <code>OLLAMA_CLOUD_API_KEY</code>); derive the list from the
+provider table.</li>
+</ul>
+<h2 id="mechanical">Mechanical</h2>
+<ul>
+<li><code>assistant_ai.py</code> / <code>key_migration.py</code> have
+not drifted since 08-03, but <code>module_size_budgets.json</code> has 6
+commits since — the budget hunk will conflict and the 1459 -&gt; 1513
+number needs recomputing after rebase.</li>
+<li>The PR body cites #1197 (the UnicodeMath equation dialog PR) as the
+source of the concern — wrong reference.</li>
+<li>Crash-report redaction unaffected: crash bundles do not capture
+<code>os.environ</code>.</li>
+</ul>
+</body>
+</html>
