@@ -1,15 +1,24 @@
-"""Sandboxed worker process that runs a Layer 2 Quillin.
+"""Out-of-process worker that runs a Layer 2 Quillin.
 
 This module is the untrusted side of the out-of-process bridge. It is launched as
 ``python -m quill.core.quillins.host_worker <extension_dir>`` by
 :class:`quill.core.quillins.host.ExtensionHost`, loads the extension's ``main``
 module, runs its top-level ``register(api)``, and dispatches handler invocations.
 
-The extension never imports ``wx`` and never touches the editor directly. Every
-editor/ui/fs/net effect is a request sent back to the host, which enforces
-capabilities and consent before doing anything. The :class:`QuillExtensionApi`
-below is the narrow, versioned surface the extension sees; it simply marshals
-each call into an ``api_call`` message and blocks for the host's reply.
+The extension never imports ``wx`` and never touches the editor directly through
+the API: every editor/ui/fs/net effect requested *via the bridge* is a message
+back to the host, which enforces capabilities and consent before doing anything.
+The :class:`QuillExtensionApi` below is the narrow, versioned surface the
+extension sees; it simply marshals each call into an ``api_call`` message and
+blocks for the host's reply.
+
+**Honest security boundary:** this is process isolation plus a capability-gated
+API — it is NOT an OS-level sandbox. The extension code runs in a normal Python
+interpreter and could import ``os``/``socket``/``subprocess`` directly, bypassing
+the bridge entirely. That is why third-party Quillin loading is ``locked_off``
+in the feature catalog (SEC-8): only first-party bundled Quillins run today,
+and unlocking third-party code requires a real sandboxing story first. The
+worker's environment is scrubbed of exported cloud API keys by the host.
 
 The worker speaks the protocol on stdin/stdout only; everything it prints to
 those streams must be a framed protocol message, so it must never ``print`` for

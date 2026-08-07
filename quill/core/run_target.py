@@ -51,6 +51,21 @@ DANGEROUS_SUFFIXES: frozenset[str] = frozenset({
     ".reg",
     ".lnk",
     ".dll",
+    # Windows types that execute or navigate on open despite not looking like
+    # programs: internet shortcuts, shell command files, compiled help (can
+    # embed script), control-panel applets, management consoles, ClickOnce
+    # references, settings shortcuts, scriptlets, and macro-enabled Office.
+    ".url",
+    ".scf",
+    ".chm",
+    ".cpl",
+    ".msc",
+    ".appref-ms",
+    ".settingcontent-ms",
+    ".wsc",
+    ".docm",
+    ".xlsm",
+    ".pptm",
 })
 
 _ALLOWED_URL_SCHEMES: frozenset[str] = frozenset({"http", "https", "mailto"})

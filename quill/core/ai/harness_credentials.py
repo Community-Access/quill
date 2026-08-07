@@ -80,6 +80,23 @@ def forget_key(pack_id: str) -> None:
         os.environ.pop(name, None)
 
 
+def scrubbed_child_env() -> dict[str, str]:
+    """A copy of the process environment with every harness API key removed.
+
+    :func:`apply_all_stored_keys` exports the stored cloud keys into
+    ``os.environ`` for the SDKs' benefit; every child process spawned without
+    an explicit ``env=`` would inherit them. Pass this as ``env=`` when
+    spawning children that have no business holding cloud credentials
+    (Quillin extension workers, user-configured external engines), so a
+    hostile or buggy child cannot read the keys out of its environment.
+    """
+    env = dict(os.environ)
+    for names in _ENV_VARS.values():
+        for name in names:
+            env.pop(name, None)
+    return env
+
+
 def apply_all_stored_keys() -> None:
     """Apply every supported pack's previously stored key to the environment.
 

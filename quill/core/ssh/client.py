@@ -171,6 +171,16 @@ def _load_pinned_host_keys(client: Any, *, writable: bool) -> None:
         pass
 
 
+def apply_pinned_host_keys(client: Any, *, writable: bool) -> None:
+    """Populate *client* with QUILL's pinned host keys (public wrapper).
+
+    Shared with the Remote Sites SFTP transport so every SSH-speaking path
+    gets the same trust-on-first-use pinning semantics; see
+    :func:`_load_pinned_host_keys`.
+    """
+    _load_pinned_host_keys(client, writable=writable)
+
+
 def connect(
     host: str,
     *,
