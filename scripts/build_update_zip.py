@@ -214,7 +214,10 @@ def main() -> int:
         "--output",
         type=Path,
         default=None,
-        help="Output ZIP path (default: release-artifacts/quill-{version}-update-{platform}.zip)",
+        help=(
+            "Output ZIP path "
+            "(default: dist/release-artifacts/quill-{version}-update-{platform}.zip)"
+        ),
     )
     parser.add_argument(
         "--install-prefix",
@@ -229,7 +232,7 @@ def main() -> int:
     manifest_dir = source_root / _MANIFEST_DIR
 
     output: Path = args.output or (
-        source_root / "release-artifacts" / f"quill-{version}-update-{platform}.zip"
+        source_root / "dist" / "release-artifacts" / f"quill-{version}-update-{platform}.zip"
     )
 
     # Determine mode: default to delta if a previous manifest can be found, else full

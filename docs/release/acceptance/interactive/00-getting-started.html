@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Part 0 — Getting Started (you have never used QUILL) (interactive acceptance)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 62em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  html { scroll-padding-top: 5em; }
+  li { margin: 0.3em 0; }
+  input.cb, input.aspect { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+         border-bottom: 1px solid GrayText; z-index: 2; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; }
+    input.notes, input.meta { background: #222; color: #eee; border: 1px solid #666; } }
+  .bar button, .bar a { margin-right: 0.5em; }
+  details.sec { border: 1px solid GrayText; border-radius: 6px;
+                margin: 0.8em 0; padding: 0 0.8em; }
+  details.sec > summary { cursor: pointer; padding: 0.4em 0; }
+  details.sec > summary h2 { display: inline; font-size: 1.1em; margin: 0; }
+  .st { margin-left: 0.6em; font-weight: bold; }
+  .secbody { padding-bottom: 0.8em; }
+  fieldset.scn { margin-top: 0.8em; border: 1px solid GrayText; border-radius: 6px; }
+  fieldset.scn .row { margin: 0.35em 0; }
+  fieldset.scn label { margin-right: 0.9em; }
+  body.hidedone details.sec[data-done="1"] { display: none; }
+  body.hidedone li.check[data-done="1"] { display: none; }
+  blockquote { border-left: 3px solid GrayText; margin-left: 0; padding-left: 1em; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
+    padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="bar" role="group" aria-label="Progress and controls">
+  <span id="progress" role="status">Loading...</span><br>
+  <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
+  <button id="expandAll" type="button">Expand all</button>
+  <button id="collapseAll" type="button">Collapse all</button>
+  <button id="export" type="button">Export progress...</button>
+  <button id="import" type="button">Import progress...</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All sections</a>
+  <span id="live" class="visually-hidden" aria-live="polite"></span>
+</div>
+
+<h1>Part 0 — Getting Started (you have never used QUILL)</h1>
+<p>Do this part <strong>first</strong>, once on each test machine, before any feature section. It takes you from "I have a download" to "I have created, saved, closed, and reopened a document in QUILL, using only the keyboard, hearing every step." If you can finish Part 0, the machine is ready for the rest of the book. If you cannot, stop and report — nothing downstream will be trustworthy.</p>
+<p>Read §2 and §3 of <code>README.md</code> once before you begin so the scenario layout and the Pass/Fail/Blocked/N-A boxes make sense.</p>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-01 — Turn on your screen reader and confirm it is speaking</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> QUILL is designed to be used by ear. Before you touch QUILL, make sure the screen reader itself is running and talking, so that later "it was silent" means QUILL was silent, not that your screen reader was off.</p><p><strong>Before you start</strong></p><ul><li>A Windows machine with <strong>NVDA</strong> or <strong>JAWS</strong> installed. (macOS testers: use <strong>VoiceOver</strong>, Command+F5.)</li><li>Nothing else needs to be open.</li></ul><p><strong>Do this</strong></p><ol><li>Start your screen reader: <strong>NVDA</strong> with <strong>Ctrl+Alt+N</strong>, or <strong>JAWS</strong> from its Start-menu shortcut. (Narrator: <strong>Ctrl+Windows+Enter</strong>.)</li><li>Press the keys to read the focused item — with NVDA, tap <strong>NVDA+Tab</strong> (NVDA is usually the Insert key or Caps Lock).</li><li>Open the Start menu (<strong>Windows key</strong>) and press <strong>Down Arrow</strong> once or twice.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The screen reader speaks as you move: it announces the Start menu and reads each item you arrow onto. You hear a clear, responsive voice.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-01" data-sid="GS-01"><legend>Sign off - GS-01 — Turn on your screen reader and confirm it is speaking</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-01 — Turn on your screen reader and confirm it is speaking"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-01:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-01:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-01:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-01:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-01:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-01:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-01:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-01:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-01:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-02 — Install QUILL (system installer)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Most users run the system installer: a normal Windows setup that adds QUILL to the Start menu. This scenario proves it installs and appears where a new user would look. (If you are testing the <strong>portable ZIP</strong> instead, skip to GS-03.)</p><p><strong>Before you start</strong></p><ul><li>The file <strong><code>Quill-Setup-1.0.0.exe</code></strong> (the system installer) downloaded to a known folder, e.g. your Downloads.</li><li>You know whether this is a <strong>per-user</strong> install (no admin needed) — the default.</li></ul><p><strong>Do this</strong></p><ol><li>In File Explorer, arrow to <code>Quill-Setup-1.0.0.exe</code> and press <strong>Enter</strong> to run it.</li><li>Move through the installer with <strong>Tab</strong> and <strong>Enter</strong>; read each screen. Accept the default install location. When offered a <strong>Desktop shortcut</strong> and <strong>Open-With</strong> file associations, note the choices but you may accept defaults.</li><li>On the last screen, leave <strong>Launch QUILL</strong> unchecked for now and press <strong>Finish</strong>.</li><li>Open the Start menu (<strong>Windows key</strong>), type <strong>QUILL</strong>, and confirm an entry appears.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Each installer screen is keyboard-navigable and its controls are announced (this is the Inno Setup UI, not QUILL, but it must still be operable by keyboard).</li><li>After finishing, <strong>QUILL</strong> appears in the Start menu. If you accepted them, a Desktop shortcut exists and QUILL appears in <strong>Add or Remove Programs</strong> with a proper name, version <strong>1.0.0</strong>, and publisher <strong>Community Access</strong>.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-02" data-sid="GS-02"><legend>Sign off - GS-02 — Install QUILL (system installer)</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-02 — Install QUILL (system installer)"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-02:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-02:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-02:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-02:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-02:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-02:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-02:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-02:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-02:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-03 — Set up the portable copy (portable ZIP) [do instead of GS-02 for portable]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The portable edition runs from a folder with no installation, keeping all its data beside itself — ideal for a USB stick or a locked-down machine. This proves the ZIP unpacks into a self-contained, runnable folder.</p><p><strong>Before you start</strong></p><ul><li>The file <strong><code>Quill-Portable-1.0.0.zip</code></strong> downloaded.</li><li>A folder you can write to, e.g. <code>C:\QuillPortable</code> or a USB drive.</li></ul><p><strong>Do this</strong></p><ol><li>In File Explorer, select the ZIP, press the <strong>Application/Menu key</strong>, and choose <strong>Extract All…</strong>; extract into your chosen folder.</li><li>Open the extracted folder and confirm it contains a launcher named <strong><code>QUILL.exe</code></strong> (a genuine native launcher, not a script) and a <strong><code>data</code></strong> subfolder beside it.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The folder is self-contained: <code>QUILL.exe</code>, a bundled <code>pythonw.exe</code>, and a <code>data\</code> folder are all present. Nothing had to be installed system-wide.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-03" data-sid="GS-03"><legend>Sign off - GS-03 — Set up the portable copy (portable ZIP) [do instead of GS-02 for portable]</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-03 — Set up the portable copy (portable ZIP) [do instead of GS-02 for portable]"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-03:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-03:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-03:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-03:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-03:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-03:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-03:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-03:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-03:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-04 — Launch QUILL for the first time</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The first launch is the moment of truth: the window must open, take focus, and be announced, with no crash dialog. First launch may also show a one-time welcome/onboarding — that is expected.</p><p><strong>Before you start</strong></p><ul><li>QUILL installed (GS-02) or extracted (GS-03). Screen reader running (GS-01).</li></ul><p><strong>Do this</strong></p><ol><li>Launch QUILL: from the <strong>Start menu</strong> (system install) press <strong>Enter</strong> on the QUILL entry, <strong>or</strong> run <strong><code>QUILL.exe</code></strong> in the portable folder.</li><li>Wait a few seconds for the main window to appear. Do not click anything.</li><li>If a welcome / first-run dialog appears, read it fully with the screen reader, then dismiss it with its default button (or <strong>Escape</strong>) — note what it offered.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The QUILL window opens and <strong>comes to the foreground</strong>; the screen reader announces the window (its title includes <strong>QUILL</strong>). There is **no crash or error dialog**.</li><li>Any first-run welcome is keyboard-operable and announced; after dismissing it, focus lands in the editor.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-04" data-sid="GS-04"><legend>Sign off - GS-04 — Launch QUILL for the first time</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-04 — Launch QUILL for the first time"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-04:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-04:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-04:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-04:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-04:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-04:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-04:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-04:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-04:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-05 — Confirm the version and build (Help ▸ About)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Sign-off is only valid against a known build. This records exactly which build you are testing.</p><p><strong>Before you start</strong></p><ul><li>QUILL open (GS-04).</li></ul><p><strong>Do this</strong></p><ol><li>Press <strong>Alt</strong> to enter the menu bar; the screen reader announces the first menu.</li><li><strong>Right Arrow</strong> to the <strong>Help</strong> menu, then <strong>Down Arrow</strong> to <strong>About QUILL…</strong> and press <strong>Enter</strong>. (Or open the menu and press its mnemonic letter.)</li><li>Read the dialog top to bottom with your screen reader. Write the version and build stamp in your notebook.</li><li>Close the dialog with <strong>Escape</strong> or its <strong>OK/Close</strong> button.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The About dialog opens, is fully readable by keyboard, and states version <strong>1.0.0</strong> and a build/commit stamp. Closing it returns focus to the editor.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-05" data-sid="GS-05"><legend>Sign off - GS-05 — Confirm the version and build (Help ▸ About)</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-05 — Confirm the version and build (Help ▸ About)"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-05:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-05:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-05:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-05:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-05:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-05:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-05:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-05:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-05:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-06 — Get your bearings: the main window</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Later sections say things like "focus returns to the editor" or "check the status bar." This scenario teaches you those places so the rest of the book makes sense.</p><p><strong>Before you start</strong></p><ul><li>QUILL open, no document changes yet.</li></ul><p><strong>Do this</strong></p><ol><li>Press <strong>F6</strong> a few times to cycle between the window's main regions (editor, status bar, and any panels). Listen to what each region is called.</li><li>Press <strong>Alt</strong> and <strong>Right Arrow</strong> across the whole menu bar once — File, Edit, View, Insert, Format, Navigate, Search, Tools, and so on — just to hear the menu names. Press <strong>Escape</strong> to leave the menu bar.</li><li>Return to the editor (press <strong>Escape</strong> until the screen reader says you are in the document / text area).</li></ol><p><strong>You should see and hear</strong></p><ul><li><strong>F6</strong> moves between named regions and each is announced (e.g. the editor as a multi-line "Document" text area, and a status bar). The menu bar lists the expected top-level menus. Escape lands you back in the editor.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-06" data-sid="GS-06"><legend>Sign off - GS-06 — Get your bearings: the main window</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-06 — Get your bearings: the main window"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-06:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-06:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-06:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-06:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-06:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-06:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-06:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-06:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-06:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-07 — Your first document: type, hear it, and read it back</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The core of QUILL is typing and having it spoken. This proves the editor accepts text and reads back what you wrote.</p><p><strong>Before you start</strong></p><ul><li>A new, empty document. If one is not already open, press <strong>Ctrl+N</strong> (New File).</li><li>The exact text to type: <strong><code>Hello QUILL, this is my first line.</code></strong></li></ul><p><strong>Do this</strong></p><ol><li>With focus in the editor, type: <code>Hello QUILL, this is my first line.</code></li><li>Press <strong>Enter</strong>, then type a second line: <code>And this is my second line.</code></li><li>Press <strong>Ctrl+Home</strong> to go to the top, then <strong>Down Arrow</strong> to move line by line and listen. Press <strong>Ctrl+A</strong> to select all and listen to the selection announcement.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Characters/words are echoed as you type (per your screen reader's echo setting). Arrowing reads each line back <strong>exactly</strong> as typed. <strong>Ctrl+A</strong> announces that all text is selected. The title bar now shows a <strong>modified</strong> indicator (an unsaved change marker).</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-07" data-sid="GS-07"><legend>Sign off - GS-07 — Your first document: type, hear it, and read it back</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-07 — Your first document: type, hear it, and read it back"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-07:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-07:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-07:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-07:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-07:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-07:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-07:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-07:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-07:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-08 — Save it, close it, reopen it (the round trip)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A newcomer's real first task is "write something and get it back later." This proves save, the unsaved-changes guard, and reopen — the safety net every other scenario relies on.</p><p><strong>Before you start</strong></p><ul><li>The two-line document from GS-07, unsaved.</li><li>A filename to use: <strong><code>first.md</code></strong>, saved to your Documents folder.</li></ul><p><strong>Do this</strong></p><ol><li>Press <strong>Ctrl+S</strong> (Save). Because the document is new, a <strong>Save As</strong> dialog opens.</li><li>In the dialog, type the name <strong><code>first</code></strong>, confirm the type is Markdown/<code>.md</code>, and press <strong>Enter</strong> to save into Documents.</li><li>Press <strong>Ctrl+W</strong> (Close Document).</li><li>Press <strong>Ctrl+O</strong> (Open), navigate to <strong><code>first.md</code></strong> in Documents, and press <strong>Enter</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>On save, the screen reader confirms the save and the title bar updates to <strong><code>first.md</code></strong> with the modified marker <strong>gone</strong>.</li><li>Close leaves you with no unsaved-changes prompt (you just saved). Reopening <strong><code>first.md</code></strong> shows both lines exactly as written; focus lands in the editor.</li><li>Cross-check the guard: type one character, press <strong>Ctrl+W</strong>, and confirm QUILL <strong>asks before discarding</strong> the change (you can hear and cancel the prompt). Cancel it.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-08" data-sid="GS-08"><legend>Sign off - GS-08 — Save it, close it, reopen it (the round trip)</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-08 — Save it, close it, reopen it (the round trip)"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-08:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-08:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-08:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-08:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-08:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-08:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-08:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-08:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-08:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-09 — Undo, redo, and getting unstuck</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Newcomers make mistakes; QUILL must make them recoverable. This also teaches Escape as the universal "get me out of here."</p><p><strong>Before you start</strong></p><ul><li><code>first.md</code> open from GS-08.</li></ul><p><strong>Do this</strong></p><ol><li>Type the word <code>TEMP</code> somewhere, then press <strong>Ctrl+Z</strong> (Undo). Press <strong>Ctrl+Y</strong> (Redo).</li><li>Open any menu with <strong>Alt</strong>, then press <strong>Escape</strong> to confirm it closes and focus returns to the editor.</li><li>Open a dialog you have already met — <strong>Help ▸ About</strong> — and close it with <strong>Escape</strong> alone.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Undo removes <code>TEMP</code> and says so; Redo restores it. Escape reliably closes menus and dialogs and returns you to the editor every time. Nothing is silent.</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-09" data-sid="GS-09"><legend>Sign off - GS-09 — Undo, redo, and getting unstuck</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-09 — Undo, redo, and getting unstuck"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-09:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-09:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-09:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-09:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-09:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-09:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-09:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-09:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-09:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>GS-10 — Find every command without memorizing anything (Command Palette)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> No one can memorize 700 commands. The Command Palette lets you find any command by typing part of its name — your escape hatch for the entire rest of this book. Learn it now.</p><p><strong>Before you start</strong></p><ul><li>QUILL open with any document.</li></ul><p><strong>Do this</strong></p><ol><li>Open the <strong>Command Palette</strong> (<strong>Ctrl+Shift+P</strong>). A search box appears with focus.</li><li>Type <strong><code>save as</code></strong> and listen as the results filter. Arrow through them.</li><li>Press <strong>Escape</strong> to close it without running anything.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The palette opens with focus in the search field; typing filters a list that is announced as it changes (result count and the focused item). Arrowing reads each match with its name and shortcut. Escape closes it and returns focus to the editor. **From here on, if you cannot find a command in a menu, open the palette and type its name.**</li></ul><fieldset class="scn" data-base="00-getting-started:scn:GS-10" data-sid="GS-10"><legend>Sign off - GS-10 — Find every command without memorizing anything (Command Palette)</legend><div class="row" role="radiogroup" aria-label="Outcome for GS-10 — Find every command without memorizing anything (Command Palette)"><label><input type="radio" class="outcome" name="00-getting-started:scn:GS-10:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-10:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-10:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-10:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="00-getting-started:scn:GS-10:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-10:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-10:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="00-getting-started:scn:GS-10:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="00-getting-started:scn:GS-10:notes"></label></div></fieldset></div></details>
+<section class="footerblock"><h3>Section sign-off</h3>
+<ul>
+<li><label>Tester: <input type="text" class="meta" size="40" data-key="00-getting-started:meta:9264a677ddfa" value=""></label></li>
+<li><label>Screen reader(s) + version(s): <input type="text" class="meta" size="40" data-key="00-getting-started:meta:23d6c2127f5f" value=""></label></li>
+<li><label>Build / commit tested: <input type="text" class="meta" size="40" data-key="00-getting-started:meta:53295e384ade" value=""></label></li>
+<li><label>Environment (E1–E6): <input type="text" class="meta" size="40" data-key="00-getting-started:meta:267597b92b20" value=""></label></li>
+<li><label>Date: <input type="text" class="meta" size="40" data-key="00-getting-started:meta:eb9a4bc1c0c1" value=""></label></li>
+<li><label>Scenarios passed / total: <input type="text" class="meta" size="40" data-key="00-getting-started:meta:0ce6deb713bd" value="___ / 10"></label></li>
+<li><label>Release blockers found (must be zero to ship): <input type="text" class="meta" size="40" data-key="00-getting-started:meta:1dbaf858fd79" value=""></label></li>
+<li><label>Result: <input type="text" class="meta" size="40" data-key="00-getting-started:meta:5faa59d4bc37" value="Pass / Pass-with-notes / Fail"></label></li>
+<li><label>Notes: <input type="text" class="meta" size="40" data-key="00-getting-started:meta:70440046a3dc" value=""></label></li>
+</ul>
+</section>
+<script>
+(function () {
+  var PREFIX = "quill-acceptance:";
+  var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var live = document.getElementById("live");
+  var toggleBtn = document.getElementById("toggleHide");
+  var cbs = Array.prototype.slice.call(document.querySelectorAll("input.cb"));
+  var aspects = Array.prototype.slice.call(document.querySelectorAll("input.aspect"));
+  var notes = Array.prototype.slice.call(
+    document.querySelectorAll("input.notes, input.meta"));
+  var scns = Array.prototype.slice.call(document.querySelectorAll("fieldset.scn"));
+  var secs = Array.prototype.slice.call(document.querySelectorAll("details.sec"));
+
+  function outcomeOf(scn) {
+    var r = scn.querySelector('input.outcome:checked');
+    return r ? r.value : "";
+  }
+  function setStatusBadge(scn) {
+    var det = scn.closest("details.sec");
+    if (!det) return;
+    var st = det.querySelector(".st");
+    var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
+    if (st) st.textContent = labels[outcomeOf(scn)] || "";
+  }
+  function secDone(det) {
+    var kind = det.getAttribute("data-kind");
+    if (kind === "scenario") {
+      var fs = det.querySelectorAll("fieldset.scn");
+      for (var i = 0; i < fs.length; i++) {
+        if (!outcomeOf(fs[i])) return false;
+      }
+      return fs.length > 0;
+    }
+    if (kind === "checklist") {
+      var bs = det.querySelectorAll("input.cb");
+      for (var j = 0; j < bs.length; j++) { if (!bs[j].checked) return false; }
+      return bs.length > 0;
+    }
+    return false;
+  }
+  function itemDone(li) {
+    var bs = li.querySelectorAll("input.cb");
+    for (var i = 0; i < bs.length; i++) { if (!bs[i].checked) return false; }
+    return bs.length > 0;
+  }
+  function hideActive() { return localStorage.getItem(HIDE_KEY) === "1"; }
+  function markDone() {
+    secs.forEach(function (d) {
+      d.setAttribute("data-done", secDone(d) ? "1" : "0");
+    });
+    document.querySelectorAll("li.check").forEach(function (li) {
+      li.setAttribute("data-done", itemDone(li) ? "1" : "0");
+    });
+  }
+  function applyHide() {
+    document.body.classList.toggle("hidedone", hideActive());
+    if (toggleBtn) toggleBtn.setAttribute("aria-pressed", hideActive() ? "true" : "false");
+  }
+  function refresh() {
+    var counts = { pass: 0, fail: 0, blocked: 0, na: 0 };
+    var recorded = 0;
+    scns.forEach(function (s) {
+      var o = outcomeOf(s);
+      if (o) { recorded++; counts[o]++; }
+    });
+    var done = 0;
+    cbs.forEach(function (b) { if (b.checked) done++; });
+    var bits = [];
+    if (scns.length) {
+      bits.push(recorded + " of " + scns.length + " scenarios recorded (" +
+        counts.pass + " pass, " + counts.fail + " fail, " +
+        counts.blocked + " blocked, " + counts.na + " n/a)");
+    }
+    if (cbs.length) { bits.push(done + " of " + cbs.length + " boxes checked"); }
+    document.getElementById("progress").textContent =
+      bits.length ? bits.join("; ") : "Nothing to sign off on this page.";
+  }
+  // Focus rescue: when hiding removes the element under focus, land on the
+  // next visible section summary (else previous, else the toggle button).
+  function rescueFocus(fromEl) {
+    var det = fromEl && fromEl.closest ? fromEl.closest("details.sec") : null;
+    if (det && getComputedStyle(det).display !== "none") return; // still visible
+    var idx = det ? secs.indexOf(det) : -1;
+    for (var j = idx + 1; j < secs.length; j++) {
+      if (getComputedStyle(secs[j]).display !== "none") {
+        secs[j].querySelector("summary").focus(); return;
+      }
+    }
+    for (var k = idx - 1; k >= 0; k--) {
+      if (getComputedStyle(secs[k]).display !== "none") {
+        secs[k].querySelector("summary").focus(); return;
+      }
+    }
+    if (toggleBtn) toggleBtn.focus();
+  }
+
+  // Restore + wire checkboxes (checklist and aspect boxes share persistence).
+  cbs.concat(aspects).forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      markDone(); refresh();
+      if (hideActive()) {
+        var li = b.closest("li.check");
+        var det = b.closest("details.sec");
+        var hid = (li && li.getAttribute("data-done") === "1") ||
+                  (det && det.getAttribute("data-done") === "1");
+        if (hid) {
+          if (live) live.textContent = "Completed and hidden.";
+          rescueFocus(b);
+        }
+      }
+    });
+  });
+
+  // Restore + wire outcome radios.
+  scns.forEach(function (scn) {
+    var base = PREFIX + scn.dataset.base + ":outcome";
+    var saved = localStorage.getItem(base) || "";
+    var radios = scn.querySelectorAll("input.outcome");
+    radios.forEach(function (r) {
+      r.checked = (r.value === saved);
+      r.addEventListener("change", function () {
+        if (!r.checked) return;
+        if (r.value) localStorage.setItem(base, r.value);
+        else localStorage.removeItem(base);
+        setStatusBadge(scn); markDone(); refresh();
+        var det = scn.closest("details.sec");
+        if (hideActive() && det && det.getAttribute("data-done") === "1") {
+          if (live) live.textContent =
+            "Scenario recorded as " + (r.value || "not run") + " and hidden.";
+          rescueFocus(scn);
+        } else if (live) {
+          live.textContent = "Recorded: " + (r.value || "not run") + ".";
+        }
+      });
+    });
+    if (!saved) {
+      var nr = scn.querySelector('input.outcome[value=""]');
+      if (nr) nr.checked = true;
+    }
+    setStatusBadge(scn);
+  });
+
+  // Restore + wire text fields (notes, section sign-off metadata).
+  notes.forEach(function (t) {
+    var key = PREFIX + t.dataset.key;
+    var saved = localStorage.getItem(key);
+    if (saved !== null) t.value = saved;
+    var timer = null;
+    t.addEventListener("input", function () {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        if (t.value) localStorage.setItem(key, t.value);
+        else localStorage.removeItem(key);
+      }, 250);
+    });
+  });
+
+  markDone(); refresh(); applyHide();
+
+  if (toggleBtn) {
+    if (scns.length === 0 && cbs.length === 0) {
+      toggleBtn.hidden = true;
+    } else {
+      toggleBtn.addEventListener("click", function () {
+        localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
+        applyHide();
+        var hidden = secs.filter(function (d) {
+          return getComputedStyle(d).display === "none";
+        }).length;
+        if (live) live.textContent = hideActive()
+          ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
+          : "Showing all sections.";
+      });
+    }
+  }
+  var ex = document.getElementById("expandAll");
+  var co = document.getElementById("collapseAll");
+  if (ex) ex.addEventListener("click", function () {
+    secs.forEach(function (d) { d.open = true; });
+    if (live) live.textContent = "All sections expanded.";
+  });
+  if (co) co.addEventListener("click", function () {
+    secs.forEach(function (d) { d.open = false; });
+    if (live) live.textContent = "All sections collapsed.";
+  });
+
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-acceptance-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      location.reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>

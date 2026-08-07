@@ -39,15 +39,24 @@
   },
   "globs": ["**/*.md"],
   "ignores": [
+    ".claude",
     ".history",
     "node_modules",
     ".venv",
     "build",
+    "build-out",
     "release-dist-*",
     "release-artifacts*",
     "installer-smoke*",
     "windows-distribution",
+    "windows-distribution-*/**",
     "kokoro",
-    "docs/site"
+    "docs/site",
+    "local",
+    "liblouis",
+    "files",
+    "data",
+    "dist",
+    "Code Samples to Innovate With"
   ]
 }

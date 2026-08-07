@@ -19,7 +19,7 @@ def main() -> int:
         description="Generate SBOM, provenance, and optional vulnerability scan artefacts.",
     )
     parser.add_argument("--pyproject", type=Path, default=Path("pyproject.toml"))
-    parser.add_argument("--output-dir", type=Path, default=Path("release-artifacts"))
+    parser.add_argument("--output-dir", type=Path, default=Path("dist") / "release-artifacts")
     parser.add_argument("--include-optional", action="store_true")
     parser.add_argument("--run-audit", action="store_true")
     args = parser.parse_args()

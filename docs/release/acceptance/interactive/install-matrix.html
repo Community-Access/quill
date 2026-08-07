@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section — Install matrix (portable vs system, secrets, updates, migration) (interactive acceptance)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 62em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  html { scroll-padding-top: 5em; }
+  li { margin: 0.3em 0; }
+  input.cb, input.aspect { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+         border-bottom: 1px solid GrayText; z-index: 2; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; }
+    input.notes, input.meta { background: #222; color: #eee; border: 1px solid #666; } }
+  .bar button, .bar a { margin-right: 0.5em; }
+  details.sec { border: 1px solid GrayText; border-radius: 6px;
+                margin: 0.8em 0; padding: 0 0.8em; }
+  details.sec > summary { cursor: pointer; padding: 0.4em 0; }
+  details.sec > summary h2 { display: inline; font-size: 1.1em; margin: 0; }
+  .st { margin-left: 0.6em; font-weight: bold; }
+  .secbody { padding-bottom: 0.8em; }
+  fieldset.scn { margin-top: 0.8em; border: 1px solid GrayText; border-radius: 6px; }
+  fieldset.scn .row { margin: 0.35em 0; }
+  fieldset.scn label { margin-right: 0.9em; }
+  body.hidedone details.sec[data-done="1"] { display: none; }
+  body.hidedone li.check[data-done="1"] { display: none; }
+  blockquote { border-left: 3px solid GrayText; margin-left: 0; padding-left: 1em; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
+    padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="bar" role="group" aria-label="Progress and controls">
+  <span id="progress" role="status">Loading...</span><br>
+  <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
+  <button id="expandAll" type="button">Expand all</button>
+  <button id="collapseAll" type="button">Collapse all</button>
+  <button id="export" type="button">Export progress...</button>
+  <button id="import" type="button">Import progress...</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All sections</a>
+  <span id="live" class="visually-hidden" aria-live="polite"></span>
+</div>
+
+<h1>Section — Install matrix (portable vs system, secrets, updates, migration)</h1>
+<p>This section proves QUILL behaves correctly depending on <strong>how it was installed</strong>. It is a little more technical than the rest of the book because you will check <strong>where files land on disk</strong> — but every step still tells you exactly what to open and what you should find. If a term is new, that is fine; follow the path given.</p>
+<p><strong>Why this matters most for secrets.</strong> Install mode is decided by <strong>three independent signals that can disagree</strong>: (1) the <strong>data directory</strong>, (2) the <strong>secrets backend</strong> (<code>QUILL_PORTABLE</code>), and (3) the <strong>update asset</strong>. The riskiest one is secrets — an API key or token must land in the <em>right</em> protected store and never in plain text. Run this section carefully.</p>
+<p><strong>Environments (run the whole book once per environment).</strong></p>
+<div class="tablewrap"><table>
+<thead><tr><th>#</th><th>Environment</th><th>Data dir</th><th>Secrets backend</th><th>Update path</th></tr></thead>
+<tbody>
+<tr><td>E1</td><td>Windows system install (Inno, no <code>data/</code>)</td><td><code>%APPDATA%\Quill</code></td><td>Windows Credential Manager</td><td>installer <code>setup.exe</code></td></tr>
+<tr><td>E2</td><td>Windows portable ZIP (<code>data/</code> beside exe, <code>QUILL_PORTABLE=1</code>)</td><td><code>&lt;app&gt;\data</code></td><td>DPAPI <code>keys.enc</code> (<code>quill-portable-keys-v1</code>)</td><td>portable <code>.zip</code></td></tr>
+<tr><td>E3</td><td>Installed but ships <code>data/</code> (split-signal, #1100)</td><td>per <code>storage-mode.json</code></td><td><strong>DPAPI <code>keys.enc</code></strong> even if data is <code>%APPDATA%</code></td><td>installer (via <code>unins000</code> marker)</td></tr>
+<tr><td>E4</td><td>Custom data location (chosen in Settings)</td><td>user path</td><td>per <code>QUILL_PORTABLE</code></td><td>per detection</td></tr>
+<tr><td>E5</td><td>macOS bundle</td><td><code>~/.quill</code> (or chosen)</td><td>login <strong>Keychain</strong></td><td><code>.dmg</code>/<code>.pkg</code></td></tr>
+<tr><td>E6</td><td>Safe Mode (<code>QUILL_SAFE_MODE=1</code>, both modes)</td><td>as above</td><td>as above</td><td>n/a</td></tr>
+</tbody></table></div>
+<p>Run each scenario for <strong>QUILL editor, Quill Radio, and Quill Weather</strong>. Read §2–§3 of <code>README.md</code> for the box layout. Mark <strong>N/A</strong> for environment lines that do not apply to the machine you are on, and record which E-number this run is.</p>
+<blockquote><p><strong>Landmine to watch (from the code).</strong> <code>is_portable_mode()</code> reads only <code>QUILL_PORTABLE</code>, which the launcher sets whenever a <code>data/</code> folder exists beside the executable. So a build that <em>ships</em> a <code>data/</code> folder writes DPAPI <code>keys.enc</code> even if the user picked appdata storage. Verify this matches product intent before sign-off — it is the crux of INST-03.</p></blockquote>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-01 — Data and settings land in the right folder</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Prove the document data, settings, logs, backups, and autosave all resolve to the folder the install mode intends.</p><p><strong>Before you start</strong></p><ul><li>QUILL installed for the environment under test. Know the expected data dir from the table above.</li></ul><p><strong>Do this</strong></p><ol><li>Launch QUILL, change one setting (e.g. toggle a view option), and create + save a throwaway document so backups/autosave have something to write.</li><li>Open File Explorer (Windows) or Finder (macOS) and go to the **expected data dir** for this environment (e.g. <code>%APPDATA%\Quill</code> for E1, <code>&lt;app&gt;\data</code> for E2).</li><li>Confirm <code>settings.json</code> and the <code>logs</code>, <code>diagnostics</code>, <code>backups</code>, <code>autosave</code>, and <code>sessions</code> subfolders exist there.</li></ol><p><strong>You should see and hear</strong></p><ul><li>E1: everything under <code>%APPDATA%\Quill</code>; <strong>nothing</strong> QUILL-owned appears beside the exe. E2: everything under <code>&lt;app&gt;\data</code>; <strong>nothing</strong> under <code>%APPDATA%</code>. E4: your chosen path is used. E5: <code>~/.quill</code> (or chosen) with <code>storage-mode.json</code> inside. <code>ensure_app_directories</code> created all the subfolders in the resolved dir.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-01" data-sid="INST-01"><legend>Sign off - INST-01 — Data and settings land in the right folder</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-01 — Data and settings land in the right folder"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-01:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-01:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-01:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-01:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-01:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-01:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-01:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-01:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-01:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-02 — Secrets go to the correct protected store (never plain text)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The highest-risk check: an API key/token must be stored in the platform's protected store for this mode, and never written in the clear.</p><p><strong>Before you start</strong></p><ul><li>QUILL open. A throwaway secret to enter — e.g. add an AI provider key in the AI Hub, or connect a GitHub account (use a disposable token).</li></ul><p><strong>Do this</strong></p><ol><li>Enter the secret through its normal UI and confirm it saves.</li><li>E1 (Windows, not portable): open <strong>Credential Manager ▸ Windows Credentials</strong> and find the QUILL entry. E2 (Windows portable): find <strong><code>keys.enc</code></strong> in the resolved data dir. E5 (macOS): open <strong>Keychain Access</strong> and find the login-keychain entry.</li><li>Search the data dir, <code>logs</code>, <code>diagnostics</code>, and any crash bundle for the raw secret string.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The secret is in the <strong>expected store</strong> for the mode (Credential Manager / DPAPI <code>keys.enc</code> / Keychain) and appears <strong>nowhere in plain text</strong> in settings, logs, diagnostics, or crash bundles (redaction, SEC-13). Signing out of the service removes only that service's entry.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-02" data-sid="INST-02"><legend>Sign off - INST-02 — Secrets go to the correct protected store (never plain text)</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-02 — Secrets go to the correct protected store (never plain text)"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-02:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-02:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-02:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-02:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-02:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-02:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-02:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-02:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-02:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-03 — The split-signal case (E3): keystore follows the resolved data dir</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> When <code>QUILL_PORTABLE=1</code> but the data dir is <code>%APPDATA%</code>, the keystore must follow the <strong>resolved data dir</strong>, not the user's abstract choice. This is the</p><h1>1100 landmine.</h1><p><strong>Before you start</strong></p><ul><li>An E3 build (installed, but ships a <code>data/</code> folder beside the exe). A throwaway secret.</li></ul><p><strong>Do this</strong></p><ol><li>Launch, enter a secret (as in INST-02).</li><li>Confirm where <code>keys.enc</code> was written.</li></ol><p><strong>You should see and hear</strong></p><ul><li><code>keys.enc</code> lands in <strong><code>%APPDATA%\Quill\keys.enc</code></strong> (it follows the resolved data dir). <strong>Record actual vs. intended</strong> — the backend is chosen by bundle layout, not the storage choice. Flag any mismatch with product intent as a release blocker.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-03" data-sid="INST-03"><legend>Sign off - INST-03 — The split-signal case (E3): keystore follows the resolved data dir</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-03 — The split-signal case (E3): keystore follows the resolved data dir"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-03:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-03:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-03:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-03:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-03:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-03:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-03:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-03:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-03:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-04 — Environment-variable key override wins and is never persisted</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A <code>QUILL_&lt;KEY&gt;_KEY</code> env override must take precedence and must not be written into any store.</p><p><strong>Before you start</strong></p><ul><li>Set an env override for a key you also have stored (e.g. <code>QUILL_OPENAI_KEY</code>), then launch QUILL.</li></ul><p><strong>Do this</strong></p><ol><li>Use the feature that consumes that key.</li><li>Inspect the secret store afterward.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The env value is used in every mode; the stored value is <strong>not</strong> overwritten and the env value is <strong>not</strong> persisted into the store.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-04" data-sid="INST-04"><legend>Sign off - INST-04 — Environment-variable key override wins and is never persisted</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-04 — Environment-variable key override wins and is never persisted"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-04:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-04:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-04:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-04:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-04:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-04:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-04:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-04:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-04:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-05 — Updates offer the right asset for the mode</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> An installed build must update via the installer; a portable build via the portable zip (preserving <code>data/</code>).</p><p><strong>Before you start</strong></p><ul><li>The build under test with update checking available (network + a reachable update source). If offline, mark <strong>Blocked</strong>.</li></ul><p><strong>Do this</strong></p><ol><li>Run <strong>Help ▸ Check for Updates…</strong>.</li><li>Read what update asset is offered and, if safe in your test setup, apply it and let QUILL relaunch.</li></ol><p><strong>You should see and hear</strong></p><ul><li>E1/E3: offered the <strong>platform installer</strong> (<code>.exe</code>/<code>.msi</code>; macOS <code>.dmg</code>/<code>.pkg</code>), applied via elevated silent setup then relaunch. E2: offered the **portable <code>.zip</code><strong> (name contains "portable"), applied via mirror-copy that </strong>excludes <code>data/</code>**, then relaunch — your documents/settings survive. E3 (#1100): <code>running_portable()</code> returns False (the <code>unins000</code> marker), so it gets the installer, not the zip. Discovery is HTTPS-only, host-allowlisted, and signed-manifest verified in every mode. A dev/non-frozen run falls back to "reveal download" instead of applying (no crash).</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-05" data-sid="INST-05"><legend>Sign off - INST-05 — Updates offer the right asset for the mode</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-05 — Updates offer the right asset for the mode"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-05:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-05:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-05:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-05:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-05:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-05:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-05:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-05:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-05:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-06 — First run, migration, and importing prior data</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A brand-new user gets the Startup Wizard; an existing user's data is migrated safely with backups.</p><p><strong>Before you start</strong></p><ul><li>For the fresh-install path: a machine/profile with no prior QUILL data. For the import path: a populated prior data location available.</li></ul><p><strong>Do this</strong></p><ol><li>Launch a fresh install and confirm the <strong>Startup Wizard</strong> appears.</li><li>On a fresh data dir with a populated prior location present, accept the offer to <strong>import prior data</strong>.</li><li>Inspect the data dir for a <code>migration-backups/</code> folder after a settings-schema migration (e.g. upgrading over an older build).</li></ol><p><strong>You should see and hear</strong></p><ul><li>Fresh install triggers the nine-page <strong>Startup Wizard</strong> (the <code>quill-new-install.txt</code> marker is consumed). Import brings over documents/settings but <strong>not</strong> the location-control files. Schema migration backs up the old settings to <code>&lt;data&gt;/migration-backups/</code> before rewriting; corrupt settings are **quarantined, not lost**. The backup dir follows the resolved data dir in every mode.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-06" data-sid="INST-06"><legend>Sign off - INST-06 — First run, migration, and importing prior data</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-06 — First run, migration, and importing prior data"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-06:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-06:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-06:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-06:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-06:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-06:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-06:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-06:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-06:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-07 — Safe Mode is identical in portable and system</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Safe Mode must disable the same things regardless of install mode.</p><p><strong>Before you start</strong></p><ul><li>Relaunch with <strong><code>QUILL_SAFE_MODE=1</code></strong> (or <code>--safe-mode</code>), once portable, once system.</li></ul><p><strong>Do this</strong></p><ol><li>Confirm plugins, AI, network, restore, indexing, watchers, themes, and snippets are disabled.</li><li>Confirm Radio and Weather network features refuse in Safe Mode.</li><li>Separately, set <code>QUILL_VERBOSITY_SAFE_MODE=1</code> and confirm custom verbosity is ignored.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The same features are off in both install modes; Safe Mode is announced/obvious; Radio/Weather network calls refuse cleanly; verbosity Safe Mode ignores custom verbosity — all mode-independent.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-07" data-sid="INST-07"><legend>Sign off - INST-07 — Safe Mode is identical in portable and system</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-07 — Safe Mode is identical in portable and system"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-07:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-07:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-07:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-07:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-07:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-07:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-07:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-07:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-07:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-08 — Portable-only behaviors (self-containment and moving the stick)</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A true portable copy keeps everything inside its folder and survives being moved — with one documented exception for machine-bound secrets.</p><p><strong>Before you start</strong></p><ul><li>An E2 portable copy on a writable medium; optionally a second machine/drive and a read-only/USB medium.</li></ul><p><strong>Do this</strong></p><ol><li>Confirm data, settings, secrets, and logs all stay <strong>inside the app folder</strong> (all three signals agree).</li><li>Move the whole folder to another machine/drive and launch.</li><li>Put the folder on a read-only/USB medium and launch.</li></ol><p><strong>You should see and hear</strong></p><ul><li>E2 keeps everything inside the folder. After a move, DPAPI <code>keys.enc</code> is <strong>machine/account-bound</strong>, so stored keys do not transfer — QUILL prompts for re-entry (documented), no crash. On read-only media, <code>storage-mode.json</code> falls back to the appdata path gracefully.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-08" data-sid="INST-08"><legend>Sign off - INST-08 — Portable-only behaviors (self-containment and moving the stick)</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-08 — Portable-only behaviors (self-containment and moving the stick)"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-08:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-08:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-08:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-08:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-08:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-08:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-08:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-08:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-08:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>INST-09 — Per-app pass for Radio and Weather</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The companion apps decide their own install mode and must place their data correctly.</p><p><strong>Before you start</strong></p><ul><li>Quill Radio and Quill Weather installed for the environment under test.</li></ul><p><strong>Do this</strong></p><ol><li><strong>Radio:</strong> confirm the data/settings/secrets/update verdict is correct for E1–E5; stations and recordings land in the right place; a <code>.qrbackup</code> restore works in both portable and system.</li><li><strong>Weather:</strong> confirm data/settings/update verdict; the **background Scheduled Task** registers per-user and fires in both install modes; the alert-dedupe store follows the data dir.</li></ol><p><strong>You should see and hear</strong></p><ul><li>Each app resolves its own portable/installed verdict (a bare <code>unins000</code>-beside-exe check plus <code>prefer_portable</code>); files land in the right place; Radio backup/restore round-trips; Weather's Scheduled Task fires and dedupe persists — all correct in both modes.</li></ul><fieldset class="scn" data-base="install-matrix:scn:INST-09" data-sid="INST-09"><legend>Sign off - INST-09 — Per-app pass for Radio and Weather</legend><div class="row" role="radiogroup" aria-label="Outcome for INST-09 — Per-app pass for Radio and Weather"><label><input type="radio" class="outcome" name="install-matrix:scn:INST-09:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-09:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-09:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-09:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="install-matrix:scn:INST-09:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-09:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-09:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="install-matrix:scn:INST-09:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="install-matrix:scn:INST-09:notes"></label></div></fieldset></div></details>
+<section class="footerblock"><h3>Section sign-off</h3>
+<ul>
+<li><label>Tester: <input type="text" class="meta" size="40" data-key="install-matrix:meta:9264a677ddfa" value=""></label></li>
+<li><label>Screen reader(s) + version(s): <input type="text" class="meta" size="40" data-key="install-matrix:meta:23d6c2127f5f" value=""></label></li>
+<li><label>Build / commit tested: <input type="text" class="meta" size="40" data-key="install-matrix:meta:53295e384ade" value=""></label></li>
+<li><label>Environment (E1–E6): <input type="text" class="meta" size="40" data-key="install-matrix:meta:267597b92b20" value=""></label></li>
+<li><label>Date: <input type="text" class="meta" size="40" data-key="install-matrix:meta:eb9a4bc1c0c1" value=""></label></li>
+<li><label>Scenarios passed / total: <input type="text" class="meta" size="40" data-key="install-matrix:meta:0ce6deb713bd" value="___ / 9"></label></li>
+<li><label>Release blockers found (must be zero to ship): <input type="text" class="meta" size="40" data-key="install-matrix:meta:1dbaf858fd79" value=""></label></li>
+<li><label>Result: <input type="text" class="meta" size="40" data-key="install-matrix:meta:5faa59d4bc37" value="Pass / Pass-with-notes / Fail"></label></li>
+<li><label>Notes: <input type="text" class="meta" size="40" data-key="install-matrix:meta:70440046a3dc" value=""></label></li>
+</ul>
+</section>
+<script>
+(function () {
+  var PREFIX = "quill-acceptance:";
+  var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var live = document.getElementById("live");
+  var toggleBtn = document.getElementById("toggleHide");
+  var cbs = Array.prototype.slice.call(document.querySelectorAll("input.cb"));
+  var aspects = Array.prototype.slice.call(document.querySelectorAll("input.aspect"));
+  var notes = Array.prototype.slice.call(
+    document.querySelectorAll("input.notes, input.meta"));
+  var scns = Array.prototype.slice.call(document.querySelectorAll("fieldset.scn"));
+  var secs = Array.prototype.slice.call(document.querySelectorAll("details.sec"));
+
+  function outcomeOf(scn) {
+    var r = scn.querySelector('input.outcome:checked');
+    return r ? r.value : "";
+  }
+  function setStatusBadge(scn) {
+    var det = scn.closest("details.sec");
+    if (!det) return;
+    var st = det.querySelector(".st");
+    var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
+    if (st) st.textContent = labels[outcomeOf(scn)] || "";
+  }
+  function secDone(det) {
+    var kind = det.getAttribute("data-kind");
+    if (kind === "scenario") {
+      var fs = det.querySelectorAll("fieldset.scn");
+      for (var i = 0; i < fs.length; i++) {
+        if (!outcomeOf(fs[i])) return false;
+      }
+      return fs.length > 0;
+    }
+    if (kind === "checklist") {
+      var bs = det.querySelectorAll("input.cb");
+      for (var j = 0; j < bs.length; j++) { if (!bs[j].checked) return false; }
+      return bs.length > 0;
+    }
+    return false;
+  }
+  function itemDone(li) {
+    var bs = li.querySelectorAll("input.cb");
+    for (var i = 0; i < bs.length; i++) { if (!bs[i].checked) return false; }
+    return bs.length > 0;
+  }
+  function hideActive() { return localStorage.getItem(HIDE_KEY) === "1"; }
+  function markDone() {
+    secs.forEach(function (d) {
+      d.setAttribute("data-done", secDone(d) ? "1" : "0");
+    });
+    document.querySelectorAll("li.check").forEach(function (li) {
+      li.setAttribute("data-done", itemDone(li) ? "1" : "0");
+    });
+  }
+  function applyHide() {
+    document.body.classList.toggle("hidedone", hideActive());
+    if (toggleBtn) toggleBtn.setAttribute("aria-pressed", hideActive() ? "true" : "false");
+  }
+  function refresh() {
+    var counts = { pass: 0, fail: 0, blocked: 0, na: 0 };
+    var recorded = 0;
+    scns.forEach(function (s) {
+      var o = outcomeOf(s);
+      if (o) { recorded++; counts[o]++; }
+    });
+    var done = 0;
+    cbs.forEach(function (b) { if (b.checked) done++; });
+    var bits = [];
+    if (scns.length) {
+      bits.push(recorded + " of " + scns.length + " scenarios recorded (" +
+        counts.pass + " pass, " + counts.fail + " fail, " +
+        counts.blocked + " blocked, " + counts.na + " n/a)");
+    }
+    if (cbs.length) { bits.push(done + " of " + cbs.length + " boxes checked"); }
+    document.getElementById("progress").textContent =
+      bits.length ? bits.join("; ") : "Nothing to sign off on this page.";
+  }
+  // Focus rescue: when hiding removes the element under focus, land on the
+  // next visible section summary (else previous, else the toggle button).
+  function rescueFocus(fromEl) {
+    var det = fromEl && fromEl.closest ? fromEl.closest("details.sec") : null;
+    if (det && getComputedStyle(det).display !== "none") return; // still visible
+    var idx = det ? secs.indexOf(det) : -1;
+    for (var j = idx + 1; j < secs.length; j++) {
+      if (getComputedStyle(secs[j]).display !== "none") {
+        secs[j].querySelector("summary").focus(); return;
+      }
+    }
+    for (var k = idx - 1; k >= 0; k--) {
+      if (getComputedStyle(secs[k]).display !== "none") {
+        secs[k].querySelector("summary").focus(); return;
+      }
+    }
+    if (toggleBtn) toggleBtn.focus();
+  }
+
+  // Restore + wire checkboxes (checklist and aspect boxes share persistence).
+  cbs.concat(aspects).forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      markDone(); refresh();
+      if (hideActive()) {
+        var li = b.closest("li.check");
+        var det = b.closest("details.sec");
+        var hid = (li && li.getAttribute("data-done") === "1") ||
+                  (det && det.getAttribute("data-done") === "1");
+        if (hid) {
+          if (live) live.textContent = "Completed and hidden.";
+          rescueFocus(b);
+        }
+      }
+    });
+  });
+
+  // Restore + wire outcome radios.
+  scns.forEach(function (scn) {
+    var base = PREFIX + scn.dataset.base + ":outcome";
+    var saved = localStorage.getItem(base) || "";
+    var radios = scn.querySelectorAll("input.outcome");
+    radios.forEach(function (r) {
+      r.checked = (r.value === saved);
+      r.addEventListener("change", function () {
+        if (!r.checked) return;
+        if (r.value) localStorage.setItem(base, r.value);
+        else localStorage.removeItem(base);
+        setStatusBadge(scn); markDone(); refresh();
+        var det = scn.closest("details.sec");
+        if (hideActive() && det && det.getAttribute("data-done") === "1") {
+          if (live) live.textContent =
+            "Scenario recorded as " + (r.value || "not run") + " and hidden.";
+          rescueFocus(scn);
+        } else if (live) {
+          live.textContent = "Recorded: " + (r.value || "not run") + ".";
+        }
+      });
+    });
+    if (!saved) {
+      var nr = scn.querySelector('input.outcome[value=""]');
+      if (nr) nr.checked = true;
+    }
+    setStatusBadge(scn);
+  });
+
+  // Restore + wire text fields (notes, section sign-off metadata).
+  notes.forEach(function (t) {
+    var key = PREFIX + t.dataset.key;
+    var saved = localStorage.getItem(key);
+    if (saved !== null) t.value = saved;
+    var timer = null;
+    t.addEventListener("input", function () {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        if (t.value) localStorage.setItem(key, t.value);
+        else localStorage.removeItem(key);
+      }, 250);
+    });
+  });
+
+  markDone(); refresh(); applyHide();
+
+  if (toggleBtn) {
+    if (scns.length === 0 && cbs.length === 0) {
+      toggleBtn.hidden = true;
+    } else {
+      toggleBtn.addEventListener("click", function () {
+        localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
+        applyHide();
+        var hidden = secs.filter(function (d) {
+          return getComputedStyle(d).display === "none";
+        }).length;
+        if (live) live.textContent = hideActive()
+          ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
+          : "Showing all sections.";
+      });
+    }
+  }
+  var ex = document.getElementById("expandAll");
+  var co = document.getElementById("collapseAll");
+  if (ex) ex.addEventListener("click", function () {
+    secs.forEach(function (d) { d.open = true; });
+    if (live) live.textContent = "All sections expanded.";
+  });
+  if (co) co.addEventListener("click", function () {
+    secs.forEach(function (d) { d.open = false; });
+    if (live) live.textContent = "All sections collapsed.";
+  });
+
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-acceptance-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      location.reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>

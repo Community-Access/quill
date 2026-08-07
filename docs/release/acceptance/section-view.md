@@ -771,7 +771,7 @@ note it.
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 38
+- Scenarios passed / total: ___ / 28
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

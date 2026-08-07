@@ -299,8 +299,27 @@ ABSENT).</li>
 <li><code>SIGNOFF-install-matrix.md</code> — portable vs system under
 all scenarios (E1–E6, all three portable signals), per app.</li>
 </ul></li>
+<li><label><input type="checkbox" checked="" /><strong>Hand-held
+Acceptance Test Book under
+<code>docs/release/acceptance/</code></strong> — the guided companion to
+the inventory: 723 step-by-step scenarios (setup, exact keystrokes,
+projected outcome, per-scenario Pass/Fail/Blocked/N-A +
+Works/Surface-exact/Accessible sign-off) plus the 647-line dialog
+contract, covering all 645 core-editor command ids and the companion
+apps.</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Interactive
+runners</strong> —
+<code>docs/release/acceptance/interactive/index.html</code> (the book)
+and <code>docs/planning/signoff/interactive/index.html</code> (the
+inventories): browser pages whose sign-off state saves as you go
+(localStorage + JSON export/import), with hide-completed / show-all and
+expand/collapse-all. Regenerate with
+<code>python scripts/gen_acceptance_html.py</code> /
+<code>python scripts/gen_signoff_html.py</code>.</label></li>
 <li><label><input type="checkbox" />Human execution: check off every box
-across environments E1–E6 (this is the readiness gate).</label></li>
+across environments E1–E6 (this is the readiness gate). Start at
+<code>docs/release/acceptance/interactive/index.html</code>, in the run
+order it lists.</label></li>
 <li><label><input type="checkbox" /><strong>Coverage MUST include the
 public companion apps:</strong> <strong>QUILL Radio</strong> and
 <strong>QUILL Weather</strong> get the same per-command / per-surface

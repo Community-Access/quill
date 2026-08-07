@@ -1,0 +1,110 @@
+{
+ "README": {
+  "scenarios": 0,
+  "boxes": 0
+ },
+ "00-getting-started": {
+  "scenarios": 10,
+  "boxes": 0
+ },
+ "section-file": {
+  "scenarios": 27,
+  "boxes": 0
+ },
+ "section-edit": {
+  "scenarios": 62,
+  "boxes": 0
+ },
+ "section-navigate": {
+  "scenarios": 28,
+  "boxes": 0
+ },
+ "section-format": {
+  "scenarios": 50,
+  "boxes": 0
+ },
+ "section-view": {
+  "scenarios": 28,
+  "boxes": 0
+ },
+ "section-table": {
+  "scenarios": 22,
+  "boxes": 0
+ },
+ "section-editor-behaviors": {
+  "scenarios": 24,
+  "boxes": 0
+ },
+ "section-tools-ai": {
+  "scenarios": 31,
+  "boxes": 0
+ },
+ "section-tools-speech": {
+  "scenarios": 38,
+  "boxes": 0
+ },
+ "section-tools-misc": {
+  "scenarios": 56,
+  "boxes": 0
+ },
+ "section-power": {
+  "scenarios": 56,
+  "boxes": 0
+ },
+ "section-braille": {
+  "scenarios": 45,
+  "boxes": 0
+ },
+ "section-vault": {
+  "scenarios": 22,
+  "boxes": 0
+ },
+ "section-help": {
+  "scenarios": 21,
+  "boxes": 0
+ },
+ "section-github": {
+  "scenarios": 40,
+  "boxes": 0
+ },
+ "section-settings": {
+  "scenarios": 23,
+  "boxes": 0
+ },
+ "section-quillins": {
+  "scenarios": 19,
+  "boxes": 0
+ },
+ "section-whisperer": {
+  "scenarios": 12,
+  "boxes": 0
+ },
+ "section-app-adp": {
+  "scenarios": 12,
+  "boxes": 0
+ },
+ "section-accessibility": {
+  "scenarios": 13,
+  "boxes": 0
+ },
+ "app-radio": {
+  "scenarios": 41,
+  "boxes": 0
+ },
+ "app-weather": {
+  "scenarios": 27,
+  "boxes": 0
+ },
+ "gated-absence": {
+  "scenarios": 7,
+  "boxes": 0
+ },
+ "dialogs": {
+  "scenarios": 0,
+  "boxes": 647
+ },
+ "install-matrix": {
+  "scenarios": 9,
+  "boxes": 0
+ }
+}

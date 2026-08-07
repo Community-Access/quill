@@ -8,7 +8,7 @@ the installer can extract the zip and run run-quill.cmd.
 Usage::
 
     python scripts/build_portable_zip.py \\
-        --source-dir windows-distribution/portable \\
+        --source-dir dist/windows/portable \\
         --output Quill-Portable-v0.7.0-beta.1.zip
 """
 
@@ -35,7 +35,7 @@ def main() -> int:
     parser.add_argument(
         "--source-dir",
         type=Path,
-        default=Path("windows-distribution") / "portable",
+        default=Path("dist") / "windows" / "portable",
         help="The portable bundle directory to zip.",
     )
     parser.add_argument(

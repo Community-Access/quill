@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QUILL acceptance index (interactive acceptance)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 62em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  html { scroll-padding-top: 5em; }
+  li { margin: 0.3em 0; }
+  input.cb, input.aspect { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+         border-bottom: 1px solid GrayText; z-index: 2; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; }
+    input.notes, input.meta { background: #222; color: #eee; border: 1px solid #666; } }
+  .bar button, .bar a { margin-right: 0.5em; }
+  details.sec { border: 1px solid GrayText; border-radius: 6px;
+                margin: 0.8em 0; padding: 0 0.8em; }
+  details.sec > summary { cursor: pointer; padding: 0.4em 0; }
+  details.sec > summary h2 { display: inline; font-size: 1.1em; margin: 0; }
+  .st { margin-left: 0.6em; font-weight: bold; }
+  .secbody { padding-bottom: 0.8em; }
+  fieldset.scn { margin-top: 0.8em; border: 1px solid GrayText; border-radius: 6px; }
+  fieldset.scn .row { margin: 0.35em 0; }
+  fieldset.scn label { margin-right: 0.9em; }
+  body.hidedone details.sec[data-done="1"] { display: none; }
+  body.hidedone li.check[data-done="1"] { display: none; }
+  blockquote { border-left: 3px solid GrayText; margin-left: 0; padding-left: 1em; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
+    padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="bar" role="group" aria-label="Progress and controls">
+  <span id="progress" role="status">Loading...</span><br>
+  <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
+  <button id="expandAll" type="button">Expand all</button>
+  <button id="collapseAll" type="button">Collapse all</button>
+  <button id="export" type="button">Export progress...</button>
+  <button id="import" type="button">Import progress...</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All sections</a>
+  <span id="live" class="visually-hidden" aria-live="polite"></span>
+</div>
+
+<h1>QUILL 1.0.0 Acceptance Test Book - interactive runner</h1><p>This is the run-order dashboard for the hand-held acceptance book. Open a section, follow each scenario step by step, and record the outcome with the Pass / Fail / Blocked / N-A controls. Everything you record is saved in this browser the moment you change it and restored when you come back - including after closing the browser. Use Export to back your progress up to a JSON file, and Import to restore it or move it to another machine.</p><p>Hide completed hides every fully recorded section and scenario so you always see only what is left; Show all brings everything back. The printed Markdown book in the parent folder is the source of truth; these pages are generated from it by <code>scripts/gen_acceptance_html.py</code>.</p><p>Total: 723 scenarios and 647 checklist boxes across all sections, in the recommended run order:</p><ol><li data-slug="README" data-scn="0" data-cb="0"><a href="README.html">QUILL 1.0.0 — Acceptance Test Book (hand-held, exhaustive)</a> (read first; no boxes)<span class="prog" role="status"></span></li><li data-slug="00-getting-started" data-scn="10" data-cb="0"><a href="00-getting-started.html">Part 0 — Getting Started (you have never used QUILL)</a> (10 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-file" data-scn="27" data-cb="0"><a href="section-file.html">Section — File menu (file., 29 commands)</a> (27 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-edit" data-scn="62" data-cb="0"><a href="section-edit.html">Section — Edit / insert / find (edit., 86 commands)</a> (62 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-navigate" data-scn="28" data-cb="0"><a href="section-navigate.html">Section — Navigate menu (navigate., 28 commands)</a> (28 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-format" data-scn="50" data-cb="0"><a href="section-format.html">Section — Format &amp; Insert (format., 56 commands)</a> (50 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-view" data-scn="28" data-cb="0"><a href="section-view.html">Section — View, Window &amp; Verbosity (view. + window. + verbosity., 38 commands)</a> (28 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-table" data-scn="22" data-cb="0"><a href="section-table.html">Section — Tables, Reveal Codes, Notes &amp; misc (table. reveal. notes. + document/sync/ai/media, 22 commands)</a> (22 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-editor-behaviors" data-scn="24" data-cb="0"><a href="section-editor-behaviors.html">Section — Editor and document behaviors (core.editor and the cross-cutting document features)</a> (24 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-tools-ai" data-scn="31" data-cb="0"><a href="section-tools-ai.html">Section — Tools: AI writing &amp; analysis (tools., AI subset)</a> (31 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-tools-speech" data-scn="38" data-cb="0"><a href="section-tools-speech.html">Section — Speech, Dictation, Read Aloud &amp; OCR (tools., 36 commands)</a> (38 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-tools-misc" data-scn="56" data-cb="0"><a href="section-tools-misc.html">Section — Tools: compare, keymap, macros &amp; utilities (tools., 73 commands)</a> (56 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-power" data-scn="56" data-cb="0"><a href="section-power.html">Section — Power-user commands (power., 75 commands)</a> (56 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-braille" data-scn="45" data-cb="0"><a href="section-braille.html">Section — Braille display &amp; tables (braille., 45 commands)</a> (45 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-vault" data-scn="22" data-cb="0"><a href="section-vault.html">Section — Vault (vault., 22 commands)</a> (22 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-help" data-scn="21" data-cb="0"><a href="section-help.html">Section — Help menu (help., 21 commands)</a> (21 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-github" data-scn="40" data-cb="0"><a href="section-github.html">Section — GitHub, Local Git, and Publishing (github. localgit. publishing., 40 commands)</a> (40 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-settings" data-scn="23" data-cb="0"><a href="section-settings.html">Section — Settings / Preferences (every pane of the Settings dialog)</a> (23 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-quillins" data-scn="19" data-cb="0"><a href="section-quillins.html">Section — Quillins (extensions system)</a> (19 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-whisperer" data-scn="12" data-cb="0"><a href="section-whisperer.html">Section — BITS Whisperer (whisperer., 12 commands) [GATED]</a> (12 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-app-adp" data-scn="12" data-cb="0"><a href="section-app-adp.html">Section — App launcher &amp; ADP (app. 10, adp. 2)</a> (12 scenarios)<span class="prog" role="status"></span></li><li data-slug="section-accessibility" data-scn="13" data-cb="0"><a href="section-accessibility.html">Section — Accessibility (cross-cutting, applies to every feature)</a> (13 scenarios)<span class="prog" role="status"></span></li><li data-slug="app-radio" data-scn="41" data-cb="0"><a href="app-radio.html">Quill Radio — the public standalone app (version 2.2.0)</a> (41 scenarios)<span class="prog" role="status"></span></li><li data-slug="app-weather" data-scn="27" data-cb="0"><a href="app-weather.html">App — Quill Weather (public standalone app, version 2.2.0)</a> (27 scenarios)<span class="prog" role="status"></span></li><li data-slug="gated-absence" data-scn="7" data-cb="0"><a href="gated-absence.html">Section — Gated-absence (prove the non-1.0 features are gone)</a> (7 scenarios)<span class="prog" role="status"></span></li><li data-slug="dialogs" data-scn="0" data-cb="647"><a href="dialogs.html">Dialog contract — every dialog, by area</a> (647 boxes)<span class="prog" role="status"></span></li><li data-slug="install-matrix" data-scn="9" data-cb="0"><a href="install-matrix.html">Section — Install matrix (portable vs system, secrets, updates, migration)</a> (9 scenarios)<span class="prog" role="status"></span></li></ol><p>Companion checklists: the <a href="../../../planning/signoff/interactive/index.html">machine-generated sign-off inventories</a> (every command, dialog, and app surface, one line each).</p>
+<script>
+(function () {
+  var PREFIX = "quill-acceptance:";
+  var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var live = document.getElementById("live");
+  var toggleBtn = document.getElementById("toggleHide");
+  var rows = Array.prototype.slice.call(document.querySelectorAll("li[data-slug]"));
+
+  function pageProgress(slug) {
+    var scn = 0, cb = 0;
+    var scnPrefix = PREFIX + slug + ":scn:";
+    var cbPrefix = PREFIX + slug + ":cb:";
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(scnPrefix) === 0 && k.slice(-8) === ":outcome") scn++;
+      else if (k.indexOf(cbPrefix) === 0 && localStorage.getItem(k) === "1") cb++;
+    }
+    return { scn: scn, cb: cb };
+  }
+  function hideActive() { return localStorage.getItem(HIDE_KEY) === "1"; }
+  function refresh() {
+    var tScn = 0, tScnDone = 0, tCb = 0, tCbDone = 0, hidden = 0;
+    rows.forEach(function (li) {
+      var slug = li.dataset.slug;
+      var scnTotal = parseInt(li.dataset.scn || "0", 10);
+      var cbTotal = parseInt(li.dataset.cb || "0", 10);
+      var p = pageProgress(slug);
+      var bits = [];
+      if (scnTotal) bits.push(Math.min(p.scn, scnTotal) + " of " + scnTotal + " scenarios");
+      if (cbTotal) bits.push(Math.min(p.cb, cbTotal) + " of " + cbTotal + " boxes");
+      var done = (scnTotal + cbTotal) > 0 &&
+                 p.scn >= scnTotal && p.cb >= cbTotal;
+      var span = li.querySelector(".prog");
+      if (span) span.textContent = bits.length
+        ? " - " + bits.join(", ") + (done ? " - COMPLETE" : "")
+        : "";
+      tScn += scnTotal; tScnDone += Math.min(p.scn, scnTotal);
+      tCb += cbTotal; tCbDone += Math.min(p.cb, cbTotal);
+      li.hidden = hideActive() && done;
+      if (li.hidden) hidden++;
+    });
+    document.getElementById("progress").textContent =
+      "Overall: " + tScnDone + " of " + tScn + " scenarios recorded, " +
+      tCbDone + " of " + tCb + " checklist boxes checked.";
+    if (toggleBtn) toggleBtn.setAttribute("aria-pressed", hideActive() ? "true" : "false");
+    return hidden;
+  }
+  refresh();
+  window.addEventListener("storage", refresh);
+  window.addEventListener("focus", refresh);
+  if (toggleBtn) toggleBtn.addEventListener("click", function () {
+    localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
+    var hidden = refresh();
+    if (live) live.textContent = hideActive()
+      ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
+      : "Showing all sections.";
+  });
+  var ex = document.getElementById("expandAll");
+  var co = document.getElementById("collapseAll");
+  if (ex) ex.hidden = true;
+  if (co) co.hidden = true;
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-acceptance-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      location.reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>section-format</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -1720,7 +1724,7 @@ the document and announces the change in substance (e.g. "Now saving as
 <li>Build / commit tested:</li>
 <li>Environment (E1–E6):</li>
 <li>Date:</li>
-<li>Scenarios passed / total: ___ / 56</li>
+<li>Scenarios passed / total: ___ / 50</li>
 <li>Release blockers found (must be zero to ship):</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>

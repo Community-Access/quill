@@ -10624,13 +10624,13 @@ From the repo root, with the venv active:
 python -m scripts.build_windows_distribution --bundle-python --compile-installer
 ```
 
-Expected: `windows-distribution\installer\Quill-Setup-<version>.exe` (and/or
+Expected: `dist\windows\installer\Quill-Setup-<version>.exe` (and/or
 `...\Output\Quill-Setup-<version>.exe`) is produced. If `--compile-installer`
 is not wired as a flag in your build, compile manually:
 
 ```powershell
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
-  windows-distribution\installer\quill.iss
+  dist\windows\installer\quill.iss
 ```
 
 #### Step 2 — Install with the "Send to Quill" verbs enabled
@@ -11251,7 +11251,7 @@ python scripts/build_windows_distribution.py `
     --bundle-python `
     --compile-installer `
     --iscc-path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
-    --output-dir windows-distribution
+    --output-dir dist/windows
 ```
 
 ---
@@ -11468,7 +11468,7 @@ python scripts/generate_file_manifest.py --version 0.5.0
 # 3. Build the delta update ZIP
 python scripts/build_update_zip.py --version 0.5.0
 
-# Output: release-artifacts/quill-0.5.0-update-windows.zip
+# Output: dist/release-artifacts/quill-0.5.0-update-windows.zip
 ```
 
 The CI `build` job runs all three steps automatically on each `v*` tag push.

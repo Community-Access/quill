@@ -1221,7 +1221,7 @@ commands above insert Markdown markup or apply real styling.
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 56
+- Scenarios passed / total: ___ / 50
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

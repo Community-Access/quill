@@ -21,11 +21,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 # so the root stays scannable at a glance. CHANGELOG.md stays at the root because
 # release tooling (check_version_consistency, extract_release_body,
 # build_windows_distribution) and packaging convention read it there; CLAUDE.md
-# is pinned to the root by Claude Code; README.md is the repository front page.
+# is pinned to the root by Claude Code; README.md is the repository front page;
+# REPO-GUIDE.md is the repository map (what every folder and key document is
+# for) and lives at the root so it is the first thing a newcomer can find.
 _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "CHANGELOG.md",
     "CLAUDE.md",
     "README.md",
+    "REPO-GUIDE.md",
 })
 
 

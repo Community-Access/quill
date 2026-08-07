@@ -640,7 +640,7 @@ use. Do this **before** FILE-25/28 if not yet connected.
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 29
+- Scenarios passed / total: ___ / 27
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

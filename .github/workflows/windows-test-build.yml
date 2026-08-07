@@ -39,12 +39,12 @@ jobs:
         # .yml) bake the real secret.
         env:
           QUILL_FEEDBACK_GITHUB_TOKEN: "quill-test-build-placeholder-token-not-functional"
-        run: python scripts/build_windows_distribution.py --bundle-python --output-dir windows-distribution
+        run: python scripts/build_windows_distribution.py --bundle-python --output-dir dist/windows
 
       - name: Sanity-check the portable bundle
         shell: pwsh
         run: |
-          $portable = "windows-distribution/portable"
+          $portable = "dist/windows/portable"
           if (-not (Test-Path $portable)) { throw "Portable bundle missing at $portable" }
           Get-ChildItem $portable | Select-Object -First 10 | Format-Table Name
 
@@ -52,5 +52,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: quill-windows-test-portable
-          path: windows-distribution/portable
+          path: dist/windows/portable
           retention-days: 14

@@ -1528,7 +1528,7 @@ enable box appears — mark **N/A** on a public build. Network required.
 - Build / commit tested:
 - Environment (E1–E6):
 - Date:
-- Scenarios passed / total: ___ / 73
+- Scenarios passed / total: ___ / 56
 - Release blockers found (must be zero to ship):
 - Result: Pass / Pass-with-notes / Fail
 - Notes:

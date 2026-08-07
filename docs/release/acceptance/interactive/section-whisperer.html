@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Section — BITS Whisperer (whisperer., 12 commands) [GATED] (interactive acceptance)</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 62em; margin: 0 auto;
+         padding: 1em; line-height: 1.5; }
+  html { scroll-padding-top: 5em; }
+  li { margin: 0.3em 0; }
+  input.cb, input.aspect { width: 1.1em; height: 1.1em; margin-right: 0.3em; }
+  .bar { position: sticky; top: 0; background: Canvas; padding: 0.5em 0;
+         border-bottom: 1px solid GrayText; z-index: 2; }
+  @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; }
+    .bar { background: #111; }
+    input.notes, input.meta { background: #222; color: #eee; border: 1px solid #666; } }
+  .bar button, .bar a { margin-right: 0.5em; }
+  details.sec { border: 1px solid GrayText; border-radius: 6px;
+                margin: 0.8em 0; padding: 0 0.8em; }
+  details.sec > summary { cursor: pointer; padding: 0.4em 0; }
+  details.sec > summary h2 { display: inline; font-size: 1.1em; margin: 0; }
+  .st { margin-left: 0.6em; font-weight: bold; }
+  .secbody { padding-bottom: 0.8em; }
+  fieldset.scn { margin-top: 0.8em; border: 1px solid GrayText; border-radius: 6px; }
+  fieldset.scn .row { margin: 0.35em 0; }
+  fieldset.scn label { margin-right: 0.9em; }
+  body.hidedone details.sec[data-done="1"] { display: none; }
+  body.hidedone li.check[data-done="1"] { display: none; }
+  blockquote { border-left: 3px solid GrayText; margin-left: 0; padding-left: 1em; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
+    padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<div class="bar" role="group" aria-label="Progress and controls">
+  <span id="progress" role="status">Loading...</span><br>
+  <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
+  <button id="expandAll" type="button">Expand all</button>
+  <button id="collapseAll" type="button">Collapse all</button>
+  <button id="export" type="button">Export progress...</button>
+  <button id="import" type="button">Import progress...</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+  <a href="index.html">All sections</a>
+  <span id="live" class="visually-hidden" aria-live="polite"></span>
+</div>
+
+<h1>Section — BITS Whisperer (whisperer., 12 commands) [GATED]</h1>
+<p>BITS Whisperer is QUILL's phased speech-to-text management surface: it stages Whisper speech models, checks the local faster-whisper engine, plans transcription <strong>providers</strong>, and reports readiness and roadmap. In QUILL 1.0 this whole suite is a <strong>staging / planning</strong> surface — it lets you download and configure models and choose providers, but runtime provider <em>routing</em> is intentionally still gated ("Phase 2"). Finish <strong>Part 0</strong> first.</p>
+<p>Surface reference (label + shortcut) is <code>../../planning/signoff/SIGNOFF-editor.md</code> → <code>whisperer.*</code>. Read §2–§3 of <code>README.md</code> for the scenario layout and the Pass/Fail/Blocked/N-A + Works/Surface-exact/Accessible boxes.</p>
+<blockquote><p>## This entire section is GATED behind <code>core.bw_whisperer</code> On a <strong>public QUILL 1.0 build these commands do not exist</strong>: the <strong>Tools ▸ BITS Whisperer</strong> submenu is absent and the commands do not appear in the Command Palette. If you are testing a public build, mark <strong>every</strong> scenario below <strong>N/A</strong> and instead confirm the absence in <code>gated-absence.md</code>. Do <strong>not</strong> fail a scenario for being missing. <strong>How the flag is turned on (read before you start).</strong> <code>core.bw_whisperer</code> is <strong><code>locked_off</code></strong> — it is off in <em>every</em> build, including a developer build (<code>QUILL_DEV_BUILD=1</code> alone does <strong>not</strong> reveal it). The one sanctioned way to enable it is a <strong>signature-verified unlock code</strong>: <strong>Help menu ▸ Redeem Unlock Code…</strong> (command <code>help.redeem_unlock_code</code>), enter a valid BITS Whisperer unlock code, then <strong>restart QUILL</strong> if the menu is not yet visible. Once enabled, the <strong>Tools ▸ BITS Whisperer</strong> submenu appears with sub-menus <strong>Watch Folder</strong>, <strong>Speech Models</strong>, <strong>Providers</strong>, and <strong>Rollout</strong>. All twelve commands are also reachable from the <strong>Command Palette</strong>. This section is written so a dev/admin who has redeemed the code can sign every command off. <strong>No keyboard shortcuts.</strong> None of the twelve <code>whisperer.*</code> commands ship a default accelerator. Reach each one by its menu path or the Command Palette; the "Shortcut" in each title below is therefore "no default shortcut". Fail <strong>Surface-exact</strong> only if the menu shows a shortcut this book does not list.</p></blockquote>
+<p><strong>Where each command lives</strong> (after the flag is on), under <strong>Tools ▸ BITS Whisperer</strong>:</p>
+<ul>
+<li><strong>Speech Models ▸</strong> Model Manager… · Model Status · Use Recommended Model · Check faster-whisper Engine · Download Queue…</li>
+<li><strong>Providers ▸</strong> Provider Center… · Provider Status · Use Recommended Provider · Select Provider…</li>
+<li><strong>Rollout ▸</strong> Readiness Check · Capability Matrix</li>
+<li><strong>About BITS Whisperer</strong> is <strong>not</strong> in this submenu (it was folded into the About Quill dialog); reach it from the <strong>Command Palette</strong>.</li>
+</ul>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-01 — Speech Model Manager… (<code>whisperer.model_manager</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The guided front door for speech models: pick the recommended model, browse every model, download or remove one, and set your default — all by keyboard, with the machine's own capability guidance shown up front.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled (Help ▸ Redeem Unlock Code…; see the section note).</li><li>Any document open.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools menu (Alt, T) ▸ BITS Whisperer ▸ Speech Models ▸ Model Manager…</strong>, or Command Palette → "BITS Whisperer Speech Model Manager".</li><li>Read the first dialog ("BITS Whisperer Speech Setup"). Arrow to **Choose model manually<strong> and press </strong>Enter**.</li><li>In the model list ("BITS Whisperer Speech Models"), arrow through the entries; each shows its family and any <code>[downloaded]</code> / <code>[recommended]</code> markers. Pick one and press <strong>Enter</strong>.</li><li>In the per-model action dialog, read the size and minimum-RAM detail, arrow to <strong>Set as default</strong>, and press <strong>Enter</strong>. (Escape at any step cancels.)</li></ol><p><strong>You should see and hear</strong></p><ul><li>The first dialog opens with the machine-capability guidance line spoken, then a four-item list: <strong>Use recommended model</strong>, <strong>Choose model manually</strong>, **Show model status<strong>, </strong>Check faster-whisper engine**. It is a single-choice list navigable by arrows.</li><li>The model list announces each model name, family, and markers. The action dialog announces the model name, description, <strong>Approx size: N.NN GB</strong>, and **Minimum RAM: N GB<strong>, offering </strong>Set as default<strong>, </strong>Download model<strong> (or </strong>Remove downloaded model<strong> if already present), and </strong>Show status**.</li><li>Choosing <strong>Set as default</strong> confirms aloud: "Manual mode active. Default speech model set to &lt;name&gt;" and updates the status bar. <strong>Download model</strong> first refuses with a spoken warning if there is not enough disk space; otherwise it starts a background download (see WHIS-05). Nothing happens without your Enter.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-01" data-sid="WHIS-01"><legend>Sign off - WHIS-01 — Speech Model Manager… (whisperer.model_manager, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-01 — Speech Model Manager… (whisperer.model_manager, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-01:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-01:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-01:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-01:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-01:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-01:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-01:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-01:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-01:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-02 — Speech Model Status (<code>whisperer.model_status</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A read-only snapshot of your speech-model setup: which mode is active, which model is the default, what's recommended right now, how many models are installed, and whether the engine is ready.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Model Status</strong>, or Command Palette → "BITS Whisperer Speech Model Status".</li><li>Read the whole dialog with your screen reader's review cursor; press <strong>Enter</strong> or <strong>Escape</strong> on OK to close.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A message dialog titled <strong>BITS Whisperer Speech Models</strong> whose text begins "BITS Whisperer Speech Model Status" and lists, in order: the machine-capability guidance, <strong>Selection mode:</strong> (recommended/manual), <strong>Configured default:</strong> &lt;model&gt;, <strong>Recommended now:</strong> &lt;model&gt;, <strong>Installed models: N of M</strong>, and <strong>faster-whisper engine: Ready / Not installed</strong> with an engine detail line. It ends with a note that this is a phased rollout.</li><li>Closing returns focus to where you were. Status bar: "BITS Whisperer speech model status shown".</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-02" data-sid="WHIS-02"><legend>Sign off - WHIS-02 — Speech Model Status (whisperer.model_status, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-02 — Speech Model Status (whisperer.model_status, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-02:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-02:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-02:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-02:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-02:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-02:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-02:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-02:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-02:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-03 — Use Recommended Speech Model (<code>whisperer.model_recommend</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> One-tap "just pick the best model for this machine." Switches you to recommended mode and selects the model QUILL recommends for your hardware.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled. Optionally set a manual default first (WHIS-01) so the switch back to recommended is observable.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Use Recommended Model</strong>, or Command Palette → "BITS Whisperer Use Recommended Speech Model".</li></ol><p><strong>You should see and hear</strong></p><ul><li>No dialog. The selection mode flips to <strong>recommended</strong> and the default model is set to the recommended id; the change is saved. Spoken/status: "Recommended mode active. Selected speech model: &lt;model id&gt;". Re-running WHIS-02 now shows <strong>Selection mode: recommended</strong> and the configured default equal to the recommended model.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-03" data-sid="WHIS-03"><legend>Sign off - WHIS-03 — Use Recommended Speech Model (whisperer.model_recommend, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-03 — Use Recommended Speech Model (whisperer.model_recommend, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-03:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-03:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-03:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-03:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-03:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-03:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-03:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-03:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-03:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-04 — Check faster-whisper Engine (<code>whisperer.check_faster_whisper</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Tells you whether the local <strong>faster-whisper</strong> transcription engine is installed and usable, so you know before you rely on offline speech.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Check faster-whisper Engine</strong>, or Command Palette → "BITS Whisperer Check faster-whisper Engine".</li><li>Read the dialog; close with OK.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A message dialog titled <strong>faster-whisper Engine</strong> containing a plain status detail line. When the engine is present it uses an information icon and the status bar says "faster-whisper engine ready"; when absent it uses a <strong>warning</strong> icon and the status bar says "faster-whisper not installed" — never a silent result and never a crash when the engine is missing.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-04" data-sid="WHIS-04"><legend>Sign off - WHIS-04 — Check faster-whisper Engine (whisperer.check_faster_whisper, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-04 — Check faster-whisper Engine (whisperer.check_faster_whisper, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-04:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-04:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-04:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-04:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-04:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-04:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-04:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-04:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-04:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-05 — Download Queue… (<code>whisperer.download_queue</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Manage in-flight and past model downloads: jump to the live status page, retry a failed download, or clear finished history. Model downloads are user-initiated and covered by the network egress audit.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled. To exercise <strong>Retry</strong>, first trigger a download that fails (e.g. start a model download from WHIS-01 with the network off), so a failed entry exists.</li><li>Note: if the <strong>Safe Mode Lock</strong> badge is showing in the Speech Models menu, downloads and retries are intentionally blocked (see the projected outcome).</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Download Queue…</strong>, or Command Palette → "BITS Whisperer Download Queue".</li><li>In the "BITS Whisperer Download Queue" list, arrow through **Open live status page<strong>, </strong>Retry failed download<strong>, </strong>Clear completed and failed download history<strong>. Choose </strong>Open live status page<strong> and press </strong>Enter**.</li><li>Repeat and choose <strong>Retry failed download</strong>; in the follow-up list pick a failed model and press <strong>Enter</strong>.</li><li>Repeat and choose <strong>Clear completed and failed download history</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>The three-item action list is arrow-navigable. <strong>Open live status page</strong> opens the Help ▸ Status Page (live download/speech status). <strong>Retry failed download</strong> opens a second list of failed models and restarts the chosen one as a background download; if there are none it says "No failed BITS Whisperer downloads to retry". <strong>Clear…</strong> removes completed/failed entries (keeping any still running) and says "Cleared completed and failed BITS Whisperer download history".</li><li>If the <strong>safe mode lock</strong> is enabled, Retry is refused with a spoken message pointing you to <strong>Preferences ▸ General</strong>, and status "BITS Whisperer safe mode lock blocked download retry" — it does not silently do nothing.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-05" data-sid="WHIS-05"><legend>Sign off - WHIS-05 — Download Queue… (whisperer.download_queue, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-05 — Download Queue… (whisperer.download_queue, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-05:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-05:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-05:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-05:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-05:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-05:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-05:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-05:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-05:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-06 — Provider Center… (<code>whisperer.provider_center</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A guided hub for transcription <strong>providers</strong> (the local or cloud service that would do the speech-to-text): pick the recommended one, choose manually, see status, switch local-first / cloud-first, or toggle whether cloud providers are even visible.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Provider Center…</strong>, or Command Palette → "BITS Whisperer Provider Center".</li><li>Arrow through the six actions: <strong>Use recommended provider</strong>, **Select provider manually<strong>, </strong>Show provider status<strong>, </strong>Switch to local-first mode<strong>, </strong>Switch to cloud-first mode<strong>, </strong>Toggle cloud provider visibility<strong>. Pick </strong>Switch to local-first mode<strong> and press </strong>Enter**.</li><li>Re-open and try <strong>Toggle cloud provider visibility</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A single-choice dialog titled <strong>BITS Whisperer Provider Center</strong> with the six actions, arrow-navigable. Each action either delegates (recommended → WHIS-08, manual → WHIS-09, status → WHIS-07) or applies and announces a setting: "Provider mode set to local-first" / "…cloud-first", and "Cloud provider visibility enabled/disabled". Each choice is saved. Escape cancels with no change.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-06" data-sid="WHIS-06"><legend>Sign off - WHIS-06 — Provider Center… (whisperer.provider_center, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-06 — Provider Center… (whisperer.provider_center, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-06:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-06:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-06:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-06:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-06:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-06:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-06:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-06:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-06:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-07 — Provider Status (<code>whisperer.provider_status</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A read-only readout of the provider plan: current mode, which provider is configured vs recommended, whether it is ready, and the concrete next steps to make it ready.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Provider Status</strong>, or Command Palette → "BITS Whisperer Provider Status".</li><li>Read the whole dialog; close with OK.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A message dialog titled <strong>BITS Whisperer Providers</strong> beginning "BITS Whisperer Provider Status" and listing: mode guidance, **Provider mode: Local-first / Cloud-first<strong>, </strong>Cloud providers visible: Yes/No<strong>, </strong>Configured provider:** and <strong>Recommended provider:</strong> by name, a <strong>Readiness: Ready / Needs setup</strong> line with a summary, and a bulleted <strong>Next steps:</strong> list. It ends noting that runtime provider routing remains gated in this phase. Status bar: "BITS Whisperer provider status shown".</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-07" data-sid="WHIS-07"><legend>Sign off - WHIS-07 — Provider Status (whisperer.provider_status, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-07 — Provider Status (whisperer.provider_status, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-07:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-07:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-07:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-07:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-07:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-07:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-07:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-07:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-07:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-08 — Use Recommended Provider (<code>whisperer.provider_recommend</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> One-tap "pick the best provider for me," honoring your local-first / cloud-first preference.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Use Recommended Provider</strong>, or Command Palette → "BITS Whisperer Use Recommended Provider".</li></ol><p><strong>You should see and hear</strong></p><ul><li>No dialog. The recommended provider (computed from your local-first/cloud-first mode) is selected and saved; spoken/status: "Recommended provider selected: &lt;provider name&gt;". Re-running WHIS-07 shows that provider as the configured one.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-08" data-sid="WHIS-08"><legend>Sign off - WHIS-08 — Use Recommended Provider (whisperer.provider_recommend, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-08 — Use Recommended Provider (whisperer.provider_recommend, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-08:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-08:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-08:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-08:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-08:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-08:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-08:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-08:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-08:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-09 — Select Provider… (<code>whisperer.provider_select</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> Manually choose which provider to stage for upcoming phases, from the providers currently visible (local only, or local + cloud, per your visibility setting).</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled. If you want cloud options to appear, enable cloud provider visibility first (WHIS-06 ▸ Toggle cloud provider visibility).</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Select Provider…</strong>, or Command Palette → "BITS Whisperer Select Provider".</li><li>Arrow the provider list; each entry shows the provider name and its type. Pick one and press <strong>Enter</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A single-choice dialog titled <strong>BITS Whisperer Provider Selection</strong> listing each provider as "&lt;name&gt; (&lt;type&gt;)". On confirm the choice is saved and spoken/status: "Selected provider: &lt;name&gt;". If no providers are visible for the current visibility settings, it says so ("No providers available for current provider visibility settings") instead of opening an empty dialog. Escape cancels with no change.</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-09" data-sid="WHIS-09"><legend>Sign off - WHIS-09 — Select Provider… (whisperer.provider_select, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-09 — Select Provider… (whisperer.provider_select, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-09:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-09:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-09:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-09:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-09:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-09:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-09:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-09:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-09:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-10 — Readiness Check (<code>whisperer.readiness_check</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> One combined diagnostic across providers <strong>and</strong> speech models: mode, configured vs recommended provider, provider readiness, speech mode and model, safe mode lock, installed model count, engine state, and next steps.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Rollout ▸ Readiness Check</strong>, or Command Palette → "BITS Whisperer Readiness Check".</li><li>Read the whole dialog; close with OK.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A message dialog titled <strong>BITS Whisperer Readiness</strong> beginning "BITS Whisperer Readiness Check" and listing, in order: machine guidance, <strong>Provider mode</strong>, <strong>Configured provider</strong>, <strong>Recommended provider</strong>, **Provider readiness: Ready / Needs setup<strong> with summary, </strong>Speech mode<strong>, </strong>Configured speech model<strong>, </strong>Safe mode lock: Enabled/Disabled<strong>, </strong>Downloaded whisper models: N of M**, <strong>faster-whisper engine: Ready / Not installed</strong> with detail, then a bulleted <strong>Next steps:</strong> list. Status bar: "BITS Whisperer readiness check complete".</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-10" data-sid="WHIS-10"><legend>Sign off - WHIS-10 — Readiness Check (whisperer.readiness_check, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-10 — Readiness Check (whisperer.readiness_check, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-10:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-10:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-10:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-10:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-10:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-10:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-10:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-10:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-10:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-11 — Capability Matrix (<code>whisperer.capability_matrix</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> A table of which BITS Whisperer capabilities are live now vs gated for a later phase, so a tester can see at a glance what is expected to work in 1.0.</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open <strong>Tools ▸ BITS Whisperer ▸ Rollout ▸ Capability Matrix</strong>, or Command Palette → "BITS Whisperer Capability Matrix".</li><li>Tab to the table and arrow through its rows; then read the snapshot text below it. Close with <strong>Close</strong> (OK) or <strong>Escape</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A resizable dialog titled <strong>BITS Whisperer Capability Matrix</strong> with a real ListCtrl (report view) whose columns are <strong>Capability</strong>, <strong>Phase</strong>, <strong>Status</strong>, <strong>Notes</strong>. Rows include <strong>Whisper model acquisition</strong> (Phase 1), **Provider onboarding<strong> (Phase 1), </strong>Dynamic status monitoring** (Phase 1, Ready), and <strong>Runtime provider routing</strong> (Phase 2, <strong>Gated</strong>). Below the table a read-only snapshot shows provider mode, configured provider, speech-model mode, configured speech model, and downloaded-model count. Focus lands in the table; every column is announced by the screen reader. Status bar: "Opened BITS Whisperer capability matrix".</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-11" data-sid="WHIS-11"><legend>Sign off - WHIS-11 — Capability Matrix (whisperer.capability_matrix, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-11 — Capability Matrix (whisperer.capability_matrix, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-11:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-11:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-11:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-11:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-11:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-11:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-11:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-11:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-11:notes"></label></div></fieldset></div></details>
+<details class="sec scenario" open data-kind="scenario"><summary><h2>WHIS-12 — About BITS Whisperer (<code>whisperer.about</code>, no default shortcut) [GATED core.bw_whisperer]</h2><span class="st"></span></summary><div class="secbody"><p><em>What &amp; why.</em> The roadmap/orientation page: what BITS Whisperer is, the phased plan for absorbing its patterns into QUILL, and the guiding principles. It is <strong>not</strong> in the BITS Whisperer submenu — it lives in the Command Palette (its content was also folded into the About Quill dialog).</p><p><strong>Before you start</strong></p><ul><li><code>core.bw_whisperer</code> enabled.</li></ul><p><strong>Do this</strong></p><ol><li>Open the <strong>Command Palette</strong> (see Part 0 for its shortcut), type **About BITS Whisperer<strong>, and press </strong>Enter**.</li><li>Tab across the three tabs (<strong>Overview</strong>, <strong>Roadmap</strong>, <strong>Principles</strong>); read the Roadmap and Principles tables with your review cursor. Close with <strong>Close</strong> (OK) or <strong>Escape</strong>.</li></ol><p><strong>You should see and hear</strong></p><ul><li>A resizable tabbed dialog titled <strong>About BITS Whisperer</strong> with a notebook named "About sections" and three tabs. <strong>Overview</strong> is a read-only multi-line text describing the phased plan and three next steps. <strong>Roadmap</strong> is a ListCtrl with columns <strong>Capability</strong>, <strong>Whisperer Source</strong>, <strong>Phase</strong>, <strong>Quill Plan</strong> (five rows across Phases 1–3). <strong>Principles</strong> is a ListCtrl with columns <strong>Principle</strong>, <strong>How it applies</strong> (Accessibility first, Offline-friendly, Safe rollout, Transparent status). Focus lands on the first control of the visible tab, not the tab strip; tab order and the Close button honor the keyboard contract. Status bar: "Opened About BITS Whisperer".</li></ul><fieldset class="scn" data-base="section-whisperer:scn:WHIS-12" data-sid="WHIS-12"><legend>Sign off - WHIS-12 — About BITS Whisperer (whisperer.about, no default shortcut) [GATED core.bw_whisperer]</legend><div class="row" role="radiogroup" aria-label="Outcome for WHIS-12 — About BITS Whisperer (whisperer.about, no default shortcut) [GATED core.bw_whisperer]"><label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-12:outcome" value="" checked> Not run</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-12:outcome" value="pass"> Pass</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-12:outcome" value="fail"> Fail</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-12:outcome" value="blocked"> Blocked</label> <label><input type="radio" class="outcome" name="section-whisperer:scn:WHIS-12:outcome" value="na"> N/A</label></div><div class="row"><label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-12:works"> Works</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-12:surface"> Surface-exact</label> <label><input type="checkbox" class="aspect" data-key="section-whisperer:scn:WHIS-12:access"> Accessible</label></div><div class="row"><label>Notes: <input type="text" class="notes" size="60" data-key="section-whisperer:scn:WHIS-12:notes"></label></div></fieldset></div></details>
+<section class="footerblock"><h3>Section sign-off</h3>
+<ul>
+<li><label>Tester: <input type="text" class="meta" size="40" data-key="section-whisperer:meta:9264a677ddfa" value=""></label></li>
+<li><label>Screen reader(s) + version(s): <input type="text" class="meta" size="40" data-key="section-whisperer:meta:23d6c2127f5f" value=""></label></li>
+<li><label>Build / commit tested: <input type="text" class="meta" size="40" data-key="section-whisperer:meta:53295e384ade" value=""></label></li>
+<li><label>Environment (E1–E6): <input type="text" class="meta" size="40" data-key="section-whisperer:meta:267597b92b20" value=""></label></li>
+<li><label>Date: <input type="text" class="meta" size="40" data-key="section-whisperer:meta:eb9a4bc1c0c1" value=""></label></li>
+<li><label>Scenarios passed / total: <input type="text" class="meta" size="40" data-key="section-whisperer:meta:0ce6deb713bd" value="___ / 12"></label></li>
+<li><label>Release blockers found (must be zero to ship): <input type="text" class="meta" size="40" data-key="section-whisperer:meta:1dbaf858fd79" value=""></label></li>
+<li><label>Result: <input type="text" class="meta" size="40" data-key="section-whisperer:meta:5faa59d4bc37" value="Pass / Pass-with-notes / Fail"></label></li>
+<li><label>Notes: <input type="text" class="meta" size="40" data-key="section-whisperer:meta:70440046a3dc" value=""></label></li>
+</ul>
+</section>
+<script>
+(function () {
+  var PREFIX = "quill-acceptance:";
+  var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var live = document.getElementById("live");
+  var toggleBtn = document.getElementById("toggleHide");
+  var cbs = Array.prototype.slice.call(document.querySelectorAll("input.cb"));
+  var aspects = Array.prototype.slice.call(document.querySelectorAll("input.aspect"));
+  var notes = Array.prototype.slice.call(
+    document.querySelectorAll("input.notes, input.meta"));
+  var scns = Array.prototype.slice.call(document.querySelectorAll("fieldset.scn"));
+  var secs = Array.prototype.slice.call(document.querySelectorAll("details.sec"));
+
+  function outcomeOf(scn) {
+    var r = scn.querySelector('input.outcome:checked');
+    return r ? r.value : "";
+  }
+  function setStatusBadge(scn) {
+    var det = scn.closest("details.sec");
+    if (!det) return;
+    var st = det.querySelector(".st");
+    var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
+    if (st) st.textContent = labels[outcomeOf(scn)] || "";
+  }
+  function secDone(det) {
+    var kind = det.getAttribute("data-kind");
+    if (kind === "scenario") {
+      var fs = det.querySelectorAll("fieldset.scn");
+      for (var i = 0; i < fs.length; i++) {
+        if (!outcomeOf(fs[i])) return false;
+      }
+      return fs.length > 0;
+    }
+    if (kind === "checklist") {
+      var bs = det.querySelectorAll("input.cb");
+      for (var j = 0; j < bs.length; j++) { if (!bs[j].checked) return false; }
+      return bs.length > 0;
+    }
+    return false;
+  }
+  function itemDone(li) {
+    var bs = li.querySelectorAll("input.cb");
+    for (var i = 0; i < bs.length; i++) { if (!bs[i].checked) return false; }
+    return bs.length > 0;
+  }
+  function hideActive() { return localStorage.getItem(HIDE_KEY) === "1"; }
+  function markDone() {
+    secs.forEach(function (d) {
+      d.setAttribute("data-done", secDone(d) ? "1" : "0");
+    });
+    document.querySelectorAll("li.check").forEach(function (li) {
+      li.setAttribute("data-done", itemDone(li) ? "1" : "0");
+    });
+  }
+  function applyHide() {
+    document.body.classList.toggle("hidedone", hideActive());
+    if (toggleBtn) toggleBtn.setAttribute("aria-pressed", hideActive() ? "true" : "false");
+  }
+  function refresh() {
+    var counts = { pass: 0, fail: 0, blocked: 0, na: 0 };
+    var recorded = 0;
+    scns.forEach(function (s) {
+      var o = outcomeOf(s);
+      if (o) { recorded++; counts[o]++; }
+    });
+    var done = 0;
+    cbs.forEach(function (b) { if (b.checked) done++; });
+    var bits = [];
+    if (scns.length) {
+      bits.push(recorded + " of " + scns.length + " scenarios recorded (" +
+        counts.pass + " pass, " + counts.fail + " fail, " +
+        counts.blocked + " blocked, " + counts.na + " n/a)");
+    }
+    if (cbs.length) { bits.push(done + " of " + cbs.length + " boxes checked"); }
+    document.getElementById("progress").textContent =
+      bits.length ? bits.join("; ") : "Nothing to sign off on this page.";
+  }
+  // Focus rescue: when hiding removes the element under focus, land on the
+  // next visible section summary (else previous, else the toggle button).
+  function rescueFocus(fromEl) {
+    var det = fromEl && fromEl.closest ? fromEl.closest("details.sec") : null;
+    if (det && getComputedStyle(det).display !== "none") return; // still visible
+    var idx = det ? secs.indexOf(det) : -1;
+    for (var j = idx + 1; j < secs.length; j++) {
+      if (getComputedStyle(secs[j]).display !== "none") {
+        secs[j].querySelector("summary").focus(); return;
+      }
+    }
+    for (var k = idx - 1; k >= 0; k--) {
+      if (getComputedStyle(secs[k]).display !== "none") {
+        secs[k].querySelector("summary").focus(); return;
+      }
+    }
+    if (toggleBtn) toggleBtn.focus();
+  }
+
+  // Restore + wire checkboxes (checklist and aspect boxes share persistence).
+  cbs.concat(aspects).forEach(function (b) {
+    var key = PREFIX + b.dataset.key;
+    b.checked = localStorage.getItem(key) === "1";
+    b.addEventListener("change", function () {
+      if (b.checked) localStorage.setItem(key, "1");
+      else localStorage.removeItem(key);
+      markDone(); refresh();
+      if (hideActive()) {
+        var li = b.closest("li.check");
+        var det = b.closest("details.sec");
+        var hid = (li && li.getAttribute("data-done") === "1") ||
+                  (det && det.getAttribute("data-done") === "1");
+        if (hid) {
+          if (live) live.textContent = "Completed and hidden.";
+          rescueFocus(b);
+        }
+      }
+    });
+  });
+
+  // Restore + wire outcome radios.
+  scns.forEach(function (scn) {
+    var base = PREFIX + scn.dataset.base + ":outcome";
+    var saved = localStorage.getItem(base) || "";
+    var radios = scn.querySelectorAll("input.outcome");
+    radios.forEach(function (r) {
+      r.checked = (r.value === saved);
+      r.addEventListener("change", function () {
+        if (!r.checked) return;
+        if (r.value) localStorage.setItem(base, r.value);
+        else localStorage.removeItem(base);
+        setStatusBadge(scn); markDone(); refresh();
+        var det = scn.closest("details.sec");
+        if (hideActive() && det && det.getAttribute("data-done") === "1") {
+          if (live) live.textContent =
+            "Scenario recorded as " + (r.value || "not run") + " and hidden.";
+          rescueFocus(scn);
+        } else if (live) {
+          live.textContent = "Recorded: " + (r.value || "not run") + ".";
+        }
+      });
+    });
+    if (!saved) {
+      var nr = scn.querySelector('input.outcome[value=""]');
+      if (nr) nr.checked = true;
+    }
+    setStatusBadge(scn);
+  });
+
+  // Restore + wire text fields (notes, section sign-off metadata).
+  notes.forEach(function (t) {
+    var key = PREFIX + t.dataset.key;
+    var saved = localStorage.getItem(key);
+    if (saved !== null) t.value = saved;
+    var timer = null;
+    t.addEventListener("input", function () {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () {
+        if (t.value) localStorage.setItem(key, t.value);
+        else localStorage.removeItem(key);
+      }, 250);
+    });
+  });
+
+  markDone(); refresh(); applyHide();
+
+  if (toggleBtn) {
+    if (scns.length === 0 && cbs.length === 0) {
+      toggleBtn.hidden = true;
+    } else {
+      toggleBtn.addEventListener("click", function () {
+        localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
+        applyHide();
+        var hidden = secs.filter(function (d) {
+          return getComputedStyle(d).display === "none";
+        }).length;
+        if (live) live.textContent = hideActive()
+          ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
+          : "Showing all sections.";
+      });
+    }
+  }
+  var ex = document.getElementById("expandAll");
+  var co = document.getElementById("collapseAll");
+  if (ex) ex.addEventListener("click", function () {
+    secs.forEach(function (d) { d.open = true; });
+    if (live) live.textContent = "All sections expanded.";
+  });
+  if (co) co.addEventListener("click", function () {
+    secs.forEach(function (d) { d.open = false; });
+    if (live) live.textContent = "All sections collapsed.";
+  });
+
+  document.getElementById("export").addEventListener("click", function () {
+    var state = {};
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k.indexOf(PREFIX) === 0) state[k] = localStorage.getItem(k);
+    }
+    var blob = new Blob([JSON.stringify(state, null, 1)],
+                        { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "quill-acceptance-progress.json";
+    a.click();
+  });
+  var fileInput = document.getElementById("importFile");
+  document.getElementById("import").addEventListener("click", function () {
+    fileInput.click();
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files[0];
+    if (!f) return;
+    f.text().then(function (text) {
+      var state = JSON.parse(text);
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+      });
+      location.reload();
+    });
+  });
+})();
+</script>
+</body>
+</html>

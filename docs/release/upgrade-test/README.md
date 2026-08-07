@@ -27,7 +27,7 @@ Put the installers you want to test in `installers\` (gitignored). Expected name
 
 Build them with `scripts/build_windows_distribution.py --bundle-python --compile-installer`
 (bump `build/version.toml` `prerelease_number` between the two), then copy from
-`windows-distribution\installer\Output\` into `installers\`.
+`dist\windows\installer\Output\` into `installers\`.
 
 ## Simple path
 

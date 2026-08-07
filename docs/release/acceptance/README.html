@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>README</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -322,6 +326,33 @@ screen-reader plan (<code>../screen-reader-test-plan.md</code>), and the
 UAT/regression runbooks. This book does not replace them; it surrounds
 them.</li>
 </ol>
+<h3 id="run-it-interactively-recommended">Run it interactively
+(recommended)</h3>
+<p>Open <strong><code>interactive/index.html</code></strong> in any
+browser on the test machine. It is a generated, self-contained runner
+for this whole book:</p>
+<ul>
+<li>Every scenario is a <strong>collapsible region</strong> with real
+controls: a <strong>Pass / Fail / Blocked / N-A</strong> outcome, the
+three <strong>Works / Surface-exact / Accessible</strong> boxes, and a
+<strong>Notes</strong> field.</li>
+<li>Everything you record is <strong>saved instantly</strong> in the
+browser (localStorage) and restored when you come back — including after
+closing the browser. <strong>Export</strong> backs the whole run up to a
+JSON file; <strong>Import</strong> restores it or moves it to another
+machine. Export at the end of each session.</li>
+<li><strong>Hide completed</strong> hides every recorded scenario and
+fully-checked section so you only see what is left; <strong>Show
+all</strong> brings everything back. <strong>Expand all / Collapse
+all</strong> open and close every section at once.</li>
+<li>The index page shows live per-section and overall progress, in the
+run order above, and the section sign-off footer fields (tester, build,
+environment, result) are saved fields too.</li>
+</ul>
+<p>The Markdown files in this folder remain the source of truth;
+regenerate the runner after editing them with
+<code>python scripts/gen_acceptance_html.py</code>. State keys are
+content-stable, so regeneration does not lose recorded progress.</p>
 <hr />
 <h2 id="5-gated-features--what-you-will-and-will-not-see">5. Gated
 features — what you will and will not see</h2>
@@ -370,7 +401,7 @@ it is the book's own completeness gate.</p>
 <tr>
 <td><code>section-file.md</code></td>
 <td><code>file.*</code> — File menu</td>
-<td>29</td>
+<td>27</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -378,7 +409,7 @@ it is the book's own completeness gate.</p>
 <td><code>section-edit.md</code></td>
 <td><code>edit.*</code> — Edit / insert / find (incl. 12-slot Copy
 Tray)</td>
-<td>86</td>
+<td>62</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -392,7 +423,7 @@ Tray)</td>
 <tr>
 <td><code>section-format.md</code></td>
 <td><code>format.*</code> — formatting</td>
-<td>56</td>
+<td>50</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -400,7 +431,7 @@ Tray)</td>
 <td><code>section-view.md</code></td>
 <td><code>view.*</code> <code>window.*</code> <code>verbosity.*</code> —
 view/window/speech verbosity</td>
-<td>38</td>
+<td>28</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -439,14 +470,14 @@ dictionary</td>
 <tr>
 <td><code>section-tools-misc.md</code></td>
 <td><code>tools.*</code> — compare, keymap, macros, utilities, GLOW</td>
-<td>63</td>
+<td>56</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
 <tr>
 <td><code>section-power.md</code></td>
 <td><code>power.*</code> — power-user commands</td>
-<td>75</td>
+<td>56</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -553,6 +584,13 @@ encrypted secrets store</td>
 </tr>
 </tbody>
 </table>
+<p>The scenario numbers above count <strong>sign-off blocks</strong> —
+the unit a tester actually records — and are generated
+(<code>interactive/manifest.json</code>); one block may bundle a pair of
+twinned commands (e.g. FILE-21/22 Save/Open Session) or a whole numbered
+family (Copy Tray slots 1–12, Go to Document 1–10, the per-agent Run
+Agent entries), which is why scenario IDs inside a file can run higher
+than its block count.</p>
 <p>Namespace counts come from
 <code>../../planning/signoff/SIGNOFF-editor.md</code>; that file is the
 authoritative surface list (command id, label, shortcut) each section is
