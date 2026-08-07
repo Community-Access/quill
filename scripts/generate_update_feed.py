@@ -121,6 +121,25 @@ def build_payload(
     if advisories:
         payload["advisories"] = advisories
     payload["signature"] = _signature_for(payload)
+    # Real authentication: when the publisher's Ed25519 signing key is
+    # provisioned (QUILL_FEED_SIGNING_KEY, base64 32-byte seed — the private
+    # counterpart of quill/core/feed-pub.key), dual-sign the canonical
+    # manifest. Clients hard-fail a feed whose Ed25519 signature is invalid;
+    # the legacy salted checksum stays for pre-1.0 clients.
+    signing_key = os.environ.get("QUILL_FEED_SIGNING_KEY", "").strip()
+    if signing_key:
+        from quill.core.updates import (
+            manifest_ed25519_signature,
+        )
+
+        payload["signature_ed25519"] = manifest_ed25519_signature(
+            version=resolved_version,
+            download_url=resolved_url,
+            published_at=str(payload["published_at"]),
+            notes=str(payload["notes"]),
+            signing_key_b64=signing_key,
+            advisories=_advisories_tuple(advisories),
+        )
     return payload
 
 
@@ -265,27 +284,20 @@ def _unknown_feature_ids(feature_ids: list[str]) -> dict[str, list[str]]:
     return out
 
 
-def _signature_for(payload: dict[str, object]) -> str:
-    """Sign the manifest via quill.core.updates so the client can verify it.
+def _advisories_tuple(raw_advisories: object) -> tuple:
+    """Advisory dicts -> FeatureAdvisory tuple, dropping malformed entries.
 
-    Delegates to the shared :func:`quill.core.updates.manifest_signature` (the
-    single source of truth) using the deployment key from
-    ``QUILL_UPDATE_MANIFEST_KEY`` when set (HMAC), otherwise the salt-only
-    baseline. Because the client verifier reads the same env var and uses the
-    same function, the feed this writes always verifies.
+    Signing an unexpected advisories shape should drop the bad entries, not
+    crash or silently sign garbage (#809 review).
     """
     from quill.core.updates import FeatureAdvisory
 
-    # Narrow to a list of dicts instead of a blanket type-ignore: signing an
-    # unexpected advisories shape should drop the bad entries, not crash or
-    # silently sign garbage (#809 review).
-    raw_advisories = payload.get("advisories", [])
     advisory_dicts = (
         [entry for entry in raw_advisories if isinstance(entry, dict)]
         if isinstance(raw_advisories, list)
         else []
     )
-    advisories = tuple(
+    return tuple(
         FeatureAdvisory(
             feature_id=str(a.get("feature_id", "")),
             reason=str(a.get("reason", "")),
@@ -295,6 +307,18 @@ def _signature_for(payload: dict[str, object]) -> str:
         )
         for a in advisory_dicts
     )
+
+
+def _signature_for(payload: dict[str, object]) -> str:
+    """Sign the manifest via quill.core.updates so the client can verify it.
+
+    Delegates to the shared :func:`quill.core.updates.manifest_signature` (the
+    single source of truth) using the deployment key from
+    ``QUILL_UPDATE_MANIFEST_KEY`` when set (HMAC), otherwise the salt-only
+    baseline. Because the client verifier reads the same env var and uses the
+    same function, the feed this writes always verifies.
+    """
+    advisories = _advisories_tuple(payload.get("advisories", []))
     return manifest_signature(
         version=str(payload["version"]),
         download_url=str(payload["download_url"]),

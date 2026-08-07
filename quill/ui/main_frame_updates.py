@@ -715,7 +715,12 @@ class UpdatesMixin:
 
         def worker() -> None:
             try:
-                download_release_asset(url, target, progress=report)
+                download_release_asset(
+                    url,
+                    target,
+                    progress=report,
+                    expected_sha256=getattr(release, "download_digest", ""),
+                )
             except Exception as exc:  # noqa: BLE001
                 self._wx.CallAfter(
                     self._record_notification, f"Update download failed: {exc}", "update"
