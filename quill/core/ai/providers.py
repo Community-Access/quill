@@ -173,7 +173,7 @@ def recommended_models_for_provider(provider: str) -> list[str]:
     if normalized == "openai":
         return ["gpt-4o-mini", "gpt-4.1-mini", "gpt-4.1"]
     if normalized == "claude":
-        return ["claude-haiku-4-5-20251001", "claude-sonnet-4-6"]
+        return ["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-sonnet-4-6"]
     if normalized == "openrouter":
         from quill.core.ai.free_models import best_free_writing_model
 
@@ -208,7 +208,7 @@ def recommended_models_for_provider(provider: str) -> list[str]:
             "qwen2.5:3b-instruct-q4_K_M",
             "llava:7b",
         ]
-    return ["gpt-4o-mini", "claude-sonnet-4-6", "gemini-2.5-flash"]
+    return ["gpt-4o-mini", "claude-sonnet-5", "gemini-2.5-flash"]
 
 
 def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
@@ -287,12 +287,12 @@ def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
                 ),
             ),
             ModelRecommendation(
-                model="claude-sonnet-4-6",
+                model="claude-sonnet-5",
                 framing="Deep writing review",
                 reason=(
-                    "Stronger reasoning and careful long-form revision, better for nuanced "
-                    "rewrites and structured documents, at higher cost. Pick it when you "
-                    "want the most thoughtful output."
+                    "Anthropic's current Sonnet — stronger reasoning and careful long-form "
+                    "revision, better for nuanced rewrites and structured documents, at "
+                    "higher cost. Pick it when you want the most thoughtful output."
                 ),
             ),
         ]

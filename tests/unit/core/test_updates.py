@@ -791,9 +791,7 @@ def test_download_release_asset_rejects_digest_mismatch(monkeypatch, tmp_path) -
         def __exit__(self, *args):
             return False
 
-    monkeypatch.setattr(
-        updates_mod, "urlopen", lambda *a, **k: _FakeResponse(b"hello")
-    )
+    monkeypatch.setattr(updates_mod, "urlopen", lambda *a, **k: _FakeResponse(b"hello"))
     target = tmp_path / "asset.exe"
     with pytest.raises(ValueError, match="checksum"):
         updates_mod.download_release_asset(
