@@ -170,14 +170,21 @@ def _station(name: str = "Station A") -> RadioStation:
     return RadioStation(name=name, stream_url=f"http://example.test/{name}")
 
 
-def test_wx_mode_never_touches_mpv() -> None:
+def test_wx_mode_never_touches_mpv(monkeypatch: pytest.MonkeyPatch) -> None:
     # The escape hatch: "Windows Media (classic)" pins the wx engine and
     # never consults the mpv path, even with libmpv installed.
+    #
+    # The wx engine is monkeypatched at the class (same pattern as the mpv
+    # test below): constructing a REAL WMP10 ActiveX MediaCtrl here is
+    # incidental to what the test proves, and on wxPython 4.3 doing so deep
+    # into a long test run access-violates on COM state some earlier test
+    # left behind (passes in isolation; native crash in the full suite).
+    import quill.ui.radio.player_controller as pc
+
+    fake = _FakeEngine()
+    monkeypatch.setattr(pc, "WxMediaEngine", lambda *a, **k: fake)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, playback_engine="wx")
-    fake = _FakeEngine()
-    controller._wx_engine = fake
-    controller._engine = fake
     controller.play_station(_station())
     assert fake.loads  # played through the (injected) wx engine
     assert controller._mpv_engine is None
