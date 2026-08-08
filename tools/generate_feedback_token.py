@@ -137,10 +137,20 @@ def resolve_token() -> str:
          (a developer machine that keeps the token in a file, not an env var).
       3. Windows Credential Manager generic credential ``QUILL:FeedbackToken``
          (DPAPI-backed; stash once, every local build picks it up).
-      4. A previously bundled token already in ``_feedback_token.py`` (preserved
-         across rebuilds by the caller).
+      4. A previously bundled token already in ``_feedback_token.py`` -- the
+         token this machine baked into its last build. A fresh source above
+         always wins, so this is only ever the fallback.
 
     Returns "" when none of the above yields a token. Never raises.
+
+    Source 4 exists so a machine that has already built once can rebuild
+    without re-supplying the secret. It was documented here from the start but
+    never implemented, which made ``--require-token`` (mandatory for every
+    packaged build since #919) fail on exactly those machines -- with a valid
+    token sitting in ``_feedback_token.py`` the whole time. Honouring it does
+    not weaken the #919 guarantee: the guard exists so a build can never ship a
+    *tokenless* bug reporter, and a previously bundled token is by definition
+    not tokenless. It is the same token that machine's last build shipped.
     """
     token = os.environ.get(ENV_VAR, "").strip()
     if token:
@@ -153,7 +163,7 @@ def resolve_token() -> str:
     token = _read_credential_manager(CRED_TARGET)
     if token:
         return token
-    return ""
+    return read_existing_token(OUTPUT_FILE)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -178,24 +188,13 @@ def main(argv: list[str] | None = None) -> int:
             f"  - the {ENV_VAR} env var (CI secret or explicit env var);\n"
             f"  - the {TOKEN_FILE_ENV} env var pointing at a file holding the PAT;\n"
             f"  - a Windows Credential Manager generic credential '{CRED_TARGET}'.\n"
+            f"  - a token already bundled in {OUTPUT_FILE} from a previous build.\n"
             "Set one of these in the build environment and re-run, or drop "
             "--require-token for a local test build (its bug reporter will be "
             "unavailable).",
             file=sys.stderr,
         )
         return 2
-    if not token:
-        # No token from any source: keep any working token already bundled
-        # rather than wiping it to empty, so a dev/test rebuild stays consistent
-        # (the token is populated once, then preserved). A fresh source token
-        # always wins via resolve_token above.
-        existing = read_existing_token(OUTPUT_FILE)
-        if existing:
-            print(
-                "No token found in env/credential/file; preserving the existing "
-                f"bundled token in {OUTPUT_FILE}."
-            )
-            return 0
     write_module(token, OUTPUT_FILE)
     if token:
         print(f"Wrote {OUTPUT_FILE} with a bundled token.")

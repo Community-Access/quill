@@ -74,3 +74,56 @@ def test_env_token_overwrites_an_existing_bundled_token(monkeypatch, tmp_path: P
     assert gen.main([]) == 0
     text = output.read_text(encoding="utf-8")
     assert "github_pat_new" in text and "github_pat_old" not in text
+
+
+def _no_ambient_token_sources(monkeypatch, gen) -> None:
+    """Isolate from whatever this machine happens to have configured."""
+    monkeypatch.delenv("QUILL_FEEDBACK_GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("QUILL_FEEDBACK_TOKEN_FILE", raising=False)
+    monkeypatch.setattr(gen, "_read_credential_manager", lambda target: "")
+
+
+def test_require_token_accepts_a_previously_bundled_token(monkeypatch, tmp_path: Path) -> None:
+    """A machine that has built once can rebuild without re-supplying the secret.
+
+    ``--require-token`` is mandatory for every packaged build (#919), and this
+    is the source that makes that survivable: a token already bundled by this
+    machine's last build. Without it, a developer holding a perfectly good
+    ``_feedback_token.py`` still could not build.
+
+    This does not weaken #919, whose point is that a build never ships a
+    *tokenless* bug reporter -- a previously bundled token is not tokenless.
+    """
+    import generate_feedback_token as gen
+
+    output = tmp_path / "_feedback_token.py"
+    gen.write_module("github_pat_from_last_build", output)
+    _no_ambient_token_sources(monkeypatch, gen)
+    monkeypatch.setattr(gen, "OUTPUT_FILE", output)
+    assert gen.main(["--require-token"]) == 0
+    assert "github_pat_from_last_build" in output.read_text(encoding="utf-8")
+
+
+def test_require_token_still_fails_when_nothing_is_bundled(monkeypatch, tmp_path: Path) -> None:
+    """The #919 guard is intact: no source anywhere still hard-fails."""
+    import generate_feedback_token as gen
+
+    output = tmp_path / "_feedback_token.py"
+    _no_ambient_token_sources(monkeypatch, gen)
+    monkeypatch.setattr(gen, "OUTPUT_FILE", output)
+    assert gen.main(["--require-token"]) == 2
+    assert not output.exists()
+
+
+def test_require_token_rejects_an_empty_bundled_token(monkeypatch, tmp_path: Path) -> None:
+    """An empty bundled token is tokenless, not a token -- it must not satisfy
+    the guard, or a build that once shipped ``BUNDLED_TOKEN = ''`` would keep
+    reproducing exactly the "No token" regression #919 closed.
+    """
+    import generate_feedback_token as gen
+
+    output = tmp_path / "_feedback_token.py"
+    gen.write_module("", output)
+    _no_ambient_token_sources(monkeypatch, gen)
+    monkeypatch.setattr(gen, "OUTPUT_FILE", output)
+    assert gen.main(["--require-token"]) == 2
