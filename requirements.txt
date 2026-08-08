@@ -17,7 +17,9 @@ defusedxml>=0.7.1
 comtypes>=1.4.16; sys_platform == "win32"
 
 # UI
-wxPython>=4.2.5
+# Exact pin (not a floor): wxPython 4.3.x tracks wxWidgets master, which is
+# API/ABI unstable between 4.3.x releases. Ship what acceptance tested.
+wxPython==4.3.1
 # Accessible wx.html2.WebView surfaces (chat, preview, About, update dialogs).
 wx-accessible-webview>=0.2.0
 # pywin32 — win32gui for active-window screen capture (AI image description) and
