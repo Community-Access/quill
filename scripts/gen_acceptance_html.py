@@ -6,24 +6,26 @@ self-contained, screen-reader-first HTML page under
 
 What the pages add over the printed book:
 
-- Every scenario (an ``## FILE-01 — ...`` block ending in a **Sign off** line)
-  becomes a collapsible ``<details>`` region with a real sign-off control:
-  a Pass / Fail / Blocked / N-A radio group, the three Works /
-  Surface-exact / Accessible checkboxes, and a Notes field.
+- Every printed **Sign off** line — including qualified ones such as
+  ``**Sign off (Save Session)**`` and the per-slot tray sign-offs — becomes a
+  real sign-off control in place: a Pass / Fail / Blocked / N-A radio group,
+  the three Works / Surface-exact / Accessible checkboxes, and a Notes field.
+  A scenario section can carry several sign-off blocks.
 - Every ``- [ ]`` checklist line (the dialog contract pages) becomes a
-  persistent checkbox, exactly like the sign-off checklists.
+  persistent checkbox.
 - All state persists to ``localStorage`` the moment it changes and is
   restored on reopen — including after closing the browser. Export/Import
-  buttons round-trip the whole state as JSON for backup or another machine.
-- A "Hide completed" toggle hides scenarios you have recorded (and fully
-  checked checklist items/groups); "Show all" brings them back. Expand all /
-  Collapse all drive the disclosure state of every section.
-- The index shows live per-section and overall progress computed from the
-  same saved state.
+  round-trip the whole state as JSON for backup or another machine.
+- A "Hide completed" toggle hides recorded scenarios and fully-checked
+  checklist items/sections; "Show all" brings them back. Expand all /
+  Collapse all drive every section's disclosure state.
+- The index shows live per-section and overall progress from the same saved
+  state (each page also writes a per-page summary key so the index cannot be
+  fooled by stale keys from renamed scenarios or imported files).
 
-State keys are content-stable (scenario IDs like ``FILE-01`` and content
-hashes for checklist lines), so progress survives regeneration; only
-rewording a checklist line resets that line.
+State keys are content-stable (scenario IDs like ``FILE-01`` plus sign-off
+qualifiers, and content hashes for checklist lines), so progress survives
+regeneration; only rewording an item resets that item.
 
 Usage::
 
@@ -31,8 +33,9 @@ Usage::
 
 Accessible by construction: native controls with real labels, one ``h1``
 per page, headings preserved inside ``<summary>`` for heading navigation,
-a live progress line, focus rescue when the item under focus hides, no
-external assets, dark-mode aware, ASCII-only UI chrome.
+quiet-by-default progress (a single polite live region for events, no
+announcement storm per checkbox), focus rescue whenever the control under
+focus hides, no external assets, dark-mode aware, ASCII-only UI chrome.
 """
 
 from __future__ import annotations
@@ -83,24 +86,55 @@ _BOLD = re.compile(r"\*\*([^*]+)\*\*")
 _ITALIC = re.compile(r"(?<![*\w])\*([^*\n]+)\*(?![*\w])")
 _LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
 _SCENARIO_ID = re.compile(r"^([A-Z][A-Z0-9]*-\d+[a-z]?)\b")
-_SIGNOFF_LINE = re.compile(r"^\*\*Sign off\*\*")
+# Matches plain "**Sign off**" and qualified "**Sign off (Save Session)**".
+_SIGNOFF_LINE = re.compile(r"^\*\*Sign off(?:\s*\(([^)]*)\))?\s*\*\*")
 _ASPECT_LINE = re.compile(r"^`?\[ \] Works`?")
 _ORDERED = re.compile(r"^(\d+)\.\s+(.*)$")
 _FOOTER_FIELD = re.compile(r"^- ([^:`]+):\s*(.*)$")
 
 
 def _inline(text: str) -> str:
-    """Minimal inline markdown -> HTML (escape first, then code/bold/italic/link)."""
-    out = html.escape(text, quote=False)
-    out = _INLINE_CODE.sub(r"<code>\1</code>", out)
-    out = _BOLD.sub(r"<strong>\1</strong>", out)
-    out = _ITALIC.sub(r"<em>\1</em>", out)
-    out = _LINK.sub(r'<a href="\2">\1</a>', out)
-    return out
+    """Inline markdown -> HTML.
+
+    Code spans are stashed behind ``\\x00N\\x00`` placeholders before the
+    bold/italic/link passes and restored afterwards, so a ``*`` inside one
+    code span can never pair with a ``*`` in another (``(`navigate.*`,
+    `verbosity.*`)`` keeps both globs), while bold wrapped *around* a code
+    span (``**`Book Library`**``) still pairs correctly.
+    """
+    codes: list[str] = []
+
+    def _stash(match: re.Match[str]) -> str:
+        codes.append(f"<code>{html.escape(match.group(1), quote=False)}</code>")
+        return f"\x00{len(codes) - 1}\x00"
+
+    tmp = _INLINE_CODE.sub(_stash, text)
+    tmp = html.escape(tmp, quote=False)
+    tmp = _BOLD.sub(r"<strong>\1</strong>", tmp)
+    tmp = _ITALIC.sub(r"<em>\1</em>", tmp)
+    tmp = _LINK.sub(r'<a href="\2">\1</a>', tmp)
+    return re.sub(r"\x00(\d+)\x00", lambda m: codes[int(m.group(1))], tmp)
+
+
+def _plain_label(text: str) -> str:
+    """Markdown -> plain text for titles/legends/aria-labels.
+
+    Strips backticks and bold/italic markers but keeps content asterisks:
+    ``file.*`` must stay ``file.*``, not become ``file.``.
+    """
+    out = text.replace("`", "")
+    out = out.replace("**", "")
+    out = _ITALIC.sub(r"\1", out)
+    return re.sub(r"\s+", " ", out).strip()
 
 
 def _hash_key(raw: str) -> str:
     return hashlib.sha1(raw.strip().encode("utf-8")).hexdigest()[:12]
+
+
+def _qual_slug(qualifier: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", qualifier.strip().lower()).strip("-")
+    return slug or _hash_key(qualifier)
 
 
 class _Page:
@@ -108,11 +142,10 @@ class _Page:
 
     def __init__(self, slug: str) -> None:
         self.slug = slug
-        self.parts: list[str] = []
         self.scenario_count = 0
         self.checkbox_count = 0
         self._seen_cb: dict[str, int] = {}
-        self._seen_sid: dict[str, int] = {}
+        self._seen_scn: dict[str, int] = {}
         self.title = slug
 
     # -- controls ----------------------------------------------------------
@@ -123,9 +156,7 @@ class _Page:
         n = self._seen_cb.get(digest, 0)
         self._seen_cb[digest] = n + 1
         base = f"{self.slug}:cb:{digest}:{n}"
-        plain = _CHECKBOX.sub("", body)
-        plain = re.sub(r"[`*]", "", plain)
-        plain = re.sub(r"\s+", " ", plain).strip(" -.")
+        plain = _plain_label(_CHECKBOX.sub("", body)).strip(" -.")
         parts: list[str] = []
         cursor = 0
         box_index = 0
@@ -142,17 +173,23 @@ class _Page:
         parts.append(_inline(body[cursor:]))
         return f'<li class="check">{"".join(parts)}</li>'
 
-    def scenario_controls(self, sid: str, heading: str) -> str:
-        """The persistent sign-off control block for one scenario."""
-        n = self._seen_sid.get(sid, 0)
-        self._seen_sid[sid] = n + 1
+    def scenario_controls(self, head_sid: str, heading: str, qualifier: str) -> str:
+        """One persistent sign-off control block (a scenario may have several)."""
+        sid = head_sid
+        if qualifier:
+            sid = f"{head_sid}:{_qual_slug(qualifier)}"
+        n = self._seen_scn.get(sid, 0)
+        self._seen_scn[sid] = n + 1
         if n:
             sid = f"{sid}.{n}"
         base = f"{self.slug}:scn:{sid}"
         self.scenario_count += 1
-        short = html.escape(heading[:120], quote=True)
+        label_text = _plain_label(heading)
+        if qualifier:
+            label_text = f"{label_text} - {qualifier.strip()}"
+        short = html.escape(label_text[:140], quote=True)
         radios = []
-        for value, label in (
+        for value, rlabel in (
             ("", "Not run"),
             ("pass", "Pass"),
             ("fail", "Fail"),
@@ -162,14 +199,14 @@ class _Page:
             checked = " checked" if value == "" else ""
             radios.append(
                 f'<label><input type="radio" class="outcome" name="{base}:outcome" '
-                f'value="{value}"{checked}> {label}</label>'
+                f'value="{value}"{checked}> {rlabel}</label>'
             )
         aspects = []
         aspect_defs = (("works", "Works"), ("surface", "Surface-exact"), ("access", "Accessible"))
-        for akey, label in aspect_defs:
+        for akey, alabel in aspect_defs:
             aspects.append(
                 f'<label><input type="checkbox" class="aspect" '
-                f'data-key="{base}:{akey}"> {label}</label>'
+                f'data-key="{base}:{akey}"> {alabel}</label>'
             )
         return (
             f'<fieldset class="scn" data-base="{base}" data-sid="{html.escape(sid, quote=True)}">'
@@ -191,8 +228,26 @@ class _Page:
         )
 
 
+def _indent_of(line: str) -> int:
+    return len(line) - len(line.lstrip(" "))
+
+
+def _flush_list_item(out: list[str], item: list[str], nested: list[str]) -> None:
+    """Emit one buffered list item (with optional nested bullets) and reset."""
+    if not item:
+        return
+    inner = _inline(" ".join(item))
+    if nested:
+        kids = "".join(f"<li>{_inline(t)}</li>" for t in nested)
+        out.append(f"<li>{inner}<ul>{kids}</ul></li>")
+    else:
+        out.append(f"<li>{inner}</li>")
+    item.clear()
+    nested.clear()
+
+
 def _render_lines(lines: list[str], page: _Page, *, in_footer: bool = False) -> list[str]:
-    """Line-based Markdown -> HTML with fence, table, list, quote handling."""
+    """Line-based Markdown -> HTML with fence, table, nested-list, quote handling."""
     out: list[str] = []
     i = 0
     n = len(lines)
@@ -238,63 +293,101 @@ def _render_lines(lines: list[str], page: _Page, *, in_footer: bool = False) -> 
             out.append("</tbody></table></div>")
             continue
 
-        # Blockquote.
+        # Blockquote: keep line structure (one <p> per source line) so the
+        # README's model-scenario example stays readable, and render quoted
+        # headings as bold lead-ins rather than literal "###" text.
         if stripped.startswith(">"):
-            quote: list[str] = []
+            out.append("<blockquote>")
             while i < n and lines[i].strip().startswith(">"):
-                quote.append(lines[i].strip().lstrip(">").strip())
+                inner = lines[i].strip().lstrip(">").strip()
                 i += 1
-            body = " ".join(q for q in quote if q)
-            out.append(f"<blockquote><p>{_inline(body)}</p></blockquote>")
+                if not inner:
+                    continue
+                if inner.startswith("#"):
+                    inner_text = inner.lstrip("#").strip()
+                    out.append(f"<p><strong>{_inline(inner_text)}</strong></p>")
+                else:
+                    out.append(f"<p>{_inline(inner)}</p>")
+            out.append("</blockquote>")
             continue
 
-        # Sign-off scenario control lines are handled by the caller; if one
-        # slips through (unexpected layout), render it as a paragraph.
-
-        # Unordered list (with one level of nesting and checkbox conversion).
+        # Unordered list with one nesting level (indented "- " items become a
+        # nested <ul> under the previous item). Item text is buffered so a
+        # bold/italic span wrapped across continuation lines renders in one
+        # _inline pass and pairs correctly.
         if stripped.startswith("- "):
+            base_indent = _indent_of(line)
             out.append("<ul>")
+            item: list[str] = []  # buffered text of the open item
+            nested: list[str] = []  # buffered texts of its nested items
             while i < n:
                 cur = lines[i]
                 curs = cur.strip()
-                if not curs.startswith("- "):
-                    # wrapped continuation of the previous item
-                    indented = cur.startswith("  ") or cur.startswith("\t")
-                    if curs and indented and out[-1].endswith("</li>"):
-                        out[-1] = out[-1][: -len("</li>")] + " " + _inline(curs) + "</li>"
-                        i += 1
-                        continue
+                if not curs:
                     break
-                body = curs[2:]
-                if in_footer:
-                    m = _FOOTER_FIELD.match(curs)
-                    if m:
-                        out.append(page.footer_field(m.group(1).strip(), m.group(2).strip()))
+                if curs.startswith("- "):
+                    indent = _indent_of(cur)
+                    if indent > base_indent and item:
+                        nested.append(curs[2:])
                         i += 1
                         continue
-                if _CHECKBOX.search(body):
-                    out.append(page.checklist_item(body))
-                else:
-                    out.append(f"<li>{_inline(body)}</li>")
-                i += 1
+                    _flush_list_item(out, item, nested)
+                    if in_footer:
+                        m = _FOOTER_FIELD.match(curs)
+                        if m:
+                            out.append(page.footer_field(m.group(1).strip(), m.group(2).strip()))
+                            i += 1
+                            continue
+                    body = curs[2:]
+                    if _CHECKBOX.search(body):
+                        out.append(page.checklist_item(body))
+                    else:
+                        item.append(body)
+                    i += 1
+                    continue
+                # Wrapped continuation of the previous (possibly nested) item.
+                if (item or nested) and (cur.startswith("  ") or cur.startswith("\t")):
+                    if nested:
+                        nested[-1] += " " + curs
+                    else:
+                        item.append(curs)
+                    i += 1
+                    continue
+                break
+            _flush_list_item(out, item, nested)
             out.append("</ul>")
             continue
 
-        # Ordered list.
+        # Ordered list; indented "- " items under an entry become a nested <ul>.
         if _ORDERED.match(stripped):
+            top_indent = _indent_of(line)
             out.append("<ol>")
+            oitem: list[str] = []
+            onested: list[str] = []
             while i < n:
-                m = _ORDERED.match(lines[i].strip())
-                if not m:
-                    curs = lines[i].strip()
-                    indented = lines[i].startswith("   ") or lines[i].startswith("\t")
-                    if curs and indented and out[-1].endswith("</li>"):
-                        out[-1] = out[-1][: -len("</li>")] + " " + _inline(curs) + "</li>"
-                        i += 1
-                        continue
+                cur = lines[i]
+                curs = cur.strip()
+                if not curs:
                     break
-                out.append(f"<li>{_inline(m.group(2))}</li>")
-                i += 1
+                m = _ORDERED.match(curs)
+                if m and _indent_of(cur) == top_indent:
+                    _flush_list_item(out, oitem, onested)
+                    oitem.append(m.group(2))
+                    i += 1
+                    continue
+                if curs.startswith("- ") and oitem and _indent_of(cur) > top_indent:
+                    onested.append(curs[2:])
+                    i += 1
+                    continue
+                if oitem and curs and (cur.startswith("   ") or cur.startswith("\t")):
+                    if onested:
+                        onested[-1] += " " + curs
+                    else:
+                        oitem.append(curs)
+                    i += 1
+                    continue
+                break
+            _flush_list_item(out, oitem, onested)
             out.append("</ol>")
             continue
 
@@ -324,25 +417,44 @@ def _render_lines(lines: list[str], page: _Page, *, in_footer: bool = False) -> 
     return out
 
 
-def _split_signoff(block_lines: list[str]) -> tuple[list[str], bool]:
-    """Remove the two printed sign-off lines from a scenario block.
+def _render_scenario_block(
+    block_lines: list[str], page: _Page, head_sid: str, heading: str
+) -> tuple[str, bool]:
+    """Render a scenario block, replacing every printed sign-off line (plus its
+    trailing aspect-boxes line) with a persistent control block in place.
 
-    Returns (lines-without-signoff, had_signoff).
+    Returns (html, had_any_signoff).
     """
-    kept: list[str] = []
+    out: list[str] = []
+    segment: list[str] = []
     had = False
-    skip_next_aspect = False
-    for line in block_lines:
+    in_fence = False
+    i = 0
+    n = len(block_lines)
+    while i < n:
+        line = block_lines[i]
         s = line.strip()
-        if _SIGNOFF_LINE.match(s):
+        if s.startswith("```"):
+            in_fence = not in_fence
+        m = None if in_fence else _SIGNOFF_LINE.match(s)
+        if m:
             had = True
-            skip_next_aspect = True
+            out.extend(_render_lines(segment, page))
+            segment = []
+            qualifier = m.group(1) or ""
+            # Swallow the following Works/Surface/Accessible line if present.
+            j = i + 1
+            while j < n and not block_lines[j].strip():
+                j += 1
+            if j < n and _ASPECT_LINE.match(block_lines[j].strip()):
+                i = j
+            out.append(page.scenario_controls(head_sid, heading, qualifier))
+            i += 1
             continue
-        if skip_next_aspect and _ASPECT_LINE.match(s):
-            skip_next_aspect = False
-            continue
-        kept.append(line)
-    return kept, had
+        segment.append(line)
+        i += 1
+    out.extend(_render_lines(segment, page))
+    return "".join(out), had
 
 
 def _convert(md_path: Path) -> tuple[str, _Page]:
@@ -355,7 +467,7 @@ def _convert(md_path: Path) -> tuple[str, _Page]:
         if line.startswith("# "):
             title = line[2:].strip()
             break
-    page.title = re.sub(r"[`*]", "", title)
+    page.title = _plain_label(title)
 
     # Split into preamble and h2 blocks, fence-aware.
     blocks: list[tuple[str | None, list[str]]] = []
@@ -375,12 +487,13 @@ def _convert(md_path: Path) -> tuple[str, _Page]:
         current.append(line)
     blocks.append((current_head, current))
 
+    badge = '<span class="st"></span>'
     body: list[str] = [f"<h1>{_inline(page.title)}</h1>"]
     for head, block in blocks:
         if head is None:
             body.extend(_render_lines(block, page))
             continue
-        content, had_signoff = _split_signoff(block)
+        content = list(block)
         is_footer = head.strip().lower() == "section sign-off"
         # Split out a trailing "### Section sign-off" footer inside this block.
         footer_idx = None
@@ -394,28 +507,26 @@ def _convert(md_path: Path) -> tuple[str, _Page]:
             content = content[:footer_idx]
 
         sid_match = _SCENARIO_ID.match(head)
+        head_sid = sid_match.group(1) if sid_match else f"X-{_hash_key(head)}"
         head_html = _inline(head)
-        if had_signoff:
-            sid = sid_match.group(1) if sid_match else f"X-{_hash_key(head)}"
-            inner = _render_lines(content, page)
-            controls = page.scenario_controls(sid, re.sub(r"[`*]", "", head))
-            badge = '<span class="st"></span>'
-            body.append(
-                f'<details class="sec scenario" open data-kind="scenario">'
-                f"<summary><h2>{head_html}</h2>{badge}</summary>"
-                f'<div class="secbody">{"".join(inner)}{controls}</div></details>'
-            )
+        boxes_before = page.checkbox_count
+        if is_footer:
+            inner_html = "".join(_render_lines(content, page, in_footer=True))
+            had_signoff = False
         else:
-            has_boxes_before = page.checkbox_count
-            inner = _render_lines(content, page, in_footer=is_footer)
-            kind = "checklist" if page.checkbox_count > has_boxes_before else "plain"
-            open_attr = " open"
-            badge = '<span class="st"></span>'
-            body.append(
-                f'<details class="sec"{open_attr} data-kind="{kind}">'
-                f"<summary><h2>{head_html}</h2>{badge}</summary>"
-                f'<div class="secbody">{"".join(inner)}</div></details>'
-            )
+            inner_html, had_signoff = _render_scenario_block(content, page, head_sid, head)
+        if had_signoff:
+            kind = "scenario"
+        elif page.checkbox_count > boxes_before:
+            kind = "checklist"
+        else:
+            kind = "plain"
+        css_class = "sec scenario" if kind == "scenario" else "sec"
+        body.append(
+            f'<details class="{css_class}" open data-kind="{kind}">'
+            f"<summary><h2>{head_html}</h2>{badge}</summary>"
+            f'<div class="secbody">{inner_html}</div></details>'
+        )
         if footer_lines:
             body.append('<section class="footerblock"><h3>Section sign-off</h3>')
             body.extend(_render_lines(footer_lines, page, in_footer=True))
@@ -456,7 +567,7 @@ _CSS = """
 
 _TOOLBAR = """
 <div class="bar" role="group" aria-label="Progress and controls">
-  <span id="progress" role="status">Loading...</span><br>
+  <span id="progress">Loading...</span><br>
   <button id="toggleHide" type="button" aria-pressed="false">Hide completed</button>
   <button id="expandAll" type="button">Expand all</button>
   <button id="collapseAll" type="button">Collapse all</button>
@@ -468,10 +579,12 @@ _TOOLBAR = """
 </div>
 """
 
-_PAGE_JS = """
+_PAGE_JS_TMPL = """
 (function () {
   var PREFIX = "quill-acceptance:";
+  var SLUG = __SLUG__;
   var HIDE_KEY = PREFIX + "__hideCompleted__";
+  var SUM_KEY = PREFIX + SLUG + ":__sum__";
   var live = document.getElementById("live");
   var toggleBtn = document.getElementById("toggleHide");
   var cbs = Array.prototype.slice.call(document.querySelectorAll("input.cb"));
@@ -481,16 +594,24 @@ _PAGE_JS = """
   var scns = Array.prototype.slice.call(document.querySelectorAll("fieldset.scn"));
   var secs = Array.prototype.slice.call(document.querySelectorAll("details.sec"));
 
+  function announce(text) { if (live) { live.textContent = ""; live.textContent = text; } }
   function outcomeOf(scn) {
     var r = scn.querySelector('input.outcome:checked');
     return r ? r.value : "";
   }
-  function setStatusBadge(scn) {
-    var det = scn.closest("details.sec");
-    if (!det) return;
+  function setStatusBadge(det) {
     var st = det.querySelector(".st");
-    var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
-    if (st) st.textContent = labels[outcomeOf(scn)] || "";
+    if (!st) return;
+    var fs = det.querySelectorAll("fieldset.scn");
+    if (fs.length === 0) { st.textContent = ""; return; }
+    if (fs.length === 1) {
+      var labels = { pass: "PASS", fail: "FAIL", blocked: "BLOCKED", na: "N/A", "": "" };
+      st.textContent = labels[outcomeOf(fs[0])] || "";
+      return;
+    }
+    var rec = 0;
+    for (var i = 0; i < fs.length; i++) { if (outcomeOf(fs[i])) rec++; }
+    st.textContent = rec ? rec + " of " + fs.length + " recorded" : "";
   }
   function secDone(det) {
     var kind = det.getAttribute("data-kind");
@@ -499,12 +620,14 @@ _PAGE_JS = """
       for (var i = 0; i < fs.length; i++) {
         if (!outcomeOf(fs[i])) return false;
       }
+      var bs = det.querySelectorAll("input.cb");
+      for (var k = 0; k < bs.length; k++) { if (!bs[k].checked) return false; }
       return fs.length > 0;
     }
     if (kind === "checklist") {
-      var bs = det.querySelectorAll("input.cb");
-      for (var j = 0; j < bs.length; j++) { if (!bs[j].checked) return false; }
-      return bs.length > 0;
+      var boxes = det.querySelectorAll("input.cb");
+      for (var j = 0; j < boxes.length; j++) { if (!boxes[j].checked) return false; }
+      return boxes.length > 0;
     }
     return false;
   }
@@ -517,6 +640,7 @@ _PAGE_JS = """
   function markDone() {
     secs.forEach(function (d) {
       d.setAttribute("data-done", secDone(d) ? "1" : "0");
+      setStatusBadge(d);
     });
     document.querySelectorAll("li.check").forEach(function (li) {
       li.setAttribute("data-done", itemDone(li) ? "1" : "0");
@@ -537,29 +661,38 @@ _PAGE_JS = """
     cbs.forEach(function (b) { if (b.checked) done++; });
     var bits = [];
     if (scns.length) {
-      bits.push(recorded + " of " + scns.length + " scenarios recorded (" +
+      bits.push(recorded + " of " + scns.length + " sign-offs recorded (" +
         counts.pass + " pass, " + counts.fail + " fail, " +
         counts.blocked + " blocked, " + counts.na + " n/a)");
     }
     if (cbs.length) { bits.push(done + " of " + cbs.length + " boxes checked"); }
     document.getElementById("progress").textContent =
       bits.length ? bits.join("; ") : "Nothing to sign off on this page.";
+    // Authoritative per-page summary for the index (immune to stale keys).
+    try {
+      localStorage.setItem(SUM_KEY, JSON.stringify({ scn: recorded, cb: done }));
+    } catch (e) { /* storage full: index falls back to key counting */ }
   }
-  // Focus rescue: when hiding removes the element under focus, land on the
-  // next visible section summary (else previous, else the toggle button).
+  // Focus rescue: whenever the element under focus just went display:none
+  // (hidden item OR hidden section), land on the nearest visible checkbox or
+  // outcome radio in document order, else a visible section summary, else the
+  // toggle button. Focus must never silently fall to <body>.
+  function isVisible(el) {
+    return !!el && el.offsetParent !== null;
+  }
   function rescueFocus(fromEl) {
-    var det = fromEl && fromEl.closest ? fromEl.closest("details.sec") : null;
-    if (det && getComputedStyle(det).display !== "none") return; // still visible
-    var idx = det ? secs.indexOf(det) : -1;
-    for (var j = idx + 1; j < secs.length; j++) {
-      if (getComputedStyle(secs[j]).display !== "none") {
-        secs[j].querySelector("summary").focus(); return;
-      }
+    if (isVisible(fromEl)) return;
+    var focusables = Array.prototype.slice.call(
+      document.querySelectorAll("input.cb, input.outcome"));
+    var idx = focusables.indexOf(fromEl);
+    for (var j = idx + 1; j < focusables.length; j++) {
+      if (isVisible(focusables[j])) { focusables[j].focus(); return; }
     }
     for (var k = idx - 1; k >= 0; k--) {
-      if (getComputedStyle(secs[k]).display !== "none") {
-        secs[k].querySelector("summary").focus(); return;
-      }
+      if (isVisible(focusables[k])) { focusables[k].focus(); return; }
+    }
+    for (var s = 0; s < secs.length; s++) {
+      if (isVisible(secs[s])) { secs[s].querySelector("summary").focus(); return; }
     }
     if (toggleBtn) toggleBtn.focus();
   }
@@ -572,15 +705,9 @@ _PAGE_JS = """
       if (b.checked) localStorage.setItem(key, "1");
       else localStorage.removeItem(key);
       markDone(); refresh();
-      if (hideActive()) {
-        var li = b.closest("li.check");
-        var det = b.closest("details.sec");
-        var hid = (li && li.getAttribute("data-done") === "1") ||
-                  (det && det.getAttribute("data-done") === "1");
-        if (hid) {
-          if (live) live.textContent = "Completed and hidden.";
-          rescueFocus(b);
-        }
+      if (hideActive() && !isVisible(b)) {
+        announce("Completed and hidden.");
+        rescueFocus(b);
       }
     });
   });
@@ -596,14 +723,12 @@ _PAGE_JS = """
         if (!r.checked) return;
         if (r.value) localStorage.setItem(base, r.value);
         else localStorage.removeItem(base);
-        setStatusBadge(scn); markDone(); refresh();
-        var det = scn.closest("details.sec");
-        if (hideActive() && det && det.getAttribute("data-done") === "1") {
-          if (live) live.textContent =
-            "Scenario recorded as " + (r.value || "not run") + " and hidden.";
-          rescueFocus(scn);
-        } else if (live) {
-          live.textContent = "Recorded: " + (r.value || "not run") + ".";
+        markDone(); refresh();
+        if (hideActive() && !isVisible(r)) {
+          announce("Sign-off recorded as " + (r.value || "not run") + " and hidden.");
+          rescueFocus(r);
+        } else {
+          announce("Recorded: " + (r.value || "not run") + ".");
         }
       });
     });
@@ -611,7 +736,6 @@ _PAGE_JS = """
       var nr = scn.querySelector('input.outcome[value=""]');
       if (nr) nr.checked = true;
     }
-    setStatusBadge(scn);
   });
 
   // Restore + wire text fields (notes, section sign-off metadata).
@@ -630,6 +754,10 @@ _PAGE_JS = """
   });
 
   markDone(); refresh(); applyHide();
+  if (sessionStorage.getItem("quill-acceptance-imported") === "1") {
+    sessionStorage.removeItem("quill-acceptance-imported");
+    announce("Progress imported.");
+  }
 
   if (toggleBtn) {
     if (scns.length === 0 && cbs.length === 0) {
@@ -638,12 +766,10 @@ _PAGE_JS = """
       toggleBtn.addEventListener("click", function () {
         localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
         applyHide();
-        var hidden = secs.filter(function (d) {
-          return getComputedStyle(d).display === "none";
-        }).length;
-        if (live) live.textContent = hideActive()
+        var hidden = secs.filter(function (d) { return !isVisible(d); }).length;
+        announce(hideActive()
           ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
-          : "Showing all sections.";
+          : "Showing all sections.");
       });
     }
   }
@@ -651,11 +777,11 @@ _PAGE_JS = """
   var co = document.getElementById("collapseAll");
   if (ex) ex.addEventListener("click", function () {
     secs.forEach(function (d) { d.open = true; });
-    if (live) live.textContent = "All sections expanded.";
+    announce("All sections expanded.");
   });
   if (co) co.addEventListener("click", function () {
     secs.forEach(function (d) { d.open = false; });
-    if (live) live.textContent = "All sections collapsed.";
+    announce("All sections collapsed.");
   });
 
   document.getElementById("export").addEventListener("click", function () {
@@ -670,6 +796,7 @@ _PAGE_JS = """
     a.href = URL.createObjectURL(blob);
     a.download = "quill-acceptance-progress.json";
     a.click();
+    announce("Progress exported.");
   });
   var fileInput = document.getElementById("importFile");
   document.getElementById("import").addEventListener("click", function () {
@@ -679,11 +806,25 @@ _PAGE_JS = """
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        announce("Import failed: not a valid progress file.");
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
+      if (!applied) {
+        announce("Import failed: no acceptance progress in that file.");
+        return;
+      }
+      sessionStorage.setItem("quill-acceptance-imported", "1");
       location.reload();
+    }, function () {
+      announce("Import failed: the file could not be read.");
     });
   });
 })();
@@ -697,7 +838,17 @@ _INDEX_JS = """
   var toggleBtn = document.getElementById("toggleHide");
   var rows = Array.prototype.slice.call(document.querySelectorAll("li[data-slug]"));
 
+  function announce(text) { if (live) { live.textContent = ""; live.textContent = text; } }
   function pageProgress(slug) {
+    // Prefer the authoritative per-page summary written by the page itself;
+    // fall back to key counting for pages never opened in this browser.
+    var sum = localStorage.getItem(PREFIX + slug + ":__sum__");
+    if (sum) {
+      try {
+        var parsed = JSON.parse(sum);
+        return { scn: parsed.scn || 0, cb: parsed.cb || 0 };
+      } catch (e) { /* fall through */ }
+    }
     var scn = 0, cb = 0;
     var scnPrefix = PREFIX + slug + ":scn:";
     var cbPrefix = PREFIX + slug + ":cb:";
@@ -716,22 +867,24 @@ _INDEX_JS = """
       var scnTotal = parseInt(li.dataset.scn || "0", 10);
       var cbTotal = parseInt(li.dataset.cb || "0", 10);
       var p = pageProgress(slug);
+      var scnDone = Math.min(p.scn, scnTotal);
+      var cbDone = Math.min(p.cb, cbTotal);
       var bits = [];
-      if (scnTotal) bits.push(Math.min(p.scn, scnTotal) + " of " + scnTotal + " scenarios");
-      if (cbTotal) bits.push(Math.min(p.cb, cbTotal) + " of " + cbTotal + " boxes");
+      if (scnTotal) bits.push(scnDone + " of " + scnTotal + " sign-offs");
+      if (cbTotal) bits.push(cbDone + " of " + cbTotal + " boxes");
       var done = (scnTotal + cbTotal) > 0 &&
-                 p.scn >= scnTotal && p.cb >= cbTotal;
+                 scnDone >= scnTotal && cbDone >= cbTotal;
       var span = li.querySelector(".prog");
       if (span) span.textContent = bits.length
         ? " - " + bits.join(", ") + (done ? " - COMPLETE" : "")
         : "";
-      tScn += scnTotal; tScnDone += Math.min(p.scn, scnTotal);
-      tCb += cbTotal; tCbDone += Math.min(p.cb, cbTotal);
+      tScn += scnTotal; tScnDone += scnDone;
+      tCb += cbTotal; tCbDone += cbDone;
       li.hidden = hideActive() && done;
       if (li.hidden) hidden++;
     });
     document.getElementById("progress").textContent =
-      "Overall: " + tScnDone + " of " + tScn + " scenarios recorded, " +
+      "Overall: " + tScnDone + " of " + tScn + " sign-offs recorded, " +
       tCbDone + " of " + tCb + " checklist boxes checked.";
     if (toggleBtn) toggleBtn.setAttribute("aria-pressed", hideActive() ? "true" : "false");
     return hidden;
@@ -739,12 +892,13 @@ _INDEX_JS = """
   refresh();
   window.addEventListener("storage", refresh);
   window.addEventListener("focus", refresh);
+  window.addEventListener("pageshow", refresh);
   if (toggleBtn) toggleBtn.addEventListener("click", function () {
     localStorage.setItem(HIDE_KEY, hideActive() ? "0" : "1");
     var hidden = refresh();
-    if (live) live.textContent = hideActive()
+    announce(hideActive()
       ? (hidden + " completed section" + (hidden === 1 ? "" : "s") + " hidden.")
-      : "Showing all sections.";
+      : "Showing all sections.");
   });
   var ex = document.getElementById("expandAll");
   var co = document.getElementById("collapseAll");
@@ -762,6 +916,7 @@ _INDEX_JS = """
     a.href = URL.createObjectURL(blob);
     a.download = "quill-acceptance-progress.json";
     a.click();
+    announce("Progress exported.");
   });
   var fileInput = document.getElementById("importFile");
   document.getElementById("import").addEventListener("click", function () {
@@ -771,11 +926,25 @@ _INDEX_JS = """
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        announce("Import failed: not a valid progress file.");
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
-      location.reload();
+      if (!applied) {
+        announce("Import failed: no acceptance progress in that file.");
+        return;
+      }
+      refresh();
+      announce("Progress imported.");
+    }, function () {
+      announce("Import failed: the file could not be read.");
     });
   });
 })();
@@ -804,19 +973,20 @@ def main() -> int:
     for md in sorted(ACCEPT_DIR.glob("*.md")):
         body, page = _convert(md)
         out = OUT_DIR / f"{md.stem}.html"
+        page_js = _PAGE_JS_TMPL.replace("__SLUG__", json.dumps(page.slug))
         out.write_text(
             _PAGE_TMPL.format(
                 title=html.escape(page.title),
                 css=_CSS,
                 toolbar=_TOOLBAR,
                 body=body,
-                js=_PAGE_JS,
+                js=page_js,
             ),
             encoding="utf-8",
             newline="\n",
         )
         pages.append(page)
-        print(f"{out.name}: {page.scenario_count} scenarios, {page.checkbox_count} boxes")
+        print(f"{out.name}: {page.scenario_count} sign-offs, {page.checkbox_count} boxes")
 
     order = {slug: i for i, slug in enumerate(RUN_ORDER)}
     pages.sort(key=lambda p: (order.get(p.slug, len(RUN_ORDER)), p.slug))
@@ -824,14 +994,14 @@ def main() -> int:
     for p in pages:
         detail_bits = []
         if p.scenario_count:
-            detail_bits.append(f"{p.scenario_count} scenarios")
+            detail_bits.append(f"{p.scenario_count} sign-offs")
         if p.checkbox_count:
             detail_bits.append(f"{p.checkbox_count} boxes")
         detail = f" ({', '.join(detail_bits)})" if detail_bits else " (read first; no boxes)"
         items.append(
             f'<li data-slug="{p.slug}" data-scn="{p.scenario_count}" data-cb="{p.checkbox_count}">'
             f'<a href="{p.slug}.html">{html.escape(p.title)}</a>{detail}'
-            f'<span class="prog" role="status"></span></li>'
+            f'<span class="prog"></span></li>'
         )
     total_scn = sum(p.scenario_count for p in pages)
     total_cb = sum(p.checkbox_count for p in pages)
@@ -843,13 +1013,14 @@ def main() -> int:
         "record is saved in this browser the moment you change it and restored "
         "when you come back - including after closing the browser. Use Export "
         "to back your progress up to a JSON file, and Import to restore it or "
-        "move it to another machine.</p>"
+        "move it to another machine (importing merges, so two testers' files "
+        "can be combined).</p>"
         "<p>Hide completed hides every fully recorded section and scenario so "
         "you always see only what is left; Show all brings everything back. "
         "The printed Markdown book in the parent folder is the source of "
         "truth; these pages are generated from it by "
         "<code>scripts/gen_acceptance_html.py</code>.</p>"
-        f"<p>Total: {total_scn} scenarios and {total_cb} checklist boxes "
+        f"<p>Total: {total_scn} sign-offs and {total_cb} checklist boxes "
         "across all sections, in the recommended run order:</p>"
         f"<ol>{''.join(items)}</ol>"
         '<p>Companion checklists: the <a href="../../../planning/signoff/'
@@ -867,7 +1038,7 @@ def main() -> int:
         encoding="utf-8",
         newline="\n",
     )
-    print(f"index.html: {len(pages)} sections, {total_scn} scenarios, {total_cb} boxes")
+    print(f"index.html: {len(pages)} sections, {total_scn} sign-offs, {total_cb} boxes")
 
     # Machine-readable manifest for the README coverage table and any tooling.
     manifest = {p.slug: {"scenarios": p.scenario_count, "boxes": p.checkbox_count} for p in pages}

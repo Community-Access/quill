@@ -100,6 +100,11 @@ class UpdateManifest:
     notes: str
     signature: str
     advisories: tuple[FeatureAdvisory, ...] = ()
+    #: Optional Ed25519 signature (base64) over the same canonical manifest
+    #: string, made with the publisher key whose public half ships in
+    #: ``quill/core/feed-pub.key``. When present it MUST verify; the legacy
+    #: salted checksum alone cannot authenticate a feed (the salt is public).
+    signature_ed25519: str = ""
 
 
 def fetch_update_manifest(
@@ -126,6 +131,11 @@ class GitHubRelease:
     # back to the newest release that *is* installable here, instead of
     # offering a release with nothing this client can actually use.
     has_platform_asset: bool = True
+    #: SHA-256 hex of the chosen asset, from the GitHub Releases API's per-asset
+    #: ``digest`` field ("sha256:<hex>"). "" when GitHub did not report one.
+    #: Download paths pass it to :func:`download_release_asset` so an installer
+    #: that will run ELEVATED is integrity-checked like every other download.
+    download_digest: str = ""
 
 
 def fetch_latest_release(
@@ -277,11 +287,30 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
     return ""
 
 
+def _asset_digest_for_url(assets: object, url: str) -> str:
+    """SHA-256 hex for the asset at *url* from GitHub's ``digest`` field, or ""."""
+    if not url or not isinstance(assets, list):
+        return ""
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+        if str(asset.get("browser_download_url") or "") != url:
+            continue
+        digest = str(asset.get("digest") or "").strip().lower()
+        if digest.startswith("sha256:"):
+            candidate = digest.split(":", 1)[1]
+            if re.fullmatch(r"[0-9a-f]{64}", candidate):
+                return candidate
+        return ""
+    return ""
+
+
 def _release_from_json(data: dict, *, prefer_portable: bool | None = None) -> GitHubRelease:
     # Pick the platform installer asset; fall back to the release page when the
     # release has no real installer (e.g. only provenance/checksum artifacts).
     raw_assets = data.get("assets") or []
     download_url = _pick_asset(raw_assets, prefer_portable=prefer_portable)
+    download_digest = _asset_digest_for_url(raw_assets, download_url)
     # A release with zero real assets (nothing but provenance/checksums, or
     # nothing at all) is treated as usable — the html_url fallback below is
     # the best we can offer. A release with real assets none of which match
@@ -297,6 +326,7 @@ def _release_from_json(data: dict, *, prefer_portable: bool | None = None) -> Gi
         notes=str(data.get("body") or "").strip(),
         prerelease=bool(data.get("prerelease")),
         has_platform_asset=has_platform_asset,
+        download_digest=download_digest,
     )
 
 
@@ -465,12 +495,20 @@ def parse_update_manifest(payload: str) -> UpdateManifest:
         notes=str(raw.get("notes", "")).strip(),
         signature=str(raw.get("signature", "")).strip(),
         advisories=_parse_advisories(raw.get("advisories")),
+        signature_ed25519=str(raw.get("signature_ed25519", "")).strip(),
     )
     if not manifest.version or not manifest.download_url or not manifest.signature:
         raise ValueError("Manifest is missing required fields")
     _validate_remote_url(manifest.download_url)
     if not verify_manifest_signature(manifest):
         raise ValueError("Manifest signature verification failed")
+    ed25519_ok = verify_manifest_ed25519(manifest)
+    if ed25519_ok is False:
+        raise ValueError("Manifest Ed25519 signature verification failed")
+    if ed25519_ok is None and os.getenv("QUILL_REQUIRE_SIGNED_FEED", "").strip() == "1":
+        raise ValueError(
+            "Manifest carries no Ed25519 signature and QUILL_REQUIRE_SIGNED_FEED is set"
+        )
     return manifest
 
 
@@ -616,6 +654,83 @@ def verify_manifest_signature(manifest: UpdateManifest) -> bool:
     return hmac.compare_digest(manifest.signature, expected)
 
 
+_FEED_PUBKEY_PATH = Path(__file__).resolve().parent / "feed-pub.key"
+
+
+def _feed_public_key_b64() -> str:
+    """The bundled feed-signing public key (base64), or "" when not bundled."""
+    try:
+        return _FEED_PUBKEY_PATH.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def manifest_ed25519_signature(
+    *,
+    version: str,
+    download_url: str,
+    published_at: str,
+    notes: str,
+    signing_key_b64: str,
+    advisories: tuple[FeatureAdvisory, ...] = (),
+) -> str:
+    """Sign the canonical manifest string with an Ed25519 key (publisher side).
+
+    ``signing_key_b64`` is the base64 32-byte seed of the publisher's signing
+    key (the private counterpart of ``feed-pub.key``). Returns the base64
+    signature for the ``signature_ed25519`` field.
+    """
+    import base64
+
+    from nacl import signing as nacl_signing
+
+    seed = base64.b64decode(signing_key_b64.strip())
+    key = nacl_signing.SigningKey(seed)
+    canonical = _canonical_manifest(
+        version=version,
+        download_url=download_url,
+        published_at=published_at,
+        notes=notes,
+        advisories=advisories,
+    )
+    return base64.b64encode(key.sign(canonical.encode("utf-8")).signature).decode("ascii")
+
+
+def verify_manifest_ed25519(manifest: UpdateManifest) -> bool | None:
+    """Verify the optional Ed25519 signature against the bundled public key.
+
+    Returns ``True`` when present and valid, ``False`` when present and
+    invalid (or unverifiable — a signature that cannot be checked is treated
+    as forged, never waved through), and ``None`` when the manifest carries
+    no Ed25519 signature (legacy feed).
+    """
+    sig_b64 = manifest.signature_ed25519.strip()
+    if not sig_b64:
+        return None
+    try:
+        import base64
+
+        from nacl import signing as nacl_signing
+    except Exception:  # noqa: BLE001 - PyNaCl missing: cannot verify, never accept
+        return False
+    try:
+        pub_b64 = _feed_public_key_b64()
+        if not pub_b64:
+            return False
+        verify_key = nacl_signing.VerifyKey(base64.b64decode(pub_b64))
+        canonical = _canonical_manifest(
+            version=manifest.version,
+            download_url=manifest.download_url,
+            published_at=manifest.published_at,
+            notes=manifest.notes,
+            advisories=manifest.advisories,
+        )
+        verify_key.verify(canonical.encode("utf-8"), base64.b64decode(sig_b64))
+        return True
+    except Exception:  # noqa: BLE001 - bad signature/base64/key: invalid, never accept
+        return False
+
+
 def is_newer_version(current: str, available: str) -> bool:
     return _version_tuple(available) > _version_tuple(current)
 
@@ -708,16 +823,24 @@ def download_release_asset(
     destination: str | os.PathLike[str],
     timeout: int = 60,
     progress: Callable[[int, int], None] | None = None,
+    *,
+    expected_sha256: str = "",
 ) -> None:
     """Download an update asset to ``destination`` (verified TLS).
 
     When ``progress`` is supplied it is called as ``progress(bytes_done, total)``
     after each chunk so callers can surface accessible download progress. ``total``
     is ``0`` when the server does not report a Content-Length.
+
+    When ``expected_sha256`` is supplied (the GitHub Releases API's per-asset
+    digest), the download is hashed as it streams and a mismatch deletes the
+    file and raises — an installer that will run elevated must never be kept,
+    let alone launched, when its bytes don't match what the release published.
     """
     _validate_remote_url(url)
     request = Request(url, headers={"User-Agent": "Quill-Updater"})
     chunk_size = 64 * 1024
+    hasher = hashlib.sha256() if expected_sha256 else None
     with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
         total = int(response.headers.get("Content-Length") or 0)
         done = 0
@@ -729,9 +852,20 @@ def download_release_asset(
                 if not chunk:
                     break
                 handle.write(chunk)
+                if hasher is not None:
+                    hasher.update(chunk)
                 done += len(chunk)
                 if progress is not None:
                     progress(done, total)
+    if hasher is not None:
+        actual = hasher.hexdigest()
+        if not hmac.compare_digest(actual, expected_sha256.strip().lower()):
+            Path(destination).unlink(missing_ok=True)
+            raise ValueError(
+                "The downloaded update did not match its published checksum and "
+                "was deleted. Try again; if this repeats, download the release "
+                "from the QUILL website instead."
+            )
 
 
 #: Uncompressed-size ceiling for a portable *update* extraction. A full app
@@ -831,4 +965,6 @@ __all__ = [
     "running_portable",
     "manifest_signature",
     "verify_manifest_signature",
+    "manifest_ed25519_signature",
+    "verify_manifest_ed25519",
 ]

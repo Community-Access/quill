@@ -56,6 +56,10 @@ class FindHost:
     replace_range: Callable[[int, int, str], None]
     announce: Callable[[str], None]
     is_read_only: Callable[[], bool]
+    # Optional: lets the host remember the query so global F3/Shift+F3 repeat
+    # THIS search after the dialog closes. Args: literal query text,
+    # case_sensitive, whole_word.
+    remember_query: Callable[[str, bool, bool], None] | None = None
 
 
 class QuillFindDialog:
@@ -74,7 +78,7 @@ class QuillFindDialog:
         self._host = host
         self._replace_action = replace
         self._last_match: FindMatch | None = None
-        self._peek_pos: int | None = None
+        self._peek_match: FindMatch | None = None
         self._pending_count = None  # wx.CallLater handle
         self._last_incremental: str | None = None  # dedup the spoken count
 
@@ -149,8 +153,14 @@ class QuillFindDialog:
         self.find_next_btn.SetDefault()
         self._apply_action_visibility()
 
-        self.find_next_btn.Bind(wx.EVT_BUTTON, lambda _e: self.find(backwards=False))
-        self.find_prev_btn.Bind(wx.EVT_BUTTON, lambda _e: self.find(backwards=True))
+        # Notepad semantics: Find Next follows the Direction radio; Find
+        # Previous is its reverse. The radio is not decoration (#1327).
+        self.find_next_btn.Bind(
+            wx.EVT_BUTTON, lambda _e: self.find(backwards=self._direction_backwards())
+        )
+        self.find_prev_btn.Bind(
+            wx.EVT_BUTTON, lambda _e: self.find(backwards=not self._direction_backwards())
+        )
         self.count_btn.Bind(wx.EVT_BUTTON, lambda _e: self.announce_count())
         self.special_btn.Bind(wx.EVT_BUTTON, lambda _e: self.insert_special_character())
         self.replace_btn.Bind(wx.EVT_BUTTON, lambda _e: self.replace_current())
@@ -217,6 +227,22 @@ class QuillFindDialog:
             self._host.announce(str(error))
             return None
 
+    def _direction_backwards(self) -> bool:
+        return self.direction.GetSelection() == 0
+
+    def _remember_for_global_repeat(self, query: FindQuery) -> None:
+        """Sync the host's F3/Shift+F3 state so global repeat continues THIS
+        search after the dialog closes (the docstring's modeless promise)."""
+        if self._host.remember_query is None:
+            return
+        literal = query.text
+        if query.mode == "extended":
+            try:
+                literal = translate_extended(query.text)
+            except Exception:  # noqa: BLE001 - unlikely: the query already compiled
+                return
+        self._host.remember_query(literal, query.case_sensitive, query.whole_word)
+
     def find(self, *, backwards: bool) -> None:
         query = self._build_query()
         if not query.text:
@@ -228,13 +254,14 @@ class QuillFindDialog:
             self._host.announce(str(error))
             return
         text = self._host.get_text()
-        from_pos = self.query_anchor()
+        from_pos = self.query_anchor(backwards=backwards)
         match, wrapped = find_next(compiled, text, from_pos=from_pos, backwards=backwards)
         if match is None:
             self._host.announce(f'No matches for "{query.text}"')
             return
         self._last_match = match
-        self._peek_pos = None
+        self._peek_match = None
+        self._remember_for_global_repeat(query)
         self._host.select_range(match.start, match.end)
         prefix = (
             "Wrapped past the end. "
@@ -243,12 +270,16 @@ class QuillFindDialog:
         )
         self._host.announce(f"{prefix}{context_sentence(text, match)}")
 
-    def query_anchor(self) -> int:
-        """Where the next search starts: after the last match, else the caret."""
-        if self._peek_pos is not None:
-            return self._peek_pos
-        if self._last_match is not None:
-            return self._last_match.end
+    def query_anchor(self, *, backwards: bool = False) -> int:
+        """Where the next search starts.
+
+        Direction-aware: repeating backwards must anchor at the last match's
+        START (anchoring at its end re-finds the same match forever); forwards
+        anchors at its end. Falls back to the caret.
+        """
+        anchor_match = self._peek_match or self._last_match
+        if anchor_match is not None:
+            return anchor_match.start if backwards else anchor_match.end
         return self._host.get_insertion_point()
 
     def peek(self, *, backwards: bool) -> None:
@@ -261,12 +292,15 @@ class QuillFindDialog:
         except Exception:  # noqa: BLE001 - incremental peeks stay silent on bad input
             return
         text = self._host.get_text()
-        start = self._peek_pos if self._peek_pos is not None else self._host.get_insertion_point()
+        if self._peek_match is not None:
+            start = self._peek_match.start if backwards else self._peek_match.end
+        else:
+            start = self._host.get_insertion_point()
         match, wrapped = find_next(compiled, text, from_pos=start, backwards=backwards)
         if match is None:
             self._host.announce("No matches")
             return
-        self._peek_pos = match.end if not backwards else match.start
+        self._peek_match = match
         self._host.select_range(match.start, match.end)
         prefix = "Wrapped. " if wrapped else ""
         self._host.announce(f"{prefix}{context_sentence(text, match)}")
@@ -305,8 +339,9 @@ class QuillFindDialog:
             self._host.announce(str(error))
             return
         text = self._host.get_text()
+        backwards = self._direction_backwards()
         anchor = self._last_match.start if self._last_match else self._host.get_insertion_point()
-        match, _wrapped = find_next(compiled, text, from_pos=anchor)
+        match, _wrapped = find_next(compiled, text, from_pos=anchor, backwards=backwards)
         if match is None:
             self._host.announce(f'No matches for "{query.text}"')
             return
@@ -315,7 +350,8 @@ class QuillFindDialog:
         self._host.replace_range(match.start, match.end, replacement)
         self._host.select_range(match.start, match.start + len(replacement))
         self._last_match = None
-        self._peek_pos = None
+        self._peek_match = None
+        self._remember_for_global_repeat(query)
         shown = replacement if replacement else "nothing"
         self._host.announce(f"Replaced '{match.text}' with '{shown}' at line {match.line}")
 
@@ -335,16 +371,33 @@ class QuillFindDialog:
         except Exception as error:  # noqa: BLE001
             self._host.announce(str(error))
             return
-        matches, truncated = all_matches(compiled, self._host.get_text())
+        text = self._host.get_text()
+        matches, truncated = all_matches(compiled, text)
         if not matches:
             self._host.announce(f'No matches for "{query.text}"')
             return
-        # Back to front so earlier offsets stay valid, via range replacement so
-        # every change stays on the editor's undo stack.
-        for match in reversed(matches):
-            self._host.replace_range(match.start, match.end, replacement)
+        if len(matches) <= 100:
+            # Back to front so earlier offsets stay valid, via range
+            # replacement so every change stays on the editor's undo stack
+            # (one undo step per occurrence).
+            for match in reversed(matches):
+                self._host.replace_range(match.start, match.end, replacement)
+        else:
+            # Thousands of individual RichEdit edits stall the UI thread and
+            # bury undo in per-occurrence steps; above the threshold, rebuild
+            # once and replace the whole document in a single edit (one undo
+            # step), matching the native Replace All path.
+            pieces: list[str] = []
+            cursor = 0
+            for match in matches:
+                pieces.append(text[cursor : match.start])
+                pieces.append(replacement)
+                cursor = match.end
+            pieces.append(text[cursor:])
+            self._host.replace_range(0, len(text), "".join(pieces))
         self._last_match = None
-        self._peek_pos = None
+        self._peek_match = None
+        self._remember_for_global_repeat(query)
         count = len(matches)
         noun = "occurrence" if count == 1 else "occurrences"
         extra = (
@@ -381,7 +434,7 @@ class QuillFindDialog:
     def _on_query_changed(self, event: object) -> None:
         event.Skip()
         self._last_match = None
-        self._peek_pos = None
+        self._peek_match = None
         wx = self._wx
         if self._pending_count is not None:
             self._pending_count.Stop()
@@ -391,6 +444,9 @@ class QuillFindDialog:
         self._pending_count = None
         query = self._build_query()
         if not query.text:
+            # Clearing the field resets the dedup, so retyping the same query
+            # speaks its count again instead of staying silent.
+            self._last_incremental = None
             return
         try:
             compiled = compile_query(query)
@@ -400,16 +456,20 @@ class QuillFindDialog:
         suffix = " or more" if truncated else ""
         noun = "match" if count == 1 else "matches"
         message = f"{count}{suffix} {noun}"
-        if message == self._last_incremental:
-            return  # nothing changed — don't re-speak the same count
-        self._last_incremental = message
+        # Dedup on (query, message): the same count for a DIFFERENT query is
+        # new information and must be spoken.
+        stamp = f"{query.text}\x00{message}"
+        if stamp == self._last_incremental:
+            return
+        self._last_incremental = stamp
         self._host.announce(message)
 
     # -- keys --------------------------------------------------------------------
 
     def _on_query_enter(self, event: object) -> None:
-        backwards = bool(self._wx.GetKeyState(self._wx.WXK_SHIFT))
-        self.find(backwards=backwards or self.direction.GetSelection() == 0)
+        # Enter follows the Direction radio; Shift+Enter reverses it.
+        shift = bool(self._wx.GetKeyState(self._wx.WXK_SHIFT))
+        self.find(backwards=shift != self._direction_backwards())
 
     def _on_query_key(self, event: object) -> None:
         wx = self._wx
@@ -474,6 +534,15 @@ def open_for_main_frame(controller: object, *, replace: bool) -> None:
         editor.SetSelection(start, end)
         editor.ShowPosition(start)
 
+    def _remember(query_text: str, case_sensitive: bool, whole_word: bool) -> None:
+        # Keep the global F3/Shift+F3 repeat and search history on THIS query.
+        from quill.core.search import SearchOptions
+
+        controller._last_find_query = query_text
+        controller._last_search_options = SearchOptions(
+            case_sensitive=case_sensitive, whole_word=whole_word
+        )
+
     host = FindHost(
         get_text=lambda: str(editor.GetValue()),
         get_insertion_point=lambda: int(editor.GetInsertionPoint()),
@@ -481,6 +550,7 @@ def open_for_main_frame(controller: object, *, replace: bool) -> None:
         replace_range=lambda start, end, value: editor.Replace(start, end, value),
         announce=lambda message: controller._announce(message),
         is_read_only=lambda: bool(getattr(controller, "_document_is_read_only", lambda: False)()),
+        remember_query=_remember,
     )
     seed = str(editor.GetStringSelection()) or getattr(controller, "_last_find_query", "")
     if "\n" in seed:  # a multi-line selection is context, not a query

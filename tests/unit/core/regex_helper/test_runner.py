@@ -141,3 +141,18 @@ def test_preview_invalid_pattern_is_plain_words() -> None:
 def test_preview_zero_width_terminates() -> None:
     lines = preview_replace("a*", "-", "bbb", count=10)
     assert len(lines) == 4
+
+
+def test_catastrophic_backtracking_is_stopped_with_plain_message() -> None:
+    # (a+)+b on a long run of "a" backtracks exponentially; the bounded runner
+    # must stop it within its wall-clock budget instead of freezing the UI.
+    result = run_pattern("(a+)+b", "a" * 5000)
+    assert not result.ok
+    assert result.matches == ()
+    assert "took too long" in result.error
+
+
+def test_preview_catastrophic_backtracking_is_stopped() -> None:
+    lines = preview_replace("(a+)+b", "x", "a" * 5000)
+    assert len(lines) == 1
+    assert "took too long" in lines[0]

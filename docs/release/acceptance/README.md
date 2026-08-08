@@ -178,17 +178,17 @@ environment. Keep this table current — it is the book's own completeness gate.
 | Section | Surface | Scenarios | Drafted | Signed off |
 |---|---|---|---|---|
 | `00-getting-started.md` | Install, launch, SR setup, first document | 10 | ✅ | ☐ |
-| `section-file.md` | `file.*` — File menu | 27 | ✅ | ☐ |
-| `section-edit.md` | `edit.*` — Edit / insert / find (incl. 12-slot Copy Tray) | 62 | ✅ | ☐ |
+| `section-file.md` | `file.*` — File menu | 29 | ✅ | ☐ |
+| `section-edit.md` | `edit.*` — Edit / insert / find (incl. 12-slot Copy Tray) | 86 | ✅ | ☐ |
 | `section-navigate.md` | `navigate.*` — movement & bookmarks | 28 | ✅ | ☐ |
-| `section-format.md` | `format.*` — formatting | 50 | ✅ | ☐ |
-| `section-view.md` | `view.*` `window.*` `verbosity.*` — view/window/speech verbosity | 28 | ✅ | ☐ |
+| `section-format.md` | `format.*` — formatting | 56 | ✅ | ☐ |
+| `section-view.md` | `view.*` `window.*` `verbosity.*` — view/window/speech verbosity | 29 | ✅ | ☐ |
 | `section-table.md` | `table.*` `reveal.*` `notes.*` + `document/sync/ai/media` | 22 | ✅ | ☐ |
 | `section-editor-behaviors.md` | Editor/document behaviors that aren't single commands (autosave, recovery, tabs, status bar, live spell-check, watch folder, encoding/line-ending detection) | 24 | ✅ | ☐ |
 | `section-tools-ai.md` | `tools.*` — AI writing/analysis tools | 31 | ✅ | ☐ |
 | `section-tools-speech.md` | `tools.*` — dictation, OCR, read-aloud, speech, dictionary | 38 | ✅ | ☐ |
-| `section-tools-misc.md` | `tools.*` — compare, keymap, macros, utilities, GLOW | 56 | ✅ | ☐ |
-| `section-power.md` | `power.*` — power-user commands | 56 | ✅ | ☐ |
+| `section-tools-misc.md` | `tools.*` — compare, keymap, macros, utilities, GLOW | 73 | ✅ | ☐ |
+| `section-power.md` | `power.*` — power-user commands | 75 | ✅ | ☐ |
 | `section-braille.md` | `braille.*` — braille display & tables | 45 | ✅ | ☐ |
 | `section-vault.md` | `vault.*` — knowledge-base **note vault** (wikilinks, backlinks, daily notes, git sync) — *not* an encrypted secrets store | 22 | ✅ | ☐ |
 | `section-help.md` | `help.*` — help, about, updates | 21 | ✅ | ☐ |
@@ -205,11 +205,12 @@ environment. Keep this table current — it is the book's own completeness gate.
 | `install-matrix.md` | Portable vs system, secrets, updates, migration | 9 (×E1–E6) | ✅ | ☐ |
 
 The scenario numbers above count **sign-off blocks** — the unit a tester actually
-records — and are generated (`interactive/manifest.json`); one block may bundle a
-pair of twinned commands (e.g. FILE-21/22 Save/Open Session) or a whole numbered
-family (Copy Tray slots 1–12, Go to Document 1–10, the per-agent Run Agent
-entries), which is why scenario IDs inside a file can run higher than its block
-count.
+records — and are generated (`interactive/manifest.json`). A section under one
+`## SCENARIO` heading can carry several qualified sign-offs (e.g. FILE-21/22
+Save/Open Session, or one per Copy Tray slot), and a scenario may still bundle a
+whole numbered family under one sign-off (Go to Document 1–10, the per-agent Run
+Agent entries), which is why scenario IDs inside a file need not equal its
+sign-off count.
 
 Namespace counts come from `../../planning/signoff/SIGNOFF-editor.md`; that file is
 the authoritative surface list (command id, label, shortcut) each section is

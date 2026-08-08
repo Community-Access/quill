@@ -955,7 +955,12 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
 
         def _download(**_kw: object) -> None:
             # Absorb the task manager's injected kwargs (cancellation_token, ...).
-            download_release_asset(url, target, progress=_progress)
+            download_release_asset(
+                url,
+                target,
+                progress=_progress,
+                expected_sha256=str(getattr(release, "download_digest", "") or ""),
+            )
 
         def _downloaded(_name: str, _result: object) -> None:
             wx.CallAfter(self._offer_app_update_install, release, target)

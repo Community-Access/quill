@@ -671,3 +671,132 @@ def test_app_asset_url_rejects_non_https() -> None:
 
     assets = [{"name": "Quill-Radio-Setup-2.2.0.exe", "browser_download_url": "http://x/a.exe"}]
     assert _app_asset_url(assets, "Quill-Radio", prefer_portable=False) == ""
+
+
+# ---------------------------------------------------------------------------
+# Ed25519 dual-signing and asset digest verification (2026-08-07 hardening)
+# ---------------------------------------------------------------------------
+
+
+def _ed25519_signed_payload(monkeypatch, **overrides):
+    import base64
+
+    from nacl import signing as nacl_signing
+
+    import quill.core.updates as updates_mod
+    from quill.core.updates import manifest_ed25519_signature
+
+    sk = nacl_signing.SigningKey.generate()
+    seed_b64 = base64.b64encode(bytes(sk._seed)).decode()
+    pub_b64 = base64.b64encode(bytes(sk.verify_key)).decode()
+    monkeypatch.setattr(updates_mod, "_feed_public_key_b64", lambda: pub_b64)
+    payload = {
+        "version": "9.9.9",
+        "download_url": "https://github.com/Community-Access/quill/releases/download/v9.9.9/x.exe",
+        "published_at": "2026-08-07T00:00:00Z",
+        "notes": "test",
+    }
+    payload.update(overrides)
+    payload["signature"] = manifest_signature(
+        version=payload["version"],
+        download_url=payload["download_url"],
+        published_at=payload["published_at"],
+        notes=payload["notes"],
+    )
+    payload["signature_ed25519"] = manifest_ed25519_signature(
+        version=payload["version"],
+        download_url=payload["download_url"],
+        published_at=payload["published_at"],
+        notes=payload["notes"],
+        signing_key_b64=seed_b64,
+    )
+    return payload
+
+
+def test_ed25519_signed_manifest_verifies(monkeypatch) -> None:
+    from quill.core.updates import verify_manifest_ed25519
+
+    payload = _ed25519_signed_payload(monkeypatch)
+    manifest = parse_update_manifest(json.dumps(payload))
+    assert verify_manifest_ed25519(manifest) is True
+
+
+def test_ed25519_tampered_manifest_is_rejected(monkeypatch) -> None:
+    import pytest
+
+    payload = _ed25519_signed_payload(monkeypatch)
+    payload["notes"] = "evil"
+    payload["signature"] = manifest_signature(
+        version=payload["version"],
+        download_url=payload["download_url"],
+        published_at=payload["published_at"],
+        notes="evil",
+    )
+    with pytest.raises(ValueError, match="Ed25519"):
+        parse_update_manifest(json.dumps(payload))
+
+
+def test_legacy_manifest_without_ed25519_still_parses(monkeypatch) -> None:
+    from quill.core.updates import verify_manifest_ed25519
+
+    payload = _ed25519_signed_payload(monkeypatch)
+    payload.pop("signature_ed25519")
+    manifest = parse_update_manifest(json.dumps(payload))
+    assert verify_manifest_ed25519(manifest) is None
+
+
+def test_require_signed_feed_env_rejects_unsigned(monkeypatch) -> None:
+    import pytest
+
+    payload = _ed25519_signed_payload(monkeypatch)
+    payload.pop("signature_ed25519")
+    monkeypatch.setenv("QUILL_REQUIRE_SIGNED_FEED", "1")
+    with pytest.raises(ValueError, match="QUILL_REQUIRE_SIGNED_FEED"):
+        parse_update_manifest(json.dumps(payload))
+
+
+def test_release_json_captures_asset_digest() -> None:
+    from quill.core.updates import _release_from_json
+
+    digest = "a" * 64
+    release = _release_from_json(
+        {
+            "tag_name": "v9.9.9",
+            "assets": [
+                {
+                    "name": "Quill-for-All-Setup-9.9.9.exe",
+                    "browser_download_url": "https://github.com/x/y/releases/download/v9.9.9/Quill-for-All-Setup-9.9.9.exe",
+                    "digest": f"sha256:{digest}",
+                }
+            ],
+        },
+        prefer_portable=False,
+    )
+    assert release.download_digest == digest
+
+
+def test_download_release_asset_rejects_digest_mismatch(monkeypatch, tmp_path) -> None:
+    import io
+
+    import pytest
+
+    import quill.core.updates as updates_mod
+
+    class _FakeResponse(io.BytesIO):
+        headers = {"Content-Length": "5"}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(updates_mod, "urlopen", lambda *a, **k: _FakeResponse(b"hello"))
+    target = tmp_path / "asset.exe"
+    with pytest.raises(ValueError, match="checksum"):
+        updates_mod.download_release_asset(
+            "https://github.com/x/y/releases/download/v1/a.exe",
+            target,
+            expected_sha256="b" * 64,
+        )
+    assert not target.exists()

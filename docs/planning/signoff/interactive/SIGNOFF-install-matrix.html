@@ -18,6 +18,9 @@
     .bar { background: #111; } }
   .bar button, .bar a { margin-right: 0.5em; }
   li[hidden] { display: none; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid GrayText; padding: 0.3em 0.6em; text-align: left; }
   .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px;
     padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 </style>
@@ -35,8 +38,9 @@
 <h1>QUILL 1.0.0 Sign-off — Installation-mode matrix (portable vs system, all scenarios)</h1>
 <p>Install-mode behavior is governed by <strong>three independent "portable" signals that can disagree</strong>: (1) <strong>data-dir</strong> (<code>storage_mode.py</code>/<code>storage-mode.json</code>), (2) <strong>secrets</strong> (<code>QUILL_PORTABLE=1</code> → DPAPI <code>keys.enc</code> vs Credential Manager), (3) <strong>update-asset</strong> (<code>updates.running_portable()</code>, subtracts the <code>unins000</code> marker). Every scenario below must be run for <strong>QUILL editor, Quill Radio, and Quill Weather</strong>. Legend per box: <strong>[ ]</strong> = verified.</p>
 <h2>Environments (run the whole sign-off in each)</h2>
-<p>- <strong>E1 Windows system install</strong> (Inno, no <code>data/</code>) · <strong>E2 Windows portable ZIP</strong> (<code>data/</code> beside exe) · <strong>E3 Windows installed-but-ships-<code>data/</code></strong> (split-signal, #1100) · <strong>E4 Windows custom data location</strong> · <strong>E5 macOS bundle</strong> · <strong>E6 Safe Mode</strong> (portable + system).</p>
-<p>---</p>
+<ul>
+<li><strong>E1 Windows system install</strong> (Inno, no <code>data/</code>) · <strong>E2 Windows portable ZIP</strong> (<code>data/</code> beside exe) · <strong>E3 Windows installed-but-ships-<code>data/</code></strong> (split-signal, #1100) · <strong>E4 Windows custom data location</strong> · <strong>E5 macOS bundle</strong> · <strong>E6 Safe Mode</strong> (portable + system).</li>
+</ul>
 <h2>1. Data directory &amp; settings location</h2>
 <ul>
 <li><input type="checkbox" class="so" data-key="SIGNOFF-install-matrix:7e31b21d1a14:0:0" aria-label="Done: E1 data + settings.json resolve to %APPDATA%\Quill."> E1 data + <code>settings.json</code> resolve to <code>%APPDATA%\Quill</code>.</li>
@@ -198,14 +202,29 @@
     var f = fileInput.files[0];
     if (!f) return;
     f.text().then(function (text) {
-      var state = JSON.parse(text);
+      var state;
+      try {
+        state = JSON.parse(text);
+      } catch (e) {
+        if (hideStatus) hideStatus.textContent = "Import failed: not a valid progress file.";
+        return;
+      }
+      var applied = 0;
       Object.keys(state).forEach(function (k) {
-        if (k.indexOf(PREFIX) === 0) localStorage.setItem(k, state[k]);
+        if (k.indexOf(PREFIX) === 0) { localStorage.setItem(k, state[k]); applied++; }
       });
+      if (!applied) {
+        if (hideStatus) hideStatus.textContent = "Import failed: no sign-off progress found.";
+        return;
+      }
       boxes.forEach(function (b) {
         b.checked = localStorage.getItem(PREFIX + b.dataset.key) === "1";
       });
       refresh();
+      if (boxes.length > 0) applyHide();
+      if (hideStatus) hideStatus.textContent = "Progress imported.";
+    }, function () {
+      if (hideStatus) hideStatus.textContent = "Import failed: the file could not be read.";
     });
   });
 })();

@@ -120,6 +120,17 @@ class RadioMixin:
             # were and whether the join succeeded); the UI only speaks it.
             on_parts_joined=lambda note: self._wx.CallAfter(self._announce, note),
         )
+        # The ACTIVE machinery below fires recordings, shows resume prompts, and
+        # speaks missed-recording reports on its own. In a public build the
+        # editor-embedded radio is gated off (core.radio, #1340) and none of it
+        # may run — a user with a leftover schedule from a pre-gate build must
+        # not get recordings and modal prompts from a feature with no UI. The
+        # passive state above stays so shutdown and attribute access are safe.
+        if not self._feature_enabled("core.radio"):
+            self._radio_scheduler = None
+            self._radio_wake_watcher = None
+            self._radio_last_seen_timer = None
+            return
         self._radio_scheduler = RecordingScheduler(
             data_dir=app_data_dir(),
             recorder=self._radio_recorder,

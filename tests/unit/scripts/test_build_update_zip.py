@@ -350,3 +350,35 @@ def test_find_latest_base_version_ignores_versions_above_current(tmp_path: Path)
     (manifest_dir / "manifest-0.6.0.json").write_text("{}", encoding="utf-8")
     result = _find_latest_base_version("0.5.0", manifest_dir)
     assert result is None
+
+
+# ---------------------------------------------------------------------------
+# Version normalization (git tag "v" prefix)
+# ---------------------------------------------------------------------------
+
+
+def test_find_latest_base_version_accepts_tag_prefixed_current(tmp_path: Path) -> None:
+    # CI passes github.ref_name ("v1.0.0"); this must not crash and must still
+    # find the plain-named manifest as the delta base.
+    (tmp_path / "manifest-0.6.0.json").write_text("{}", encoding="utf-8")
+    assert _find_latest_base_version("v1.0.0", tmp_path) == "0.6.0"
+
+
+def test_find_latest_base_version_reads_legacy_tag_prefixed_manifests(tmp_path: Path) -> None:
+    (tmp_path / "manifest-v0.6.0.json").write_text("{}", encoding="utf-8")
+    assert _find_latest_base_version("1.0.0", tmp_path) == "v0.6.0"
+
+
+def test_find_latest_base_version_unparseable_current_falls_back_to_none(tmp_path: Path) -> None:
+    # A pre-release suffix cannot be compared numerically; the caller must get
+    # None (-> full update) instead of a crashed release build.
+    (tmp_path / "manifest-0.6.0.json").write_text("{}", encoding="utf-8")
+    assert _find_latest_base_version("1.0.0-beta.3", tmp_path) is None
+
+
+def test_normalize_version_strips_single_v_prefix() -> None:
+    from scripts.generate_file_manifest import normalize_version
+
+    assert normalize_version(" v1.0.0 ") == "1.0.0"
+    assert normalize_version("V1.0.0") == "1.0.0"
+    assert normalize_version("1.0.0") == "1.0.0"

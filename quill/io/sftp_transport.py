@@ -73,7 +73,15 @@ class SftpTransport(RemoteTransport):
         if self._client is not None and self._sftp is not None:
             return self._client, self._sftp
         paramiko = _import_paramiko()
+        from quill.core.ssh.client import apply_pinned_host_keys
+
         client = paramiko.SSHClient()
+        # Same pinning story as File > SSH: known keys (user known_hosts +
+        # QUILL's managed pin file) are always loaded, so RejectPolicy can
+        # actually accept known hosts, and with trust_first_use the accepted
+        # first key is PERSISTED — a different key on a later connect raises
+        # BadHostKeyException instead of being silently trusted every time.
+        apply_pinned_host_keys(client, writable=self._site.trust_first_use)
         if self._site.trust_first_use:
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         else:
@@ -88,6 +96,14 @@ class SftpTransport(RemoteTransport):
                 allow_agent=False,
                 look_for_keys=False,
             )
+        except paramiko.BadHostKeyException as exc:
+            raise RemoteTransportError(
+                f"The server key for {self._site.host} has CHANGED since it was "
+                "first trusted. This can mean a different machine is answering "
+                "(possibly an attacker in the path). If the change is expected, "
+                "remove the host's line from the pinned known_hosts file under "
+                "the QUILL data directory (ssh/known_hosts) and connect again."
+            ) from exc
         except paramiko.AuthenticationException as exc:
             raise RemoteAuthError(f"SFTP login failed for {self._site.username!r}") from exc
         except paramiko.SSHException as exc:

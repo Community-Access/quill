@@ -178,6 +178,13 @@ jobs:
       # release the moment the feed lands on main; generating it before the
       # release existed would offer an update with nothing yet to download.
       - name: Generate update feed
+        # QUILL_FEED_SIGNING_KEY (base64 Ed25519 seed, private counterpart of
+        # quill/core/feed-pub.key) enables the real signature_ed25519 field.
+        # Until the secret is provisioned this is empty and the feed carries
+        # only the legacy checksum; clients accept both, but hard-fail a
+        # PRESENT-and-invalid Ed25519 signature.
+        env:
+          QUILL_FEED_SIGNING_KEY: ${{ secrets.QUILL_FEED_SIGNING_KEY }}
         run: |
           python scripts/generate_update_feed.py \
             --output docs/site/updates/.quill-update-feed-v1.json \

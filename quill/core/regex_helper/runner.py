@@ -4,11 +4,14 @@ Runs a user-supplied pattern against user-supplied text and reports every
 match with its line and column, phrased for speech ("line 12, column 5")
 rather than raw offsets a listener would have to convert in their head.
 
-Safety over rawness: both the text size and the match count are bounded, a
-zero-width match can never spin the loop forever, and nothing in this module
-raises -- a bad pattern or a bad replacement template comes back as a
-plain-language sentence in the result, because an unhandled traceback is a
-dead end for someone who cannot visually scan it for the relevant line.
+Safety over rawness: the text size, the match count, AND execution time are
+bounded (patterns run through the third-party :mod:`regex` engine with a
+wall-clock timeout, so a catastrophically backtracking pattern like
+``(a+)+b`` is stopped instead of freezing the UI thread), a zero-width match
+can never spin the loop forever, and nothing in this module raises -- a bad
+pattern or a bad replacement template comes back as a plain-language
+sentence in the result, because an unhandled traceback is a dead end for
+someone who cannot visually scan it for the relevant line.
 
 wx-free, network-free, strict-typed.
 """
@@ -16,12 +19,28 @@ wx-free, network-free, strict-typed.
 from __future__ import annotations
 
 import re
+import time
 from bisect import bisect_right
 from dataclasses import dataclass
+
+import regex as _regex
 
 from quill.core.regex_helper.explain import diagnose_error
 
 __all__ = ["MatchInfo", "RunResult", "preview_replace", "run_pattern"]
+
+#: Total wall-clock budget for one run. Runs on the UI thread inside a modal
+#: dialog, so this is the ceiling on how long the app can appear dead.
+_TIMEOUT_SECONDS = 2.0
+
+
+def _timeout_message() -> str:
+    return (
+        f"The pattern took too long and was stopped after {_TIMEOUT_SECONDS:g} "
+        "seconds. Patterns with repetition inside repetition (like (a+)+b) "
+        "can take practically forever on some text; simplify the pattern and "
+        "try again."
+    )
 
 
 @dataclass(frozen=True)
@@ -80,26 +99,35 @@ def run_pattern(
 ) -> RunResult:
     """Run ``pattern`` over ``text`` and report every match, safely bounded.
 
-    Oversized text is truncated (and flagged) rather than refused, and the
-    match list stops at ``max_matches`` with ``truncated`` set, so a runaway
-    pattern like ``.*`` on a huge document degrades to a partial answer
-    instead of freezing the app -- a frozen UI is a total loss for a
-    screen-reader user, who gets no visual hint that anything is still alive.
-    Never raises: compile problems land in ``error`` as plain language.
+    Oversized text is truncated (and flagged) rather than refused, the match
+    list stops at ``max_matches`` with ``truncated`` set, and the whole run
+    has a wall-clock timeout, so a runaway pattern -- ``.*`` on a huge
+    document or a catastrophically backtracking ``(a+)+b`` -- degrades to a
+    partial answer or a plain-language stop instead of freezing the app; a
+    frozen UI is a total loss for a screen-reader user, who gets no visual
+    hint that anything is still alive. Never raises: compile problems and
+    timeouts land in ``error`` as plain language.
     """
     truncated = False
     if len(text) > max_text_chars:
         text = text[:max_text_chars]
         truncated = True
     try:
-        compiled = re.compile(pattern, flags)
-    except re.error as err:
+        compiled = _regex.compile(pattern, flags)
+    except (re.error, _regex.error) as err:
         return RunResult(ok=False, matches=(), truncated=False, error=_compile_error(pattern, err))
     starts = _line_starts(text)
     matches: list[MatchInfo] = []
     position = 0
+    deadline = time.monotonic() + _TIMEOUT_SECONDS
     while position <= len(text):
-        found = compiled.search(text, position)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return RunResult(ok=False, matches=(), truncated=False, error=_timeout_message())
+        try:
+            found = compiled.search(text, position, timeout=remaining)
+        except TimeoutError:
+            return RunResult(ok=False, matches=(), truncated=False, error=_timeout_message())
         if found is None:
             break
         if len(matches) >= max_matches:
@@ -138,19 +166,26 @@ def preview_replace(
     plain-language message instead of an exception.
     """
     try:
-        compiled = re.compile(pattern)
-    except re.error as err:
+        compiled = _regex.compile(pattern)
+    except (re.error, _regex.error) as err:
         return (f"The pattern could not be used: {_compile_error(pattern, err)}",)
     starts = _line_starts(text)
     lines: list[str] = []
     position = 0
+    deadline = time.monotonic() + _TIMEOUT_SECONDS
     while position <= len(text) and len(lines) < count:
-        found = compiled.search(text, position)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return (_timeout_message(),)
+        try:
+            found = compiled.search(text, position, timeout=remaining)
+        except TimeoutError:
+            return (_timeout_message(),)
         if found is None:
             break
         try:
             after = found.expand(replacement)
-        except re.error as err:
+        except (re.error, _regex.error) as err:
             detail = err.msg or str(err)
             if "group" in detail:
                 return (

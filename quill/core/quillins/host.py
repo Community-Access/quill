@@ -446,6 +446,8 @@ class ExtensionHost:
     def start(self) -> None:
         if self._manifest.main is None:
             raise QuillinError("manifest has no 'main' module; not a Layer 2 extension")
+        from quill.core.ai.harness_credentials import scrubbed_child_env
+
         self._process = subprocess.Popen(
             [self._python, "-m", "quill.core.quillins.host_worker", str(self._directory)],
             stdin=subprocess.PIPE,
@@ -454,6 +456,9 @@ class ExtensionHost:
             text=True,
             encoding="utf-8",
             bufsize=1,
+            # Extensions talk to AI through the capability-gated API bridge,
+            # never by inheriting the process's exported cloud API keys.
+            env=scrubbed_child_env(),
         )
         hello = self._read_message()
         if hello.get("type") != protocol.MSG_HELLO:

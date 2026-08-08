@@ -116,21 +116,20 @@ def write_diagnostics_bundle(
     settings_payload = redact_settings(settings)
     notifications_payload = [asdict(entry) for entry in notifications[-50:]]
 
+    def _scrubbed_json(payload: object) -> str:
+        # H-2: every serialized payload passes the shared token scrubber, so a
+        # key that leaked into an action detail, a notification message, or an
+        # environment string never rides the bundle the user emails to support.
+        from quill.stability.redaction import redact_source_tokens
+
+        return redact_source_tokens(json.dumps(payload, indent=2, ensure_ascii=False)) + "\n"
+
     with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("metadata.json", json.dumps(metadata, indent=2, ensure_ascii=False) + "\n")
-        archive.writestr(
-            "recent-actions.json",
-            json.dumps(recent_actions, indent=2, ensure_ascii=False) + "\n",
-        )
-        archive.writestr(
-            "settings-redacted.json",
-            json.dumps(settings_payload, indent=2, ensure_ascii=False) + "\n",
-        )
-        archive.writestr("keymap.json", json.dumps(keymap, indent=2, ensure_ascii=False) + "\n")
-        archive.writestr(
-            "notifications.json",
-            json.dumps(notifications_payload, indent=2, ensure_ascii=False) + "\n",
-        )
+        archive.writestr("metadata.json", _scrubbed_json(metadata))
+        archive.writestr("recent-actions.json", _scrubbed_json(recent_actions))
+        archive.writestr("settings-redacted.json", _scrubbed_json(settings_payload))
+        archive.writestr("keymap.json", _scrubbed_json(keymap))
+        archive.writestr("notifications.json", _scrubbed_json(notifications_payload))
         _write_recent_logs(archive)
     return target
 
@@ -326,7 +325,13 @@ def _sanitize_log_text(text: str) -> str:
         sanitized = pattern.sub(r"\1[REDACTED]", sanitized)
     for pattern in _SECRET_INLINE_PATTERNS:
         sanitized = pattern.sub("[REDACTED]", sanitized)
-    return sanitized
+    # The shared scrubber adds the classes this module's own patterns miss:
+    # generic 32+ char hex tokens, JWTs, fine-grained GitHub PATs
+    # (github_pat_...), and URL userinfo (https://user:pass@host) from
+    # private feeds.
+    from quill.stability.redaction import redact_source_tokens
+
+    return redact_source_tokens(sanitized)
 
 
 def _safe_import_version() -> str:

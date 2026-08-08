@@ -803,7 +803,8 @@ def _render_readme(
             a USB stick or a managed work laptop where AppData is volatile.
 
             To rebuild the installer from this portable bundle, open
-            installer\\quill.iss in Inno Setup 6.
+            ..\\installer\\quill.iss (the installer folder next to this
+            portable folder) in Inno Setup 6.
             """
         ).strip()
         + "\r\n"

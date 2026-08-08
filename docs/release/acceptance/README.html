@@ -401,7 +401,7 @@ it is the book's own completeness gate.</p>
 <tr>
 <td><code>section-file.md</code></td>
 <td><code>file.*</code> — File menu</td>
-<td>27</td>
+<td>29</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -409,7 +409,7 @@ it is the book's own completeness gate.</p>
 <td><code>section-edit.md</code></td>
 <td><code>edit.*</code> — Edit / insert / find (incl. 12-slot Copy
 Tray)</td>
-<td>62</td>
+<td>86</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -423,7 +423,7 @@ Tray)</td>
 <tr>
 <td><code>section-format.md</code></td>
 <td><code>format.*</code> — formatting</td>
-<td>50</td>
+<td>56</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -431,7 +431,7 @@ Tray)</td>
 <td><code>section-view.md</code></td>
 <td><code>view.*</code> <code>window.*</code> <code>verbosity.*</code> —
 view/window/speech verbosity</td>
-<td>28</td>
+<td>29</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -470,14 +470,14 @@ dictionary</td>
 <tr>
 <td><code>section-tools-misc.md</code></td>
 <td><code>tools.*</code> — compare, keymap, macros, utilities, GLOW</td>
-<td>56</td>
+<td>73</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
 <tr>
 <td><code>section-power.md</code></td>
 <td><code>power.*</code> — power-user commands</td>
-<td>56</td>
+<td>75</td>
 <td>✅</td>
 <td>☐</td>
 </tr>
@@ -586,11 +586,12 @@ encrypted secrets store</td>
 </table>
 <p>The scenario numbers above count <strong>sign-off blocks</strong> —
 the unit a tester actually records — and are generated
-(<code>interactive/manifest.json</code>); one block may bundle a pair of
-twinned commands (e.g. FILE-21/22 Save/Open Session) or a whole numbered
-family (Copy Tray slots 1–12, Go to Document 1–10, the per-agent Run
-Agent entries), which is why scenario IDs inside a file can run higher
-than its block count.</p>
+(<code>interactive/manifest.json</code>). A section under one
+<code>## SCENARIO</code> heading can carry several qualified sign-offs
+(e.g. FILE-21/22 Save/Open Session, or one per Copy Tray slot), and a
+scenario may still bundle a whole numbered family under one sign-off (Go
+to Document 1–10, the per-agent Run Agent entries), which is why
+scenario IDs inside a file need not equal its sign-off count.</p>
 <p>Namespace counts come from
 <code>../../planning/signoff/SIGNOFF-editor.md</code>; that file is the
 authoritative surface list (command id, label, shortcut) each section is

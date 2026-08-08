@@ -508,6 +508,23 @@ def _step(number: int, text: str) -> str:
 # -- error diagnosis -----------------------------------------------------------
 
 
+def _last_unmatched_open_paren(pattern: str) -> int | None:
+    """Offset of the innermost unmatched ``(`` in *pattern*, if any."""
+    stack: list[int] = []
+    i = 0
+    while i < len(pattern):
+        ch = pattern[i]
+        if ch == "\\":
+            i += 2
+            continue
+        if ch == "(":
+            stack.append(i)
+        elif ch == ")" and stack:
+            stack.pop()
+        i += 1
+    return stack[-1] if stack else None
+
+
 def diagnose_error(pattern: str, err: re.error) -> tuple[str, int | None]:
     """Turn an :class:`re.error` into a spoken-friendly, position-bearing sentence.
 
@@ -515,17 +532,27 @@ def diagnose_error(pattern: str, err: re.error) -> tuple[str, int | None]:
     person counts characters when arrowing through the pattern field; the raw
     zero-based offset is returned separately for callers that move the caret.
     """
-    msg = err.msg or str(err)
+    msg = getattr(err, "msg", None) or str(err)
     pos: int | None = getattr(err, "pos", None)
     where = f"at character {pos + 1}" if pos is not None else "in the pattern"
-    if "unterminated subpattern" in msg:
+    # Each condition lists both engines' phrasings: the stdlib re module's and
+    # the third-party regex module's (the bounded runner executes through the
+    # latter for its timeout support).
+    if "unterminated subpattern" in msg or "missing )" in msg:
+        # The stdlib points pos at the unmatched "("; the regex module points
+        # at the end of the pattern. Locate the open-parenthesis ourselves so
+        # the spoken position is the same whichever engine raised.
+        open_pos = _last_unmatched_open_paren(pattern)
+        if open_pos is not None:
+            pos = open_pos
+            where = f"at character {pos + 1}"
         return (
             f"Unclosed group: the open-parenthesis {where} has no matching close-parenthesis.",
             pos,
         )
     if "unbalanced parenthesis" in msg:
         return (f"Extra close-parenthesis {where} with no matching open-parenthesis.", pos)
-    if "unterminated character set" in msg:
+    if "unterminated character set" in msg or "missing ]" in msg:
         return (
             f"Unclosed character class: the open-bracket {where} has no matching close-bracket.",
             pos,
@@ -538,7 +565,7 @@ def diagnose_error(pattern: str, err: re.error) -> tuple[str, int | None]:
         )
     if "multiple repeat" in msg:
         return (f"Two quantifiers in a row {where}; a repeat cannot itself be repeated.", pos)
-    if "bad escape (end of pattern)" in msg:
+    if "bad escape (end of pattern)" in msg or "trailing backslash" in msg:
         return (
             f"Trailing backslash: the pattern ends with a lone backslash {where}. "
             "To match a real backslash, double it.",
@@ -557,7 +584,7 @@ def diagnose_error(pattern: str, err: re.error) -> tuple[str, int | None]:
         )
     if "bad escape" in msg:
         return (f"Unknown escape sequence {where}.", pos)
-    if "unknown group name" in msg or "invalid group reference" in msg:
+    if "unknown group name" in msg or "invalid group reference" in msg or "unknown group" in msg:
         return (f"The pattern refers to a group that does not exist, {where}.", pos)
     sentence = msg[0].upper() + msg[1:] if msg else "The pattern is not valid"
     return (f"{sentence}, {where}.", pos)

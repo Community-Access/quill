@@ -106,6 +106,16 @@ def compare_manifests(
     }
 
 
+def normalize_version(version: str) -> str:
+    """Strip the git-tag ``v`` prefix so ``v1.0.0`` and ``1.0.0`` are one version.
+
+    CI passes ``github.ref_name`` (e.g. ``v1.0.0``) while manual runs pass the
+    plain version; without normalization the two produce differently named
+    manifests and the update tooling cannot find its own prior output.
+    """
+    return version.strip().removeprefix("v").removeprefix("V")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generate a SHA-256 file manifest for distributable Quill files."
@@ -139,7 +149,7 @@ def main() -> int:
     args = parser.parse_args()
 
     source_root: Path = args.source_root.resolve()
-    version: str = args.version.strip()
+    version: str = normalize_version(args.version)
     output: Path = args.output or (
         source_root / "docs" / "site" / "updates" / "manifests" / f"manifest-{version}.json"
     )

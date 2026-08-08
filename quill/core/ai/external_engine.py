@@ -106,6 +106,45 @@ _ENGINE_EXECUTABLE_BASENAMES: frozenset[str] = frozenset((
     "quill-engine.exe",
 ))
 
+# The allowlisted interpreters. Allowing ``node``/``python`` alone would gut
+# the allowlist: ``python -c "<payload>"`` runs arbitrary code with no file on
+# disk, which is exactly what a settings-tampering attacker (who can write
+# settings.json but not plant an executable) needs. So for interpreters the
+# first argument must be the engine's script file, never an option flag.
+_INTERPRETER_BASENAMES: frozenset[str] = frozenset((
+    "node",
+    "node.exe",
+    "python",
+    "python.exe",
+    "python3",
+    "python3.exe",
+))
+
+
+def _interpreter_arg_problem(command: tuple[str, ...]) -> str | None:
+    """A plain-language reason the interpreter command is unsafe, or None.
+
+    The script file itself is not required to exist yet (users wire engines
+    up before writing them; relative paths resolve at run time) — the check
+    only forbids option flags in the script position, which is the inline-code
+    escape hatch.
+    """
+    basename = Path(command[0]).name.lower()
+    if basename not in _INTERPRETER_BASENAMES:
+        return None
+    if len(command) < 2:
+        return "An interpreter engine needs a script file to run (for example: node my-engine.js)."
+    first = command[1]
+    if first.startswith("-"):
+        return (
+            "Interpreter options such as '-c', '-e', or '-m' are not allowed in "
+            "an engine command: the first argument must be the engine's script "
+            "file. Inline code would let a tampered settings file run arbitrary "
+            "programs."
+        )
+    return None
+
+
 # A runner takes (command, stdin_text, timeout_seconds) and returns
 # (returncode, stdout_text, stderr_text). Injectable for tests.
 Runner = Callable[[list[str], str, float], "tuple[int, str, str]"]
@@ -313,6 +352,9 @@ def configure_engine(
                 f"The program '{command[0]}' was not found on PATH. "
                 "Install it or provide the full path to the executable."
             )
+        problem = _interpreter_arg_problem(command)
+        if problem is not None:
+            raise ValueError(problem)
     config = EngineConfig(
         engine_id=cleaned_id,
         command=command,
@@ -371,6 +413,9 @@ def probe_engine(
         return EngineStatus(
             config.engine_id, False, f"The program '{executable}' was not found on this computer."
         )
+    problem = _interpreter_arg_problem(config.command)
+    if problem is not None:
+        return EngineStatus(config.engine_id, False, problem)
     return EngineStatus(config.engine_id, True, "Ready.")
 
 
@@ -397,6 +442,8 @@ class EngineResult:
 
 
 def _default_runner(command: list[str], stdin_text: str, timeout: float) -> tuple[int, str, str]:
+    from quill.core.ai.harness_credentials import scrubbed_child_env
+
     completed = subprocess.run(  # noqa: S603 - command is user-consented and configured
         command,
         input=stdin_text,
@@ -404,6 +451,9 @@ def _default_runner(command: list[str], stdin_text: str, timeout: float) -> tupl
         text=True,
         timeout=timeout,
         check=False,
+        # An engine that needs a key gets it through its own configuration,
+        # never by inheriting QUILL's exported cloud API keys.
+        env=scrubbed_child_env(),
     )
     return completed.returncode, completed.stdout, completed.stderr
 
