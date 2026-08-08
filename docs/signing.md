@@ -38,6 +38,41 @@ What it does *not* cover:
 The private key is held only by the Community-Access publisher. The
 Hub does not have it; it cannot mint new signatures.
 
+## The update-feed signing key (separate key, same discipline)
+
+The autoupdate feed is signed with its **own** Ed25519 keypair, deliberately
+distinct from the artifact-signing key above. Different purpose, different
+blast radius, independently rotatable: compromising one does not compromise
+the other.
+
+| File | Contents |
+| --- | --- |
+| `quill/core/feed-pub.key` | 32-byte Ed25519 public key, base64. Bundled in the app; `quill.core.updates.verify_manifest_ed25519` verifies every feed against it. |
+| `~/.config/quill/quill-feed-priv.key` | The 32-byte seed, base64. **Never committed** -- it lives outside the repository entirely. |
+| `QUILL_FEED_SIGNING_KEY` (GitHub repo secret) | The same seed. `scripts/generate_update_feed.py` reads it during the release workflow and writes the `signature_ed25519` field. |
+
+**Back the seed up somewhere durable -- a password manager or a hardware
+token -- not just on the build machine.** Losing it does not merely stop
+new releases from being signed: every shipped client verifies against the
+`feed-pub.key` compiled into it, so recovering means shipping a new build
+with a new public key and leaving already-installed copies unable to verify
+any newer feed.
+
+Clients accept a feed with no `signature_ed25519` (the legacy salted
+checksum still applies, so pre-1.0 builds keep working), but a signature
+that is *present and invalid* is a hard failure -- a forged feed is refused
+rather than downgraded. Set `QUILL_REQUIRE_SIGNED_FEED=1` to reject unsigned
+feeds outright.
+
+### Rotating the feed key
+
+1. `python -c "import base64; from nacl import signing; k=signing.SigningKey.generate(); print(base64.b64encode(bytes(k._seed)).decode()); print(base64.b64encode(bytes(k.verify_key)).decode())"` -- first line is the seed, second the public key.
+2. Put the seed in `~/.config/quill/quill-feed-priv.key` and in the
+   `QUILL_FEED_SIGNING_KEY` repo secret.
+3. Replace `quill/core/feed-pub.key` with the public key and ship a build
+   containing it **before** publishing a feed signed with the new seed --
+   otherwise existing clients reject the feed they cannot verify.
+
 ## Sidecar format
 
 Each `.minisig` is plain text in the standard minisign format -- three
