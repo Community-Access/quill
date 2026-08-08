@@ -57,7 +57,15 @@ dependencies = [
 
 [project.optional-dependencies]
 ui = [
-    "wxPython>=4.2.5",
+    # Pinned exactly for 1.0.0, not floored. wxPython 4.3.x tracks the
+    # wxWidgets master branch, which upstream documents as API/ABI UNSTABLE
+    # between 4.3.x releases -- so a bare floor means a release build can
+    # silently ship a wx the acceptance run never tested, and QUILL's whole
+    # product is screen-reader behavior on those widgets. 4.3.1 (wxWidgets
+    # 3.3.3) is the version the 1.0.0 suite and JAWS/NVDA pass ran against.
+    # Same rationale as the llama-cpp-python exact pin below. Re-test the
+    # editor, dialogs, and braille surfaces before bumping.
+    "wxPython==4.3.1",
     # Accessible wx.html2.WebView surfaces (chat, preview, dialogs) — extracted
     # from Quill and published so any wxPython app can reuse it.
     "wx-accessible-webview>=0.2.0",
