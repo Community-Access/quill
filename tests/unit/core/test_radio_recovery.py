@@ -131,6 +131,61 @@ def test_strategy_c_lone_triton_hit_is_confident_even_beside_others(
     assert "streamtheworld" in result.station.stream_url
 
 
+def test_strategy_c_lone_securenet_mount_is_confident_even_beside_others(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A station saved from a SecureNet player page self-heals on first failure.
+
+    These are the three candidates the real Radio Once More player page yields
+    (reported 2026-08-07): the true mount plus two ordinary links that happen to
+    survive the scan. Before the mount counted as resolved, three candidates
+    read as "ambiguous" and the station stayed broken purely because its page
+    was chatty.
+    """
+    monkeypatch.setattr(triton, "resolve_station_streams", lambda *a, **k: [])
+    monkeypatch.setattr(radio_browser, "lookup_station", lambda *a, **k: None)
+    scan = PageScanResult(
+        page_title="Radio Once More",
+        favicon_url="",
+        candidates=[
+            PageStreamCandidate(
+                url="https://ice66.securenetsystems.net/ROM",
+                reason="stream from the station's player (ROM)",
+            ),
+            PageStreamCandidate(
+                url="https://streamdb3web.securenetsystems.net", reason="stream-shaped"
+            ),
+            PageStreamCandidate(
+                url="https://streamdb3web.securenetsystems.net/v5/index.cfm?retry=true",
+                reason="stream-shaped",
+            ),
+        ],
+    )
+    monkeypatch.setattr(link_finder, "scan_page_for_streams", lambda page, **k: scan)
+    result = recover_stream(_station(homepage="https://streamdb3web.securenetsystems.net/v5/ROM"))
+    assert result.station is not None
+    assert result.station.stream_url == "https://ice66.securenetsystems.net/ROM"
+
+
+def test_strategy_c_two_securenet_mounts_stay_ambiguous(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Being a resolved mount promotes a *lone* hit, never a genuine choice."""
+    monkeypatch.setattr(triton, "resolve_station_streams", lambda *a, **k: [])
+    monkeypatch.setattr(radio_browser, "lookup_station", lambda *a, **k: None)
+    scan = PageScanResult(
+        page_title="",
+        favicon_url="",
+        candidates=[
+            PageStreamCandidate(url="https://ice66.securenetsystems.net/ROM", reason="player"),
+            PageStreamCandidate(url="https://ice25.securenetsystems.net/WARL", reason="player"),
+        ],
+    )
+    monkeypatch.setattr(link_finder, "scan_page_for_streams", lambda page, **k: scan)
+    result = recover_stream(_station(homepage="https://example.com"))
+    assert result.station is None
+
+
 def test_strategy_c_multiple_guesses_are_presented_not_played(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

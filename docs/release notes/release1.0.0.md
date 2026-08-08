@@ -1551,6 +1551,20 @@ keyless, community-run directory, with a name box and optional narrowing by tag 
 and by country. A unified **Find Stations** search spans RadioBrowser, iHeart, TuneIn, and
 SomaFM at once, and can also take a website address directly.
 
+**Find Streams from a Website** reads one page you name and lists the streams on it. It
+understands the modern JavaScript players that hide the stream behind a "Listen Live"
+button — Triton Digital / StreamTheWorld, and iHeart or TuneIn station pages — resolving
+each to the real stream instead of handing back a page address that will not play. It also
+handles **SecureNet's player** (`securenetsystems.net/v5/...`), which a large number of
+American broadcasters use, and which used to fail for the opposite reason from the others:
+that page *does* write its stream address out in plain text, but the address looks
+unremarkable — `https://ice66.securenetsystems.net/ROM`, no `.mp3` on the end, no `/stream`
+in the path — so the scan filed it with the page's ordinary links and threw it away,
+returning junk or nothing at all. Quill Radio now recognizes the player itself and lists
+the real stream first, whether you point it at the player page or at a station's own site
+with the player embedded. A station saved from such a page also repairs itself on the first
+failed play.
+
 The browse tree also carries sources that need no search at all. There are twelve branches
 on it, in this order:
 

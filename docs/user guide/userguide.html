@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>userguide</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -31967,7 +31971,19 @@ it does not open an interactive browser inside QUILL. If you paste (or
 the page links to) an <strong>iHeart or TuneIn station page</strong>,
 Find Streams now follows that player page and pulls out the real
 underlying stream, instead of handing back the unplayable directory page
-URL.</li>
+URL. <strong>SecureNet's player</strong>
+(<code>securenetsystems.net/v5/...</code>), used by a large number of
+American broadcasters, is handled too — and it failed for the opposite
+reason from the others. That page <em>does</em> write its stream address
+out in plain text; the address just looks unremarkable —
+<code>https://ice66.securenetsystems.net/ROM</code>, with no
+<code>.mp3</code> on the end and no <code>/stream</code> in the path —
+so the scan used to file it with the page's ordinary links and discard
+it, returning junk or nothing at all. QUILL now recognizes the player
+itself and lists the real stream first, whether you point it at the
+player page or at a station's own site with the player embedded. A
+station saved from such a page also repairs itself on the first failed
+play.</li>
 </ul>
 <h3 id="whats-playing">What's playing</h3>
 <p>QUILL reports the current track — artist and title — from the

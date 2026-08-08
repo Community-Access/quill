@@ -8953,6 +8953,45 @@ one that prompted it. It cannot solve a fully generic JS player with no static
 callsign hint — QUILL deliberately has no embedded arbitrary-site browser — but
 Triton/listenlive.co is the large, tractable case.
 
+**SecureNet Systems &quot;Cirrus&quot; players — the shape-heuristic blind spot
+(`core/radio/securenet.py`).** SecureNet hosts the player used by a large
+number of US broadcasters, at `…securenetsystems.net/v5/&lt;CALLSIGN&gt;`. Unlike
+Triton, its real stream *is* a literal string in the page HTML — and the scan
+still threw it away. The mount is a bare Icecast path
+(`https://ice66.securenetsystems.net/ROM`): no file extension, no
+`/stream`-style path hint, nothing that distinguishes it by *shape* from an
+ordinary link, so the generic filters that keep a page&#39;s help articles out of
+the results discarded the one URL that actually played. This was a real,
+reported gap (Radio Once More and Radio Once More 2, 2026-08-07): the first
+station offered two useless candidates and the second offered none at all.
+
+Recognising the platform is what makes the URL trustworthy, since its shape
+never can be. When the page is a Cirrus player — by host, or by carrying an
+`ice&lt;N&gt;.securenetsystems.net` mount when a broadcaster embeds the player on
+their own domain — QUILL reads the mount straight out of the HTML and offers
+it as the *first* candidate, ahead of the merely stream-shaped links from the
+same page. Per-visit `playSessionID` query strings are stripped so a saved
+favourite does not pin one visit&#39;s tracking id forever, and the shared
+`/media` interstitial mount is skipped. The ice-server number is not derivable
+from the callsign (ROM is on `ice66`, WARL on `ice25`), so it is read rather
+than computed; a player page carrying no mount reports nothing instead of
+guessing a URL that will not play. This resolver needs **no** network call of
+its own — it only parses the page the scan already fetched — so it adds no
+egress entry and works in Safe Mode.
+
+Self-healing recovery inherits it, with one extra rule. `recovery.py` only
+auto-applies an *unambiguous* result, which previously meant a resolved
+StreamTheWorld mount or a single candidate overall — and a SecureNet player
+page yields neither: alongside the true mount it carries ordinary links that
+survive the scan, so a station saved from one read as &quot;3 possible streams&quot; and
+recovery declined to act. `_is_resolved_player_mount` now counts a lone
+`ice&lt;N&gt;` mount as resolved on the same footing as StreamTheWorld, so such a
+station repairs itself on the first failed play. The match is on the `ice&lt;N&gt;`
+host specifically, **not** the domain: the player front-ends (`radio.`,
+`streamdb&lt;N&gt;web.`) share `securenetsystems.net`, and a player page links to
+itself, so a domain match would promote the page&#39;s own links right back into
+the &quot;confident&quot; set and defeat the check.
+
 **Self-healing stream recovery (`core/radio/recovery.py`, #1065).** A directory
 station&#39;s listed stream can be dead even though the station is perfectly live —
 usually because the real stream is behind a Triton/JavaScript player, so the URL
