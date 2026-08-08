@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from quill.core.ai.voice_reply import mode_label, plan_voice_reply
+from quill.core.ai.voice_reply import mode_label, plan_voice_reply, truncate_announcement
 from quill.core.settings import VOICE_REPLY_MODES, Settings
 
 
@@ -131,3 +131,32 @@ def test_unknown_mode_falls_back_rather_than_raising() -> None:
     plan = plan_voice_reply("An answer.", _settings(ai_voice_reply_mode="nonsense"))
     assert plan.mode == "announce"
     assert plan.announce_text
+
+
+def test_truncate_announcement_is_the_shared_rule() -> None:
+    """Replies, errors and proposals all go through this one function.
+
+    It used to be a literal 140 inside the chat panel's announcement helper, so
+    the user's configured length governed replies while errors and edit
+    proposals silently kept the old number.
+    """
+    long_text = "word " * 100
+    assert truncate_announcement(long_text, 20).endswith("...")
+    assert len(truncate_announcement(long_text, 20)) == 20
+    # 0 means "no cap", not "announce nothing".
+    assert truncate_announcement(long_text, 0) == " ".join(long_text.split())
+    # Short input is returned whole, never padded or ellipsised.
+    assert truncate_announcement("Short.", 140) == "Short."
+    # Whitespace is collapsed so a multi-line reply announces as one utterance.
+    assert truncate_announcement("a\n\n  b\tc", 140) == "a b c"
+    assert truncate_announcement("   ", 140) == ""
+
+
+def test_announcement_limit_is_honoured_by_the_plan_too() -> None:
+    """The same limit the helper uses also shapes a planned announcement."""
+    reply = "word " * 100
+    plan = plan_voice_reply(
+        reply, _settings(ai_voice_reply_mode="announce", ai_voice_reply_announce_limit=30)
+    )
+    body = plan.announce_text.split(": ", 1)[1]
+    assert len(body) == 30

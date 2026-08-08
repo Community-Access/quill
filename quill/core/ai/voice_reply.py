@@ -36,6 +36,7 @@ __all__ = [
     "VoiceReplyPlan",
     "mode_label",
     "plan_voice_reply",
+    "truncate_announcement",
 ]
 
 #: Providers :mod:`quill.core.ai.cloud_tts` can *speak* with. ElevenLabs is in
@@ -83,8 +84,19 @@ class VoiceReplyPlan:
         return self.mode == "ai_voice" and bool(self.spoken_text)
 
 
-def _truncate(text: str, limit: int) -> str:
-    """Collapse whitespace and cap at *limit* characters (0 = no cap)."""
+def truncate_announcement(text: str, limit: int) -> str:
+    """Collapse whitespace and cap at *limit* characters (0 = no cap).
+
+    The one truncation rule every screen-reader announcement in the chat shares
+    -- replies, errors, and edit proposals alike. It used to be a literal 140
+    written into the announcement helper, which meant the user's configured
+    length governed replies while errors and proposals silently kept the old
+    number.
+
+    Truncation is for *announcements* specifically: they are transient and
+    interruptible, so brevity is a feature there. Spoken replies are never cut
+    (see :func:`plan_voice_reply`).
+    """
     compact = " ".join((text or "").split())
     if limit <= 0 or len(compact) <= limit:
         return compact
@@ -146,6 +158,6 @@ def plan_voice_reply(
     limit = settings.ai_voice_reply_announce_limit
     return VoiceReplyPlan(
         mode="announce",
-        announce_text=f"{announce_prefix}: {_truncate(compact, limit)}",
+        announce_text=f"{announce_prefix}: {truncate_announcement(compact, limit)}",
         fallback_reason=reason,
     )

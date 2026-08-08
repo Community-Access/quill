@@ -560,14 +560,6 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         if hasattr(self.messages, "EnsureVisible"):
             self.messages.EnsureVisible(index)
 
-    def _announce_incoming(self, text: str, *, prefix: str = "Quill says") -> None:
-        compact = " ".join((text or "").split())
-        if not compact:
-            return
-        if len(compact) > 140:
-            compact = compact[:137].rstrip() + "..."
-        self._announce(f"{prefix}: {compact}")
-
     def _set_busy(self, busy: bool) -> None:
         self._update_thinking(busy)
         if self._webview is not None:
@@ -864,7 +856,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
             if self._stream_active:
                 self._stream_active = False
             else:
-                self._announce_incoming(text or "No response")
+                self._deliver_reply(text or "No response")
             self._record_session_exchange(text)
         self.copy_button.Enable(bool(self._last_response))
         self._action_insert_btn.Enable(bool(self._last_response))

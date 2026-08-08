@@ -7750,10 +7750,20 @@ missing.</p>
 <code>announce</code> (default, unchanged behaviour), <code>text</code>,
 <code>local_tts</code>, <code>ai_voice</code> — and
 <code>ai_voice_reply_announce_limit</code> (0–2000, 0 = no cap) governs
-the announcement only. Truncation is deliberately <strong>not</strong>
+announcements only. Truncation is deliberately <strong>not</strong>
 applied to the spoken modes: a character cap is the right shape for a
 summary and the wrong shape for speech, where stopping mid-sentence is
 worse than not speaking.</p>
+<p><code>truncate_announcement()</code> is the single rule every
+announcement in the chat shares — replies, errors, and edit proposals
+alike. It replaces a literal <code>140</code> that lived inside the
+panel's announcement helper, which meant the configured length governed
+replies while errors and proposals silently kept the old number. Errors
+and proposals remain <em>announcements</em> whatever the reply mode (a
+4,000-character error read out in full helps nobody); they simply
+respect the same length. The limit is read once per chat session rather
+than per utterance, since it sits on the path of every announcement and
+reading settings is file I/O.</p>
 <p>Policy lives in <code>plan_voice_reply()</code>, which is wx-free,
 synchronous, and returns a <code>VoiceReplyPlan</code> the UI performs;
 the mechanics (threads, wx, TTS calls) stay in the UI mixin. Two

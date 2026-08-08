@@ -67,6 +67,38 @@ class AssistantReplyDeliveryMixin:
         if plan.mode == "ai_voice":
             self._speak_with_ai_voice(plan.spoken_text, settings)
 
+    def _announce_incoming(self, text: str, *, prefix: str = "Quill says") -> None:
+        """Announce *text* through the screen reader, at the configured length.
+
+        Errors and edit proposals stay announcements whatever the reply mode --
+        you do not want a 4,000-character error read out in full -- but they now
+        honour the same length the user configured, instead of the literal 140
+        that used to be written in here. One rule, one place.
+        """
+        from quill.core.ai.voice_reply import truncate_announcement
+
+        compact = truncate_announcement(text, self._announce_limit())
+        if not compact:
+            return
+        self._announce(f"{prefix}: {compact}")
+
+    def _announce_limit(self) -> int:
+        """The configured announcement length, read once per chat session.
+
+        Cached because this is on the path of every announcement and reading
+        settings is file I/O; the dialog is short-lived enough that changing the
+        setting mid-chat and expecting it to apply to the current window is not
+        a case worth a disk read per utterance.
+        """
+        cached = getattr(self, "_cached_announce_limit", None)
+        if cached is None:
+            settings = self._load_settings()
+            cached = (
+                int(getattr(settings, "ai_voice_reply_announce_limit", 140)) if settings else 140
+            )
+            self._cached_announce_limit = cached
+        return int(cached)
+
     def _load_settings(self) -> Any:
         """Current settings, or ``None`` when they cannot be read.
 
