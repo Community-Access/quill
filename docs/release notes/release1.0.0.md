@@ -1143,6 +1143,43 @@ deliberate limits keep it honest: a genuine rewrite with many scattered edits is
 as whole lines, because forty spoken word pairs is worse than hearing the lines; and
 spacing-only changes are never announced as word edits.
 
+### Asking out loud, and choosing how you are answered
+
+You have always been able to ask Ask Quill a question by voice: **Ctrl+F9** starts
+recording, Ctrl+F9 again stops it, and QUILL transcribes what you said **on your own
+machine** before sending the text. Nothing you record leaves the computer.
+
+The answer, though, only ever came back one way — a short summary handed to your screen
+reader and cut off at 140 characters — even though QUILL already had two complete speech
+stacks that could have read it properly. **AI ▸ Voice Reply Settings...** now lets you
+choose, and the choice applies to every reply:
+
+- **Announce a short summary.** What you have today: brief, spoken by your screen reader,
+  offline and free. This is still the default, so nothing changes unless you want it to.
+- **Show as text only.** Nothing is spoken; read the answer in the transcript.
+- **Read aloud in QUILL's own voice.** The full reply in whichever offline voice you use
+  for Read Aloud — Kokoro, Piper, eSpeak, DECtalk or SAPI. Offline and free.
+- **Read aloud in an AI voice.** The full reply in a voice from **OpenAI** (11 voices) or
+  **Google Gemini** (30).
+
+When a reply is spoken you hear **all** of it. The length limit exists to keep an
+*announcement* short, and cutting speech off mid-sentence would be worse than not speaking
+at all, so it applies to announcements alone. Set it to 0 to hear whole replies announced
+too.
+
+Choosing an AI voice shows the provider, model and voice, and the voice list always
+matches the provider you picked — so you cannot pair an OpenAI provider with a Gemini
+voice and discover it only when speech fails, which the old settings list allowed.
+**Preview this voice** reads a sample line so you can hear a voice before committing to
+it.
+
+The AI voices are the one option here that costs money and is not private in the way the
+others are: the reply text is sent to OpenAI or Google to be spoken, and you are billed
+per character. The dialog says so plainly and estimates the cost of a typical reply.
+Nothing ever selects an AI voice on your behalf. And if one cannot be used — no API key
+for that provider, say — QUILL reads the reply in an offline voice instead and tells you
+why, so an answer is never lost because a voice was unavailable.
+
 ### Writing help
 
 - **Rewrite**, **Summarize**, **Expand**, **Continue**, and **Fix Grammar** work with or
