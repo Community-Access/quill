@@ -227,7 +227,7 @@ def _extract_math_placeholders(content: str) -> tuple[str, dict[str, str]]:
     placeholders = {}
     counter = 0
 
-    def math_replacer(match):
+    def math_replacer(match: re.Match[str]) -> str:
         nonlocal counter
         mathml_str = match.group(0)
         placeholder = f"___MATH_EQ_PLACEHOLDER_{counter}___"
@@ -236,7 +236,7 @@ def _extract_math_placeholders(content: str) -> tuple[str, dict[str, str]]:
         counter += 1
         return f" {placeholder} "
 
-    def latex_replacer(match):
+    def latex_replacer(match: re.Match[str]) -> str:
         nonlocal counter
         latex_str = match.group(2).strip()
         placeholder = f"___MATH_EQ_PLACEHOLDER_{counter}___"
@@ -252,7 +252,7 @@ def _extract_math_placeholders(content: str) -> tuple[str, dict[str, str]]:
 
 
 def _process_embedded_latex_delimiters(text: str) -> str:
-    def replace_latex(match):
+    def replace_latex(match: re.Match[str]) -> str:
         latex_str = match.group(1).strip()
         spoken = _convert_latex_to_speech(latex_str)
         return f" [Math Equation: {spoken}] "
