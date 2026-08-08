@@ -35,6 +35,29 @@ def pytest_configure(config: pytest.Config) -> None:
     """
     if config.option.basetemp is None:
         config.option.basetemp = str(Path.home() / ".quill-pytest-tmp")
+    _configure_hypothesis()
+
+
+def _configure_hypothesis() -> None:
+    """Register the suite's Hypothesis profile (no-op if it isn't installed).
+
+    ``deadline=None`` disables Hypothesis's per-example time limit. The default
+    (200ms) measures wall-clock per generated example, which on a loaded CI
+    runner -- four xdist workers plus AST-scanning gates -- turns an otherwise
+    passing property into an intermittent DeadlineExceeded. Correctness, not
+    latency, is what these properties assert; the suite-wide pytest ``timeout``
+    still bounds a genuinely hung test.
+    """
+    try:
+        from hypothesis import HealthCheck, settings
+    except ModuleNotFoundError:  # property tests skip themselves without it
+        return
+    settings.register_profile(
+        "quill",
+        deadline=None,
+        suppress_health_check=[HealthCheck.too_slow],
+    )
+    settings.load_profile("quill")
 
 
 @pytest.fixture(autouse=True, scope="session")

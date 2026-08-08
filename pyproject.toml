@@ -293,6 +293,13 @@ dev = [
   "pytest-xdist>=3.8.0",
   "pytest-timeout>=2.4.0",
   "pytest-cov>=7.1.0",
+  # Property-based testing for the pure parsers (find_model, regex_helper,
+  # quill/io readers): generates edge cases a hand-written example never
+  # thinks of. See tests/unit/core/test_find_model_properties.py.
+  "hypothesis>=6.165.2",
+  # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
+  # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
+  "pytest-randomly>=4.1.0",
   "ruff>=0.15.21",
   "mypy>=2.3.0",
   # I18N: string extraction, .po update, .mo compile
@@ -361,6 +368,15 @@ python_files = ["test_*.py"]
 timeout = 30
 log_cli = true
 log_level = "INFO"
+# pytest-randomly is installed but OFF by default. It shuffles test order on
+# every run, which is exactly how you find order-dependent coupling (the wx
+# 4.3 MediaCtrl/COM crash on 2026-08-07 was one) -- but an unpredictable
+# ordering in the required CI gates would turn a real failure into a
+# can't-reproduce. Opt in deliberately when hunting that class of bug:
+#     pytest -p randomly tests/unit/core
+#     pytest -p randomly -p no:cacheprovider tests/unit/ui   # a suspect area
+# Reproduce a specific shuffle with the seed it prints: -p randomly -p randomly.seed=12345
+addopts = "-p no:randomly"
 markers = [
     "perf: wall-clock performance budgets; run with RUN_PERF=1 or exclude with -m 'not perf'",
     "smoke: fast, high-signal core checks; run the quick subset with -m smoke",
