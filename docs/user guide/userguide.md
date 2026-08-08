@@ -4804,6 +4804,19 @@ Choosing the provider and model from the chat:
 - A bar at the top of Ask Quill always shows the **active provider and model** so you know what is answering.
 - Select **Change provider or model** to reveal the inline picker. Choose a provider and model, enter a key if needed, and **Save** — this also sets that choice as the default, so the next chat uses it.
 
+Asking out loud, and choosing how Quill answers:
+
+- Press **Ctrl+F9** in Ask Quill to ask a question by voice. Press it once to start recording and again to stop; Quill transcribes what you said **on your own machine** and sends the text. Nothing you record leaves the computer.
+- **AI > Voice Reply Settings...** chooses how the answer comes back. The setting applies to every reply, however you asked:
+  - **Announce a short summary** — the default. Brief, spoken by your screen reader, offline and free.
+  - **Show as text only** — nothing is spoken; read the reply in the transcript.
+  - **Read aloud with QUILL's own voice** — the full reply, in whichever offline voice you use for Read Aloud (Kokoro, Piper, eSpeak, DECtalk, SAPI). Offline and free.
+  - **Read aloud with the AI voice** — the full reply, in a voice from **OpenAI** or **Google Gemini**.
+- When a reply is **spoken** you hear all of it. The length limit exists to keep an *announcement* short; cutting speech off mid-sentence would be worse than not speaking, so it applies only to announcements. Set the limit to 0 to hear the whole reply announced too.
+- Choosing **AI voice** shows the provider, model, and voice. The voice list always matches the provider you picked, so you cannot accidentally pair an OpenAI provider with a Gemini voice. **Preview this voice** reads a sample line so you can hear it before committing.
+- The AI voices cost money and are not private in the way the other options are: the reply text is sent to OpenAI or Google to be spoken, and you are billed per character. The dialog says so and estimates the cost of a typical reply. Nothing selects an AI voice for you.
+- If an AI voice cannot be used — no API key for that provider, for instance — Quill reads the reply in an offline voice instead and tells you why. Your answer is never lost because a voice was unavailable.
+
 Putting chat content into your document:
 
 - The **Insert into document** controls at the bottom let you drop chat content straight into the editor.

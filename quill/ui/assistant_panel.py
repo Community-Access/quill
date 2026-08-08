@@ -13,6 +13,7 @@ from __future__ import annotations
 import threading
 import time
 
+from quill.ui.assistant_reply_delivery import AssistantReplyDeliveryMixin
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
 SUGGESTED_PROMPTS: tuple[str, ...] = (
@@ -47,7 +48,7 @@ def classify_assistant_error(error: str) -> tuple[str, bool]:
     return (f"Error: {text}", False)
 
 
-class AskQuillChatDialog:
+class AskQuillChatDialog(AssistantReplyDeliveryMixin):
     def __init__(
         self,
         parent: object,
@@ -816,13 +817,8 @@ class AskQuillChatDialog:
                 self._announce("Quill updated the document. Press Control Z to undo.")
             else:
                 self._signal_sound("response")
-                self._announce_incoming(text or "No response")
+                self._deliver_reply(text or "No response")
             self._record_session_exchange(text or "")
-            # Voice mode: speak the reply with transport controls (Pause/Stop/Play/
-            # Save). Only when a speech player was provided (TTS output available);
-            # otherwise the screen reader already voiced the announcement above.
-            if not error and self._voice_mode and self._open_speech_player and (text or "").strip():
-                self._open_speech_player(text)
             self.copy_button.Enable(bool(self._last_response))
             self._action_insert_btn.Enable(bool(self._last_response))
             self._action_replace_btn.Enable(bool(self._last_response))

@@ -452,6 +452,12 @@ class CommandRegistryMixin:
             self._binding_for("tools.ask_quill_conversation"),
         )
         self.commands.register(
+            "tools.voice_reply_settings",
+            "Voice Reply Settings",
+            self.open_voice_reply_settings,
+            None,
+        )
+        self.commands.register(
             "tools.ai_model",
             "AI Model",
             self.open_ai_model_settings,

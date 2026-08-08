@@ -7735,6 +7735,51 @@ Artificial Intelligence" toggle and AI Model settings. Generation runs
 off the UI thread. The single-instance lock self-heals (PID +
 creation-time identity) so a stale lock from a crash never blocks
 launch.</p>
+<p><strong>Voice reply delivery (<code>core/ai/voice_reply.py</code>,
+<code>ui/voice_reply_dialog.py</code>,
+<code>ui/assistant_reply_delivery.py</code>).</strong> Ask Quill has
+always supported a spoken question (Ctrl+F9 → offline transcription →
+send), but the <em>answer</em> had exactly one delivery path:
+<code>_announce_incoming</code>, a whitespace-collapsed 140-character
+summary handed to the screen reader. Two full speech stacks already
+existed and were wired only to document read-aloud — QUILL's offline
+voices, and the cloud AI voices in <code>core/ai/cloud_tts.py</code>
+(OpenAI 11 voices, Gemini 30, ElevenLabs export-only). The join was
+missing.</p>
+<p><code>ai_voice_reply_mode</code> selects one of four deliveries —
+<code>announce</code> (default, unchanged behaviour), <code>text</code>,
+<code>local_tts</code>, <code>ai_voice</code> — and
+<code>ai_voice_reply_announce_limit</code> (0–2000, 0 = no cap) governs
+the announcement only. Truncation is deliberately <strong>not</strong>
+applied to the spoken modes: a character cap is the right shape for a
+summary and the wrong shape for speech, where stopping mid-sentence is
+worse than not speaking.</p>
+<p>Policy lives in <code>plan_voice_reply()</code>, which is wx-free,
+synchronous, and returns a <code>VoiceReplyPlan</code> the UI performs;
+the mechanics (threads, wx, TTS calls) stay in the UI mixin. Two
+invariants hold in the policy layer: a plan never both speaks and
+announces (that would talk over itself), and every degradation moves
+<strong>towards</strong> the offline default, never away from it. An
+<code>ai_voice</code> mode with no API key, or with an export-only
+provider (ElevenLabs), falls back to <code>local_tts</code> and then to
+<code>announce</code>, carrying a <code>fallback_reason</code> the UI
+states once — silently doing something other than what a setting says is
+how trust in the setting is lost.</p>
+<p>The dialog is the single place the whole chain is configured, and it
+closes a real defect: <code>ai_tts_voice</code> was surfaced in the
+generic settings list as one flat catalog of every provider's voices, so
+a Gemini voice could be selected while <code>ai_tts_provider</code> was
+OpenAI, failing only at synthesis. The model and voice lists are rebuilt
+from the selected provider, making the invalid pairing unrepresentable.
+Cost and egress are stated in the dialog body (not a footnote) with a
+live estimate from <code>estimate_cost_usd</code>, because
+<code>ai_voice</code> is the only mode that bills money and transmits
+the reply text off the machine. It is opt-in and never selected on the
+user's behalf.</p>
+<p>Voice conversation mode (Alt+Shift+Q) predates the setting and has
+always spoken its answers; while the setting is at its default it
+continues to, so entering voice mode does not silently become text-only.
+An explicit choice always wins.</p>
 <h3 id="577-copy-tray--twelve-slot-persistent-clipboard">5.77 Copy Tray
 — twelve-slot persistent clipboard</h3>
 <p>Copy Tray gives users twelve independently addressable clipboard

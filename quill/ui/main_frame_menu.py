@@ -1574,6 +1574,7 @@ class MenuBuilderMixin:
         self._id_ai_accessibility_agent = wx.NewIdRef()
         self._id_ask_quill_chat = wx.NewIdRef()
         self._id_ask_quill_voice = wx.NewIdRef()
+        self._id_voice_reply_settings = wx.NewIdRef()
         self._id_ai_library = wx.NewIdRef()
         self._id_prompt_library = wx.NewIdRef()
         self._id_skill_library = wx.NewIdRef()
@@ -2703,6 +2704,10 @@ class MenuBuilderMixin:
         ai_menu.Append(
             self._id_ask_quill_voice,
             self._menu_label(_("Ask Quill by &Voice..."), "tools.ask_quill_conversation"),
+        )
+        ai_menu.Append(
+            self._id_voice_reply_settings,
+            self._menu_label(_("Voice &Reply Settings..."), "tools.voice_reply_settings"),
         )
         ai_menu.AppendSeparator()
 
