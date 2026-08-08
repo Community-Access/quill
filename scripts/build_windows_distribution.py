@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
 import re
 import shutil
 import subprocess
@@ -425,7 +426,16 @@ def build_windows_distribution(
     portable_dir = output_dir / "portable"
     installer_dir = output_dir / "installer"
     reference_installer_dir = pyproject.parent / "installer"
-    portable_dir.mkdir(parents=True, exist_ok=True)
+    # Start from an empty portable/ every time. The bundle is generated whole, so
+    # nothing here is worth preserving -- and reusing a dirty directory made the
+    # build non-idempotent: a previous run (especially a failed one) leaves
+    # residue such as a root ``__pycache__``, which then trips the
+    # flatten-collision guard below and fails the NEXT build with a message about
+    # clobbering a "staged bundle entry" that is really just leftovers. A build
+    # must not depend on whether the last one succeeded.
+    if portable_dir.exists():
+        shutil.rmtree(portable_dir)
+    portable_dir.mkdir(parents=True)
     installer_dir.mkdir(parents=True, exist_ok=True)
     reference_installer_dir.mkdir(parents=True, exist_ok=True)
 
@@ -562,8 +572,21 @@ def build_windows_distribution(
         numeric_version=iss_numeric_version,
         offline_edition=offline_edition,
     )
-    installer_script.write_text(installer_script_text, encoding="utf-8")
-    reference_installer_script.write_text(installer_script_text, encoding="utf-8")
+    # newline="\n" explicitly: text mode otherwise translates "\n" to os.linesep,
+    # so the same generator emitted LF on CI (Linux) and CRLF on a Windows build
+    # machine. The tracked reference copy then flipped line endings on every
+    # local build -- a 665-line diff with no content change -- and the sync test
+    # compared bytes across platforms. Inno Setup accepts either.
+    installer_script.write_text(installer_script_text, encoding="utf-8", newline="\n")
+    # The tracked reference copy is the STANDARD installer script -- that is what
+    # `test_committed_installer_iss_is_in_sync_with_generator` compares against.
+    # An Offline Edition build generates a deliberately different script (its own
+    # AppId, AppName, OutputBaseFilename, and a much shorter Excludes list), so
+    # letting it write here silently replaced the tracked file with the offline
+    # variant and left the working tree dirty and the sync gate red after every
+    # `--bundle-offline` build.
+    if not offline_edition:
+        reference_installer_script.write_text(installer_script_text, encoding="utf-8", newline="\n")
 
     installer_readme = build_installer_readme(version, identity)
     (installer_dir / "README-installer.txt").write_text(installer_readme, encoding="utf-8")
@@ -1514,15 +1537,45 @@ def compile_inno_setup_installer(
     )
 
 
+def inno_setup_search_roots() -> list[Path]:
+    """Directories that may contain an ``Inno Setup 6`` installation.
+
+    Environment-derived first (so a non-English Windows, a D: system drive, or a
+    non-default Program Files location all work), then the usual literals as a
+    backstop. ``%LOCALAPPDATA%\\Programs`` matters as much as Program Files:
+    Inno Setup's "install for me only" option -- the one you get without
+    administrator rights -- lands there, and a build machine set up by a
+    non-admin will have it nowhere else. Missing it made the compile step fail
+    with "Install Inno Setup 6" on a machine that had Inno Setup 6 installed.
+    """
+    roots: list[Path] = []
+    for var in ("ProgramFiles(x86)", "ProgramFiles", "ProgramW6432"):
+        value = os.environ.get(var, "").strip()
+        if value:
+            roots.append(Path(value))
+    local_app_data = os.environ.get("LOCALAPPDATA", "").strip()
+    if local_app_data:
+        roots.append(Path(local_app_data) / "Programs")
+    roots += [Path(r"C:\Program Files (x86)"), Path(r"C:\Program Files")]
+    # Preserve order while dropping duplicates (the literals usually repeat the
+    # environment-derived ones).
+    seen: set[str] = set()
+    unique: list[Path] = []
+    for root in roots:
+        key = str(root).lower()
+        if key not in seen:
+            seen.add(key)
+            unique.append(root)
+    return unique
+
+
 def find_inno_setup_compiler() -> Path | None:
     for candidate_name in ("ISCC.exe", "iscc"):
         discovered = shutil.which(candidate_name)
         if discovered:
             return Path(discovered)
-    for candidate in (
-        Path(r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"),
-        Path(r"C:\Program Files\Inno Setup 6\ISCC.exe"),
-    ):
+    for root in inno_setup_search_roots():
+        candidate = root / "Inno Setup 6" / "ISCC.exe"
         if candidate.exists():
             return candidate
     return None

@@ -25,6 +25,7 @@ from scripts.build_windows_distribution import (
     bundled_runtime_dependencies,
     compile_inno_setup_installer,
     find_inno_setup_compiler,
+    inno_setup_search_roots,
 )
 
 # build/version.toml is the local-only (gitignored) canonical release-identity
@@ -668,21 +669,66 @@ version = "3.0.0"
 
 
 def test_find_inno_setup_compiler_checks_common_locations(monkeypatch, tmp_path: Path) -> None:
-    compiler = tmp_path / "ISCC.exe"
+    """A Program Files install is found when it is not on PATH.
+
+    Uses a real directory tree rather than stubbing ``Path``: the lookup builds
+    each candidate as ``root / "Inno Setup 6" / "ISCC.exe"``, so a stub keyed on
+    the string passed to ``Path()`` never saw the final path and silently
+    stopped exercising anything.
+    """
+    program_files = tmp_path / "Program Files"
+    compiler = program_files / "Inno Setup 6" / "ISCC.exe"
+    compiler.parent.mkdir(parents=True)
     compiler.write_text("binary", encoding="utf-8")
+
     monkeypatch.setattr("scripts.build_windows_distribution.shutil.which", lambda _name: None)
-    monkeypatch.setattr(
-        "scripts.build_windows_distribution.Path.exists",
-        lambda self: self == compiler,
-    )
-    monkeypatch.setattr(
-        "scripts.build_windows_distribution.Path",
-        lambda value: compiler if "Inno Setup" in str(value) else Path(value),
-    )
+    monkeypatch.setenv("ProgramFiles", str(program_files))
+    monkeypatch.setenv("ProgramFiles(x86)", str(tmp_path / "no-such-x86"))
+    monkeypatch.delenv("ProgramW6432", raising=False)
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "no-such-appdata"))
 
-    discovered = find_inno_setup_compiler()
+    assert find_inno_setup_compiler() == compiler
 
-    assert discovered == compiler
+
+def test_find_inno_setup_compiler_finds_a_per_user_install(monkeypatch, tmp_path: Path) -> None:
+    """Inno Setup installed "for me only" lives under %LOCALAPPDATA%\\Programs.
+
+    That is what you get without administrator rights, so a build machine set up
+    by a non-admin has it nowhere else. Searching only Program Files made the
+    build fail with "Install Inno Setup 6" on a machine that had Inno Setup 6.
+    """
+    local_app_data = tmp_path / "AppData" / "Local"
+    compiler = local_app_data / "Programs" / "Inno Setup 6" / "ISCC.exe"
+    compiler.parent.mkdir(parents=True)
+    compiler.write_text("binary", encoding="utf-8")
+
+    monkeypatch.setattr("scripts.build_windows_distribution.shutil.which", lambda _name: None)
+    monkeypatch.setenv("LOCALAPPDATA", str(local_app_data))
+    # Point the Program Files roots somewhere empty so only the per-user copy exists.
+    for var in ("ProgramFiles(x86)", "ProgramFiles", "ProgramW6432"):
+        monkeypatch.setenv(var, str(tmp_path / "no-such-program-files"))
+
+    assert find_inno_setup_compiler() == compiler
+
+
+def test_inno_setup_search_roots_are_unique_and_env_first(monkeypatch, tmp_path: Path) -> None:
+    """Environment-derived roots come first and repeats collapse.
+
+    The hardcoded ``C:\\Program Files`` literals usually duplicate what the
+    environment already gave us; searching the same directory twice is just
+    wasted stat calls, and on a non-English or non-C: Windows the literals are
+    the wrong answer anyway.
+    """
+    monkeypatch.setenv("ProgramFiles", r"C:\Program Files")
+    monkeypatch.setenv("ProgramFiles(x86)", r"C:\Program Files (x86)")
+    monkeypatch.delenv("ProgramW6432", raising=False)
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+
+    roots = inno_setup_search_roots()
+
+    lowered = [str(r).lower() for r in roots]
+    assert len(lowered) == len(set(lowered)), f"duplicate roots: {roots}"
+    assert str(tmp_path / "Programs") in [str(r) for r in roots]
 
 
 def test_compile_inno_setup_installer_runs_compiler(monkeypatch, tmp_path: Path) -> None:

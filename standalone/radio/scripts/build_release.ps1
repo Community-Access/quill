@@ -14,13 +14,16 @@
 # build FAILS if the token file is missing rather than shipping a build
 # with a silently broken bug reporter.
 
+# Every path below defaults to "" and is resolved from the checkout itself, so a
+# clone builds on any machine. Hardcoded D:\ defaults used to make this script
+# runnable on exactly one computer.
 param(
-    [string]$Python = "D:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "D:\token.txt",
+    [string]$TokenFile = "",
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "D:\QUILL",
+    [string]$QuillRepo = "",
     [switch]$SkipToken,
     [switch]$SkipSharedRuntime
 )
@@ -28,6 +31,25 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "2.2.0"
+
+# -- resolve the toolchain ----------------------------------------------------
+# standalone\radio -> standalone -> the QUILL checkout root.
+if (-not $QuillRepo) {
+    $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
+}
+if (-not (Test-Path (Join-Path $QuillRepo "quill\__init__.py"))) {
+    throw "QUILL checkout not found at '$QuillRepo' -- pass -QuillRepo."
+}
+if (-not $Python) {
+    $venvPython = Join-Path $QuillRepo ".venv\Scripts\python.exe"
+    if (Test-Path $venvPython) {
+        $Python = $venvPython
+    } else {
+        $onPath = Get-Command python -ErrorAction SilentlyContinue
+        if (-not $onPath) { throw "No Python found -- pass -Python <python.exe>." }
+        $Python = $onPath.Source
+    }
+}
 
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
@@ -37,10 +59,17 @@ $version = "2.2.0"
 # copy whose Report a Bug falls back to opening GitHub manually (same posture as
 # the Quill Weather build).
 if (-not $SkipToken) {
-    if (-not (Test-Path $TokenFile)) {
-        throw "Token file not found: $TokenFile -- a release build must embed the issues-only token (or pass -SkipToken for a private build)."
+    # -TokenFile is one of several sources generate_feedback_token.py accepts
+    # (env var, token file, Windows Credential Manager, or a token already
+    # bundled by this machine's last build). Pass it when given; otherwise let
+    # the generator resolve, and let ITS --require-token error explain every
+    # option rather than throwing here about the one source we happen to know.
+    if ($TokenFile) {
+        if (-not (Test-Path $TokenFile)) {
+            throw "Token file not found: $TokenFile."
+        }
+        $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
     }
-    $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
     & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
     if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
@@ -50,8 +79,17 @@ if (-not $SkipToken) {
 # explicit, vetted staging directory. We do NOT fall back to Get-Command (the
 # builder's PATH), which a stale or malicious local install could poison into a
 # planted, unverified binary inside the release.
+# When no directory is given, stage it from QUILL's own pinned, SHA-256-verified
+# assets-v1 release (scripts/fetch_build_deps.py) instead of failing. That keeps
+# the security rule intact -- still no PATH auto-discovery, and the bytes are
+# checksum-verified against a pin in the source tree, which is a stronger
+# guarantee than a directory the builder assembled by hand -- while letting a
+# fresh clone build on a machine with no ffmpeg installed at all.
 if (-not $FfmpegDir) {
-    throw "ffmpeg not staged: pass -FfmpegDir pointing at a vetted directory containing ffmpeg.exe; recording must ship bundled (PATH auto-discovery is refused for release builds)."
+    Write-Host "Staging ffmpeg from QUILL's pinned release assets..."
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
+    $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
 }
 if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
     throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'."
@@ -68,8 +106,14 @@ if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
 # %APPDATA%\Quill\engine-packs\mpv, which any process running as the user (or a
 # malicious download) could overwrite -- that DLL would then be planted,
 # unverified, into every shipped copy.
+# Same as ffmpeg above: absent an explicit directory, stage the pinned,
+# SHA-256-verified libmpv pack rather than failing. Still never the
+# user-writable %APPDATA%\Quill\engine-packs\mpv copy.
 if (-not $LibmpvDir) {
-    throw "libmpv not staged: pass -LibmpvDir pointing at a vetted directory containing libmpv-2.dll; the mpv engine must ship bundled (%APPDATA% auto-discovery is refused for release builds)."
+    Write-Host "Staging libmpv from QUILL's pinned release assets..."
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only libmpv
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage libmpv (see scripts/fetch_build_deps.py)." }
+    $LibmpvDir = Join-Path $QuillRepo "build\deps\mpv"
 }
 if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
     throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."

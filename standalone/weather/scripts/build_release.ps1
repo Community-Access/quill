@@ -13,11 +13,14 @@
 # versioned in lockstep with Quill Radio (2.2.0) but built and released on its
 # own. Everything is bundled; the installer and zip perform no downloads.
 
+# Every path below defaults to "" and is resolved from the checkout itself, so a
+# clone builds on any machine. Hardcoded D:\ defaults used to make this script
+# runnable on exactly one computer.
 param(
-    [string]$Python = "D:\QUILL\.venv\Scripts\python.exe",
-    [string]$TokenFile = "D:\token.txt",
+    [string]$Python = "",
+    [string]$TokenFile = "",
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "D:\QUILL",
+    [string]$QuillRepo = "",
     [switch]$SkipToken,
     [switch]$SkipSharedRuntime
 )
@@ -26,15 +29,41 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "2.2.0"
 
+# -- resolve the toolchain ----------------------------------------------------
+# standalone\weather -> standalone -> the QUILL checkout root.
+if (-not $QuillRepo) {
+    $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
+}
+if (-not (Test-Path (Join-Path $QuillRepo "quill\__init__.py"))) {
+    throw "QUILL checkout not found at '$QuillRepo' -- pass -QuillRepo."
+}
+if (-not $Python) {
+    $venvPython = Join-Path $QuillRepo ".venv\Scripts\python.exe"
+    if (Test-Path $venvPython) {
+        $Python = $venvPython
+    } else {
+        $onPath = Get-Command python -ErrorAction SilentlyContinue
+        if (-not $onPath) { throw "No Python found -- pass -Python <python.exe>." }
+        $Python = $onPath.Source
+    }
+}
+
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
 # -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
 if (-not $SkipToken) {
-    if (-not (Test-Path $TokenFile)) {
-        throw "Token file not found: $TokenFile -- a release build must embed the issues-only token (or pass -SkipToken for a private build)."
+    # -TokenFile is one of several sources generate_feedback_token.py accepts
+    # (env var, token file, Windows Credential Manager, or a token already
+    # bundled by this machine's last build). Pass it when given; otherwise let
+    # the generator resolve, and let ITS --require-token error explain every
+    # option rather than throwing here about the one source we happen to know.
+    if ($TokenFile) {
+        if (-not (Test-Path $TokenFile)) {
+            throw "Token file not found: $TokenFile."
+        }
+        $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
     }
-    $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
     & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
     if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
