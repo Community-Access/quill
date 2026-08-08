@@ -362,6 +362,14 @@ def context_sentence(text: str, match: FindMatch, *, max_chars: int = 120) -> st
             sent_end = j
             break
     sentence = _collapse(text[sent_start:sent_end])
+    if not sentence:
+        # The surrounding "sentence" was whitespace only -- searching for a
+        # space or a tab on an otherwise blank line. Returning "" would make
+        # the caller announce nothing at all, and a silent success is an
+        # accessibility failure (the acceptance book's own rubric): the
+        # listener cannot tell a found match from a failed search. Fall back
+        # to the position, which is always speakable.
+        return f"line {match.line}, column {match.column}"
     if len(sentence) <= max_chars:
         return sentence
     center = (match.start + match.end) // 2

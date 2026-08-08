@@ -1,5 +1,24 @@
 """Shared fixtures for the UI unit tests.
 
+KNOWN ISSUE -- window-handle leak (not yet fixed at the source). Windows caps
+a process at 10,000 User (Window Manager) handles. Widget tests that create a
+wx.Frame or wx.Dialog and let it fall out of scope leak the native HWND for
+the life of the process: Python's garbage collector does not destroy a wx
+window, only an explicit Destroy() does. A single-process run of this
+directory exhausts the ceiling about three quarters of the way through and
+collapses into a cascade of failures that look unrelated to their tests
+("Failed to create dialog. Incorrect DLGTEMPLATE?", "can't append invalid
+menu to menubar", "'NoneType' object has no attribute 'Enable'").
+
+CI works around it by running this directory in its own xdist pool with more
+workers than cores, so no single process gets close (see pr-ci.yml). An
+autouse teardown that destroyed each test's leaked top-level windows was
+tried on 2026-08-07 and made no measurable difference to the failure count,
+so the leak is not (only) un-destroyed top-level windows -- diagnosing it
+properly means instrumenting GetGuiResources per test. Until then, run this
+directory with -n to reproduce CI locally; a bare single-process
+`pytest tests/unit/ui` is expected to fail late.
+
 The one fixture here exists because of a wxPython 4.3 (wxWidgets 3.3)
 interaction: constructing a REAL ``wx.media.MediaCtrl`` with the WMP10
 ActiveX backend deep into a long single-process test run access-violates on
