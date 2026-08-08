@@ -51,12 +51,36 @@ the other.
 | `~/.config/quill/quill-feed-priv.key` | The 32-byte seed, base64. **Never committed** -- it lives outside the repository entirely. |
 | `QUILL_FEED_SIGNING_KEY` (GitHub repo secret) | The same seed. `scripts/generate_update_feed.py` reads it during the release workflow and writes the `signature_ed25519` field. |
 
-**Back the seed up somewhere durable -- a password manager or a hardware
-token -- not just on the build machine.** Losing it does not merely stop
-new releases from being signed: every shipped client verifies against the
-`feed-pub.key` compiled into it, so recovering means shipping a new build
-with a new public key and leaving already-installed copies unable to verify
-any newer feed.
+**Back the seed up somewhere that survives this machine.** Losing it does
+not merely stop new releases from being signed: every shipped client
+verifies against the `feed-pub.key` compiled into it, so recovering means
+shipping a new build with a new public key and leaving already-installed
+copies unable to verify any newer feed.
+
+Three copies, covering three different ways to lose it:
+
+| Copy | Survives | How |
+| --- | --- | --- |
+| `~/.config/quill/quill-feed-priv.key` | day-to-day use | the working copy; plaintext, user-only ACL, outside the repository |
+| Encrypted file in cloud sync | machine loss, fire, theft | `python scripts/secret_backup.py encrypt ~/.config/quill/quill-feed-priv.key <cloud-folder>/quill-feed-priv.key.enc` |
+| Printed sheet in a physical safe | total digital loss, forgotten passphrase | see below |
+
+The encrypted copy is safe to keep in Dropbox/OneDrive/email precisely
+because it is encrypted: `scripts/secret_backup.py` stretches your
+passphrase with Argon2id and seals the secret with XSalsa20-Poly1305, both
+from PyNaCl (already a dependency, so no new cryptographic surface). The
+passphrase is prompted for, never passed as an argument, so it never lands
+in shell history or the process list. **Verify the restore before you rely
+on it** -- `python scripts/secret_backup.py decrypt <file>` -- because a
+backup nobody has ever decrypted is not a backup.
+
+The printed sheet is the copy that survives a forgotten passphrase and a
+dead cloud account. Generate one with the seed, its SHA-256 (so a
+transcription error is caught), the matching public key, and restore
+instructions; print it; store it physically; delete the file. Do not
+photograph it or keep it on a computer -- a sheet of paper in a safe has a
+completely different threat model from a file, which is the whole point of
+having one.
 
 Clients accept a feed with no `signature_ed25519` (the legacy salted
 checksum still applies, so pre-1.0 builds keep working), but a signature

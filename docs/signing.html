@@ -333,12 +333,56 @@ during the release workflow and writes the
 </tr>
 </tbody>
 </table>
-<p><strong>Back the seed up somewhere durable -- a password manager or a
-hardware token -- not just on the build machine.</strong> Losing it does
-not merely stop new releases from being signed: every shipped client
-verifies against the <code>feed-pub.key</code> compiled into it, so
-recovering means shipping a new build with a new public key and leaving
-already-installed copies unable to verify any newer feed.</p>
+<p><strong>Back the seed up somewhere that survives this
+machine.</strong> Losing it does not merely stop new releases from being
+signed: every shipped client verifies against the
+<code>feed-pub.key</code> compiled into it, so recovering means shipping
+a new build with a new public key and leaving already-installed copies
+unable to verify any newer feed.</p>
+<p>Three copies, covering three different ways to lose it:</p>
+<table>
+<thead>
+<tr>
+<th>Copy</th>
+<th>Survives</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.config/quill/quill-feed-priv.key</code></td>
+<td>day-to-day use</td>
+<td>the working copy; plaintext, user-only ACL, outside the
+repository</td>
+</tr>
+<tr>
+<td>Encrypted file in cloud sync</td>
+<td>machine loss, fire, theft</td>
+<td><code>python scripts/secret_backup.py encrypt ~/.config/quill/quill-feed-priv.key &lt;cloud-folder&gt;/quill-feed-priv.key.enc</code></td>
+</tr>
+<tr>
+<td>Printed sheet in a physical safe</td>
+<td>total digital loss, forgotten passphrase</td>
+<td>see below</td>
+</tr>
+</tbody>
+</table>
+<p>The encrypted copy is safe to keep in Dropbox/OneDrive/email
+precisely because it is encrypted: <code>scripts/secret_backup.py</code>
+stretches your passphrase with Argon2id and seals the secret with
+XSalsa20-Poly1305, both from PyNaCl (already a dependency, so no new
+cryptographic surface). The passphrase is prompted for, never passed as
+an argument, so it never lands in shell history or the process list.
+<strong>Verify the restore before you rely on it</strong> --
+<code>python scripts/secret_backup.py decrypt &lt;file&gt;</code> --
+because a backup nobody has ever decrypted is not a backup.</p>
+<p>The printed sheet is the copy that survives a forgotten passphrase
+and a dead cloud account. Generate one with the seed, its SHA-256 (so a
+transcription error is caught), the matching public key, and restore
+instructions; print it; store it physically; delete the file. Do not
+photograph it or keep it on a computer -- a sheet of paper in a safe has
+a completely different threat model from a file, which is the whole
+point of having one.</p>
 <p>Clients accept a feed with no <code>signature_ed25519</code> (the
 legacy salted checksum still applies, so pre-1.0 builds keep working),
 but a signature that is <em>present and invalid</em> is a hard failure
