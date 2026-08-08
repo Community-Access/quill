@@ -1452,6 +1452,57 @@ Two deliberate limits keep it honest: a genuine rewrite with many
 scattered edits is presented as whole lines, because forty spoken word
 pairs is worse than hearing the lines; and spacing-only changes are
 never announced as word edits.</p>
+<h3 id="asking-out-loud-and-choosing-how-you-are-answered">Asking out
+loud, and choosing how you are answered</h3>
+<p>You have always been able to ask Ask Quill a question by voice:
+<strong>Ctrl+F9</strong> starts recording, Ctrl+F9 again stops it, and
+QUILL transcribes what you said <strong>on your own machine</strong>
+before sending the text. Nothing you record leaves the computer.</p>
+<p>The answer, though, only ever came back one way — a short summary
+handed to your screen reader and cut off at 140 characters — even though
+QUILL already had two complete speech stacks that could have read it
+properly. <strong>AI ▸ Voice Reply Settings...</strong> now lets you
+choose, and the choice applies to every reply:</p>
+<ul>
+<li><strong>Announce a short summary.</strong> What you have today:
+brief, spoken by your screen reader, offline and free. This is still the
+default, so nothing changes unless you want it to.</li>
+<li><strong>Show as text only.</strong> Nothing is spoken; read the
+answer in the transcript.</li>
+<li><strong>Read aloud in QUILL's own voice.</strong> The full reply in
+whichever offline voice you use for Read Aloud — Kokoro, Piper, eSpeak,
+DECtalk or SAPI. Offline and free.</li>
+<li><strong>Read aloud in an AI voice.</strong> The full reply in a
+voice from <strong>OpenAI</strong> (11 voices) or <strong>Google
+Gemini</strong> (30).</li>
+</ul>
+<p>When a reply is spoken you hear <strong>all</strong> of it. The
+length limit exists to keep an <em>announcement</em> short, and cutting
+speech off mid-sentence would be worse than not speaking at all, so it
+applies to announcements alone. Set it to 0 to hear whole replies
+announced too.</p>
+<p>That length is now yours to set, and it applies to
+<strong>everything</strong> Ask Quill announces — answers, error
+messages, and the summary of an edit it wants to make. Previously the
+140 was fixed and written into the program, so there was no way to ask
+for more detail or less. Errors and edit proposals stay announcements
+whichever reply mode you choose, since having a long error read out in
+full is rarely what anyone wants; they simply respect the length you
+picked.</p>
+<p>Choosing an AI voice shows the provider, model and voice, and the
+voice list always matches the provider you picked — so you cannot pair
+an OpenAI provider with a Gemini voice and discover it only when speech
+fails, which the old settings list allowed. <strong>Preview this
+voice</strong> reads a sample line so you can hear a voice before
+committing to it.</p>
+<p>The AI voices are the one option here that costs money and is not
+private in the way the others are: the reply text is sent to OpenAI or
+Google to be spoken, and you are billed per character. The dialog says
+so plainly and estimates the cost of a typical reply. Nothing ever
+selects an AI voice on your behalf. And if one cannot be used — no API
+key for that provider, say — QUILL reads the reply in an offline voice
+instead and tells you why, so an answer is never lost because a voice
+was unavailable.</p>
 <h3 id="writing-help">Writing help</h3>
 <ul>
 <li><strong>Rewrite</strong>, <strong>Summarize</strong>,

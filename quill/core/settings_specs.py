@@ -1460,6 +1460,36 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("ai voice", "cloud tts", "voice"),
     ),
     SettingSpec(
+        "ai_voice_reply_mode",
+        "Voice question reply",
+        "ai",
+        "choice",
+        "How Ask Quill delivers a reply when you asked by voice (Ctrl+F9). "
+        "Announcement and text stay offline and cost nothing. AI voice reads the "
+        "reply with the cloud voice above, which is billed per character and "
+        "sends the reply text to that provider.",
+        choices=(
+            ("announce", "Announce a short summary (default, offline)"),
+            ("text", "Show as text only, do not speak"),
+            ("local_tts", "Read aloud with QUILL's own voice (offline)"),
+            ("ai_voice", "Read aloud with the AI voice (cloud, billed)"),
+        ),
+        feature_id="core.ai",
+        keywords=("voice", "reply", "spoken", "ask quill", "ai voice", "tts"),
+    ),
+    SettingSpec(
+        "ai_voice_reply_announce_limit",
+        "Announcement length limit",
+        "ai",
+        "int",
+        "Characters spoken when the reply mode is an announcement. The full "
+        "reply is always in the transcript. 0 announces the whole reply.",
+        minimum=0,
+        maximum=2000,
+        feature_id="core.ai",
+        keywords=("voice", "reply", "announcement", "length", "truncate"),
+    ),
+    SettingSpec(
         "read_aloud_rate",
         "Read Aloud rate",
         "read_aloud",

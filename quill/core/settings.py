@@ -24,11 +24,18 @@ from quill.core.versioned_store import load_with_migration
 
 __all__ = [
     "STATUS_BAR_ITEMS",
+    "VOICE_REPLY_MODES",
     "Settings",
     "load_settings",
     "save_settings",
     "settings_path",
 ]
+
+#: How a voice-asked AI reply comes back. Ordered cheapest/most private first:
+#: the two offline modes cost nothing and send nothing, ``local_tts`` reads the
+#: whole reply with QUILL's own voices, and ``ai_voice`` is the only one that
+#: bills and transmits the reply text to a cloud provider.
+VOICE_REPLY_MODES: tuple[str, ...] = ("announce", "text", "local_tts", "ai_voice")
 
 
 def _coerce_non_negative_float(value: object, default: float) -> float:
@@ -197,6 +204,17 @@ class Settings:
     ai_tts_model: str = ""
     ai_tts_voice: str = ""
     ai_tts_speed: float = 1.0
+    # How an AI chat reply is delivered when you ask by voice (Ctrl+F9 in Ask
+    # Quill). "announce" is the historical behaviour and stays the default:
+    # a short spoken summary through your screen reader, free and offline.
+    # "text" shows the reply without speaking it, "local_tts" reads it with
+    # QUILL's own offline voices, and "ai_voice" reads it with the cloud voice
+    # configured above -- which bills per character and sends the reply text to
+    # that provider, so it is opt-in and never a silent upgrade.
+    ai_voice_reply_mode: str = "announce"
+    # An announcement is a summary, so it is truncated; spoken and text modes
+    # deliver the whole reply. 0 disables truncation for announcements too.
+    ai_voice_reply_announce_limit: int = 140
     announcement_trace_enabled: bool = False
     announcement_startup_tips_enabled: bool = False
     verbosity_speech_enabled: bool = True
@@ -812,6 +830,12 @@ class Settings:
         except (TypeError, ValueError):
             ai_tts_speed = 1.0
         ai_tts_speed = max(0.25, min(4.0, ai_tts_speed))
+        ai_voice_reply_mode = str(data.get("ai_voice_reply_mode", "announce")).strip().lower()
+        if ai_voice_reply_mode not in VOICE_REPLY_MODES:
+            ai_voice_reply_mode = "announce"
+        ai_voice_reply_announce_limit = _clamp_int(
+            data.get("ai_voice_reply_announce_limit", 140), 140, 0, 2000
+        )
         if announcement_backend not in {"auto", "prism", "status_only"}:
             announcement_backend = "auto"
         announcement_braille = bool(data.get("announcement_braille", True))
@@ -1440,6 +1464,8 @@ class Settings:
             ai_tts_model=ai_tts_model,
             ai_tts_voice=ai_tts_voice,
             ai_tts_speed=ai_tts_speed,
+            ai_voice_reply_mode=ai_voice_reply_mode,
+            ai_voice_reply_announce_limit=ai_voice_reply_announce_limit,
             announcement_trace_enabled=announcement_trace_enabled,
             announcement_startup_tips_enabled=announcement_startup_tips_enabled,
             verbosity_speech_enabled=verbosity_speech_enabled,

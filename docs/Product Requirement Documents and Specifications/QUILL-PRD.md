@@ -3462,6 +3462,56 @@ Ask Quill is a conversational assistant that runs entirely on the user's machine
 
 **Discoverability and reliability.** Ask Quill lives under a top-level **AI** menu (Alt+I) alongside the "Use Artificial Intelligence" toggle and AI Model settings. Generation runs off the UI thread. The single-instance lock self-heals (PID + creation-time identity) so a stale lock from a crash never blocks launch.
 
+**Voice reply delivery (`core/ai/voice_reply.py`, `ui/voice_reply_dialog.py`,
+`ui/assistant_reply_delivery.py`).** Ask Quill has always supported a spoken
+question (Ctrl+F9 → offline transcription → send), but the *answer* had exactly
+one delivery path: `_announce_incoming`, a whitespace-collapsed 140-character
+summary handed to the screen reader. Two full speech stacks already existed and
+were wired only to document read-aloud — QUILL's offline voices, and the cloud
+AI voices in `core/ai/cloud_tts.py` (OpenAI 11 voices, Gemini 30, ElevenLabs
+export-only). The join was missing.
+
+`ai_voice_reply_mode` selects one of four deliveries — `announce` (default,
+unchanged behaviour), `text`, `local_tts`, `ai_voice` — and
+`ai_voice_reply_announce_limit` (0–2000, 0 = no cap) governs announcements only.
+Truncation is deliberately **not** applied to the spoken modes: a character cap
+is the right shape for a summary and the wrong shape for speech, where stopping
+mid-sentence is worse than not speaking.
+
+`truncate_announcement()` is the single rule every announcement in the chat
+shares — replies, errors, and edit proposals alike. It replaces a literal `140`
+that lived inside the panel's announcement helper, which meant the configured
+length governed replies while errors and proposals silently kept the old number.
+Errors and proposals remain *announcements* whatever the reply mode (a
+4,000-character error read out in full helps nobody); they simply respect the
+same length. The limit is read once per chat session rather than per utterance,
+since it sits on the path of every announcement and reading settings is file
+I/O.
+
+Policy lives in `plan_voice_reply()`, which is wx-free, synchronous, and returns
+a `VoiceReplyPlan` the UI performs; the mechanics (threads, wx, TTS calls) stay
+in the UI mixin. Two invariants hold in the policy layer: a plan never both
+speaks and announces (that would talk over itself), and every degradation moves
+**towards** the offline default, never away from it. An `ai_voice` mode with no
+API key, or with an export-only provider (ElevenLabs), falls back to `local_tts`
+and then to `announce`, carrying a `fallback_reason` the UI states once —
+silently doing something other than what a setting says is how trust in the
+setting is lost.
+
+The dialog is the single place the whole chain is configured, and it closes a
+real defect: `ai_tts_voice` was surfaced in the generic settings list as one flat
+catalog of every provider's voices, so a Gemini voice could be selected while
+`ai_tts_provider` was OpenAI, failing only at synthesis. The model and voice
+lists are rebuilt from the selected provider, making the invalid pairing
+unrepresentable. Cost and egress are stated in the dialog body (not a footnote)
+with a live estimate from `estimate_cost_usd`, because `ai_voice` is the only
+mode that bills money and transmits the reply text off the machine. It is opt-in
+and never selected on the user's behalf.
+
+Voice conversation mode (Alt+Shift+Q) predates the setting and has always spoken
+its answers; while the setting is at its default it continues to, so entering
+voice mode does not silently become text-only. An explicit choice always wins.
+
 ### 5.77 Copy Tray — twelve-slot persistent clipboard
 
 Copy Tray gives users twelve independently addressable clipboard slots that survive application restarts. Each slot holds text explicitly placed there; slots are written atomically to disk on every change.

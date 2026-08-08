@@ -313,6 +313,7 @@
   "quill/ui/main_frame.py::MainFrame.show_watch_folder_status::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame.start_macro_recording::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_adp.py::AdpMixin.open_adp_settings::wx.Dialog": "hardened_custom",
+  "quill/ui/main_frame_ai_actions.py::AiActionsMixin.open_voice_reply_settings::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_braille.py::BrailleCommandsMixin.convert_brf_file::wx.FileDialog": "native",
   "quill/ui/main_frame_braille.py::BrailleCommandsMixin.go_to_braille_page::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_braille_phase2.py::BraillePhase2CommandsMixin.go_to_print_page::wx.TextEntryDialog": "native",

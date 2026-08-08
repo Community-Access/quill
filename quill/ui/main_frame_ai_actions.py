@@ -18,6 +18,91 @@ from quill.core.selection import paragraph_span
 class AiActionsMixin:
     """Selection-scoped AI writing actions, mixed into MainFrame."""
 
+    def open_voice_reply_settings(self) -> None:
+        """Configure how Ask Quill answers a spoken question.
+
+        One dialog for the whole chain: the reply mode, and the cloud voice used
+        when the mode is *AI voice*. The provider/model/voice knobs also exist as
+        individual rows in the settings list, but only here are the model and
+        voice lists rebuilt per provider -- the flat list let a Gemini voice be
+        selected while OpenAI was the provider, which fails at synthesis time.
+        """
+        from quill.core.settings import save_settings
+        from quill.ui.dialog_contract import apply_modal_ids
+        from quill.ui.voice_reply_dialog import VoiceReplyDialog
+
+        wx = self._wx
+        panel = VoiceReplyDialog(wx, settings=self.settings, on_preview=self._preview_ai_voice)
+        dialog = wx.Dialog(self.frame, title="Voice Reply Settings", style=wx.DEFAULT_DIALOG_STYLE)
+        outer = panel.populate(dialog)
+        buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+        outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+        panel.finalize()
+        apply_modal_ids(
+            dialog,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="&Save",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
+        try:
+            if self._show_modal_dialog(dialog, "Voice Reply Settings") != wx.ID_OK:
+                self._set_status("Voice reply settings unchanged")
+                return
+            result = panel.result
+        finally:
+            dialog.Destroy()
+        if result is None:
+            return
+        s = self.settings
+        s.ai_voice_reply_mode = result.reply_mode
+        s.ai_voice_reply_announce_limit = result.announce_limit
+        s.ai_tts_provider = result.provider
+        s.ai_tts_model = result.model
+        s.ai_tts_voice = result.voice
+        s.ai_tts_speed = result.speed
+        save_settings(s)
+
+        from quill.core.ai.voice_reply import mode_label
+
+        self._set_status(f"Voice replies: {mode_label(result.reply_mode)}")
+
+    def _preview_ai_voice(
+        self, provider: str, model: str, voice: str, speed: float, text: str
+    ) -> None:
+        """Speak a sample line with the voice selected in the dialog.
+
+        Off the UI thread, and never fatal: a failed preview reports itself and
+        leaves the dialog open so another voice can be tried.
+        """
+        import threading
+
+        def worker() -> None:
+            try:
+                from quill.core.ai.cloud_tts import default_model, default_voice, speak_text
+                from quill.core.assistant_ai import load_provider_api_key
+
+                key = load_provider_api_key(provider)
+                if not key:
+                    self._wx.CallAfter(
+                        self._set_status, f"Add an API key for {provider} to preview its voices."
+                    )
+                    return
+                speak_text(
+                    provider,
+                    text,
+                    key,
+                    model=model or default_model(provider),
+                    voice=voice or default_voice(provider),
+                    speed=speed,
+                )
+            except Exception as exc:  # noqa: BLE001 - a preview must not break the dialog
+                self._wx.CallAfter(self._set_status, f"Could not preview that voice: {exc}")
+
+        threading.Thread(  # GATE-40-OK: cloud TTS preview; posts via CallAfter.
+            target=worker, daemon=True
+        ).start()
+
     # NOTE: open_ai_rewrite_selection and open_ai_summarize_selection used to live
     # here too, but MainFrame's own class body defines newer agent-task versions
     # (``_run_agent_task``) that override these via MRO — the copies here never ran.

@@ -24845,6 +24845,51 @@ inline picker. Choose a provider and model, enter a key if needed, and
 <strong>Save</strong> — this also sets that choice as the default, so
 the next chat uses it.</li>
 </ul>
+<p>Asking out loud, and choosing how Quill answers:</p>
+<ul>
+<li>Press <strong>Ctrl+F9</strong> in Ask Quill to ask a question by
+voice. Press it once to start recording and again to stop; Quill
+transcribes what you said <strong>on your own machine</strong> and sends
+the text. Nothing you record leaves the computer.</li>
+<li><strong>AI &gt; Voice Reply Settings...</strong> chooses how the
+answer comes back. The setting applies to every reply, however you
+asked:
+<ul>
+<li><strong>Announce a short summary</strong> — the default. Brief,
+spoken by your screen reader, offline and free.</li>
+<li><strong>Show as text only</strong> — nothing is spoken; read the
+reply in the transcript.</li>
+<li><strong>Read aloud with QUILL's own voice</strong> — the full reply,
+in whichever offline voice you use for Read Aloud (Kokoro, Piper,
+eSpeak, DECtalk, SAPI). Offline and free.</li>
+<li><strong>Read aloud with the AI voice</strong> — the full reply, in a
+voice from <strong>OpenAI</strong> or <strong>Google
+Gemini</strong>.</li>
+</ul></li>
+<li>When a reply is <strong>spoken</strong> you hear all of it. The
+length limit exists to keep an <em>announcement</em> short; cutting
+speech off mid-sentence would be worse than not speaking, so it applies
+only to announcements. Set the limit to 0 to hear the whole reply
+announced too.</li>
+<li>The length you set applies to <strong>everything</strong> Ask Quill
+announces — answers, error messages, and the summary of an edit it
+proposes. It used to be fixed at 140 characters with no way to change
+it. Errors and edit proposals stay announcements whichever reply mode
+you pick, because having a long error read out in full is rarely useful;
+they just follow your chosen length.</li>
+<li>Choosing <strong>AI voice</strong> shows the provider, model, and
+voice. The voice list always matches the provider you picked, so you
+cannot accidentally pair an OpenAI provider with a Gemini voice.
+<strong>Preview this voice</strong> reads a sample line so you can hear
+it before committing.</li>
+<li>The AI voices cost money and are not private in the way the other
+options are: the reply text is sent to OpenAI or Google to be spoken,
+and you are billed per character. The dialog says so and estimates the
+cost of a typical reply. Nothing selects an AI voice for you.</li>
+<li>If an AI voice cannot be used — no API key for that provider, for
+instance — Quill reads the reply in an offline voice instead and tells
+you why. Your answer is never lost because a voice was unavailable.</li>
+</ul>
 <p>Putting chat content into your document:</p>
 <ul>
 <li>The <strong>Insert into document</strong> controls at the bottom let

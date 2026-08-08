@@ -676,6 +676,11 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.open_voice_reply_settings(),
+            id=self._id_voice_reply_settings,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self._refresh_ai_status(),
             id=self._id_ai_status_badge,
         )
