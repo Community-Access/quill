@@ -853,3 +853,81 @@ def test_build_chat_headers_openai_does_not_get_anthropic_beta() -> None:
         "openai", "https://api.openai.com", "key123", cache_system_prompt=True
     )
     assert "anthropic-beta" not in headers
+
+
+# ---------------------------------------------------------------------------
+# Environment API key fallback (#1312)
+# ---------------------------------------------------------------------------
+
+
+def test_environment_key_is_used_only_when_nothing_is_stored(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = _fake_credential_store(monkeypatch)
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai")
+
+    assert assistant_ai.load_provider_api_key("openai") == "env-openai"
+    assert assistant_ai.provider_api_key_source("openai") == "environment"
+
+    # A key entered in QUILL always wins over an ambient one.
+    store[assistant_ai.provider_credential_target("openai")] = "stored-openai"
+    assert assistant_ai.load_provider_api_key("openai") == "stored-openai"
+    assert assistant_ai.provider_api_key_source("openai") == "stored"
+
+
+def test_environment_key_is_stripped(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A shell profile exporting a trailing newline must not cause a 401."""
+    _fake_credential_store(monkeypatch)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "  sk-ant-padded\n")
+    assert assistant_ai.load_provider_api_key("claude") == "sk-ant-padded"
+
+
+def test_environment_fallback_ignores_non_cloud_providers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A local Ollama needs no key, and "off" is not a provider.
+
+    Guards against the computed-name approach, where provider "off" would
+    read OFF_API_KEY and a local Ollama would read OLLAMA_API_KEY.
+    """
+    _fake_credential_store(monkeypatch)
+    monkeypatch.setenv("OLLAMA_API_KEY", "should-not-be-used-for-local")
+    monkeypatch.setenv("OFF_API_KEY", "nonsense")
+    assert assistant_ai.load_provider_api_key("ollama") == ""
+    assert assistant_ai.load_provider_api_key("off") == ""
+    # ollama_cloud IS a cloud provider and does read OLLAMA_API_KEY.
+    assert assistant_ai.load_provider_api_key("ollama_cloud") == "should-not-be-used-for-local"
+
+
+def test_stored_accessors_never_see_the_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The accessors the UI and the migration use must ignore env vars."""
+    _fake_credential_store(monkeypatch)
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai")
+    assert assistant_ai.stored_provider_api_key("openai") == ""
+    assert assistant_ai.load_provider_api_key("openai") == "env-openai"
+
+
+def test_unlock_failure_is_not_masked_by_an_environment_key(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """L-5: a key encrypted for a different Windows user must still surface.
+
+    Silently succeeding with an environment key here would hide the
+    "re-enter your key" diagnosis behind an unrelated success.
+    """
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    _fake_credential_store(monkeypatch)
+    monkeypatch.setattr(assistant_ai, "unprotect_secret", _raise_unprotect)
+    assistant_ai.assistant_secret_path().write_text(
+        json.dumps({"protected_secret": "undecryptable"}), encoding="utf-8"
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai")
+    assistant_ai.save_assistant_connection_settings(
+        assistant_ai.AssistantConnectionSettings(provider="openai", model="gpt-4o-mini")
+    )
+    assert assistant_ai.assistant_secret_unlock_failed() is True
+    assert assistant_ai.load_assistant_api_key() == ""
+
+
+def _raise_unprotect(_value: str) -> str:
+    raise ValueError("cannot decrypt with this user's keys")

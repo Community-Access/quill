@@ -69,6 +69,23 @@ def _enable_dev_build_for_tests() -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_ambient_provider_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Hide the developer's own provider API keys from every test.
+
+    ``assistant_ai.environment_api_key`` falls back to these variables, so a
+    machine that legitimately exports one for unrelated work would otherwise
+    make key-related tests pass (or fail) for reasons that have nothing to do
+    with the code under test, and would differ from CI. Derived from the
+    provider table so a newly supported variable cannot be forgotten here.
+    """
+    from quill.core.assistant_ai import _PROVIDER_ENV_VARS
+
+    for names in _PROVIDER_ENV_VARS.values():
+        for name in names:
+            monkeypatch.delenv(name, raising=False)
+
+
+@pytest.fixture(autouse=True)
 def _reclaim_leaked_wx_windows():
     """Destroy wx top-level windows a test created but never destroyed.
 

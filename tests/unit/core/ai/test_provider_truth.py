@@ -104,7 +104,9 @@ def test_migration_moves_global_active_key(monkeypatch) -> None:  # type: ignore
     monkeypatch.setattr(
         aai, "load_assistant_connection_settings", lambda: type("S", (), {"provider": "claude"})()
     )
-    monkeypatch.setattr(aai, "load_assistant_api_key", lambda: "sk-ant-global")
+    # stored_* is what the migration reads: it must consolidate only keys the
+    # user actually saved, never an ambient environment variable.
+    monkeypatch.setattr(aai, "stored_assistant_api_key", lambda: "sk-ant-global")
 
     migrated = consolidate_provider_keys()
 
@@ -142,3 +144,28 @@ def test_allowed_providers_applies_policy() -> None:
     assert "ollama" in result
     assert "openai" not in result
     assert "off" in result  # disabling AI is never policy-blocked
+
+
+def test_migration_never_persists_an_environment_key(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """An ambient env key must not be written into the credential store.
+
+    This is the invariant the whole stored_* / load_* split exists to
+    protect. If consolidate_provider_keys() read through the env-aware
+    accessors it would copy a variable the user exported for unrelated work
+    into QUILL's permanent storage -- and keep using it after they unset it.
+    """
+    store: dict[str, str] = {}
+    monkeypatch.setattr(aai, "_cs_save", lambda target, secret: store.__setitem__(target, secret))
+    monkeypatch.setattr(aai, "_cs_load", lambda target: store.get(target, ""))
+    monkeypatch.setattr(
+        aai, "load_assistant_connection_settings", lambda: type("S", (), {"provider": "openai"})()
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai-should-not-persist")
+
+    migrated = consolidate_provider_keys()
+
+    assert migrated == []
+    assert store == {}
+    # The env key still WORKS for making calls -- it is just never saved.
+    assert aai.load_provider_api_key("openai") == "env-openai-should-not-persist"
+    assert aai.stored_provider_api_key("openai") == ""

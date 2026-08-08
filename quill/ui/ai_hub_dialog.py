@@ -136,11 +136,17 @@ class AIHubDialog:
 
         from quill.core.assistant_ai import (
             load_assistant_connection_settings,
-            load_provider_api_key,
+            provider_api_key_source,
+            stored_provider_api_key,
         )
 
         self._settings = load_assistant_connection_settings()
-        self._provider_key = load_provider_api_key(self._settings.provider or "ollama")
+        # stored_* not load_*: this value populates an EDITABLE field whose Save
+        # writes it back to the credential store. Prefilling it from an
+        # environment variable would silently persist a key the user never
+        # entered here, and keep using it after they unset the variable.
+        self._provider_key = stored_provider_api_key(self._settings.provider or "ollama")
+        self._provider_key_source = provider_api_key_source(self._settings.provider or "ollama")
         self._deepgram_key = _load_deepgram_key()
         self._deepgram_max_speakers = _load_deepgram_max_speakers()
 
@@ -253,6 +259,19 @@ class AIHubDialog:
         key_row.Add(self._key_ctrl, 1, wx.RIGHT, 4)
         key_row.Add(self._reveal_btn, 0)
         sizer.Add(key_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        if self._provider_key_source == "environment":
+            # Say so out loud rather than leaving the field mysteriously empty
+            # on a provider that nonetheless works: the key is real, it just
+            # lives in the environment, and typing here overrides it.
+            env_note = wx.StaticText(
+                panel,
+                label=_(
+                    "This provider is using an API key from an environment "
+                    "variable. Leave this box empty to keep using it, or type a "
+                    "key here to save one in QUILL instead."
+                ),
+            )
+            sizer.Add(env_note, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         self._set_key_field_enabled(self._settings.provider or "ollama")
 
         # Host (shown only for Ollama / custom)

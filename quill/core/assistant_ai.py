@@ -661,7 +661,14 @@ def save_assistant_connection_settings(settings: AssistantConnectionSettings) ->
     write_json_atomic(assistant_connection_path(), payload)
 
 
-def load_assistant_api_key() -> str:
+def stored_assistant_api_key() -> str:
+    """The saved global assistant key, ignoring the environment.
+
+    Split out from :func:`load_assistant_api_key` so the key migration can
+    consolidate only values the user actually gave QUILL -- migrating an
+    ambient environment variable into the credential store would persist a
+    secret they never chose to save here.
+    """
     credential_secret = _load_api_key_from_credential_manager()
     if credential_secret:
         return credential_secret
@@ -689,6 +696,26 @@ def load_assistant_api_key() -> str:
         if path.exists():
             path.unlink()
     return decrypted
+
+
+def load_assistant_api_key() -> str:
+    """The key to USE for the active provider: stored first, environment second.
+
+    The environment fallback deliberately does NOT apply when the stored key
+    exists but could not be decrypted (``assistant_secret_unlock_failed()``):
+    silently succeeding with a different key there would mask the
+    wrong-Windows-user diagnosis L-5 exists to surface.
+    """
+    stored = stored_assistant_api_key()
+    if stored:
+        return stored
+    if assistant_secret_unlock_failed():
+        return ""
+    try:
+        provider = load_assistant_connection_settings().provider
+    except Exception:  # noqa: BLE001 - unreadable settings means "no active provider"
+        return ""
+    return environment_api_key(provider)
 
 
 def save_assistant_api_key(api_key: str) -> None:
@@ -749,9 +776,74 @@ def provider_credential_target(provider: str) -> str:
     return f"QUILL:assistant:{normalized}:api-key"
 
 
-def load_provider_api_key(provider: str) -> str:
-    """Return the stored key for *provider*, or "" if none."""
+#: Environment variables each cloud provider's own SDK/CLI conventionally uses.
+#: Deliberately an explicit table rather than a computed ``f"{PROVIDER}_API_KEY"``
+#: pattern: a computed name would make ``provider="off"`` read ``OFF_API_KEY``
+#: and a local Ollama install read ``OLLAMA_API_KEY``, inventing meaning for
+#: variables nobody set for QUILL. Mirrors ``ai.harness_credentials._ENV_VARS``.
+_PROVIDER_ENV_VARS: dict[str, tuple[str, ...]] = {
+    "openai": ("OPENAI_API_KEY",),
+    "claude": ("ANTHROPIC_API_KEY", "CLAUDE_API_KEY"),
+    "gemini": ("GEMINI_API_KEY", "GOOGLE_API_KEY"),
+    "openrouter": ("OPENROUTER_API_KEY",),
+    "ollama_cloud": ("OLLAMA_API_KEY",),
+}
+
+
+def environment_api_key(provider: str) -> str:
+    """The key for *provider* from the environment, or "" if none is set.
+
+    Only cloud providers are consulted -- a local Ollama needs no key, and
+    ``off`` is not a provider at all. The value is stripped: a shell profile
+    that exports a key with a trailing newline would otherwise produce a
+    confusing 401 rather than an obvious mistake.
+    """
+    normalized = provider.strip().lower()
+    if normalized not in _CLOUD_PROVIDERS:
+        return ""
+    for name in _PROVIDER_ENV_VARS.get(normalized, ()):
+        value = (os.environ.get(name) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def stored_provider_api_key(provider: str) -> str:
+    """The key QUILL has actually SAVED for *provider*, ignoring the environment.
+
+    Use this wherever an ambient environment key must not be mistaken for a
+    stored one: the Settings/AI Hub key fields (whose Save would otherwise
+    write an env-supplied key into the credential store) and the key
+    migration (which must never persist a value the user did not give us).
+    """
     return _cs_load(provider_credential_target(provider)) or ""
+
+
+def provider_api_key_source(provider: str) -> str:
+    """Where *provider*'s key comes from: ``"stored"``, ``"environment"``, or ``""``.
+
+    Lets the UI tell the user that a provider is configured by an environment
+    variable rather than by something they entered here -- otherwise a key
+    exported for unrelated work silently configures a cloud provider.
+    """
+    if stored_provider_api_key(provider):
+        return "stored"
+    if environment_api_key(provider):
+        return "environment"
+    return ""
+
+
+def load_provider_api_key(provider: str) -> str:
+    """Return the key to USE for *provider*: stored first, environment second.
+
+    The environment is a fallback, never an override -- a key entered in QUILL
+    always wins over an ambient one. Callers that need to distinguish the two
+    (UI prefill, migration) must use :func:`stored_provider_api_key`.
+    """
+    stored = stored_provider_api_key(provider)
+    if stored:
+        return stored
+    return environment_api_key(provider)
 
 
 def load_keyed_provider_api_key(provider: str) -> str:
