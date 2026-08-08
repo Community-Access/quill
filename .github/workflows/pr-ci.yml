@@ -99,41 +99,25 @@ jobs:
         # deadlocked on the dead worker). In a fresh process it is fast and
         # boring.
         #
-        # tests\unit\ui runs as its OWN step below rather than sharing this
-        # pool. Two reasons, both learned the hard way on 2026-08-07:
-        #   1. Determinism. With one shared pool, --dist=loadfile assigns files
-        #      across workers by position, so merely ADDING an unrelated test
-        #      file (a core property-test module) reshuffled the split, landed
-        #      more wx files on one worker, and tipped it past the handle
-        #      ceiling -- 27 failures in code that commit never touched. With
-        #      the wx files in their own pool, non-UI additions cannot move
-        #      them.
-        #   2. Headroom. The UI pool gets more workers than cores precisely
-        #      because the constraint is per-PROCESS Windows USER handles, not
-        #      CPU: more processes means fewer wx files each, and roughly half
-        #      the peak handle count per worker. These tests are GUI- and
-        #      I/O-bound, so oversubscribing cores costs little wall clock.
-        # The underlying leak (widget tests that never Destroy their windows)
-        # is still real and worth fixing at the source; see the note in
-        # tests\unit\ui\conftest.py.
+        # The window-handle exhaustion this comment describes was ROOT-CAUSED
+        # and fixed on 2026-08-08: widget tests created wx.Frame/wx.Dialog
+        # without Destroy(), and a wx window outlives Python's garbage
+        # collector. The _reclaim_leaked_wx_windows fixture in tests\conftest.py
+        # now destroys each test's leaked windows and pumps the pending-delete
+        # list. Measured effect on a single-process run of tests\unit\ui:
+        # 71 failed / 25 errors and handles pinned at the 10,000 ceiling,
+        # became 2609 passed / 0 failed with handles peaking at 523.
+        # -n 4 --dist=loadfile is kept for wall-clock and because loadfile
+        # keeps each file's tests together so module-scoped wx_app fixtures
+        # still work -- no longer as a handle workaround.
         run: |
           pytest tests\unit tests\accessibility -q -n 4 --dist=loadfile `
             --timeout=300 --timeout-method=thread `
-            --ignore=tests\unit\ui `
             --ignore=tests\unit\core\test_net_tls.py `
             --ignore=tests\unit\core\test_thesaurus.py `
-            --cov=quill.core --cov=quill.io `
-            --cov-report=
-      - name: Run UI widget tests (own worker pool, more headroom)
-        # --cov-append: this is a second pytest process writing to the same
-        # .coverage data the floor check reads, so it must add to the first
-        # step's measurements rather than replace them.
-        run: |
-          pytest tests\unit\ui -q -n 8 --dist=loadfile `
-            --timeout=300 --timeout-method=thread `
             --ignore=tests\unit\ui\test_dialog_inventory.py `
             --cov=quill.core --cov=quill.io `
-            --cov-append --cov-report=
+            --cov-report=
       - name: Run dialog-inventory gate tests (isolated process)
         run: |
           pytest tests\unit\ui\test_dialog_inventory.py -q `
