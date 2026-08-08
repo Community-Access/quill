@@ -530,7 +530,14 @@ real stream address, telling you in the dialog that it did. Nothing is
 fetched or sent anywhere -- it is purely a matter of rewriting the text
 -- and a link that is not Live365 is used exactly as you typed it.</li>
 <li><strong>Any other stream URL</strong> is saved as you typed it, as
-always.</li>
+always. A SecureNet player link
+(<code>securenetsystems.net/v5/...</code>) is saved as typed too,
+because unlike the two above its real stream address cannot be worked
+out from the link alone -- it has to be read from the page. Two things
+get you there: use <strong>Find Streams from a Website...</strong> below
+with the player link, or just save it and press Play, and the
+self-healing repair will find the stream for you on the first
+attempt.</li>
 </ul></li>
 <li><strong>When a station won't play, Quill Radio tries to fix it for
 you.</strong> Some stations are listed in the directory but their stream
@@ -561,9 +568,19 @@ guessing. Both the MP3 and the AAC stream are offered when a station
 publishes both. It also recognizes an <strong>iHeart</strong> or
 <strong>TuneIn</strong> station page pasted directly and resolves its
 real playable stream through that directory, instead of handing back a
-page address that will not play. If a page is not one of these players
-or directories, or does not name its station, the scan simply behaves as
-before.</li>
+page address that will not play. It also handles <strong>SecureNet's
+player</strong> (<code>securenetsystems.net/v5/...</code>), used by a
+large number of American broadcasters, which failed for the opposite
+reason: that page <em>does</em> write its stream address out in plain
+text, but the address looks like nothing special --
+<code>https://ice66.securenetsystems.net/ROM</code>, with no
+<code>.mp3</code> on the end and no <code>/stream</code> in the path --
+so the scan used to file it with the page's ordinary links and throw it
+away, returning junk or nothing at all. Quill Radio now recognizes the
+player itself and offers the real stream first, whether you point it at
+the player page or at a station's own site with the player embedded. If
+a page is not one of these players or directories, or does not name its
+station, the scan simply behaves as before.</li>
 <li><strong>Manage Favorites...</strong> -- the favorites, made
 organizable. See "The Favorites Manager" below.</li>
 <li><strong>New Folder...</strong> (Ctrl+Shift+E) -- create a folder
