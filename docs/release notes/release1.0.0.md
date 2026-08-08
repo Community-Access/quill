@@ -1167,6 +1167,13 @@ When a reply is spoken you hear **all** of it. The length limit exists to keep a
 at all, so it applies to announcements alone. Set it to 0 to hear whole replies announced
 too.
 
+That length is now yours to set, and it applies to **everything** Ask Quill announces —
+answers, error messages, and the summary of an edit it wants to make. Previously the 140
+was fixed and written into the program, so there was no way to ask for more detail or
+less. Errors and edit proposals stay announcements whichever reply mode you choose, since
+having a long error read out in full is rarely what anyone wants; they simply respect the
+length you picked.
+
 Choosing an AI voice shows the provider, model and voice, and the voice list always
 matches the provider you picked — so you cannot pair an OpenAI provider with a Gemini
 voice and discover it only when speech fails, which the old settings list allowed.
