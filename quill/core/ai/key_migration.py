@@ -36,8 +36,13 @@ def consolidate_provider_keys() -> list[str]:
     """
     migrated: list[str] = []
     try:
+        # stored_* rather than load_* throughout: this function WRITES to the
+        # credential store, and load_provider_api_key/load_assistant_api_key
+        # now fall back to environment variables. Reading through those would
+        # persist an ambient env key the user never chose to save in QUILL --
+        # and would then keep using it after they unset the variable.
         for provider, legacy_target in _LEGACY_PROVIDER_TARGETS.items():
-            if _aai.load_provider_api_key(provider):
+            if _aai.stored_provider_api_key(provider):
                 continue
             legacy_value = (_aai._cs_load(legacy_target) or "").strip()
             if legacy_value:
@@ -45,8 +50,8 @@ def consolidate_provider_keys() -> list[str]:
                 migrated.append(provider)
 
         active = _aai.load_assistant_connection_settings().provider.strip().lower()
-        if active and active != "off" and not _aai.load_provider_api_key(active):
-            global_value = (_aai.load_assistant_api_key() or "").strip()
+        if active and active != "off" and not _aai.stored_provider_api_key(active):
+            global_value = (_aai.stored_assistant_api_key() or "").strip()
             if global_value:
                 _aai._cs_save(_aai.provider_credential_target(active), global_value)
                 if active not in migrated:

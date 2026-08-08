@@ -26,7 +26,6 @@ from quill.core.assistant_ai import (
     list_assistant_models,
     load_assistant_api_key,
     load_assistant_connection_settings,
-    load_provider_api_key,
     load_provider_model,
     missing_required_api_key,
     provider_api_key_label,
@@ -37,6 +36,8 @@ from quill.core.assistant_ai import (
     recommended_model_guidance,
     save_assistant_connection_settings,
     set_active_provider,
+    stored_assistant_api_key,
+    stored_provider_api_key,
     test_chat,
     verify_assistant_connection,
 )
@@ -1111,8 +1112,11 @@ class AssistantConnectionDialog:
         # always matches what is selected, even when the legacy active-key store
         # still holds a different provider's key from a previous session.
         _initial_provider = self._settings.provider.strip().lower() or "ollama"
-        _per_provider_key = load_provider_api_key(_initial_provider)
-        self._api_key = _per_provider_key or load_assistant_api_key()
+        # stored_* not load_*: this field is editable and its Save writes back
+        # to the credential store, so prefilling it from an environment
+        # variable would persist a key the user never entered here.
+        _per_provider_key = stored_provider_api_key(_initial_provider)
+        self._api_key = _per_provider_key or stored_assistant_api_key()
         self._api_key_revealed = False
         self.last_verification_ok: bool | None = None
         self.last_verification_message: str = "Not checked"
@@ -1350,7 +1354,7 @@ class AssistantConnectionDialog:
             # loses another provider's configuration.
             saved = self._per_provider_models.get(provider) or load_provider_model(provider)
             model_value = saved if saved else default_model_for_provider(provider)
-            self.api_key.SetValue(load_provider_api_key(provider))
+            self.api_key.SetValue(stored_provider_api_key(provider))
         else:
             model_value = self.model.GetValue().strip()
             known_models = {
