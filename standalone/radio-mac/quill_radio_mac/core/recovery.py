@@ -41,6 +41,7 @@ macOS notes: none -- fully platform-neutral.
 
 from __future__ import annotations
 
+import re
 import urllib.parse
 from dataclasses import dataclass, replace
 
@@ -222,17 +223,37 @@ def _pages_to_scan(station: RadioStation) -> list[str]:
     return pages
 
 
+#: A SecureNet *mount* lives on an ``ice<N>`` host. The player front-ends
+#: (``radio.``, ``streamdb<N>web.``) sit on the same domain but serve pages, and
+#: a player page links to itself -- so matching the domain would promote the
+#: page's own links right along with the stream.
+_SECURENET_MOUNT_RE = re.compile(r"^https?://ice\d+\.securenetsystems\.net/", re.IGNORECASE)
+
+
+def _is_resolved_player_mount(url: str) -> bool:
+    """True when *url* **is** a page's own resolved stream rather than a guess
+    taken off it: a Triton/StreamTheWorld mount, or a SecureNet ice mount.
+    """
+    return "streamtheworld.com" in url.lower() or bool(_SECURENET_MOUNT_RE.match(url))
+
+
 def _confident_candidate(candidates: list[PageStreamCandidate]) -> PageStreamCandidate | None:
     """A single high-confidence pick from website candidates, or ``None``.
 
-    A resolved Triton/StreamTheWorld player is unambiguous -- that page's own
-    live stream -- so a lone one is confident even beside other guesses. Failing
-    that, exactly one candidate overall is confident; two or more genuinely
-    different guesses are left for the user to choose between.
+    A *resolved player mount* is unambiguous -- it is the live stream the page
+    itself advertises, not one of the page's links that merely looks like audio
+    -- so a lone one is confident even beside other guesses. Two platforms
+    qualify: Triton/StreamTheWorld (resolved through its provisioning API) and a
+    SecureNet Cirrus player's own ``ice<N>`` mount. The SecureNet case is why
+    this matters in practice: its player pages also carry ordinary links that
+    survive the scan, so without this a station saved from such a page would
+    stay broken purely because its page was chatty. Failing that, exactly one
+    candidate overall is confident; two or more genuinely different guesses are
+    left for the user to choose between.
     """
-    triton_hits = [c for c in candidates if "streamtheworld.com" in c.url.lower()]
-    if len(triton_hits) == 1:
-        return triton_hits[0]
+    resolved = [c for c in candidates if _is_resolved_player_mount(c.url)]
+    if len(resolved) == 1:
+        return resolved[0]
     if len(candidates) == 1:
         return candidates[0]
     return None

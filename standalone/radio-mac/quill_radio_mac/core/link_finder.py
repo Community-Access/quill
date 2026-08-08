@@ -334,7 +334,10 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     parser = _StreamLinkParser(normalized)
     parser.feed(html_text)
 
-    all_candidates = list(parser.candidates)
+    # SecureNet first: its mount is a real, page-advertised stream, while the
+    # generic parser's picks off the same page are only stream-*shaped*.
+    all_candidates = _securenet_candidates(normalized, html_text)
+    all_candidates.extend(parser.candidates)
     all_candidates.extend(
         _follow_pages(parser.iframe_urls, _MAX_IFRAMES_TO_FOLLOW, "embedded iframe")
     )
@@ -395,6 +398,7 @@ def _follow_pages(
         page_candidates: list[PageStreamCandidate] = []
         if base:  # a followed Listen link may itself be a Triton player page
             page_candidates.extend(_triton_candidates(sub_url, sub_html, safe_mode=safe_mode))
+            page_candidates.extend(_securenet_candidates(sub_url, sub_html))
         page_candidates.extend(sub_parser.candidates)
         for candidate in page_candidates:
             out.append(
@@ -436,4 +440,36 @@ def _triton_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStre
             label=stream.mount,
         )
         for stream in streams
+    ]
+
+
+def _securenet_candidates(url: str, html: str) -> list[PageStreamCandidate]:
+    """Resolve a SecureNet Systems (Cirrus) player page to stream candidates,
+    or ``[]`` when the page is not a SecureNet player.
+
+    Unlike the Triton resolver above, this one needs no API call -- a Cirrus
+    player carries its own mount in the page HTML. The generic parser still
+    misses it, because that mount is a bare Icecast path
+    (``https://ice66.securenetsystems.net/ROM``) with no file extension and no
+    ``/stream``-style hint, so it fails the shape heuristics that keep ordinary
+    page links out of the results. Recognising the platform is what makes the
+    URL trustworthy here; the shape alone never could be.
+
+    Being fetch-free, this also runs in Safe Mode: it only reads the page the
+    caller already has.
+    """
+    from quill_radio_mac.core import securenet
+
+    if not securenet.page_is_securenet_player(url, html):
+        return []
+    callsign = securenet.callsign_from_page(url, html)
+    return [
+        PageStreamCandidate(
+            url=stream_url,
+            reason=f"stream from the station's player ({callsign})"
+            if callsign
+            else "stream from the station's player",
+            label=callsign,
+        )
+        for stream_url in securenet.stream_urls_from_page(html)
     ]
