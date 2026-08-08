@@ -68,6 +68,78 @@ def _enable_dev_build_for_tests() -> None:
     paths_mod._DEV_BUILD = True
 
 
+@pytest.fixture(autouse=True)
+def _reclaim_leaked_wx_windows():
+    """Destroy wx top-level windows a test created but never destroyed.
+
+    Windows caps a process at 10,000 User (window) handles. A wx.Frame or
+    wx.Dialog that simply falls out of scope keeps its native window alive for
+    the life of the process -- Python's garbage collector does not destroy a wx
+    window, only ``Destroy()`` does. Measured: an App plus one Frame, one
+    Dialog and twenty controls is 28 USER objects; dropping the frame without
+    destroying it leaks 2, and at roughly 2-4 leaked per widget test the suite
+    reaches the ceiling about three quarters of the way through. Past it every
+    CreateWindowEx fails and the run collapses into failures that look
+    unrelated to their own tests ("Failed to create dialog. Incorrect
+    DLGTEMPLATE?", "can't append invalid menu to menubar").
+
+    ``Destroy()`` only SCHEDULES deletion -- the handle is reclaimed when wx
+    processes its pending-delete list -- so the event loop must be pumped
+    afterwards or nothing is actually freed. (A first attempt at this fixture
+    pumped with ``app.ProcessIdle()``, which does not exist on ``wx.App``; the
+    AttributeError was swallowed by a broad except and the fixture silently did
+    nothing, which is why it appeared not to help.)
+
+    Only windows that appeared *during* the test are destroyed, so a module- or
+    session-scoped fixture's window survives. Teardown never fails a test.
+    """
+    import sys
+
+    def _live_wx():
+        """The real wx module with a running App, else None.
+
+        Some tests install a ``types.SimpleNamespace`` stub as ``sys.modules
+        ["wx"]``, so the module being importable proves nothing -- check that
+        the functions actually exist before calling them. Explicit rather than
+        a broad try/except: swallowing AttributeError here is what hid the
+        ``ProcessIdle`` mistake described above.
+        """
+        wx = sys.modules.get("wx")
+        get_app = getattr(wx, "GetApp", None)
+        if (
+            wx is None
+            or not callable(get_app)
+            or not callable(getattr(wx, "GetTopLevelWindows", None))
+        ):
+            return None
+        return wx if get_app() is not None else None
+
+    def _top_level_ids() -> set[int]:
+        wx = _live_wx()
+        if wx is None:
+            return set()
+        return {id(win) for win in wx.GetTopLevelWindows()}
+
+    before = _top_level_ids()
+    yield
+    wx = _live_wx()
+    if wx is None:
+        return
+    leaked = [win for win in wx.GetTopLevelWindows() if id(win) not in before]
+    if not leaked:
+        return  # nothing to reclaim: skip the pump entirely (it is not free)
+    for win in leaked:
+        try:
+            win.Destroy()
+        except Exception:  # noqa: BLE001 - an already-dead window is fine
+            pass
+    try:
+        wx.GetApp().ProcessPendingEvents()
+        wx.SafeYield()
+    except Exception:  # noqa: BLE001
+        pass
+
+
 @pytest.fixture()
 def quill_data_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     """Isolated QUILL_DATA_DIR guaranteed to be accepted by paths.app_data_dir().
