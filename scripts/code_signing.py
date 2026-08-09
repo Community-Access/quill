@@ -315,6 +315,41 @@ def resolve_config(
 # -- signing + verification ---------------------------------------------------
 
 
+def _sanitize_pe_for_signing(path: Path) -> None:
+    """Zero a dangling Certificate Table data directory before signing.
+
+    rcedit (which stamps the launcher's VERSIONINFO) rewrites a PE copied from
+    an already-signed binary -- the embeddable ``pythonw.exe`` -> ``quill.exe``
+    -- but leaves the optional header's Certificate Table entry
+    (IMAGE_DIRECTORY_ENTRY_SECURITY, index 4) pointing at the old signature it
+    removed: an offset at or past EOF. ``signtool`` then fails with 0x800700C1
+    (badexeformat) trying to parse a certificate that is not there.
+
+    A genuine signature sits fully *inside* the file and is left untouched --
+    signtool replaces it. Only an entry that points outside the file (rva >=
+    size, or rva + size > size) is zeroed. Best-effort: any parse problem is
+    swallowed so signtool, not this helper, reports real errors.
+    """
+    try:
+        data = bytearray(path.read_bytes())
+        if data[:2] != b"MZ":
+            return
+        e_lfanew = int.from_bytes(data[0x3C:0x40], "little")
+        if data[e_lfanew : e_lfanew + 4] != b"PE\x00\x00":
+            return
+        opt = e_lfanew + 24  # PE signature (4) + COFF header (20)
+        magic = int.from_bytes(data[opt : opt + 2], "little")
+        ddir = opt + (112 if magic == 0x20B else 96)  # PE32+ vs PE32 data-dir offset
+        cert = ddir + 4 * 8  # index 4, 8 bytes per entry
+        rva = int.from_bytes(data[cert : cert + 4], "little")
+        size = int.from_bytes(data[cert + 4 : cert + 8], "little")
+        if rva and (rva >= len(data) or rva + size > len(data)):
+            data[cert : cert + 8] = b"\x00" * 8
+            path.write_bytes(bytes(data))
+    except (OSError, IndexError, ValueError):
+        return
+
+
 def _sign_command(config: SigningConfig, files: Sequence[Path]) -> list[str]:
     return [
         str(config.signtool),
@@ -348,6 +383,8 @@ def sign_files(files: Iterable[Path], config: SigningConfig, *, batch: int = 50)
         raise SigningError(f"Cannot sign missing files: {', '.join(map(str, missing))}")
     if not resolved:
         return []
+    for f in resolved:
+        _sanitize_pe_for_signing(f)
     for start in range(0, len(resolved), batch):
         chunk = resolved[start : start + batch]
         command = _sign_command(config, chunk)
