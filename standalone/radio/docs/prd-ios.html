@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio for iOS -- Product Requirements</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-radio-for-ios----product-requirements">Quill Radio for iOS
+-- Product Requirements</h1>
+<p><strong>Product:</strong> Quill Radio for iOS (iPhone, iPad, Apple
+Watch, CarPlay) <strong>Ecosystem:</strong> QUILL / QuillVille
+<strong>Language and stack:</strong> Swift 6, SwiftUI + a thin UIKit
+layer where VoiceOver needs it, AVFoundation, AVAudioEngine,
+MediaPlayer, CarPlay, App Intents, WidgetKit, ActivityKit, CryptoKit
+<strong>Document status:</strong> Product definition,
+implementation-ready <strong>Version:</strong> 1.0
+<strong>Date:</strong> August 8, 2026 <strong>Windows
+counterpart:</strong> <code>standalone/radio/docs/prd.md</code> (the
+authoritative feature spec for the shared radio domain) <strong>Shared
+platform spec:</strong>
+<code>docs/Product Requirement Documents and Specifications/quillville-apple-platform-spec.md</code>
+<strong>Sibling iOS app:</strong>
+<code>standalone/weather/docs/prd-ios.md</code> <strong>Product
+posture:</strong> Accessibility-first, VoiceOver-first,
+keyboard-complete, local-first, directory-plural, no-account</p>
+<hr />
+<h2 id="1-product-statement">1. Product statement</h2>
+<p>Quill Radio for iOS puts the whole of Quill Radio -- seven station
+directories, a self-healing stream resolver, nested favorites,
+per-station sound, timers, and recording -- into a pocket, and then does
+the thing a desktop app cannot: it goes with you. Into the car. Onto a
+wrist. Into a Siri request made with the phone still in a bag.</p>
+<p>The desktop product's real achievement is not that it plays streams.
+It is that a blind listener can <strong>find</strong> a station --
+across RadioBrowser, TuneIn, iHeart, SomaFM, ACB Media, Radio Reading
+Services, and NOAA Weather Radio -- get a playable URL when the
+station's own website hides it behind a JavaScript player, have that URL
+heal itself when the broadcaster moves it, and organize the result into
+a tree that behaves the same way every time. That is the part that must
+survive the port intact.</p>
+<p>The measure of success: <strong>a blind listener should be able to go
+from "I heard about a station called X" to hearing it, entirely by voice
+or by VoiceOver, in under thirty seconds, on a phone.</strong> Nothing
+in the App Store does that today.</p>
+<hr />
+<h2 id="2-architecture-requirement-not-a-fork">2. Architecture
+requirement: not a fork</h2>
+<ul>
+<li><strong>R-1.</strong> All portable logic lives in
+<strong>QuillKit</strong>, the Swift package shared with Quill Weather
+for iOS (see the platform spec). Directory clients, the stream resolver
+ladder, the favorites model, history, the recording model, the
+announcement policy, sync, and settings are QuillKit; the app target
+holds screens, intents, widgets, and the CarPlay scene.</li>
+<li><strong>R-2.</strong> The domain layer is a <strong>parity
+port</strong> of <code>quill/core/radio/*</code> -- the 41 wx-free,
+strict-typed modules that already exist precisely because someone
+anticipated this. Field names, JSON shapes, defaults, clamps, and the
+exact resolver ordering are preserved so a
+<code>radio_favorites.json</code> written on Windows loads on iOS and
+back again with no migration.</li>
+<li><strong>R-3.</strong> Every user-visible string that is spoken or
+shown comes from the same narration layer Quill Weather uses
+(<code>QuillNarrate</code>), governed by the shared golden corpus. "Now
+playing", "Buffering", "Recording started", the reconnect wording, the
+DVR "two minutes behind live" phrasing -- all of it is spec'd once and
+matched byte for byte across platforms.</li>
+<li><strong>R-4.</strong> Where iOS cannot do what Windows does, the
+product <strong>says so plainly in the user guide and in the affected
+screen</strong>. It does not silently ship a worse version of a promised
+feature. §13 is the honest list.</li>
+<li><strong>R-5.</strong> Source layout:
+<code>standalone/radio-ios/</code> (app, widgets, watch app, CarPlay
+scene, intents, tests) and <code>apple/QuillKit/</code>. Both sit
+outside QUILL's Python CI gates, as <code>standalone/radio-mac/</code>
+does, and carry their own Swift CI.</li>
+<li><strong>R-6.</strong> Data is shared, not copied: favorites,
+history, recordings index, schedules, wake timer, and settings live in
+one App Group container shared with Quill Weather for iOS -- the direct
+equivalent of the shared <code>%APPDATA%\Quill</code> store.</li>
+</ul>
+<hr />
+<h2 id="3-scope">3. Scope</h2>
+<h3 id="31-finding-stations">3.1 Finding stations</h3>
+<p><strong>F-1. Seven blended directories</strong>, ported whole, each
+behind the audited network chokepoint and each individually
+failure-tolerant so a down source never blanks a result list:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Access</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio Browser</td>
+<td>Public API, keyless</td>
+<td>Search with 200-per-page paging and a More Stations control; genre
+browse; country and tag facets; click-vote; by-uuid re-fetch for
+self-healing</td>
+</tr>
+<tr>
+<td>TuneIn (RadioTime OPML)</td>
+<td><code>opml.radiotime.com</code>, <code>partnerId=RadioTime</code>,
+keyless</td>
+<td>Search/Browse/Tune; resolve cap 10 per search</td>
+</tr>
+<tr>
+<td>iHeart</td>
+<td>Public sitemap index plus the keyless JSON content API</td>
+<td>Genre browse; lazy per-station stream resolution; resolve cap 5</td>
+</tr>
+<tr>
+<td>SomaFM</td>
+<td>Public directory, keyless</td>
+<td></td>
+</tr>
+<tr>
+<td>ACB Media</td>
+<td>Bundled directory</td>
+<td></td>
+</tr>
+<tr>
+<td>Radio Reading Services</td>
+<td>Bundled 20-service snapshot plus live refresh</td>
+<td>The audio information services that read print aloud -- a
+first-class category, not a genre filter</td>
+</tr>
+<tr>
+<td>NOAA Weather Radio (WeatherIndex)</td>
+<td>Live API, then cache, then the bundled 1,035-transmitter
+snapshot</td>
+<td>Works fully offline from the snapshot</td>
+</tr>
+</tbody>
+</table>
+<p><strong>F-2. Unified Find Stations</strong> --
+<code>merge_and_rank</code> ported exactly: de-dupe by stream URL then
+by name plus country, exact matches first, every non-Radio-Browser row
+labelled "via <source>", and <code>alt_sources</code> preserved so the
+Source facet never hides a station under the wrong directory.</p>
+<p><strong>F-3. Browse tree</strong> -- the lazy hierarchical browser
+(source, then genre or state, then A-Z or station) with per-node counts
+that match what expanding actually shows.</p>
+<p><strong>F-4. Find Streams -- the website scanner.</strong> The whole
+resolver ladder ports, because it is the feature that makes obscure
+stations reachable:</p>
+<ul>
+<li>Plain HTML scan with the bounded one-level "Listen / Live / Play /
+Tune in" link following.</li>
+<li><strong>Triton Digital / StreamTheWorld</strong> JavaScript-player
+resolution: detect the player, read the callsign from the PWA's logo
+asset, resolve a real mount through the provisioning API, offer both MP3
+and AAC.</li>
+<li><strong>SecureNet Cirrus</strong> player resolution: host or
+<code>ice&lt;N&gt;</code> mount detection, <code>playSessionID</code>
+stripping, <code>/media</code> interstitial skipping, callsign casing
+from the mount. Parse-only, no network call of its own.</li>
+<li><strong>iHeart and TuneIn page</strong> resolution.</li>
+<li><strong>Live365</strong> pure-string link normalization to the
+canonical streaming URL.</li>
+<li>Test-play with a Test/Stop Test toggle before committing.</li>
+</ul>
+<p><strong>F-5. Self-healing recovery</strong> -- the confidence-ordered
+ladder on a playback error: re-resolve a moved StreamTheWorld or
+<code>ice&lt;N&gt;</code> mount, refresh from the directory by uuid,
+then (opt-in, default on) scan the station website. A single unambiguous
+result auto-plays and rewrites the favorite; multiple candidates are
+announced for the user to choose. One attempt per station per
+session.</p>
+<p><strong>F-6. Custom stream URLs</strong>, M3U/M3U8/PLS import with
+folder targeting and duplicate handling, and export of favorites to
+extended M3U.</p>
+<p><strong>F-7. Report Bad Station</strong> -- the ported report
+builder, offered from any station's actions, carrying station metadata
+only and never identity or paths.</p>
+<h3 id="32-listening">3.2 Listening</h3>
+<p><strong>F-8. One transport control</strong> (Play becomes Stop, never
+a dead button), mute, and volume with <strong>per-station
+memory</strong> plus the persisted global level.</p>
+<p><strong>F-9. Single-player rule</strong> -- starting any stream
+silences sibling audio in every QuillVille app on the device.</p>
+<p><strong>F-10. What's Playing.</strong> The three-tier title
+resolution ports:</p>
+<ol type="1">
+<li>ICY <code>StreamTitle</code> side-tap for progressive streams,
+parsed by the ported <code>now_playing</code> module -- including the
+<code>key="value"</code> broadcast-automation convention and the plain
+<code>Artist - Title</code> form.</li>
+<li>The player's own timed metadata for HLS
+(<code>AVPlayerItemMetadataOutput</code>).</li>
+<li>Same-host status endpoint fallback -- Icecast
+<code>/status-json.xsl</code>, SHOUTcast v2 <code>/stats?json=1</code>,
+v1 <code>/7.html</code>.</li>
+</ol>
+<p>The user-set token template (<code>{title}</code>,
+<code>{artist}</code>, <code>{raw}</code>, <code>[optional]</code>
+segments; default <code>{title}[ by {artist}]</code>) ports unchanged,
+as does the reviewable, character-navigable Now Playing detail surface
+with copy, and the rule that both the copy and the detail command
+<strong>always terminate with a result</strong> -- a title-less stream
+still produces a surface naming the station.</p>
+<p><strong>F-11. Track-change announcements are opt-in</strong>, exactly
+as on Windows, so ambient chatter never surprises anyone.</p>
+<p><strong>F-12. Recently Played</strong> (capped, de-duplicated), Play
+Last Station, and resume-on-launch.</p>
+<p><strong>F-13. Live DVR</strong> -- pause and resume live radio,
+rewind and forward 30 seconds, and Back to Live, each announcing how far
+behind live the listener is. Implemented over the HLS live window where
+the stream provides one, and over an app-managed ring buffer for
+progressive streams.</p>
+<p><strong>F-14. Buffering announcements</strong> on a mid-stream stall,
+and a spoken, tiered reconnect narrative rather than silence.</p>
+<h3 id="33-organizing">3.3 Organizing</h3>
+<p><strong>F-15. Favorites Manager</strong> -- nested path-based
+folders, live rich search, custom display names used everywhere, folder
+rename carrying descendants, folder delete returning stations to the top
+level, and reordering. On iOS reordering is available three ways: drag,
+the VoiceOver <strong>Move up / Move down / Move above / Move
+below</strong> custom actions (A-6), and Full Keyboard Access.</p>
+<p><strong>F-16. Sort orders</strong> -- global (A-Z, Z-A, manual) with
+per-folder override, and the load-bearing Windows rule that switching to
+manual <strong>preserves the stored order and never bakes the sorted
+view over it</strong>.</p>
+<p><strong>F-17. Station Details</strong> -- the reviewable, copyable
+details surface for any station from any list.</p>
+<p><strong>F-18. Backup and restore</strong> -- the
+<code>.qrbackup</code> bundle with its SHA manifest, importable and
+exportable through the Files app, so a listener moving devices carries
+everything. Path traversal guarded on import, identical to the Windows
+implementation.</p>
+<h3 id="34-sound">3.4 Sound</h3>
+<p><strong>F-19. Sound Enhancements</strong>, per-station and global,
+with the resolution order ported (per-favorite override, else the shared
+default):</p>
+<ul>
+<li>Three-band equalizer, bass/mid/treble, -12 to +12 dB.</li>
+<li>Compressor.</li>
+<li>Channel mode: stereo, mono downmix, left only, right only -- the
+single-sided-hearing feature, with the corrected 2.0.2 pan behavior (the
+whole stereo field to one output, not one source channel
+duplicated).</li>
+<li>Night mode loudness normalization.</li>
+<li>The OptiLab-derived broadcast modes: Podcast Leveler, Stream Polish,
+Smooth Limiter, with the Input trim and Auto-Adapt controls and the
+bypass that remembers the chosen mode.</li>
+<li>Quick presets (Small Speakers, Late Night).</li>
+<li><strong>Live preview</strong>: every control takes effect on the
+playing stream immediately, debounced; Cancel reverts to the snapshot
+taken on open.</li>
+</ul>
+<p><strong>F-20. Output routing</strong> -- AirPlay and Bluetooth route
+selection through <code>AVRoutePickerView</code>, spoken route changes,
+and a remembered preference. This is the iOS analogue of the Windows
+Output Device picker.</p>
+<h3 id="35-recording-and-time-shifting">3.5 Recording and
+time-shifting</h3>
+<p><strong>F-21. Record now</strong> and <strong>Record a different
+station</strong>, for a duration, with the ported settings: format,
+bitrate, destination, filename pattern with tokens, and the
+maximum-duration safety cap.</p>
+<p><strong>F-22. Concurrent recordings</strong> -- the job-manager model
+ports: independent jobs, per-job stop, Stop All, per-job reconnect
+state, a stable job id across a reconnect, and the configurable
+concurrency cap with pending-and-retry rather than a hard refusal.</p>
+<p><strong>F-23. Raw/lossless capture</strong> -- remux the server's
+packets without re-encoding where the container allows, choosing the
+extension from the stream's own codec and falling back to a universal
+lossless container. Sound Enhancements and bitrate are correctly
+unavailable in this mode.</p>
+<p><strong>F-24. Recordings list</strong> -- live status with a growing
+size and a live elapsed time, in-place diff refresh keyed by file path
+so VoiceOver is never yanked to the top mid-read, plus Play, Stop,
+Share, Save to Files, and Remove.</p>
+<p><strong>F-25. Auto-reconnect</strong> with the ported
+fatal-versus-transient classification (disk full and HTTP 404/410/451
+are fatal; 403, 408, 5xx, and bare EOF reconnect), the stderr-tail
+clearing rule so a recovered error cannot poison a later verdict, and
+continuation parts that keep the original start timestamp.</p>
+<p><strong>F-26. Crash resume</strong> -- per-job resume markers,
+reconciliation of stray temporary files on launch, and the
+ask/always/never resume choice with its ten-minute grace window.</p>
+<p><strong>F-27. Scheduled recordings</strong> -- once, daily, weekly;
+edit in place; duplicate; enable and disable without deleting;
+hours-plus-minutes duration entry; 12- or 24-hour time entry; per-entry
+time zone; the next-occurrence sort with the stream host shown to
+disambiguate near-identical rows; and the window-based "due from start
+through start plus duration" model with launch catch-up.</p>
+<p><strong>iOS scope note.</strong> Scheduled recording and the wake-up
+timer depend on the app being alive at the scheduled moment, and iOS
+decides that, not the app. See §13 for exactly what is guaranteed, what
+is best-effort, and how the product tells the user the truth about it.
+This is a scope reduction, and it is stated in the feature's own screen,
+not buried.</p>
+<h3 id="36-timers">3.6 Timers</h3>
+<p><strong>F-28. Sleep timer</strong> with the shared fade-and-restore.
+<strong>F-29. Wake-up timer</strong> -- once or daily at a set time,
+within the ported five-minute firing window, "once" disabling itself. On
+iOS this becomes a notification-driven alarm with a one-tap Play action
+(§13.2).</p>
+<h3 id="37-shell">3.7 Shell</h3>
+<p><strong>F-30. Customize Features</strong> -- switchable areas
+(Recording, Weather, Reading Services, NOAA) that remove whole regions
+from the interface and from the VoiceOver focus order. <strong>F-31.
+Verbose diagnostics</strong> with a shareable log, and the ported coded
+errors. <strong>F-32. In-app documentation</strong> -- user guide,
+release notes, and this PRD, readable in the app with full VoiceOver
+support. <strong>F-33. QuillVille menu</strong> -- the family navigation
+surface, listing every QuillVille app with a link to open or install
+it.</p>
+<h3 id="38-non-goals">3.8 Non-goals</h3>
+<ul>
+<li><strong>YouTube as a station kind.</strong> The Windows feature
+depends on yt-dlp installed on demand, which iOS cannot do and the App
+Store would not allow. The feature is explicitly absent, not degraded,
+and the user guide says why.</li>
+<li>Spotify. The Windows integration ships dark behind a feature flag;
+iOS does not carry it at 1.0.</li>
+<li>A general DSP effects rack. Sound Enhancements is a purpose-built
+three-band EQ, compressor, channel control, and loudness stage --
+nothing more.</li>
+<li>Any station catalogue built from another product's private data
+files. Only open directories and public APIs, matching the ecosystem's
+standing rule.</li>
+<li>Advertising, analytics, tracking, an IDFA request, or any
+third-party runtime dependency.</li>
+<li>Re-broadcasting, sharing, or distributing recorded audio. Recording
+is personal time-shifting; the app has no share-to-the-world path for a
+recorded file, only a local save and a system share sheet the user
+drives.</li>
+</ul>
+<hr />
+<h2 id="4-accessibility-voiceover-as-the-primary-interface">4.
+Accessibility: VoiceOver as the primary interface</h2>
+<p>Requirements are normative. §5 of the Quill Weather iOS PRD defines
+the shared contract (A-1 through A-27); this section states the parts
+that are specific to a media application, and the shared ones bind here
+too.</p>
+<h3 id="41-focus-structure-and-the-parity-invariant">4.1 Focus,
+structure, and the parity invariant</h3>
+<ul>
+<li><strong>A-1.</strong> What is displayed is what is spoken. There is
+no separate accessible version of any surface.</li>
+<li><strong>A-2.</strong> Focus lands on the <strong>favorites
+list</strong> at launch, with the currently playing station selected. A
+focus dead zone is a defect.</li>
+<li><strong>A-3.</strong> Every list row is one accessibility element
+with a complete, self-contained label -- station name, folder, and state
+-- so arrowing through favorites is a stream of meaningful sentences,
+never a stream of fragments. This is the ported
+<code>display_label</code> and <code>details_text</code>
+discipline.</li>
+<li><strong>A-4.</strong> Real headings for source, genre, and folder
+nodes, so the Headings rotor navigates the browse tree.</li>
+<li><strong>A-5.</strong> A hidden control is never a focus stop, and an
+empty detail region is removed from the accessibility tree rather than
+blanked.</li>
+</ul>
+<h3 id="42-voiceover-actions----the-core-interaction-model">4.2
+VoiceOver Actions -- the core interaction model</h3>
+<ul>
+<li><strong>A-6.</strong> Actions live on the row, reached by swiping
+down, so nothing requires hunting for a button. Required action sets:
+<ul>
+<li><strong>Favorite station:</strong> Play, Record now, Sound
+enhancements, Rename, Move up, Move down, Move above, Move below, Move
+to folder, Station details, Copy stream URL, Report bad station,
+Remove.</li>
+<li><strong>Search or browse result:</strong> Play, Test play, Add to
+favorites, Add to folder, Station details, Report bad station.</li>
+<li><strong>Folder:</strong> Play first station, Expand, Collapse,
+Rename, Sort, New subfolder, Delete folder.</li>
+<li><strong>Recording row:</strong> Play, Stop, Share, Save to Files,
+Rename, Remove.</li>
+<li><strong>Schedule row:</strong> Edit, Duplicate, Enable, Disable,
+Delete.</li>
+<li><strong>Now Playing:</strong> Play or Stop, Rewind 30, Forward 30,
+Back to live, What's playing, Copy title, Sound enhancements, Sleep
+timer, Record.</li>
+</ul></li>
+<li><strong>A-7.</strong> Volume is an
+<code>.accessibilityAdjustableAction</code> on the Now Playing element
+-- swipe up and down changes volume without leaving the station. The
+volume boost range (to 150 percent for quiet stations) is exposed as an
+extension of the same adjustable, with the boost state spoken in the
+value.</li>
+</ul>
+<h3 id="43-custom-rotors-and-the-where-am-i-problem">4.3 Custom rotors
+and the "where am I" problem</h3>
+<ul>
+<li><strong>A-8.</strong> Custom rotors: <strong>Folders</strong>,
+<strong>Sources</strong>, <strong>Stations</strong>,
+<strong>Recordings</strong>, and <strong>Now Playing</strong>. The Now
+Playing rotor entry jumps to the transport from anywhere in the app --
+the single most requested navigation shortcut in any media app.</li>
+<li><strong>A-9.</strong> The ported <strong>focusable status
+bar</strong> becomes an accessibility-only summary element: one element
+whose value is the whole state sentence ("Playing WXYZ, volume 60, boost
+off, one recording, sleep timer 25 minutes remaining, 47 favorites"),
+with the individual cells as its custom actions. F6 on Windows becomes a
+rotor stop and a keyboard shortcut on iOS.</li>
+</ul>
+<h3 id="44-announcements-and-speech-shaping">4.4 Announcements and
+speech shaping</h3>
+<ul>
+<li><strong>A-10.</strong> Announcement priority: <code>.high</code>
+only for errors and for a weather alert forwarded from Quill Weather;
+<code>.default</code> for user-initiated results ("Recording started:
+WXYZ"); <code>.low</code> for track changes, buffering, and reconnects.
+Ambient state never interrupts a user who is reading.</li>
+<li><strong>A-11.</strong> Identical announcements inside two seconds
+are suppressed, and bursts are coalesced -- the first message of a quiet
+period is immediate, and anything within the following 150 milliseconds
+settles to the newest. Errors are exempt from both rules.</li>
+<li><strong>A-12.</strong> Track titles are <strong>never
+truncated</strong>. A long title is a long label.</li>
+<li><strong>A-13.</strong> Call letters and stream hosts are spoken with
+<code>accessibilitySpeechSpellsOutCharacters</code> where
+character-by-character is clearer, and the ported abbreviation-widening
+applies to spoken metadata.</li>
+<li><strong>A-14.</strong> A <strong>Concise labels</strong> setting
+swaps primary labels for the ported <code>compact_braille()</code>
+wording so a braille display line stays readable, with the full text in
+Custom Content. Same mechanism as Quill Weather (its A-14).</li>
+</ul>
+<h3 id="45-gestures-and-system-integration">4.5 Gestures and system
+integration</h3>
+<ul>
+<li><strong>A-15.</strong> <strong>Magic Tap</strong> is Play/Stop, the
+iOS convention, from anywhere in the app and from the Lock Screen when
+Quill Radio owns the Now Playing session.</li>
+<li><strong>A-16.</strong> <strong>Escape</strong> dismisses any sheet
+from any screen.</li>
+<li><strong>A-17.</strong> Full Keyboard Access and hardware keyboard
+shortcuts mirroring the Windows accelerators where the platform permits:
+Command-P play/stop, Command-T what's playing, Command-Shift-D output
+device, Command-Shift-E new folder, Command-comma settings, Command-F
+find stations, Command-R record, and a Command-hold shortcuts
+overlay.</li>
+<li><strong>A-18.</strong> Hardware media keys and headphone controls
+through <code>MPRemoteCommandCenter</code>, including the "skip"
+commands mapped to Rewind 30 and Forward 30 for DVR-capable
+streams.</li>
+<li><strong>A-19.</strong> Dynamic Type to <code>AX5</code> with reflow
+and no truncation; Reduce Motion, Increase Contrast, and Differentiate
+Without Color honored; Switch Control, Voice Control, and Assistive
+Access supported, with an Assistive Access presentation that is
+favorites plus a transport and nothing else.</li>
+<li><strong>A-20.</strong> Haptics for buffering, reconnect, recording
+start and stop, and timer fire -- always accompanying speech, never the
+only signal, always disableable.</li>
+<li><strong>A-21.</strong> <strong>Audio ducking discipline.</strong>
+VoiceOver speech ducks the stream by a configurable amount rather than
+being drowned by it; this is set through the audio session and is
+verified in the scripted VoiceOver run at maximum volume. A screen
+reader a listener cannot hear over their own radio is a broken app.</li>
+<li><strong>A-22.</strong> A VoiceOver user can complete first launch,
+find a station by name, play it, favorite it into a new folder, set a
+sleep timer, and start a recording without sighted assistance. Verified
+per release with the screen curtain on.</li>
+</ul>
+<hr />
+<h2 id="5-the-playback-engine">5. The playback engine</h2>
+<ul>
+<li><strong>E-1. Two engines behind one protocol</strong>, mirroring the
+Windows mpv/wx split and its silent cross-engine rescue:
+<ul>
+<li><strong>Engine A -- AVPlayer.</strong> HLS, DASH-free adaptive
+streams, and anything Apple's stack handles natively. Best battery, best
+AirPlay, best CarPlay, native timed metadata.</li>
+<li><strong>Engine B -- AVAudioEngine with a custom stream
+reader.</strong> A URLSession byte stream feeding an
+<code>AVAudioConverter</code> into an <code>AVAudioEngine</code> graph.
+This is the engine that carries the ICY side-tap, the DVR ring buffer
+for progressive streams, and <strong>all of Sound Enhancements</strong>
+(<code>AVAudioUnitEQ</code>, <code>AVAudioUnitDistortion</code>-free
+dynamics via the dynamics processor audio unit, a mixer node for channel
+mode and boost).</li>
+</ul></li>
+<li><strong>E-2.</strong> Engine selection is automatic and per-stream,
+with <strong>one silent cross-engine rescue per play attempt in either
+direction</strong>, exactly as on Windows. The chosen engine is
+inspectable in diagnostics and in Custom Content on the Now Playing
+element; it is never something the user must choose.</li>
+<li><strong>E-3.</strong> Format coverage must be at least: MP3, AAC and
+HE-AAC, Ogg Vorbis, Opus, FLAC, and HLS. Ogg and Opus need a decoder the
+platform does not provide; the implementation ships a small, audited,
+statically linked decoder for those two codecs rather than dropping the
+SomaFM and Radio Reading Service streams that use them.</li>
+<li><strong>E-4.</strong> Background audio via the <code>audio</code>
+background mode and an <code>AVAudioSession</code> in
+<code>.playback</code>, with correct interruption handling: a phone call
+pauses and resumes; a route change to a disconnected device pauses
+rather than blasting the speaker; a <code>.shouldResume</code>
+interruption end resumes.</li>
+<li><strong>E-5.</strong> <code>MPNowPlayingInfoCenter</code> is kept
+accurate -- station name, current title and artist, artwork where the
+directory supplies it, and live-stream semantics -- because that is what
+Lock Screen, CarPlay, the watch, and VoiceOver's own now-playing
+surfaces all read.</li>
+<li><strong>E-6.</strong> A stalled stream produces a spoken, tiered
+recovery narrative and the F-5 healing ladder, never an indefinite
+silence.</li>
+</ul>
+<hr />
+<h2 id="6-beyond-the-app-system-surfaces">6. Beyond the app: system
+surfaces</h2>
+<ul>
+<li><strong>W-1. CarPlay.</strong> A full CarPlay audio app: favorites
+and folders as list templates, a Now Playing template with the transport
+and DVR controls, tabs for Favorites, Recently Played, and NOAA Weather
+Radio, and a "Play my last station" root action. CarPlay is the single
+strongest argument for this app existing on iOS.</li>
+<li><strong>W-2. App Intents and Siri.</strong>
+<code>PlayStation</code>, <code>PlayLastStation</code>,
+<code>PlayFavorite(folder:)</code>, <code>StopPlayback</code>,
+<code>WhatIsPlaying</code>, <code>StartRecording</code>,
+<code>StopRecording</code>, <code>SetSleepTimer</code>,
+<code>PlayLocalNOAAWeatherRadio</code>. All are
+<code>AppShortcut</code>s with natural phrases ("Play my last station on
+Quill Radio", "What is playing on Quill Radio"), all expose favorites as
+an <code>AppEntity</code> with a dynamic query so Siri can match a
+station by its custom name, and all return spoken dialog from the shared
+narrator.</li>
+<li><strong>W-3. Widgets.</strong> Favorites quick-play (interactive),
+Now Playing, and a Recording status widget. Lock Screen and StandBy
+families included. Every widget carries a complete accessibility
+label.</li>
+<li><strong>W-4. Control Center control</strong> for play/stop and for
+"play my last station".</li>
+<li><strong>W-5. Live Activity and Dynamic Island</strong> while playing
+or recording: station, current title, elapsed recording time, with
+transport controls and full VoiceOver labels.</li>
+<li><strong>W-6. Apple Watch app</strong> -- favorites, transport,
+volume via the crown as an adjustable, now-playing complications, and
+playback control of the phone. A standalone-watch streaming mode is a
+later phase, not 1.0.</li>
+<li><strong>W-7. Spotlight and Shortcuts.</strong> Favorites are indexed
+in Spotlight through <code>CSSearchableItem</code>, so typing a station
+name in system search plays it.</li>
+<li><strong>W-8. Action Button and Back Tap</strong> are bound through
+the App Shortcut.</li>
+</ul>
+<hr />
+<h2 id="7-sync----favorites-and-settings-that-track-either-way">7. Sync
+-- favorites and settings that track either way</h2>
+<p>The full design is in the platform spec and in §11 of the Quill
+Weather iOS PRD; the requirements binding on this app:</p>
+<ul>
+<li><p><strong>S-1.</strong> Opt-in, end-to-end encrypted,
+zero-knowledge, over <strong>QuillSync</strong> -- the engine that
+already exists at <code>quill/apps/beacon/quillsync/</code>. Three
+transports: an iCloud Drive folder (default, and the reason
+Windows-to-iPhone sync needs no QUILL server), any folder, or the
+QuillSync server.</p></li>
+<li><p><strong>S-2.</strong> What syncs:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Syncs</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Favorites: stations, custom names, folder tree, per-station volume,
+per-station sound enhancements</td>
+<td>Yes</td>
+<td>The identification set. This is the whole point</td>
+</tr>
+<tr>
+<td>Folder sort orders and the global sort preference</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>Recently played history</td>
+<td>Yes, capped and TTL'd</td>
+<td>Cheap and genuinely useful across devices</td>
+</tr>
+<tr>
+<td>Global sound enhancement defaults, channel mode, night mode, OptiLab
+mode</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>Now-playing template, announcement preferences, concise labels</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>Recording settings: format, bitrate, filename pattern, duration cap,
+concurrency cap</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>Recording <strong>destination path</strong></td>
+<td>No -- device scope</td>
+<td>Meaningless across platforms</td>
+</tr>
+<tr>
+<td>Recording schedules</td>
+<td>Yes, with a per-device enable flag</td>
+<td>The schedule is portable; whether <em>this</em> device acts on it is
+local</td>
+</tr>
+<tr>
+<td>Wake-up and sleep timer state</td>
+<td>No -- device scope</td>
+<td></td>
+</tr>
+<tr>
+<td>Output device or AirPlay route, volume level, engine choice</td>
+<td>No -- device scope</td>
+<td></td>
+</tr>
+<tr>
+<td>Recorded audio files</td>
+<td>Never</td>
+<td>Large, personal, and the <code>.qrbackup</code> bundle already
+covers deliberate transfer</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>S-3.</strong> Entity ids are <code>shared/...</code> and
+<code>device/&lt;device-id&gt;/...</code> partitioned; merge is
+field-level last-writer-wins with union merge on the folder tree and the
+favorites list; a station removed on one device and renamed on another
+is a one-tap, spoken conflict resolution.</p></li>
+<li><p><strong>S-4.</strong> Favorite ids become UUIDs on both
+platforms, since two devices adding a favorite independently must not
+collide.</p></li>
+<li><p><strong>S-5.</strong> The vault key lives in the Keychain,
+device-only, never synced, never sent anywhere. Wire-format parity with
+the Python implementation is verified by a cross-language fixture test
+in CI.</p></li>
+<li><p><strong>S-6.</strong> Sync status is spoken, with an explicit
+"Sync now" and a plainly worded error that says what to do.</p></li>
+</ul>
+<hr />
+<h2 id="8-cross-app-behavior-with-quill-weather">8. Cross-app behavior
+with Quill Weather</h2>
+<ul>
+<li><strong>X-1.</strong> Both apps share one App Group container, so a
+location saved in either is present in both immediately on the
+device.</li>
+<li><strong>X-2.</strong> <strong>NOAA Weather Radio hand-off.</strong>
+Quill Weather finds the transmitter covering the user's location; Quill
+Radio plays it. This closes the desktop's documented limitation, where
+Quill Weather can find a transmitter but has no audio engine to play it.
+Reached by App Intent, from Quill Weather's alert surface, from Siri,
+and from CarPlay.</li>
+<li><strong>X-3.</strong> <strong>Alert ducking.</strong> A
+<code>Critical</code> or <code>Urgent</code> weather alert ducks the
+stream, speaks, and restores the previous level. Nothing below
+<code>Urgent</code> interrupts audio. This is the cross-app application
+of the single-player rule.</li>
+<li><strong>X-4.</strong> Quill Radio carries a Weather surface that
+reads the shared locations and shows current conditions and active
+alerts, using the shared narrator -- the direct port of the Windows
+Weather menu inside Quill Radio. It does not duplicate Quill Weather; it
+offers to open it.</li>
+<li><strong>X-5.</strong> Neither app requires the other, and each
+degrades to a described, working state alone.</li>
+</ul>
+<hr />
+<h2 id="9-privacy-security-and-network">9. Privacy, security, and
+network</h2>
+<ul>
+<li><strong>N-1.</strong> Every outbound request goes through one
+audited chokepoint: HTTPS only, system trust store, timeouts, and a
+<code>Quill Radio</code> User-Agent. Every call site is inventoried in
+the ecosystem network-egress audit alongside the Windows sites.</li>
+<li><strong>N-2.</strong> The complete destination list is: the seven
+directories in F-1, the user-typed page for Find Streams plus at most
+one follow-on provider API call to resolve a stream, the playing stream
+itself, that stream server's own same-host status endpoint, and the sync
+transport if enabled. Nothing else.</li>
+<li><strong>N-3.</strong> No telemetry, no analytics, no tracking. The
+Privacy Manifest declares no tracking domains. Diagnostics are generated
+on request, shown in full, redacted, and shared only by explicit
+action.</li>
+<li><strong>N-4.</strong> <strong>Offline Mode</strong> -- the
+<code>QUILL_SAFE_MODE</code> analogue -- disables every network surface
+in one switch, leaving favorites, recordings, and the bundled NOAA and
+Reading Services snapshots fully usable.</li>
+<li><strong>N-5.</strong> App Transport Security is left strict. Streams
+that are HTTP-only are refused with a clear spoken explanation and an
+offer to search for an HTTPS equivalent, rather than an ATS exception
+that weakens every connection.</li>
+<li><strong>N-6.</strong> Persisted files use Data Protection; secrets
+use the Keychain.</li>
+<li><strong>N-7.</strong> Errors are coded with the ported
+<code>QUILL-&lt;DOMAIN&gt;-&lt;SUBSYSTEM&gt;-&lt;REASON&gt;</code>
+scheme.</li>
+</ul>
+<hr />
+<h2 id="10-distribution">10. Distribution</h2>
+<ul>
+<li><strong>P-1.</strong> One universal app: iPhone, iPad, Apple Watch,
+CarPlay, and Mac (Catalyst or native, decided at implementation). App
+Store only.</li>
+<li><strong>P-2.</strong> Free, no in-app purchase, no subscription, no
+account. Identical posture to the Windows product.</li>
+<li><strong>P-3.</strong> MIT-licensed source in the monorepo under
+<code>standalone/radio-ios/</code>, with the shared package under
+<code>apple/QuillKit/</code>.</li>
+<li><strong>P-4.</strong> Third-party notices, including the Ogg/Opus
+decoder (E-3) and the OptiLab attribution for the broadcast-processing
+chain shapes, ship in the app and in
+<code>docs/legal/THIRD_PARTY_NOTICES.md</code>.</li>
+<li><strong>P-5.</strong> Versioning follows the QuillVille family
+convention; the iOS app starts at 1.0 and is documented in this folder's
+<code>CHANGELOG.md</code> at ship time, with the Windows changelog
+updated for any shared-package change.</li>
+</ul>
+<hr />
+<h2 id="11-quality-and-the-definition-of-done">11. Quality and the
+definition of done</h2>
+<ul>
+<li><strong>Q-1.</strong> The shared narration golden corpus passes in
+both the Swift and Python suites (see the Quill Weather iOS PRD
+Q-1).</li>
+<li><strong>Q-2.</strong>
+<code>XCUIApplication.performAccessibilityAudit()</code> runs on every
+screen on every pull request; failures block the build.</li>
+<li><strong>Q-3.</strong> A scripted VoiceOver run per release covering:
+first launch, find a station by name across sources, test-play, favorite
+into a new folder, reorder by custom action, set per-station sound,
+start and stop a recording, set and cancel a sleep timer, use every
+rotor, and drive the app entirely from CarPlay simulation.</li>
+<li><strong>Q-4.</strong> Directory contract tests against recorded
+fixtures, plus a scheduled live suite to catch provider drift.</li>
+<li><strong>Q-5.</strong> Stream-resolver regression suite: every
+Triton, SecureNet, iHeart, TuneIn, and Live365 case that has ever been
+reported is a fixture, and the resolver must still produce the same
+answer.</li>
+<li><strong>Q-6.</strong> Long-play soak: eight hours of continuous
+playback with a scripted network interruption, verifying reconnect, DVR
+integrity, memory stability, and that no announcement is lost or
+duplicated.</li>
+<li><strong>Q-7.</strong> Battery budget asserted with Instruments for
+one hour of background playback.</li>
+<li><strong>Q-8.</strong> Done means all of the above pass, the privacy
+manifest matches the actual egress list, third-party notices are
+current, and the user guide, CHANGELOG, and this PRD are updated in the
+same change.</li>
+</ul>
+<hr />
+<h2 id="12-phasing">12. Phasing</h2>
+<p><strong>Phase 1 -- A radio you can actually find a station
+on.</strong> QuillKit foundation shared with Weather; the seven
+directories and unified search; the favorites tree with folders and
+custom names; Engine A playback with ICY and status-endpoint titles; the
+full VoiceOver contract including custom actions and rotors; background
+audio and Lock Screen. <em>Ships when a blind listener can find and play
+an obscure station on a phone.</em></p>
+<p><strong>Phase 2 -- The resolver and the sound.</strong> Find Streams
+with the full Triton, SecureNet, iHeart, TuneIn, and Live365 ladder;
+self-healing recovery; Engine B with Sound Enhancements, channel mode,
+night mode, and the OptiLab modes; live preview; volume boost; DVR.
+<em>Ships when the app can play stations no other app can find, and
+sound the way the listener needs it to.</em></p>
+<p><strong>Phase 3 -- The car and the voice.</strong> CarPlay; App
+Intents and Siri; widgets; Control Center; Live Activity; Spotlight
+indexing; Handoff. <em>Ships when the phone can stay in a
+pocket.</em></p>
+<p><strong>Phase 4 -- Recording and time.</strong> Recording with
+concurrency, raw capture, auto-reconnect, crash resume, and the
+recordings list; sleep and wake timers with the honest iOS scope from
+§13; scheduled recordings.</p>
+<p><strong>Phase 5 -- Everything tracks either way.</strong> QuillSync
+adoption with the three transports and the scope map; the Windows-side
+adapter; backup and restore through Files.</p>
+<p><strong>Phase 6 -- The rest.</strong> Apple Watch app and
+complications; iPad and Mac layouts; standalone watch streaming; the
+Quill Weather NOAA hand-off in both directions; Radio Reading Services
+enrichment.</p>
+<hr />
+<h2 id="13-what-ios-cannot-do-stated-plainly">13. What iOS cannot do,
+stated plainly</h2>
+<p>R-4 requires that these be visible in the product, not only in this
+document.</p>
+<p><strong>13.1 Scheduled recording is best-effort, not
+guaranteed.</strong> Windows can wake a process at 3 a.m. and record.
+iOS cannot. A <code>BGProcessingTask</code> is scheduled at the system's
+discretion and may not run. What the product guarantees:</p>
+<ul>
+<li>A recording scheduled while the app is playing audio in the
+background <strong>will</strong> start, because the audio session keeps
+the app alive.</li>
+<li>A recording scheduled while the app is not running is attempted
+through a background task and, in parallel, a local notification fires
+at the scheduled time with a <strong>Record now</strong> action, so a
+listener who has the phone can start it with one tap.</li>
+<li>The scheduling screen states this in one sentence, and the app never
+reports a scheduled recording as "will record" when it can only promise
+"will try."</li>
+<li>The recommended configuration for a listener who depends on
+scheduled recording is stated in the user guide: keep Quill Radio
+playing, or use the Windows app for that recording. Telling the truth is
+better than a silent miss.</li>
+</ul>
+<p><strong>13.2 The wake-up timer is a notification, not an
+alarm.</strong> iOS will not let an app start playing audio from a
+background timer. The wake-up timer fires a Time Sensitive notification
+with a <strong>Play</strong> action. If the app is already running with
+an active audio session, it starts playback directly. The screen says
+which of the two applies.</p>
+<p><strong>13.3 Sound Enhancements are unavailable on some HLS
+streams.</strong> Engine A cannot host the filter graph. Where a stream
+is HLS-only and Engine B cannot read it, the sound controls are
+<strong>disabled with a spoken explanation</strong> naming the reason,
+rather than shown as controls that silently do nothing.</p>
+<p><strong>13.4 There is no system tray.</strong> Its roles are covered
+by widgets, Control Center, the Lock Screen, the Live Activity, and
+CarPlay. The global show/hide hotkey has no iOS equivalent and is
+replaced by the Action Button, Back Tap, and Siri.</p>
+<p><strong>13.5 YouTube is absent.</strong> See §3.8.</p>
+<p><strong>13.6 Recording is personal time-shifting.</strong> The app
+records for the listener's own later use. It offers no re-broadcast, no
+publishing, and no sharing surface beyond the system share sheet the
+user drives. This posture is stated in the app, in the user guide, and
+in the App Review notes.</p>
+<hr />
+<h2 id="14-open-questions-to-resolve-before-phase-2-and-phase-4">14.
+Open questions to resolve before Phase 2 and Phase 4</h2>
+<ol type="1">
+<li><strong>Ogg and Opus decoding.</strong> Confirm the licensing and
+binary-size cost of the statically linked decoder (E-3), and confirm it
+against App Store review. Dropping SomaFM and several Radio Reading
+Services is not an acceptable alternative.</li>
+<li><strong>ICY metadata on iOS.</strong> Validate the
+<code>AVAssetResourceLoaderDelegate</code> side-tap approach against a
+representative set of Icecast and SHOUTcast servers before committing;
+the same-host status endpoint fallback must cover whatever it
+misses.</li>
+<li><strong>DVR ring buffer sizing</strong> for progressive streams --
+the Windows engine offers roughly 45 minutes; determine what is
+reasonable on device given memory and disk, and make it a setting.</li>
+<li><strong>App Review posture on recording.</strong> Prepare the review
+notes and the demonstration script for §13.6 ahead of first
+submission.</li>
+<li><strong>CarPlay entitlement.</strong> The audio app category
+requires Apple approval; apply early, because it gates Phase 3.</li>
+<li><strong>Background task budget</strong> with concurrent recordings
+-- measure before promising a concurrency cap default above one on
+iOS.</li>
+<li><strong>Directory rate limits at App Store scale.</strong> Radio
+Browser, RadioTime, and the iHeart content API were sized for a desktop
+app's traffic. Confirm each one's terms and add client-side rate
+limiting and a shared cache before the install base makes it someone
+else's problem.</li>
+</ol>
+<hr />
+<h2 id="15-relationship-to-the-existing-documents">15. Relationship to
+the existing documents</h2>
+<ul>
+<li>The Windows Quill Radio PRD
+(<code>standalone/radio/docs/prd.md</code>) remains the authoritative
+specification for the shared radio <strong>domain</strong>: the resolver
+ladder, the favorites model, the recording state machine, the
+sound-enhancement chain, and the settings keys. This document specifies
+the <strong>iOS product</strong>. Where the two disagree, the Windows
+PRD wins on domain semantics and this document wins on iOS
+delivery.</li>
+<li>Improvements discovered here -- UUID identifiers, rate limiting, the
+honest scheduled-recording wording -- flow back to the Windows product
+under R-4 of the Quill Weather iOS PRD's shared rule.</li>
+<li><code>quillville-apple-platform-spec.md</code> owns QuillKit,
+QuillSync adoption, the narration golden corpus, the shared
+accessibility contract, and the Apple repo layout, and is shared with
+Quill Weather for iOS.</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Weather for iOS -- Product Requirements</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-weather-for-ios----product-requirements">Quill Weather for
+iOS -- Product Requirements</h1>
+<p><strong>Product:</strong> Quill Weather for iOS (iPhone, iPad, Apple
+Watch, CarPlay-aware) <strong>Ecosystem:</strong> QUILL / QuillVille
+<strong>Language and stack:</strong> Swift 6, SwiftUI + a thin UIKit
+layer where VoiceOver needs it, WeatherKit, CoreLocation,
+UserNotifications, App Intents, WidgetKit, ActivityKit, CryptoKit
+<strong>Document status:</strong> Product definition,
+implementation-ready <strong>Version:</strong> 1.0
+<strong>Date:</strong> August 8, 2026 <strong>Windows
+counterpart:</strong> <code>standalone/weather/docs/prd.md</code> (the
+authoritative feature and behavior spec for the shared weather domain)
+<strong>Shared platform spec:</strong>
+<code>docs/Product Requirement Documents and Specifications/quillville-apple-platform-spec.md</code>
+<strong>Sibling iOS app:</strong>
+<code>standalone/radio/docs/prd-ios.md</code> <strong>Product
+posture:</strong> Accessibility-first, VoiceOver-first, narration-first,
+local-first, provider-plural, safety-conscious</p>
+<hr />
+<h2 id="1-product-statement">1. Product statement</h2>
+<p>Quill Weather for iOS is the pocket half of the Quill Weather
+product. It is not a port of a window; it is a port of a
+<strong>voice</strong>. The Windows app's defining property is that
+every number it knows is already a sentence -- warm, fully spelled out,
+never abbreviated, and identical whether it is read on screen or spoken
+aloud. iOS inherits that property byte for byte.</p>
+<p>What iOS adds is everything the desktop could only describe in its
+own PRD as future work: a real current location, real push instead of a
+30-second poll approximation, a device that is with the user when the
+warning is issued, and a screen reader that ships with the operating
+system and has a richer interaction vocabulary than any Windows screen
+reader exposes to an application.</p>
+<p>The measure of success is blunt. <strong>A blind user should get the
+weather faster, more completely, and with less effort on Quill Weather
+for iOS than a sighted user gets it from the built-in Weather
+app.</strong> Not "as well as." Faster and more completely. Everything
+in this document exists to serve that sentence.</p>
+<hr />
+<h2
+id="2-architecture-requirement-not-a-fork-and-not-a-rewrite-of-the-voice">2.
+Architecture requirement: not a fork, and not a rewrite of the
+voice</h2>
+<ul>
+<li><strong>R-1.</strong> The narration layer is a <strong>port with
+parity, not a reinterpretation</strong>.
+<code>quill/core/weather/render.py</code> is the specification. Its
+Swift counterpart (<code>QuillNarrate</code>, see the platform spec)
+must produce <strong>byte-identical output</strong> for the same input.
+A shared golden corpus of input/expected-string pairs is checked into
+the repo and is run by both the Python test suite and the Swift test
+suite. A divergence is a build failure on both sides, not a stylistic
+choice.</li>
+<li><strong>R-2.</strong> The domain model is a port with parity.
+<code>models.py</code>, <code>settings.py</code>,
+<code>locations.py</code>, <code>monitor.py</code>, and
+<code>astronomy.py</code> are wx-free, clock-free, network-free and
+unit-tested; their Swift equivalents keep the same field names, the same
+defaults, the same clamps, the same tier derivation
+(<code>ALERT_TIERS</code>, <code>tier_rank</code>), and the same JSON
+on-disk shapes so a settings file written by either platform is readable
+by the other without migration.</li>
+<li><strong>R-3.</strong> Everything reusable lives in
+<strong>QuillKit</strong>, a Swift package shared with Quill Radio for
+iOS: sync, settings, narration, announcement policy, network chokepoint,
+location model, provider clients. App targets contain only their own
+screens, intents, and widgets. The same "not a fork" discipline that
+keeps the Windows wrappers honest applies here.</li>
+<li><strong>R-4.</strong> New capability discovered on iOS flows
+<strong>back</strong> to the shared spec. If iOS learns to say something
+better -- a new phrase, a better disagreement wording, a smarter
+staleness rule -- the sentence is added to the golden corpus and to
+<code>render.py</code> in the same change. The two platforms never drift
+on wording, only on delivery.</li>
+<li><strong>R-5.</strong> Source layout:
+<code>standalone/weather-ios/</code> (app target, widgets, watch app,
+intents, tests) and <code>apple/QuillKit/</code> (the shared package).
+Both sit outside QUILL's Python CI gates, exactly as
+<code>standalone/radio-mac/</code> does, and carry their own Swift
+CI.</li>
+</ul>
+<hr />
+<h2 id="3-users-and-the-three-second-promise">3. Users and the
+three-second promise</h2>
+<p>Three usage shapes drive every decision:</p>
+<ol type="1">
+<li><strong>The glance.</strong> The user raises the phone,
+triple-clicks or taps once, and hears one sentence: what it is doing
+outside right now, and whether anything is wrong. Target: <strong>under
+three seconds from intent to speech</strong>, from cold, using cached
+data with an honest staleness clause if the network is slow.</li>
+<li><strong>The read.</strong> The user wants the whole picture --
+hourly, daily, the official warning text -- and wants to move through it
+with the rotor rather than by swiping past 200 elements.</li>
+<li><strong>The warning.</strong> The user is not looking at the phone.
+Something dangerous is coming. The device must interrupt, must be
+understood in one hearing, and must be re-readable a minute later
+without hunting.</li>
+</ol>
+<p>Every feature below is tagged, in effect, by which of those three it
+serves. A feature that serves none of them is a candidate for
+cutting.</p>
+<hr />
+<h2 id="4-scope-the-full-windows-feature-set-ported">4. Scope: the full
+Windows feature set, ported</h2>
+<h3 id="41-shipped-on-windows-required-at-ios-10">4.1 Shipped on
+Windows, required at iOS 1.0</h3>
+<p><strong>F-1. Weather Now</strong> -- the full narrative report for a
+location, as one continuous readable and speakable block, in the fixed
+priority order: alerts, current conditions, forecast, hourly, daily,
+source and freshness. Ported from
+<code>render.current_conditions_block</code> and
+<code>WeatherCenterDialog._render_report</code>.</p>
+<p><strong>F-2. Quick Weather</strong> -- the one-liner
+(<code>render.quick_weather_line</code>), reachable without opening the
+app at all (§9).</p>
+<p><strong>F-3. Current conditions</strong>, every field individually
+toggleable, with temperature and sky description always present:
+temperature, text description, feels-like (spoken only when it differs
+by at least one degree), humidity, dew point, wind with direction and
+gusts, cloud cover, barometric pressure, visibility, chance of
+precipitation today, sunrise and sunset, moon phase and illumination
+with moonrise and moonset, UV index with its severity band, air quality
+with its category, the two-clock time summary, and the observation time
+and station.</p>
+<p><strong>F-4. Period forecast</strong> -- the NWS named periods ("This
+Afternoon", "Tonight"), with per-period detail blocks that repeat their
+own heading so a period read out of context still stands alone, and with
+abbreviations widened (<code>_spell_out</code>: <code>mph</code> becomes
+"miles per hour").</p>
+<p><strong>F-5. Hourly forecast</strong> -- 0 to 48 hours, default 24,
+one self-contained spoken line per hour.</p>
+<p><strong>F-6. Extended daily outlook</strong> -- 0 to 16 days, default
+10, one friendly sentence per day including sun and moon events.</p>
+<p><strong>F-7. Alerts</strong> -- active alerts, most severe first,
+with the full official text in the documented order (headline,
+severity/urgency/certainty, area, in-effect window, <strong>instructions
+before description</strong>, issuing office). The derived five-tier
+priority (<code>Critical</code>, <code>Urgent</code>,
+<code>Important</code>, <code>Advisory</code>,
+<code>Informational</code>) is shown and spoken, never hidden. Severity
+floor and per-event mute list both port unchanged.</p>
+<p><strong>F-8. Weather Guardian</strong> -- background alert monitoring
+across <strong>every saved location at once</strong>, with new-alert and
+all-clear announcements, baseline-on-first-poll semantics so a launch
+never spams already-active alerts, and forced/interrupting delivery at
+<code>Urgent</code> and above. On iOS this is re-founded on push and
+background refresh rather than a timer (§8).</p>
+<p><strong>F-9. Multi-location</strong> -- unlimited saved locations,
+one primary, add by ZIP, city, county, address, worldwide place name, or
+bare <code>lat,lon</code> (parsed locally, zero network calls). Remove,
+rename to a friendly name, and -- new on iOS --
+<strong>reorder</strong>, which the Windows store supports
+(<code>WeatherLocationStore.move</code>) but never exposed.</p>
+<p><strong>F-10. Units</strong> -- temperature Fahrenheit/Celsius; wind
+mph, km/h, knots, m/s. iOS additionally honors the system measurement
+system as the initial default, and extends unit control to
+<strong>pressure</strong> (inHg / hPa / mb) and
+<strong>visibility</strong> (miles / kilometers), which the Windows app
+hard-coded. That extension is back-ported to <code>render.py</code>
+under R-4.</p>
+<p><strong>F-11. Alert sounder</strong> -- enable/disable, custom sound,
+repeat 1 to 10. On iOS this becomes the notification sound plus an
+in-app rehearsal, and the <strong>Test Alert</strong> command ports
+whole: it exercises sound, notification, haptic, speech, and the alert
+surface, marked <code>[TEST]</code>, without touching the network or the
+real monitor state.</p>
+<p><strong>F-12. NOAA Weather Radio directory</strong> -- find the
+transmitter covering a saved location, from the same bundled
+1,035-transmitter snapshot (<code>quill/data/noaa_directory.json</code>)
+via county/SAME match then nearest covering transmitter. On iOS, unlike
+Windows, this is not a dead end: <strong>Quill Weather hands the stream
+to Quill Radio for iOS</strong> and it plays (§12.2).</p>
+<p><strong>F-13. Customize Features</strong> -- switchable areas, so a
+user who wants only alerts can remove everything else from the interface
+and, critically, from the VoiceOver focus order.</p>
+<h3 id="42-documented-on-windows-unbuilt-there-built-here">4.2
+Documented on Windows, unbuilt there, built here</h3>
+<p>These are all specified in the Windows PRD and never shipped because
+Windows made them awkward. iOS makes them natural, so iOS ships them
+first and the design flows back.</p>
+<p><strong>F-14. Current location</strong> (§7). The single biggest
+greenfield item.</p>
+<p><strong>F-15. Travel mode</strong> -- arrival detection, automatic
+temporary location, "you have arrived somewhere with an active warning"
+(§7.4).</p>
+<p><strong>F-16. Location groups</strong> -- "Family", "Route", "Work"
+-- as a grouping over saved locations, used for both display and
+per-group alert policy.</p>
+<p><strong>F-17. Alert lifecycle and the revision graph</strong> --
+updated, escalated, downgraded, extended, area-changed, corrected,
+cancelled, expired. The Windows app dedupes by alert id only and
+therefore cannot say "this warning has been extended." iOS carries
+<code>references</code>, <code>messageType</code>, and
+<code>sent</code>, and speaks the transition, which is often the most
+important sentence of the whole event (§8.5).</p>
+<p><strong>F-18. Conditional HTTP and honest staleness</strong> --
+ETag/If-None-Match, Last-Modified, Retry-After, point-to-grid caching on
+the location record, last-good-data retention, and a spoken staleness
+clause. Windows re-resolves point metadata on every refresh and never
+marks stale data; iOS must not, both because cellular data is precious
+and because a stale reading presented as current is a safety defect.</p>
+<p><strong>F-19. Observation station selection by freshness and
+quality</strong>, rather than "take the first station in the list."</p>
+<p><strong>F-20. Historical weather</strong> -- yesterday, this date
+last year, and a "compared to normal" clause, from Open-Meteo's archive
+and ERA5 endpoints. This turns "98 degrees" into "98 degrees, nine
+degrees above normal for August 8," which is the sentence people
+actually want.</p>
+<p><strong>F-21. Marine and fire-weather segments</strong>, where the
+location has a marine or fire zone.</p>
+<h3 id="43-new-on-ios-because-ios-makes-it-possible">4.3 New on iOS
+because iOS makes it possible</h3>
+<p><strong>F-22. Apple Weather (WeatherKit) as a first-class
+provider</strong> (§6).</p>
+<p><strong>F-23. Minute-by-minute precipitation</strong> -- "Rain
+starting in 12 minutes, lasting about 25 minutes." From WeatherKit's
+minute forecast where available. This is the single most useful weather
+sentence that exists and neither NWS nor Open-Meteo can produce it.</p>
+<p><strong>F-24. Audio Graphs</strong> -- the hourly temperature curve,
+the precipitation probability curve, and the daily high/low range are
+exposed as <code>AXChartDescriptor</code> so VoiceOver can <strong>play
+the forecast as sound</strong>. A rising tone is a warming afternoon.
+This is a native VoiceOver capability that has no Windows equivalent and
+it changes what "reading a forecast" means (§5.6).</p>
+<p><strong>F-25. Provenance per fact</strong> -- every number in the
+narrative can be interrogated for its source, its issuing office, its
+observation time, and its age, without leaving the sentence, via the
+VoiceOver Custom Content rotor (§5.4).</p>
+<p><strong>F-26. Honest disagreement</strong> -- when two providers
+disagree materially, the app says so rather than silently picking one
+(§6.4).</p>
+<p><strong>F-27. Widgets, Live Activities, Control Center, Siri,
+Watch</strong> (§9, §10).</p>
+<h3 id="44-non-goals">4.4 Non-goals</h3>
+<ul>
+<li>Radar imagery, animated maps, or any surface where the map
+<em>is</em> the navigation. A textual and sonified radar interpretation
+("a line of storms about 20 miles west, moving east at 30 miles per
+hour, reaching you around 4:15") is in scope for a later phase; a map
+that must be looked at is not.</li>
+<li>Any implication that the app replaces Wireless Emergency Alerts, a
+physical NOAA Weather Radio receiver, or local emergency instruction.
+This is stated in the onboarding, in the alert settings screen, and in
+the App Store description. It is a safety requirement, not marketing
+copy.</li>
+<li>Accounts as a precondition. Nothing in the core product requires
+signing in to anything. Sync is opt-in and, at its default tier,
+serverless (§11).</li>
+<li>Advertising, analytics, tracking, an IDFA request, or any
+third-party SDK that performs network I/O. The app ships with
+<strong>zero</strong> third-party runtime dependencies.</li>
+<li>Selling or brokering weather data, or presenting derived data as
+official.</li>
+</ul>
+<hr />
+<h2
+id="5-accessibility-voiceover-as-a-first-class-interaction-language">5.
+Accessibility: VoiceOver as a first-class interaction language</h2>
+<p>This section is the heart of the document. Requirements are
+normative.</p>
+<h3 id="51-the-parity-invariant">5.1 The parity invariant</h3>
+<ul>
+<li><strong>A-1.</strong> <strong>What is displayed is what is
+spoken.</strong> There is no separate "accessible version" and no
+visual-only or audio-only content. The string rendered into a
+<code>Text</code> view is the string in its
+<code>accessibilityLabel</code> unless the label is <em>shorter for
+braille reasons</em> (A-14), in which case the full string is reachable
+via Custom Content. This is the ported invariant from
+<code>render.py</code> and it is the reason the product works.</li>
+<li><strong>A-2.</strong> Every interactive element has an
+<code>accessibilityLabel</code> that names it in the same words the
+on-screen label uses, an <code>accessibilityValue</code> when it has
+state, an <code>accessibilityHint</code> only when the action is not
+obvious from the label, and correct traits. Unlabeled elements fail CI
+(§14.3).</li>
+<li><strong>A-3.</strong> Reading order is priority order, enforced with
+<code>accessibilitySortPriority</code> where the visual layout would
+otherwise disagree: alerts, then current conditions, then forecast, then
+hourly, then daily, then source and freshness.</li>
+<li><strong>A-4.</strong> An empty region is <strong>removed from the
+accessibility tree</strong>, not blanked. This is the direct port of the
+Windows <code>_show_field</code> rule -- a VoiceOver user must never
+land on an empty detail field. Implemented with
+<code>.accessibilityHidden(true)</code> plus removal from the view
+hierarchy.</li>
+<li><strong>A-5.</strong> Data refresh never moves VoiceOver focus. New
+data announces itself with a polite
+<code>AccessibilityNotification.Announcement</code>; the cursor stays
+where the user put it.</li>
+</ul>
+<h3 id="52-voiceover-actions-the-rotors-action-menu">5.2 VoiceOver
+Actions (the rotor's action menu)</h3>
+<ul>
+<li><strong>A-6.</strong> Every list row that can be acted on exposes
+its actions as <code>accessibilityCustomActions</code> /
+<code>.accessibilityAction(named:)</code>, so a user swipes down through
+actions instead of hunting for buttons. Required action sets:
+<ul>
+<li><strong>Location row:</strong> Show weather, Make primary, Speak
+quick summary, Rename, Move up, Move down, Add to group, Copy report,
+Remove.</li>
+<li><strong>Alert row:</strong> Read full text, Read instructions only,
+Share, Copy, Mute this event type, Show the covered area in words,
+Snooze this alert.</li>
+<li><strong>Hour row:</strong> Speak this hour, Compare to now, Set a
+reminder for this hour.</li>
+<li><strong>Day row:</strong> Speak this day, Open its hourly detail,
+Compare to normal.</li>
+<li><strong>Saved-location group header:</strong> Speak all in this
+group, Rename group, Collapse.</li>
+</ul></li>
+<li><strong>A-7.</strong> Adjustable values use
+<code>.accessibilityAdjustableAction</code> so swipe up/down changes
+them without opening a picker: forecast period count, daily outlook
+days, hourly hours, alert repeat count, and the severity floor.</li>
+</ul>
+<h3 id="53-custom-rotors">5.3 Custom rotors</h3>
+<ul>
+<li><strong>A-8.</strong> The app publishes
+<code>AccessibilityCustomRotor</code>s so a user can move by meaning
+rather than by element: <strong>Alerts</strong>, <strong>Hours</strong>,
+<strong>Days</strong>, <strong>Sections</strong>, and
+<strong>Locations</strong>. On the Weather Now screen the Alerts rotor
+jumps directly between active alerts even when the alert list is
+scrolled off screen.</li>
+<li><strong>A-9.</strong> Headings are real headings
+(<code>.accessibilityHeading(.h1/.h2/.h3)</code>), so the standard
+Headings rotor works with no custom code: the location name is h1, each
+section is h2, each alert event name is h3.</li>
+</ul>
+<h3 id="54-custom-content----verbosity-without-a-verbosity-setting">5.4
+Custom Content -- verbosity without a verbosity setting</h3>
+<ul>
+<li><strong>A-10.</strong> Every fact-bearing element carries
+<code>.accessibilityCustomContent(_:_:importance:)</code> entries that
+VoiceOver reads on demand via the "More Content" rotor. This is how the
+app serves both the three-second glance and the exhaustive read from the
+same element:
+<ul>
+<li>Default label:
+<code>"96 degrees Fahrenheit and mostly clear."</code></li>
+<li>Custom Content: <code>Source</code> -&gt;
+<code>"National Weather Service, station KTUS"</code>;
+<code>Observed</code> -&gt;
+<code>"July 19 at 1:55 PM, 12 minutes ago"</code>;
+<code>Also reported</code> -&gt;
+<code>"Apple Weather says 95 degrees"</code>; <code>Confidence</code>
+-&gt; <code>"Both sources agree within one degree."</code></li>
+<li>Entries marked <code>.high</code> importance are spoken inline; the
+rest wait for the rotor.</li>
+</ul></li>
+<li><strong>A-11.</strong> Custom Content is the <strong>only</strong>
+sanctioned place for provenance and disagreement detail. It never
+lengthens the primary sentence, which is what keeps the glance
+fast.</li>
+</ul>
+<h3 id="55-announcement-priority-and-speech-shaping">5.5 Announcement,
+priority, and speech shaping</h3>
+<ul>
+<li><strong>A-12.</strong> Announcements use
+<code>AttributedString</code> with
+<code>accessibilitySpeechAnnouncementPriority</code>:
+<ul>
+<li><code>.high</code> for <code>Critical</code> and <code>Urgent</code>
+tier alerts -- interrupts, matching the Windows
+<code>should_force_speech</code> rule
+(<code>tier_rank &lt;= 1</code>).</li>
+<li><code>.default</code> for <code>Important</code>.</li>
+<li><code>.low</code> for <code>Advisory</code>,
+<code>Informational</code>, all-clear, and refresh completion -- queued,
+never interrupting.</li>
+</ul></li>
+<li><strong>A-13.</strong> Speech attributes are used where they change
+comprehension: <code>accessibilitySpeechSpellsOutCharacters</code> for
+station identifiers and SAME codes;
+<code>accessibilitySpeechPunctuation</code> on the official alert text
+so the structure of an NWS bulletin survives;
+<code>accessibilitySpeechPhoneticNotation</code> is deliberately
+<strong>not</strong> used (it slows everything down).</li>
+<li><strong>A-14.</strong> <strong>Braille.</strong> iOS derives braille
+from the accessibility label, so there is no separate braille channel to
+write to. Quill Weather therefore ships a <strong>Concise
+labels</strong> setting (default off) that swaps the primary label for
+the ported <code>compact_braille()</code> wording while keeping the full
+sentence in Custom Content. A braille user gets a line that fits the
+display; a speech user is unaffected; nobody loses information. This is
+the honest iOS answer to the Windows braille channel, and its limitation
+is documented in the user guide rather than papered over.</li>
+<li><strong>A-15.</strong> Nothing is ever truncated for speech.
+Track-length labels are fine; clipping the end of a warning is a
+defect.</li>
+<li><strong>A-16.</strong> An identical announcement inside a two-second
+window is suppressed, porting the Windows dedupe policy
+(<code>core/announce/policy.py</code>).</li>
+</ul>
+<h3 id="56-audio-graphs">5.6 Audio Graphs</h3>
+<ul>
+<li><strong>A-17.</strong> The hourly temperature series, the hourly
+precipitation-probability series, and the ten-day high/low series each
+publish an <code>AXChartDescriptor</code> with correctly labeled axes,
+units, and a summary sentence. VoiceOver's Audio Graph player is
+reachable from the chart element's rotor.</li>
+<li><strong>A-18.</strong> Every audio graph has a <strong>spoken
+alternative that is complete on its own</strong> -- the same data as a
+list of sentences. The graph is an accelerator, never the only path to
+the data.</li>
+</ul>
+<h3 id="57-gestures-focus-and-the-rest-of-the-contract">5.7 Gestures,
+focus, and the rest of the contract</h3>
+<ul>
+<li><strong>A-19.</strong> <strong>Magic Tap</strong> (two-finger double
+tap) speaks the current location's quick summary from anywhere in the
+app. If an alert is active, it leads with the alert.</li>
+<li><strong>A-20.</strong> <strong>Escape</strong>
+(<code>.accessibilityAction(.escape)</code>) dismisses any sheet or
+detail, on every screen.</li>
+<li><strong>A-21.</strong> Full <strong>Full Keyboard Access</strong>
+and hardware-keyboard support with a documented shortcut set that
+mirrors the Windows accelerators where the platform allows:
+Command-Shift-W Weather Now, Command-Shift-Q Quick Weather, Command-R
+refresh, Command-1 through Command-9 saved locations, Command-F search,
+and a discoverable keyboard-shortcuts overlay on holding Command.</li>
+<li><strong>A-22.</strong> Dynamic Type to the largest accessibility
+sizes, with no truncation and no fixed-height rows; the layout reflows
+rather than clipping. Verified at <code>AX5</code> in snapshot
+tests.</li>
+<li><strong>A-23.</strong> <code>prefers-reduced-motion</code> is
+honored: no parallax, no animated transitions on alert arrival, no
+motion used to convey state.</li>
+<li><strong>A-24.</strong> Color is never the only carrier of meaning.
+Alert tier is carried by the tier word itself in every surface. Contrast
+meets WCAG 2.2 AA at minimum in both light and dark appearance, and
+Increase Contrast and Differentiate Without Color are both honored.</li>
+<li><strong>A-25.</strong> Switch Control, Voice Control, and Assistive
+Access are supported: every action is reachable without a gesture, every
+control has a Voice-Control-speakable name matching its visible label,
+and the app provides a reduced Assistive Access presentation that is
+Quick Weather plus alerts.</li>
+<li><strong>A-26.</strong> Haptics accompany, never replace: a distinct
+haptic pattern for a new <code>Critical</code>/<code>Urgent</code>
+alert, one for all-clear, one for refresh complete. All are disableable
+and none is the sole indicator of anything.</li>
+<li><strong>A-27.</strong> VoiceOver users can complete <strong>first
+launch, permission grants, adding a location, and receiving a test
+alert</strong> without sighted assistance. This is validated by a
+scripted end-to-end VoiceOver run before every release (§14.2).</li>
+</ul>
+<hr />
+<h2 id="6-data-sources-and-the-fusion-model">6. Data sources and the
+fusion model</h2>
+<h3 id="61-the-provider-set">6.1 The provider set</h3>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Role</th>
+<th>Auth</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>National Weather Service (<code>api.weather.gov</code>)</td>
+<td>Authoritative US: alerts (full official text), period forecast,
+hourly forecast, observations, zones</td>
+<td>None; identifying User-Agent required</td>
+<td>Alert polling floor 30 s, honored</td>
+</tr>
+<tr>
+<td>Apple WeatherKit</td>
+<td>Global current, hourly, daily, minute precipitation, global alerts,
+historical</td>
+<td>Apple Developer Program; JWT for REST</td>
+<td>Attribution mandatory (D-5)</td>
+</tr>
+<tr>
+<td>Open-Meteo</td>
+<td>Air quality (US AQI, PM2.5), worldwide fallback report, historical
+archive</td>
+<td>None</td>
+<td>Already the Windows fallback</td>
+</tr>
+<tr>
+<td>On-device astronomy</td>
+<td>Moon phase, illumination, moonrise, moonset</td>
+<td>None</td>
+<td>Ported <code>astronomy.py</code>; zero network</td>
+</tr>
+<tr>
+<td>Apple <code>MKLocalSearch</code> / <code>CLGeocoder</code></td>
+<td>Place search and reverse geocoding</td>
+<td>None (on-platform)</td>
+<td><strong>Replaces Nominatim</strong>, see D-4</td>
+</tr>
+<tr>
+<td>WeatherIndex (<code>api.wxindex.org</code>) + bundled snapshot</td>
+<td>NOAA Weather Radio transmitter directory</td>
+<td>None</td>
+<td>Three-tier resolver ported</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>D-1.</strong> Every outbound request goes through
+<strong>one</strong> audited chokepoint, the Swift counterpart of
+<code>_http.py</code>: HTTPS only (a non-HTTPS URL is a programming
+error and traps), the system trust store, a 15-second timeout, and the
+identifying User-Agent
+<code>QUILLWeather-iOS/&lt;version&gt; (https://github.com/Community-Access/quill)</code>.
+Every call site is inventoried in the ecosystem network-egress audit
+exactly as the Windows call sites are.</li>
+<li><strong>D-2.</strong> The chokepoint implements conditional requests
+(ETag, Last-Modified), honors <code>Retry-After</code>, and applies
+exponential backoff with jitter. This closes Windows gap F-18.</li>
+<li><strong>D-3.</strong> No provider key is ever embedded in the
+binary. WeatherKit uses the on-device Swift API, which needs no key
+material in the app.</li>
+<li><strong>D-4.</strong> <strong>Nominatim is not used on iOS.</strong>
+The OpenStreetMap public endpoint's usage policy does not permit a
+distributed application to geocode against it unthrottled, and the
+Windows app does so today. iOS uses <code>MKLocalSearch</code> and
+<code>CLGeocoder</code>, which are free, on-platform, rate-managed by
+the OS, and better at the address forms people actually type. This is
+also filed as a compliance fix for the Windows app.</li>
+<li><strong>D-5.</strong> <strong>Apple Weather attribution is mandatory
+and non-negotiable.</strong> Where any WeatherKit-derived value is shown
+or spoken, the app displays the Apple Weather trademark and a link to
+the legal attribution page obtained from
+<code>WeatherAttribution</code>, and the <em>spoken</em> provenance in
+Custom Content names Apple Weather. Failing to display attribution is
+both a licensing breach and an accessibility failure, since a blind user
+would otherwise never learn where the number came from.</li>
+</ul>
+<h3 id="62-which-provider-answers-which-question">6.2 Which provider
+answers which question</h3>
+<p>Selection is <strong>by question, not by preference</strong>, and the
+rule set is fixed and inspectable:</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Primary</th>
+<th>Fallback</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>US watches, warnings, advisories -- full text</td>
+<td>NWS</td>
+<td>WeatherKit alert (summary + link)</td>
+<td>Only NWS returns the complete official body, instructions, and zone
+list</td>
+</tr>
+<tr>
+<td>Non-US alerts</td>
+<td>WeatherKit</td>
+<td>none</td>
+<td>NWS is US-only</td>
+</tr>
+<tr>
+<td>Named period forecast ("Tonight")</td>
+<td>NWS</td>
+<td>--</td>
+<td>A uniquely NWS product; nobody else writes prose forecasts</td>
+</tr>
+<tr>
+<td>Current conditions, US</td>
+<td>NWS observation</td>
+<td>WeatherKit current</td>
+<td>Station observation is the ground truth; WeatherKit fills gaps NWS
+omits</td>
+</tr>
+<tr>
+<td>Current conditions, worldwide</td>
+<td>WeatherKit</td>
+<td>Open-Meteo</td>
+<td></td>
+</tr>
+<tr>
+<td>Hourly, US</td>
+<td>NWS <code>forecastHourly</code></td>
+<td>WeatherKit hourly</td>
+<td></td>
+</tr>
+<tr>
+<td>Hourly, worldwide</td>
+<td>WeatherKit</td>
+<td>Open-Meteo</td>
+<td>Closes the Windows "no hourly outside the US" gap</td>
+</tr>
+<tr>
+<td>Daily outlook</td>
+<td>WeatherKit</td>
+<td>Open-Meteo</td>
+<td></td>
+</tr>
+<tr>
+<td>Minute-by-minute precipitation</td>
+<td>WeatherKit</td>
+<td>none; the sentence is simply omitted</td>
+<td></td>
+</tr>
+<tr>
+<td>Air quality</td>
+<td>Open-Meteo</td>
+<td>none</td>
+<td>WeatherKit does not provide AQI</td>
+</tr>
+<tr>
+<td>Moon and sun</td>
+<td>On-device <code>astronomy.swift</code></td>
+<td>--</td>
+<td>No network, always available, already correct</td>
+</tr>
+<tr>
+<td>Historical and normals</td>
+<td>Open-Meteo archive</td>
+<td>WeatherKit historical</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>D-6.</strong> Availability is queried, not assumed.
+<code>WeatherService.availability(for:)</code> determines whether minute
+precipitation and alerts exist for a location before the app promises
+them; an unavailable dataset produces <strong>no sentence at
+all</strong>, never an empty or zeroed one.</li>
+</ul>
+<h3 id="63-graceful-degradation">6.3 Graceful degradation</h3>
+<ul>
+<li><strong>D-7.</strong> The Windows per-subrequest degradation model
+ports exactly: point resolution is required; forecast, hourly,
+observation, alerts, daily, and air quality are each independently
+recoverable and each failure appends its own note to the report, spoken
+in the source-and-freshness section. The exact note strings are shared
+with Windows through the golden corpus.</li>
+<li><strong>D-8.</strong> Last-good data is retained per location and
+per dataset, with its fetch time. When the network fails, the app shows
+the cached report <strong>with an explicit staleness clause in the
+narrative</strong> -- never a spinner, never a blank screen, and never a
+stale number presented as current.</li>
+</ul>
+<h3 id="64-honest-disagreement">6.4 Honest disagreement</h3>
+<ul>
+<li><strong>D-9.</strong> When two providers answer the same question
+and differ by more than a configured threshold -- 3 degrees Fahrenheit
+for temperature, 20 percentage points for precipitation probability, one
+Beaufort step for wind -- the app states the disagreement rather than
+picking silently:
+<blockquote>
+<p><code>"The National Weather Service reports 96 degrees; Apple Weather reports 91. Readings differ by 5 degrees."</code>
+Below the threshold, the primary provider's value is spoken alone and
+the other is available in Custom Content as
+<code>Also reported</code>.</p>
+</blockquote></li>
+<li><strong>D-10.</strong> Disagreement is <strong>never</strong>
+applied to alerts. If either provider says there is a warning, there is
+a warning. Safety information is a union, never an intersection or an
+average.</li>
+</ul>
+<hr />
+<h2 id="7-location-the-greenfield">7. Location: the greenfield</h2>
+<ul>
+<li><strong>L-1. Current location</strong> uses
+<code>CLLocationManager</code> with <strong>When In Use</strong>
+authorization by default. <strong>Always</strong> authorization is
+requested only when the user turns on arrival-based alerting or travel
+mode, and is requested with a purpose string that says exactly what it
+buys them.</li>
+<li><strong>L-2. Reduced accuracy is the default.</strong> The app
+requests <code>CLAccuracyAuthorization.reducedAccuracy</code> and works
+fully at that level -- weather is a ~5 km question, not a ~5 m question.
+Full accuracy is requested temporarily, with a stated purpose, only for
+the NOAA transmitter lookup and only if reduced accuracy returns an
+ambiguous result.</li>
+<li><strong>L-3. Coordinates are rounded before they leave the
+device.</strong> Every provider request uses four decimal places at most
+(the NWS point format, roughly 11 metres) and, for the "current
+location" case, snaps to a coarse grid so repeated requests do not trace
+a path. Coordinates are never sent to any QUILL-operated server; the
+push service subscribes by <strong>NWS zone or SAME code</strong>, never
+by position (§8.3).</li>
+<li><strong>L-4. No location history.</strong> Current-location fixes
+are held in memory and in the last-good cache only. There is no track,
+no visit log persisted beyond what travel mode needs for its current
+session, and an explicit "Forget where I have been" control that clears
+everything in one action.</li>
+<li><strong>L-5. Saved locations</strong> carry, in addition to the
+Windows fields, the cached resolution results the Windows app throws
+away on every refresh: IANA time zone, NWS office, grid X/Y, forecast
+zone, county zone, observation station, marine and fire zones where
+present, and <code>source_resolved_at</code>. This is the single largest
+performance and battery win available and it is required.</li>
+<li><strong>L-6. Stable identifiers.</strong> Location ids are UUIDs,
+not the sequential <code>loc_N</code> the Windows store uses, because
+sequential ids collide the instant two devices add a location
+independently. The Windows store gains UUID support in the same change,
+with <code>loc_N</code> accepted on read forever.</li>
+<li><strong>L-7. Geofenced arrival</strong> uses <code>CLMonitor</code>
+circular conditions around saved locations, plus
+significant-location-change, plus <code>CLVisit</code> for travel mode.
+Arrival produces one sentence: what it is like here, and whether
+anything is in effect.</li>
+<li><strong>L-8. Travel mode</strong> creates a temporary location on
+arrival in a new area, marks it as temporary, watches it for the
+duration of the stay, and offers to save it or discard it when the user
+leaves. Temporary locations never sync.</li>
+<li><strong>L-9. Permission refusal is a first-class path, not an
+error.</strong> Everything works with location fully denied; the app
+simply asks the user to add a place. The refusal state is announced
+once, calmly, with a working alternative, and never nagged.</li>
+</ul>
+<hr />
+<h2 id="8-alerts-notifications-and-push">8. Alerts, notifications, and
+push</h2>
+<h3 id="81-delivery-tiers">8.1 Delivery tiers</h3>
+<ul>
+<li><strong>U-1.</strong> Alert delivery uses, in order of preference
+and with automatic fallback:
+<ol type="1">
+<li><strong>APNs push</strong> from the QuillPush relay (§8.3) -- the
+only mechanism that delivers within seconds while the app is not
+running.</li>
+<li><strong><code>BGAppRefreshTask</code> background refresh</strong> --
+opportunistic, scheduled by the system, used to reconcile and to cover
+push outages.</li>
+<li><strong>Foreground fast poll</strong> -- the ported Windows monitor,
+including severe-weather mode down to the 30-second NWS courtesy floor,
+active only while the app is on screen.</li>
+<li><strong>Manual refresh</strong>, always available.</li>
+</ol></li>
+<li><strong>U-2.</strong> Whichever tier delivers, the user-visible
+behavior is identical. The tier is inspectable in the diagnostics screen
+and in Custom Content on the alert; it is never something the user has
+to think about.</li>
+</ul>
+<h3 id="82-notification-behavior">8.2 Notification behavior</h3>
+<ul>
+<li><strong>U-3.</strong> Interruption level maps to the ported tier:
+<code>Critical</code> -&gt; <code>.critical</code> (see U-4) or
+<code>.timeSensitive</code>; <code>Urgent</code> -&gt;
+<code>.timeSensitive</code>; <code>Important</code> -&gt;
+<code>.active</code>; <code>Advisory</code> and
+<code>Informational</code> -&gt; <code>.passive</code>. Time Sensitive
+breaks through Focus, which is the entire point.</li>
+<li><strong>U-4.</strong> <strong>Critical Alerts</strong> (which bypass
+silent mode and Do Not Disturb) require an Apple entitlement. The app
+requests the entitlement for tornado warnings, flash flood emergencies,
+and other life-threatening short-fuse events only. Until and unless the
+entitlement is granted, the app ships with Time Sensitive as its highest
+level and <strong>says so plainly in the alert settings screen</strong>
+-- the user must never believe they have a wake-them-up alarm that they
+do not have. This is a safety requirement.</li>
+<li><strong>U-5.</strong> Notification content is the ported sentence,
+not a truncated headline. Title:
+<code>"Weather alert: Excessive Heat Warning"</code>. Body: the same
+first sentence the app would speak. Notification actions: <strong>Read
+full text</strong>, <strong>Speak it</strong>, <strong>Snooze this
+alert</strong>, <strong>Mute this event type</strong>. Actions are
+performed without launching the app where possible.</li>
+<li><strong>U-6.</strong> A <strong>notification summary is never
+used</strong> for <code>Critical</code> or <code>Urgent</code> tiers;
+those are excluded from Scheduled Summary delivery.</li>
+<li><strong>U-7.</strong> <strong>Live Activity and Dynamic
+Island.</strong> While an <code>Urgent</code>-or-worse alert is in
+effect, a Live Activity shows the event name and the time remaining
+until expiry, with fully labeled accessibility content and a countdown
+that VoiceOver reads as words, not as a ticking timer. It ends
+automatically when the alert expires or clears.</li>
+<li><strong>U-8.</strong> <strong>No repeat-notification spam.</strong>
+The notified-alert-id union (<code>weather_notified.json</code> on
+Windows) ports as a persisted set shared between the app, the
+notification service extension, and the background task, so one alert
+produces one interruption regardless of which tier delivered it.</li>
+<li><strong>U-9.</strong> <strong>Snooze and quiet hours</strong> are
+per-event-type and per-tier, and quiet hours never suppress
+<code>Critical</code> or <code>Urgent</code>. A user can silence every
+Special Weather Statement forever without ever risking a tornado
+warning.</li>
+</ul>
+<h3 id="83-quillpush----the-relay">8.3 QuillPush -- the relay</h3>
+<ul>
+<li><strong>U-10.</strong> A QUILL-operated relay subscribes to NWS
+alerts and fans them out over APNs. Its privacy design is load-bearing:
+<ul>
+<li>The device registers <strong>only</strong>
+<code>(device token, list of NWS zone or SAME codes, minimum tier)</code>.
+No account, no coordinates, no location history, no identifier that
+outlives an uninstall.</li>
+<li>Zone codes are derived on-device from the saved location's
+already-cached NWS metadata. The server never learns where the user is,
+only which of roughly 4,000 public zones they care about.</li>
+<li>The push payload carries the alert id and tier only; the
+<strong>full alert text is fetched from NWS by the device</strong>, so
+the relay is never a source of truth for content and cannot inject a
+fabricated warning body.</li>
+<li>The relay retains no message history and no per-device log beyond
+what APNs delivery requires.</li>
+</ul></li>
+<li><strong>U-11.</strong> Push registration is <strong>opt-in</strong>,
+is explained in one screen in plain language before any token is sent,
+and is fully revocable. With push off, the app degrades to tiers 2
+through 4 and says so.</li>
+<li><strong>U-12.</strong> The relay is specified in the platform spec
+and is the only QUILL-operated network service the weather app talks
+to.</li>
+</ul>
+<h3 id="84-non-us-alerts">8.4 Non-US alerts</h3>
+<ul>
+<li><strong>U-13.</strong> Outside NWS coverage, WeatherKit alerts drive
+the same pipeline, with the same tier derivation applied to their
+severity. Where WeatherKit supplies only a summary and a details URL,
+the app says so rather than implying it has the full text, and offers
+the link.</li>
+</ul>
+<h3 id="85-lifecycle-and-the-revision-graph">8.5 Lifecycle and the
+revision graph</h3>
+<ul>
+<li><strong>U-14.</strong> The app persists <code>id</code>,
+<code>messageType</code>, <code>sent</code>, <code>references</code>,
+and a content hash per alert, and derives the transition: issued,
+updated, escalated, downgraded, extended, area changed, corrected,
+cancelled, expired. The transition is the lead of the announcement,
+because "the tornado warning has been extended until 5:15" is a
+different and more useful sentence than a second copy of the original
+warning.</li>
+<li><strong>U-15.</strong> An alert whose only change is an
+administrative re-issue with identical content does <strong>not</strong>
+re-interrupt.</li>
+</ul>
+<hr />
+<h2 id="9-getting-the-weather-without-opening-the-app">9. Getting the
+weather without opening the app</h2>
+<p>The three-second promise (§3) is mostly won outside the app.</p>
+<ul>
+<li><strong>W-1. Widgets</strong> (WidgetKit, all families plus Lock
+Screen and StandBy): Current conditions; Next alert; Sunrise/sunset;
+Hourly strip; and a <strong>Speak it</strong> interactive widget whose
+single button speaks Quick Weather. Every widget has a complete
+<code>accessibilityLabel</code> that is the same sentence the app would
+say -- a widget that a VoiceOver user cannot read is a broken
+widget.</li>
+<li><strong>W-2. Control Center control</strong>
+(<code>ControlWidget</code>): "Speak my weather." One press, one
+sentence, from the Lock Screen, without unlocking.</li>
+<li><strong>W-3. Action Button and Back Tap</strong> are both supported
+through the App Shortcut, so the hardware affordance can be bound to
+Quick Weather.</li>
+<li><strong>W-4. App Intents and Siri.</strong>
+<code>GetQuickWeather</code>, <code>GetWeatherReport</code>,
+<code>GetActiveAlerts</code>, <code>AddLocation</code>,
+<code>SetPrimaryLocation</code>, <code>SpeakForecast</code>,
+<code>FindNOAATransmitter</code>. All are <code>AppShortcut</code>s with
+natural phrases ("What is my Quill weather", "Any weather alerts"), all
+return spoken dialog authored by the same narrator, and all are usable
+from Shortcuts, Siri, and the Shortcuts automation engine.</li>
+<li><strong>W-5. Apple Watch app</strong> with: complications for
+current temperature, next alert, and sunrise/sunset; a Quick Weather
+crown-scrollable report; notification forwarding with distinct haptics
+per tier; and full VoiceOver support including custom actions. The watch
+is the right device for a warning -- it taps the wrist.</li>
+<li><strong>W-6. Handoff and Continuity.</strong> Reading a location's
+report on the watch or the phone offers to continue on the Mac or
+iPad.</li>
+<li><strong>W-7. Share and export.</strong> Any report or alert can be
+shared as plain text (the narrative, not a screenshot), and the whole
+current report can be copied in one action -- the ported "copyable
+read-only field" behavior.</li>
+</ul>
+<hr />
+<h2 id="10-ipad-mac-and-carplay">10. iPad, Mac, and CarPlay</h2>
+<ul>
+<li><strong>P-1.</strong> The app is a single SwiftUI codebase shipping
+to iPhone, iPad, and Mac (Catalyst or native, decided at implementation
+time), so the "macOS next" line in the Windows PRD is satisfied by this
+work rather than by a second port. The Mac build additionally exposes
+the Windows keyboard accelerators.</li>
+<li><strong>P-2.</strong> iPad: multi-column layout with locations in
+the sidebar, full keyboard support, Stage Manager and multi-window
+aware. Split view keeps the reading order rule (A-3) within each
+column.</li>
+<li><strong>P-3.</strong> CarPlay: <strong>alerts only</strong>,
+presented through CarPlay's notification surface, plus a "Speak my
+weather" list item. No forecast browsing while driving. The NOAA Weather
+Radio hand-off to Quill Radio (§12.2) is available from CarPlay because
+that is the one weather interaction that genuinely belongs in a
+car.</li>
+</ul>
+<hr />
+<h2
+id="11-sync----settings-and-identifications-that-track-either-way">11.
+Sync -- settings and identifications that track either way</h2>
+<p>Full design is in the platform spec; the requirements binding on this
+app:</p>
+<ul>
+<li><p><strong>S-1.</strong> Sync is <strong>opt-in</strong>,
+<strong>end-to-end encrypted</strong>, and
+<strong>zero-knowledge</strong>. It uses <strong>QuillSync</strong>, the
+engine that already exists at <code>quill/apps/beacon/quillsync/</code>
+-- an append-only commit log of AES-GCM encrypted, content-addressed
+blobs under a scrypt-derived vault key. Nothing new is
+invented.</p></li>
+<li><p><strong>S-2.</strong> Three transports, user-chosen, all carrying
+the identical encrypted log so a user can switch or use several:</p>
+<ol type="1">
+<li><strong>iCloud Drive folder</strong> (default on Apple devices).
+Because iCloud Drive is also available on Windows, this gives
+Windows-to-iPhone sync <strong>with no QUILL server at
+all</strong>.</li>
+<li><strong>Any folder</strong> -- OneDrive, Dropbox, Syncthing, a USB
+stick. This is the existing <code>FolderTransport</code>.</li>
+<li><strong>The QuillSync server</strong> -- passwordless magic link,
+per-device revocable token, for users with no cloud drive.</li>
+</ol></li>
+<li><p><strong>S-3.</strong> What syncs (the "identifications" that must
+track either way):</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Syncs</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Saved locations, their friendly names, order, groups, and
+primary</td>
+<td>Yes</td>
+<td>The core identification set</td>
+</tr>
+<tr>
+<td>Units, field toggles, forecast/hourly/daily counts</td>
+<td>Yes</td>
+<td>The user's voice preferences follow them</td>
+</tr>
+<tr>
+<td>Alert severity floor, muted event list, snoozes, quiet hours</td>
+<td>Yes</td>
+<td>Hard-won tuning must not be re-done per device</td>
+</tr>
+<tr>
+<td>Narration preferences (concise labels, announcement verbosity)</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td>NOAA transmitter favorites</td>
+<td>Yes</td>
+<td>Shared with Quill Radio's favorites namespace</td>
+</tr>
+<tr>
+<td>Notified-alert id set</td>
+<td>Yes, with a short TTL</td>
+<td>Prevents a second device re-announcing what the first already
+did</td>
+</tr>
+<tr>
+<td>Push registration, device token</td>
+<td>No -- device scope</td>
+<td>Meaningless elsewhere</td>
+</tr>
+<tr>
+<td>Alert sound file selection, haptics, Critical Alert grant</td>
+<td>No -- device scope</td>
+<td>Platform-specific</td>
+</tr>
+<tr>
+<td>Location permission state, current-location fixes, travel
+history</td>
+<td><strong>Never</strong></td>
+<td>Privacy floor</td>
+</tr>
+<tr>
+<td>Last-good weather cache</td>
+<td>No</td>
+<td>Regenerated cheaply; syncing it wastes bandwidth</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>S-4.</strong> Entity ids are partitioned
+<code>shared/...</code> and <code>device/&lt;device-id&gt;/...</code>
+exactly as the Beacon integration plan specifies, so device-scoped
+settings can live in the same log without leaking across
+machines.</p></li>
+<li><p><strong>S-5.</strong> Merge is field-level last-writer-wins on
+scalars with a union merge on lists (muted events, groups, locations),
+using the existing <code>merge.union_lists</code>. A location removed on
+one device and edited on another surfaces as a conflict the user
+resolves in one tap, with the resolution spoken.</p></li>
+<li><p><strong>S-6.</strong> The vault key lives in the <strong>iOS
+Keychain</strong> with
+<code>kSecAttrAccessibleWhenUnlockedThisDeviceOnly</code> and is never
+written to the sync log, never sent to any server, and never included in
+a backup that could travel. Losing it means losing sync, not losing data
+-- local data is always intact.</p></li>
+<li><p><strong>S-7.</strong> Wire format parity is mandatory: scrypt
+N=2^15, r=8, p=1, 32-byte key; AES-GCM with a 12-byte nonce and AAD
+<code>quillsync:dek</code>; SHA-256 content addressing. The Swift
+implementation (CryptoKit) must decrypt a blob written by the Python
+implementation and vice versa, verified by a cross-language fixture test
+in CI.</p></li>
+<li><p><strong>S-8.</strong> Sync status is fully accessible: a spoken
+state ("Last synced 4 minutes ago over iCloud Drive; everything up to
+date"), an explicit "Sync now", and a plainly worded error that says
+what to do.</p></li>
+</ul>
+<hr />
+<h2 id="12-ecosystem-behavior">12. Ecosystem behavior</h2>
+<h3 id="121-two-apps-one-settings-store">12.1 Two apps, one settings
+store</h3>
+<ul>
+<li><strong>E-1.</strong> Quill Weather for iOS and Quill Radio for iOS
+share the QuillKit settings and sync layer through an <strong>App
+Group</strong> container, so a location saved in one is instantly
+present in the other on the same device -- the direct equivalent of the
+shared <code>%APPDATA%\Quill</code> store on Windows.</li>
+<li><strong>E-2.</strong> Neither app requires the other. Each degrades
+to a described, working state alone.</li>
+</ul>
+<h3 id="122-the-noaa-weather-radio-hand-off">12.2 The NOAA Weather Radio
+hand-off</h3>
+<ul>
+<li><strong>E-3.</strong> Quill Weather finds the transmitter covering a
+location (F-12) and, when Quill Radio for iOS is installed, hands the
+stream to it via an App Intent -- so the desktop's honest limitation
+("Quill Weather can find but not play it") is finally closed. When Radio
+is not installed, the app offers the App Store link and still shows the
+callsign, frequency, and SAME code, which is what a user with a physical
+receiver actually needs.</li>
+</ul>
+<h3 id="123-cross-app-announcement-etiquette">12.3 Cross-app
+announcement etiquette</h3>
+<ul>
+<li><strong>E-4.</strong> A <code>Critical</code> or <code>Urgent</code>
+weather alert <strong>ducks Quill Radio's playback</strong> and speaks
+over it, then restores the previous volume -- the ported "single-player
+rule" applied across apps through the shared audio session policy.
+Nothing below <code>Urgent</code> ever interrupts audio.</li>
+</ul>
+<hr />
+<h2 id="13-privacy-security-and-safety">13. Privacy, security, and
+safety</h2>
+<ul>
+<li><strong>N-1.</strong> No analytics, no telemetry, no crash-reporting
+SDK that transmits automatically. Diagnostics are generated on request,
+shown to the user in full, redacted through the ported
+<code>redaction</code> rules, and shared only by explicit action.</li>
+<li><strong>N-2.</strong> Every network destination is enumerated in the
+app's own privacy screen, in plain language, with what each one
+receives. The Privacy Manifest (<code>PrivacyInfo.xcprivacy</code>)
+declares the same set and declares <strong>no</strong> tracking
+domains.</li>
+<li><strong>N-3.</strong> App Transport Security is left at its strict
+default with no exceptions.</li>
+<li><strong>N-4.</strong> All persisted files use Data Protection
+(<code>.completeUnlessOpen</code> minimum), and secrets use the
+Keychain, never <code>UserDefaults</code>.</li>
+<li><strong>N-5.</strong> A "Safe Mode" equivalent -- <strong>Offline
+Mode</strong> -- disables every network surface in one switch, mirroring
+<code>QUILL_SAFE_MODE=1</code>, and the app remains usable against
+cached data.</li>
+<li><strong>N-6.</strong> The safety disclaimer (§4.4) is shown at first
+launch, is present in the alert settings screen, and cannot be
+permanently dismissed from the settings screen.</li>
+<li><strong>N-7.</strong> Errors are coded, using the ported
+<code>QUILL-&lt;DOMAIN&gt;-&lt;SUBSYSTEM&gt;-&lt;REASON&gt;</code>
+scheme, so a user's report of a failure is actionable and a Swift error
+can be matched to its Python sibling.</li>
+</ul>
+<hr />
+<h2 id="14-quality-testing-and-the-definition-of-done">14. Quality,
+testing, and the definition of done</h2>
+<ul>
+<li><strong>Q-1. Narration golden corpus.</strong> A JSON corpus of
+report fixtures and their expected spoken strings is shared by the
+Python and Swift test suites. Any wording change must update the corpus,
+and both suites must then pass. This is the mechanism that makes R-1
+real rather than aspirational.</li>
+<li><strong>Q-2. Accessibility audit in CI.</strong> Every screen is run
+through <code>XCUIApplication.performAccessibilityAudit()</code> for all
+audit types on every pull request. Failures block the build. This is the
+iOS analogue of QUILL's dialog-inventory and banned-pattern gates.</li>
+<li><strong>Q-3. Scripted VoiceOver run.</strong> Before every release,
+a scripted end-to-end run covers: first launch, permission grant and
+refusal, add location by ZIP and by voice search, read a full report,
+navigate every rotor, perform every custom action, receive a test alert
+at each tier, and complete a sync pairing. It is performed with the
+screen curtain on.</li>
+<li><strong>Q-4. Snapshot tests</strong> at the default and
+<code>AX5</code> Dynamic Type sizes, in light and dark, with Increase
+Contrast on and off.</li>
+<li><strong>Q-5. Provider contract tests</strong> run against recorded
+fixtures, never the live network, so the suite is deterministic; a
+separate, clearly-labeled live suite runs on a schedule to catch
+provider drift (the same pattern as QUILL's live AI regression
+suite).</li>
+<li><strong>Q-6. Battery and data budget.</strong> A full day of normal
+use with push enabled and three saved locations must consume less than a
+stated budget of background time and cellular data, measured with
+Instruments and asserted in the release checklist.</li>
+<li><strong>Q-7. Done means:</strong> the golden corpus passes on both
+platforms, the accessibility audit is clean, the scripted VoiceOver run
+is complete, the privacy manifest matches the actual egress list,
+attribution is present on every WeatherKit-derived surface, and the user
+guide and CHANGELOG are updated in the same change.</li>
+</ul>
+<hr />
+<h2 id="15-phasing">15. Phasing</h2>
+<p>Each phase is shippable and each ends with a real user able to do
+something they could not do before.</p>
+<p><strong>Phase 1 -- The voice, on a phone.</strong> QuillKit
+foundation; the narrator port with the golden corpus green; saved
+locations with the enriched record; NWS and Open-Meteo providers behind
+the audited chokepoint; Weather Now and Quick Weather; the full
+VoiceOver contract (§5.1 through §5.5, §5.7); Apple geocoding. No push,
+no sync, no WeatherKit yet. <em>Ships when a blind user can add a place
+and hear the complete report.</em></p>
+<p><strong>Phase 2 -- Apple Weather and the things only iOS can
+say.</strong> WeatherKit integration with attribution and availability
+checks; minute-by-minute precipitation; the fusion and disagreement
+model; provenance via Custom Content; worldwide hourly; Audio Graphs.
+<em>Ships when the app says something the Windows app cannot.</em></p>
+<p><strong>Phase 3 -- Being told, not asking.</strong> Current location,
+reduced accuracy, geofenced arrival; local notifications and background
+refresh; the full alert lifecycle and revision graph; the Critical
+Alerts entitlement application; Live Activity; widgets, Control Center,
+App Intents, Siri. <em>Ships when the phone wakes the user for a tornado
+warning.</em></p>
+<p><strong>Phase 4 -- QuillPush.</strong> The zone-subscription relay
+and APNs delivery, with the iCloud-folder-only degradation path fully
+working for users who decline it. <em>Ships when alerts arrive in
+seconds rather than minutes.</em></p>
+<p><strong>Phase 5 -- Everything tracks either way.</strong> QuillSync
+adoption: the Swift engine with cross-language fixture parity, the three
+transports, the scope map, conflict resolution, and the Windows-side
+adapter that makes Windows a peer. <em>Ships when a location added on
+the desktop is on the phone before the user picks it up.</em></p>
+<p><strong>Phase 6 -- The rest of the ecosystem.</strong> Apple Watch
+app and complications; iPad and Mac layouts; CarPlay alerts; the Quill
+Radio NOAA hand-off; travel mode; location groups; historical and
+normals; marine and fire segments; textual radar interpretation.</p>
+<hr />
+<h2 id="16-open-questions-to-resolve-before-phase-2-and-phase-4">16.
+Open questions to resolve before Phase 2 and Phase 4</h2>
+<p>These are called out explicitly rather than assumed, because getting
+them wrong is expensive:</p>
+<ol type="1">
+<li><strong>WeatherKit call budget.</strong> The Apple Developer Program
+includes a monthly call allowance; beyond it, calls are billed. Confirm
+the current allowance and pricing tiers, then design the cache policy to
+fit -- per-location coalescing, a minimum refresh interval, and a hard
+per-device daily ceiling. Widgets and the watch must share the app's
+cache, not multiply the call count.</li>
+<li><strong>WeatherKit alert coverage and content by region.</strong>
+Confirm which regions return alerts, and whether the payload carries a
+usable body or only a summary and a details URL, before promising non-US
+alert text (U-13).</li>
+<li><strong>Minute-precipitation coverage.</strong> Confirm the
+supported regions so the sentence is offered only where it exists (D-6
+makes this safe by default).</li>
+<li><strong>Critical Alerts entitlement.</strong> Confirm Apple's
+current criteria and turnaround. The product must be fully honest in the
+interim (U-4).</li>
+<li><strong>QuillPush hosting and cost.</strong> The relay's
+steady-state cost is dominated by the NWS poll, not by fan-out; confirm
+the hosting shape against the existing <code>quill-ai-gateway</code>
+deployment pattern before building.</li>
+<li><strong>iCloud Drive on Windows behavior</strong> for a directory of
+many small files under concurrent write -- validate the
+<code>FolderTransport</code> commit-log shape against real iCloud sync
+semantics before making it the default transport.</li>
+<li><strong>App Store review posture</strong> on a weather app
+requesting Always location and Critical Alerts -- prepare the review
+notes and the demonstration script ahead of first submission.</li>
+</ol>
+<hr />
+<h2 id="17-relationship-to-the-existing-documents">17. Relationship to
+the existing documents</h2>
+<ul>
+<li>The Windows Quill Weather PRD
+(<code>standalone/weather/docs/prd.md</code>) remains the authoritative
+specification for the shared weather <strong>domain</strong>: the alert
+model, the tier derivation, the settings keys, the narration rules, and
+the safety posture. This document specifies the <strong>iOS
+product</strong> and does not restate that spec; where the two disagree,
+the Windows PRD wins on domain semantics and this document wins on iOS
+delivery.</li>
+<li>Items F-14 through F-21 are the Windows PRD's own unbuilt sections.
+Building them here does not fork them; the design flows back under R-4,
+and the Windows PRD's corresponding sections should be updated to
+reference this document as the design of record once each ships.</li>
+<li><code>quillville-apple-platform-spec.md</code> owns QuillKit,
+QuillSync adoption, QuillPush, the narration golden corpus, and the
+Apple repo layout, and is shared with Quill Radio for iOS.</li>
+</ul>
+</body>
+</html>
