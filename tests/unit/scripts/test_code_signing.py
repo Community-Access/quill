@@ -164,3 +164,51 @@ def test_sign_paths_signs_collected_files(
 def test_version_key_orders_sdk_builds() -> None:
     assert cs._version_key("10.0.26100.0") > cs._version_key("10.0.22621.0")
     assert cs._version_key("10.0.22621.0") > cs._version_key("10.0.19041.0")
+
+
+def _fake_pe(cert_rva: int, cert_size: int, total: int = 320) -> bytearray:
+    """A minimal PE32+ header buffer with a Certificate Table directory entry."""
+    import struct
+
+    data = bytearray(total)
+    data[0:2] = b"MZ"
+    e_lfanew = 0x80
+    struct.pack_into("<I", data, 0x3C, e_lfanew)
+    data[e_lfanew : e_lfanew + 4] = b"PE\x00\x00"
+    opt = e_lfanew + 24
+    struct.pack_into("<H", data, opt, 0x20B)  # PE32+
+    cert = opt + 112 + 4 * 8
+    struct.pack_into("<II", data, cert, cert_rva, cert_size)
+    return data
+
+
+def _cert_entry(data: bytes) -> tuple[int, int]:
+    import struct
+
+    e_lfanew = struct.unpack_from("<I", data, 0x3C)[0]
+    opt = e_lfanew + 24
+    cert = opt + 112 + 4 * 8
+    return struct.unpack_from("<II", data, cert)
+
+
+def test_sanitize_zeros_a_dangling_cert_directory(tmp_path: Path) -> None:
+    # rva points past EOF (the rcedit-stamped-launcher case) -> zeroed.
+    exe = tmp_path / "quill.exe"
+    exe.write_bytes(bytes(_fake_pe(cert_rva=90112, cert_size=14048, total=320)))
+    cs._sanitize_pe_for_signing(exe)
+    assert _cert_entry(exe.read_bytes()) == (0, 0)
+
+
+def test_sanitize_leaves_an_in_file_cert_directory_untouched(tmp_path: Path) -> None:
+    # A genuine, in-bounds signature is left for signtool to replace.
+    exe = tmp_path / "signed.dll"
+    exe.write_bytes(bytes(_fake_pe(cert_rva=200, cert_size=50, total=320)))
+    cs._sanitize_pe_for_signing(exe)
+    assert _cert_entry(exe.read_bytes()) == (200, 50)
+
+
+def test_sanitize_ignores_non_pe_files(tmp_path: Path) -> None:
+    plain = tmp_path / "notes.txt"
+    plain.write_text("hello", encoding="utf-8")
+    cs._sanitize_pe_for_signing(plain)  # must not raise
+    assert plain.read_text(encoding="utf-8") == "hello"
