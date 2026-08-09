@@ -5896,6 +5896,17 @@ DAISY 2.02 *text-only* writer (no OPF/NCX/EPUB3), and no DAISY 2.02 player
 has real MathML rendering/speech support, so embedding raw `<math>` there
 would be inert markup, not real accessibility.
 
+**Math in imported e-books (EPUB), shipped (#1355).** EPUB text extraction
+(`quill/core/epub.py`) detects `<math>` MathML blocks, LaTeX-classed
+`<span>`/`<div>` elements, and inline/block LaTeX delimiters (`$…$`, `$$…$$`,
+`\(…\)`, `\[…\]`) in each chapter and converts them to the same spoken reading
+the editor uses — `math/speech.speak()` via MathCAT, falling back to the
+`navigator` template renderer, and to the raw formula if neither can parse it —
+wrapping the result inline as `[Math Equation: …]` so an equation reads as a
+sentence in place rather than being dropped or read out as tag soup. Extraction
+never raises: a malformed equation degrades to stripped text, and a chapter with
+no math is byte-for-byte unchanged.
+
 **Tutorial:** [07-type-math-like-a-pro.md](../tutorials/07-type-math-like-a-pro.md)
 teaches the whole surface end to end — gallery first, then typed input, the
 structure explorer, Browser Preview, and the Word round trip.
