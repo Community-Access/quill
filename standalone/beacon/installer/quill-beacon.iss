@@ -18,6 +18,15 @@
 #define AppExeName "QuillBeacon.exe"
 
 [Setup]
+#ifdef Sign
+; Code signing (opt-in). Present only when ISCC is invoked with /DSign plus a
+; matching /Squilltrusted=<sign command>; Inno then signs the compiled Setup.exe
+; and the generated uninstaller. A plain build passes neither, so these
+; directives are absent and the unsigned build compiles unchanged. See
+; docs/code-signing.md.
+SignTool=quilltrusted
+SignedUninstaller=yes
+#endif
 AppId={{6B1F0E92-3A7D-4C15-9E28-BEAC0FADE001}}
 AppName={#AppName}
 AppVersion={#AppVersion}

@@ -69,6 +69,8 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 
 **SSH host keys:** `core/ssh/client.py` defaults to `paramiko.RejectPolicy`. `AutoAddPolicy` requires `trust_first_use=True` (or `settings.ssh_trust_first_use`).
 
+**Windows code signing (Authenticode):** `scripts/code_signing.py` is the single tool for OS code signing via Azure Trusted Signing (`metadata.json` at repo root; auth is the ambient `az login` / workload-identity credential, no PFX). It locates `signtool`, stages+SHA-256-verifies the signing dlib into gitignored `build/deps/trusted-signing/`, and invokes `signtool` with an argv list — never through an MSYS/Git-Bash shell, which mangles `/fd`-style switches. It is **opt-in** (`QUILL_SIGN=1`) and **fail-open** (a failure aborts only under `QUILL_SIGN_REQUIRED=1`), so plain builds are unchanged. Wired into all seven installers — `build_windows_distribution.py` (main app) and every `standalone/*/scripts/build_release.ps1` (`-Sign`): payload `.exe`/`.dll` signed before packaging; each `Setup.exe` and its uninstaller signed by Inno's native `SignTool` + `SignedUninstaller` during compile, gated behind an `#ifdef Sign` block (ISCC gets `/DSign` + a `/Squilltrusted=` mapping) so unsigned builds compile unchanged. This is distinct from `quill/tools/signing.py` (Ed25519 artifact provenance) and the update-feed key. Runbook: `docs/code-signing.md`.
+
 **`QUILL_DATA_DIR`:** Respected only when `_DEV_BUILD=True` (i.e., `QUILL_DEV_BUILD=1`). In release builds the env var is ignored; dev overrides must also stay under `Path.home()`.
 
 ### Module size budget

@@ -23,9 +23,12 @@ What it does *not* cover:
   Community-Access publisher key, not who the author is.
 - **Download privacy** -- no anonymity layer.
 - **Executable code** -- Quillins (which carry Python) are additionally
-  scanned by Bandit and the SecurityWatchdog, but the operating-system
-  code-signing runbook for QUILL itself is documented separately
-  (see `docs/release/quill-macos-signing-notarization-runbook.md`).
+  scanned by Bandit and the SecurityWatchdog, but operating-system
+  code signing for QUILL itself is a separate system: Windows
+  Authenticode via Azure Trusted Signing is documented in
+  [`docs/code-signing.md`](code-signing.md), and the macOS
+  signing/notarization runbook in
+  `docs/release/quill-macos-signing-notarization-runbook.md`.
 
 ## Key files
 

@@ -241,6 +241,44 @@ RCEDIT_PINNED_URL = (
 RCEDIT_PINNED_SHA256 = "3e7801db1a5edbec91b49a24a094aad776cb4515488ea5a4ca2289c400eade2a"
 
 
+def _sign_paths(paths: list[Path], *, label: str) -> list[Path]:
+    """Authenticode-sign build outputs (opt-in; see scripts/code_signing.py).
+
+    A thin, import-safe wrapper: ``code_signing`` lives beside this module in
+    ``scripts/`` and is imported as ``scripts.code_signing`` under pytest but as
+    a top-level ``code_signing`` when this file is run directly as a script.
+    Signing is a no-op unless ``QUILL_SIGN=1`` (fail-open unless
+    ``QUILL_SIGN_REQUIRED=1``), so calling it unconditionally is safe.
+    """
+    try:
+        from scripts.code_signing import sign_paths
+    except ModuleNotFoundError:
+        from code_signing import sign_paths  # type: ignore[no-redef]
+    return sign_paths(paths, label=label)
+
+
+def _inno_sign_args() -> list[str]:
+    """ISCC args that activate the generated ``.iss`` ``#ifdef Sign`` SignTool
+    block, or ``[]`` when code signing is not requested.
+
+    Mirrors the standalone ``build_release.ps1`` wiring: ``/DSign`` plus a
+    ``/Squilltrusted=`` mapping whose command signs ``$f`` (Inno's ``$q`` -> a
+    double quote, ``$f`` -> the file being signed) through
+    ``scripts/code_signing.py``. With this passed, Inno signs the compiled
+    ``Setup.exe`` and the generated uninstaller. Gated on ``QUILL_SIGN`` so a
+    plain build compiles the inert directives away and stays unsigned.
+    """
+    try:
+        from scripts.code_signing import signing_requested
+    except ModuleNotFoundError:
+        from code_signing import signing_requested  # type: ignore[no-redef]
+    if not signing_requested():
+        return []
+    signer = Path(__file__).resolve().parent / "code_signing.py"
+    sign_cmd = f"$q{sys.executable}$q $q{signer}$q sign $f"
+    return ["/DSign", f"/Squilltrusted={sign_cmd}"]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generate portable and Inno Setup packaging artefacts for Windows.",
@@ -667,6 +705,12 @@ def build_windows_distribution(
             "PyPI on first use."
         )
 
+    # Authenticode code signing (opt-in via QUILL_SIGN; docs/code-signing.md).
+    # Sign the fully-assembled payload BEFORE the installer compiles so the
+    # signed launcher/binaries are what Inno embeds; the Setup.exe itself is
+    # signed after compile below. A plain build (QUILL_SIGN unset) is unchanged.
+    _sign_paths([portable_dir], label="portable payload")
+
     result = {
         "portable_dir": str(portable_dir),
         "installer_script": str(installer_script),
@@ -681,6 +725,10 @@ def build_windows_distribution(
             iscc_path=iscc_path,
             offline_edition=offline_edition,
         )
+        # No post-compile signing of the Setup.exe here: when QUILL_SIGN is set,
+        # compile_inno_setup_installer passes /DSign + /Squilltrusted so Inno
+        # itself signs the Setup.exe AND the generated uninstaller during compile
+        # (see _inno_sign_args). The payload was already signed above.
         result["installer_exe"] = str(installer_exe)
     return result
 
@@ -971,6 +1019,16 @@ def build_inno_setup_script(
         '#define AppExeName "quill.exe"',
         "",
         "[Setup]",
+        "#ifdef Sign",
+        "; Code signing (opt-in). Present only when ISCC is invoked with /DSign",
+        "; plus a matching /Squilltrusted=<sign command> (see",
+        "; compile_inno_setup_installer + scripts/code_signing.py). Inno then signs",
+        "; the compiled Setup.exe AND the generated uninstaller. A plain build",
+        "; passes neither, so these directives are absent and the unsigned build",
+        "; compiles unchanged. See docs/code-signing.md.",
+        "SignTool=quilltrusted",
+        "SignedUninstaller=yes",
+        "#endif",
         f"AppId={app_id}",
         "AppName={#AppName}",
         "AppVersion={#AppVersion}",
@@ -1518,7 +1576,7 @@ def compile_inno_setup_installer(
         raise RuntimeError(
             "Inno Setup compiler not found. Install Inno Setup 6 or pass --iscc-path."
         )
-    subprocess.run([str(compiler), str(installer_script)], check=True)
+    subprocess.run([str(compiler), *_inno_sign_args(), str(installer_script)], check=True)
     # The Offline Edition uses a distinct OutputBaseFilename (Quill-Offline-Setup)
     # so it never overwrites a coexisting slim installer; the slim build keeps the
     # long-standing Quill-for-All-Setup name.

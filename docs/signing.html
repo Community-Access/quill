@@ -265,10 +265,12 @@ id (<code>ca-pubkey-2026</code>) only tells you the artifact was signed
 with the Community-Access publisher key, not who the author is.</li>
 <li><strong>Download privacy</strong> -- no anonymity layer.</li>
 <li><strong>Executable code</strong> -- Quillins (which carry Python)
-are additionally scanned by Bandit and the SecurityWatchdog, but the
-operating-system code-signing runbook for QUILL itself is documented
-separately (see
-<code>docs/release/quill-macos-signing-notarization-runbook.md</code>).</li>
+are additionally scanned by Bandit and the SecurityWatchdog, but
+operating-system code signing for QUILL itself is a separate system:
+Windows Authenticode via Azure Trusted Signing is documented in <a
+href="code-signing.md"><code>docs/code-signing.md</code></a>, and the
+macOS signing/notarization runbook in
+<code>docs/release/quill-macos-signing-notarization-runbook.md</code>.</li>
 </ul>
 <h2 id="key-files">Key files</h2>
 <table>
