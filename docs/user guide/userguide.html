@@ -29808,6 +29808,16 @@ at all; for those, QUILL <strong>infers</strong> headings from the
 book's structure — a paragraph styled as a title or chapter, or a short
 standalone bold line — so heading navigation and the chapter outline
 still work where they would otherwise be empty.</p>
+<p><strong>Equations are spoken, not skipped.</strong> When a chapter
+contains mathematics — MathML, or LaTeX written as a <code>math</code>
+span or between <code>$$…$$</code> / <code>\(…\)</code> delimiters —
+QUILL converts each equation to a plain-language reading and places it
+inline as "Math Equation: …" so the formula is read as part of its
+sentence rather than lost or spelled out as raw markup. It uses the same
+math speech as the editor: the MathCAT engine when it is installed,
+QUILL's built-in reader otherwise. A formula QUILL cannot parse is read
+as its plain source rather than dropped, and a book with no math reads
+exactly as before.</p>
 <h3 id="ocr-image">OCR Image</h3>
 <p>OCR is explicit and local. You choose the image, confirm the action,
 and receive progress updates. This keeps OCR useful without making it

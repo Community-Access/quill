@@ -837,6 +837,13 @@ speak math. The preview and HTML export render it through MathJax, and
 Word export writes real, editable Word equation objects that round-trip
 back to text when you reopen the file. With the optional MathCAT engine
 installed, "read this part aloud" speaks math the way NVDA does.</p>
+<p><strong>And now the math in the books you read, too.</strong> When
+you open an <strong>EPUB</strong> that contains equations — MathML or
+LaTeX — QUILL converts each one to that same plain-language reading and
+drops it inline in the text as "Math Equation: …", so a formula is
+spoken as part of its sentence instead of being skipped or read out as
+raw markup. It uses MathCAT when installed and QUILL's built-in reader
+otherwise, and never fails a book over an equation it cannot parse.</p>
 <p>This feature was contributed by @salorajan.</p>
 <hr />
 <h2 id="spelling-language-and-words">Spelling, Language, and Words</h2>

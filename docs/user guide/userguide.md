@@ -7317,6 +7317,8 @@ When you open an EPUB, the navigator gives you chapter-aware movement rather tha
 
 Chapter headings are also placed **inline in the text**, so single-key heading navigation (`H` and `Shift+H`) walks every heading in the book, not just chapter boundaries. Many older or hand-made EPUBs never used real heading tags at all; for those, QUILL **infers** headings from the book's structure — a paragraph styled as a title or chapter, or a short standalone bold line — so heading navigation and the chapter outline still work where they would otherwise be empty.
 
+**Equations are spoken, not skipped.** When a chapter contains mathematics — MathML, or LaTeX written as a `math` span or between `$$…$$` / `\(…\)` delimiters — QUILL converts each equation to a plain-language reading and places it inline as "Math Equation: …" so the formula is read as part of its sentence rather than lost or spelled out as raw markup. It uses the same math speech as the editor: the MathCAT engine when it is installed, QUILL's built-in reader otherwise. A formula QUILL cannot parse is read as its plain source rather than dropped, and a book with no math reads exactly as before.
+
 ### OCR Image
 
 OCR is explicit and local. You choose the image, confirm the action, and receive progress updates. This keeps OCR useful without making it invisible or surprising.
