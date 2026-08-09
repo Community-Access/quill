@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Weather for iOS -- Product Requirements</title>
+  <title>prd-ios</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -1019,8 +1019,17 @@ Screen and StandBy): Current conditions; Next alert; Sunrise/sunset;
 Hourly strip; and a <strong>Speak it</strong> interactive widget whose
 single button speaks Quick Weather. Every widget has a complete
 <code>accessibilityLabel</code> that is the same sentence the app would
-say -- a widget that a VoiceOver user cannot read is a broken
-widget.</li>
+say -- a widget that a VoiceOver user cannot read is a broken widget.
+The Lock Screen accessory families (<code>accessoryCircular</code>,
+<code>accessoryRectangular</code>, <code>accessoryInline</code>) carry
+the <strong>current temperature</strong> with its degree sign
+(<code>112°</code>) and condition -- this is the recommended surface for
+a temperature on the Lock Screen. Because WidgetKit refreshes on a
+system-budgeted timeline (about every 15 minutes at best, not live), the
+widget states freshness in its <code>accessibilityLabel</code> ("112
+degrees, sunny, updated 8 minutes ago") rather than implying a real-time
+reading, and it renders negatives and the degree sign that the app-icon
+badge (W-8) cannot.</li>
 <li><strong>W-2. Control Center control</strong>
 (<code>ControlWidget</code>): "Speak my weather." One press, one
 sentence, from the Lock Screen, without unlocking.</li>
@@ -1047,6 +1056,38 @@ iPad.</li>
 shared as plain text (the narrative, not a screenshot), and the whole
 current report can be copied in one action -- the ported "copyable
 read-only field" behavior.</li>
+<li><strong>W-8. Current temperature as the app-icon badge</strong>
+(opt-in, default off). A Settings toggle, <em>Show current temperature
+on the app icon</em>, sets the badge
+(<code>UNUserNotificationCenter.setBadgeCount</code>, requires the
+<code>.badge</code> authorization) to the primary location's
+temperature. It refreshes on foreground and via
+<code>BGAppRefreshTask</code> (§8.1), <strong>never by push</strong> --
+QuillPush is zone-based and location-blind by design (§8.3, §13) and
+must never learn a user's temperature, so a push-driven badge is out of
+scope. Honest constraints, and the toggle's footer states them:
+<ul>
+<li>The badge is a <strong>whole, non-negative integer</strong>: it
+shows <code>112</code> with no degree sign and no decimals. iOS imposes
+<strong>no 99 ceiling</strong> -- the badge pill widens, so triple-digit
+desert temperatures (Phoenix in July) display in full; the "99+" cap is
+an Android/notification-dot behavior, not iOS.</li>
+<li>It <strong>cannot show below zero</strong>.
+<code>setBadgeCount(0)</code> clears the badge, so a sub-zero location
+has no badge representation and falls back to the Lock Screen widget
+(W-1).</li>
+<li>Freshness is <strong>best-effort</strong>, not live: background
+refresh is opportunistic and user-disable-able, so the number can lag.
+The toggle says "approximate, last known" rather than implying real
+time.</li>
+<li>The app-icon badge is <strong>shared with the unread-alert
+count</strong>: enabling the temperature badge replaces the alert count
+on the icon (the alert itself still arrives as a notification and on the
+Watch, W-5). The toggle makes this trade-off explicit.</li>
+<li>VoiceOver reads the badge as a bare "Quill Weather, 112", so W-1
+remains the recommended glance surface; the badge is the secondary,
+opt-in extra.</li>
+</ul></li>
 </ul>
 <hr />
 <h2 id="10-ipad-mac-and-carplay">10. iPad, Mac, and CarPlay</h2>

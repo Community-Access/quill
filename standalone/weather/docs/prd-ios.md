@@ -621,7 +621,15 @@ The three-second promise (§3) is mostly won outside the app.
   Current conditions; Next alert; Sunrise/sunset; Hourly strip; and a **Speak
   it** interactive widget whose single button speaks Quick Weather. Every widget
   has a complete `accessibilityLabel` that is the same sentence the app would
-  say -- a widget that a VoiceOver user cannot read is a broken widget.
+  say -- a widget that a VoiceOver user cannot read is a broken widget. The Lock
+  Screen accessory families (`accessoryCircular`, `accessoryRectangular`,
+  `accessoryInline`) carry the **current temperature** with its degree sign
+  (`112°`) and condition -- this is the recommended surface for a temperature on
+  the Lock Screen. Because WidgetKit refreshes on a system-budgeted timeline
+  (about every 15 minutes at best, not live), the widget states freshness in its
+  `accessibilityLabel` ("112 degrees, sunny, updated 8 minutes ago") rather than
+  implying a real-time reading, and it renders negatives and the degree sign that
+  the app-icon badge (W-8) cannot.
 - **W-2. Control Center control** (`ControlWidget`): "Speak my weather." One
   press, one sentence, from the Lock Screen, without unlocking.
 - **W-3. Action Button and Back Tap** are both supported through the App
@@ -642,6 +650,30 @@ The three-second promise (§3) is mostly won outside the app.
 - **W-7. Share and export.** Any report or alert can be shared as plain text
   (the narrative, not a screenshot), and the whole current report can be copied
   in one action -- the ported "copyable read-only field" behavior.
+- **W-8. Current temperature as the app-icon badge** (opt-in, default off). A
+  Settings toggle, *Show current temperature on the app icon*, sets the badge
+  (`UNUserNotificationCenter.setBadgeCount`, requires the `.badge` authorization)
+  to the primary location's temperature. It refreshes on foreground and via
+  `BGAppRefreshTask` (§8.1), **never by push** -- QuillPush is zone-based and
+  location-blind by design (§8.3, §13) and must never learn a user's
+  temperature, so a push-driven badge is out of scope. Honest constraints, and
+  the toggle's footer states them:
+  - The badge is a **whole, non-negative integer**: it shows `112` with no
+    degree sign and no decimals. iOS imposes **no 99 ceiling** -- the badge pill
+    widens, so triple-digit desert temperatures (Phoenix in July) display in
+    full; the "99+" cap is an Android/notification-dot behavior, not iOS.
+  - It **cannot show below zero**. `setBadgeCount(0)` clears the badge, so a
+    sub-zero location has no badge representation and falls back to the Lock
+    Screen widget (W-1).
+  - Freshness is **best-effort**, not live: background refresh is opportunistic
+    and user-disable-able, so the number can lag. The toggle says "approximate,
+    last known" rather than implying real time.
+  - The app-icon badge is **shared with the unread-alert count**: enabling the
+    temperature badge replaces the alert count on the icon (the alert itself
+    still arrives as a notification and on the Watch, W-5). The toggle makes this
+    trade-off explicit.
+  - VoiceOver reads the badge as a bare "Quill Weather, 112", so W-1 remains the
+    recommended glance surface; the badge is the secondary, opt-in extra.
 
 ---
 
