@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Add the WeatherKit capability in Xcode (Signing & Capabilities) and
+	     register the App ID for WeatherKit at developer.apple.com. Requires a
+	     paid Apple Developer account. Without it the app falls back to the
+	     keyless Open-Meteo provider. -->
+	<key>com.apple.developer.weatherkit</key>
+	<true/>
+	<!-- App Group so the widget extension can read the app's saved locations
+	     and last-known report. Create it in Xcode and match the identifier. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.communityaccess.quillweather</string>
+	</array>
+</dict>
+</plist>

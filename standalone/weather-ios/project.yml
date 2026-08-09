@@ -1,0 +1,77 @@
+# XcodeGen spec for Quill Weather iOS. Generate the project with:
+#   xcodegen generate
+# See README.md. Deployment target and bundle IDs are meant to be edited.
+name: QuillWeather
+options:
+  bundleIdPrefix: com.communityaccess.quillweather
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: "" # set your Team ID
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    GENERATE_INFOPLIST_FILE: NO
+
+targets:
+  QuillWeather:
+    type: application
+    platform: iOS
+    sources:
+      - path: QuillWeather
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.communityaccess.quillweather
+        INFOPLIST_FILE: QuillWeather/Support/Info.plist
+        CODE_SIGN_ENTITLEMENTS: QuillWeather/Support/QuillWeather.entitlements
+        SUPPORTS_MACCATALYST: NO
+    dependencies:
+      - sdk: WeatherKit.framework
+      - sdk: CoreLocation.framework
+      - target: QuillWeatherWidgets
+        embed: true
+
+  QuillWeatherWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: QuillWeatherWidgets
+      # The widget reuses the app's model + narration + weather + shared layers.
+      - path: QuillWeather/Models
+      - path: QuillWeather/Weather
+      - path: QuillWeather/Narration
+      - path: QuillWeather/Units
+      - path: QuillWeather/Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.communityaccess.quillweather.widgets
+        INFOPLIST_FILE: QuillWeatherWidgets/Support/Info.plist
+        CODE_SIGN_ENTITLEMENTS: QuillWeatherWidgets/Support/QuillWeatherWidgets.entitlements
+    dependencies:
+      - sdk: WeatherKit.framework
+      - sdk: CoreLocation.framework
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+
+  QuillWeatherTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: QuillWeatherTests
+    dependencies:
+      - target: QuillWeather
+
+schemes:
+  QuillWeather:
+    build:
+      targets:
+        QuillWeather: all
+        QuillWeatherWidgets: all
+    test:
+      targets:
+        - QuillWeatherTests
