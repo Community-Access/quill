@@ -13424,9 +13424,30 @@ by default), JAWS script (optional). License screen lists
 <code>THIRD-PARTY-NOTICES.md</code>.</li>
 <li><strong>Portable zip</strong>: identical layout without registry
 writes; uses <code>%APPDATA%</code> per Windows convention.</li>
-<li><strong>Signing</strong>: EV code-signing certificate;
-<code>signtool</code> signs every <code>.exe</code>, <code>.dll</code>,
-and the installer; timestamps via DigiCert RFC 3161 timestamp server.
+<li><strong>Signing (Windows Authenticode)</strong>: Azure Trusted
+Signing (no PFX/private key on disk -- <code>signtool</code> loads
+Microsoft's <code>Azure.CodeSigning.Dlib.dll</code>, which submits
+digests to the account's Trusted Signing endpoint and gets back a
+short-lived, identity-validated certificate chained under
+<code>Microsoft ID Verified Code Signing PCA 2021</code>). One reusable
+tool, <code>scripts/code_signing.py</code>, locates
+<code>signtool</code>, stages+verifies the signing dlib, and signs from
+an argv list (never an MSYS shell). Every shipped
+<code>.exe</code>/<code>.dll</code> is signed <em>before</em> packaging;
+each <code>Setup.exe</code> <strong>and its uninstaller</strong> are
+signed by Inno Setup itself during compile via its native
+<code>SignTool</code> + <code>SignedUninstaller</code> directives (gated
+behind an <code>#ifdef Sign</code> block so unsigned builds compile
+unchanged) -- the embedded uninstaller can only be signed this way. All
+signatures are timestamped via <code>timestamp.acs.microsoft.com</code>
+so they outlive the short-lived cert. Wired into the main-app build
+(<code>build_windows_distribution.py</code>) and every standalone
+<code>build_release.ps1</code> (<code>-Sign</code>). <strong>Opt-in and
+fail-open</strong>: signing only runs under <code>QUILL_SIGN=1</code>
+and only aborts the build under <code>QUILL_SIGN_REQUIRED=1</code>, so
+CI/offline/contributor builds are unchanged. Full runbook:
+<code>docs/code-signing.md</code>. (This is distinct from the Ed25519
+artifact-provenance signing in <code>docs/signing.md</code>.)
 SmartScreen reputation built before public launch.</li>
 <li><strong>Reproducible builds</strong>: the build pipeline pins every
 dependency via <code>uv</code> lockfile; the lockfile is committed; the

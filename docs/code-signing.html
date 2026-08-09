@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>code-signing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="windows-code-signing-authenticode-via-azure-trusted-signing">Windows
+code signing (Authenticode via Azure Trusted Signing)</h1>
+<p>This is how QUILL and its companion apps get an
+<strong>Authenticode</strong> signature -- the operating-system code
+signature Windows checks on an <code>.exe</code>/<code>.dll</code> and
+the one SmartScreen and the UAC prompt read to show a real publisher
+instead of "Unknown publisher". It is a <strong>different</strong> thing
+from <a href="signing.md"><code>docs/signing.md</code></a>, which is
+Ed25519 <em>provenance</em> signing (minisign sidecars) for Quillins and
+other Hub artifacts. Both exist on purpose:</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Covers</th>
+<th>Mechanism</th>
+<th>Doc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Authenticode code signing</strong></td>
+<td>shipped <code>.exe</code>/<code>.dll</code> + the installers</td>
+<td>Azure Trusted Signing + <code>signtool</code></td>
+<td>this file</td>
+</tr>
+<tr>
+<td><strong>Artifact provenance signing</strong></td>
+<td>Quillins, agents, packs (Hub downloads)</td>
+<td>Ed25519 <code>.minisig</code> sidecars</td>
+<td><code>docs/signing.md</code></td>
+</tr>
+<tr>
+<td><strong>Update-feed signing</strong></td>
+<td>the autoupdate feed JSON</td>
+<td>a separate Ed25519 keypair</td>
+<td><code>docs/signing.md</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-signs-what">What signs what</h2>
+<p>There is no PFX or private key on disk. Signing goes through
+<strong>Azure Trusted Signing</strong> (formerly Azure Code Signing):
+<code>signtool.exe</code> loads a Microsoft signing dlib
+(<code>Azure.CodeSigning.Dlib.dll</code>) that submits a file digest to
+the account's <code>wus2.codesigning.azure.net</code> endpoint and
+receives a short-lived certificate. The signed leaf certificate's
+subject is the identity-validated publisher
+(<code>CN=Jeffrey Bishop</code>), chained under
+<code>Microsoft ID Verified Code Signing PCA 2021</code>. Every
+signature is timestamped against
+<code>http://timestamp.acs.microsoft.com</code>, so it stays valid after
+the short-lived signing certificate expires.</p>
+<p>The account and certificate profile live in a small
+<code>metadata.json</code> at the repo root:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;Endpoint&quot;</span><span class="fu">:</span> <span class="st">&quot;https://wus2.codesigning.azure.net/&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;CodeSigningAccountName&quot;</span><span class="fu">:</span> <span class="st">&quot;JeffBishopSigningCert&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;CertificateProfileName&quot;</span><span class="fu">:</span> <span class="st">&quot;QUILL&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="the-one-tool-scriptscode_signingpy">The one tool:
+<code>scripts/code_signing.py</code></h2>
+<p>Everything routes through a single, reusable module. It is
+import-safe (build scripts call it in-process) and a CLI.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> doctor            <span class="co"># is the toolchain + credential ready?</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> ensure-dlib       <span class="co"># stage the signing dlib (pinned + SHA-256 verified)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> sign a<span class="op">.</span><span class="fu">exe</span> b<span class="op">.</span><span class="fu">dll</span>  <span class="co"># sign specific files (fails closed)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> sign-tree dist\portable   <span class="co"># sign every *.exe/*.dll under a tree</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> sign-build dist\App <span class="op">--</span>label app   <span class="co"># opt-in/fail-open (build scripts use this)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> verify a<span class="op">.</span><span class="fu">exe</span>      <span class="co"># verify the embedded Authenticode signature</span></span></code></pre></div>
+<p>It:</p>
+<ul>
+<li><strong>Locates <code>signtool.exe</code></strong> from the
+installed Windows 10/11 SDK
+(<code>Windows Kits\10\bin\&lt;version&gt;\x64\signtool.exe</code>),
+newest SDK first, then PATH.</li>
+<li><strong>Stages the signing dlib</strong> by downloading the pinned
+<code>Microsoft.Trusted.Signing.Client</code> NuGet package,
+SHA-256-verifying it, and extracting
+<code>Azure.CodeSigning.Dlib.dll</code> into
+<code>build/deps/trusted-signing/</code> (gitignored, the same cache
+<code>fetch_build_deps.py</code> uses). Pinned + verified exactly like
+every other build dependency.</li>
+<li><strong>Invokes <code>signtool</code> with an argv list</strong>
+(never a shell). This matters: passing <code>/fd</code>-style switches
+through Git Bash / MSYS mangles them into paths and yields the
+misleading <code>No file digest algorithm specified</code> error. Always
+drive signing from PowerShell or <code>subprocess</code>, never from an
+MSYS shell.</li>
+</ul>
+<h2 id="authentication">Authentication</h2>
+<p>The dlib authenticates with the ambient Azure credential
+(<code>DefaultAzureCredential</code>):</p>
+<ul>
+<li><strong>Dev box:</strong> <code>az login</code> once.
+<code>python scripts\code_signing.py doctor</code> reports whether a
+credential is visible.</li>
+<li><strong>CI:</strong> a workload identity / service principal (an
+<code>AZURE_*</code> env credential or a federated GitHub OIDC login)
+that has the <strong>Trusted Signing Certificate Profile Signer</strong>
+role on the account.</li>
+</ul>
+<h2 id="the-opt-in--fail-open-contract">The opt-in / fail-open
+contract</h2>
+<p>Signing never changes a plain build. It is controlled by two
+environment variables (or the <code>-Sign</code> switch on the
+standalone build scripts, which sets the first):</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QUILL_SIGN=1</code></td>
+<td>Turn signing <strong>on</strong> for this build. Unset (default)
+-&gt; every sign step is a logged no-op.</td>
+</tr>
+<tr>
+<td><code>QUILL_SIGN_REQUIRED=1</code></td>
+<td>A signing failure <strong>aborts</strong> the build. Unset -&gt; a
+failure logs a warning and the build continues (fail-open). Use this in
+the release pipeline.</td>
+</tr>
+<tr>
+<td><code>QUILL_SIGN_PATTERNS</code></td>
+<td>Comma/semicolon list of globs a tree-sign covers. Default
+<code>*.exe,*.dll</code>. Widen to <code>*.exe,*.dll,*.pyd</code> to
+also sign CPython extension modules.</td>
+</tr>
+<tr>
+<td><code>QUILL_SIGN_METADATA</code></td>
+<td>Path to an alternate <code>metadata.json</code>. Default: repo-root
+<code>metadata.json</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>So CI, offline builds, and contributor clones without the certificate
+build exactly as before; a release machine sets
+<code>QUILL_SIGN=1</code> (and <code>QUILL_SIGN_REQUIRED=1</code>) and
+gets signed output.</p>
+<h2 id="how-it-is-wired-into-the-builds">How it is wired into the
+builds</h2>
+<p>Three things are signed for every app: <strong>each shipped
+binary</strong> (so the launcher shows a real publisher and no embedded
+DLL is unsigned), <strong>the installer</strong>, and <strong>the
+uninstaller</strong> (so both the SmartScreen download prompt and the
+later Add/Remove Programs "unins000.exe" are clean). The split is
+deliberate:</p>
+<ul>
+<li><strong>Payload <code>.exe</code>/<code>.dll</code></strong> are
+signed by <code>code_signing.py</code> <strong>before</strong>
+packaging, so the signed copies are what land in both the portable ZIP
+and the installer.</li>
+<li><strong>The <code>Setup.exe</code> and the uninstaller</strong> are
+signed by <strong>Inno Setup itself</strong> during compile, via its
+native <code>SignTool</code> mechanism
+(<code>SignTool=quilltrusted</code>
+<ul>
+<li><code>SignedUninstaller=yes</code> in the <code>.iss</code>). The
+uninstaller is generated and embedded at compile time, so Inno's own
+signing is the only way to sign it -- an external post-compile pass over
+the finished <code>Setup.exe</code> cannot reach it.</li>
+</ul></li>
+</ul>
+<p>All seven installers wire this the same way: each
+<code>[Setup]</code> carries an <code>#ifdef Sign</code> block, and the
+build invokes ISCC with <code>/DSign</code> plus a
+<code>/Squilltrusted=&lt;command&gt;</code> mapping that points Inno at
+<code>python code_signing.py sign $f</code> (Inno's <code>$q</code>
+-&gt; <code>"</code>, <code>$f</code> -&gt; the file). Without
+<code>/DSign</code> the directives are compiled away, so an unsigned
+build is unchanged.</p>
+<h3 id="main-app-quill-for-all">Main app
+(<code>QUILL for All</code>)</h3>
+<p><code>scripts/build_windows_distribution.py</code> signs the
+assembled <code>portable/</code> tree, then compiles the installer. When
+<code>QUILL_SIGN=1</code>, <code>compile_inno_setup_installer</code>
+passes <code>/DSign</code> + the sign-command mapping so Inno signs
+<code>Quill-for-All-Setup-&lt;ver&gt;.exe</code> <strong>and its
+uninstaller</strong> during compile. No new flags -- it honours
+<code>QUILL_SIGN</code>.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_SIGN</span> <span class="op">=</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>python scripts\build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span></code></pre></div>
+<h3
+id="standalone-apps-radio-weather-cast-beacon-social-audio-studio">Standalone
+apps (Radio, Weather, Cast, Beacon, Social, Audio Studio)</h3>
+<p>Each <code>standalone/&lt;app&gt;/scripts/build_release.ps1</code>
+takes a <code>-Sign</code> switch. With it, the script signs the shared
+runtime (where present) and the portable app dir before zipping, then
+passes <code>/DSign</code> + the mapping to ISCC so Inno signs the
+<code>Setup.exe</code> and uninstaller during compile:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Sign</span></code></pre></div>
+<p>Without <code>-Sign</code>, the payload <code>sign-build</code> step
+prints a "skipped" line and ISCC is invoked with no sign arguments, so
+the build is byte-for-byte what it was before.</p>
+<h2 id="cost-note">Cost note</h2>
+<p>Trusted Signing bills per signature, and every file is one remote
+round-trip, so signing time scales with file count. The default
+<code>*.exe,*.dll</code> set keeps this to the launcher, the installer,
+and the bundled DLLs. Widening <code>QUILL_SIGN_PATTERNS</code> to
+include <code>*.pyd</code> signs every CPython extension module too
+(hundreds of files across the embedded runtime + wxPython) -- thorough,
+but slower and more expensive. Choose per release.</p>
+<h2 id="verifying-a-signature">Verifying a signature</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>python scripts\code_signing<span class="op">.</span><span class="fu">py</span> verify dist\<span class="op">...</span>\Quill-for-All-Setup-<span class="op">&lt;</span>ver<span class="op">&gt;.</span><span class="fu">exe</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># or, authoritatively:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>signtool verify <span class="op">/</span>pa <span class="op">/</span>v <span class="op">&lt;</span>file<span class="op">&gt;</span></span></code></pre></div>
+<p><code>signtool verify /pa /v</code> is the source of truth for the
+embedded signature. Note that <code>Get-AuthenticodeSignature</code> can
+report a <em>catalog</em> signer (e.g.
+<code>CN=Microsoft Windows</code>) for a file that is also
+catalog-signed by the OS; that is the Windows security-catalog match,
+independent of the embedded Authenticode signature <code>signtool</code>
+reports.</p>
+<h2 id="rotation--account-changes">Rotation / account changes</h2>
+<p>The signing identity is entirely in <code>metadata.json</code> plus
+the Azure account's certificate profile. To move accounts or profiles,
+edit <code>metadata.json</code> (or point
+<code>QUILL_SIGN_METADATA</code> at a different file); nothing else in
+the tree hard-codes the endpoint, account, or profile. To bump the
+signing dlib, change <code>TRUSTED_SIGNING_CLIENT_VERSION</code> /
+<code>TRUSTED_SIGNING_CLIENT_SHA256</code> in
+<code>scripts/code_signing.py</code>.</p>
+</body>
+</html>

@@ -8,6 +8,16 @@
 #define AppExeName "quill.exe"
 
 [Setup]
+#ifdef Sign
+; Code signing (opt-in). Present only when ISCC is invoked with /DSign
+; plus a matching /Squilltrusted=<sign command> (see
+; compile_inno_setup_installer + scripts/code_signing.py). Inno then signs
+; the compiled Setup.exe AND the generated uninstaller. A plain build
+; passes neither, so these directives are absent and the unsigned build
+; compiles unchanged. See docs/code-signing.md.
+SignTool=quilltrusted
+SignedUninstaller=yes
+#endif
 AppId={{6E0A1C52-4A90-4C6E-A8A1-3C2A16E2B7F2}}
 AppName={#AppName}
 AppVersion={#AppVersion}

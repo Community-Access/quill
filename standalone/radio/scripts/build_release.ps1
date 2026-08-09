@@ -25,12 +25,19 @@ param(
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
     [string]$QuillRepo = "",
     [switch]$SkipToken,
-    [switch]$SkipSharedRuntime
+    [switch]$SkipSharedRuntime,
+    [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "2.2.0"
+
+# Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
+# for this run by setting QUILL_SIGN=1, which the shared signer
+# (QUILL\scripts\code_signing.py) reads. Without it, the sign-build steps below
+# are no-ops, so a plain build is unchanged.
+if ($Sign) { $env:QUILL_SIGN = "1" }
 
 # -- resolve the toolchain ----------------------------------------------------
 # standalone\radio -> standalone -> the QUILL checkout root.
@@ -187,13 +194,29 @@ if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
     throw "Portable build did not stage the genuine pythonw.exe interpreter."
 }
 
+# -- code signing (payload) ---------------------------------------------------
+# Sign every exe/dll in the shared runtime and the portable app BEFORE they are
+# zipped or embedded in the installer, so the signed binaries are what ships.
+# Opt-in via -Sign / QUILL_SIGN; a no-op otherwise.
+$signer = Join-Path $QuillRepo "scripts\code_signing.py"
+& $Python $signer sign-build $sharedRuntimeDist $appDir --label "radio payload"
+if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
+
 $zipPath = Join-Path $repoRoot "dist\Quill-Radio-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
-# -- installer ----------------------------------------------------------------
-& $Iscc "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"
+# -- installer (Inno signs Setup.exe + the uninstaller when signing is on) ----
+# When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
+# the .iss SignTool/SignedUninstaller directives activate ($q -> ", $f -> file).
+# Inno then signs both the compiled Setup.exe and the embedded uninstaller.
+# Without it, $innoSign is empty and the build compiles unsigned.
+$innoSign = @()
+if ($env:QUILL_SIGN -eq "1") {
+    $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
+}
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
 Write-Host ""
