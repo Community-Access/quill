@@ -176,8 +176,99 @@ def _resolve_href(chapter_files: list[str], href: str) -> str | None:
     return None
 
 
+_MATH_TAG_PATTERN = re.compile(r"<math\b[^>]*>.*?</math>", re.DOTALL | re.IGNORECASE)
+_LATEX_TAG_PATTERN = re.compile(
+    r"<(span|div)\b[^>]*\bclass\s*=\s*['\"][^'\"]*?\b(?:math|latex)\b[^'\"]*?['\"][^>]*>(.*?)</\1>",
+    re.DOTALL | re.IGNORECASE,
+)
+
+
+def _strip_latex_delimiters(text: str) -> str:
+    t = text.strip()
+    if t.startswith("$$") and t.endswith("$$") and len(t) > 4:
+        return t[2:-2].strip()
+    if t.startswith("\\(") and t.endswith("\\)") and len(t) > 4:
+        return t[2:-2].strip()
+    if t.startswith("\\[") and t.endswith("\\]") and len(t) > 4:
+        return t[2:-2].strip()
+    if t.startswith("$") and t.endswith("$") and len(t) > 2:
+        return t[1:-1].strip()
+    return t
+
+
+def _convert_mathml_to_speech(mathml_str: str) -> str:
+    try:
+        mathml_str = html.unescape(mathml_str)
+        from quill.core.math.mathml import parse_mathml
+        from quill.core.math.navigator import _normalize
+        from quill.core.math.speech import speak
+
+        root = parse_mathml(mathml_str)
+        normalized = _normalize(root)
+        return speak(normalized)
+    except Exception:
+        without_tags = re.sub(r"<[^>]+>", " ", mathml_str)
+        decoded = html.unescape(without_tags)
+        return " ".join(decoded.split())
+
+
+def _convert_latex_to_speech(latex_str: str) -> str:
+    try:
+        latex_str = html.unescape(latex_str)
+        from quill.core.math.latex_bridge import latex_to_mathml
+
+        mathml = latex_to_mathml(latex_str)
+        return _convert_mathml_to_speech(mathml)
+    except Exception:
+        return latex_str
+
+
+def _extract_math_placeholders(content: str) -> tuple[str, dict[str, str]]:
+    placeholders = {}
+    counter = 0
+
+    def math_replacer(match: re.Match[str]) -> str:
+        nonlocal counter
+        mathml_str = match.group(0)
+        placeholder = f"___MATH_EQ_PLACEHOLDER_{counter}___"
+        spoken = _convert_mathml_to_speech(mathml_str)
+        placeholders[placeholder] = f"[Math Equation: {spoken}]"
+        counter += 1
+        return f" {placeholder} "
+
+    def latex_replacer(match: re.Match[str]) -> str:
+        nonlocal counter
+        latex_str = match.group(2).strip()
+        placeholder = f"___MATH_EQ_PLACEHOLDER_{counter}___"
+        clean_latex = _strip_latex_delimiters(latex_str)
+        spoken = _convert_latex_to_speech(clean_latex)
+        placeholders[placeholder] = f"[Math Equation: {spoken}]"
+        counter += 1
+        return f" {placeholder} "
+
+    content = _MATH_TAG_PATTERN.sub(math_replacer, content)
+    content = _LATEX_TAG_PATTERN.sub(latex_replacer, content)
+    return content, placeholders
+
+
+def _process_embedded_latex_delimiters(text: str) -> str:
+    def replace_latex(match: re.Match[str]) -> str:
+        latex_str = match.group(1).strip()
+        spoken = _convert_latex_to_speech(latex_str)
+        return f" [Math Equation: {spoken}] "
+
+    text = re.sub(r"\$\$(.*?)\$\$", replace_latex, text, flags=re.DOTALL)
+    text = re.sub(r"\\\[(.*?)\\\]", replace_latex, text, flags=re.DOTALL)
+    text = re.sub(r"\\\((.*?)\\\)", replace_latex, text, flags=re.DOTALL)
+    return text
+
+
 def _extract_text(content: str) -> str:
+    content, placeholders = _extract_math_placeholders(content)
     without_tags = re.sub(r"<[^>]+>", " ", content)
+    for placeholder, math_repr in placeholders.items():
+        without_tags = without_tags.replace(placeholder, math_repr)
+    without_tags = _process_embedded_latex_delimiters(without_tags)
     decoded = html.unescape(without_tags)
     return " ".join(decoded.split())
 

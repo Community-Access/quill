@@ -115,3 +115,50 @@ def test_long_bold_run_is_not_treated_as_a_heading(tmp_path: Path) -> None:
     book = load_epub_book(target)
     assert book.chapters[0].headings == ()
     assert book.chapters[0].headings_inferred is False
+
+
+def test_epub_math_parsing_extracts_mathml(tmp_path: Path) -> None:
+    target = tmp_path / "math_mathml.epub"
+    chapter = (
+        "<html><body>"
+        '<p>MathML: <math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<mfrac><mn>1</mn><mn>2</mn></mfrac></math> inside text.</p>"
+        "</body></html>"
+    )
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    assert "[Math Equation: the fraction 1 over 2]" in book.chapters[0].text
+
+
+def test_epub_math_parsing_extracts_latex_classes(tmp_path: Path) -> None:
+    target = tmp_path / "math_latex_class.epub"
+    chapter = (
+        '<html><body><p>LaTeX span: <span class="math">x^2 + y^2 = z^2</span>.</p></body></html>'
+    )
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    # May convert to spoken text if latex2mathml is installed, or fall back to raw LaTeX
+    assert (
+        "[Math Equation: x squared plus y squared equals z squared]" in book.chapters[0].text
+        or "[Math Equation: x^2 + y^2 = z^2]" in book.chapters[0].text
+    )
+
+
+def test_epub_math_parsing_extracts_latex_delimiters(tmp_path: Path) -> None:
+    target = tmp_path / "math_latex_delimiters.epub"
+    chapter = (
+        "<html><body><p>Inline: \\( a^2 + b^2 = c^2 \\) and block: $$ x = y $$.</p></body></html>"
+    )
+    with zipfile.ZipFile(target, "w") as archive:
+        archive.writestr("chapters/one.xhtml", chapter)
+    book = load_epub_book(target)
+    assert (
+        "[Math Equation: a squared plus b squared equals c squared]" in book.chapters[0].text
+        or "[Math Equation: a^2 + b^2 = c^2]" in book.chapters[0].text
+    )
+    assert (
+        "[Math Equation: x equals y]" in book.chapters[0].text
+        or "[Math Equation: x = y]" in book.chapters[0].text
+    )
