@@ -39,6 +39,7 @@ from quill.core.radio import (
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.radio import browse_position
 from quill.ui.radio.browse_tree_helpers import (
     iheart_letter_groups as _iheart_letter_groups,
 )
@@ -326,9 +327,7 @@ class BrowseTreeDialog:
             tree.SetItemData(tree.AppendItem(node, "Loading..."), {"kind": "placeholder"})
             if kind == "favorites":
                 self._favorites_root = node  # kept so a favorite add/remove can refresh it live
-        first, _cookie = tree.GetFirstChild(root)
-        if first.IsOk():
-            tree.SelectItem(first)
+        browse_position.restore_selection(tree, root)  # browse position memory
 
     def _fetch_children(self, kind: str, payload: Any) -> list[Any]:
         """Off-thread fetch for an expandable node; returns raw children."""
@@ -737,6 +736,7 @@ class BrowseTreeDialog:
         event.Skip()  # a source/folder toggles open
 
     def _on_selected(self, _event: Any) -> None:
+        browse_position.remember(self._tree, self._tree.GetSelection())
         data = self._selected_data()
         if data and data.get("kind") == "station":
             station = data["station"]

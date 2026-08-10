@@ -181,6 +181,20 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "radio.play_pause": "Ctrl+Shift+Grave, N",  # Internet Radio (N = the last free plain letter)
     "radio.stop": "Ctrl+Shift+Grave, 0",  # Internet Radio
     "radio.mute_toggle": "Ctrl+Shift+Grave, 9",  # Internet Radio
+    # Quick-play the first ten favorites (slot 10 is the 0 key). The obvious
+    # Alt+digit / Ctrl+digit combos are already taken (window nav, headings, copy
+    # tray), so these default to the free Ctrl+Alt+Shift+digit; rebind to Alt+1-0
+    # in the Keymap Editor if you don't use window navigation.
+    "radio.play_favorite_1": "Ctrl+Alt+Shift+1",
+    "radio.play_favorite_2": "Ctrl+Alt+Shift+2",
+    "radio.play_favorite_3": "Ctrl+Alt+Shift+3",
+    "radio.play_favorite_4": "Ctrl+Alt+Shift+4",
+    "radio.play_favorite_5": "Ctrl+Alt+Shift+5",
+    "radio.play_favorite_6": "Ctrl+Alt+Shift+6",
+    "radio.play_favorite_7": "Ctrl+Alt+Shift+7",
+    "radio.play_favorite_8": "Ctrl+Alt+Shift+8",
+    "radio.play_favorite_9": "Ctrl+Alt+Shift+9",
+    "radio.play_favorite_10": "Ctrl+Alt+Shift+0",
     "podcasts.play_pause": "Ctrl+Shift+Grave, 8",  # Podcasts
     "podcasts.stop": "Ctrl+Shift+Grave, 7",  # Podcasts
     "radio.record_toggle": "Ctrl+Shift+Grave, 6",  # Internet Radio (Record Now / Stop Recording)
