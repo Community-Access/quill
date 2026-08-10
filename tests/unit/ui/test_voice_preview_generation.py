@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gc
 import os
 import time
 
@@ -28,9 +29,39 @@ pytestmark = pytest.mark.skipif(
 )
 
 
+def _stop_stale_wx_timers() -> int:
+    """Stop every running wx.Timer left behind by earlier tests.
+
+    This module is the only one that registers a live wx event loop, so it is
+    the only place the session's accumulated timers can ever fire. Tests
+    elsewhere destroy frames directly (``frame.Destroy()``) rather than closing
+    them, which leaves timers such as Quill Weather's 800ms IPC poll
+    (quill/apps/weather.py) running with a destroyed owner -- 10 of them alive
+    after tests/unit/apps alone. Activating an event loop below would fire all
+    of them at once into freed C++ objects, which crashed the whole run with an
+    access violation the moment tests/unit/apps ran before this file.
+
+    A gc walk is far too slow to do per-test, but it costs nothing once per
+    module, and this is the only module that needs it.
+    """
+    stopped = 0
+    for obj in gc.get_objects():
+        if not isinstance(obj, wx.Timer):
+            continue
+        try:
+            if obj.IsRunning():
+                obj.Stop()
+                stopped += 1
+        except Exception:  # noqa: BLE001 - a dead timer is already harmless
+            pass
+    return stopped
+
+
 @pytest.fixture(scope="module")
 def wx_app():
     app = wx.App()
+    # Must happen before SetActive below: see _stop_stale_wx_timers.
+    _stop_stale_wx_timers()
     # Without a real wx.App().MainLoop() running (never entered in these unit
     # tests), wx.Yield()/YieldIfNeeded() is a no-op for wx.Timer-backed
     # callbacks (wx.CallLater) unless an event loop object is registered as
