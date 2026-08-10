@@ -9,10 +9,13 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $docsDir = Join-Path $repoRoot "docs"
 
-$pandoc = Get-Command pandoc -ErrorAction SilentlyContinue
-if (-not $pandoc) {
-    throw "Pandoc is required to render docs. Install with: winget install --id JohnMacFarlane.Pandoc -e"
-}
+# Resolve Pandoc by version rather than by PATH order -- see the header of
+# scripts\Resolve-Pandoc.ps1 for why the first match on PATH is the wrong one
+# on any machine that has more than one Pandoc installed.
+$resolverPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\..\scripts\Resolve-Pandoc.ps1"))
+if (-not (Test-Path $resolverPath)) { throw "Pandoc resolver not found at $resolverPath." }
+. $resolverPath
+$pandocExe = Resolve-Pandoc
 
 # Shared accessible HTML template (adds <html lang="en">, a descriptive
 # <title>, a skip link, and a <main> landmark) lives in the top-level repo at
@@ -37,8 +40,8 @@ Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
     # Without it Pandoc slugifies a literal "--" straight into the heading id,
     # changing every anchor on the page and breaking existing deep links into
     # these docs.
-    & $pandoc.Source $_.FullName -f gfm+smart -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
+    & $pandocExe $_.FullName -f gfm+smart -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
     if ($LASTEXITCODE -ne 0) { throw "Pandoc HTML render failed for $($_.Name)" }
-    & $pandoc.Source $_.FullName -f gfm+smart -t epub3 -o $epubOut
+    & $pandocExe $_.FullName -f gfm+smart -t epub3 -o $epubOut
     if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }
 }

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
@@ -48,13 +49,120 @@ def _pandoc_sources(docs_dir: Path) -> list[Path]:
     ]
 
 
-def _build_docs(repo_root: Path) -> None:
-    pandoc_path = shutil.which("pandoc")
-    if pandoc_path is None:
+# The repo bundles Pandoc 3.10 (see MIRRORED_PANDOC_URL in
+# build_windows_distribution.py) and every committed .html/.epub was rendered
+# with it. Older releases stamp a different generator string and differ in
+# typography, so rendering with one rewrites every artifact and the docs parity
+# gate then reports the churn as a real diff.
+MINIMUM_PANDOC = (3, 10)
+
+
+def _pandoc_version(executable: str) -> tuple[int, ...] | None:
+    """The version an executable reports, or ``None`` if it is not usable Pandoc."""
+    try:
+        result = subprocess.run(
+            [executable, "--version"], capture_output=True, text=True, timeout=30
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    match = re.search(r"(\d+(?:\.\d+)+)", result.stdout.splitlines()[0] if result.stdout else "")
+    if not match:
+        return None
+    return tuple(int(part) for part in match.group(1).split("."))
+
+
+def _pandoc_candidates() -> list[str]:
+    """Every plausible Pandoc, PATH first then the standard install locations."""
+    candidates: list[str] = []
+    seen: set[str] = set()
+
+    def add(path: str | None) -> None:
+        if not path:
+            return
+        resolved = str(Path(path).resolve())
+        key = resolved.casefold()
+        if key not in seen and Path(resolved).is_file():
+            seen.add(key)
+            candidates.append(resolved)
+
+    for directory in (os.environ.get("PATH") or "").split(os.pathsep):
+        if directory:
+            add(shutil.which("pandoc", path=directory))
+    for root in (
+        os.environ.get("LOCALAPPDATA"),
+        os.environ.get("ProgramFiles"),
+        os.environ.get("ProgramFiles(x86)"),
+    ):
+        if root:
+            add(str(Path(root) / "Pandoc" / "pandoc.exe"))
+    return candidates
+
+
+def _resolve_pandoc() -> str:
+    """The newest usable Pandoc, independent of PATH ordering.
+
+    ``shutil.which`` returns the *first* match on PATH, and PATH order is not
+    version order: Windows composes it as machine entries then user entries, so
+    an old per-machine install shadows a newer per-user one. Removing the old
+    copy needs admin rights a developer may not have, so resolve by version
+    instead. ``QUILL_PANDOC`` overrides the search entirely.
+
+    Mirrors scripts/Resolve-Pandoc.ps1; keep the two in step.
+    """
+    minimum_text = ".".join(str(part) for part in MINIMUM_PANDOC)
+
+    override = os.environ.get("QUILL_PANDOC")
+    if override:
+        if not Path(override).is_file():
+            raise RuntimeError(f"QUILL_PANDOC points at {override!r}, which is not a file.")
+        version = _pandoc_version(override)
+        if version is None:
+            raise RuntimeError(
+                f"QUILL_PANDOC points at {override!r}, which did not report a Pandoc version."
+            )
+        if version < MINIMUM_PANDOC:
+            found = ".".join(str(part) for part in version)
+            raise RuntimeError(
+                f"QUILL_PANDOC points at Pandoc {found}, but {minimum_text} or newer is required."
+            )
+        return override
+
+    found_versions: list[tuple[tuple[int, ...], str]] = []
+    for candidate in _pandoc_candidates():
+        version = _pandoc_version(candidate)
+        if version is not None:
+            found_versions.append((version, candidate))
+    if not found_versions:
         raise RuntimeError(
             "Pandoc is required for release readiness. "
             "Install with: winget install --id JohnMacFarlane.Pandoc -e"
         )
+
+    best_version, best_path = max(found_versions)
+    if best_version < MINIMUM_PANDOC:
+        detail = "\n".join(
+            f"  {'.'.join(str(part) for part in version)}  {path}"
+            for version, path in sorted(found_versions, reverse=True)
+        )
+        raise RuntimeError(
+            f"Pandoc {minimum_text} or newer is required to render docs; the newest found is "
+            f"{'.'.join(str(part) for part in best_version)}.\n\nFound:\n{detail}\n\n"
+            "Upgrade with: winget install --id JohnMacFarlane.Pandoc -e\n"
+            "Or point QUILL_PANDOC at a suitable pandoc.exe."
+        )
+    if len(found_versions) > 1:
+        # PATH order is not version order, so say which one won.
+        print(
+            f"Using Pandoc {'.'.join(str(part) for part in best_version)} ({best_path}); "
+            f"{len(found_versions) - 1} older copy/copies ignored"
+        )
+    return best_path
+
+
+def _build_docs(repo_root: Path) -> None:
+    pandoc_path = _resolve_pandoc()
     # The accessible template adds <html lang="en">, a skip link, and a <main>
     # landmark. Pandoc's default template has none of those, so a missing
     # template is a hard failure rather than a silent downgrade.
