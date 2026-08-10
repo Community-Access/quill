@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Networks catalog for Quill Radio's browse tree</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="networks-catalog-for-quill-radios-browse-tree">Networks catalog
+for Quill Radio’s browse tree</h1>
+<p>An exhaustive, accuracy-checked catalog of radio “networks” worth
+surfacing, and <strong>how each can be added</strong> using open sources
+only (Radio Browser — already integrated, so no new network-egress site
+— plus each broadcaster’s own public streams). No competitor data or
+curated lists are copied.</p>
+<h2 id="the-one-distinction-that-matters">The one distinction that
+matters</h2>
+<p>A “network” is one of three very different things, and they must be
+handled differently:</p>
+<ol type="1">
+<li><strong>Broadcasters with tune-in streams</strong> (BBC, NPR
+members, CBC, ABC Australia, Fox News Radio, Bloomberg…). These have
+real, playable streams and belong as one-click browse nodes.</li>
+<li><strong>Syndication / content networks</strong> (Westwood One, NBC
+News Radio, ABC News Radio, Premiere). These produce <em>programming
+carried by affiliate stations</em> — there is <strong>no single stream
+to tune to</strong>. Surfacing them means searching their
+<strong>affiliates</strong> (which are in Radio Browser / iHeart /
+TuneIn), not inventing one URL.</li>
+<li><strong>Station groups / owners</strong> (iHeartMedia, Audacy,
+Cumulus). Ownership, not a listening destination — their stations are
+already reachable by name/genre.</li>
+</ol>
+<p><strong>Timely caveat (verified Aug 2026):</strong> <strong>CBS News
+Radio is being shut down</strong> — CBS announced on 2026-03-20 that
+service to its ~700 remaining affiliates ends 2026-05-22. Do
+<strong>not</strong> build a “CBS” network node; CBS-owned local radio
+became <strong>Audacy</strong> back in 2017, and CBS News Radio the
+syndicated service is ending.</p>
+<h2 id="add-method-legend">Add method legend</h2>
+<ul>
+<li><strong>RB</strong> = curated Radio Browser query (reuses
+<code>radio_browser.py</code>; no new egress site; no keys) — the
+default.</li>
+<li><strong>Direct</strong> = the broadcaster publishes a stable public
+stream URL.</li>
+<li><strong>Built-in</strong> = already shipped in Quill Radio.</li>
+<li><strong>Affiliates</strong> = a <em>search</em> entry (syndicator
+has no single stream).</li>
+</ul>
+<h2 id="us-news--talk">US news / talk</h2>
+<table>
+<thead>
+<tr>
+<th>Network</th>
+<th>Add method</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NPR (member stations)</td>
+<td>RB (tag <code>npr</code>, <code>public radio</code>)</td>
+<td>NPR’s own API needs a key + is on-demand</td>
+</tr>
+<tr>
+<td>Fox News Radio</td>
+<td>Direct (<code>radio.foxnews.com</code>) + RB</td>
+<td>national 24/7 talk stream</td>
+</tr>
+<tr>
+<td>CNN (audio)</td>
+<td>RB / TuneIn</td>
+<td>CNN audio via aggregators</td>
+</tr>
+<tr>
+<td>Bloomberg Radio</td>
+<td>Direct + RB</td>
+<td>own national stream</td>
+</tr>
+<tr>
+<td>Westwood One</td>
+<td><strong>Affiliates</strong></td>
+<td>Cumulus syndication (news/sports/music formats); no single
+stream</td>
+</tr>
+<tr>
+<td>NBC News Radio</td>
+<td><strong>Affiliates</strong></td>
+<td>syndicated news service; carried by affiliates</td>
+</tr>
+<tr>
+<td>ABC News Radio (US)</td>
+<td><strong>Affiliates</strong></td>
+<td>syndicated; disambiguate from ABC Australia</td>
+</tr>
+<tr>
+<td>CBS News Radio</td>
+<td><strong>excluded</strong></td>
+<td>ending 2026-05-22</td>
+</tr>
+</tbody>
+</table>
+<h2 id="us-station-groups-stations-reachable-already">US station groups
+(stations reachable already)</h2>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Add method</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iHeartMedia</td>
+<td>Built-in</td>
+<td>the iHeart browse branch</td>
+</tr>
+<tr>
+<td>Audacy (ex-CBS Radio / Entercom)</td>
+<td>RB</td>
+<td>acquired CBS Radio 2017</td>
+</tr>
+<tr>
+<td>Cumulus Media</td>
+<td>RB</td>
+<td>owns Westwood One</td>
+</tr>
+<tr>
+<td>Townsquare / Beasley / Salem</td>
+<td>RB</td>
+<td>by name</td>
+</tr>
+</tbody>
+</table>
+<h2 id="us-public-radio-beyond-npr">US public radio (beyond NPR)</h2>
+<table>
+<thead>
+<tr>
+<th>Network</th>
+<th>Add method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>American Public Media (APM) / Minnesota Public Radio</td>
+<td>RB</td>
+</tr>
+<tr>
+<td>PRX / GBH / PRI</td>
+<td>RB</td>
+</tr>
+<tr>
+<td>Marquee independents: KEXP, KCRW, WNYC, WBEZ, WFMU</td>
+<td>RB / Direct</td>
+</tr>
+</tbody>
+</table>
+<h2 id="us-sports">US sports</h2>
+<table>
+<thead>
+<tr>
+<th>Network</th>
+<th>Add method</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ESPN Radio</td>
+<td>RB / Direct</td>
+<td>iHeart-distributed national feed</td>
+</tr>
+<tr>
+<td>CBS Sports Radio</td>
+<td><strong>Affiliates</strong></td>
+<td>Audacy</td>
+</tr>
+<tr>
+<td>Fox Sports Radio</td>
+<td><strong>Affiliates</strong></td>
+<td>iHeart / Premiere</td>
+</tr>
+<tr>
+<td>Westwood One Sports</td>
+<td><strong>Affiliates</strong></td>
+<td>event-based (NFL, NCAA)</td>
+</tr>
+</tbody>
+</table>
+<h2
+id="international-public-broadcasters-the-strongest-candidates--real-streams">International
+public broadcasters (the strongest candidates — real streams)</h2>
+<p>All are RB-addable by name/country; most also publish Direct
+streams.</p>
+<table>
+<thead>
+<tr>
+<th>Country</th>
+<th>Network</th>
+<th>Streams</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UK</td>
+<td><strong>BBC</strong></td>
+<td>Radio 1/1Xtra/2/3/4/4 Extra/5 Live/6 Music/Asian Network,
+<strong>World Service</strong> (global), local</td>
+</tr>
+<tr>
+<td>Canada</td>
+<td><strong>CBC / Radio-Canada</strong></td>
+<td>CBC Radio One/Music, ICI Première/Musique</td>
+</tr>
+<tr>
+<td>Australia</td>
+<td><strong>ABC</strong></td>
+<td>Radio National, triple j, ABC News, Classic, local</td>
+</tr>
+<tr>
+<td>Ireland</td>
+<td><strong>RTÉ</strong></td>
+<td>Radio 1, 2FM, lyric fm, RnaG</td>
+</tr>
+<tr>
+<td>New Zealand</td>
+<td><strong>RNZ</strong></td>
+<td>National, Concert</td>
+</tr>
+<tr>
+<td>Japan</td>
+<td><strong>NHK World</strong></td>
+<td>English + Japanese</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td><strong>Deutschlandfunk / Deutschlandradio</strong>,
+<strong>Deutsche Welle (DW)</strong></td>
+<td>national + international</td>
+</tr>
+<tr>
+<td>France</td>
+<td><strong>Radio France</strong> (France Inter/Info/Culture/Musique,
+<strong>FIP</strong>), <strong>RFI</strong></td>
+<td>national + international</td>
+</tr>
+<tr>
+<td>Austria</td>
+<td>ORF (Ö1, FM4)</td>
+<td></td>
+</tr>
+<tr>
+<td>Switzerland</td>
+<td>SRF, RTS, Radio Swiss (Jazz/Classic/Pop)</td>
+<td></td>
+</tr>
+<tr>
+<td>Italy</td>
+<td>RAI Radio 1/2/3</td>
+<td></td>
+</tr>
+<tr>
+<td>Spain</td>
+<td>RTVE / RNE</td>
+<td></td>
+</tr>
+<tr>
+<td>Netherlands</td>
+<td>NPO Radio 1/2/4</td>
+<td></td>
+</tr>
+<tr>
+<td>Nordics</td>
+<td>NRK (NO), DR (DK), SR (SE), YLE (FI)</td>
+<td></td>
+</tr>
+<tr>
+<td>Belgium/Portugal/Greece</td>
+<td>VRT/RTBF, RTP, ERT</td>
+<td></td>
+</tr>
+<tr>
+<td>US international</td>
+<td>Voice of America, Radio Free Europe/RL</td>
+<td></td>
+</tr>
+<tr>
+<td>Korea/India/S. Africa</td>
+<td>KBS World, AIR/Akashvani, SABC</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="music--theme-networks">Music / theme networks</h2>
+<table>
+<thead>
+<tr>
+<th>Network</th>
+<th>Add method</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SomaFM</td>
+<td>Built-in</td>
+<td>via SomaFM’s own <code>channels.json</code></td>
+</tr>
+<tr>
+<td>Radio Paradise</td>
+<td>Direct</td>
+<td>publishes stream + a public JSON API</td>
+</tr>
+<tr>
+<td>FIP (Radio France)</td>
+<td>Direct/RB</td>
+<td>genre-blend music</td>
+</tr>
+<tr>
+<td>KEXP, dublab, NTS</td>
+<td>RB / Direct</td>
+<td>tastemaker stations</td>
+</tr>
+<tr>
+<td>Radio Swiss Jazz/Classic/Pop</td>
+<td>Direct/RB</td>
+<td>commercial-free</td>
+</tr>
+</tbody>
+</table>
+<h2 id="recommended-implementation">Recommended implementation</h2>
+<p>A <strong>Networks</strong> branch in Browse Stations, grouped:</p>
+<ul>
+<li><strong>Public broadcasters</strong> (BBC, CBC, ABC AU, RTÉ, RNZ,
+NHK, DW, Deutschlandfunk, Radio France, RFI, ORF, SRF, RAI, RTVE, NPO,
+NRK, DR, SR, YLE, VOA, …) — each a curated <strong>RB</strong> query;
+the ones with a clean public stream can add a <strong>Direct</strong>
+entry too.</li>
+<li><strong>US news/talk</strong> (NPR, Fox News Radio, Bloomberg, CNN)
+— RB/Direct.</li>
+<li><strong>Syndicators</strong> (Westwood One, NBC News Radio, ABC News
+Radio, CBS/Fox Sports) — an <strong>“…affiliates” search</strong> node
+that runs a name search, honestly labeled “programming carried by local
+stations”, <strong>not</strong> a fake single stream.</li>
+<li>SomaFM stays where it is (or moves under Networks &gt; Music).</li>
+</ul>
+<p>RB-query nodes reuse <code>radio_browser.py</code>, so the whole
+section adds <strong>no new network-egress site</strong> (keeps
+<code>network_egress_audit</code> green), needs no API keys, and never
+hard-codes an expiring stream URL. New source module:
+<code>quill/core/radio/networks.py</code> (the curated query table),
+wired into <code>browse_tree_dialog.py</code> and
+<code>directory_search.py</code>, with tests and docs.</p>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a
+href="https://www.radioworld.com/news-and-business/westwood-one-to-drop-nbc-news-radio">Westwood
+One to Drop NBC News Radio — Radio World</a></li>
+<li><a href="https://en.wikipedia.org/wiki/CBS_News_Radio">CBS News
+Radio — Wikipedia</a></li>
+<li><a
+href="https://www.insideradio.com/free/former-westwood-one-news-affiliates-spread-the-wealth-among-network-providers/article_48cde23e-edad-11ea-9e58-831051b8422d.html">Former
+Westwood One News affiliates spread the wealth — Inside Radio</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Fox_News_Radio">Fox News
+Radio — Wikipedia</a> / <a
+href="https://radio.foxnews.com/">radio.foxnews.com</a></li>
+<li><a href="https://en.wikipedia.org/wiki/BBC_World_Service">BBC World
+Service — Wikipedia</a></li>
+<li><a
+href="https://worldpopulationreview.com/country-rankings/public-broadcasters-by-country">Public
+Broadcasters by Country 2026 — World Population Review</a></li>
+<li><a
+href="https://tunein.com/radio/Live-Stream-News-Radio-c57922/">Live News
+Radio — TuneIn</a></li>
+</ul>
+</main>
+</body>
+</html>

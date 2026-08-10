@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Audio Studio 2.2.0 - Release Notes</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -202,9 +201,9 @@
 <p>Built, not yet released.</p>
 <h2 id="why-the-version-jumps-from-100-to-220">Why the version jumps
 from 1.0.0 to 2.2.0</h2>
-<p>There is no Audio Studio 2.0 or 2.1. On 2026-07-21 the Studio's build
+<p>There is no Audio Studio 2.0 or 2.1. On 2026-07-21 the Studio’s build
 was rebuilt from the shared template every Quill app now uses, and it
-took the family's version number with it - the same 2.2.0 that Quill
+took the family’s version number with it - the same 2.2.0 that Quill
 Weather (2026-07-23) and Quill Radio (2026-07-24) carry. The number is
 shared because the apps now install and run on one shared runtime; the
 releases stay independent, so each app still updates on its own
@@ -232,7 +231,7 @@ and its documentation. The first time you launch it, if the runtime is
 not already on your machine, it offers to download and install it (about
 230 MB, once). After that, this app and every other Quill app start
 instantly.</li>
-<li><strong>Thin installer</strong> (the "Lite" setup) - a small
+<li><strong>Thin installer</strong> (the “Lite” setup) - a small
 installer that downloads the shared runtime only if it is not already
 present, then installs the app.</li>
 </ul>
@@ -249,9 +248,9 @@ did on its own first launch - shows a <strong>fully accessible progress
 bar</strong> that works with NVDA, JAWS, and Narrator and announces
 progress as a percentage. There is no silent wait where you cannot tell
 whether anything is happening.</p>
-<p>The Studio's launcher is now a genuine, tiny native program, and the
+<p>The Studio’s launcher is now a genuine, tiny native program, and the
 bundled Python is the official unmodified build. Earlier versions used a
-renamed and modified copy of Python's own launcher, a pattern some
+renamed and modified copy of Python’s own launcher, a pattern some
 antivirus tools flagged as a false positive. That pattern is gone, so
 the Quill apps are far less likely to be flagged. Releases are still not
 code-signed, so SmartScreen may caution on first run.</p>
@@ -262,20 +261,20 @@ itself - extracting the new portable files over your folder, or running
 the installer quietly - and relaunches, keeping every setting, voice,
 and book position. No closing the app, unzipping, and swapping folders
 by hand.</p>
-<p><strong>Help &gt; Check for Updates...</strong> now looks at the
-shared Quill project releases and picks out Audio Studio's own download
-for the flavor you run. Each app updates on its own schedule from that
-one place, so an update to Quill Radio is never mistaken for an update
-to the Studio.</p>
+<p><strong>Help &gt; Check for Updates…</strong> now looks at the shared
+Quill project releases and picks out Audio Studio’s own download for the
+flavor you run. Each app updates on its own schedule from that one
+place, so an update to Quill Radio is never mistaken for an update to
+the Studio.</p>
 <h2 id="a-status-bar-you-can-actually-read">A status bar you can
 actually read</h2>
-<p>The Studio's status bar used to be a strip of text a screen reader
+<p>The Studio’s status bar used to be a strip of text a screen reader
 could not review. It is now arrow-navigable, exactly like the one in
 QUILL and Quill Radio: press <strong>F6</strong> to move focus into it,
 Left and Right to move between cells, Enter to act on the one you are
 on, and Escape or a second F6 to leave. The cells are Activity,
-Progress, Sleep timer, Your books, and Time, so "what is going on right
-now" is always one key away.</p>
+Progress, Sleep timer, Your books, and Time, so “what is going on right
+now” is always one key away.</p>
 <p>The Progress cell carries a live narration or build run - the
 percentage, how many files are done, and the current step - and the
 Studio writes the same text into its system-tray tooltip. An overnight
@@ -285,7 +284,7 @@ tray, instead of going quiet the moment you minimize it. <strong>View
 choice.</p>
 <h2 id="converting-audio-without-leaving-the-studio">Converting audio,
 without leaving the Studio</h2>
-<p><strong>Voices &gt; Convert Audio...</strong> changes audio files
+<p><strong>Voices &gt; Convert Audio…</strong> changes audio files
 between formats - MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, AAC and more - and
 pulls the audio track out of video files (MP4, MKV, MOV, WebM and the
 rest) along the way. It converts through the ffmpeg the Studio already
@@ -299,16 +298,16 @@ what your ffmpeg can genuinely encode, so a long batch cannot die half
 way for a missing encoder. Conversion runs in the background with
 several files at once, a real Cancel, and a spoken summary at the end
 that <strong>names the files that failed</strong> rather than quietly
-reporting success. Progress appears in the status bar's Progress cell
+reporting success. Progress appears in the status bar’s Progress cell
 and the tray tooltip, the same as a narration run.</p>
 <p>An Advanced panel is there when you want it, and neutral when you do
 not: loudness normalization to audiobook (ACX) or podcast level, gain, a
 high-pass filter, silence trimming, pitch-preserving tempo, a
 compressor, a night-mode leveler, fade in and fade out, and a safety
 limiter.</p>
-<p><strong>Voices &gt; Convert from URL...</strong> takes a link -
-YouTube and the many other sites the downloader supports - fetches the
-audio, and drops it straight into the converter. The downloader is never
+<p><strong>Voices &gt; Convert from URL…</strong> takes a link - YouTube
+and the many other sites the downloader supports - fetches the audio,
+and drops it straight into the converter. The downloader is never
 bundled: it installs on demand after a one-time consent and rights
 notice, and the whole feature is unavailable in Safe Mode.</p>
 <h2 id="announcements-reach-your-braille-display">Announcements reach
@@ -322,7 +321,7 @@ the Studio makes is covered at once. Three rules govern it:</p>
 <ul>
 <li><strong>Braille never costs speech.</strong> An unplugged display, a
 screen reader that rejects the call, a bridge without the capability -
-all of them degrade to "spoke but did not braille", never to
+all of them degrade to “spoke but did not braille”, never to
 silence.</li>
 <li><strong>Nothing is truncated.</strong> Clipping a message to the
 display width would drop the end of the very thing you asked for, and
@@ -346,18 +345,18 @@ spoken string, or a compact position-first form), how long an identical
 braille message is held back, whether an error sticks on the display
 instead of flashing past, whether the companion apps play sound cues,
 whether a cue stands in for speech while Quiet Mode is on, and which
-severities interrupt speech. The Studio's own Preferences dialog stays
+severities interrupt speech. The Studio’s own Preferences dialog stays
 the short list it has always been; these live in the settings store the
 Studio shares with QUILL, so setting them in QUILL applies here too.</p>
-<h2 id="built-from-quills-own-source">Built from QUILL's own source</h2>
-<p>The Studio used to be assembled from a copy of QUILL's audio code
+<h2 id="built-from-quills-own-source">Built from QUILL’s own source</h2>
+<p>The Studio used to be assembled from a copy of QUILL’s audio code
 kept in a separate repository and re-synced by hand. It is now built
 directly from QUILL itself. Nothing changes in what you see, but the
-standalone Studio and QUILL's built-in Audio Studio can no longer drift
+standalone Studio and QUILL’s built-in Audio Studio can no longer drift
 apart, and a fix made upstream is in the next Studio build with nothing
 to copy across.</p>
 <p>Two smaller results of the same work: Piper voices now download from
-the project's own signed mirror rather than a third-party model host, so
+the project’s own signed mirror rather than a third-party model host, so
 a voice download no longer depends on an outside service being reachable
 from your network; and the shared components each app needs (ffmpeg, for
 the Studio) are counted, so uninstalling one Quill app can never take
@@ -366,13 +365,13 @@ large libraries the Studio never loads, making both the installer and
 the portable zip meaningfully lighter.</p>
 <h2 id="fixed">Fixed</h2>
 <p><strong>Kokoro narration no longer stops mid-run on a portable
-copy.</strong> A long, dense passage could overrun the neural model's
+copy.</strong> A long, dense passage could overrun the neural model’s
 input window; the Studio then fell back to a heavyweight code path a
-portable copy does not carry, and announced "Kokoro voices need one more
-component" - for a component you had already installed, 29 chapters into
+portable copy does not carry, and announced “Kokoro voices need one more
+component” - for a component you had already installed, 29 chapters into
 a run. The Studio now re-splits that one passage at safe boundaries and
 carries on, so a portable narration completes. The per-passage size
-limit is capped below the model's window everywhere it is used,
+limit is capped below the model’s window everywhere it is used,
 translated editions included, and when a passage genuinely cannot be
 synthesized the message names the real cause and where the report is,
 instead of pointing at a download you do not need.</p>
@@ -381,13 +380,13 @@ instead of pointing at a download you do not need.</p>
 <li><strong>Not released yet.</strong> This version is built but
 unpublished, and Audio Studio is not offered in the cross-app menu.</li>
 <li><strong>Releases are not code-signed.</strong> Windows SmartScreen
-warns on first run; choose "More info" then "Run anyway".</li>
+warns on first run; choose “More info” then “Run anyway”.</li>
 <li><strong>Windows-first; macOS supported.</strong> SAPI 5 and DECtalk
 are Windows engines, and stored secrets use the Windows Credential
 Manager; elsewhere those fields work per-session but are not
 persisted.</li>
 <li><strong>Add-ons are not available here yet.</strong> Quillins -
-QUILL's small, sandboxed add-ons - run in QUILL, Quill Radio, and QUILL
+QUILL’s small, sandboxed add-ons - run in QUILL, Quill Radio, and QUILL
 Cast. Audio Studio does not yet offer them.</li>
 </ul>
 </main>

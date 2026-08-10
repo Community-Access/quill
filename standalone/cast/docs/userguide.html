@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast User Guide</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-cast-user-guide">QUILL Cast User Guide</h1>
 <p>Version 1.0</p>
 <p>QUILL Cast is podcasts the way a screen reader user would design
@@ -188,12 +208,12 @@ from a terminal if you installed from source). The window opens with
 keyboard focus on your <strong>Library</strong> tree.</p>
 <ul>
 <li>No shows yet? Press Alt+S for the Subscriptions menu, then
-<strong>Add Podcast...</strong> to subscribe by search or feed URL -- or
-<strong>Import OPML...</strong> to bring a library from another podcast
-app, or <strong>Subscribe to ACB Media Podcasts</strong> for ACB's whole
+<strong>Add Podcast…</strong> to subscribe by search or feed URL – or
+<strong>Import OPML…</strong> to bring a library from another podcast
+app, or <strong>Subscribe to ACB Media Podcasts</strong> for ACB’s whole
 live directory in one step.</li>
 <li>With shows: arrow to one and press <strong>Enter</strong> to play
-its next unplayed episode -- no detour through the Manager required. If
+its next unplayed episode – no detour through the Manager required. If
 every episode is already played, Enter plays the most recent one and
 says so.</li>
 <li>Want QUILL Cast on the moment it opens? Check <strong>Subscriptions
@@ -202,8 +222,8 @@ picks up exactly where you left off.</li>
 </ul>
 <p>Everything QUILL Cast announces goes through the same announcement
 engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA,
-Narrator) without stealing focus -- and writes to your braille display
-at the same time (see "Spoken and braille announcements" below).</p>
+Narrator) without stealing focus – and writes to your braille display at
+the same time (see “Spoken and braille announcements” below).</p>
 <h2 id="the-main-window">The main window</h2>
 <p>Tab order: the now-playing line, the library tree, then five
 buttons.</p>
@@ -211,33 +231,33 @@ buttons.</p>
 <li><strong>Now playing</strong> (read-only text): what is playing;
 mirrored in the status bar and the Episode menu.</li>
 <li><strong>Library</strong> (tree): the same pinned views the Podcast
-Manager shows -- <strong>Favorites</strong>, <strong>New
+Manager shows – <strong>Favorites</strong>, <strong>New
 Episodes</strong>, <strong>Continue Listening</strong>,
-<strong>Inbox</strong> -- above your nested library folders and the
-shows filed in them, each with a live unplayed-episode count. Enter on a
-show plays its next episode; Enter on a pinned view opens the Podcast
-Manager to that view. Delete unsubscribes a show (with confirmation) or
-dissolves a folder (your shows step safely to the top level -- nothing
-is ever unsubscribed by deleting a folder). Shift+F10 opens the full
+<strong>Inbox</strong> – above your nested library folders and the shows
+filed in them, each with a live unplayed-episode count. Enter on a show
+plays its next episode; Enter on a pinned view opens the Podcast Manager
+to that view. Delete unsubscribes a show (with confirmation) or
+dissolves a folder (your shows step safely to the top level – nothing is
+ever unsubscribed by deleting a folder). Shift+F10 opens the full
 context menu: Play/Stop, Add/Remove Favorites, Move to Folder,
 <strong>Download All Episodes</strong>, <strong>Remove All
-Episodes</strong>, <strong>Feed Credentials...</strong> (for private
-feeds -- see below), Unsubscribe, New Folder, and Open Manager. On a
-folder the context menu offers <strong>Rename Folder...</strong>,
-<strong>Delete Folder...</strong>, New Folder..., and Open Manager.</li>
+Episodes</strong>, <strong>Feed Credentials…</strong> (for private feeds
+– see below), Unsubscribe, New Folder, and Open Manager. On a folder the
+context menu offers <strong>Rename Folder…</strong>, <strong>Delete
+Folder…</strong>, New Folder…, and Open Manager.</li>
 <li><strong>Episodes without leaving the main page.</strong> Every show
 in the tree can be expanded (Right Arrow) to reveal its episodes, newest
-first, right where the show sits -- no detour through the Manager to
+first, right where the show sits – no detour through the Manager to
 reach one particular episode. Shows start collapsed so the tree reads as
 a list of shows rather than a wall of episodes. <strong>Enter on an
 episode plays that episode</strong>; Enter on the show itself still
-plays the show's next unplayed episode.</li>
+plays the show’s next unplayed episode.</li>
 <li>Buttons: <strong>Play</strong> (becomes <strong>Pause</strong> while
-playing, <strong>Resume</strong> while paused -- one transport control
+playing, <strong>Resume</strong> while paused – one transport control
 that is never dead), <strong>Stop</strong>, <strong>Add to
 Favorites</strong> (becomes <strong>Remove from Favorites</strong> when
-the playing show is already a favorite), <strong>Open
-Manager...</strong>, <strong>Add Podcast...</strong>.</li>
+the playing show is already a favorite), <strong>Open Manager…</strong>,
+<strong>Add Podcast…</strong>.</li>
 </ul>
 <h2 id="the-podcast-manager">The Podcast Manager</h2>
 <p>The Manager (Ctrl+M) is where episode-level life happens, and it is
@@ -251,16 +271,16 @@ the same Manager QUILL ships:</p>
 a show to the Inbox and its new episodes land there; file episodes into
 your own nested folders. Your first manual filing per show is remembered
 and applied automatically (Forget reverts it).</li>
-<li><strong>"View cross-show lists as"</strong>, a combo box next to
-"Sort episodes", offers three ways to see the Inbox and every other
+<li><strong>“View cross-show lists as”</strong>, a combo box next to
+“Sort episodes”, offers three ways to see the Inbox and every other
 cross-show list (New Episodes, Continue Listening, Favorites):
-<strong>Grouped in list</strong> (the default -- each show's episodes
-cluster together, read one podcast's backlog at a time), <strong>Flat
+<strong>Grouped in list</strong> (the default – each show’s episodes
+cluster together, read one podcast’s backlog at a time), <strong>Flat
 list</strong> (everything as one stream, sorted purely by date across
 every show at once), or <strong>Folders per podcast</strong> (real
 expandable tree nodes, one per show, right under the pinned view). The
 Sort Episodes control now applies to these cross-show lists too, not
-just a single show's own episode list -- and it's per-podcast: select a
+just a single show’s own episode list – and it’s per-podcast: select a
 show (or its Folders node) and change the sort to override just that
 podcast, leaving everyone else on the shared default.</li>
 <li><strong>Play Queue</strong>: Play Next or Add to Queue on any
@@ -269,16 +289,16 @@ the keyboard (Move Up/Down, or Mark then Move for long hops).</li>
 <li><strong>Playlists</strong>, below the Play Queue in the tree: saved,
 named episode lists, distinct from the (transient) Play Queue and the
 (fixed) pinned views. Right-click Playlists for <strong>New
-Playlist...</strong> (manual -- add episodes one at a time via
-<strong>Add to Playlist...</strong> on any episode's context menu) or
-<strong>New Smart Playlist...</strong> (rule-based -- which shows,
-episode status, how recent, how long, and how to sort, re-resolved live
-every time you open it). Edit Rules..., Rename (F2), and Delete round
-out each playlist's own context menu.</li>
+Playlist…</strong> (manual – add episodes one at a time via <strong>Add
+to Playlist…</strong> on any episode’s context menu) or <strong>New
+Smart Playlist…</strong> (rule-based – which shows, episode status, how
+recent, how long, and how to sort, re-resolved live every time you open
+it). Edit Rules…, Rename (F2), and Delete round out each playlist’s own
+context menu.</li>
 <li><strong>Search Everywhere</strong> searches shows, episodes, your
 notes, and fetched transcripts at once and jumps to the result.</li>
 <li><strong>Transcripts</strong>: when a feed provides one (Podcasting
-2.0; VTT/SRT/JSON), save it to a file or open it -- cached for instant
+2.0; VTT/SRT/JSON), save it to a file or open it – cached for instant
 reopening. QUILL Cast never generates transcripts from audio; that stays
 in full QUILL.</li>
 <li><strong>Episode notes</strong> timestamp the playing moment; Enter
@@ -287,22 +307,22 @@ on a note jumps playback there.</li>
 shows, with optional watched folders that pick up dropped files.</li>
 <li><strong>Always Sync</strong>, <strong>auto-trim silence</strong>,
 <strong>normalize loudness</strong>, and a live <strong>volume
-boost</strong> that respects the Sleep Timer's restore volume.</li>
+boost</strong> that respects the Sleep Timer’s restore volume.</li>
 <li><strong>Download All Episodes / Remove All Episodes</strong> on a
-show's context menu: Download All queues everything not already
+show’s context menu: Download All queues everything not already
 downloaded or in progress, no extra confirmation needed. Remove All
-Episodes confirms first, then -- only if the show has downloaded files
--- asks separately whether to delete those too; the show itself stays
+Episodes confirms first, then – only if the show has downloaded files –
+asks separately whether to delete those too; the show itself stays
 subscribed either way.</li>
 </ul>
 <h2 id="private-feeds-username-and-password">Private feeds (username and
 password)</h2>
-<p>Some feeds -- Patreon supporter feeds, premium and members-only
-shows, private company or organization feeds -- protect their RSS
-address with a username and password (HTTP Basic authentication). QUILL
-Cast handles them end to end.</p>
+<p>Some feeds – Patreon supporter feeds, premium and members-only shows,
+private company or organization feeds – protect their RSS address with a
+username and password (HTTP Basic authentication). QUILL Cast handles
+them end to end.</p>
 <p><strong>Subscribing.</strong> Add the feed exactly as you would any
-other: Subscriptions &gt; Add Podcast..., paste the address into
+other: Subscriptions &gt; Add Podcast…, paste the address into
 <strong>Add by Feed URL</strong>, press <strong>Add</strong>. If the
 feed asks for a sign-in, a small <strong>Feed Credentials</strong>
 dialog opens with focus on the username field: enter the username and
@@ -312,11 +332,11 @@ Cast retries with your credentials and the subscription continues
 normally. Wrong password? The dialog reopens with your username kept,
 and says so.</p>
 <p><strong>Changing or clearing credentials later.</strong> Open the
-show's context menu (Shift+F10 in the main window's library tree or the
-Podcast Manager's tree) and choose <strong>Feed Credentials...</strong>
--- the same dialog, username prefilled. Enter a new password to replace
-the stored one, or press <strong>Clear Credentials</strong> to remove
-both and make the show public-only again. Every save and clear is
+show’s context menu (Shift+F10 in the main window’s library tree or the
+Podcast Manager’s tree) and choose <strong>Feed Credentials…</strong> –
+the same dialog, username prefilled. Enter a new password to replace the
+stored one, or press <strong>Clear Credentials</strong> to remove both
+and make the show public-only again. Every save and clear is
 announced.</p>
 <p><strong>What signing in covers.</strong> Once a show has credentials,
 QUILL Cast signs in automatically everywhere that show touches the
@@ -324,39 +344,38 @@ network: feed refresh, episode downloads, streaming playback, and
 feed-provided transcripts and chapters. One deliberate security rule:
 credentials are only ever sent to the same host as the feed itself. If a
 show serves its audio from a different host (a public content network,
-say), those requests carry no credentials -- your password is never
+say), those requests carry no credentials – your password is never
 broadcast to third parties.</p>
 <p><strong>Where the password lives.</strong> Never in a plain file. On
 an installed copy it goes into Windows Credential Manager, protected by
 your Windows account. On a portable copy it is encrypted (Windows DPAPI)
 inside the <code>data</code> folder on your stick. It never appears in
 <code>podcasts.json</code>, never in logs, and <strong>Export
-OPML</strong> never includes it -- an exported subscription list is
+OPML</strong> never includes it – an exported subscription list is
 always safe to share.</p>
 <p><strong>Portable caveat.</strong> DPAPI encryption is tied to your
 Windows account and machine. Move the portable stick to a different PC
 or user account and your subscriptions all come along, but stored feed
-passwords cannot be decrypted there -- the first refresh of a private
+passwords cannot be decrypted there – the first refresh of a private
 feed will say sign-in failed, and you re-enter the password once via
-Feed Credentials....</p>
+Feed Credentials….</p>
 <h2 id="menus">Menus</h2>
 <h3 id="subscriptions-alts">Subscriptions (Alt+S)</h3>
-<p>Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML...,
-Export OPML..., New Folder... (creates a library folder without opening
-the Manager), Add Local Podcast..., Scan Watched Folders, Subscribe to
-ACB Media Podcasts, Podcast Settings..., <strong>Resume Last Episode on
-Launch</strong> (check item -- the appliance switch),
-<strong>Preferences...</strong> (Ctrl+,), Send to Tray (Ctrl+W),
-Exit.</p>
-<p><strong>Preferences...</strong> (Ctrl+,) holds four checkboxes:</p>
+<p>Open Podcast Manager… (Ctrl+M), Add Podcast…, Import OPML…, Export
+OPML…, New Folder… (creates a library folder without opening the
+Manager), Add Local Podcast…, Scan Watched Folders, Subscribe to ACB
+Media Podcasts, Podcast Settings…, <strong>Resume Last Episode on
+Launch</strong> (check item – the appliance switch),
+<strong>Preferences…</strong> (Ctrl+,), Send to Tray (Ctrl+W), Exit.</p>
+<p><strong>Preferences…</strong> (Ctrl+,) holds four checkboxes:</p>
 <ul>
-<li><strong>Resume Last Episode on Launch</strong> -- pick up where you
+<li><strong>Resume Last Episode on Launch</strong> – pick up where you
 left off the moment the app opens.</li>
-<li><strong>Check for updates automatically on launch</strong> -- the
+<li><strong>Check for updates automatically on launch</strong> – the
 quiet once-a-day check.</li>
-<li><strong>Announce dialog transitions</strong> -- off by default; turn
+<li><strong>Announce dialog transitions</strong> – off by default; turn
 it on for more spoken detail around every dialog.</li>
-<li><strong>Alt+F4 minimizes to the system tray</strong> -- off by
+<li><strong>Alt+F4 minimizes to the system tray</strong> – off by
 default. When on, Alt+F4 tucks the window away with playback still
 running instead of closing it, so the reflexive keyboard close stops
 ending your listening. The titlebar X and Exit are unaffected: a
@@ -368,84 +387,83 @@ deliberate exit still exits.</li>
 <strong>Volume Up</strong> (Ctrl+Up) and <strong>Volume Down</strong>
 (Ctrl+Down), Next Chapter, Previous Chapter, <strong>Skip
 Forward</strong> (Ctrl+Right), <strong>Skip Back</strong> (Ctrl+Left),
-Add Episode Note..., <strong>Play Queue...</strong> (the same
-reorderable queue the Manager offers, now one keystroke away), a
-<strong>Recently Played</strong> submenu (your last fifteen episodes,
-newest first, playable inline), Sleep Timer... (fade out and stop after
-a set time, restoring your volume), <strong>Sound
-Enhancements...</strong>, and <strong>Skip Settings...</strong>. The
-volume keys match Quill Radio's, so the two apps behave the same
-way.</p>
-<p><strong>Sound Enhancements...</strong> applies live, on top of
-whatever is playing: a three-band equalizer (Bass, Mid, Treble sliders,
--12 to +12 dB each) plus a "Quick preset" shortcut (Flat, Bass Boost,
-Voice Clarity, Podcast) that sets all three at once, a compressor ("Even
-Out Volume"), and <strong>Smart Speed</strong> (trims silence between
-words and sentences, distinct from the one-time leading/trailing silence
-trim Downloads can already do to the saved file -- Smart Speed is
-reversible and live, on any episode, any time). All of it needs FFmpeg
-(Help &gt; Get FFmpeg...); if it's missing, playback continues
-unfiltered and QUILL Cast tells you why. Turning anything on or off, or
-scrubbing the seek bar while enhanced, briefly reconnects on Apply --
-QUILL Cast restarts the filter at your exact position, so you never lose
-your place, and pausing/resuming works normally throughout. Every
-setting here is <strong>per-podcast</strong>: open it while an episode
-is playing to set that show's own sound, or with nothing playing to set
-the shared default every other show follows.</p>
+Add Episode Note…, <strong>Play Queue…</strong> (the same reorderable
+queue the Manager offers, now one keystroke away), a <strong>Recently
+Played</strong> submenu (your last fifteen episodes, newest first,
+playable inline), Sleep Timer… (fade out and stop after a set time,
+restoring your volume), <strong>Sound Enhancements…</strong>, and
+<strong>Skip Settings…</strong>. The volume keys match Quill Radio’s, so
+the two apps behave the same way.</p>
+<p><strong>Sound Enhancements…</strong> applies live, on top of whatever
+is playing: a three-band equalizer (Bass, Mid, Treble sliders, -12 to
++12 dB each) plus a “Quick preset” shortcut (Flat, Bass Boost, Voice
+Clarity, Podcast) that sets all three at once, a compressor (“Even Out
+Volume”), and <strong>Smart Speed</strong> (trims silence between words
+and sentences, distinct from the one-time leading/trailing silence trim
+Downloads can already do to the saved file – Smart Speed is reversible
+and live, on any episode, any time). All of it needs FFmpeg (Help &gt;
+Get FFmpeg…); if it’s missing, playback continues unfiltered and QUILL
+Cast tells you why. Turning anything on or off, or scrubbing the seek
+bar while enhanced, briefly reconnects on Apply – QUILL Cast restarts
+the filter at your exact position, so you never lose your place, and
+pausing/resuming works normally throughout. Every setting here is
+<strong>per-podcast</strong>: open it while an episode is playing to set
+that show’s own sound, or with nothing playing to set the shared default
+every other show follows.</p>
 <p><strong>Skip Forward</strong> and <strong>Skip Back</strong> jump the
-current episode by a fixed number of seconds -- 30 forward, 15 back by
-default -- unlike Next/Previous Chapter, which jump to the nearest
-chapter marker instead. <strong>Skip Settings...</strong> sets how far
+current episode by a fixed number of seconds – 30 forward, 15 back by
+default – unlike Next/Previous Chapter, which jump to the nearest
+chapter marker instead. <strong>Skip Settings…</strong> sets how far
 each jumps (per-podcast, the same way Sound Enhancements is), and, only
 when a show is loaded, <strong>auto-skip intro</strong> and
 <strong>auto-skip outro</strong> (0 = off): intro-skip jumps forward
 automatically on a fresh start (never when resuming your saved
 position); outro-skip ends the episode early, exactly as if it had
-finished naturally -- auto-advance and delete-after-play still fire.</p>
+finished naturally – auto-advance and delete-after-play still fire.</p>
 <h3 id="downloads-altd">Downloads (Alt+D)</h3>
 <p>Pause All Downloads, Resume All Downloads.</p>
 <h3 id="help-alth">Help (Alt+H)</h3>
-<p>One standalone difference from QUILL: "Send Show Notes to Editor"
+<p>One standalone difference from QUILL: “Send Show Notes to Editor”
 copies notes to the clipboard instead, since there is no editor
 here.</p>
 <ul>
-<li><strong>Command Palette...</strong> (Ctrl+Shift+P) -- every QUILL
-Cast command in one searchable list.</li>
-<li><strong>Keyboard Shortcuts...</strong> -- open the Keyboard Manager
-to view, search, and change QUILL Cast's keyboard shortcuts (see "Global
-hotkeys and keyboard shortcuts" below).</li>
-<li><strong>Global Hotkeys...</strong> -- assign a system-wide key to
-QUILL Cast's Play/Pause and Stop so they work while another program has
-focus (see below).</li>
-<li><strong>Get FFmpeg...</strong> -- a safety net: ffmpeg ships inside
+<li><strong>Command Palette…</strong> (Ctrl+Shift+P) – every QUILL Cast
+command in one searchable list.</li>
+<li><strong>Keyboard Shortcuts…</strong> – open the Keyboard Manager to
+view, search, and change QUILL Cast’s keyboard shortcuts (see “Global
+hotkeys and keyboard shortcuts” below).</li>
+<li><strong>Global Hotkeys…</strong> – assign a system-wide key to QUILL
+Cast’s Play/Pause and Stop so they work while another program has focus
+(see below).</li>
+<li><strong>Get FFmpeg…</strong> – a safety net: ffmpeg ships inside
 QUILL Cast for trim/normalize passes and Sound Enhancements, but if it
 ever goes missing this downloads the official build so those settings
 work again.</li>
 <li><strong>User Guide</strong> / <strong>Release Notes</strong> /
-<strong>Product Requirements...</strong> -- this guide, the version
+<strong>Product Requirements…</strong> – this guide, the version
 history, and the product requirements document, each opened right in
 your browser.</li>
-<li><strong>Redeem Unlock Code...</strong> -- enter a signed unlock code
+<li><strong>Redeem Unlock Code…</strong> – enter a signed unlock code
 for a pre-release capability. Verified entirely on your machine; nothing
 is transmitted. A code redeemed here counts for QUILL and Quill Radio
-too -- all three share one unlock store.</li>
-<li><strong>Check for Updates...</strong> -- compares your version with
-the newest release of QUILL Cast, downloads the installer in-app with
-spoken progress, then offers Install now (closes the app and runs the
+too – all three share one unlock store.</li>
+<li><strong>Check for Updates…</strong> – compares your version with the
+newest release of QUILL Cast, downloads the installer in-app with spoken
+progress, then offers Install now (closes the app and runs the
 installer) or Open folder. Already up to date shows a dialog too, not
 just a spoken announcement. QUILL Cast also runs this check quietly once
-a day on launch -- silent unless it actually finds something;
+a day on launch – silent unless it actually finds something;
 Subscriptions &gt; Preferences (Ctrl+,) turns it off.</li>
-<li><strong>About QUILL Cast</strong> -- version, sync statement, and
-the project address.</li>
+<li><strong>About QUILL Cast</strong> – version, sync statement, and the
+project address.</li>
 </ul>
 <h2 id="spotify-podcasts-experimental">Spotify podcasts
 (experimental)</h2>
-<p>QUILL Cast can play podcasts hosted on Spotify -- but this is an
+<p>QUILL Cast can play podcasts hosted on Spotify – but this is an
 <strong>experimental capability that is off by default and hidden until
-you deliberately turn it on</strong>. It ships "dark" behind a feature
+you deliberately turn it on</strong>. It ships “dark” behind a feature
 flag, so on a normal install there are no Spotify menu items and nothing
-reaches Spotify's servers. Turning it on takes four separate things, and
+reaches Spotify’s servers. Turning it on takes four separate things, and
 one of them is a paid <strong>Spotify Premium</strong> account, because
 Spotify only lets an app stream its audio for Premium subscribers.</p>
 <h3 id="what-you-need-to-enable-it">What you need to enable it</h3>
@@ -462,14 +480,14 @@ items never appear or never play.</p>
 <tr>
 <td>The Spotify feature, unlocked</td>
 <td>Spotify is a locked, pre-release feature. Unlock it with a signed
-code via <strong>Help &gt; Redeem Unlock Code...</strong> -- the same
+code via <strong>Help &gt; Redeem Unlock Code…</strong> – the same
 one-time, verified-on-your-machine unlock QUILL uses for other early
 features. A code redeemed here counts for QUILL and Quill Radio too; all
 three share one unlock store.</td>
 </tr>
 <tr>
 <td>A Spotify Premium account</td>
-<td>Spotify's Web Playback engine only streams audio to Premium
+<td>Spotify’s Web Playback engine only streams audio to Premium
 subscribers. A free account can sign in and browse, but will not
 play.</td>
 </tr>
@@ -479,12 +497,12 @@ play.</td>
 own. Register an app in the Spotify Developer Dashboard, then set its
 redirect address to exactly
 <code>http://127.0.0.1:43217/callback</code>. There is no client secret
-to copy -- QUILL Cast signs in with the modern Authorization Code with
+to copy – QUILL Cast signs in with the modern Authorization Code with
 PKCE flow, which needs only the Client ID.</td>
 </tr>
 <tr>
 <td>Windows with the Edge WebView2 runtime</td>
-<td>Spotify audio is copy-protected and can only be played by Spotify's
+<td>Spotify audio is copy-protected and can only be played by Spotify’s
 own Web Playback engine, which runs inside a hidden Microsoft Edge
 WebView2 component. The WebView2 runtime is part of current Windows (it
 ships with Microsoft Edge), so it is normally already present.</td>
@@ -493,24 +511,24 @@ ships with Microsoft Edge), so it is normally already present.</td>
 </table>
 <p>Once the feature is unlocked and you are not in Safe Mode, two new
 items appear in the <strong>Help</strong> menu: <strong>Connect to
-Spotify...</strong> and <strong>Browse Spotify Podcasts...</strong></p>
+Spotify…</strong> and <strong>Browse Spotify Podcasts…</strong></p>
 <h3 id="connecting-to-spotify">Connecting to Spotify</h3>
-<p>Choose <strong>Help &gt; Connect to Spotify...</strong> to open an
+<p>Choose <strong>Help &gt; Connect to Spotify…</strong> to open an
 accessible sign-in dialog. Enter your Client ID and start the sign-in:
-your web browser opens to Spotify's own approval page, you approve
+your web browser opens to Spotify’s own approval page, you approve
 access, and Spotify sends you back to a tiny local address on your own
 machine (<code>127.0.0.1</code>) that QUILL Cast is listening on for
 exactly that one moment. QUILL Cast captures the result and stores your
-sign-in tokens in the <strong>Windows credential vault</strong> -- never
+sign-in tokens in the <strong>Windows credential vault</strong> – never
 in a plain file, never in <code>podcasts.json</code> or a log. Your
 Client ID is stored alongside them so the whole connection lives in one
 place and clears together.</p>
 <h3 id="browsing-and-playing">Browsing and playing</h3>
-<p>Choose <strong>Help &gt; Browse Spotify Podcasts...</strong> to open
-an accessible search box with a results list. Type a show or episode
-name, arrow to a result, and press <strong>Enter</strong> to play it. A
+<p>Choose <strong>Help &gt; Browse Spotify Podcasts…</strong> to open an
+accessible search box with a results list. Type a show or episode name,
+arrow to a result, and press <strong>Enter</strong> to play it. A
 Spotify episode plays through the hidden Web Playback engine, which
-coexists with QUILL Cast's normal streaming engine -- a Spotify episode
+coexists with QUILL Cast’s normal streaming engine – a Spotify episode
 is routed to it automatically, and the transport controls (Play/Pause,
 Stop), the status bar, the tray, and any system-wide Global Hotkeys you
 have assigned all drive it exactly as they drive an ordinary
@@ -520,40 +538,40 @@ play-only</h3>
 <ul>
 <li><strong>No download.</strong> Spotify audio is copy-protected (DRM),
 and the Web Playback engine is the only sanctioned way to play it, so a
-Spotify episode plays but has no Download -- it cannot be saved to disk
+Spotify episode plays but has no Download – it cannot be saved to disk
 the way a normal podcast episode can.</li>
 <li><strong>Many Spotify shows are exclusive.</strong> A large share of
-Spotify's shows exist only on Spotify, with no public RSS feed to fall
+Spotify’s shows exist only on Spotify, with no public RSS feed to fall
 back to.</li>
 <li><strong>A best-effort public-RSS match (idea, not yet a
 button).</strong> Some shows publish the <em>same</em> episode both on
 Spotify and as an ordinary MP3 in their own public podcast feed. QUILL
-Cast has a core helper that can try to find that public enclosure --
-downloading the <strong>publisher's own public file</strong>, never
-Spotify's audio -- for a Spotify episode that also exists on a normal
+Cast has a core helper that can try to find that public enclosure –
+downloading the <strong>publisher’s own public file</strong>, never
+Spotify’s audio – for a Spotify episode that also exists on a normal
 feed. This is deliberately best-effort and, for now, is available in the
 underlying code but is not yet wired to a menu item or button.</li>
 <li><strong>Premium only, and off in Safe Mode.</strong> Without Spotify
 Premium, playback will not start even after you sign in; and like every
 network feature, Spotify is disabled when QUILL Cast runs in Safe Mode.
 The first sign-in asks for a one-time network-access confirmation,
-because connecting reaches Spotify's servers.</li>
+because connecting reaches Spotify’s servers.</li>
 </ul>
 <h2 id="spoken-and-braille-announcements">Spoken and braille
 announcements</h2>
 <p>Every action in QUILL Cast announces its outcome, and that
 announcement goes out on two channels at once.</p>
-<p><strong>Speech</strong> goes through your screen reader -- JAWS,
-NVDA, or Narrator -- without stealing focus, so a download finishing
-never interrupts what you were reading.</p>
+<p><strong>Speech</strong> goes through your screen reader – JAWS, NVDA,
+or Narrator – without stealing focus, so a download finishing never
+interrupts what you were reading.</p>
 <p><strong>Braille</strong> goes to your display at the same time. This
 is new: the standalone apps used to speak but never write, so a braille
-reader saw nothing of QUILL Cast's own confirmations, progress, and
+reader saw nothing of QUILL Cast’s own confirmations, progress, and
 errors. Three details make it usable rather than noisy:</p>
 <ul>
 <li><strong>A burst settles instead of flickering.</strong> When several
-different messages arrive in quick succession -- a refresh cascade, a
-download reporting in -- the first is written instantly and the rest
+different messages arrive in quick succession – a refresh cascade, a
+download reporting in – the first is written instantly and the rest
 settle to whichever is newest, rather than each one shoving the last
 aside faster than cell one can be read.</li>
 <li><strong>Errors are exempt.</strong> An error is written through
@@ -571,7 +589,7 @@ it off here.</p>
 id="questions-that-could-destroy-something-always-start-on-no">Questions
 that could destroy something always start on No</h2>
 <p>Every confirmation that would delete or discard something opens with
-<strong>No</strong> selected -- <strong>Delete Folder</strong>,
+<strong>No</strong> selected – <strong>Delete Folder</strong>,
 <strong>Delete Playlist</strong>, <strong>Remove All Episodes</strong>,
 and <strong>Delete Downloaded Files</strong> among them. Pressing Enter
 reflexively while a question is still being read can never lose your
@@ -581,12 +599,12 @@ opens on Yes.</p>
 <h2 id="hardware-media-keys">Hardware media keys</h2>
 <p>If your keyboard has media keys, Play/Pause, Stop, and Next/Previous
 Track (mapped to chapters) control QUILL Cast system-wide while it runs
--- even from the tray. Keys another app already owns are left alone.
+– even from the tray. Keys another app already owns are left alone.
 Starting an episode also silences a playing radio stream and vice versa:
 nothing ever double-plays.</p>
 <h2 id="global-hotkeys-and-keyboard-shortcuts">Global hotkeys and
 keyboard shortcuts</h2>
-<p><strong>Keyboard Shortcuts (Help &gt; Keyboard Shortcuts...)</strong>
+<p><strong>Keyboard Shortcuts (Help &gt; Keyboard Shortcuts…)</strong>
 opens the Keyboard Manager: a searchable, conflict-aware list of every
 QUILL Cast command and its assigned key, where you can reassign a key
 (with a warning for conflicts or risky keys), clear it, or restore the
@@ -595,9 +613,9 @@ Radio</strong>, so a change here changes it everywhere in the family. A
 few commands whose default is a two-key chord or uses a comma
 (Preferences on Ctrl+,) keep their built-in shortcut until the next
 launch; plain single-key commands take effect immediately.</p>
-<p><strong>Global Hotkeys (Help &gt; Global Hotkeys...)</strong> lets
-you give a <strong>system-wide</strong> key to QUILL Cast's Play/Pause
-and Stop, so you can control an episode from any program, and to
+<p><strong>Global Hotkeys (Help &gt; Global Hotkeys…)</strong> lets you
+give a <strong>system-wide</strong> key to QUILL Cast’s Play/Pause and
+Stop, so you can control an episode from any program, and to
 <strong>Show/Hide QUILL Cast to the Tray</strong>, which tucks the
 window away or brings it back from wherever you are. Only those safe
 commands can be bound this way; the first assignment warns that a
@@ -606,26 +624,26 @@ app already owns is left alone. (Windows only.)</p>
 <p>Show/Hide QUILL Cast to the Tray starts on
 <strong>Ctrl+Alt+Shift+Q</strong>. That is the same chord QUILL itself
 uses for its own show/hide, and Windows gives a system-wide key to
-whichever app registers it first -- so if you run both, change one of
+whichever app registers it first – so if you run both, change one of
 them here.</p>
 <h2 id="quillins-in-quill-cast">Quillins in QUILL Cast</h2>
-<p>QUILL Cast can now run <strong>Quillins</strong> -- QUILL's small,
-sandboxed, permission-gated add-ons -- from its own
+<p>QUILL Cast can now run <strong>Quillins</strong> – QUILL’s small,
+sandboxed, permission-gated add-ons – from its own
 <strong>Quillins</strong> menu. A Quillin declares which apps it
 targets, so only add-ons written for QUILL Cast appear here. The bundled
 <code>cast-premium-auth</code> sample demonstrates a Quillin that
 supplies the sign-in header for a private, subscriber-only podcast feed
 (a companion to the built-in username/password support described above).
 Quillins are off in Safe Mode, and third-party Quillins remain disabled
-in this release -- the bundled ones are the foundation.</p>
+in this release – the bundled ones are the foundation.</p>
 <h2 id="downloads-that-survive-a-dropped-connection">Downloads that
 survive a dropped connection</h2>
 <p>If your internet hiccups mid-download, QUILL Cast first tries to
 quietly resume from where it left off; if the drop is real, it waits and
 reconnects automatically instead of leaving the episode stuck in Failed
-status -- you'll hear "Download connection dropped; reconnecting" when
-it happens. <strong>Subscriptions &gt; Podcast Settings...</strong> has
-an <strong>"If a download's connection drops"</strong> section: turn
+status – you’ll hear “Download connection dropped; reconnecting” when it
+happens. <strong>Subscriptions &gt; Podcast Settings…</strong> has an
+<strong>“If a download’s connection drops”</strong> section: turn
 automatic reconnecting on or off, and set how many attempts and how many
 seconds between them.</p>
 <h2 id="the-system-tray">The system tray</h2>
@@ -635,7 +653,7 @@ and Exit. Double-click to bring the window back.</p>
 <h2 id="sharing-data-with-quill">Sharing data with QUILL</h2>
 <p>QUILL Cast reads and writes the same data store as QUILL and Quill
 Radio (<code>%APPDATA%\Quill</code>). Subscribe here, and the show is
-subscribed in QUILL's Podcasts; your queue, positions, notes, and
+subscribed in QUILL’s Podcasts; your queue, positions, notes, and
 downloads are one set of data. Local podcasts are stored outside the
 synced data folder by construction. Uninstalling QUILL Cast never
 deletes the shared store.</p>
@@ -681,7 +699,7 @@ deletes the shared store.</p>
 <td>Ctrl+,</td>
 </tr>
 <tr>
-<td>Play selected show's next episode</td>
+<td>Play selected show’s next episode</td>
 <td>Enter (in the tree)</td>
 </tr>
 <tr>
@@ -721,32 +739,33 @@ deletes the shared store.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <ul>
 <li><strong>A feed will not add.</strong> Check the URL is the RSS/Atom
-feed itself, not the show's web page; the Add dialog's search can
+feed itself, not the show’s web page; the Add dialog’s search can
 usually find the show by name instead.</li>
 <li><strong>Adding a feed asks for a username and password.</strong> The
-feed is private (see "Private feeds" above). Enter the credentials your
-podcast provider gave you -- for Patreon-style feeds they're shown
-alongside the feed address on the provider's site. If the prompt keeps
+feed is private (see “Private feeds” above). Enter the credentials your
+podcast provider gave you – for Patreon-style feeds they’re shown
+alongside the feed address on the provider’s site. If the prompt keeps
 reopening, the username or password is wrong; re-copy both from the
 provider.</li>
-<li><strong>A private feed says "feed sign-in failed" during
+<li><strong>A private feed says “feed sign-in failed” during
 refresh.</strong> The publisher rotated or revoked your credentials, or
--- on a portable copy -- you've moved the stick to a different PC or
-Windows account, where stored passwords can't be decrypted. Either way:
-show's context menu &gt; <strong>Feed Credentials...</strong>, re-enter
+– on a portable copy – you’ve moved the stick to a different PC or
+Windows account, where stored passwords can’t be decrypted. Either way:
+show’s context menu &gt; <strong>Feed Credentials…</strong>, re-enter
 the password, refresh again.</li>
-<li><strong>An episode will not download and reconnect isn't fixing
+<li><strong>An episode will not download and reconnect isn’t fixing
 it.</strong> Downloads menu &gt; Resume All Downloads; check
-Subscriptions &gt; Podcast Settings... to confirm reconnecting is on and
+Subscriptions &gt; Podcast Settings… to confirm reconnecting is on and
 the attempt/wait numbers give it enough tries. Some hosts rate-limit
 regardless.</li>
 <li><strong>Positions seem stale across apps.</strong> Positions are
 written on pause/stop/switch; if two apps play simultaneously against
 the same store, the last writer wins.</li>
-<li><strong>Resume Last Episode on Launch didn't pick up my
+<li><strong>Resume Last Episode on Launch didn’t pick up my
 episode.</strong> It only fires at app startup, and only if the episode
 is still in your library (an unsubscribed show or a removed download
-won't resume).</li>
+won’t resume).</li>
 </ul>
+</main>
 </body>
 </html>

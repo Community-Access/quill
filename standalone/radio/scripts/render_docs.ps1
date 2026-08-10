@@ -18,11 +18,14 @@ if (-not $pandoc) {
 
 # Shared accessible HTML template (adds <html lang="en">, a descriptive
 # <title>, a skip link, and a <main> landmark) lives in the top-level repo at
-# docs/pandoc. Fall back to Pandoc's default template if it is unavailable.
+# docs/pandoc. It is required, not optional: Pandoc's default template drops
+# the page language, the skip link, and the <main> landmark, and a warning here
+# is too easy to miss in a build log, so a missing template fails the render.
 $templatePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\..\docs\pandoc\quill-accessible.html5"))
-$htmlTemplateArgs = @()
-if (Test-Path $templatePath) { $htmlTemplateArgs = @("--template", $templatePath) }
-else { Write-Warning "Accessible pandoc template not found at $templatePath; using pandoc default." }
+if (-not (Test-Path $templatePath)) {
+    throw "Accessible pandoc template not found at $templatePath. Rendering without it drops <html lang>, the skip link, and the <main> landmark."
+}
+$htmlTemplateArgs = @("--template", $templatePath)
 
 Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
     $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")
@@ -32,8 +35,12 @@ Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
     # (falls back to the file name), so pages are never titled by bare filename.
     $h1 = Select-String -Path $_.FullName -Pattern '^#\s+(.+?)\s*$' | Select-Object -First 1
     $pageTitle = if ($h1) { $h1.Matches[0].Groups[1].Value } else { $_.BaseName }
-    & $pandoc.Source $_.FullName -f gfm -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
+    # +smart turns ASCII "--", "..." and straight quotes into real typography.
+    # Without it Pandoc slugifies a literal "--" straight into the heading id
+    # (quill-radio----product-requirements), changing every anchor on the page
+    # and breaking existing deep links into these docs.
+    & $pandoc.Source $_.FullName -f gfm+smart -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
     if ($LASTEXITCODE -ne 0) { throw "Pandoc HTML render failed for $($_.Name)" }
-    & $pandoc.Source $_.FullName -f gfm -t epub3 -o $epubOut
+    & $pandoc.Source $_.FullName -f gfm+smart -t epub3 -o $epubOut
     if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }
 }

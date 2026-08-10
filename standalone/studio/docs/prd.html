@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Audio Studio -- Product Requirements</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -197,26 +196,26 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quill-audio-studio----product-requirements">QUILL Audio Studio
--- Product Requirements</h1>
+<h1 id="quill-audio-studio--product-requirements">QUILL Audio Studio –
+Product Requirements</h1>
 <p>Version 2.2.0 (the shared QuillVille family version; there is no
-Audio Studio 2.0 or 2.1 -- see CHANGELOG.md)</p>
+Audio Studio 2.0 or 2.1 – see CHANGELOG.md)</p>
 <h2 id="1-product-overview-and-mission">1. Product overview and
 mission</h2>
 <p>QUILL Audio Studio is a standalone Windows desktop application for
-audiobook and audio production, extracted from the QUILL editor's Audio
+audiobook and audio production, extracted from the QUILL editor’s Audio
 Studio. Its mission: audio production that meets blind and low-vision
-creators where they are. Every step -- narrating a manuscript,
-assembling recordings into a chaptered book, fixing chapter markers,
-measuring against ACX, publishing a feed -- is fully operable with a
-keyboard and a screen reader, with progress you can hear.</p>
+creators where they are. Every step – narrating a manuscript, assembling
+recordings into a chaptered book, fixing chapter markers, measuring
+against ACX, publishing a feed – is fully operable with a keyboard and a
+screen reader, with progress you can hear.</p>
 <p>The product is one studio with three journeys:</p>
 <ol type="1">
-<li>Narrate Documents -- turn a folder of documents (.docx, .md, .html,
+<li>Narrate Documents – turn a folder of documents (.docx, .md, .html,
 .txt) into speech audio or a finished chaptered audiobook.</li>
-<li>Build From Recordings -- combine a folder of pre-recorded audio
-files into one chaptered M4B or MP3 master.</li>
-<li>Edit a Book -- open a finished audiobook in the Chapter Workbench:
+<li>Build From Recordings – combine a folder of pre-recorded audio files
+into one chaptered M4B or MP3 master.</li>
+<li>Edit a Book – open a finished audiobook in the Chapter Workbench:
 play it, fix chapters and tags, run the ACX check, publish.</li>
 </ol>
 <p>The wizard, Chapter Workbench, batch narration pipeline, and publish
@@ -228,7 +227,7 @@ an installer.</p>
 <p>QUILL Audio Studio is built from the QUILL repository itself. The
 whole application lives in the <code>quill</code> package
 (<code>quill.apps.studio</code>); this directory is the product wrapper
-only -- entry point, installer, assets, and these docs. Superseded: the
+only – entry point, installer, assets, and these docs. Superseded: the
 Studio was originally assembled in a separate repository (S:\QUILL-AS)
 that vendored its dependency closure into a <code>quillas</code> package
 and re-synced by hand. That vendoring was retired on 2026-07-20 when the
@@ -239,11 +238,11 @@ requirements REL-1 and REL-2 below record the rule that replaced it.</p>
 <code>quill</code> package, not in a copy. The product wrapper may
 contain only the entry point, packaging, assets, and documentation; a
 feature added here instead of upstream is a defect.</li>
-<li>REL-2. There must be no vendored or hand-synced duplicate of QUILL's
+<li>REL-2. There must be no vendored or hand-synced duplicate of QUILL’s
 audio code. A build of this product is a build of the current
-<code>quill</code> package, so the standalone Studio and QUILL's
+<code>quill</code> package, so the standalone Studio and QUILL’s
 built-in Audio Studio cannot drift.</li>
-<li>REL-3. Behavior parity with QUILL's built-in Audio Studio (QUILL PRD
+<li>REL-3. Behavior parity with QUILL’s built-in Audio Studio (QUILL PRD
 sections 5.25d and 5.25e) is a requirement, not a goal. Feature changes
 land in the shared package and reach this app on its next build. There
 must not be a second pipeline or forked wizard behavior.</li>
@@ -257,7 +256,7 @@ live in their own file (<code>audio-studio-app.json</code> in the data
 dir) so the shared settings.json stays exactly what QUILL wrote.</li>
 <li>REL-6. Downloaded speech engines, voices, and engine packs
 (<code>%APPDATA%\Quill\engine-packs</code>, Piper voices, Kokoro models,
-ffmpeg component installs) must be shared with the other Quill apps --
+ffmpeg component installs) must be shared with the other Quill apps –
 downloaded once, used by all.</li>
 </ul>
 <h2 id="3-users-and-accessibility-requirements">3. Users and
@@ -271,33 +270,33 @@ including the inner text controls of composite spinners.</li>
 <li>A-2. Every function must be reachable by keyboard. There must be no
 mouse-only paths. Menus, buttons, and wizard navigation carry mnemonics;
 the library list acts on Enter (open) and Delete (remove).</li>
-<li>A-3. All modal dialogs must go through the host's
+<li>A-3. All modal dialogs must go through the host’s
 <code>_show_modal_dialog</code> contract (<code>apply_modal_ids</code>
 keyboard contract); never a bare <code>ShowModal()</code>.</li>
-<li>A-4. Wizard page changes must be announced ("Step 2 of 7: What
-should I read?") and focus must move to the new page.</li>
+<li>A-4. Wizard page changes must be announced (“Step 2 of 7: What
+should I read?”) and focus must move to the new page.</li>
 <li>A-5. Long runs must be followable by ear: status-bar progress
 mirrored from the worker, plus optional spoken milestones at 25, 50, and
 75 percent (preference-controlled, on by default).</li>
 <li>A-6. Every wizard page must open with a one-sentence purpose line
 before any control, so screen-reader users get context first.</li>
-<li>A-7. Playback must announce position on demand ("Where am I?" speaks
+<li>A-7. Playback must announce position on demand (“Where am I?” speaks
 chapter N of M, elapsed and remaining in the chapter and the book) and
 announce each chapter once as playback crosses into it.</li>
-<li>A-8. Outcomes -- run completion, save, publish, download, error --
+<li>A-8. Outcomes – run completion, save, publish, download, error –
 must be announced in plain sentences through the screen-reader bridge,
 and errors must surface as dialogs on the UI thread, never
 silently.</li>
 <li>A-9. Announcements must be delivered by the shared announcement
 service, not by a private speech call, so every channel the service
-carries -- speech, braille, sound, and the visual status slot -- reaches
+carries – speech, braille, sound, and the visual status slot – reaches
 this app, and a channel added upstream appears here without app-side
 work.</li>
 <li>A-10. Announcements must reach a connected braille display by
 default, under three invariants: braille must never cost speech (any
 braille failure is recorded for diagnostics and degrades to speech-only,
 never to silence); a message must never be truncated to the display
-width; and the display must not be stolen twice -- an identical message
+width; and the display must not be stolen twice – an identical message
 inside the dedupe window is skipped, and a burst of differing messages
 settles to the newest rather than each overwriting the last, with errors
 always written through immediately.</li>
@@ -305,15 +304,15 @@ always written through immediately.</li>
 shared settings store (braille on/off, braille style, dedupe window,
 sticky errors, app sound cues, cue-instead-of-speech under Quiet Mode,
 and which severities interrupt), and diagnostics must report whether
-braille was both supported and active, so "braille is broken" and "no
-display is connected" are distinguishable in a support bundle.</li>
+braille was both supported and active, so “braille is broken” and “no
+display is connected” are distinguishable in a support bundle.</li>
 </ul>
 <h2 id="4-functional-requirements">4. Functional requirements</h2>
 <h3 id="41-home-window-and-library">4.1 Home window and library</h3>
 <ul>
 <li>AS-1. The app must present a home window with a named activity line,
 three journey buttons (Narrate Documents, Build From Recordings, Edit a
-Book), and a "Your books" list that takes focus on launch.</li>
+Book), and a “Your books” list that takes focus on launch.</li>
 <li>AS-2. The books list must show the recent-audiobook MRU, most recent
 first, flagging entries whose file is missing. Enter or double-click
 opens the selected book in the Chapter Workbench; Delete removes the
@@ -330,8 +329,8 @@ Guide, PRD, Release Notes, Command Palette Ctrl+Shift+P, Check for
 Updates, Report a Bug, View Log, Save Diagnostics, About).</li>
 <li>AS-4. All menu actions must also be registered as commands reachable
 from the command palette.</li>
-<li>AS-5. The status bar must reflect readiness ("Ready - N books in
-your library") when idle and must be owned by the running task while
+<li>AS-5. The status bar must reflect readiness (“Ready - N books in
+your library”) when idle and must be owned by the running task while
 background work is in flight.</li>
 <li>AS-85. The status bar must be reviewable, not merely visible: F6
 moves focus into it, Left/Right move between cells, Enter activates the
@@ -362,8 +361,8 @@ entries.</li>
 <h3 id="42-the-studio-wizard-shared-by-both-build-journeys">4.2 The
 Studio wizard (shared by both build journeys)</h3>
 <ul>
-<li>AS-7. The wizard's start page must offer the three journeys as a
-radio box plus a "Load a job file..." button. The last-used journey
+<li>AS-7. The wizard’s start page must offer the three journeys as a
+radio box plus a “Load a job file…” button. The last-used journey
 (<code>audio_studio_last_journey</code>, shared setting) must be
 pre-selected and must be persisted on every journey change.</li>
 <li>AS-8. Page flow must adapt to the journey: documents = Start &gt;
@@ -371,14 +370,14 @@ What to read
 <blockquote>
 <p>Voices &gt; Chapters &gt; Output &gt; Book &gt; Summary; audio =
 Start &gt; Recordings folder &gt; Book &gt; Summary; edit = Start &gt;
-Open a book, with the final button relabeled "Open in Workbench".</p>
+Open a book, with the final button relabeled “Open in Workbench”.</p>
 </blockquote></li>
 <li>AS-9. Navigation must provide Back, Next, Skip to summary
 (fast-forward that stops at the first invalid page), Start, Cancel, and
-a "Step N of M" label. Next and Start must validate pages and report the
+a “Step N of M” label. Next and Start must validate pages and report the
 failure message.</li>
-<li>AS-10. Wizard defaults must be the user's global speech settings
-overlaid by the source folder's project profile, with precedence
+<li>AS-10. Wizard defaults must be the user’s global speech settings
+overlaid by the source folder’s project profile, with precedence
 this-run &gt; project profile &gt; global settings &gt; built-in
 defaults.</li>
 </ul>
@@ -387,10 +386,10 @@ defaults.</li>
 <li>AS-11. The source page must offer: source folder (with MRU combo and
 Browse), include subfolders, file-type checkboxes (.docx, .md,
 .html/.htm, .txt), include and exclude glob filters, a max-file-size cap
-(MB, 0 = no limit), and a "Count documents" probe that reports document
+(MB, 0 = no limit), and a “Count documents” probe that reports document
 and word counts off-thread and announces the result.</li>
 <li>AS-12. The voices page must offer: engine choice (unavailable
-engines labeled "(not installed)"), voice choice with a Preview button,
+engines labeled “(not installed)”), voice choice with a Preview button,
 rate 80-450 WPM, and Kokoro speed 0.5-2.0.</li>
 <li>AS-13. The voices page must support round-robin voice rotation (an
 ordered list of voices, one per article/heading, with move
@@ -401,11 +400,11 @@ override rotation).</li>
 <li>AS-14. The voices page must support translated editions: one or more
 (language, engine, voice) targets, translated by either the configured
 AI provider (cloud) or a local LibreTranslate server. Each translation
-is exported as a sibling file named "<stem> (<Language>)<ext>".</li>
+is exported as a sibling file named “<stem> (<Language>)<ext>”.</li>
 <li>AS-15. The chapters page must offer: chapter mode (one chaptered
 file per document, or separate file per article), chapter heading level
-(every heading, level 1, levels 1-2, levels 1-3), a "Preview chapter
-titles" probe (first 20, off-thread), speak headings aloud, combine
+(every heading, level 1, levels 1-2, levels 1-3), a “Preview chapter
+titles” probe (first 20, off-thread), speak headings aloud, combine
 empty headings into the next article, a transition sounder with volume,
 and article gap, sentence gap, and trailing-pad milliseconds.</li>
 <li>AS-16. The output page must offer: output format (MP3, M4B, WAV),
@@ -415,7 +414,7 @@ loudness to ACX, reuse unchanged audio (incremental rebuild), dry run
 spoken text (<code>&lt;doc&gt;.spoken.txt</code> sidecar), audition
 (first document only), and a temporary-files folder override.</li>
 <li>AS-17. The book page must offer: assemble into one audiobook, title,
-author, narrator, genre, year, a consented "Look up book details" (Open
+author, narrator, genre, year, a consented “Look up book details” (Open
 Library + MusicBrainz; only title and author are sent; cover download is
 separately consented), cover image, book format (M4B or MP3), normalize
 the book to ACX loudness, fade-in/fade-out milliseconds, book tempo
@@ -423,7 +422,7 @@ the book to ACX loudness, fade-in/fade-out milliseconds, book tempo
 chapters before building, and an explicit output path synced to the
 chosen format.</li>
 <li>AS-18. The summary page must restate the whole run in plain
-sentences and offer "Save a job file...".</li>
+sentences and offer “Save a job file…”.</li>
 </ul>
 <h3 id="44-execution-pipeline-batch-runs">4.4 Execution pipeline (batch
 runs)</h3>
@@ -437,7 +436,7 @@ counts, with per-chunk movement inside large documents, mirrored to the
 status bar.</li>
 <li>AS-21. Cancellation must be cooperative: the current file always
 finishes (no partial or corrupt output); the run stops between documents
-and reports "Cancelled after N of M".</li>
+and reports “Cancelled after N of M”.</li>
 <li>AS-22. Per-file failures must be counted and logged but must never
 abort the run. Voices that fail must enter a persisted voice blacklist
 and be skipped by rotation on later runs.</li>
@@ -467,15 +466,15 @@ characters).</li>
 journey</h3>
 <ul>
 <li>AS-28. The recordings page must offer: source folder (shared MRU),
-include subfolders, Library mode, and "Trim leading and trailing silence
-from each recording". Accepted inputs: MP3, M4A/M4B, WAV, FLAC, Opus,
+include subfolders, Library mode, and “Trim leading and trailing silence
+from each recording”. Accepted inputs: MP3, M4A/M4B, WAV, FLAC, Opus,
 OGG (and AAC).</li>
 <li>AS-29. This journey must force book assembly on and default to
 chapter review (except in Library mode); the Book page hides the
 narration-only options (credits) it cannot honor.</li>
 <li>AS-30. Files must be ordered by natural sort; chapter titles must
 derive from filenames (track-number prefixes stripped, underscores to
-spaces, purely numeric names becoming "Chapter N").</li>
+spaces, purely numeric names becoming “Chapter N”).</li>
 <li>AS-31. Cover art must be auto-discovered in the folder
 (cover/folder/front/ albumart/album/artwork stems; jpg/jpeg/png),
 overridable on the Book page.</li>
@@ -500,27 +499,27 @@ can be split. Opened books must join the home-window library MRU.</li>
 <li>AS-36. The embedded player must provide Play/Pause, Stop, Previous
 chapter, Next chapter, Rewind, Forward (10-second step), Where am I?,
 speed choice (0.75x, 1x, 1.25x, 1.5x, 2x, pitch preserved), a position
-slider, and a volume slider -- all named and keyboard-operable.</li>
+slider, and a volume slider – all named and keyboard-operable.</li>
 <li>AS-37. The Workbench must resume from the saved listening position
-on open ("Resuming where you left off") and save the playhead on close.
+on open (“Resuming where you left off”) and save the playhead on close.
 Previous chapter within 3 seconds of a chapter start must go to the
 prior chapter.</li>
 <li>AS-38. Chapter surgery must include: rename, split at playhead
 (minimum 1-second parts), set chapter start to playhead, merge into
 previous, and Restore original (from the snapshot taken at open). Audio
 bytes are never altered by chapter surgery.</li>
-<li>AS-39. "Propose chapters from silences" must run ffmpeg silence
+<li>AS-39. “Propose chapters from silences” must run ffmpeg silence
 detection with adjustable noise floor (-60..-10 dB, default -30) and
 minimum silence (0.1..5.0 s, default 0.8), place boundaries at silence
 midpoints, enforce a 5-second minimum chapter, and always land as a
-reviewable proposal -- never applied blind.</li>
-<li>AS-40. "Propose AI titles" must be present only when AI is
+reviewable proposal – never applied blind.</li>
+<li>AS-40. “Propose AI titles” must be present only when AI is
 configured and not in Safe Mode. It must show a consent dialog first,
-transcribe each chapter's first minute locally (audio never leaves the
+transcribe each chapter’s first minute locally (audio never leaves the
 machine), send only the transcribed text to the AI, cap titles at 8
 words, apply only changed titles, and remain undoable via Restore
 original.</li>
-<li>AS-41. "Check against ACX" must measure integrated loudness, true
+<li>AS-41. “Check against ACX” must measure integrated loudness, true
 peak, and noise floor via ffmpeg loudnorm analysis, judge them against
 the ACX window (-20 +/-3 LUFS integrated, -3 dBFS max true peak, -60
 dBFS max noise floor), announce the verdict, and show per-metric results
@@ -528,7 +527,7 @@ with plain recommendations on failure.</li>
 <li>AS-42. Chapter lists must import from Audacity labels, timestamp
 lists, CUE sheets, and Podcasting 2.0 JSON (auto-detected), and export
 to those four formats plus CSV.</li>
-<li>AS-43. "Split into files" must write one audio file per chapter into
+<li>AS-43. “Split into files” must write one audio file per chapter into
 a chosen folder.</li>
 <li>AS-44. Tag editing must cover book title, author, narrator, genre,
 and year. Saving an MP3 must rewrite tags and chapters in place without
@@ -579,13 +578,13 @@ the shared data store.</li>
 <li>AS-49. Voice preview must always try to make sound: play the bundled
 pre-recorded sample when one ships; otherwise, if the engine is
 installed, synthesize the standard preview phrase live in the
-background; otherwise say "Download this voice to hear a preview." Every
+background; otherwise say “Download this voice to hear a preview.” Every
 preview must speak the same phrase so before/after-download comparisons
 are direct.</li>
 <li>AS-50. Starting a new preview must supersede the old one: in-flight
 synthesis results are discarded by generation check and playback is
 cut.</li>
-<li>AS-51. Choosing "Export to audio" from the Speech Hub must open the
+<li>AS-51. Choosing “Export to audio” from the Speech Hub must open the
 Audio Studio wizard (documents journey).</li>
 <li>AS-87. Generate Captions (Offline) must transcribe a chosen audio or
 video file to <code>.srt</code> or <code>.vtt</code> entirely on the
@@ -600,16 +599,16 @@ that names failed files rather than reporting a clean run. The offered
 output formats must be probed from the available ffmpeg, never assumed,
 so a batch cannot fail part-way for a missing encoder. It is fully local
 and must therefore remain available in Safe Mode.</li>
-<li>AS-89. The converter's Advanced panel must expose loudness
+<li>AS-89. The converter’s Advanced panel must expose loudness
 normalization (audiobook/ACX or podcast), gain, high-pass, silence
 trimming, pitch-preserving tempo, compressor, leveler, fade in, fade
 out, and a limiter, all neutral by default, and must reveal them without
 changing the Basic flow.</li>
 <li>AS-90. Convert from URL must obtain one-time consent covering both
-the on-demand downloader install and the user's rights to the audio,
+the on-demand downloader install and the user’s rights to the audio,
 before any network contact, and must be unavailable in Safe Mode.</li>
 <li>AS-91. Converter progress must be reported through the same
-task-progress channel as a narration run, so it reaches the status bar's
+task-progress channel as a narration run, so it reaches the status bar’s
 Progress cell and the tray tooltip.</li>
 </ul>
 <h3 id="48-ai-features-and-safe-mode">4.8 AI features and Safe Mode</h3>
@@ -634,11 +633,11 @@ refusal announced in a plain sentence.</li>
 <li>AS-56. Publish a Finished Book must offer three consent-gated
 destinations for an already-saved book: a local podcast feed, SFTP
 upload, and Auphonic mastering.</li>
-<li>AS-57. Local feed: "Write feed file" must write a self-contained RSS
+<li>AS-57. Local feed: “Write feed file” must write a self-contained RSS
 2.0 (+ iTunes + Podcasting 2.0) <code>.rss</code> next to the book,
 built from its tags, probed duration, and <code>.chapters.json</code>
 sidecar, with no network access. A blank media URL may be derived from a
-saved SFTP destination's public URL.</li>
+saved SFTP destination’s public URL.</li>
 <li>AS-58. SFTP: destinations (name, host, port, user, remote folder,
 public URL) must be savable and reusable; passwords must be stored only
 in the Windows Credential Manager; uploads must show cancelable byte
@@ -648,13 +647,13 @@ hosts unless trust-first-use is enabled in settings).</li>
 the dialog must verify the account and list presets (showing remaining
 credits), require consent before upload, poll production status with
 cancel support (up to about 30 minutes), and download results beside the
-book as "<stem> (Auphonic)".</li>
+book as “<stem> (Auphonic)”.</li>
 <li>AS-60. Make a Podcast Feed From a Folder must manage a folder as a
 show: per-folder config in <code>&lt;folder&gt;/.quill/feed.json</code>,
 oldest-first episode numbering, per-episode titles and descriptions,
-"Write feed.rss now" (requires a media URL base), and a show-notes page.
+“Write feed.rss now” (requires a media URL base), and a show-notes page.
 All folder-feed work is local file IO; uploading remains the SFTP
-destination's job.</li>
+destination’s job.</li>
 <li>AS-61. The standalone ACX Compliance Check (Book Tools menu) must
 measure any audio file against the ACX window in the background and
 report the three metrics with pass/fail and recommendations; if ffmpeg
@@ -690,21 +689,21 @@ Minimize to Tray, default Ask). They must persist to the app-local prefs
 file, written atomically, with unreadable prefs falling back to defaults
 rather than crashing.</li>
 <li>AS-66. The tray icon must always be present, offering Open Audio
-Studio and "Resume: <most recent book>", both restoring the window
+Studio and “Resume: <most recent book>”, both restoring the window
 first. Sending the app to the tray must announce that it is still
 running.</li>
 <li>AS-67. Alt+F4-to-tray, when enabled, must intercept before Windows
 closes the window so a long narration run keeps going; the titlebar X
 and Exit must keep the configured close action.</li>
-<li>AS-68. "Ask when work is running" must prompt only when protected
+<li>AS-68. “Ask when work is running” must prompt only when protected
 work is actually running (listing the running jobs, defaulting to
 No/keep open); an idle window must just close. A second close during the
 prompt must not stack a second dialog.</li>
 <li>AS-69. On real exit the app must stop any preview, shut down the
 task manager without waiting, unregister media keys, and remove the tray
 icon.</li>
-<li>AS-70. Update checks must query the shared QUILL project's GitHub
-releases (Community-Access/quill) and resolve <strong>this app's
+<li>AS-70. Update checks must query the shared QUILL project’s GitHub
+releases (Community-Access/quill) and resolve <strong>this app’s
 own</strong> release asset for the running flavor (installer for an
 installed copy, portable zip for a portable one), so each QuillVille app
 updates independently from one publishing point and an update to a
@@ -715,9 +714,9 @@ there is no update.</li>
 <li>AS-71. Help must open the packaged User Guide, PRD, and Release
 Notes, offer View Log and Save Diagnostics (a redacted bundle), and
 Report a Bug must submit through the shared feedback channel tagged with
-this app's name and version.</li>
+this app’s name and version.</li>
 <li>AS-92. An available update must be installable in one step: after
-Download, "Install and restart now" applies it (extracting portable
+Download, “Install and restart now” applies it (extracting portable
 files over the install folder, or running the installer silently) and
 relaunches the app, preserving all settings and data.</li>
 <li>AS-83. The Studio menu must offer a Resume on launch opt-in (check
@@ -733,7 +732,7 @@ and close protection</h3>
 <ul>
 <li>AS-72. All long work (runs, previews, downloads, ACX measures,
 saves, uploads, diagnostics) must run off the UI thread through the
-frame's background-task host, with results and errors delivered to the
+frame’s background-task host, with results and errors delivered to the
 UI thread.</li>
 <li>AS-73. Tasks that represent real, hard-to-redo work (an export run)
 must register as close-protected so the close prompt can name them;
@@ -776,7 +775,7 @@ caches, feed configs) must be atomic (temp file +
 <code>os.replace</code>).</li>
 <li>N-3. Network egress is limited to: pinned assets-v1 / catalog
 component and voice downloads (Ed25519-signed where supported), the
-app's own GitHub update check, and explicit user actions -- consented
+app’s own GitHub update check, and explicit user actions – consented
 metadata lookup, consented cover fetch, user-initiated SFTP/Auphonic
 publishing, and configured AI/cloud-TTS/translation calls
 (cost-confirmed when paid). No other outbound calls. Book building,
@@ -790,7 +789,7 @@ are redacted.</li>
 run through the hardened safe-subprocess wrapper (no console windows,
 bounded timeouts: 600 s for probes/detection, 1800 s for builds and
 re-muxes).</li>
-<li>N-6. Performance: a multi-hour book build must remain responsive --
+<li>N-6. Performance: a multi-hour book build must remain responsive –
 progress streamed, window minimizable to the tray, cancellation honored
 between files. Repeat runs must be fast via the incremental synth cache.
 MP3 tag saves must be instant (tags only, audio untouched); M4B saves
@@ -810,7 +809,7 @@ and Quill Weather because the three install on one shared runtime;
 releases remain independent per app.</li>
 <li>P-2. Release builds must exclude the heavy ML runtimes
 (faster-whisper, vosk, kokoro-onnx, onnxruntime, torch) and the large
-libraries the Studio never loads -- they install on demand into the
+libraries the Studio never loads – they install on demand into the
 shared engine-packs store, and excluding the rest keeps both the
 installer and the portable zip small.</li>
 <li>P-3. One build must feed both artifacts: an Inno Setup installer
@@ -832,7 +831,7 @@ containing a <code>storage-mode.json</code> marker
 the installed copy must ship no <code>data\</code> folder and use the
 shared <code>%APPDATA%\Quill</code> store.</li>
 <li>P-6. The uninstaller must never delete or prompt to delete
-<code>%APPDATA%\Quill</code> -- that store is shared with QUILL, Quill
+<code>%APPDATA%\Quill</code> – that store is shared with QUILL, Quill
 Radio, and QUILL Cast, and the full QUILL uninstaller owns it. Uninstall
 removes only the install folder.</li>
 <li>P-7. The installed docs (User Guide, Release Notes, this PRD) must
@@ -846,8 +845,8 @@ the installer shortcut.</li>
 QuillVille Runtime and shared-runtime editions</h3>
 <ul>
 <li>P-9. All QuillVille apps (QUILL, Quill Radio, Quill Weather, and
-QUILL Audio Studio) must be able to share one Python runtime -- the
-QuillVille Runtime -- installed once per user and reused by every app.
+QUILL Audio Studio) must be able to share one Python runtime – the
+QuillVille Runtime – installed once per user and reused by every app.
 Once any app has installed the runtime, every other app must be able to
 start against it without downloading Python again.</li>
 <li>P-10. The QuillVille Runtime must be reference-counted: each
@@ -875,21 +874,21 @@ installs the shared runtime, if not already present, plus the app.</li>
 that downloads the shared runtime only if it is not already present,
 then installs the app.</li>
 </ul></li>
-<li>P-12. Every QuillVille Runtime download -- whether triggered by an
-installer or by an app's own first launch -- must show a fully
-accessible progress bar that works with NVDA, JAWS, and Narrator,
-announcing progress as a percentage. There must be no silent or
+<li>P-12. Every QuillVille Runtime download – whether triggered by an
+installer or by an app’s own first launch – must show a fully accessible
+progress bar that works with NVDA, JAWS, and Narrator, announcing
+progress as a percentage. There must be no silent or
 screen-reader-invisible wait during a runtime download.</li>
 <li>P-13. The app launcher must be a genuine, tiny native executable,
 and any bundled Python must be the official, unmodified build. The
-previous pattern of shipping a renamed or modified copy of Python's
-<code>pythonw.exe</code> as the launcher -- a frequent antivirus
-false-positive trigger -- must not be used.</li>
+previous pattern of shipping a renamed or modified copy of Python’s
+<code>pythonw.exe</code> as the launcher – a frequent antivirus
+false-positive trigger – must not be used.</li>
 </ul>
 <h2 id="7-out-of-scope--non-goals">7. Out of scope / non-goals</h2>
 <ul>
 <li>Document editing. This app narrates documents; writing them is
-QUILL's job.</li>
+QUILL’s job.</li>
 <li>Radio and podcast listening. Live-stream playback is Quill Radio;
 podcast subscription playback is QUILL Cast. This app only builds and
 publishes.</li>
@@ -897,11 +896,11 @@ publishes.</li>
 Linux is not a target.</li>
 <li>Bundling neural voices or ML runtimes in the installer. Engines and
 voices are download-on-demand, always.</li>
-<li>Direct platform publishing (WordPress and similar) -- deferred
+<li>Direct platform publishing (WordPress and similar) – deferred
 upstream to QUILL 2.0; when it lands there, it arrives here on the next
 build.</li>
 <li>A second pipeline. Any narration or assembly behavior that diverges
-from QUILL's Audio Studio is a bug, not a feature.</li>
+from QUILL’s Audio Studio is a bug, not a feature.</li>
 </ul>
 <h2 id="8-future-directions">8. Future directions</h2>
 <ul>
@@ -916,7 +915,7 @@ work.</li>
 <li>Recognize <code>QuillAudioStudio.exe</code> in the shared
 portable-evidence check
 (<code>storage_mode._has_portable_evidence</code> currently lists only
-the other Quill app executables; the launcher's env export covers the
+the other Quill app executables; the launcher’s env export covers the
 gap today).</li>
 <li>A dedicated voice-casting manager (save and reuse named casting rule
 sets across projects, beyond the per-run rules on the Voices page).</li>
@@ -928,7 +927,7 @@ the surface does not.)</li>
 <li>Repeat Last Announcement and the Announcement Self-Test. Both
 commands are implemented on the shared app shell but no companion app
 calls <code>register_announcement_commands()</code>, so neither is
-reachable from the Studio's command palette yet. They are deliberately
+reachable from the Studio’s command palette yet. They are deliberately
 left undocumented for users until they are wired up.</li>
 </ul>
 <hr />

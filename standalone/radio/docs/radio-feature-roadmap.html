@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Maintainers</title>
+  <title>Quill Radio — station-browsing roadmap</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -196,90 +196,51 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quill-maintainers">QUILL Maintainers</h1>
-<p>This file describes maintainer responsibilities and operational
-expectations.</p>
-<h2 id="named-maintainers">Named maintainers</h2>
-<table>
-<thead>
-<tr>
-<th>Role</th>
-<th>Name</th>
-<th>Contact</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Code Maintainer</td>
-<td>Jeff Bishop</td>
-<td><a href="mailto:jeff@jeffbishop.com">jeff@jeffbishop.com</a></td>
-</tr>
-</tbody>
-</table>
-<h2 id="maintainer-team">Maintainer team</h2>
+<h1 id="quill-radio--station-browsing-roadmap">Quill Radio —
+station-browsing roadmap</h1>
+<p>Target capabilities to make station discovery in Quill Radio
+comprehensive and fully keyboard/screen-reader native. This is our own
+roadmap; it names no other product.</p>
+<h2 id="already-shipped">Already shipped</h2>
 <ul>
-<li>Community Access maintainers (<code>@Community-Access</code>)</li>
+<li><strong>Search across every directory at once</strong>
+(RadioBrowser, SomaFM, iHeart, TuneIn), with Tag and Country dropdowns,
+plus NOAA Weather Radio and Radio Reading Services by name / SAME code /
+call sign.</li>
+<li><strong>Browse tree</strong> with Radio Browser (by genre), TuneIn’s
+real folder tree (<strong>location drill-down to city</strong>), iHeart
+(genre → A–Z), SomaFM, Weather/NOAA (1,035 transmitters, offline), ACB
+Media, NFB Radio, Radio Reading Services, and the Community M3U / Xiph
+catalogs.</li>
+<li><strong>Add custom station</strong> by URL, with YouTube / Live365 /
+SecureNet / Triton resolution and a self-healing stream-repair
+ladder.</li>
+<li>Recording (now + scheduled), sleep/wake timers, DVR (pause/rewind
+live), favorites with folders, global hotkeys, tray with favorites,
+sound-card routing with fallback, backup/restore, braille output.</li>
 </ul>
-<h2 id="responsibilities">Responsibilities</h2>
+<h2 id="planned-additions">Planned additions</h2>
 <ol type="1">
-<li>Triage issues and guide contributors to the right
-template/workflow.</li>
-<li>Review pull requests for correctness, accessibility, and
-maintainability.</li>
-<li>Keep release process and documentation current.</li>
-<li>Enforce <code>CODE_OF_CONDUCT.md</code> and
-<code>SECURITY.md</code>.</li>
-<li>Protect user trust: no silent network behavior, no unsafe
-defaults.</li>
+<li><strong>Networks section</strong> — well-known broadcasters as
+one-click browse nodes (public broadcasters worldwide, US news/talk, US
+public radio, sports, music, plus honest affiliate-search nodes for
+syndication services). All resolved through the already-integrated Radio
+Browser directory, so no new network-egress site, no API keys, and no
+third party’s curated list is copied. See
+<code>networks-catalog.md</code>. <em>(Core module landed; browse-tree
+wiring next.)</em></li>
+<li><strong>Three-band equalizer</strong> — Bass / Mid / Treble (−12…+12
+dB) with presets (Flat, Bass Boost, Treble Boost, Loudness, Voice,
+Warm), toggled with <code>Ctrl+E</code> and switchable from anywhere
+with <code>Ctrl+Alt+Shift+E</code>, hosted on the mpv audio-filter
+chain.</li>
+<li><strong>Quick-play favorites</strong> —
+<code>Alt+1</code>…<code>Alt+0</code> play the first ten favorites
+directly, rebindable in the Keyboard Manager.</li>
+<li><strong>Browse position memory</strong> — reopening Browse Stations
+returns to the node you were on, with its ancestors expanded, instead of
+a collapsed top level.</li>
 </ol>
-<h2 id="triage-and-labeling-standards">Triage and labeling
-standards</h2>
-<p>Maintainers should apply both a <strong>type</strong> and an
-<strong>area</strong> label:</p>
-<ul>
-<li>Type: <code>bug</code>, <code>feature</code>,
-<code>documentation</code>, <code>security</code></li>
-<li>Area: <code>accessibility</code>, <code>ai</code>,
-<code>intake</code>, <code>snippets</code>, <code>dictation</code>,
-<code>performance</code>, <code>stability</code></li>
-</ul>
-<p>Priority labels:</p>
-<ul>
-<li><code>p0</code>: release blocker (launch crash, data loss, severe
-accessibility break)</li>
-<li><code>p1</code>: major workflow break</li>
-</ul>
-<p>Triage target: new issues receive an initial maintainer response
-within 5 business days.</p>
-<h2 id="review-expectations">Review expectations</h2>
-<p>Maintainers should request changes when a PR:</p>
-<ul>
-<li>introduces accessibility regressions,</li>
-<li>bypasses architecture boundaries from
-<code>docs/QUILL-PRD.md</code>,</li>
-<li>weakens security/privacy constraints,</li>
-<li>omits required tests/checks for changed behavior.</li>
-</ul>
-<h2 id="availability-and-handoff">Availability and handoff</h2>
-<p>If a maintainer is unavailable, another maintainer should take
-ownership of:</p>
-<ol type="1">
-<li>Security reports</li>
-<li>Release-blocking regressions</li>
-<li>Accessibility regressions</li>
-</ol>
-<h2 id="role-descriptions">Role descriptions</h2>
-<p><strong>Code Maintainer</strong> — Reviews and merges pull requests,
-triages bug reports and feature requests, cuts releases, enforces code
-quality gates and CI requirements, and sets technical direction for the
-project.</p>
-<h2 id="related-docs">Related docs</h2>
-<ul>
-<li><code>CONTRIBUTING.md</code></li>
-<li><code>GOVERNANCE.md</code></li>
-<li><code>SECURITY.md</code></li>
-<li><code>release/RELEASE.md</code></li>
-</ul>
 </main>
 </body>
 </html>

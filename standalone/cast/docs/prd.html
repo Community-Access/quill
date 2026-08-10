@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast -- Product Requirements</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,13 +173,34 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-cast----product-requirements">QUILL Cast -- Product
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-cast--product-requirements">QUILL Cast – Product
 Requirements</h1>
 <p>Version 1.0</p>
 <h2 id="1-product-statement">1. Product statement</h2>
-<p>QUILL Cast is QUILL's podcast environment, shipped as its own small
+<p>QUILL Cast is QUILL’s podcast environment, shipped as its own small
 Windows app for people who want their shows without loading a full
 writing environment. It is screen-reader-first, keyboard-complete, and
 deliberately small.</p>
@@ -208,12 +228,12 @@ visible in all.</li>
 <li>Subscriptions: search, feed URL, OPML import/export, ACB Media
 directory, podcast settings.</li>
 <li><strong>Private feeds</strong>: username/password (HTTP Basic)
-authentication for protected feeds -- Patreon-style supporter feeds,
+authentication for protected feeds – Patreon-style supporter feeds,
 premium shows, members-only feeds. Prompted automatically when adding a
-protected feed URL; managed later via <strong>Feed
-Credentials...</strong> on the show's context menu. Covers refresh,
-downloads, streaming, transcripts, and chapters for that show, under the
-security requirements in §8.</li>
+protected feed URL; managed later via <strong>Feed Credentials…</strong>
+on the show’s context menu. Covers refresh, downloads, streaming,
+transcripts, and chapters for that show, under the security requirements
+in §8.</li>
 <li><strong>Main-page library tree</strong>: the same pinned views
 (Favorites, New Episodes, Continue Listening, Inbox) and nested folders
 the Podcast Manager shows, right on the main window, with a full context
@@ -221,7 +241,7 @@ menu (Play/Stop, Favorite toggle, Move to Folder, Unsubscribe, New
 Folder). Enter on a show plays its next unplayed episode directly.</li>
 <li><strong>One state-aware transport control</strong>
 (Play/Pause/Resume) and a <strong>Favorites toggle button</strong> for
-whatever show is currently playing, mirroring Quill Radio's main-page
+whatever show is currently playing, mirroring Quill Radio’s main-page
 pattern.</li>
 <li><strong>Resume Last Episode on Launch</strong> (an appliance switch,
 backed by a shared recently-played history store) and a <strong>Recently
@@ -241,48 +261,48 @@ episode notes with timestamp jump.</li>
 folder by construction).</li>
 <li>Downloads: queue, pause/resume all, Always Sync, auto-trim silence,
 normalize loudness, and <strong>auto-reconnect on a dropped
-connection</strong> (configurable attempts/wait, mirroring Quill Radio's
+connection</strong> (configurable attempts/wait, mirroring Quill Radio’s
 recording reconnect).</li>
 <li>System tray presence with podcast controls, plus an opt-in
 preference that makes Alt+F4 minimize to the tray instead of closing
 (the titlebar X and Exit keep the configured close behavior).</li>
-<li>Announcement-engine speech through the user's screen reader,
-<strong>and braille output to the user's display</strong> through the
+<li>Announcement-engine speech through the user’s screen reader,
+<strong>and braille output to the user’s display</strong> through the
 same screen-reader bridge, governed by the shared announcement service
 (§4).</li>
 <li><strong>Quillins host</strong>: a top-level Quillins menu running
 app-targeted, sandboxed, permission-gated extensions, including the
 bundled <code>cast-premium-auth</code> sample. Off in Safe Mode;
 third-party Quillins remain disabled.</li>
-<li><strong>Keyboard Shortcuts...</strong> (the shared Keymap Editor,
-scoped to this app's commands) and <strong>Global Hotkeys...</strong>
+<li><strong>Keyboard Shortcuts…</strong> (the shared Keymap Editor,
+scoped to this app’s commands) and <strong>Global Hotkeys…</strong>
 (system-wide keys for Play/Pause, Stop, and Show/Hide QUILL Cast to the
 Tray).</li>
 <li><strong>Spotify podcasts (experimental)</strong>, shipped dark
 behind <code>future.spotify</code>: requires a signed unlock code,
-Spotify Premium, a user-supplied Client ID, and WebView2. Play-only --
+Spotify Premium, a user-supplied Client ID, and WebView2. Play-only –
 Spotify audio is DRM-protected and cannot be downloaded. Off in Safe
 Mode.</li>
 <li>Help: Get FFmpeg (recovery download if the bundled copy goes
 missing), Open in Quill, Redeem Unlock Code (shared unlock store), Check
-for Updates against this repo's releases, About.</li>
+for Updates against this repo’s releases, About.</li>
 <li>Unlock-gated Audio Description Project menu (top-level) when
 <code>future.adp_assistant</code> is unlocked.</li>
 </ul>
-<p>Out of scope, by decision (D-1, "basic level of functionality"):</p>
+<p>Out of scope, by decision (D-1, “basic level of functionality”):</p>
 <ul>
 <li>Speech transcription engines (whisper.cpp / Faster Whisper / Vosk).
 Feed transcripts are plain downloads and remain fully functional;
 generating a transcript from audio is full-QUILL territory.</li>
-<li>QUILL's editor, AI assistants, braille translation stacks (liblouis
+<li>QUILL’s editor, AI assistants, braille translation stacks (liblouis
 tables, BRF authoring), neural TTS voice stacks (Kokoro/Piper), Pandoc
 conversions. The installer excludes their payloads outright. Braille
 <em>announcements</em> are in scope and are not part of those payloads:
-they are written through the screen reader's own bridge, which requires
+they are written through the screen reader’s own bridge, which requires
 no translation stack here.</li>
-<li>"Send Show Notes to Editor" copies to the clipboard instead
+<li>“Send Show Notes to Editor” copies to the clipboard instead
 (documented standalone difference).</li>
-<li>QUILL's update extras (signed manifest feed, portable zip swaps,
+<li>QUILL’s update extras (signed manifest feed, portable zip swaps,
 version skipping). Check for Updates downloads the installer in-app and
 offers Install now; the rest stays in QUILL.</li>
 </ul>
@@ -307,14 +327,14 @@ entirely and may be held on the display. Braille style, the repeat
 window, sticky errors, and interrupt severity are shared accessibility
 settings, edited in QUILL and honored here.</li>
 <li>A-7. Every Yes/No confirmation whose outcome destroys or discards
-something defaults to No -- Delete Folder, Delete Playlist, Remove All
+something defaults to No – Delete Folder, Delete Playlist, Remove All
 Episodes, Delete Downloaded Files. Enter must always be the safe answer.
 Enforced upstream by an automated build check over the shared dialog
 surfaces.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
-<li>P-1. PyInstaller onedir build with the app's own icon; Inno Setup
+<li>P-1. PyInstaller onedir build with the app’s own icon; Inno Setup
 installer with its own AppId, installs to its own directory
 ({autopf}\QUILL Cast), per-user privileges by default.</li>
 <li>P-2. Everything bundled, nothing downloaded at install or runtime:
@@ -323,17 +343,17 @@ the onedir build carries the whole quill package and data
 {app}\tools\ffmpeg, found via the wrapper exporting QUILL_APP_ROOT. A
 portable zip ships the same onedir build plus a <code>data\</code>
 folder that switches storage to travel with the app.</li>
-<li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> -- QUILL
-or Quill Radio may still use it. Only the full QUILL uninstaller owns
-that decision.</li>
+<li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> – QUILL or
+Quill Radio may still use it. Only the full QUILL uninstaller owns that
+decision.</li>
 <li>P-4. Upgrade hygiene: the installer wipes its own
 <code>{app}\_internal</code> tree before re-laying files so module
 renames upstream never leave stale imports.</li>
 </ul>
 <h2 id="6-update-requirements">6. Update requirements</h2>
 <ul>
-<li>U-1. Help &gt; Check for Updates queries the shared repository's
-GitHub releases for this app's own asset (newest stable vs running
+<li>U-1. Help &gt; Check for Updates queries the shared repository’s
+GitHub releases for this app’s own asset (newest stable vs running
 version), downloads it in-app with spoken 25/50/75 percent milestones,
 and offers Install now / Open folder. A manual check that finds nothing
 newer shows a dialog, not only a spoken announcement.</li>
@@ -345,20 +365,20 @@ the shared repository.</li>
 <li>U-3. A throttled silent check runs once a day on launch, quiet
 unless a real update exists; Preferences (Ctrl+,) turns it off.</li>
 <li>U-4. <strong>Install and restart now</strong>: QUILL Cast applies an
-update itself -- extracting portable files over the existing folder, or
-running the installer silently -- and relaunches, preserving shows,
+update itself – extracting portable files over the existing folder, or
+running the installer silently – and relaunches, preserving shows,
 downloads, and settings. Shared with the rest of the family.</li>
 </ul>
 <h2 id="7-non-goals">7. Non-goals</h2>
 <p>macOS/Linux standalone builds (upstream QUILL covers macOS; the
 tray-icon pattern does not exist there), silent or unattended background
 updating (an update is always offered and accepted before it is applied
--- see U-4), telemetry of any kind. Downloading Spotify audio, which is
+– see U-4), telemetry of any kind. Downloading Spotify audio, which is
 DRM-protected and play-only by design. A full DSP effects rack (reverb,
-tempo/pitch, spatial audio) -- Sound Enhancements (§9) is a small,
+tempo/pitch, spatial audio) – Sound Enhancements (§9) is a small,
 purpose-built three-band EQ, compressor, and Smart Speed, not a general
 effects rack. For private feeds: no OAuth/token/cookie auth schemes, no
-per-episode credentials, no cross-machine credential sync -- one
+per-episode credentials, no cross-machine credential sync – one
 username/password per show, HTTP Basic only.</p>
 <h2 id="8-security-requirements">8. Security requirements</h2>
 <ul>
@@ -372,27 +392,27 @@ they belong to. A request for the same show going to any other host
 Authorization header.</li>
 <li>S-3. OPML export never contains credentials, so an exported
 subscription list is always safe to share. Deleting a show, or clearing
-its credentials, deletes the stored secret -- no orphaned entries.</li>
-<li>S-4. An authentication failure is reported as such ("feed sign-in
-failed", pointing at Feed Credentials...), never blurred into a generic
+its credentials, deletes the stored secret – no orphaned entries.</li>
+<li>S-4. An authentication failure is reported as such (“feed sign-in
+failed”, pointing at Feed Credentials…), never blurred into a generic
 network error; background refresh never opens modal credential
 prompts.</li>
 </ul>
 <h2 id="9-since-10">9. Since 1.0</h2>
 <ul>
 <li><p><strong>Sound Enhancements</strong> (Episode &gt; Sound
-Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12
-to +12 dB), a compressor, and Smart Speed (live silence trimming between
+Enhancements…): a three-band equalizer (Bass/Mid/Treble sliders, -12 to
++12 dB), a compressor, and Smart Speed (live silence trimming between
 words/sentences), applied via an ffmpeg filter graph relayed to the
-playback engine over a loopback-only local HTTP server -- shared with
-Quill Radio's own Sound Enhancements. Off by default. A "Quick preset"
+playback engine over a loopback-only local HTTP server – shared with
+Quill Radio’s own Sound Enhancements. Off by default. A “Quick preset”
 shortcut sets all three sliders at once. Full seek/scrub-bar support
 while enhanced (an ffmpeg <code>-ss</code> restart is how scrubbing
-works, since a running relay can't be seeked within; duration comes from
+works, since a running relay can’t be seeked within; duration comes from
 an independent <code>ffprobe</code> call). Every setting is per-podcast:
-a shared default plus a per-show override, resolved at play time -- the
+a shared default plus a per-show override, resolved at play time – the
 same mechanism playback speed already used.</p></li>
-<li><p><strong>Quieter dialogs and a real "up to date" answer</strong>:
+<li><p><strong>Quieter dialogs and a real “up to date” answer</strong>:
 dialog-transition announcements are now off by default (Preferences),
 and a manual Check for Updates that finds nothing newer shows a dialog
 instead of only announcing it.</p></li>
@@ -405,22 +425,22 @@ default) plus per-podcast auto-skip-intro (applies only on a fresh
 start, never a resume) and auto-skip-outro (ends the episode early
 through the same code path a natural finish uses, so
 auto-advance/delete-after-play still fire). New context-aware Skip
-Settings... dialog, same shape as Sound Enhancements.</p></li>
+Settings… dialog, same shape as Sound Enhancements.</p></li>
 <li><p><strong>Playlists</strong>: saved, named episode lists distinct
 from the transient Play Queue and the fixed pinned views. Smart
 Playlists re-resolve live from rules (shows, episode status, recency,
 duration, sort); manual Playlists are a curated, ordered, self-healing
-list built via each episode's own "Add to Playlist..." context-menu
+list built via each episode’s own “Add to Playlist…” context-menu
 item.</p></li>
 <li><p><strong>Private feeds (username and password)</strong>: HTTP
 Basic authentication for protected feeds, end to end. Add by Feed URL
 detects a protected feed and opens a Feed Credentials prompt;
-<strong>Feed Credentials...</strong> on every show's context menu
-changes or clears them later. Credentials cover refresh, downloads,
-streaming, transcripts, and chapters, gated by the same-host rule (S-2);
-passwords live in the platform secret store (S-1) and never in OPML
-exports or logs (S-3). Documented portable caveat: DPAPI binding means a
-stick moved to another PC/account keeps subscriptions but asks for
+<strong>Feed Credentials…</strong> on every show’s context menu changes
+or clears them later. Credentials cover refresh, downloads, streaming,
+transcripts, and chapters, gated by the same-host rule (S-2); passwords
+live in the platform secret store (S-1) and never in OPML exports or
+logs (S-3). Documented portable caveat: DPAPI binding means a stick
+moved to another PC/account keeps subscriptions but asks for
 private-feed passwords once more.</p></li>
 <li><p><strong>Library tree episodes in place</strong>: shows in the
 main-page tree expand to reveal their episodes (collapsed by default so
@@ -429,7 +449,7 @@ episode and Enter on the show still playing its next unplayed
 one.</p></li>
 <li><p><strong>Playback keyboard shortcuts</strong>: Stop (Ctrl+.), Skip
 Back/Forward (Ctrl+Left/Right), Volume Down/Up (Ctrl+Down/Up), matching
-Quill Radio's convention.</p></li>
+Quill Radio’s convention.</p></li>
 <li><p><strong>Focus return after subscribing</strong>: the Add Podcast
 search path returns focus to the results list and re-selects the
 subscribed row on success, already-subscribed, and error alike; the
@@ -444,7 +464,7 @@ accessibility settings (A-6).</p></li>
 <li><p><strong>Destructive defaults</strong>: the podcast confirmation
 surfaces default to No (A-7).</p></li>
 <li><p><strong>Quillins app host</strong> and the <strong>Keyboard
-Shortcuts / Global Hotkeys</strong> managers, both scoped to this app's
+Shortcuts / Global Hotkeys</strong> managers, both scoped to this app’s
 own command registry.</p></li>
 <li><p><strong>Spotify (experimental, dark)</strong>: unlock-gated,
 Premium-only, user-supplied Client ID, WebView2-hosted playback;
@@ -455,5 +475,6 @@ window appeared. Guarded on the tree style, with a regression test
 asserting the guard stays adjacent to the call.</p></li>
 </ul>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
+</main>
 </body>
 </html>

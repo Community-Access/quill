@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Audio Studio 1.0.0 - Release Notes</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -200,7 +199,7 @@
 <h1 id="quill-audio-studio-100---release-notes">QUILL Audio Studio 1.0.0
 - Release Notes</h1>
 <p>Released 2026-07-18.</p>
-<p>Introducing QUILL Audio Studio: the QUILL editor's audiobook and
+<p>Introducing QUILL Audio Studio: the QUILL editor’s audiobook and
 audio production suite as its own standalone Windows and macOS desktop
 app - screen-reader-first, keyboard-first, and spoken end to end. It is
 for anyone who wants to turn writing into finished, chaptered,
@@ -231,7 +230,7 @@ publishing.</li>
 <h2 id="headline-features">Headline features</h2>
 <ul>
 <li><strong>A guided wizard that asks one thing at a time.</strong>
-Every step announced ("Step 2 of 7: What should I read?"),
+Every step announced (“Step 2 of 7: What should I read?”),
 Back/Next/Skip to summary, validation in plain language, and a
 plain-sentence review before Start. The wizard remembers your last
 journey, your recent source folders, and your recent books.</li>
@@ -242,7 +241,7 @@ cloud voices with your own API key. Engines, voices, and models download
 on demand from the Voices menu; every voice has a comparable
 preview.</li>
 <li><strong>A cast, not just a voice.</strong> Round-robin rotation,
-glob-based voice casting rules ("<em>interview</em> = the guest voice"),
+glob-based voice casting rules (“<em>interview</em> = the guest voice”),
 and translated editions in additional languages via your AI provider or
 local LibreTranslate.</li>
 <li><strong>Honest, resumable runs.</strong> Audition mode (first
@@ -262,7 +261,7 @@ with credentials in the Windows Credential Manager, and Auphonic
 mastering in your own account - each an explicit, consented action with
 spoken progress and a real Cancel.</li>
 <li><strong>ACX compliance in plain words.</strong> Loudness, true peak,
-and noise floor measured against Audible's window, with a concrete
+and noise floor measured against Audible’s window, with a concrete
 recommendation per failing criterion - from the Book Tools menu for any
 file, or one button in the Workbench.</li>
 <li><strong>A library that organizes itself.</strong> Your books live in
@@ -290,7 +289,7 @@ everything local keeps working.</li>
 <h2 id="relationship-to-quill">Relationship to QUILL</h2>
 <p>The Studio runs the exact same Audio Studio code that ships inside
 the QUILL editor - carried here as a self-contained copy - and shares
-QUILL's data store (<code>%APPDATA%\Quill</code>, or the portable
+QUILL’s data store (<code>%APPDATA%\Quill</code>, or the portable
 <code>data</code> folder). Voices, downloaded engines, speech settings,
 your book list, and listening positions are one set of data across
 QUILL, QUILL Audio Studio, Quill Radio, and QUILL Cast. You do not need
@@ -316,9 +315,9 @@ secrets (SFTP passwords, the Auphonic token, the ElevenLabs key) use the
 Windows Credential Manager - on other platforms those fields work
 per-session but are not persisted.</li>
 <li><strong>Releases are not code-signed.</strong> Windows SmartScreen
-warns on first run; choose "More info" then "Run anyway".</li>
+warns on first run; choose “More info” then “Run anyway”.</li>
 <li><strong>M4B books save as a new file.</strong> Chapter atoms cannot
-be rewritten in place; the Workbench's Save As performs a lossless
+be rewritten in place; the Workbench’s Save As performs a lossless
 re-mux instead. MP3 books do save in place (tags only).</li>
 <li><strong>Dev runs show a generic tray/window icon.</strong> The
 proper app icon is embedded in the packaged exe; running from source

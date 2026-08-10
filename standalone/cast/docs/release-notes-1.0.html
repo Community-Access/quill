@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast 1.0 -- Release Notes</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,44 +173,65 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-cast-10----release-notes">QUILL Cast 1.0 -- Release
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-cast-10--release-notes">QUILL Cast 1.0 – Release
 Notes</h1>
 <p>Your shows, on their own. QUILL Cast takes the podcast environment
 QUILL users already know and gives it a window, a menu bar, and a tray
-icon of its own -- for the days you want your queue without the
+icon of its own – for the days you want your queue without the
 manuscript.</p>
 <h2 id="coming-spotify-podcasts-experimental">Coming: Spotify podcasts
 (experimental)</h2>
 <p>Groundwork has landed for playing podcasts hosted on Spotify inside
-QUILL Cast. It is <strong>experimental and off by default</strong> -- it
+QUILL Cast. It is <strong>experimental and off by default</strong> – it
 ships hidden behind a feature flag, so you will not see it on a normal
 install, and turning it on takes a signed unlock code, a Spotify
 <strong>Premium</strong> account, and your own Spotify Client ID.
 Spotify audio is copy-protected, so a Spotify episode plays but cannot
 be downloaded, and many Spotify shows are exclusive with no public feed.
-The full story -- what you need, how to connect, and how to browse and
-play -- is in the new <strong>"Spotify podcasts (experimental)"</strong>
+The full story – what you need, how to connect, and how to browse and
+play – is in the new <strong>“Spotify podcasts (experimental)”</strong>
 section of the QUILL Cast User Guide.</p>
-<h2 id="whats-new-since-107">What's new since 1.0.7</h2>
+<h2 id="whats-new-since-107">What’s new since 1.0.7</h2>
 <ul>
 <li><strong>QUILL Cast starts again.</strong> On some builds QUILL Cast
-closed before its window ever appeared -- no error, no window, nothing
-to report. The cause was a single instruction telling Windows to expand
-the top of the library tree. That tree deliberately hides its invisible
-"root" node so the first thing you arrow to is a real folder or show
+closed before its window ever appeared – no error, no window, nothing to
+report. The cause was a single instruction telling Windows to expand the
+top of the library tree. That tree deliberately hides its invisible
+“root” node so the first thing you arrow to is a real folder or show
 rather than a meaningless container, and Windows refuses to expand a
-hidden node -- so it stopped the app instead. The instruction was never
-doing anything useful in the first place (a hidden root's children
+hidden node – so it stopped the app instead. The instruction was never
+doing anything useful in the first place (a hidden root’s children
 already <em>are</em> the visible top level), so it is now skipped, and a
 test keeps it that way.</li>
 <li><strong>Your braille display gets everything, and stops
 flickering.</strong> Until now the standalone apps spoke but never wrote
-to braille: if you read by touch, QUILL Cast's confirmations, download
+to braille: if you read by touch, QUILL Cast’s confirmations, download
 progress, and errors simply were not there. Every announcement now
 reaches the display. And a burst of messages no longer flashes past
-faster than cell one can be read -- the first message of a quiet moment
+faster than cell one can be read – the first message of a quiet moment
 appears instantly, and anything arriving in the next fraction of a
 second settles to the newest rather than each one shoving the last
 aside. Errors are exempt: they always write through immediately, and can
@@ -221,102 +241,102 @@ form, and how long an identical repeated message is suppressed. These
 are shared accessibility settings, so they are set once in QUILL and
 apply here too.</li>
 <li><strong>Enter is now always the safe answer.</strong> Four
-confirmations -- <strong>Delete Folder</strong>, <strong>Delete
+confirmations – <strong>Delete Folder</strong>, <strong>Delete
 Playlist</strong>, <strong>Remove All Episodes</strong>, and
-<strong>Delete Downloaded Files</strong> -- used to open with Yes
-already selected, so pressing Enter out of habit destroyed the thing
-before you had finished reading the question. All four now start on No.
-Yes is still one arrow key away, but it has to be a decision. A check in
-the build fails if a destructive question is ever given a Yes default
+<strong>Delete Downloaded Files</strong> – used to open with Yes already
+selected, so pressing Enter out of habit destroyed the thing before you
+had finished reading the question. All four now start on No. Yes is
+still one arrow key away, but it has to be a decision. A check in the
+build fails if a destructive question is ever given a Yes default
 again.</li>
-<li><strong>Quillins, in QUILL Cast.</strong> QUILL's small, sandboxed,
+<li><strong>Quillins, in QUILL Cast.</strong> QUILL’s small, sandboxed,
 permission-gated add-ons now run here too, from a
 <strong>Quillins</strong> menu of their own. An add-on says which apps
 it is written for, so you only ever see the ones meant for QUILL Cast.
 The bundled <code>cast-premium-auth</code> sample shows how one can
-supply the sign-in for a private, subscriber-only feed -- a companion to
+supply the sign-in for a private, subscriber-only feed – a companion to
 the built-in username and password support. Quillins are off in Safe
 Mode, and third-party ones stay disabled in this release.</li>
 <li><strong>Change any key, and reach the app from anywhere.</strong>
-<strong>Help &gt; Keyboard Shortcuts...</strong> opens the same
+<strong>Help &gt; Keyboard Shortcuts…</strong> opens the same
 searchable, conflict-aware Keyboard Manager QUILL uses, scoped to QUILL
-Cast's own commands. <strong>Help &gt; Global Hotkeys...</strong>
-assigns system-wide keys -- and now includes <strong>Show/Hide QUILL
-Cast to the Tray</strong>, so the window tucks away or comes back with
-one keystroke even when another program has focus. Its default is
-Ctrl+Alt+Shift+Q; whichever Quill app starts first claims a shared
-chord, so change it here if you run more than one at once.</li>
+Cast’s own commands. <strong>Help &gt; Global Hotkeys…</strong> assigns
+system-wide keys – and now includes <strong>Show/Hide QUILL Cast to the
+Tray</strong>, so the window tucks away or comes back with one keystroke
+even when another program has focus. Its default is Ctrl+Alt+Shift+Q;
+whichever Quill app starts first claims a shared chord, so change it
+here if you run more than one at once.</li>
 <li><strong>Spotify podcasts, taking shape.</strong> Groundwork for
 playing Spotify-hosted shows has landed, hidden and off by default. See
 the section above for what it needs and what it cannot do.</li>
 </ul>
-<h2 id="whats-new-in-107">What's new in 1.0.7</h2>
+<h2 id="whats-new-in-107">What’s new in 1.0.7</h2>
 <ul>
-<li><strong>Update in one click -- QUILL Cast installs it and restarts
+<li><strong>Update in one click – QUILL Cast installs it and restarts
 itself.</strong> When an update is available, choose Download, then
 <strong>Install and restart now</strong>: QUILL Cast applies the update
--- extracting the new portable files over your folder, or running the
-installer silently -- and relaunches on its own, keeping all your shows,
+– extracting the new portable files over your folder, or running the
+installer silently – and relaunches on its own, keeping all your shows,
 downloads, and settings. No more closing the app, unzipping, and
 swapping folders by hand. This is the same one-click self-update shared
 across every Quill app.</li>
 </ul>
-<h2 id="whats-new-in-106">What's new in 1.0.6</h2>
+<h2 id="whats-new-in-106">What’s new in 1.0.6</h2>
 <ul>
-<li><p><strong>Private feeds -- your supporter subscriptions, finally
+<li><p><strong>Private feeds – your supporter subscriptions, finally
 first-class.</strong> Patreon feeds, premium shows, members-only company
 feeds: any podcast protected by a username and password (HTTP Basic
 authentication) now subscribes like any other. Paste the feed address
 into Add by Feed URL as usual; if the feed asks for a sign-in, a small
-<strong>Feed Credentials</strong> dialog opens -- enter what your
+<strong>Feed Credentials</strong> dialog opens – enter what your
 provider gave you and QUILL Cast retries and subscribes. Change or clear
-credentials any time from the show's context menu (<strong>Feed
-Credentials...</strong>), in the main library tree or the Podcast
-Manager alike.</p></li>
-<li><p><strong>Signed in everywhere that show goes -- and nowhere
+credentials any time from the show’s context menu (<strong>Feed
+Credentials…</strong>), in the main library tree or the Podcast Manager
+alike.</p></li>
+<li><p><strong>Signed in everywhere that show goes – and nowhere
 else.</strong> Once a show has credentials, refresh, episode downloads,
 streaming playback, transcripts, and chapters all authenticate
 automatically. One deliberate security rule: credentials only ever
-travel to the feed's own host. Audio served from a third-party content
-network gets no password attached -- yours is never broadcast beyond the
+travel to the feed’s own host. Audio served from a third-party content
+network gets no password attached – yours is never broadcast beyond the
 publisher who issued it.</p></li>
 <li><p><strong>Stored like a secret, because it is one.</strong>
 Passwords live in Windows Credential Manager on an installed copy, or
 DPAPI-encrypted inside the portable <code>data</code> folder on a stick
--- never in <code>podcasts.json</code>, never in logs, and never in an
+– never in <code>podcasts.json</code>, never in logs, and never in an
 exported OPML file, so sharing your subscription list stays safe. One
 portable caveat, documented in the User Guide: DPAPI is tied to your
 Windows account and machine, so a stick moved to a new PC keeps every
 subscription but asks for private-feed passwords once more.</p></li>
 <li><p><strong>Honest errors.</strong> A wrong or rotated password no
-longer hides behind "could not reach that feed" -- subscribing reopens
+longer hides behind “could not reach that feed” – subscribing reopens
 the credentials prompt and says so, and a background refresh that fails
 to sign in announces exactly which show needs its credentials updated
 and where to do it.</p></li>
 <li><p><strong>Subscribing to a second show no longer means finding the
-list again.</strong> In Add Podcast..., subscribing to a search result
+list again.</strong> In Add Podcast…, subscribing to a search result
 used to leave you standing on the Subscribe button with the results list
 somewhere behind you. Focus now lands back on the list, on the very row
 you just subscribed from, ready to arrow to the next show. It behaves
 the same whether the show subscribed, was already in your library, or
-failed. Adding by feed address is unchanged -- focus stays by the URL
+failed. Adding by feed address is unchanged – focus stays by the URL
 box, where you would want it.</p></li>
 <li><p><strong>Episodes, right there in the library tree.</strong> Every
 show on the main page can now be expanded to reveal its episodes in
 place, so you never have to open the Manager just to reach one
 particular episode. Shows start collapsed, so the tree stays a list of
 shows rather than a wall of episodes. Enter on an episode plays it;
-Enter on a show still plays that show's next unplayed episode, exactly
+Enter on a show still plays that show’s next unplayed episode, exactly
 as before.</p></li>
 <li><p><strong>Keys for the things you do most.</strong> The Episode
 menu gained real shortcuts: <strong>Stop</strong> on Ctrl+period,
 <strong>Skip Back</strong> and <strong>Skip Forward</strong> on
 Ctrl+Left and Ctrl+Right, and <strong>Volume Down</strong> and
-<strong>Volume Up</strong> on Ctrl+Down and Ctrl+Up -- the same volume
+<strong>Volume Up</strong> on Ctrl+Down and Ctrl+Up – the same volume
 keys Quill Radio uses, so the family behaves the same way. Play/Pause
 keeps Ctrl+P.</p></li>
-<li><p><strong>Alt+F4 can mean "get out of my way" instead of
-"quit".</strong> A new Preferences checkbox (off by default) makes
+<li><p><strong>Alt+F4 can mean “get out of my way” instead of
+“quit”.</strong> A new Preferences checkbox (off by default) makes
 Alt+F4 send QUILL Cast to the system tray with the episode still
 playing. The titlebar X and the Exit command keep whatever you chose for
 closing the window, so the reflexive keyboard close stops ending your
@@ -329,129 +349,129 @@ could stall behind a stray console window that appeared out of nowhere
 and stole your focus. That window is gone.</p></li>
 <li><p><strong>The confirming button is always OK.</strong> Dialogs that
 used to confirm with Apply or Save now say OK, so the button that means
-"do it" is in the same place with the same name everywhere.</p></li>
+“do it” is in the same place with the same name everywhere.</p></li>
 </ul>
-<h2 id="whats-new-in-105">What's new in 1.0.5</h2>
+<h2 id="whats-new-in-105">What’s new in 1.0.5</h2>
 <ul>
 <li><strong>Skip Forward and Skip Back.</strong> Two new Episode-menu
-commands jump the current episode by a fixed number of seconds -- 30
-forward, 15 back by default -- for the times a chapter marker isn't
-where you want to land. A new <strong>Skip Settings...</strong> dialog
-sets how far each jumps, per podcast: open it while an episode is
-playing to set that show's own distance, or with nothing playing to set
-the shared default every other show follows.</li>
+commands jump the current episode by a fixed number of seconds – 30
+forward, 15 back by default – for the times a chapter marker isn’t where
+you want to land. A new <strong>Skip Settings…</strong> dialog sets how
+far each jumps, per podcast: open it while an episode is playing to set
+that show’s own distance, or with nothing playing to set the shared
+default every other show follows.</li>
 <li><strong>Auto-skip intro and outro, per podcast.</strong> The same
-Skip Settings... dialog offers, only when a show is loaded, auto-skip
-intro (jump forward automatically the moment an episode starts fresh --
+Skip Settings… dialog offers, only when a show is loaded, auto-skip
+intro (jump forward automatically the moment an episode starts fresh –
 never when resuming your saved position, so you never lose your place)
 and auto-skip outro (end the episode early, exactly as if it had reached
-its own true end -- auto-advance to the next queued episode and
+its own true end – auto-advance to the next queued episode and
 delete-after-play still fire). Both off by default.</li>
-<li><strong>Playlists.</strong> A new "Playlists" node sits below the
-Play Queue in the Podcast Manager's tree -- saved, named episode lists,
+<li><strong>Playlists.</strong> A new “Playlists” node sits below the
+Play Queue in the Podcast Manager’s tree – saved, named episode lists,
 distinct from the transient Play Queue and the four fixed pinned views.
-Build a manual Playlist by adding episodes one at a time (any episode's
-right-click menu gets <strong>Add to Playlist...</strong>), or create a
+Build a manual Playlist by adding episodes one at a time (any episode’s
+right-click menu gets <strong>Add to Playlist…</strong>), or create a
 Smart Playlist that re-resolves live every time you open it, from rules
 you set: which shows, episode status (unplayed/in progress/played), how
 recently published, a minimum and maximum length, and how to sort the
 result.</li>
 </ul>
-<h2 id="whats-new-in-104">What's new in 1.0.4</h2>
+<h2 id="whats-new-in-104">What’s new in 1.0.4</h2>
 <ul>
 <li><strong>A real three-band equalizer, per podcast.</strong> Sound
-Enhancements' single preset choice became Bass, Mid, and Treble sliders
+Enhancements’ single preset choice became Bass, Mid, and Treble sliders
 (-12 to +12 dB each), freely adjustable. The old presets are still there
-as a "Quick preset" shortcut. And every enhancement setting -- the three
-bands, Even Out Volume, Smart Speed -- is now per-podcast: a shared
+as a “Quick preset” shortcut. And every enhancement setting – the three
+bands, Even Out Volume, Smart Speed – is now per-podcast: a shared
 default plus a per-show override, exactly like playback speed already
 worked. Open Sound Enhancements while an episode is playing to adjust
-that show specifically; with nothing playing, you're adjusting the
+that show specifically; with nothing playing, you’re adjusting the
 shared default.</li>
-<li><strong>A real dialog when you're already up to date.</strong> Help
-&gt; Check for Updates used to only announce "up to date" -- easy to
+<li><strong>A real dialog when you’re already up to date.</strong> Help
+&gt; Check for Updates used to only announce “up to date” – easy to
 miss. It now shows a proper dialog, the same as a genuine update
 does.</li>
 <li><strong>Quieter by default.</strong> Preferences (Ctrl+,) gained
-"Announce dialog transitions" (off by default) -- previously every
-dialog spoke "Entered/Exited" cues with no way to turn it off.</li>
+“Announce dialog transitions” (off by default) – previously every dialog
+spoke “Entered/Exited” cues with no way to turn it off.</li>
 <li><strong>Documentation, right in the Help menu.</strong> User Guide,
 Release Notes, and Product Requirements now open directly from Help,
 rendered in your browser.</li>
 </ul>
-<h2 id="whats-new-in-103">What's new in 1.0.3</h2>
+<h2 id="whats-new-in-103">What’s new in 1.0.3</h2>
 <ul>
 <li><strong>Three ways to view the Inbox and every cross-show
-list.</strong> A new "View cross-show lists as" combo box next to the
-Podcast Manager's "Sort episodes" control offers <strong>Flat
-list</strong> (one stream sorted purely by date across every show -- a
-true "what's new, period" feed), <strong>Grouped in list</strong> (the
-default and pre-existing look -- each show's episodes cluster together,
-read one podcast's backlog at a time), or <strong>Folders per
+list.</strong> A new “View cross-show lists as” combo box next to the
+Podcast Manager’s “Sort episodes” control offers <strong>Flat
+list</strong> (one stream sorted purely by date across every show – a
+true “what’s new, period” feed), <strong>Grouped in list</strong> (the
+default and pre-existing look – each show’s episodes cluster together,
+read one podcast’s backlog at a time), or <strong>Folders per
 podcast</strong> (real expandable tree nodes, one per show, under the
 Inbox and every other pinned view).</li>
 <li><strong>Per-podcast sort order.</strong> The sort control now
 actually applies to these cross-show views too (it previously only
-affected a single show's own list) -- and any podcast can have its own
+affected a single show’s own list) – and any podcast can have its own
 sort order that overrides the shared default: select that show (or its
-Folders node) and change Sort Episodes. Also fixed: setting a podcast's
+Folders node) and change Sort Episodes. Also fixed: setting a podcast’s
 own playback speed no longer silently resets any other setting override
 that podcast already had.</li>
 </ul>
-<h2 id="whats-new-in-102">What's new in 1.0.2</h2>
+<h2 id="whats-new-in-102">What’s new in 1.0.2</h2>
 <ul>
 <li><strong>Sound Enhancements.</strong> Episode &gt; Sound
-Enhancements... adds an equalizer preset (Flat, Bass Boost, Voice
-Clarity, Podcast), a compressor ("Even Out Volume"), and <strong>Smart
+Enhancements… adds an equalizer preset (Flat, Bass Boost, Voice Clarity,
+Podcast), a compressor (“Even Out Volume”), and <strong>Smart
 Speed</strong> (trims silence between words and sentences, live and
 reversible on any episode, distinct from the one-time leading/trailing
-trim Downloads already offers) -- all applied through the ffmpeg QUILL
+trim Downloads already offers) – all applied through the ffmpeg QUILL
 Cast already uses for download processing. Off by default. Full seek and
 scrub-bar support while enhanced: scrubbing or toggling anything on/off
 never loses your place or forces a paused episode to resume.</li>
 <li><strong>Download All Episodes / Remove All Episodes.</strong> New on
-every show's context menu, in the Podcast Manager and the main library
+every show’s context menu, in the Podcast Manager and the main library
 tree alike. Download All queues everything not already downloaded or in
-progress -- no extra confirmation, just like downloading one episode.
-Remove All Episodes confirms first, then -- only if the show actually
-has downloaded files -- asks separately whether to delete those too;
-either way the show stays subscribed, so a future feed refresh can bring
+progress – no extra confirmation, just like downloading one episode.
+Remove All Episodes confirms first, then – only if the show actually has
+downloaded files – asks separately whether to delete those too; either
+way the show stays subscribed, so a future feed refresh can bring
 episodes back.</li>
 </ul>
-<h2 id="whats-new-in-101">What's new in 1.0.1</h2>
+<h2 id="whats-new-in-101">What’s new in 1.0.1</h2>
 <ul>
 <li><strong>Automatic Check for Updates.</strong> QUILL Cast quietly
-checks for a newer version once a day when it launches -- silent unless
-a real update is found, at which point you get the same "download it
-now?" prompt Help &gt; Check for Updates always gave you. Throttled so
-it never hits the network on every single launch.</li>
-<li><strong>Preferences...</strong> (Ctrl+,) is a new, small dialog
-gathering the app's startup behavior in one place: Resume Last Episode
+checks for a newer version once a day when it launches – silent unless a
+real update is found, at which point you get the same “download it now?”
+prompt Help &gt; Check for Updates always gave you. Throttled so it
+never hits the network on every single launch.</li>
+<li><strong>Preferences…</strong> (Ctrl+,) is a new, small dialog
+gathering the app’s startup behavior in one place: Resume Last Episode
 on Launch and the new automatic update check, each its own checkbox.
 Turning either off takes effect immediately.</li>
 </ul>
 <h2 id="highlights">Highlights</h2>
 <ul>
 <li><strong>Your library, on the front page.</strong> The main window is
-your library tree -- the same pinned views the Manager shows (Favorites,
+your library tree – the same pinned views the Manager shows (Favorites,
 New Episodes, Continue Listening, Inbox) above your nested folders and
 the shows filed in them, each with a live unplayed count and a full
 context menu (Play/Stop, Favorite toggle, Move to Folder, Unsubscribe,
 New Folder) one Shift+F10 away. Enter on a show plays its next unplayed
-episode directly -- no detour through the Manager required.</li>
+episode directly – no detour through the Manager required.</li>
 <li><strong>One transport button, not two dead ones.</strong> Play
 becomes Pause while playing and Resume while paused, exactly like the
 panel it sits on. A Favorites button tracks whatever is playing and
-flips to Remove when it's already saved.</li>
+flips to Remove when it’s already saved.</li>
 <li><strong>Podcasts as an appliance.</strong> Check Subscriptions &gt;
 Resume Last Episode on Launch once, and opening QUILL Cast is all you
-ever do -- it picks up exactly where you left off. A Recently Played
+ever do – it picks up exactly where you left off. A Recently Played
 submenu (Episode menu) keeps your last fifteen episodes one keystroke
-deep, distinct from the Continue Listening view's in-progress list.</li>
+deep, distinct from the Continue Listening view’s in-progress list.</li>
 <li><strong>Play Queue, promoted.</strong> The same reorderable
 cross-show queue the Manager offers now has its own top-level menu item
-and Command Palette entry -- no longer a button buried in a dialog.</li>
-<li><strong>Mute, everywhere you'd expect it.</strong> A dedicated
+and Command Palette entry – no longer a button buried in a dialog.</li>
+<li><strong>Mute, everywhere you’d expect it.</strong> A dedicated
 Mute/Unmute command silences playback without losing your level.</li>
 <li><strong>Downloads that survive a dropped connection.</strong> If
 your internet hiccups mid-download, QUILL Cast retries automatically
@@ -464,8 +484,8 @@ own folders and remembers how you file each show; episode and show
 filters that narrow the list live.</li>
 <li><strong>A Play Queue that behaves.</strong> Play Next or Add to
 Queue from any episode, auto-advance when one ends, survives restarts,
-and reorders entirely from the keyboard -- Move Up/Down, or Mark and
-Move for long hops.</li>
+and reorders entirely from the keyboard – Move Up/Down, or Mark and Move
+for long hops.</li>
 <li><strong>Search Everywhere.</strong> Shows, episodes, your notes, and
 fetched transcripts, one search, straight to the result.</li>
 <li><strong>Transcripts and notes.</strong> Feed-provided transcripts
@@ -475,42 +495,41 @@ there.</li>
 <li><strong>Local podcasts.</strong> Your own audio files become shows,
 with watched folders that turn dropped files into new episodes. Stored
 outside the synced data folder by construction.</li>
-<li><strong>ACB Media, one command.</strong> Subscribe to ACB's whole
+<li><strong>ACB Media, one command.</strong> Subscribe to ACB’s whole
 live directory idempotently.</li>
 <li><strong>Downloads that respect you.</strong> Pause/resume all;
 Always Sync for shows you want complete; auto-trim silence and normalize
 loudness on finished downloads; a volume boost that never disturbs the
-Sleep Timer's restore volume.</li>
+Sleep Timer’s restore volume.</li>
 <li><strong>A tray citizen.</strong> Close to the notification area and
 keep listening; control playback from the tray menu.</li>
 <li><strong>Two flavors, everything bundled.</strong> A system installer
 and a truly portable zip whose <code>data</code> folder keeps your whole
 library on the stick. ffmpeg included, its own app icon, no downloads
-ever -- and if ffmpeg somehow goes missing, <strong>Help &gt; Get
-FFmpeg...</strong> restores it from the official source.</li>
+ever – and if ffmpeg somehow goes missing, <strong>Help &gt; Get
+FFmpeg…</strong> restores it from the official source.</li>
 <li><strong>Spoken feedback everywhere.</strong> Every action announces
-its outcome through your screen reader -- JAWS, NVDA, or Narrator --
+its outcome through your screen reader – JAWS, NVDA, or Narrator –
 without stealing focus.</li>
 <li><strong>One data store.</strong> Subscriptions, queue, positions,
 notes, and downloads are shared with QUILL and Quill Radio. Subscribe
 here, see it there.</li>
 <li><strong>Check for Updates, built in.</strong> The update check
-compares your version against this repository's releases, downloads the
+compares your version against this repository’s releases, downloads the
 installer in-app with spoken progress, and offers Install now.</li>
 <li><strong>Folders from the menu.</strong> Subscriptions &gt; New
-Folder... creates a library folder without opening the Manager; Send to
+Folder… creates a library folder without opening the Manager; Send to
 Tray (Ctrl+W) and Exit live there too. (Send Show Notes to Editor copies
-to the clipboard here -- there is no editor buffer to send to.)</li>
+to the clipboard here – there is no editor buffer to send to.)</li>
 </ul>
 <h2 id="what-quill-cast-deliberately-is-not">What QUILL Cast
 deliberately is not</h2>
-<p>It is not QUILL minus some menus -- it is the podcast app, period.
-The editor, AI, speech transcription engines, braille, and
-speech-synthesis stacks are not installed at all, which keeps the
-install small and the app simple. Feed transcripts still work fully;
-generating transcripts from audio is full QUILL's job, one Help menu
-item away.</p>
-<h2 id="not-a-fork----a-guarantee">Not a fork -- a guarantee</h2>
+<p>It is not QUILL minus some menus – it is the podcast app, period. The
+editor, AI, speech transcription engines, braille, and speech-synthesis
+stacks are not installed at all, which keeps the install small and the
+app simple. Feed transcripts still work fully; generating transcripts
+from audio is full QUILL’s job, one Help menu item away.</p>
+<h2 id="not-a-fork--a-guarantee">Not a fork – a guarantee</h2>
 <p>QUILL Cast runs the exact same podcast feature code as QUILL, from
 the same upstream package. Fixes and features land upstream once and
 reach QUILL, QUILL Cast, and Quill Radio together. This repository only
@@ -521,13 +540,14 @@ installation required.</p>
 <h2 id="known-limitations">Known limitations</h2>
 <ul>
 <li>Global hotkeys and keyboard shortcuts are now configured from QUILL
-Cast itself (Help &gt; Global Hotkeys... and Help &gt; Keyboard
-Shortcuts...); they no longer require opening full QUILL. The keymap is
+Cast itself (Help &gt; Global Hotkeys… and Help &gt; Keyboard
+Shortcuts…); they no longer require opening full QUILL. The keymap is
 shared across the family, so a change here changes it everywhere.</li>
-<li>Accessibility settings that govern announcements -- braille on or
+<li>Accessibility settings that govern announcements – braille on or
 off, braille style, the repeat window, sticky errors, interrupt severity
--- are edited in QUILL's Preferences and honored here; QUILL Cast's own
+– are edited in QUILL’s Preferences and honored here; QUILL Cast’s own
 Preferences (Ctrl+,) covers only its four app-level switches.</li>
 </ul>
+</main>
 </body>
 </html>

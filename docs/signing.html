@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>signing</title>
+  <title>QUILL artifact signing</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-artifact-signing">QUILL artifact signing</h1>
 <p>QUILL artifacts (Quillins, AI agents, verbosity packs, sound packs,
 keyboard packs, skill packs, pronunciation dictionaries) are distributed
@@ -251,21 +271,21 @@ every Hub operator needs.</p>
 <p>The signature is a <em>provenance</em> attestation, not a
 code-signing system. What it does cover:</p>
 <ul>
-<li><strong>Tampered Hub download</strong> -- the sidecar verification
+<li><strong>Tampered Hub download</strong> – the sidecar verification
 fails.</li>
-<li><strong>MITM on the storefront</strong> -- the sidecar verification
+<li><strong>MITM on the storefront</strong> – the sidecar verification
 fails.</li>
-<li><strong>Unsigned submission to the Hub</strong> -- the Submission
+<li><strong>Unsigned submission to the Hub</strong> – the Submission
 Forge rejects it before the validator runs.</li>
 </ul>
 <p>What it does <em>not</em> cover:</p>
 <ul>
-<li><strong>Author identity</strong> -- there is no PKI chain. The key
-id (<code>ca-pubkey-2026</code>) only tells you the artifact was signed
+<li><strong>Author identity</strong> – there is no PKI chain. The key id
+(<code>ca-pubkey-2026</code>) only tells you the artifact was signed
 with the Community-Access publisher key, not who the author is.</li>
-<li><strong>Download privacy</strong> -- no anonymity layer.</li>
-<li><strong>Executable code</strong> -- Quillins (which carry Python)
-are additionally scanned by Bandit and the SecurityWatchdog, but
+<li><strong>Download privacy</strong> – no anonymity layer.</li>
+<li><strong>Executable code</strong> – Quillins (which carry Python) are
+additionally scanned by Bandit and the SecurityWatchdog, but
 operating-system code signing for QUILL itself is a separate system:
 Windows Authenticode via Azure Trusted Signing is documented in <a
 href="code-signing.md"><code>docs/code-signing.md</code></a>, and the
@@ -324,7 +344,7 @@ feed against it.</td>
 </tr>
 <tr>
 <td><code>~/.config/quill/quill-feed-priv.key</code></td>
-<td>The 32-byte seed, base64. <strong>Never committed</strong> -- it
+<td>The 32-byte seed, base64. <strong>Never committed</strong> – it
 lives outside the repository entirely.</td>
 </tr>
 <tr>
@@ -375,36 +395,36 @@ stretches your passphrase with Argon2id and seals the secret with
 XSalsa20-Poly1305, both from PyNaCl (already a dependency, so no new
 cryptographic surface). The passphrase is prompted for, never passed as
 an argument, so it never lands in shell history or the process list.
-<strong>Verify the restore before you rely on it</strong> --
-<code>python scripts/secret_backup.py decrypt &lt;file&gt;</code> --
+<strong>Verify the restore before you rely on it</strong> –
+<code>python scripts/secret_backup.py decrypt &lt;file&gt;</code> –
 because a backup nobody has ever decrypted is not a backup.</p>
 <p>The printed sheet is the copy that survives a forgotten passphrase
 and a dead cloud account. Generate one with the seed, its SHA-256 (so a
 transcription error is caught), the matching public key, and restore
 instructions; print it; store it physically; delete the file. Do not
-photograph it or keep it on a computer -- a sheet of paper in a safe has
+photograph it or keep it on a computer – a sheet of paper in a safe has
 a completely different threat model from a file, which is the whole
 point of having one.</p>
 <p>Clients accept a feed with no <code>signature_ed25519</code> (the
 legacy salted checksum still applies, so pre-1.0 builds keep working),
-but a signature that is <em>present and invalid</em> is a hard failure
--- a forged feed is refused rather than downgraded. Set
+but a signature that is <em>present and invalid</em> is a hard failure –
+a forged feed is refused rather than downgraded. Set
 <code>QUILL_REQUIRE_SIGNED_FEED=1</code> to reject unsigned feeds
 outright.</p>
 <h3 id="rotating-the-feed-key">Rotating the feed key</h3>
 <ol type="1">
 <li><code>python -c "import base64; from nacl import signing; k=signing.SigningKey.generate(); print(base64.b64encode(bytes(k._seed)).decode()); print(base64.b64encode(bytes(k.verify_key)).decode())"</code>
--- first line is the seed, second the public key.</li>
+– first line is the seed, second the public key.</li>
 <li>Put the seed in <code>~/.config/quill/quill-feed-priv.key</code> and
 in the <code>QUILL_FEED_SIGNING_KEY</code> repo secret.</li>
 <li>Replace <code>quill/core/feed-pub.key</code> with the public key and
 ship a build containing it <strong>before</strong> publishing a feed
-signed with the new seed -- otherwise existing clients reject the feed
+signed with the new seed – otherwise existing clients reject the feed
 they cannot verify.</li>
 </ol>
 <h2 id="sidecar-format">Sidecar format</h2>
 <p>Each <code>.minisig</code> is plain text in the standard minisign
-format -- three lines, all UTF-8:</p>
+format – three lines, all UTF-8:</p>
 <pre><code>untrusted comment: quill artifact signature
 key id: ca-pubkey-2026
 sig: &lt;base64-encoded 64-byte Ed25519 signature&gt;</code></pre>
@@ -485,7 +505,7 @@ become unverifiable.</li>
 <li>Bump the <code>KEY_ID</code> constant in
 <code>quill/tools/signing.py</code> (e.g. to
 <code>ca-pubkey-2026b</code>) and re-sign.</li>
-<li>Cut a new release; the Hub's <code>SIGNING_PUBLIC_KEY_PATH</code>
+<li>Cut a new release; the Hub’s <code>SIGNING_PUBLIC_KEY_PATH</code>
 env var should be updated at deploy time so the in-process Hub uses the
 new key without rebuilding.</li>
 </ol>
@@ -498,12 +518,13 @@ Quillin is what the publisher signed.</li>
 <li>Someone MITMs the download and replaces the zip with a tampered
 copy. The sidecar no longer matches. <code>signature_status</code>
 returns <code>signature does not match</code>. The Quillin Manager
-dialog shows "Invalid" and refuses to load.</li>
+dialog shows “Invalid” and refuses to load.</li>
 <li>I write a Quillin and want to submit it. I sign it with the
 publisher key, upload both files to the Hub, and the Forge accepts.</li>
-<li>I forget to sign. The Forge rejects with "Unsigned -- every
+<li>I forget to sign. The Forge rejects with “Unsigned – every
 submission must carry a sidecar signed by
-<code>ca-pubkey-2026</code>".</li>
+<code>ca-pubkey-2026</code>”.</li>
 </ul>
+</main>
 </body>
 </html>

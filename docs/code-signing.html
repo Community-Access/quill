@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>code-signing</title>
+  <title>Windows code signing (Authenticode via Azure Trusted
+Signing)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,16 +239,37 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="windows-code-signing-authenticode-via-azure-trusted-signing">Windows
 code signing (Authenticode via Azure Trusted Signing)</h1>
 <p>This is how QUILL and its companion apps get an
-<strong>Authenticode</strong> signature -- the operating-system code
+<strong>Authenticode</strong> signature – the operating-system code
 signature Windows checks on an <code>.exe</code>/<code>.dll</code> and
 the one SmartScreen and the UAC prompt read to show a real publisher
-instead of "Unknown publisher". It is a <strong>different</strong> thing
+instead of “Unknown publisher”. It is a <strong>different</strong> thing
 from <a href="signing.md"><code>docs/signing.md</code></a>, which is
 Ed25519 <em>provenance</em> signing (minisign sidecars) for Quillins and
 other Hub artifacts. Both exist on purpose:</p>
@@ -287,8 +308,8 @@ other Hub artifacts. Both exist on purpose:</p>
 <strong>Azure Trusted Signing</strong> (formerly Azure Code Signing):
 <code>signtool.exe</code> loads a Microsoft signing dlib
 (<code>Azure.CodeSigning.Dlib.dll</code>) that submits a file digest to
-the account's <code>wus2.codesigning.azure.net</code> endpoint and
-receives a short-lived certificate. The signed leaf certificate's
+the account’s <code>wus2.codesigning.azure.net</code> endpoint and
+receives a short-lived certificate. The signed leaf certificate’s
 subject is the identity-validated publisher
 (<code>CN=Jeffrey Bishop</code>), chained under
 <code>Microsoft ID Verified Code Signing PCA 2021</code>. Every
@@ -393,7 +414,7 @@ builds</h2>
 binary</strong> (so the launcher shows a real publisher and no embedded
 DLL is unsigned), <strong>the installer</strong>, and <strong>the
 uninstaller</strong> (so both the SmartScreen download prompt and the
-later Add/Remove Programs "unins000.exe" are clean). The split is
+later Add/Remove Programs “unins000.exe” are clean). The split is
 deliberate:</p>
 <ul>
 <li><strong>Payload <code>.exe</code>/<code>.dll</code></strong> are
@@ -406,8 +427,8 @@ native <code>SignTool</code> mechanism
 (<code>SignTool=quilltrusted</code>
 <ul>
 <li><code>SignedUninstaller=yes</code> in the <code>.iss</code>). The
-uninstaller is generated and embedded at compile time, so Inno's own
-signing is the only way to sign it -- an external post-compile pass over
+uninstaller is generated and embedded at compile time, so Inno’s own
+signing is the only way to sign it – an external post-compile pass over
 the finished <code>Setup.exe</code> cannot reach it.</li>
 </ul></li>
 </ul>
@@ -415,7 +436,7 @@ the finished <code>Setup.exe</code> cannot reach it.</li>
 <code>[Setup]</code> carries an <code>#ifdef Sign</code> block, and the
 build invokes ISCC with <code>/DSign</code> plus a
 <code>/Squilltrusted=&lt;command&gt;</code> mapping that points Inno at
-<code>python code_signing.py sign $f</code> (Inno's <code>$q</code>
+<code>python code_signing.py sign $f</code> (Inno’s <code>$q</code>
 -&gt; <code>"</code>, <code>$f</code> -&gt; the file). Without
 <code>/DSign</code> the directives are compiled away, so an unsigned
 build is unchanged.</p>
@@ -426,7 +447,7 @@ assembled <code>portable/</code> tree, then compiles the installer. When
 <code>QUILL_SIGN=1</code>, <code>compile_inno_setup_installer</code>
 passes <code>/DSign</code> + the sign-command mapping so Inno signs
 <code>Quill-for-All-Setup-&lt;ver&gt;.exe</code> <strong>and its
-uninstaller</strong> during compile. No new flags -- it honours
+uninstaller</strong> during compile. No new flags – it honours
 <code>QUILL_SIGN</code>.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">QUILL_SIGN</span> <span class="op">=</span> <span class="st">&quot;1&quot;</span></span>
@@ -442,7 +463,7 @@ passes <code>/DSign</code> + the mapping to ISCC so Inno signs the
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Sign</span></code></pre></div>
 <p>Without <code>-Sign</code>, the payload <code>sign-build</code> step
-prints a "skipped" line and ISCC is invoked with no sign arguments, so
+prints a “skipped” line and ISCC is invoked with no sign arguments, so
 the build is byte-for-byte what it was before.</p>
 <h2 id="cost-note">Cost note</h2>
 <p>Trusted Signing bills per signature, and every file is one remote
@@ -450,7 +471,7 @@ round-trip, so signing time scales with file count. The default
 <code>*.exe,*.dll</code> set keeps this to the launcher, the installer,
 and the bundled DLLs. Widening <code>QUILL_SIGN_PATTERNS</code> to
 include <code>*.pyd</code> signs every CPython extension module too
-(hundreds of files across the embedded runtime + wxPython) -- thorough,
+(hundreds of files across the embedded runtime + wxPython) – thorough,
 but slower and more expensive. Choose per release.</p>
 <h2 id="verifying-a-signature">Verifying a signature</h2>
 <div class="sourceCode" id="cb5"><pre
@@ -466,12 +487,13 @@ independent of the embedded Authenticode signature <code>signtool</code>
 reports.</p>
 <h2 id="rotation--account-changes">Rotation / account changes</h2>
 <p>The signing identity is entirely in <code>metadata.json</code> plus
-the Azure account's certificate profile. To move accounts or profiles,
+the Azure account’s certificate profile. To move accounts or profiles,
 edit <code>metadata.json</code> (or point
 <code>QUILL_SIGN_METADATA</code> at a different file); nothing else in
 the tree hard-codes the endpoint, account, or profile. To bump the
 signing dlib, change <code>TRUSTED_SIGNING_CLIENT_VERSION</code> /
 <code>TRUSTED_SIGNING_CLIENT_SHA256</code> in
 <code>scripts/code_signing.py</code>.</p>
+</main>
 </body>
 </html>

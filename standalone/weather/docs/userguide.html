@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>userguide</title>
+  <title>Quill Weather User Guide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-weather-user-guide">Quill Weather User Guide</h1>
 <p>Quill Weather is a small, standalone, screen-reader-first weather
 app. This guide covers what is specific to the standalone app; the
@@ -373,7 +393,7 @@ separate from Quill Radio. Because the QuillVille Runtime is shared, an
 app update is usually just the small app itself; the large runtime is
 downloaded only when a new one is required, and again with a fully
 accessible progress bar.</p>
-<h2 id="weather-features-full-reference">Weather features – full
+<h2 id="weather-features--full-reference">Weather features – full
 reference</h2>
 <p>This is the full reference for the weather features, shared by the
 standalone <strong>Quill Weather</strong> app and Quill Radio’s
@@ -553,7 +573,7 @@ clearly marked as a <strong>test</strong> and dismissable with OK. It
 sends nothing over the internet and does not touch your real
 monitoring.</p>
 <h3
-id="the-quill-weather-app-alerts-even-when-everything-else-is-closed">The
+id="the-quill-weather-app--alerts-even-when-everything-else-is-closed">The
 Quill Weather app – alerts even when everything else is closed</h3>
 <p>Quill Weather is a small companion app whose only job is to keep the
 alert watch running on its own:</p>
@@ -609,5 +629,6 @@ interruption rules per feed and per alert, continuously generated
 weather channels, and choosing exactly which of your saved places the
 alert watch covers. See the Product Requirements document (Help &gt;
 Product Requirements) for the full roadmap.</p>
+</main>
 </body>
 </html>

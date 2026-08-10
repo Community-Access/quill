@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Audio Studio User Guide</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -209,7 +208,7 @@ reader user would design it: a small home window whose book list has
 focus the instant it opens, a wizard that asks one question at a time
 and announces every step, a chapter editor you drive entirely by ear,
 and spoken progress for every long run. It runs the exact same Audio
-Studio code that ships inside the QUILL editor and shares QUILL's data
+Studio code that ships inside the QUILL editor and shares QUILL’s data
 store, so a voice you configure here reads aloud in QUILL too, and
 nothing you set up is ever stranded.</p>
 <p>Three journeys cover the whole workshop:</p>
@@ -258,15 +257,15 @@ you already run, or plan to run, more than one Quill app.</li>
 <li><strong>Full installer</strong>
 (<code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code>) -
 installs the shared runtime, if it is not already present, plus the app.
-See "The installer" below.</li>
+See “The installer” below.</li>
 <li><strong>Thin installer</strong> (the <code>-Lite</code> setup) - a
 tiny installer that downloads the shared runtime only if it is not
 already present, then installs the app.</li>
 </ul>
-<p>Whenever the runtime is downloaded - by an installer or by an app's
+<p>Whenever the runtime is downloaded - by an installer or by an app’s
 own first launch - it shows a fully accessible progress bar that works
 with NVDA, JAWS, and Narrator, announcing progress as a percentage. See
-"Downloading the QuillVille Runtime" below.</p>
+“Downloading the QuillVille Runtime” below.</p>
 <h3 id="the-installer">The installer</h3>
 <p>Run the full installer
 (<code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code>) or
@@ -279,7 +278,7 @@ lives in the shared Quill store in your Windows profile
 QUILL Cast use. Uninstalling never deletes that shared data, and never
 removes the shared runtime while another Quill app still needs it.</p>
 <p>Windows SmartScreen may warn on first run because this release is not
-code-signed; choose "More info" then "Run anyway".</p>
+code-signed; choose “More info” then “Run anyway”.</p>
 <h3 id="the-portable-zip">The portable zip</h3>
 <p>Extract the full portable zip
 (<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code>)
@@ -305,48 +304,48 @@ shared runtime is not yet on your machine, the Studio offers to download
 it - about 230 MB, one time. This download always shows a <strong>fully
 accessible progress bar</strong> that works with NVDA, JAWS, and
 Narrator, whether the download was triggered by the installer or by the
-app's own first launch. Progress is announced as a percentage, so you
+app’s own first launch. Progress is announced as a percentage, so you
 always know how far along it is and never face a silent wait. Once the
 runtime is installed, this app and every other QuillVille app start
 instantly, and you are never asked to download it again unless every
 Quill app has been removed.</p>
 <h3 id="a-note-on-antivirus">A note on antivirus</h3>
-<p>The Studio's launcher is now a genuine, tiny native program, and the
+<p>The Studio’s launcher is now a genuine, tiny native program, and the
 bundled Python is the official unmodified build. Earlier versions used a
-renamed and modified copy of Python's <code>pythonw.exe</code> as the
+renamed and modified copy of Python’s <code>pythonw.exe</code> as the
 launcher, which some antivirus tools flagged as a false positive. That
 pattern is completely gone, so the Quill apps are far less likely to be
 flagged. If an antivirus tool ever does flag a Quill app, it is a false
-positive; the downloads come from the project's official releases.</p>
+positive; the downloads come from the project’s official releases.</p>
 <h3 id="running-from-source">Running from source</h3>
 <p>From a checkout of the repository:</p>
 <ul>
 <li><code>pip install -e ".[ui]"</code> then
 <code>python -m quill.apps.studio</code>, or</li>
 <li>run <code>run-quill-audio-studio.bat</code>, which finds a Python
-environment for you (this repo's <code>.venv</code>, then a sibling
-QUILL checkout's <code>.venv</code>, then whatever <code>python</code>
+environment for you (this repo’s <code>.venv</code>, then a sibling
+QUILL checkout’s <code>.venv</code>, then whatever <code>python</code>
 is on PATH).</li>
 </ul>
 <p><code>run-quill-audio-studio-safe-mode.bat</code> launches with Safe
-Mode on (see "Safe Mode" below).</p>
+Mode on (see “Safe Mode” below).</p>
 <h2 id="the-home-window">The home window</h2>
 <p>The window opens with keyboard focus on your books list. From top to
 bottom:</p>
 <ul>
 <li><strong>Studio activity</strong> (read-only text): what the Studio
-is doing right now - "Ready", or live progress during a run. The same
+is doing right now - “Ready”, or live progress during a run. The same
 text is mirrored in the status bar.</li>
-<li>Three buttons, one per journey: <strong>Narrate
-Documents...</strong>, <strong>Build From Recordings...</strong>,
-<strong>Edit a Book...</strong></li>
+<li>Three buttons, one per journey: <strong>Narrate Documents…</strong>,
+<strong>Build From Recordings…</strong>, <strong>Edit a
+Book…</strong></li>
 <li><strong>Your books</strong>: your audiobooks, organized as a tree
 (see below). Press <strong>Enter</strong> to open the selected book in
 the Chapter Workbench. A book whose file has been moved or renamed is
-marked "(missing)".</li>
+marked “(missing)”.</li>
 </ul>
 <h3 id="the-status-bar">The status bar</h3>
-<p>The status bar reads "Ready - N books in your library" when idle.
+<p>The status bar reads “Ready - N books in your library” when idle.
 During a long run it carries per-file progress, and by default the
 Studio also speaks the 25, 50, and 75 percent milestones so you can
 follow an overnight narration from another window (turn this off in
@@ -358,7 +357,7 @@ and <strong>Right</strong> to move between its cells:</p>
 <li><strong>Activity</strong> - what the Studio is doing right now.</li>
 <li><strong>Progress</strong> - a live narration or build run: the
 percentage, how many files are done, and the current step.</li>
-<li><strong>Sleep timer</strong> - the timer's state, when one is
+<li><strong>Sleep timer</strong> - the timer’s state, when one is
 set.</li>
 <li><strong>Your books</strong> - how many books are in your
 library.</li>
@@ -393,20 +392,20 @@ both books and folders: <strong>Open</strong>, <strong>Reveal in
 Folder</strong>, <strong>Favorite</strong> (toggle), <strong>Move to
 Folder</strong>, <strong>New Folder</strong>, and
 <strong>Remove</strong>. <strong>Reveal in Folder</strong> opens your
-operating system's file manager (Windows File Explorer, or the macOS
+operating system’s file manager (Windows File Explorer, or the macOS
 Finder) with the book file selected, so you can find it on disk.
 <strong>Remove</strong> takes the book out of your library but never
 touches the file on disk, and says so. The tree remembers which book you
 had selected when the library reloads.</p>
 <h2 id="the-studio-wizard">The Studio wizard</h2>
-<p><strong>Studio &gt; Open Audio Studio...</strong> (Ctrl+N) opens the
+<p><strong>Studio &gt; Open Audio Studio…</strong> (Ctrl+N) opens the
 wizard. Its first page asks the one question that matters - what would
 you like to make? - and the following steps adapt to your answer. The
 wizard remembers which journey you used last and pre-selects it.</p>
 <p>Wizard mechanics, the same on every page:</p>
 <ul>
-<li>Every page change is announced: "Step 2 of 7: What should I
-read?".</li>
+<li>Every page change is announced: “Step 2 of 7: What should I
+read?”.</li>
 <li><strong>Back</strong> and <strong>Next</strong> move between steps.
 Each page validates before you leave it, with a plain-language message
 if something is missing.</li>
@@ -416,12 +415,12 @@ If a page objects, the wizard stops there and tells you why.</li>
 <li><strong>Start</strong> on the summary page begins the run. In the
 Edit journey the button reads <strong>Open in Workbench</strong>
 instead.</li>
-<li><strong>Load a job file...</strong> on the first page re-opens the
-wizard pre-filled from a saved <code>.quilljob</code> (see "Job
-files").</li>
+<li><strong>Load a job file…</strong> on the first page re-opens the
+wizard pre-filled from a saved <code>.quilljob</code> (see “Job
+files”).</li>
 </ul>
-<p>The menu items <strong>Narrate Documents...</strong>, <strong>Build
-From Recordings...</strong>, and <strong>Edit a Book...</strong> are
+<p>The menu items <strong>Narrate Documents…</strong>, <strong>Build
+From Recordings…</strong>, and <strong>Edit a Book…</strong> are
 shortcuts into the same wizard (Edit a Book goes straight to a file
 picker and then the Workbench).</p>
 <h2 id="journey-1-narrate-documents">Journey 1: Narrate Documents</h2>
@@ -431,8 +430,8 @@ Review and start.</p>
 <h3 id="what-should-i-read">What should I read?</h3>
 <ul>
 <li><strong>Source folder</strong> - a combo box seeded with your recent
-source folders, plus a <strong>Browse...</strong> button.
-<strong>Include subfolders</strong> widens discovery.</li>
+source folders, plus a <strong>Browse…</strong> button. <strong>Include
+subfolders</strong> widens discovery.</li>
 <li><strong>File types to include</strong> - Word (<code>.docx</code>),
 Markdown (<code>.md</code>), HTML (<code>.html</code>,
 <code>.htm</code>), plain text (<code>.txt</code>). Tick any
@@ -442,8 +441,8 @@ filters, semicolon- or comma-separated.</li>
 <li><strong>Skip files larger than (MB)</strong> - a size cap so one
 accidental 400 MB export cannot hijack a run (0 = no limit).</li>
 <li><strong>Count documents</strong> - counts the matching files and
-their words off-thread and announces the settled number: "12 document(s)
-found, about 84,000 words." The count also refreshes automatically when
+their words off-thread and announces the settled number: “12 document(s)
+found, about 84,000 words.” The count also refreshes automatically when
 you browse to a folder or arrive on the page.</li>
 </ul>
 <h3 id="who-should-read-it">Who should read it?</h3>
@@ -451,7 +450,7 @@ you browse to a folder or arrive on the page.</li>
 <li><strong>Engine</strong> - Windows (SAPI 5), DECtalk, Piper (neural,
 offline), Kokoro (neural, offline), eSpeak-NG (many languages); on a
 Mac, the macOS system voice as well. An engine that is not installed yet
-is labeled "(not installed)" - see "Voices" below for downloading
+is labeled “(not installed)” - see “Voices” below for downloading
 it.</li>
 <li><strong>Voice</strong> and <strong>Preview voice</strong> - hear the
 chosen voice before committing. Previews play a bundled sample when one
@@ -489,8 +488,8 @@ chapter above. <strong>Preview chapter titles</strong> lists the first
 twenty titles this choice would carve from your actual documents, so you
 can tune the level before synthesizing anything.</li>
 <li><strong>Speak each heading aloud</strong>, <strong>Combine empty
-headings into the next article</strong> (a "Part One" heading with no
-body joins the next chapter's title instead of becoming an empty
+headings into the next article</strong> (a “Part One” heading with no
+body joins the next chapter’s title instead of becoming an empty
 chapter).</li>
 <li><strong>Play a transition sounder between headings</strong> with its
 own volume, plus configurable pauses between articles and sentences and
@@ -510,7 +509,7 @@ resume), Overwrite, or Rename (keep both).</li>
 re-level every file to audiobook loudness.</li>
 <li><strong>Reuse unchanged audio from the last run</strong> (on by
 default) - the incremental rebuild. The Studio fingerprints each
-document's text plus every audio-shaping setting; on a re-run, only what
+document’s text plus every audio-shaping setting; on a re-run, only what
 changed is re-synthesized. Draft with a fast voice, then swap in your
 best voice for the final pass and everything rebuilds
 automatically.</li>
@@ -531,7 +530,7 @@ temp.</li>
 in this journey (leave it off for plain speech-audio files).</li>
 <li><strong>Book title, Author, Narrator, Genre, Year</strong> - the
 tags that travel with the book in every player.</li>
-<li><strong>Look up book details...</strong> - type the title and the
+<li><strong>Look up book details…</strong> - type the title and the
 Studio searches Open Library and MusicBrainz (free public catalogs; it
 asks before the first contact, and only the title and author you typed
 are sent). The match you pick fills author, genre, and year, and if it
@@ -545,8 +544,8 @@ markers).</li>
 <strong>fade in / fade out</strong> per chapter, and <strong>book
 tempo</strong> (pitch-preserving).</li>
 <li><strong>Add spoken opening and closing credits</strong> - the book
-introduces itself ("Title. Written by... Narrated by...") in the run's
-own voice.</li>
+introduces itself (“Title. Written by… Narrated by…”) in the run’s own
+voice.</li>
 <li><strong>Review chapters before building</strong> - pause after
 synthesis to rename, reorder, or merge chapters before the master is
 assembled.</li>
@@ -556,16 +555,16 @@ sources.</li>
 <h3 id="review-and-start">Review and start</h3>
 <p>The summary reads every choice back in plain sentences; press
 <strong>Back</strong> to change any of it. <strong>Save a job
-file...</strong> pins this exact run to a portable
-<code>.quilljob</code> (see "Job files"). Press <strong>Start</strong>
-and the run begins in the background: per-file progress in the status
-bar, spoken milestones at 25, 50, and 75 percent, and the finished book
-lands in Your books. <strong>Cancel</strong> (or Escape) stops a run
-cleanly - the file being synthesized right now finishes first, so you
-are never left with a half-written audio file, and nothing new is
-started after it. The diagnostics log records the same chunk-by-chunk
-detail the progress dialog shows, so reading the log after a run tells
-you as much as watching it did.</p>
+file…</strong> pins this exact run to a portable <code>.quilljob</code>
+(see “Job files”). Press <strong>Start</strong> and the run begins in
+the background: per-file progress in the status bar, spoken milestones
+at 25, 50, and 75 percent, and the finished book lands in Your books.
+<strong>Cancel</strong> (or Escape) stops a run cleanly - the file being
+synthesized right now finishes first, so you are never left with a
+half-written audio file, and nothing new is started after it. The
+diagnostics log records the same chunk-by-chunk detail the progress
+dialog shows, so reading the log after a run tells you as much as
+watching it did.</p>
 <h2 id="journey-2-build-from-recordings">Journey 2: Build From
 Recordings</h2>
 <p>Four steps: Start, Where are the recordings?, Tell me about the book,
@@ -591,14 +590,14 @@ import titles, then confirm the merge.</li>
 </ul>
 <h2 id="journey-3-the-chapter-workbench">Journey 3: The Chapter
 Workbench</h2>
-<p>Open a book three ways: <strong>Edit a Book...</strong> (a file
-picker), <strong>Studio &gt; Open Book File...</strong> (Ctrl+O), or
-press <strong>Enter</strong> on a book in Your books. A chaptered MP3,
-M4B, or M4A opens with its chapters; a file with no chapter markers
-opens as one big chapter, ready to carve.</p>
+<p>Open a book three ways: <strong>Edit a Book…</strong> (a file
+picker), <strong>Studio &gt; Open Book File…</strong> (Ctrl+O), or press
+<strong>Enter</strong> on a book in Your books. A chaptered MP3, M4B, or
+M4A opens with its chapters; a file with no chapter markers opens as one
+big chapter, ready to carve.</p>
 <h3 id="the-chapter-list">The chapter list</h3>
-<p>Each row reads in full: "3. The Long Road - starts 1:02:03, runs
-12:40". Press <strong>Enter</strong> on a chapter to hear it. Selecting
+<p>Each row reads in full: “3. The Long Road - starts 1:02:03, runs
+12:40”. Press <strong>Enter</strong> on a chapter to hear it. Selecting
 a chapter loads its title into the <strong>Chapter title</strong> field
 - type a new one and press Enter (or the <strong>Rename</strong>
 button).</p>
@@ -613,9 +612,9 @@ state) and <strong>Stop</strong>.</li>
 before.</li>
 <li><strong>Rewind</strong> and <strong>Forward</strong> - ten-second
 skips, position spoken after each.</li>
-<li><strong>Where am I?</strong> - the full audible glance: "Chapter 4
+<li><strong>Where am I?</strong> - the full audible glance: “Chapter 4
 of 24: The Long Road. 3:12 into the chapter, 9:28 left in it. 1:02:03 of
-7:41:00 in the book, 6:38:57 remaining."</li>
+7:41:00 in the book, 6:38:57 remaining.”</li>
 <li><strong>Speed</strong> - 0.75x to 2x, pitch preserved.</li>
 <li>A <strong>Position</strong> slider that speaks human time, and a
 <strong>Volume</strong> slider.</li>
@@ -655,34 +654,34 @@ original</strong> (one press undoes every edit) round it out.</li>
 <p>Both propose, never impose - proposals land in the list for review,
 and <strong>Restore original</strong> undoes them.</p>
 <ul>
-<li><strong>Propose chapters from silences...</strong> - scans the
+<li><strong>Propose chapters from silences…</strong> - scans the
 recording with ffmpeg for silences and proposes boundaries at the
 silence midpoints. A small dialog asks for the noise threshold (dB,
 default -30) and minimum silence length (seconds, default 0.8). The
 one-long-recording story is complete: open a single 80-minute file,
 press one button, review, save.</li>
-<li><strong>Propose AI titles...</strong> - names a folder of
-"track07"-style chapters by listening to them. The opening minute of
+<li><strong>Propose AI titles…</strong> - names a folder of
+“track07”-style chapters by listening to them. The opening minute of
 each chapter is transcribed on your machine by the local speech model
 (the audio never leaves your computer); only that text goes to your
 configured AI, which proposes a short title per chapter. Needs a
-configured AI (AI &gt; Set Up AI...) and is unavailable in Safe Mode.
-The Studio asks before starting and tells you exactly what will be
+configured AI (AI &gt; Set Up AI…) and is unavailable in Safe Mode. The
+Studio asks before starting and tells you exactly what will be
 sent.</li>
 <li><strong>Check against ACX</strong> - measures the book against
-Audible's ACX submission window (integrated loudness, true peak, noise
+Audible’s ACX submission window (integrated loudness, true peak, noise
 floor) and shows a verdict dialog with a plain-language recommendation
 for each failing criterion. The verdict is also announced, so you hear
 it even if you dismiss the dialog with Escape.</li>
 </ul>
 <h3 id="import-export-and-split">Import, export, and split</h3>
 <ul>
-<li><strong>Import chapters...</strong> replaces the whole list from
+<li><strong>Import chapters…</strong> replaces the whole list from
 Audacity labels, a CUE sheet, timestamp lines, Podcasting 2.0 JSON, or
 CSV.</li>
-<li><strong>Export chapters...</strong> writes the list in any of the
-same five formats.</li>
-<li><strong>Split into files...</strong> goes the other way: one audio
+<li><strong>Export chapters…</strong> writes the list in any of the same
+five formats.</li>
+<li><strong>Split into files…</strong> goes the other way: one audio
 file per chapter into a folder you pick - instant podcast episodes, or
 tracks for players without chapter support.</li>
 </ul>
@@ -693,16 +692,15 @@ the dialog.</p>
 <ul>
 <li>An <strong>MP3</strong> saves <strong>in place</strong> with
 <strong>Save</strong> - only the tags are rewritten; the audio is
-untouched. <strong>Save As...</strong> writes an edited copy
-instead.</li>
+untouched. <strong>Save As…</strong> writes an edited copy instead.</li>
 <li>An <strong>M4B</strong> cannot be rewritten in place; the Save
-button is disabled and <strong>Save As...</strong> performs a lossless
+button is disabled and <strong>Save As…</strong> performs a lossless
 re-mux (no re-encode, no quality loss) into a new file.</li>
 </ul>
 <p>Long saves run in the background so the window stays responsive.</p>
-<h3 id="publish">Publish...</h3>
+<h3 id="publish">Publish…</h3>
 <p>Opens the Publish dialog for this book - save your chapter edits
-first. See "Publishing" below.</p>
+first. See “Publishing” below.</p>
 <h2 id="voices">Voices</h2>
 <h3 id="engines">Engines</h3>
 <ul>
@@ -718,22 +716,22 @@ machine, in several languages; a one-time model download.</li>
 number of languages.</li>
 <li><strong>macOS (system voice)</strong> - on a Mac, the system
 <code>say</code> voices.</li>
-<li><strong>Cloud voices</strong> - ElevenLabs on the Speech Hub's
+<li><strong>Cloud voices</strong> - ElevenLabs on the Speech Hub’s
 online tab, and OpenAI / Gemini / ElevenLabs multilingual voices as
 translation-target voices. All require your own API key and are never
 used without it.</li>
 </ul>
 <h3 id="the-speech-hub">The Speech Hub</h3>
-<p><strong>Voices &gt; Speech Hub (Voices and Engines)...</strong> is
-the one place to see and set everything: offline voices on one tab,
-cloud voices on another, and the speech-recognition
-(dictation/transcription) engines and models alongside. Pick an engine
-and voice, adjust rate, volume, or speed, preview, and <strong>Set as
-Default</strong>. Voices you configure here are shared with QUILL - and
-the hub's "export to audio" action opens the Audio Studio wizard,
-because in this app that is what export means.</p>
+<p><strong>Voices &gt; Speech Hub (Voices and Engines)…</strong> is the
+one place to see and set everything: offline voices on one tab, cloud
+voices on another, and the speech-recognition (dictation/transcription)
+engines and models alongside. Pick an engine and voice, adjust rate,
+volume, or speed, preview, and <strong>Set as Default</strong>. Voices
+you configure here are shared with QUILL - and the hub’s “export to
+audio” action opens the Audio Studio wizard, because in this app that is
+what export means.</p>
 <h3 id="pronunciation-dictionaries">Pronunciation dictionaries</h3>
-<p><strong>Voices &gt; Pronunciation Dictionaries...</strong> opens the
+<p><strong>Voices &gt; Pronunciation Dictionaries…</strong> opens the
 same manager QUILL uses to teach the speech engines how to say tricky
 words - names, acronyms, invented terms. Each entry maps what is written
 to how it should be spoken, and dictionaries apply as a silent text
@@ -746,23 +744,23 @@ comparable. When a bundled sample ships for a voice, the preview plays
 instantly - even before the engine is downloaded. When no sample ships
 but the engine is installed, the Studio synthesizes the phrase live with
 the real voice; if that synthesis is taking a moment, you hear
-"Generating preview, please wait" so silence never leaves you guessing.
+“Generating preview, please wait” so silence never leaves you guessing.
 If neither a sample nor an installed engine is available, the status
-line says "Download this voice to hear a preview." Starting a new
+line says “Download this voice to hear a preview.” Starting a new
 preview always stops the previous one; previews never overlap.</p>
 <h3 id="generate-captions-from-audio-or-video">Generate captions from
 audio or video</h3>
-<p><strong>Voices &gt; Generate Captions (Offline)...</strong>
-transcribes an audio or video file into a <code>.srt</code> or
-<code>.vtt</code> caption file entirely on your own machine - nothing is
-uploaded. Point it at a recording, a finished chapter, or a video, and
-it writes captions alongside. It uses the same speech-recognition models
-as the Studio's other transcription work, so if none is installed yet it
-offers to fetch one first (see "Downloading voices, engines, and
-components").</p>
+<p><strong>Voices &gt; Generate Captions (Offline)…</strong> transcribes
+an audio or video file into a <code>.srt</code> or <code>.vtt</code>
+caption file entirely on your own machine - nothing is uploaded. Point
+it at a recording, a finished chapter, or a video, and it writes
+captions alongside. It uses the same speech-recognition models as the
+Studio’s other transcription work, so if none is installed yet it offers
+to fetch one first (see “Downloading voices, engines, and
+components”).</p>
 <h3 id="convert-audio-between-formats">Convert audio between
 formats</h3>
-<p><strong>Voices &gt; Convert Audio...</strong> changes audio files
+<p><strong>Voices &gt; Convert Audio…</strong> changes audio files
 between formats and pulls the audio track out of video files. It uses
 the ffmpeg the Studio already bundles, so there is nothing extra to
 install, nothing leaves your machine, and it works in Safe Mode.</p>
@@ -789,15 +787,15 @@ leveler, fade in and fade out, and a safety limiter.</li>
 </ul>
 <p>The run happens in the background with several files at once, so the
 window stays responsive, and <strong>Cancel</strong> works. Progress
-appears in the status bar's Progress cell and the tray tooltip, and the
+appears in the status bar’s Progress cell and the tray tooltip, and the
 spoken summary at the end <strong>names any files that failed</strong>
 rather than reporting success for all of them.</p>
-<p><strong>Voices &gt; Convert from URL...</strong> takes a link -
-YouTube and the many other sites the downloader supports - fetches its
-audio, and hands it to the converter. The downloader is not bundled: the
-first time you use this, the Studio explains what it is about to install
-and asks, and it reminds you that you are responsible for having the
-right to the audio you download. Unavailable in Safe Mode.</p>
+<p><strong>Voices &gt; Convert from URL…</strong> takes a link - YouTube
+and the many other sites the downloader supports - fetches its audio,
+and hands it to the converter. The downloader is not bundled: the first
+time you use this, the Studio explains what it is about to install and
+asks, and it reminds you that you are responsible for having the right
+to the audio you download. Unavailable in Safe Mode.</p>
 <h3 id="downloading-voices-engines-and-components">Downloading voices,
 engines, and components</h3>
 <p>Everything heavy downloads on demand, with progress and a working
@@ -806,15 +804,15 @@ Cancel:</p>
 <li>The Speech Hub offers <strong>Download Voice</strong> for Piper
 voices and the Kokoro model pack, and engine downloads for DECtalk,
 Piper, and eSpeak-NG right where you would use them.</li>
-<li><strong>Voices &gt; Manage Speech Models...</strong> manages the
+<li><strong>Voices &gt; Manage Speech Models…</strong> manages the
 speech-recognition models (used by transcription-backed features such as
-AI chapter titles), matched to your machine's memory and GPU.</li>
-<li><strong>Voices &gt; Download Optional Components...</strong> is the
+AI chapter titles), matched to your machine’s memory and GPU.</li>
+<li><strong>Voices &gt; Download Optional Components…</strong> is the
 hub for everything else: see what is installed versus available,
 download, <strong>Test</strong> it in place, or <strong>Remove</strong>
 it. The audio pack here bundles the mpv player engine and ffmpeg in one
 download.</li>
-<li><strong>Voices &gt; Get FFmpeg...</strong> is the safety net for
+<li><strong>Voices &gt; Get FFmpeg…</strong> is the safety net for
 ffmpeg alone - the tool behind compressed formats, audiobook assembly,
 loudness measurement, and silence detection. Both packaged flavors
 already bundle it.</li>
@@ -826,49 +824,49 @@ private.</p>
 <p>All downloads are disabled in Safe Mode.</p>
 <h2 id="ai-features">AI features</h2>
 <h3 id="set-up-ai">Set Up AI</h3>
-<p><strong>AI &gt; Set Up AI...</strong> runs a short, jargon-free
-wizard: choose how AI should run - a cloud provider with your own key
-(paste it, test it) or a local model via Ollama (nothing leaves your
-machine) - and you land ready to go. Nothing is applied until you
-confirm, and you can cancel at any point with nothing lost.</p>
+<p><strong>AI &gt; Set Up AI…</strong> runs a short, jargon-free wizard:
+choose how AI should run - a cloud provider with your own key (paste it,
+test it) or a local model via Ollama (nothing leaves your machine) - and
+you land ready to go. Nothing is applied until you confirm, and you can
+cancel at any point with nothing lost.</p>
 <p>One configured provider powers three things in this app:</p>
 <ul>
-<li><strong>AI chapter titles</strong> - the Workbench's "Propose AI
-titles..." (local transcription first; only text goes to the AI).</li>
-<li><strong>Translated editions</strong> - "Translate with: AI provider"
+<li><strong>AI chapter titles</strong> - the Workbench’s “Propose AI
+titles…” (local transcription first; only text goes to the AI).</li>
+<li><strong>Translated editions</strong> - “Translate with: AI provider”
 on the voices page. LibreTranslate remains the local, no-AI
 alternative.</li>
 <li><strong>Cloud narration voices</strong> - the OpenAI / Gemini /
 ElevenLabs voices offered as translation targets, each using its
-provider's key.</li>
+provider’s key.</li>
 </ul>
 <p>All AI features are unavailable in Safe Mode.</p>
 <h2 id="publishing">Publishing</h2>
 <h3 id="publish-a-finished-book">Publish a Finished Book</h3>
-<p><strong>Book Tools &gt; Publish a Finished Book...</strong> asks for
+<p><strong>Book Tools &gt; Publish a Finished Book…</strong> asks for
 the book file (pre-selecting the book highlighted in Your books) and
-opens the Publish dialog. The Workbench's <strong>Publish...</strong>
+opens the Publish dialog. The Workbench’s <strong>Publish…</strong>
 button opens the same dialog for the book you are editing. Three
 explicit, consent-first paths:</p>
 <ul>
 <li><strong>Podcast feed</strong> - writes a complete <code>.rss</code>
 file next to the book from its tags and the public URL you give;
 generation itself never touches the network. Upload the feed and the
-audio anywhere, then subscribe to the feed's public URL in any podcast
+audio anywhere, then subscribe to the feed’s public URL in any podcast
 app. Chapter navigation rides the <code>chapters.json</code> sidecar for
 Podcasting 2.0 apps.</li>
 <li><strong>SFTP upload</strong> - save a destination (name, host, port,
 username, remote folder, and the public URL base that mirrors it) and
-upload the book plus its companion files through the app's own SSH
+upload the book plus its companion files through the app’s own SSH
 machinery, with strict host-key policy. The password is kept in the
 Windows Credential Manager, never in settings. Progress speaks
-whole-percent steps ("Uploading book.m4b: 42%") and Cancel is real:
+whole-percent steps (“Uploading book.m4b: 42%”) and Cancel is real:
 files already completed stay on the server.</li>
 <li><strong>Auphonic</strong> - professional post-production in your own
 Auphonic account. Paste your API token (kept in the credential manager),
 press <strong>Check account and load presets</strong> to hear whose
 account it is, your credit balance, and your saved presets; then
-<strong>Send to Auphonic...</strong> uploads, waits, and downloads the
+<strong>Send to Auphonic…</strong> uploads, waits, and downloads the
 results into a folder next to the book. Cancelling before the upload
 finishes means no production starts; cancelling later leaves the
 production running in your account and skips the download - the app
@@ -876,7 +874,7 @@ announces which happened.</li>
 </ul>
 <h3 id="make-a-podcast-feed-from-a-folder">Make a Podcast Feed From a
 Folder</h3>
-<p><strong>Book Tools &gt; Make a Podcast Feed From a Folder...</strong>
+<p><strong>Book Tools &gt; Make a Podcast Feed From a Folder…</strong>
 runs a whole show from one folder. Every MP3, M4B, or M4A master becomes
 an episode (oldest file = episode 1), with its title from its tags or
 your per-episode override and your per-episode description, edited in an
@@ -885,29 +883,29 @@ URL base, feed URL, cover URL) persist in the folder itself, so after
 each new build one press of <strong>Write feed.rss now</strong>
 regenerates the complete feed. <strong>Write show notes page</strong>
 produces an accessible <code>show-notes.html</code> beside it.
-Everything here is local file IO; uploading is the SFTP destination's
+Everything here is local file IO; uploading is the SFTP destination’s
 job.</p>
 <p>All publishing is unavailable in Safe Mode.</p>
 <h3 id="acx-compliance-check">ACX Compliance Check</h3>
-<p><strong>Book Tools &gt; ACX Compliance Check...</strong> measures any
+<p><strong>Book Tools &gt; ACX Compliance Check…</strong> measures any
 audio file - not just books built here - against the ACX submission
 window: integrated loudness (target -20 LUFS plus or minus 3), true peak
 (max -3 dBFS), and noise floor (max -60 dBFS). A passing file is told so
 plainly; a failing one gets a concrete recommendation per criterion
-("make the recording 5.8 dB quieter"). The measurement runs in the
+(“make the recording 5.8 dB quieter”). The measurement runs in the
 background and needs ffmpeg; if ffmpeg is missing the app points you at
-<strong>Voices &gt; Get FFmpeg...</strong> first.</p>
+<strong>Voices &gt; Get FFmpeg…</strong> first.</p>
 <h2 id="job-files">Job files</h2>
 <p>A <code>.quilljob</code> file pins an entire run - folder, voices,
 rotation and casting, chapters, output, mastering, and book details - in
 a small, portable, hand-editable text file.</p>
 <ul>
-<li><strong>Save</strong>: on the wizard's summary page, press
-<strong>Save a job file...</strong></li>
-<li><strong>Load</strong>: <strong>Studio &gt; Open Job
-File...</strong>, or <strong>Load a job file...</strong> on the wizard's
-first page. The wizard reopens with every page pre-filled from the job;
-review and press Start.</li>
+<li><strong>Save</strong>: on the wizard’s summary page, press
+<strong>Save a job file…</strong></li>
+<li><strong>Load</strong>: <strong>Studio &gt; Open Job File…</strong>,
+or <strong>Load a job file…</strong> on the wizard’s first page. The
+wizard reopens with every page pre-filled from the job; review and press
+Start.</li>
 </ul>
 <p>Keep one job file per project, or edit one in any text editor between
 runs. Loading a job from the Studio menu behaves exactly like loading it
@@ -915,11 +913,11 @@ in the wizard - just one dialog sooner.</p>
 <h2 id="book-tools">Book Tools</h2>
 <p>Two listening aids live on the <strong>Book Tools</strong> menu:</p>
 <ul>
-<li><strong>Sleep Timer...</strong> - stop playback after a number of
+<li><strong>Sleep Timer…</strong> - stop playback after a number of
 minutes you choose, or at the end of the current chapter. The Studio
 announces when playback stops, and you can cancel the timer before it
 fires. Your last setting is remembered.</li>
-<li><strong>Play Queue...</strong> - line up an ordered list of books.
+<li><strong>Play Queue…</strong> - line up an ordered list of books.
 Add, remove, clear, and set which one is next. When the book you are
 listening to finishes and you close the Workbench, the Studio opens the
 next entry in the queue and announces the change; an empty queue, or a
@@ -940,19 +938,19 @@ open it) - the books you have played most recently. Pick one to open it
 in the Workbench.</li>
 </ul>
 <h2 id="preferences">Preferences</h2>
-<p><strong>Studio &gt; Preferences...</strong> (Ctrl+Comma):</p>
+<p><strong>Studio &gt; Preferences…</strong> (Ctrl+Comma):</p>
 <ul>
 <li><strong>Check for updates automatically on launch</strong> - a quiet
-daily check; see "Checking for updates".</li>
+daily check; see “Checking for updates”.</li>
 <li><strong>Alt+F4 minimizes to the system tray</strong> (off by
 default) - when on, Alt+F4 tucks the Studio into the tray with any
 narration run still going, instead of closing the window. The titlebar X
-and Studio &gt; Exit keep the "When closing the window" behavior.</li>
+and Studio &gt; Exit keep the “When closing the window” behavior.</li>
 <li><strong>Speak progress milestones during long runs</strong> (on by
 default) - announce 25, 50, and 75 percent during a narration or build
 run.</li>
 <li><strong>When closing the window</strong> - Ask when work is running
-/ Exit / Minimize to Tray. "Ask" only prompts while an export is still
+/ Exit / Minimize to Tray. “Ask” only prompts while an export is still
 going; an idle window just closes. The prompt names the work that would
 be lost and defaults to keeping the Studio open.</li>
 </ul>
@@ -965,7 +963,7 @@ configure a voice here and QUILL reads aloud with it too.</p>
 narration continues with the window tucked away. Right-click (or
 keyboard-invoke) the tray icon for:</p>
 <ul>
-<li><strong>Open Audio Studio...</strong> - restore the window and open
+<li><strong>Open Audio Studio…</strong> - restore the window and open
 the wizard.</li>
 <li><strong>Resume: <your latest book></strong> - restore the window and
 open your most recent book in the Chapter Workbench.</li>
@@ -973,7 +971,7 @@ open your most recent book in the Chapter Workbench.</li>
 <p>Double-click the tray icon to bring the window back.</p>
 <h2 id="announcements-how-the-studio-tells-you-things">Announcements:
 how the Studio tells you things</h2>
-<p>Everything the Studio announces - "Ready", a run milestone, a
+<p>Everything the Studio announces - “Ready”, a run milestone, a
 finished conversion, a warning - goes out on four channels at once, so
 you hear or feel it in whichever way you actually work:</p>
 <ul>
@@ -991,12 +989,12 @@ last aside - except errors, which always come through immediately.</li>
 <li><strong>Sound</strong>, for the short cues that confirm an
 action.</li>
 <li><strong>The status line</strong>, which you can read at your own
-pace with F6 (see "The status bar").</li>
+pace with F6 (see “The status bar”).</li>
 </ul>
 <p>Announcements are also recorded as they happen, so a message that
 went past while you were reading something else is not simply gone.</p>
 <p>These settings are shared with QUILL rather than repeated in the
-Studio's own Preferences, so set them once in QUILL's Preferences
+Studio’s own Preferences, so set them once in QUILL’s Preferences
 (Accessibility) and they apply here too: whether to show announcements
 in braille, the braille style (the full spoken wording, or a compact
 position-first form), how long an identical braille message is held
@@ -1005,7 +1003,7 @@ whether the companion apps play sound cues, whether a cue stands in for
 speech while Quiet Mode is on, and which severities interrupt
 speech.</p>
 <h2 id="checking-for-updates">Checking for updates</h2>
-<p><strong>Help &gt; Check for Updates...</strong> compares your version
+<p><strong>Help &gt; Check for Updates…</strong> compares your version
 with the newest Quill release, works out which download matches the
 flavor you run (the installer for an installed copy, the portable zip
 for a portable one), and fetches it with spoken progress. Then choose
@@ -1020,7 +1018,7 @@ offered to the Studio and each app updates on its own schedule. The
 automatic startup check (on by default, throttled to once a day) is
 silent unless it actually finds something.</p>
 <h2 id="the-command-palette">The Command Palette</h2>
-<p><strong>Help &gt; Command Palette...</strong> (Ctrl+Shift+P) lists
+<p><strong>Help &gt; Command Palette…</strong> (Ctrl+Shift+P) lists
 every Studio command in one searchable list: the three journeys, Open
 Job File, Publish, the podcast feed, the ACX check, Sleep Timer, Mute
 Playback, Play Queue, the Speech Hub, Pronunciation Dictionaries,
@@ -1028,11 +1026,11 @@ Generate Captions, Convert Audio, Convert from URL, model and component
 downloads, AI setup, Preferences, and Check for Updates. Type a few
 letters, arrow to the command, press Enter.</p>
 <h2 id="quillins">Quillins</h2>
-<p><strong>Quillins</strong> are QUILL's small, sandboxed,
+<p><strong>Quillins</strong> are QUILL’s small, sandboxed,
 permission-gated add-ons. They run in QUILL, Quill Radio, and QUILL Cast
 today; <strong>Audio Studio does not offer a Quillins menu yet.</strong>
 The groundwork is in place - an add-on can declare that it contributes
-an extra step to the Studio's audio processing, such as a loudness pass
+an extra step to the Studio’s audio processing, such as a loudness pass
 at the mastering stage, and a sample add-on demonstrates exactly that -
 but the Studio does not load add-ons in this version. When it does, they
 will be off in Safe Mode like everywhere else.</p>
@@ -1154,50 +1152,50 @@ Credential Manager).</li>
 Uninstalling the Studio never deletes the shared data.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Two Help items are worth knowing before anything else goes wrong.
-<strong>Help &gt; View Log...</strong> opens the Studio's own log, so
-you can read what happened during a run instead of guessing.
-<strong>Help &gt; Save Diagnostics...</strong> writes a small, redacted
-zip - the log plus what the Studio can tell about your machine and
-settings, with anything private scrubbed - which is exactly what to
-attach to a bug report. <strong>Help &gt; Report a Bug...</strong> files
-one for you, already tagged with this app's name and version.</p>
+<strong>Help &gt; View Log…</strong> opens the Studio’s own log, so you
+can read what happened during a run instead of guessing. <strong>Help
+&gt; Save Diagnostics…</strong> writes a small, redacted zip - the log
+plus what the Studio can tell about your machine and settings, with
+anything private scrubbed - which is exactly what to attach to a bug
+report. <strong>Help &gt; Report a Bug…</strong> files one for you,
+already tagged with this app’s name and version.</p>
 <ul>
-<li><strong>"The ACX check measures loudness with FFmpeg, which looks
-missing."</strong> Choose <strong>Voices &gt; Get FFmpeg...</strong> The
+<li><strong>“The ACX check measures loudness with FFmpeg, which looks
+missing.”</strong> Choose <strong>Voices &gt; Get FFmpeg…</strong> The
 same applies if compressed output formats fall back to WAV, audiobook
 assembly fails, or silence detection cannot run - all of those are
-ffmpeg's jobs. The packaged installer and portable zip bundle ffmpeg;
+ffmpeg’s jobs. The packaged installer and portable zip bundle ffmpeg;
 this mostly affects source checkouts.</li>
-<li><strong>An engine shows "(not installed)" in the wizard.</strong>
+<li><strong>An engine shows “(not installed)” in the wizard.</strong>
 Open <strong>Voices &gt; Speech Hub</strong> and use the download button
-on that engine's tab, or <strong>Voices &gt; Download Optional
-Components...</strong> DECtalk, Piper, eSpeak-NG, and the Kokoro models
+on that engine’s tab, or <strong>Voices &gt; Download Optional
+Components…</strong> DECtalk, Piper, eSpeak-NG, and the Kokoro models
 all install on demand.</li>
-<li><strong>The Preview voice button says "Download this voice to hear a
-preview."</strong> No bundled sample ships for that voice and its engine
+<li><strong>The Preview voice button says “Download this voice to hear a
+preview.”</strong> No bundled sample ships for that voice and its engine
 is not installed yet; download the engine or voice first.</li>
 <li><strong>A Piper voice is selected but will not speak.</strong> The
-voice model has not been downloaded; the Speech Hub's Download Voice
+voice model has not been downloaded; the Speech Hub’s Download Voice
 button fetches it.</li>
-<li><strong>A book in Your books is marked "(missing)".</strong> The
+<li><strong>A book in Your books is marked “(missing)”.</strong> The
 file was moved or renamed. Open it from its new location with Ctrl+O
 (the list updates), or press Delete to drop the stale entry.</li>
 <li><strong>The Save button is disabled in the Workbench.</strong> The
-book is an M4B; use <strong>Save As...</strong> - M4B chapter data
-cannot be rewritten in place, so the Workbench re-muxes losslessly to a
-new file.</li>
-<li><strong>"Propose AI titles" says it needs a configured AI
-provider.</strong> Run <strong>AI &gt; Set Up AI...</strong> first - or
+book is an M4B; use <strong>Save As…</strong> - M4B chapter data cannot
+be rewritten in place, so the Workbench re-muxes losslessly to a new
+file.</li>
+<li><strong>“Propose AI titles” says it needs a configured AI
+provider.</strong> Run <strong>AI &gt; Set Up AI…</strong> first - or
 you are in Safe Mode, where every AI surface is disabled.</li>
 <li><strong>A translated edition was skipped.</strong> The cloud voice
 you chose for that language has no API key configured; the run notes the
 skip and continues rather than stopping.</li>
 <li><strong>Closing the window warns about work in progress.</strong> A
 narration or build run is still going. Choose No to keep the Studio
-open, or minimize to the tray and let it finish; the "When closing the
-window" preference sets a fixed answer.</li>
+open, or minimize to the tray and let it finish; the “When closing the
+window” preference sets a fixed answer.</li>
 <li><strong>Windows SmartScreen blocks the installer.</strong> The
-release is not code-signed; choose "More info" then "Run anyway".</li>
+release is not code-signed; choose “More info” then “Run anyway”.</li>
 </ul>
 </main>
 </body>

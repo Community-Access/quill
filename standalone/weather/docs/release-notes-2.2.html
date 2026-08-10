@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release-notes-2.2</title>
+  <title>Quill Weather 2.2 -- Release Notes</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-weather-2.2-release-notes">Quill Weather 2.2 – Release
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-weather-22--release-notes">Quill Weather 2.2 – Release
 Notes</h1>
 <p>Quill Weather is a small app with a big job: to watch the sky for you
 and speak up the moment it matters. It began life inside Quill Radio’s
@@ -258,7 +278,7 @@ they never step on one another. It is Windows-only and best-effort: if
 another app already claimed the chord, Quill Weather quietly yields it
 and the tray icon still shows and hides the window as always.</li>
 </ul>
-<h2 id="a-warning-you-cannot-miss-your-way">A warning you cannot miss –
+<h2 id="a-warning-you-cannot-miss--your-way">A warning you cannot miss –
 your way</h2>
 <p>Every new alert plays an attention <strong>sounder</strong>. In
 <strong>Settings</strong> you can silence it entirely (the alert is
@@ -308,7 +328,7 @@ QUILL and Quill Radio let you tailor themselves. And the apps stay
 within reach of one another: <strong>Open Quill Radio</strong> and
 <strong>Open QUILL</strong> sit in the File menu and the tray, each
 opening in its own window.</p>
-<h2 id="not-a-fork-a-guarantee">Not a fork – a guarantee</h2>
+<h2 id="not-a-fork--a-guarantee">Not a fork – a guarantee</h2>
 <p>Quill Weather runs the exact same weather feature code as QUILL and
 Quill Radio, from the same upstream <code>quill</code> package.
 Improvements land once, upstream, and reach all three together. This app
@@ -363,5 +383,6 @@ tools flagged is gone.</li>
 needs Quill Radio installed; Quill Weather still finds your local
 transmitter.</li>
 </ul>
+</main>
 </body>
 </html>
