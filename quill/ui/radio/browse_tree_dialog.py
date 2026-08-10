@@ -28,18 +28,26 @@ from quill.core.radio import (
     acb_media,
     iheart,
     m3u_catalog,
+    networks,
     nfb_media,
     radio_browser,
     reading_services,
     soma_fm,
     tunein,
-    wxindex,
     xiph,
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
-from quill.core.radio.wxindex_models import WxState, to_radio_station
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.radio.browse_tree_helpers import (
+    iheart_letter_groups as _iheart_letter_groups,
+)
+from quill.ui.radio.browse_tree_helpers import (
+    wx_playable_stations as _wx_playable_stations,
+)
+from quill.ui.radio.browse_tree_helpers import (
+    wx_state_folders as _wx_state_folders,
+)
 
 #: Top-level sources, in tree order: (label, kind, payload). "stations" sources
 #: expand straight to stations; "genres" sources expand to genre folders; the
@@ -58,6 +66,9 @@ _SOURCES: tuple[tuple[str, str, Any], ...] = (
     ("SomaFM", "stations", "soma"),
     ("TuneIn", "tunein", ""),
     ("iHeart", "iheart", None),
+    # #1384: well-known broadcasters grouped as one-click nodes, each a curated
+    # Radio Browser query (see quill.core.radio.networks) -> no new egress site.
+    ("Networks", "networks", None),
     ("Community M3U (Music Genres)", "genres", m3u_catalog),
     ("Xiph / Icecast Directory", "genres", xiph),
 )
@@ -74,13 +85,23 @@ _EXPANDABLE = (
     "iheart",
     "iheart-genre",
     "iheart-letter",
+    "networks",
+    "network-group",
+    "network",
 )
 
 #: Expandable kinds whose fetched children are already playable ``RadioStation``
 #: leaves (as opposed to sub-folders that must be recursed). "iheart-genre" is
 #: here because its raw fetch is the genre's stations -- the A-Z letters are
 #: only a display grouping.
-_LEAF_KINDS = frozenset({"stations", "genre", "wx_state", "iheart-genre", "iheart-letter"})
+_LEAF_KINDS = frozenset({
+    "stations",
+    "genre",
+    "wx_state",
+    "iheart-genre",
+    "iheart-letter",
+    "network",
+})
 
 #: Bounds for "Find in this folder": how deep to recurse a subtree, the most
 #: results to collect, and the most folder fetches to spend -- so searching from
@@ -89,57 +110,6 @@ _LEAF_KINDS = frozenset({"stations", "genre", "wx_state", "iheart-genre", "ihear
 _FIND_MAX_DEPTH = 6
 _FIND_MAX_RESULTS = 2000
 _FIND_MAX_FETCHES = 80
-
-
-def _iheart_letter_groups(
-    stations: list[RadioStation],
-) -> list[tuple[str, list[RadioStation]]]:
-    """Group iHeart stations into an alphabetised sub-directory: a "0-9" bucket
-    for digit-led names first, then A-Z folders (case-insensitive by first
-    letter), then a "#" bucket for anything else. Stations inside each bucket
-    are sorted by name, case-insensitively, so the whole list reads in order."""
-    buckets: dict[str, list[RadioStation]] = {}
-    for station in stations:
-        first = (station.name or "").strip()[:1].upper()
-        if first.isalpha():
-            key = first
-        elif first.isdigit():
-            key = "0-9"
-        else:
-            key = "#"
-        buckets.setdefault(key, []).append(station)
-
-    def _order(key: str) -> tuple[int, str]:
-        if key == "0-9":
-            return (0, key)  # digits before letters
-        if key == "#":
-            return (2, key)  # symbols last
-        return (1, key)
-
-    return [
-        (key, sorted(buckets[key], key=lambda s: (s.name or "").lower()))
-        for key in sorted(buckets, key=_order)
-    ]
-
-
-def _wx_state_folders(*, safe_mode: bool) -> list[WxState]:
-    """States with a playable NOAA transmitter, counted from the SAME
-    full-directory tier the station leaves come from -- so a folder's "(N items)"
-    always matches what expanding it shows (never "9 items" then nothing).
-    Most NWR transmitters have no internet re-stream and whole states have none,
-    so feedless states are omitted; ``_add_children`` turns each into a
-    "wx_state" node."""
-    return wxindex.states_with_playable_feeds(safe_mode=safe_mode)
-
-
-def _wx_playable_stations(slug: str, *, safe_mode: bool) -> list[RadioStation]:
-    """Station leaves for one State: its transmitters that have a playable
-    internet re-stream feed. Sourced via ``wxindex.playable_stations_for_state``
-    from the full-directory tier (bundled snapshot or the refreshed
-    directory cache), which is the only tier that carries feed URLs -- the
-    per-state live endpoint returns just a feed count, so building the tree
-    from it would leave every state's folder empty online."""
-    return [to_radio_station(s) for s in wxindex.playable_stations_for_state(slug)]
 
 
 class BrowseTreeDialog:
@@ -382,6 +352,12 @@ class BrowseTreeDialog:
                 return list(iheart.fetch_genre_stations(payload, safe_mode=self._safe_mode))
             if kind == "iheart-letter":
                 return list(payload)  # already-fetched stations, no network
+            if kind == "networks":
+                return list(networks.groups())  # local: group labels
+            if kind == "network-group":
+                return list(networks.networks_in_group(payload))  # local: Network folders
+            if kind == "network":
+                return networks.network_stations(payload, safe_mode=self._safe_mode)
         except Exception:  # noqa: BLE001 - a down source shows as empty, never fatal
             return []
         return []
@@ -399,6 +375,10 @@ class BrowseTreeDialog:
             return [("wx_state", state.slug) for state in raw]
         if kind == "iheart":
             return [("iheart-genre", genre.genre_id) for genre in raw]
+        if kind == "networks":
+            return [("network-group", group) for group in raw]
+        if kind == "network-group":
+            return [("network", network) for network in raw]
         return []
 
     def _leaf_name(self, node_data: dict) -> str:
@@ -613,6 +593,25 @@ class BrowseTreeDialog:
                 tree.SetItemData(
                     child, {"kind": "iheart-letter", "payload": stations, "loaded": False}
                 )
+                tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
+        elif kind == "networks":
+            for group in raw:
+                child = tree.AppendItem(node, group)
+                tree.SetItemData(
+                    child, {"kind": "network-group", "payload": group, "loaded": False}
+                )
+                tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
+        elif kind == "network-group":
+            for network in raw:
+                # The note (for syndicators) is spoken with the name so a listener
+                # knows it is an affiliate search, not a single stream.
+                label = (
+                    f"{network.display_name} -- {network.note}"
+                    if network.note
+                    else network.display_name
+                )
+                child = tree.AppendItem(node, label)
+                tree.SetItemData(child, {"kind": "network", "payload": network, "loaded": False})
                 tree.SetItemData(tree.AppendItem(child, "Loading..."), {"kind": "placeholder"})
         elif kind == "tunein":
             for result in raw:
