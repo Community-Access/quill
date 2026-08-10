@@ -288,6 +288,45 @@ ai-openai = ["openai-agents>=0.18.3"]
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
 # Windows 10 SDK + CMake. Not required at runtime (MSAA fallback ships).
 native-build = ["pybind11>=3.0.4"]
+# The dependency set the shared QuillVille Runtime ships
+# (standalone/runtime/build_runtime.ps1 -> quillville-runtime.spec), which every
+# companion app installs once and launches through.
+#
+# Why this exists: the spec builds with collect_all("quill"), so PyInstaller
+# bundles whatever happens to be importable in the builder's virtualenv. With no
+# declared set, the runtime's contents were a photograph of one machine at one
+# moment -- a drifted venv silently shipped a runtime with no offline dictation
+# and wxPython below its own pin, and the build reported success either way.
+# scripts/check_build_env.py verifies the venv against this list before a build,
+# so a drift fails loudly instead of shipping.
+#
+# This mirrors what build_portable.py already does for the portable bundles (it
+# resolves groups straight from this file), which is exactly why those artifacts
+# were unaffected by the same drift.
+#
+# Trimming this list is the supported way to shrink every app installer at once:
+# the speech engines below (fasterwhisper, vosk, kokoro) all have on-demand
+# install paths in quill/core/speech/engine_install.py and are bundled here only
+# so a fresh install works without a download.
+runtime = [
+  "quill[ui]",
+  "quill[spellcheck]",
+  "quill[audio]",
+  "quill[speech]",
+  "quill[dictation]",
+  "quill[mp3]",
+  "quill[docx]",
+  "quill[math]",
+  # Windows OCR (the winrt-* packages) shipped in the 2026-08-09 release and is
+  # absent from the current one. It is ~1.5 MB and needs no model download, so
+  # restoring it is a one-line change: add "quill[ocr]" here. Left out for now
+  # because what the runtime ships is a product decision, not a build one.
+  "quill[office-text]",
+  "quill[pdf-ocr]",
+  "quill[fasterwhisper]",
+  "quill[vosk]",
+  "quill[kokoro]",
+]
 dev = [
   "pytest>=9.1.1",
   "pytest-xdist>=3.8.0",

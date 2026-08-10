@@ -21,6 +21,25 @@ $ErrorActionPreference = "Stop"
 $repoRoot = $PSScriptRoot
 $dist = Join-Path $repoRoot "dist\QuillVilleRuntime"
 
+# -- the build environment must match the declared runtime manifest -----------
+# quillville-runtime.spec builds with collect_all("quill"), so PyInstaller
+# bundles whatever is importable in THIS interpreter's environment. A drifted
+# virtualenv therefore changes what ships without changing a line of source, and
+# the build still exits 0: one such drift shipped a runtime with no offline
+# dictation and wxPython below the pin in [ui], and it was only caught by
+# unpacking the installer and diffing it against a known-good one. Check the
+# venv against pyproject's [runtime] group first -- it costs a second.
+$quillRepo = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\.."))
+$envCheck = Join-Path $quillRepo "scripts\check_build_env.py"
+if (Test-Path $envCheck) {
+    & $Python $envCheck --groups runtime --python $Python
+    if ($LASTEXITCODE -ne 0) {
+        throw "Build environment does not match pyproject [runtime] -- see above."
+    }
+} else {
+    Write-Warning "Build-environment check not found at $envCheck; skipping."
+}
+
 # -- ffmpeg + libmpv to bundle (shared by every app that records/plays) -------
 # SECURITY: ffmpeg/ffprobe and libmpv-2.dll are copied verbatim into the shipped
 # runtime, so they must come from a vetted staging directory passed explicitly.
