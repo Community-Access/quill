@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-07-missing-components-surface-design</title>
+  <title>Unified "missing component" surface — design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,9 +238,30 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="unified-missing-component-surface-design">Unified “missing
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="unified-missing-component-surface--design">Unified “missing
 component” surface — design</h1>
 <p>Closes GitHub issue #874.</p>
 <h2 id="problem">Problem</h2>
@@ -275,7 +299,7 @@ pattern; individual voice selection and download stays in the Voice
 Browser.</li>
 </ul>
 <h2 id="design">Design</h2>
-<h3 id="add-piper-to-the-component-catalog">1. Add Piper to the
+<h3 id="1-add-piper-to-the-component-catalog">1. Add Piper to the
 component catalog</h3>
 <p><code>quill/core/optional_components.py</code>: new
 <code>_piper_installed()</code> detector
@@ -283,13 +307,13 @@ component catalog</h3>
 and a new <code>OptionalComponent("piper", ...)</code> entry in
 <code>gather_optional_components()</code>, category <code>VOICES</code>,
 alongside Kokoro/eSpeak/DECtalk.</p>
-<h3 id="pre-focus-the-picker">2. Pre-focus the picker</h3>
+<h3 id="2-pre-focus-the-picker">2. Pre-focus the picker</h3>
 <p><code>show_optional_components_picker()</code> gains an optional
 <code>preselect: str = ""</code> parameter. When non-empty and present
 among <code>components</code>, that row is selected/focused instead of
 row 0. Backward compatible — every existing caller (just the Help-menu
 entry point today) keeps working unchanged.</p>
-<h3 id="two-dispatch-helpers-on-mainframe">3. Two dispatch helpers on
+<h3 id="3-two-dispatch-helpers-on-mainframe">3. Two dispatch helpers on
 MainFrame</h3>
 <p><strong>Hard blockers</strong> (the action cannot proceed at all
 without the component; fire every time, matching current frequency):</p>
@@ -350,7 +374,7 @@ and is out of scope here).</li>
 template-based equation reading instead of MathCAT’s natural
 speech.</li>
 </ul>
-<h3 id="new-persisted-state">4. New persisted state</h3>
+<h3 id="4-new-persisted-state">4. New persisted state</h3>
 <p><code>Settings.nudged_missing_components: list[str] = field(default_factory=list)</code>
 — same shape as the existing <code>applied_recommended_updates</code>
 field. Marking a nudge “shown” is permanent (not per-session): once a
@@ -398,5 +422,6 @@ back to template reading (per <code>optional_components.py</code>’s
 Explore Equation Structure…”). Not yet located to a line number; the
 implementation plan should pin this down as its first step, the same way
 the libmpv site was pinned down above.</p>
+</main>
 </body>
 </html>

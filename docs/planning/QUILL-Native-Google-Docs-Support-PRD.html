@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL-Native-Google-Docs-Support-PRD</title>
+  <title>QUILL Native Google Docs Support</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-native-google-docs-support">QUILL Native Google Docs
 Support</h1>
 <h2 id="product-requirements-document">Product Requirements
@@ -260,7 +280,7 @@ quality assurance, security, documentation, and release teams</p>
 <p>QUILL will add native support for opening, creating, editing, saving,
 reviewing, and managing Google Docs documents without embedding the
 Google Docs web editor and without forcing users to edit Markdown.</p>
-<p>The feature will preserve QUILL's central promise: a fast,
+<p>The feature will preserve QUILL’s central promise: a fast,
 understandable, text-first editing experience that meets people where
 they are. Ordinary document text will remain ordinary text. Semantic
 formatting such as headings, lists, links, and emphasis will be retained
@@ -295,7 +315,7 @@ advanced collaboration workflows.</p>
 <h2 id="2-product-vision">2. Product Vision</h2>
 <h3 id="21-vision-statement">2.1 Vision statement</h3>
 <blockquote>
-<p>Enable people to edit Google Docs through QUILL's accessible,
+<p>Enable people to edit Google Docs through QUILL’s accessible,
 efficient, text-first experience while preserving Google Drive storage,
 permissions, document structure, and collaboration.</p>
 </blockquote>
@@ -385,7 +405,7 @@ remote plain-text file.</p>
 <ul>
 <li>Provide a first-class <strong>Google Docs document provider</strong>
 in QUILL.</li>
-<li>Preserve QUILL's existing text-editing speed and accessibility.</li>
+<li>Preserve QUILL’s existing text-editing speed and accessibility.</li>
 <li>Keep Google Docs as the authoritative cloud document.</li>
 <li>Support safe round-trip editing of common document structures.</li>
 <li>Provide purpose-built accessible editors for structured
@@ -428,7 +448,7 @@ for accessible review.</li>
 <li>Unsupported objects survive unrelated edits unchanged.</li>
 <li>Users can always determine whether their work is saved.</li>
 <li>The implementation does not require broad access to every file in a
-user's Google Drive for the normal workflow.</li>
+user’s Google Drive for the normal workflow.</li>
 </ul>
 <hr />
 <h2 id="5-non-goals">5. Non-Goals</h2>
@@ -518,7 +538,7 @@ operations.</li>
 is stored by a remote provider.</li>
 <li><strong>Provider:</strong> An adapter that implements cloud document
 operations, such as Google Docs.</li>
-<li><strong>Semantic document model:</strong> QUILL's internal
+<li><strong>Semantic document model:</strong> QUILL’s internal
 provider-independent representation of paragraphs, runs, headings,
 lists, tables, objects, tabs, and document segments.</li>
 <li><strong>Projection:</strong> The editable text-first representation
@@ -717,7 +737,7 @@ projection</strong> of the semantic document model.</p>
 </ul>
 <h3 id="102-ordinary-text">10.2 Ordinary text</h3>
 <p>Paragraph text is displayed directly. Paragraph boundaries remain
-normal line or paragraph boundaries according to QUILL's editor
+normal line or paragraph boundaries according to QUILL’s editor
 behavior.</p>
 <p>Example:</p>
 <pre class="text"><code>Project Proposal
@@ -1518,10 +1538,10 @@ restricted in the initial release.</li>
 <h2 id="24-authentication-and-account-management">24. Authentication and
 Account Management</h2>
 <h3 id="241-oauth-model">24.1 OAuth model</h3>
-<p>Use Google's OAuth 2.0 installed/desktop application flow.</p>
+<p>Use Google’s OAuth 2.0 installed/desktop application flow.</p>
 <p>Requirements:</p>
 <ul>
-<li>Authorization occurs in the user's default browser.</li>
+<li>Authorization occurs in the user’s default browser.</li>
 <li>QUILL never requests or stores the Google password.</li>
 <li>Use Authorization Code flow with PKCE where supported by the
 selected library and Google configuration.</li>
@@ -1581,7 +1601,7 @@ and display email.</li>
 <li>Account email.</li>
 <li>Connection state.</li>
 <li>Last authorization date.</li>
-<li>Number of documents authorized in QUILL's local history.</li>
+<li>Number of documents authorized in QUILL’s local history.</li>
 <li>Reauthorize.</li>
 <li>Disconnect.</li>
 <li>Remove local recent-document history.</li>
@@ -1719,7 +1739,7 @@ behavior</h3>
 <ul>
 <li>All API work runs in a controlled worker/executor or asynchronous
 service layer.</li>
-<li>UI updates return through <code>wx.CallAfter</code> or the project's
+<li>UI updates return through <code>wx.CallAfter</code> or the project’s
 approved event mechanism.</li>
 <li>Cancellation tokens stop obsolete refresh/open operations.</li>
 <li>Closing a document flushes or journals pending operations without
@@ -2048,7 +2068,7 @@ open</h3>
 <p>Messages must answer:</p>
 <ol type="1">
 <li>What happened?</li>
-<li>Is the user's work safe?</li>
+<li>Is the user’s work safe?</li>
 <li>What will QUILL do automatically?</li>
 <li>What action is available?</li>
 </ol>
@@ -2104,7 +2124,7 @@ editing.</li>
 Requirements</h2>
 <h3 id="341-current-google-docs-api-considerations">34.1 Current Google
 Docs API considerations</h3>
-<p>As of this PRD's verification date, Google documents quotas include
+<p>As of this PRD’s verification date, Google documents quotas include
 per-user and per-project read/write limits. The design must not assume
 unlimited requests.</p>
 <h3 id="342-performance-targets">34.2 Performance targets</h3>
@@ -2157,7 +2177,7 @@ scopes.</li>
 <h3 id="352-local-data-protection">35.2 Local data protection</h3>
 <ul>
 <li>Credentials in Windows Credential Manager.</li>
-<li>Local cache stored in the user's profile with restrictive
+<li>Local cache stored in the user’s profile with restrictive
 permissions.</li>
 <li>Consider encryption at rest for cached content and journals.</li>
 <li>Never place recovery content in a shared temporary directory.</li>
@@ -2418,7 +2438,7 @@ product/security approval.</li>
 <hr />
 <h2 id="41-telemetry-and-product-analytics">41. Telemetry and Product
 Analytics</h2>
-<p>Telemetry must be opt-in or follow QUILL's established privacy
+<p>Telemetry must be opt-in or follow QUILL’s established privacy
 policy.</p>
 <p>Allowed aggregate events might include:</p>
 <ul>
@@ -3136,5 +3156,6 @@ Focused structured editors</code></pre>
 pretending that tables and other document objects are merely strings. It
 also creates the foundation for QUILL to become an accessible native
 front end for additional cloud document platforms in the future.</p>
+</main>
 </body>
 </html>

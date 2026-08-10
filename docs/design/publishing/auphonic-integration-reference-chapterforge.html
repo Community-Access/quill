@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>auphonic-integration-reference-chapterforge</title>
+  <title>Auphonic Integration</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,15 +238,36 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <blockquote>
-<p><strong>Archived reference.</strong> This is ChapterForge's Auphonic
+<p><strong>Archived reference.</strong> This is ChapterForge’s Auphonic
 integration design, kept when ChapterForge was consolidated into QUILL
-(2026-07-04). QUILL's own shipped client is the compact
+(2026-07-04). QUILL’s own shipped client is the compact
 <code>quill/core/publish/auphonic.py</code> (API-token auth, simple-API
 upload/poll/download, credential-vault storage) reached from the Chapter
-Workbench's Publish dialog. Mine this document when growing that client
+Workbench’s Publish dialog. Mine this document when growing that client
 (OAuth flow, credit balance, multitrack, preset UX).</p>
 </blockquote>
 <h1 id="auphonic-integration">Auphonic Integration</h1>
@@ -332,7 +352,7 @@ ChapterForge</h3>
 <ol type="1">
 <li>Open <strong>Auphonic &gt; Connect Account</strong></li>
 <li>Click <strong>Connect Auphonic</strong> - your browser opens to
-Auphonic's authorization page</li>
+Auphonic’s authorization page</li>
 <li>Log in and approve access</li>
 <li>Return to ChapterForge - the dialog shows your credit balance</li>
 </ol>
@@ -413,7 +433,7 @@ hidden from results even if Auphonic returns them</li>
 <ul>
 <li>Minimum charge: 3 minutes per production</li>
 <li>Re-running with changed settings on the same input does not trigger
-a new charge (per Auphonic's pricing FAQ)</li>
+a new charge (per Auphonic’s pricing FAQ)</li>
 <li>Creating a new production from the same audio does trigger a new
 charge</li>
 <li>ChapterForge shows your available balance before submission and the
@@ -432,7 +452,7 @@ review-before-publish</li>
 <h2 id="data-storage">Data Storage</h2>
 <p>All Auphonic job data is stored locally in
 <code>%APPDATA%\ChapterForge\auphonic.db</code> (SQLite). Nothing is
-sent to ChapterForge's servers.</p>
+sent to ChapterForge’s servers.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
 <thead>
@@ -443,15 +463,15 @@ sent to ChapterForge's servers.</p>
 </thead>
 <tbody>
 <tr>
-<td>"Not connected to Auphonic"</td>
+<td>“Not connected to Auphonic”</td>
 <td>Open Connect Account and click Connect</td>
 </tr>
 <tr>
-<td>"Insufficient credits"</td>
+<td>“Insufficient credits”</td>
 <td>Purchase credits at auphonic.com or use a shorter file</td>
 </tr>
 <tr>
-<td>"File contains a video stream"</td>
+<td>“File contains a video stream”</td>
 <td>Convert to audio-only before using (e.g., extract audio with
 ffmpeg)</td>
 </tr>
@@ -471,5 +491,6 @@ variables</td>
 </tr>
 </tbody>
 </table>
+</main>
 </body>
 </html>

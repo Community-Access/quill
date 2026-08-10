@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-file</title>
+  <title>Section — File menu (`file.*`, 29 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--file-menu-file-29-commands">Section — File menu
 (<code>file.*</code>, 29 commands)</h1>
 <p>Everything about getting documents <strong>in and out</strong> of
@@ -192,8 +212,8 @@ onto the machine first): <code>plain.txt</code>,
 <hr />
 <h2 id="file-01--new-file-filenew-ctrln">FILE-01 — New File
 (<code>file.new</code>, Ctrl+N)</h2>
-<p><em>What &amp; why.</em> Start a blank document. The everyday "give
-me a fresh page."</p>
+<p><em>What &amp; why.</em> Start a blank document. The everyday “give
+me a fresh page.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>QUILL open, any state.</li>
@@ -208,7 +228,7 @@ New File</strong>.</li>
 <li>A new empty document opens with focus in the editor; the title bar
 shows an untitled/new document. If a document with unsaved changes was
 open, it is <strong>not</strong> disturbed (the new one opens alongside
-or as a fresh buffer per QUILL's tab model).</li>
+or as a fresh buffer per QUILL’s tab model).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -260,10 +280,10 @@ Save</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The save is confirmed aloud; the title bar's <strong>modified marker
+<li>The save is confirmed aloud; the title bar’s <strong>modified marker
 disappears</strong>. No dialog appears for an already-named file. A
 second <strong>Ctrl+S</strong> with no new change saves silently or
-reports "no changes" — never errors.</li>
+reports “no changes” — never errors.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -293,13 +313,13 @@ As…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A converting-Save-As is announced in substance: "Saved as
+<li>A converting-Save-As is announced in substance: “Saved as
 formatting.docx, Word format. You are still editing QUILL text; each
-save converts it to Word." The title bar updates; a follow-up
+save converts it to Word.” The title bar updates; a follow-up
 <strong>Ctrl+S</strong> saves without a dialog.</li>
 <li>Opening <code>formatting.docx</code> in Word: six heading styles
 H1–H6, real bullet and numbered lists, a live <strong>QUILL
-project</strong> hyperlink, image alt "Red circle", and
+project</strong> hyperlink, image alt “Red circle”, and
 bold/italic/underline/strikethrough on the right words.
 <code>formatting.html</code> opens in a browser with an
 <code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code> outline,
@@ -325,7 +345,7 @@ plain text cannot hold).</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>File menu ▸ Save As Plain Text…</strong> (or Command Palette
-→ "Save As Plain Text").</li>
+→ “Save As Plain Text”).</li>
 <li>Name it <strong><code>formatting</code></strong>; confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
@@ -350,8 +370,8 @@ is dropped silently.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li><strong>File menu ▸ Save All</strong> (or Command Palette → "Save
-All").</li>
+<li><strong>File menu ▸ Save All</strong> (or Command Palette → “Save
+All”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -377,13 +397,13 @@ work.</p>
 <li>Press <strong>Ctrl+W</strong>, or <strong>File menu ▸ Close
 Document</strong>.</li>
 <li>In the guard prompt, choose <strong>Cancel</strong> first (hear it),
-then repeat and choose <strong>Don't Save</strong> /
+then repeat and choose <strong>Don’t Save</strong> /
 <strong>Save</strong> as appropriate.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>With unsaved changes, a <strong>spoken confirmation</strong> appears
-offering Save / Don't Save / Cancel; Cancel keeps the document. After
+offering Save / Don’t Save / Cancel; Cancel keeps the document. After
 closing, focus moves to another open document or a clean empty state —
 never nowhere.</li>
 </ul>
@@ -414,7 +434,7 @@ blocked/unreachable host is reported clearly, not silently. On success
 the document opens in the editor.</li>
 <li>Cross-check: paste a <strong>local file path</strong> into the URL
 field — it is handled gracefully (opened as a local file or reported
-"not a URL"), never a silent network fetch.</li>
+“not a URL”), never a silent network fetch.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -424,7 +444,7 @@ field — it is handled gracefully (opened as a local file or reported
 <h2
 id="file-09--open-containing-folder-fileopen_containing_folder">FILE-09
 — Open Containing Folder (<code>file.open_containing_folder</code>)</h2>
-<p><em>What &amp; why.</em> Jump to the current file's folder in File
+<p><em>What &amp; why.</em> Jump to the current file’s folder in File
 Explorer.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -474,7 +494,7 @@ change is gone) and says so.</li>
 <hr />
 <h2 id="file-11--restore-backup-filerestore_backup">FILE-11 — Restore
 Backup… (<code>file.restore_backup</code>)</h2>
-<p><em>What &amp; why.</em> Recover a document from QUILL's automatic
+<p><em>What &amp; why.</em> Recover a document from QUILL’s automatic
 backups.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -567,7 +587,7 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces the new mode (e.g. "Line endings: Unix (LF)");
+<li>QUILL announces the new mode (e.g. “Line endings: Unix (LF)”);
 saving then writes that ending. Toggling again returns to the original
 and is announced.</li>
 </ul>
@@ -593,7 +613,7 @@ printing/export.</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The dialog's fields are labelled and keyboard-complete; on confirm
+<li>The dialog’s fields are labelled and keyboard-complete; on confirm
 QUILL accepts the values (verified later in Print Preview / export).
 Escape cancels with no change.</li>
 </ul>
@@ -633,7 +653,7 @@ printer).</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Any document open; at least one printer installed (the built-in
-"Microsoft Print to PDF" is fine).</li>
+“Microsoft Print to PDF” is fine).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -655,7 +675,7 @@ document text. Cancel leaves nothing printed.</li>
 <hr />
 <h2 id="file-18--print-studio-fileprint_studio">FILE-18 — Print Studio…
 (<code>file.print_studio</code>)</h2>
-<p><em>What &amp; why.</em> QUILL's richer print/preview workspace
+<p><em>What &amp; why.</em> QUILL’s richer print/preview workspace
 (layout and options beyond the system dialog).</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -737,7 +757,7 @@ id="file-21--save-session-filesave_session-and-file-22--open-session-fileopen_se
 — Save Session… (<code>file.save_session</code>) and FILE-22 — Open
 Session… (<code>file.open_session</code>)</h2>
 <p><em>What &amp; why.</em> Save the whole set of open documents (a
-"session") and restore it later — your desk exactly as you left it.</p>
+“session”) and restore it later — your desk exactly as you left it.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Two or three documents open (e.g. <code>plain.txt</code>,
@@ -874,7 +894,7 @@ file URL, confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The URL field is labelled; the file's content opens in the editor; a
+<li>The URL field is labelled; the file’s content opens in the editor; a
 bad URL or private file without auth is reported clearly.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -979,5 +999,6 @@ confirmed.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-19-noaa-weather-radio-wxindex-design</title>
+  <title>NOAA Weather Radio via WeatherIndex (wxindex) — QUILL Radio
+2.1.1</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,10 +174,31 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="noaa-weather-radio-via-weatherindex-wxindex-quill-radio-2.1.1">NOAA
+id="noaa-weather-radio-via-weatherindex-wxindex--quill-radio-211">NOAA
 Weather Radio via WeatherIndex (wxindex) — QUILL Radio 2.1.1</h1>
 <p>Status: approved design (brainstorming). Target release:
 <strong>QUILL Radio 2.1.1</strong>.</p>
@@ -211,7 +236,7 @@ county name, state, or SAME code.</li>
 <li><code>GET /v1/wfo</code> and
 <code>GET /v1/wfo/{wfo_code}/stations</code> — group by NWS office.</li>
 <li><code>GET /v1/stations/all</code> (active, with feeds) and
-<code>/all-known</code> (incl. no-feed).</li>
+<code>/all-known</code> (incl. no-feed).</li>
 <li><code>GET /v1/stations/{callsign}</code> — full detail: frequency,
 coordinates, power, feed URLs (+ source), county coverage.</li>
 <li><code>GET /health</code> — data counts / freshness (used by the
@@ -219,7 +244,7 @@ snapshot script and a diagnostics line only).</li>
 </ul>
 <p>Terms: “cache results where practical instead of polling.” Feed
 uptime depends on the original stream providers and can change.</p>
-<h2 id="data-resilience-layer-quillcoreradiowxindex.py">1. Data +
+<h2 id="1-data--resilience-layer--quillcoreradiowxindexpy">1. Data +
 resilience layer — <code>quill/core/radio/wxindex.py</code></h2>
 <p>A small, <code>wx</code>-free client plus a <strong>three-tier
 resolver</strong> so capability never depends on a live API call:</p>
@@ -277,10 +302,10 @@ bundled snapshot, so the fresh data is used immediately without a
 restart. The bundled snapshot is never overwritten (it is the permanent
 floor); “reset to bundled” is available by clearing the cache.</li>
 <li>The Browse dialog’s per-source “Reload from internet” refreshes just
-the highlighted branch (e.g. one state) for a lighter, targeted
+the highlighted branch (e.g. one state) for a lighter, targeted
 pull.</li>
 </ul>
-<h3 id="snapshot-build-script-scriptssnapshot_wxindex.py">Snapshot build
+<h3 id="snapshot-build-script--scriptssnapshot_wxindexpy">Snapshot build
 script — <code>scripts/snapshot_wxindex.py</code></h3>
 <p>Walks <code>/v1/states</code>, every state’s stations,
 <code>/v1/stations/all-known</code>, and <code>/v1/wfo</code>,
@@ -289,8 +314,8 @@ assembling one normalized document written to
 <code>generated_at</code> stamp and the upstream <code>/health</code>
 counts. Run manually / in CI when refreshing the bundled data; the
 result is committed. Idempotent and safe to re-run.</p>
-<h2 id="browse-replace-the-weather-noaa-source">2. Browse — replace the
-“Weather / NOAA” source</h2>
+<h2 id="2-browse--replace-the-weather--noaa-source">2. Browse — replace
+the “Weather / NOAA” source</h2>
 <p><code>quill/ui/radio/browse_tree_dialog.py</code>’s
 <code>_SOURCES</code> “Weather / NOAA” branch stops calling
 <code>noaa_weather_stations</code> (fuzzy) and becomes a real geography
@@ -304,16 +329,16 @@ tree:</p>
 Favorites (save to a folder), Record, and Schedule all work with no new
 UI. The legacy <code>noaa_weather_stations</code> fuzzy path is removed
 (no consumer left) rather than left dead.</p>
-<h2 id="search-authoritative-noaa-results">3. Search — authoritative
+<h2 id="3-search--authoritative-noaa-results">3. Search — authoritative
 NOAA results</h2>
 <p>The unified station search gains a NOAA path backed by wxindex
 <code>search_stations</code>: a query that looks like a <strong>SAME
-code</strong> (6 digits), a <strong>callsign</strong>
-(e.g. <code>KHB36</code>), or a <strong>“County, ST”</strong> / state
-name routes to wxindex and returns exact stations, blended into the
-existing results list. Free text still falls through to the current
-sources. No separate dialog — it enriches the search already there.</p>
-<h2 id="weather-menu-your-local-noaa-weather-radio">4. Weather menu +
+code</strong> (6 digits), a <strong>callsign</strong> (e.g.
+<code>KHB36</code>), or a <strong>“County, ST”</strong> / state name
+routes to wxindex and returns exact stations, blended into the existing
+results list. Free text still falls through to the current sources. No
+separate dialog — it enriches the search already there.</p>
+<h2 id="4-weather-menu--your-local-noaa-weather-radio">4. Weather menu +
 “Your Local NOAA Weather Radio”</h2>
 <p>The Weather feature already geocodes a saved location to
 latitude/longitude <strong>and</strong> a county
@@ -331,7 +356,7 @@ location) rather than failing silently.</li>
 </ul>
 <p>This is the tie that makes it feel “local” without any new location
 system.</p>
-<h2 id="full-experience">5. Full experience</h2>
+<h2 id="5-full-experience">5. Full experience</h2>
 <ul>
 <li><strong>Station detail</strong>: an accessible read-out (callsign,
 frequency, WFO office, covered counties, feed source) reachable from
@@ -381,8 +406,7 @@ fixtures and produces a valid <code>noaa_directory.json</code>.</li>
 <li>A characterization test that the Browse “Weather / NOAA” branch
 yields stations from the resolver (snapshot-backed, offline).</li>
 </ul>
-<h2 id="out-of-scope-yagni-for-2.1.1">Out of scope (YAGNI for
-2.1.1)</h2>
+<h2 id="out-of-scope-yagni-for-211">Out of scope (YAGNI for 2.1.1)</h2>
 <ul>
 <li>Live weather <em>data</em> (forecasts/alerts/radar) — wxindex is a
 station directory, not a weather-data API; the Weather feature stays the
@@ -400,5 +424,6 @@ if wanted.</li>
 refresh interval 7 days; user-triggerable via the existing per-source
 “Reload from internet”.</li>
 </ul>
+</main>
 </body>
 </html>

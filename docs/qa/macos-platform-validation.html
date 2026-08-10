@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>macos-platform-validation</title>
+  <title>macOS platform review — status</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,12 +173,33 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="macos-platform-review--status">macOS platform review —
 status</h1>
 <p>Status of the macOS platform review. Every item is <strong>fixed in
-code</strong>; nothing remains for the dev side to do. What's left is
+code</strong>; nothing remains for the dev side to do. What’s left is
 Mac validation, which needs real hardware — so this file is now a record
 of what shipped plus the checklist a Mac tester runs, and the community
 help ask lives in the 0.9.0-beta2 release notes (see <em>A favor to ask
@@ -215,7 +235,7 @@ release notes. Close once a comment confirms it.</td>
 <tr>
 <td><a
 href="https://github.com/Community-Access/support/issues/66">support#66</a></td>
-<td>"product-feedback"</td>
+<td>“product-feedback”</td>
 <td>Out of scope — filed against the Git Going workshop, not QUILL</td>
 </tr>
 </tbody>
@@ -244,7 +264,7 @@ listed for tester reference.</p>
 <tbody>
 <tr>
 <td>#21 / #75</td>
-<td>"macOS (system voice)" wired as a first-class Read Aloud engine
+<td>“macOS (system voice)” wired as a first-class Read Aloud engine
 (Speech Hub engine option + voice picker + preview, Read Aloud
 pause/stop, batch export) via the <code>say</code> CLI backend (pyobjc
 voice catalog with <code>say -v ?</code> fallback). Off-darwin inert; 10
@@ -259,16 +279,16 @@ with pause/stop; export-to-file produces audio.</td>
 <tr>
 <td>#37</td>
 <td>Windows-only UI strings adapt via gettext-wrapped
-<code>quill/core/platform_nouns.py</code>: "Keychain" on darwin (AI Hub,
-SFTP publish, GitHub sign-in, forget-key, trust-consent); "System
-dictation"; "In my user profile"; "Cmd+Alt" in help text. Windows
+<code>quill/core/platform_nouns.py</code>: “Keychain” on darwin (AI Hub,
+SFTP publish, GitHub sign-in, forget-key, trust-consent); “System
+dictation”; “In my user profile”; “Cmd+Alt” in help text. Windows
 strings unchanged.</td>
 <td><code>quill/core/platform_nouns.py</code>,
 <code>ui/{ai_hub_dialog,audio_studio/publish_dialog,main_frame_github,main_frame,main_frame_speech,setup_wizard_pages,keymap_editor}.py</code>,
 <code>tools/network_egress_audit.py</code></td>
-<td>API-key/publish/forget-key messages say "Keychain"; dictation status
-says "System dictation"; wizard says "In my user profile"; help chord
-says "Cmd+Alt".</td>
+<td>API-key/publish/forget-key messages say “Keychain”; dictation status
+says “System dictation”; wizard says “In my user profile”; help chord
+says “Cmd+Alt”.</td>
 </tr>
 <tr>
 <td>#2 / #10</td>
@@ -292,7 +312,7 @@ helpers (no UI consumer) deleted.</td>
 <td><code>quill/platform/macos/high_contrast.py</code>,
 <code>quill/platform/high_contrast.py</code>,
 <code>tests/unit/platform/macos/test_high_contrast_appearance.py</code></td>
-<td>QUILL's theme follows Dark Mode when toggled in System
+<td>QUILL’s theme follows Dark Mode when toggled in System
 Settings.</td>
 </tr>
 <tr>
@@ -325,11 +345,11 @@ fail/truncate.</td>
 </tr>
 <tr>
 <td>#11</td>
-<td>Tray terminology is platform-neutral: <code>_TRAY_NOUN</code> ("menu
-bar" on darwin), Settings label/description, Help topic body.</td>
+<td>Tray terminology is platform-neutral: <code>_TRAY_NOUN</code> (“menu
+bar” on darwin), Settings label/description, Help topic body.</td>
 <td><code>main_frame.py:759</code>, <code>settings_specs.py</code>,
 <code>help/topics.json</code></td>
-<td>Settings and Help say "menu bar", not "system tray", on macOS.</td>
+<td>Settings and Help say “menu bar”, not “system tray”, on macOS.</td>
 </tr>
 <tr>
 <td>#7 / F8</td>
@@ -346,8 +366,8 @@ Cmd+Home/End to document start/end.</td>
 darwin (RegisterHotKey is Windows-only) instead of silently
 dropping.</td>
 <td><code>main_frame.py</code> <code>_reload_global_hotkeys</code></td>
-<td>On darwin, a single-keystroke sticky-note hotkey shows the "not
-available on macOS" status; the Tools command and QUILL-key chord still
+<td>On darwin, a single-keystroke sticky-note hotkey shows the “not
+available on macOS” status; the Tools command and QUILL-key chord still
 work.</td>
 </tr>
 <tr>
@@ -498,7 +518,7 @@ chords are routed to AI/compare/dark-mode commands.</td>
 </tr>
 <tr>
 <td>#51</td>
-<td>"Toggle hidden files" is <code>Cmd+Shift+.</code> on darwin (not
+<td>“Toggle hidden files” is <code>Cmd+Shift+.</code> on darwin (not
 Ctrl+H, which is system Hide).</td>
 <td><code>quill/ui/simple_open_dialog.py:43-47</code></td>
 </tr>
@@ -557,7 +577,7 @@ the cold-launch race where the Apple Event arrives before
 <code>Cmd+Shift+]</code>/<code>[</code> doc-switch chord and the
 <code>Cmd+Alt+F</code>/<code>Cmd+Alt+M</code>/
 <code>Cmd+Alt+Space</code> darwin alternates do not collide with the
-tester's setup.</li>
+tester’s setup.</li>
 </ul>
 <hr />
 <h2 id="mac-tester-validation-checklist">Mac tester validation
@@ -569,15 +589,15 @@ build from main after this pass.</p>
 Option+Left/Right extends by word; Cmd+Left/Right to line start/end;
 Cmd+Home/End to document start/end.</li>
 <li><strong>macOS (system voice) Read Aloud engine (#21/#75).</strong>
-In Speech Hub, pick the "macOS (system voice)" engine: voice picker
+In Speech Hub, pick the “macOS (system voice)” engine: voice picker
 lists system voices; Preview speaks; Read Aloud reads with pause/stop;
 batch export-to-file produces audio.</li>
 <li><strong>Tray mode.</strong> Enable tray mode; close the window — it
-closes normally with a one-time "not available on macOS" status (must
-NOT vanish with no restore path). Settings/Help say "menu bar", not
-"system tray".</li>
+closes normally with a one-time “not available on macOS” status (must
+NOT vanish with no restore path). Settings/Help say “menu bar”, not
+“system tray”.</li>
 <li><strong>Sticky-note hotkey.</strong> Bind a single-keystroke
-sticky-note hotkey; on darwin you get the "not available on macOS"
+sticky-note hotkey; on darwin you get the “not available on macOS”
 status. Tools &gt; Sticky Note and the QUILL-key chord still create a
 note.</li>
 <li><strong>OK/Cancel order.</strong> Voice Browser, Remote Sites
@@ -593,18 +613,18 @@ stats in metadata.json).</li>
 a &gt;8000-char sentence completes without truncation/failure.</li>
 <li><strong>Platform-aware strings (#37).</strong> AI Hub Auphonic note,
 Audio Studio SFTP publish note, GitHub sign-in failure, and
-Forget-API-key confirmation all say "Keychain"; dictation status says
-"System dictation"; the first-run wizard says "In my user profile"; the
-keymap editor's example chord says "Cmd+Alt".</li>
+Forget-API-key confirmation all say “Keychain”; dictation status says
+“System dictation”; the first-run wizard says “In my user profile”; the
+keymap editor’s example chord says “Cmd+Alt”.</li>
 <li><strong>Dark Mode (#6).</strong> Toggle Dark Mode in System
-Settings; QUILL's theme follows it.</li>
+Settings; QUILL’s theme follows it.</li>
 <li><strong>New Mac shortcuts (community ask).</strong> Cmd+Alt+F /
 Cmd+Alt+M / Cmd+Alt+Space, and Cmd+G / Cmd+Shift+G for Find
 Next/Previous — confirm none collides with your setup and they feel
 natural; comment via the release-notes ask if not.</li>
 <li><strong>Bundle items from earlier batches</strong> (Keychain,
 LibreOffice, MathCAT/braille gating, engine resolution, Window menu,
-.command persona shortcut, etc.) per the "Shipped in earlier batches"
+.command persona shortcut, etc.) per the “Shipped in earlier batches”
 table.</li>
 </ol>
 <p>support#67 (diacriticals) and support#69 (Settings speech labels) are
@@ -633,5 +653,6 @@ regenerated and the Italian <code>.mo</code> recompiled (3 invalidated
 entries cleared to English fallback). The release notes
 <code>.html</code>/<code>.epub</code> were regenerated to match the
 edited <code>.md</code> (docs-artifact parity).</p>
+</main>
 </body>
 </html>

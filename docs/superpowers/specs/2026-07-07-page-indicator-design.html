@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-07-page-indicator-design</title>
+  <title>Page indicator for every document — design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,9 +238,30 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="page-indicator-for-every-document-design">Page indicator for
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="page-indicator-for-every-document--design">Page indicator for
 every document — design</h1>
 <p>Closes GitHub issue #872.</p>
 <h2 id="problem">Problem</h2>
@@ -298,7 +322,7 @@ text length changes):</p>
 <ul>
 <li><strong>Exact track:</strong> if
 <code>navigation.page_starts(text)</code> finds more than one page
-boundary (i.e. the document contains at least one <code>\f</code>), the
+boundary (i.e. the document contains at least one <code>\f</code>), the
 cell reads <strong>“Page 3 of 12”</strong> — no qualifier, because it’s
 a real count.</li>
 <li><strong>Estimated track:</strong> otherwise, the cell reads
@@ -312,7 +336,7 @@ or actual print/export pagination.”</em></li>
 <p>Detection between the two tracks is nothing more than “does this
 document’s text contain a <code>\f</code>” — no per-format
 special-casing is needed once the import side (below) is in place.</p>
-<h3 id="track-a-the-estimate-quillcorenavigation.py">Track A — the
+<h3 id="track-a--the-estimate-quillcorenavigationpy">Track A — the
 estimate (<code>quill/core/navigation.py</code>)</h3>
 <p>Two new pure functions:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -331,7 +355,7 @@ clamped to <code>[150, 600]</code>, following the exact pattern of
 in Preferences under the same group as the other status-bar settings,
 with help text making the estimate’s approximate nature explicit at the
 settings level too, not just in the status bar.</p>
-<h3 id="track-b-real-pages-quilliopdf.py-docx-import">Track B — real
+<h3 id="track-b--real-pages-quilliopdfpy-docx-import">Track B — real
 pages (<code>quill/io/pdf.py</code>, DOCX import)</h3>
 <p>This reuses machinery that already exists rather than building new
 exact-page tracking:</p>
@@ -416,5 +440,6 @@ rather than removed outright.</li>
 <li>Issue #872 is closed once all of the above lands and tests
 pass.</li>
 </ul>
+</main>
 </body>
 </html>

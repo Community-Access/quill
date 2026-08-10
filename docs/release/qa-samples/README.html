@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>QUILL QA sample-document corpus</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,13 +173,34 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-qa-sample-document-corpus">QUILL QA sample-document
 corpus</h1>
 <p>Small, purpose-built input documents for <strong>manual</strong>
 release QA. Each file has <strong>known, fixed content</strong> so
-"correct" is unambiguous: a tester opens the file in QUILL, runs the
+“correct” is unambiguous: a tester opens the file in QUILL, runs the
 referenced journey, and compares what QUILL says and writes against the
 expected structure below.</p>
 <p>These files are for <strong>manual QA only</strong> — they are inputs
@@ -185,7 +209,7 @@ and the master sign-off pack. They are not fixtures for the automated
 suite and nothing here is asserted by CI.</p>
 <p>Keep every file byte-stable: the journeys quote exact counts, cell
 contents, alt text, and screen-reader wording, so editing a sample
-silently invalidates the "Expected" fields that depend on it.</p>
+silently invalidates the “Expected” fields that depend on it.</p>
 <table>
 <thead>
 <tr>
@@ -198,7 +222,7 @@ silently invalidates the "Expected" fields that depend on it.</p>
 <tr>
 <td><code>formatting.md</code></td>
 <td>Heading navigation (QUILL Next/Previous Heading and the screen
-reader's <code>H</code> / <code>Shift+H</code>);
+reader’s <code>H</code> / <code>Shift+H</code>);
 bold/italic/underline/strikethrough; ordered and unordered lists;
 blockquote; inline + fenced code; link; image alt; Save-As fidelity;
 Find/Replace + Regex Helper; Read Aloud</td>
@@ -207,10 +231,10 @@ Find/Replace + Regex Helper; Read Aloud</td>
 <strong>bold</strong>, <em>italic</em>, underlined
 <code>underline</code> (via <code>&lt;u&gt;</code>), and struck
 <code>strike</code>; one unordered list (Apples/Oranges/Pears) and one
-ordered list (First/Second/Third); one blockquote ("The quick brown
-fox…"); inline code <code>print("hello")</code> and one fenced
+ordered list (First/Second/Third); one blockquote (“The quick brown
+fox…”); inline code <code>print("hello")</code> and one fenced
 <code>python</code> code block; one link labelled <strong>QUILL
-project</strong>; one image with alt <strong>"Red circle"</strong></td>
+project</strong>; one image with alt <strong>“Red circle”</strong></td>
 </tr>
 <tr>
 <td><code>table.md</code></td>
@@ -218,9 +242,9 @@ project</strong>; one image with alt <strong>"Red circle"</strong></td>
 in a cell; Save-As table fidelity</td>
 <td>One caption sentence above a <strong>3-column</strong> table with a
 header row (Region/Device/Notes) and <strong>3 body rows</strong>; the
-South row's Device cell contains the literal pipe
+South row’s Device cell contains the literal pipe
 <strong><code>Phone | Watch</code></strong> (must stay one cell, not
-split); last cell is East/Laptop/Backordered so the "end of table" edge
+split); last cell is East/Laptop/Backordered so the “end of table” edge
 is reachable</td>
 </tr>
 <tr>
@@ -252,10 +276,10 @@ Save-As must match character for character</td>
 <tr>
 <td><code>sample.html</code></td>
 <td>HTML import; Paste HTML as Markdown</td>
-<td>An HTML doc with one <code>h1</code> ("Trip Checklist"), a
+<td>An HTML doc with one <code>h1</code> (“Trip Checklist”), a
 paragraph, a 3-item unordered list, a 2-column table (Day/City) with two
 body rows, one link labelled <strong>QUILL project</strong>, and one
-<code>&lt;img&gt;</code> with alt <strong>"Red circle"</strong></td>
+<code>&lt;img&gt;</code> with alt <strong>“Red circle”</strong></td>
 </tr>
 <tr>
 <td><code>compare-original.txt</code> and
@@ -264,9 +288,9 @@ body rows, one link labelled <strong>QUILL project</strong>, and one
 Book</td>
 <td>A known before/after pair with <strong>exactly three
 differences</strong>: line 2 changes <strong>March → April</strong>;
-line 3 gains <strong>"and performance"</strong>; the revised file adds a
-fourth line <strong>"A follow-up review is scheduled for
-February."</strong> Compare must report these three and nothing
+line 3 gains <strong>“and performance”</strong>; the revised file adds a
+fourth line <strong>“A follow-up review is scheduled for
+February.”</strong> Compare must report these three and nothing
 else</td>
 </tr>
 <tr>
@@ -315,10 +339,11 @@ non-blocking outcome).</li>
 are <strong>byte-specific</strong> — copy them as-is; do not open and
 re-save them in an editor that would rewrite the encoding or the line
 endings, or the scenario they support becomes untestable.</li>
-<li>If you must edit a sample, update the matching "Expected" cell here
+<li>If you must edit a sample, update the matching “Expected” cell here
 <strong>and</strong> the affected step in
 <code>qa-core-journeys.md</code> (and <code>../acceptance/</code>) in
 the same change.</li>
 </ul>
+</main>
 </body>
 </html>

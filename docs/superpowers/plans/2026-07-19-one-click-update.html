@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-19-one-click-update</title>
+  <title>One-Click Update (Apply and Restart) Implementation
+Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +239,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="one-click-update-apply-and-restart-implementation-plan">One-Click
 Update (Apply and Restart) Implementation Plan</h1>
@@ -338,18 +363,22 @@ and <code>S:\QUILL-AS\CHANGELOG.md</code>.</li>
 </ul>
 <hr />
 <h2
-id="task-1-build_apply_update_script-the-pure-helper-script-generator">Task
+id="task-1-build_apply_update_script--the-pure-helper-script-generator">Task
 1: <code>build_apply_update_script()</code> — the pure helper-script
 generator</h2>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/self_update.py</code> - Test:
-<code>tests/unit/core/test_self_update.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
-<code>SelfUpdateError(CodedError)</code> with
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/self_update.py</code></li>
+<li>Test: <code>tests/unit/core/test_self_update.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>SelfUpdateError(CodedError)</code> with
 <code>code = "QUILL-UPDATE-SELF-APPLY"</code>;
 <code>build_apply_update_script(*, pid: int, mode: str, install_dir: Path, exe_path: Path, log_path: Path, source_dir: Path | None = None, setup_exe: Path | None = None, data_dirname: str = "data") -&gt; str</code>
 where <code>mode</code> is <code>"portable"</code> or
-<code>"installer"</code>.</p>
+<code>"installer"</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -567,15 +596,21 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <h2 id="task-2-install_root_and_exe-and-stage_portable_update">Task 2:
 <code>install_root_and_exe()</code> and
 <code>stage_portable_update()</code></h2>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/self_update.py</code> - Test:
-<code>tests/unit/core/test_self_update.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.updates.extract_portable_update</code>. - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/self_update.py</code></li>
+<li>Test: <code>tests/unit/core/test_self_update.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
+<code>quill.core.updates.extract_portable_update</code>.</li>
+<li>Produces:
 <code>install_root_and_exe() -&gt; tuple[Path, Path] | None</code>
 (install dir, exe path; <code>None</code> when not a frozen build);
 <code>stage_portable_update(zip_path: Path, staging_root: Path, *, exe_name: str) -&gt; Path</code>
-returns the directory that actually contains <code>exe_name</code>.</p>
+returns the directory that actually contains <code>exe_name</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -702,21 +737,27 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="
 id="task-3-write_and_launch_helper-and-begin_self_update-orchestration">Task
 3: <code>write_and_launch_helper()</code> and
 <code>begin_self_update()</code> orchestration</h2>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/self_update.py</code> - Test:
-<code>tests/unit/core/test_self_update.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: Task 1
-<code>build_apply_update_script</code>, Task 2
-<code>install_root_and_exe</code>/<code>stage_portable_update</code>. -
-Produces: -
-<code>write_and_launch_helper(script_text: str, helper_dir: Path) -&gt; Path</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/self_update.py</code></li>
+<li>Test: <code>tests/unit/core/test_self_update.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: Task 1 <code>build_apply_update_script</code>, Task 2
+<code>install_root_and_exe</code>/<code>stage_portable_update</code>.</li>
+<li>Produces:
+<ul>
+<li><code>write_and_launch_helper(script_text: str, helper_dir: Path) -&gt; Path</code>
 — writes <code>apply-update.bat</code> and launches it detached; returns
-its path. -
-<code>begin_self_update(*, download_path: Path, portable: bool, app_data_dir: Path, pid: int | None = None) -&gt; None</code>
+its path.</li>
+<li><code>begin_self_update(*, download_path: Path, portable: bool, app_data_dir: Path, pid: int | None = None) -&gt; None</code>
 — the single entry point the UI calls. Determines mode, stages if
 portable, builds the script, launches the helper. Raises
 <code>SelfUpdateError</code> on any failure (UI announces and stays
-open). Caller closes the window on success.</p>
+open). Caller closes the window on success.</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -887,10 +928,15 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 <hr />
 <h2 id="task-4-end-to-end-helper-batch-test-windows-guarded">Task 4:
 End-to-end helper batch test (Windows-guarded)</h2>
-<p><strong>Files:</strong> - Test:
-<code>tests/unit/core/test_self_update.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>build_apply_update_script</code> (portable mode).</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Test: <code>tests/unit/core/test_self_update.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>build_apply_update_script</code> (portable
+mode).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -951,16 +997,23 @@ real behavioral guard for the pure generator).</p>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add tests/unit/core/test_self_update.py</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;test(update): end-to-end portable helper batch preserves data&quot;</span></span></code></pre></div>
 <hr />
-<h2 id="task-5-wire-the-standalone-apps-radio-cast-app_shell.py">Task 5:
-Wire the standalone apps (Radio + Cast) — <code>app_shell.py</code></h2>
-<p><strong>Files:</strong> - Modify: <code>quill/ui/app_shell.py</code>
-(<code>_offer_app_update_install</code>, ~lines 617-678) - Test:
-<code>tests/unit/ui/test_app_shell_self_update.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.self_update.begin_self_update</code>; existing
-<code>self._running_portable_build()</code>,
+<h2 id="task-5-wire-the-standalone-apps-radio--cast--app_shellpy">Task
+5: Wire the standalone apps (Radio + Cast) —
+<code>app_shell.py</code></h2>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/app_shell.py</code>
+(<code>_offer_app_update_install</code>, ~lines 617-678)</li>
+<li>Test: <code>tests/unit/ui/test_app_shell_self_update.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.self_update.begin_self_update</code>;
+existing <code>self._running_portable_build()</code>,
 <code>self._announce</code>, <code>self._show_modal_dialog</code>,
-<code>self.frame</code>, <code>quill.core.paths.app_data_dir</code>.</p>
+<code>self.frame</code>,
+<code>quill.core.paths.app_data_dir</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1103,20 +1156,25 @@ Expected: PASS + clean.</p>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/app_shell.py tests/unit/ui/test_app_shell_self_update.py</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(update): one-click Install and restart for Radio/Cast (app_shell)&quot;</span></span></code></pre></div>
 <hr />
-<h2 id="task-6-wire-quill-main_frame_updates.py">Task 6: Wire QUILL —
+<h2 id="task-6-wire-quill--main_frame_updatespy">Task 6: Wire QUILL —
 <code>main_frame_updates.py</code></h2>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame_updates.py</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame_updates.py</code>
 (<code>_offer_post_download_actions</code>, ~lines 738-808;
-<code>_extract_and_reveal_portable_update</code> stays as a fallback) -
-Test: <code>tests/unit/ui/test_app_shell_self_update.py</code> (add a
-QUILL-seam case) or a new
-<code>tests/unit/ui/test_main_frame_updates_self_update.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.self_update.begin_self_update</code>,
+<code>_extract_and_reveal_portable_update</code> stays as a
+fallback)</li>
+<li>Test: <code>tests/unit/ui/test_app_shell_self_update.py</code> (add
+a QUILL-seam case) or a new
+<code>tests/unit/ui/test_main_frame_updates_self_update.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.self_update.begin_self_update</code>,
 <code>quill.core.updates.running_portable</code>,
 <code>app_data_dir</code>, <code>self.frame</code>,
-<code>self._announce</code>, <code>self._show_message_box</code>.</p>
+<code>self._announce</code>, <code>self._show_message_box</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1233,8 +1291,9 @@ self-contained <code>quillas</code> package (it does NOT import the live
 <code>check_for_app_updates</code>, so it needs the identical seam
 Radio/Cast got — but placed in <code>quillas</code>, not picked up
 automatically.</p>
-<p><strong>Files:</strong> - Create:
-<code>quillas/core/self_update.py</code> and
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quillas/core/self_update.py</code> and
 <code>quillas/ui/update_apply.py</code> — copies of the quill files with
 <code>from quill.core</code>→<code>from quillas.core</code> (and
 <code>from quill.core import</code>→<code>from quillas.core import</code>).
@@ -1245,15 +1304,17 @@ quillas already has <code>core/updates.py</code>
 <code>QUILL-</code> error-code prefix, so
 <code>SelfUpdateError.code = "QUILL-UPDATE-SELF-APPLY"</code> is
 consistent. quillas has no error-code/module-budget gate, so no extra
-gate to satisfy. - Modify: <code>quillas/ui/app_shell.py</code>
+gate to satisfy.</li>
+<li>Modify: <code>quillas/ui/app_shell.py</code>
 <code>_offer_app_update_install</code> — apply the same “Install and
 restart now” edit + add <code>_apply_update_and_restart</code>
 (importing <code>quillas.core.paths.app_data_dir</code> and
-<code>quillas.ui.update_apply</code>). - Create:
-<code>tests/unit/core/test_self_update.py</code> and
+<code>quillas.ui.update_apply</code>).</li>
+<li>Create: <code>tests/unit/core/test_self_update.py</code> and
 <code>tests/unit/ui/test_app_shell_self_update.py</code> in
 <code>S:\QUILL-AS</code> — ported from the quill tests with
-<code>quill.*</code>→<code>quillas.*</code> imports.</p>
+<code>quill.*</code>→<code>quillas.*</code> imports.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Port the two core
 files with import swaps</strong></label></li>
@@ -1276,7 +1337,7 @@ and run</strong></label></p></li>
 </ul>
 <p>Run (from <code>S:\QUILL-AS</code>):
 <code>python -m pytest tests/unit/core/test_self_update.py tests/unit/ui/test_app_shell_self_update.py -q</code>
-Expected: PASS (15, incl. the Windows e2e batch). Then
+Expected: PASS (15, incl. the Windows e2e batch). Then
 <code>ruff check quillas/core/self_update.py quillas/ui/update_apply.py quillas/ui/app_shell.py</code>
 clean, and <code>python -m pytest tests/unit/ui -q</code> shows no
 regression.</p>
@@ -1287,11 +1348,15 @@ direction; Audio Studio replaces it.</p>
 </blockquote>
 <h2 id="task-8-module-budget-full-test-sweep-and-docs">Task 8: Module
 budget, full test sweep, and docs</h2>
-<p><strong>Files:</strong> - Modify (if needed):
-<code>quill/tools/module_size_budgets.json</code> - Modify:
-<code>S:\quill-radio\docs\release-notes-2.0.md</code>,
-<code>S:\quill-radio\CHANGELOG.md</code> - Regenerate:
-<code>S:\quill-radio\docs\release-notes-2.0.html</code></p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify (if needed):
+<code>quill/tools/module_size_budgets.json</code></li>
+<li>Modify: <code>S:\quill-radio\docs\release-notes-2.0.md</code>,
+<code>S:\quill-radio\CHANGELOG.md</code></li>
+<li>Regenerate:
+<code>S:\quill-radio\docs\release-notes-2.0.html</code></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Full targeted test
 sweep</strong></label></li>
@@ -1347,19 +1412,25 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href=
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;docs(update): document one-click update in 2.0.3&quot;</span></span></code></pre></div>
 <hr />
 <h2 id="self-review">Self-Review</h2>
-<p><strong>Spec coverage:</strong> - Installed silent+relaunch → Task 1
-(installer mode script) + Task 3 (begin_self_update installer branch) +
-Tasks 5/6 (UI). ✓ - Portable stage → helper → swap-excluding-data →
-relaunch → Tasks 1-4. ✓ - Build-flavor detection → reuse
+<p><strong>Spec coverage:</strong></p>
+<ul>
+<li>Installed silent+relaunch → Task 1 (installer mode script) + Task 3
+(begin_self_update installer branch) + Tasks 5/6 (UI). ✓</li>
+<li>Portable stage → helper → swap-excluding-data → relaunch → Tasks
+1-4. ✓</li>
+<li>Build-flavor detection → reuse
 <code>_running_portable_build()</code> / <code>running_portable()</code>
-in Tasks 5/6. ✓ - Consent (one-click) → Tasks 5/6 button. ✓ - Safety
-(validate exe, exclude data, fail-soft, log) → Tasks 1/2 +
-<code>_apply_update_and_restart</code> error handling. ✓ -
-Single-instance coordination → helper PID-wait (Task 1); app close
-releases the lock (existing close paths). ✓ - macOS/dev fallthrough →
-<code>install_root_and_exe()</code> None + <code>applyable</code>
-guarded to <code>sys.platform.startswith("win")</code> (Tasks 2/5/6). ✓
-- Tests, docs, budget/error-code gates → Tasks 4/7. ✓</p>
+in Tasks 5/6. ✓</li>
+<li>Consent (one-click) → Tasks 5/6 button. ✓</li>
+<li>Safety (validate exe, exclude data, fail-soft, log) → Tasks 1/2 +
+<code>_apply_update_and_restart</code> error handling. ✓</li>
+<li>Single-instance coordination → helper PID-wait (Task 1); app close
+releases the lock (existing close paths). ✓</li>
+<li>macOS/dev fallthrough → <code>install_root_and_exe()</code> None +
+<code>applyable</code> guarded to
+<code>sys.platform.startswith("win")</code> (Tasks 2/5/6). ✓</li>
+<li>Tests, docs, budget/error-code gates → Tasks 4/7. ✓</li>
+</ul>
 <p><strong>Placeholder scan:</strong> Task 6 intentionally instructs the
 implementer to look up the exact updates mixin class name (it varies) —
 this is a lookup, not a placeholder; the method body is complete. No
@@ -1372,5 +1443,6 @@ other TBDs.</p>
 <code>write_and_launch_helper(script_text, helper_dir) -&gt; Path</code>,
 <code>_apply_update_and_restart(release, target)</code> — consistent
 across all tasks.</p>
+</main>
 </body>
 </html>

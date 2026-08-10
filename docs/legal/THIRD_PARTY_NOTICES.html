@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>THIRD_PARTY_NOTICES</title>
+  <title>Third-Party Notices</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="third-party-notices">Third-Party Notices</h1>
 <p>QUILL includes vendored or directly-referenced open-source
 components. Full license texts are reproduced below and in the relevant
@@ -285,14 +305,14 @@ Technology Solutions (BITS) project — <a
 href="https://chapterforge.app">https://chapterforge.app</a></li>
 <li><strong>License:</strong> MIT</li>
 <li><strong>Used for:</strong> Design/approach reference only (no code
-is vendored). QUILL's MP3 ID3 CHAP/CTOC chapter writer
-(<code>quill/core/speech/chapters.py</code>) follows ChapterForge's
+is vendored). QUILL’s MP3 ID3 CHAP/CTOC chapter writer
+(<code>quill/core/speech/chapters.py</code>) follows ChapterForge’s
 <code>core.Chapter</code> / <code>compute_chapters</code> /
 <code>write_tags_and_chapters</code> approach (with two deliberate
 fixes: contiguous gap chapters, and preserving existing ID3 tags), and
 the <strong>Build Audiobook from Folder</strong> feature
-(<code>quill/core/speech/audiobook.py</code>) follows ChapterForge's
-"folder of audio → one chaptered master" design. Auphonic, RSS-feed,
+(<code>quill/core/speech/audiobook.py</code>) follows ChapterForge’s
+“folder of audio → one chaptered master” design. Auphonic, RSS-feed,
 SFTP-publish, and metadata-lookup surfaces are intentionally not
 ported.</li>
 </ul>
@@ -315,5 +335,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
+</main>
 </body>
 </html>

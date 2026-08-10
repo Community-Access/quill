@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillVille Apple Platform Specification</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,12 +173,33 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quillville-apple-platform-specification">QuillVille Apple
 Platform Specification</h1>
 <p><strong>Scope:</strong> The shared foundation for Quill Weather for
-iOS and Quill Radio for iOS -- and for every QuillVille app that follows
+iOS and Quill Radio for iOS – and for every QuillVille app that follows
 them onto Apple platforms. <strong>Status:</strong> Design of record,
 implementation-ready <strong>Version:</strong> 1.0
 <strong>Date:</strong> August 8, 2026 <strong>Owns:</strong> QuillKit
@@ -189,8 +209,8 @@ contract, the Apple repository layout, and the cross-platform settings
 scope map. <strong>Consumed by:</strong>
 <code>standalone/weather/docs/prd-ios.md</code>,
 <code>standalone/radio/docs/prd-ios.md</code> <strong>Supersedes, in
-scope:</strong> the "we will not spin up our own sync process" position
-recorded in <code>docs/engineering/sync-engine-history.md</code> -- see
+scope:</strong> the “we will not spin up our own sync process” position
+recorded in <code>docs/engineering/sync-engine-history.md</code> – see
 §4.1, which adopts the existing QuillSync engine rather than building a
 new one, and does not reopen the retired multi-provider OAuth plan.</p>
 <hr />
@@ -202,7 +222,7 @@ the ecosystem ends up with four incompatible dialects of itself and a
 settings file that no longer round trips between a desktop and a
 phone.</p>
 <p>The Windows product avoided that by putting every portable thing in
-<code>quill/core/*</code> -- wx-free, clock-free, network-free,
+<code>quill/core/*</code> – wx-free, clock-free, network-free,
 strict-typed, and unit tested. That decision is the reason an Apple port
 is tractable at all. This document is the Apple-side equivalent of that
 decision, made once, up front.</p>
@@ -235,19 +255,19 @@ standalone/
   weather-ios/              app target, widgets, watch app, intents, tests
   radio-ios/                app target, widgets, watch app, CarPlay scene, intents, tests</code></pre>
 <ul>
-<li><strong>AP-1.</strong> <code>apple/</code> sits outside QUILL's
-Python CI gates -- the module size budget, the dialog inventory, the
-banned-pattern scan, and <code>mypy</code> do not apply -- and carries
+<li><strong>AP-1.</strong> <code>apple/</code> sits outside QUILL’s
+Python CI gates – the module size budget, the dialog inventory, the
+banned-pattern scan, and <code>mypy</code> do not apply – and carries
 its own Swift CI, exactly as <code>standalone/radio-mac/</code> does
 today.</li>
 <li><strong>AP-2.</strong> The network egress audit
 <strong>does</strong> apply. Every Swift call site is added to
-<code>quill/tools/network_egress_audit.py</code>'s inventory in the same
-change that introduces it, because the audit's purpose is to describe
-the ecosystem's total outbound surface, not one language's.</li>
+<code>quill/tools/network_egress_audit.py</code>’s inventory in the same
+change that introduces it, because the audit’s purpose is to describe
+the ecosystem’s total outbound surface, not one language’s.</li>
 <li><strong>AP-3.</strong> Documentation follows the standing
 per-product rule: every change is documented with the product it belongs
-to, at ship time, in that product's <code>CHANGELOG.md</code> and
+to, at ship time, in that product’s <code>CHANGELOG.md</code> and
 <code>docs/</code>, with the <code>.html</code> and <code>.epub</code>
 twins regenerated. A change to QuillKit that affects both apps gets an
 entry in both changelogs.</li>
@@ -262,11 +282,11 @@ and the narration golden corpus</h2>
 <p>This is the most important section in the document.</p>
 <h3 id="31-the-invariant-being-protected">3.1 The invariant being
 protected</h3>
-<p>The Windows weather renderer's module docstring states the product's
+<p>The Windows weather renderer’s module docstring states the product’s
 whole thesis: pure functions that produce warm, fully spelled-out
-sentences meant to be read aloud -- "miles per hour", not "mph";
-"west-northwest", not "WNW"; "degrees", not a symbol -- with no clock,
-no randomness, and no wx, so that <strong>speech and text share the same
+sentences meant to be read aloud – “miles per hour”, not “mph”;
+“west-northwest”, not “WNW”; “degrees”, not a symbol – with no clock, no
+randomness, and no wx, so that <strong>speech and text share the same
 strings and can never drift apart</strong>.</p>
 <p>That invariant is worth more than any individual feature. If iOS
 reimplements the phrasing, the two products slowly become two products.
@@ -288,7 +308,7 @@ sentence with string interpolation has introduced a dialect and fails
 review.</li>
 <li><strong>NR-4.</strong> A wording change is a change to
 <strong>both</strong> implementations and to the corpus, in one commit.
-There is no "fix it on iOS first."</li>
+There is no “fix it on iOS first.”</li>
 </ul>
 <h3 id="33-the-corpus">3.3 The corpus</h3>
 <ul>
@@ -299,7 +319,7 @@ output for each narrator function and each relevant settings
 combination. The same files live at
 <code>tests/fixtures/narration/</code> on the Python side, kept
 identical by a checked-in sync check that fails CI on divergence.</li>
-<li><strong>NR-6.</strong> Both test suites iterate the corpus. Python's
+<li><strong>NR-6.</strong> Both test suites iterate the corpus. Python’s
 suite already has the behavior; the corpus makes it explicit and
 shareable.</li>
 <li><strong>NR-7.</strong> Initial corpus coverage, drawn from the
@@ -322,15 +342,15 @@ and every degradation note string.</li>
 now-playing template renderer across the <code>key="value"</code> and
 <code>Artist - Title</code> conventions and every
 <code>[optional]</code> segment case, recording start and stop
-announcements, the reconnect and buffering narrative, the DVR "behind
-live" phrasing, the schedule list line with time zones, and the
+announcements, the reconnect and buffering narrative, the DVR “behind
+live” phrasing, the schedule list line with time zones, and the
 <code>compact_braille</code> variants.</li>
 </ul></li>
 </ul>
 <h3 id="34-where-new-wording-comes-from">3.4 Where new wording comes
 from</h3>
 <ul>
-<li><strong>NR-8.</strong> iOS will produce sentences Windows cannot --
+<li><strong>NR-8.</strong> iOS will produce sentences Windows cannot –
 minute-by-minute precipitation, arrival narration, disagreement wording,
 Live Activity countdowns. Each new sentence is added to
 <code>QuillNarrate</code> <strong>and</strong> to <code>render.py</code>
@@ -341,8 +361,8 @@ product.</li>
 </ul>
 <hr />
 <h2
-id="4-quillsync----how-settings-and-identifications-track-either-way">4.
-QuillSync -- how settings and identifications track either way</h2>
+id="4-quillsync--how-settings-and-identifications-track-either-way">4.
+QuillSync – how settings and identifications track either way</h2>
 <h3 id="41-adopt-do-not-invent">4.1 Adopt, do not invent</h3>
 <p>The engine already exists and is complete:
 <code>quill/apps/beacon/quillsync/</code> provides a git-like
@@ -350,15 +370,15 @@ append-only commit log of AES-GCM encrypted, content-addressed blobs
 under a scrypt-derived vault key, with a <code>Transport</code>
 abstraction, a <code>RecordStore</code> protocol, pluggable merge
 functions, and tombstones for deletes. Its own docstring names the
-intent: "Beacon, Quill settings, Quill Radio stations, and Quill Cast
+intent: “Beacon, Quill settings, Quill Radio stations, and Quill Cast
 episodes all use the same engine with their own adapter and merge
-function." A reference server exists at
+function.” A reference server exists at
 <code>standalone/beacon/server/</code>, with magic-link auth, per-device
 revocable tokens, and a deliberately opaque hint endpoint.</p>
 <ul>
 <li><strong>SY-1.</strong> No new sync engine is written. The standing
-decision in <code>docs/engineering/sync-engine-history.md</code> -- that
-QUILL will not build its own sync process -- is honored in substance:
+decision in <code>docs/engineering/sync-engine-history.md</code> – that
+QUILL will not build its own sync process – is honored in substance:
 this is adoption of an engine that already exists in the tree, not a new
 one, and it does not revive the retired multi-provider OAuth plan.</li>
 <li><strong>SY-2.</strong> <strong>Promotion is a prerequisite.</strong>
@@ -384,7 +404,7 @@ re-pairing or losing history.</p>
 <tbody>
 <tr>
 <td>T1</td>
-<td><strong>iCloud Drive folder</strong> (the app's ubiquity
+<td><strong>iCloud Drive folder</strong> (the app’s ubiquity
 container)</td>
 <td>None</td>
 <td>Default on Apple devices. Because iCloud Drive is also available on
@@ -393,7 +413,7 @@ infrastructure at all</strong></td>
 </tr>
 <tr>
 <td>T2</td>
-<td><strong>Any folder</strong> -- OneDrive, Dropbox, Syncthing, a
+<td><strong>Any folder</strong> – OneDrive, Dropbox, Syncthing, a
 network share, a USB stick</td>
 <td>None</td>
 <td>The existing <code>FolderTransport</code>, unchanged. Already works
@@ -401,8 +421,8 @@ on Windows today</td>
 </tr>
 <tr>
 <td>T3</td>
-<td><strong>QuillSync server</strong> -- magic link, per-device
-revocable token</td>
+<td><strong>QuillSync server</strong> – magic link, per-device revocable
+token</td>
 <td>Yes</td>
 <td>For users with no cloud drive, and the only tier that can deliver a
 push hint</td>
@@ -412,11 +432,11 @@ push hint</td>
 <ul>
 <li><strong>SY-3.</strong> T1 is the recommended default because it is
 zero-configuration on Apple devices, requires no account with QUILL, and
-is the transport most likely to already be working on both of a user's
+is the transport most likely to already be working on both of a user’s
 machines.</li>
-<li><strong>SY-4.</strong> T1 and T2 are the same code path -- a
+<li><strong>SY-4.</strong> T1 and T2 are the same code path – a
 directory of <code>commits/*.json</code> and
-<code>objects/&lt;sha256&gt;</code> -- so the iCloud tier is a
+<code>objects/&lt;sha256&gt;</code> – so the iCloud tier is a
 coordinated-file-access wrapper over the existing transport, not a new
 implementation.</li>
 <li><strong>SY-5.</strong> T3 remains optional forever. <strong>Nothing
@@ -452,7 +472,7 @@ output.</li>
 <code>kSecAttrAccessibleWhenUnlockedThisDeviceOnly</code>. It is never
 written to the log, never sent to any server, never included in a device
 backup that travels, and never derivable from anything the server holds.
-Losing it costs sync, not data -- local data is always intact and always
+Losing it costs sync, not data – local data is always intact and always
 readable.</li>
 </ul>
 <h3 id="44-the-settings-scope-map">4.4 The settings scope map</h3>
@@ -470,18 +490,18 @@ sync.</p>
 <tbody>
 <tr>
 <td><code>shared</code></td>
-<td>The user's decisions, portable across every device and platform</td>
+<td>The user’s decisions, portable across every device and platform</td>
 <td><code>shared/...</code></td>
 </tr>
 <tr>
 <td><code>device</code></td>
-<td>Real settings that are meaningless or harmful elsewhere -- audio
+<td>Real settings that are meaningless or harmful elsewhere – audio
 routes, file paths, per-device enable flags, notification grants</td>
 <td><code>device/&lt;device-id&gt;/...</code></td>
 </tr>
 <tr>
 <td><code>local</code></td>
-<td>Never leaves the machine under any circumstance -- secrets, location
+<td>Never leaves the machine under any circumstance – secrets, location
 fixes, caches, DPAPI- or Keychain-protected material</td>
 <td>not in the log</td>
 </tr>
@@ -505,10 +525,10 @@ collide by design.</li>
 <li><strong>SY-13.</strong> Merge policy: field-level last-writer-wins
 on scalars; union merge on lists that are sets in spirit (muted alert
 events, location groups, favorites, folder paths) using the existing
-<code>merge.union_lists</code>; a real conflict -- removed here, edited
-there -- surfaces as a single user-resolvable item whose resolution is
+<code>merge.union_lists</code>; a real conflict – removed here, edited
+there – surfaces as a single user-resolvable item whose resolution is
 spoken, never a silent pick.</li>
-<li><strong>SY-14.</strong> The per-app scope tables live in each app's
+<li><strong>SY-14.</strong> The per-app scope tables live in each app’s
 iOS PRD (Quill Weather §11, Quill Radio §7) and are normative. This
 document owns the classification rules; the apps own their key
 lists.</li>
@@ -518,7 +538,7 @@ lists.</li>
 side is part of this work, not a follow-on:</p>
 <ul>
 <li><strong>SY-15.</strong> A <code>SettingsRecordStore</code> adapter
-and a <code>settings_merge</code> function for QUILL's own settings, as
+and a <code>settings_merge</code> function for QUILL’s own settings, as
 already specified in
 <code>standalone/beacon/docs/PLAN-quillsync-integration.md</code>.</li>
 <li><strong>SY-16.</strong> A <code>WeatherRecordStore</code> over
@@ -527,7 +547,7 @@ already specified in
 over <code>radio_favorites.json</code> and the radio history/settings
 record.</li>
 <li><strong>SY-17.</strong> A sync surface in the Windows apps: enable,
-choose a transport, pair, sync now, view status, resolve a conflict --
+choose a transport, pair, sync now, view status, resolve a conflict –
 all through the existing dialog contract and the existing announcement
 service, so it is accessible by construction.</li>
 <li><strong>SY-18.</strong> Sequencing: <strong>Quill Radio favorites
@@ -537,8 +557,8 @@ bug is recoverable. Weather locations follow, then QUILL
 preferences.</li>
 </ul>
 <hr />
-<h2 id="5-quillpush----the-only-new-service">5. QuillPush -- the only
-new service</h2>
+<h2 id="5-quillpush--the-only-new-service">5. QuillPush – the only new
+service</h2>
 <h3 id="51-why-it-is-needed">5.1 Why it is needed</h3>
 <p>The Windows product approximates push with a 30-second poll while an
 alert is active, and its own PRD records the NWWS relay as evaluated and
@@ -555,9 +575,9 @@ design</h3>
 No account, no email, no coordinates, no identifier that outlives an
 uninstall.</li>
 <li><strong>PU-2.</strong> Zone codes are derived <strong>on the
-device</strong> from the saved location's already-cached NWS metadata.
-The relay never receives a coordinate and never learns where anyone is
--- only which of roughly four thousand public zones a token cares about,
+device</strong> from the saved location’s already-cached NWS metadata.
+The relay never receives a coordinate and never learns where anyone is –
+only which of roughly four thousand public zones a token cares about,
 which is the same information a NOAA Weather Radio receiver broadcasts
 to the room.</li>
 <li><strong>PU-3.</strong> The push payload carries the alert id, the
@@ -579,13 +599,13 @@ network egress audit and disabled by Offline Mode.</li>
 <h3 id="53-shape">5.3 Shape</h3>
 <ul>
 <li><strong>PU-7.</strong> One process polls NWS alerts once per
-zone-set per interval -- the cost is dominated by the NWS poll, not by
+zone-set per interval – the cost is dominated by the NWS poll, not by
 fan-out, so it scales with the number of zones (fixed) rather than the
 number of users. It follows the hosting pattern already established by
 <code>quill-ai-gateway</code>.</li>
 <li><strong>PU-8.</strong> Later, the same relay can front NWWS-OI for
 sub-ten-second latency without changing the client contract, which is
-what the Windows PRD's §17 always intended.</li>
+what the Windows PRD’s §17 always intended.</li>
 <li><strong>PU-9.</strong> Quill Radio does not use QuillPush. It has
 nothing to push.</li>
 </ul>
@@ -598,11 +618,11 @@ each app re-reads.</p>
 <li><strong>AX-1.</strong> Reusable modifiers for the recurring
 patterns: the parity label (label equals displayed text), the
 concise-label swap with full text in Custom Content, the priority-mapped
-announcement, the "remove from the tree when empty" wrapper, the sorted
+announcement, the “remove from the tree when empty” wrapper, the sorted
 reading order, and the standard custom-action sets.</li>
-<li><strong>AX-2.</strong> The announcement policy port -- priority
+<li><strong>AX-2.</strong> The announcement policy port – priority
 mapping, the two-second identical-message dedupe, and the burst
-coalescer with its 150-millisecond settle and its error exemption --
+coalescer with its 150-millisecond settle and its error exemption –
 lives here once. Both apps get identical announcement behavior because
 they share the implementation, not because they each remembered.</li>
 <li><strong>AX-3.</strong> The <strong>Custom Content</strong>
@@ -622,7 +642,7 @@ curtain on, and its results are recorded in
 acceptance documents.</li>
 <li><strong>AX-6.</strong> A shared <strong>accessibility
 statement</strong> ships in both apps and in <code>docs/legal/</code>,
-naming what works, what is known-limited (Quill Radio's §13), and how to
+naming what works, what is known-limited (Quill Radio’s §13), and how to
 report a defect.</li>
 </ul>
 <hr />
@@ -642,8 +662,8 @@ to stay that way.</li>
 validator, shared across the app, its widgets, its watch app, and its
 extensions through the App Group container. Widgets must never multiply
 provider call counts.</li>
-<li><strong>NW-4.</strong> <strong>Offline Mode</strong> -- the
-<code>QUILL_SAFE_MODE</code> analogue -- is implemented in the
+<li><strong>NW-4.</strong> <strong>Offline Mode</strong> – the
+<code>QUILL_SAFE_MODE</code> analogue – is implemented in the
 chokepoint, so a single switch disables every network surface in both
 apps and no individual call site can forget to check it.</li>
 <li><strong>NW-5.</strong> No App Transport Security exceptions in
@@ -658,16 +678,16 @@ Shared conventions carried over from the Windows product</h2>
 <p>These are non-negotiables that already govern the ecosystem and
 continue to:</p>
 <ul>
-<li><strong>CV-1.</strong> Atomic writes for every persisted JSON file
--- write to a temporary file, then replace. A partially written
-favorites file is unacceptable.</li>
+<li><strong>CV-1.</strong> Atomic writes for every persisted JSON file –
+write to a temporary file, then replace. A partially written favorites
+file is unacceptable.</li>
 <li><strong>CV-2.</strong> Defensive load: a wrong-typed key keeps its
 default, an unparseable record is dropped rather than crashing the app,
 and a corrupt file yields defaults with a spoken notice. Absence is
 never an error.</li>
 <li><strong>CV-3.</strong> Every custom error type is coded
 <code>QUILL-&lt;DOMAIN&gt;-&lt;SUBSYSTEM&gt;-&lt;REASON&gt;</code>,
-matching its Python sibling where one exists, so a user's report is
+matching its Python sibling where one exists, so a user’s report is
 actionable across platforms.</li>
 <li><strong>CV-4.</strong> No telemetry, no analytics, no tracking, no
 advertising identifier, in any app, ever.</li>
@@ -675,7 +695,7 @@ advertising identifier, in any app, ever.</li>
 to the user in full, redacted through the ported redaction rules, and
 transmitted only by an explicit user action.</li>
 <li><strong>CV-6.</strong> Naming follows the family exactly:
-<strong>Quill Radio</strong>, <strong>Quill Weather</strong> -- matching
+<strong>Quill Radio</strong>, <strong>Quill Weather</strong> – matching
 <code>quill/core/app_launcher.py</code>, which is the single source of
 truth for product names.</li>
 <li><strong>CV-7.</strong> Licensing is MIT, with <code>NOTICE</code>
@@ -690,8 +710,8 @@ app targets, so it can be scheduled rather than discovered:</p>
 <li><strong>Promote QuillSync</strong> from
 <code>quill/apps/beacon/quillsync/</code> to
 <code>quill/core/sync/</code>, with a Beacon re-export shim (SY-2).</li>
-<li><strong>Write three Windows record-store adapters</strong> --
-settings, weather, radio -- plus their merge functions (SY-15,
+<li><strong>Write three Windows record-store adapters</strong> –
+settings, weather, radio – plus their merge functions (SY-15,
 SY-16).</li>
 <li><strong>Build a Windows sync UI</strong> through the existing dialog
 contract (SY-17).</li>
@@ -702,14 +722,14 @@ legacy id acceptance forever (SY-12).</li>
 existing tests and the weather acceptance document, and add the sync
 check that keeps the Python and Swift copies identical (NR-5,
 NR-6).</li>
-<li><strong>Back-port the unit extensions</strong> the iOS work adds --
-pressure and visibility units -- and any new sentence iOS invents
+<li><strong>Back-port the unit extensions</strong> the iOS work adds –
+pressure and visibility units – and any new sentence iOS invents
 (NR-8).</li>
 <li><strong>Add conditional HTTP, backoff, last-good caching, and
 staleness marking</strong> to the Windows weather client, which its own
 PRD requires and which the corpus will now assert.</li>
 <li><strong>Replace Nominatim</strong> in the Windows geocoder with a
-compliant alternative; its public endpoint's usage policy does not
+compliant alternative; its public endpoint’s usage policy does not
 permit a distributed application to use it the way the app does today.
 This is a live compliance issue that the iOS work surfaced.</li>
 <li><strong>Add client-side rate limiting</strong> to the shared
@@ -717,7 +737,7 @@ directory clients (NW-2).</li>
 <li><strong>Build QuillPush</strong> (§5).</li>
 <li><strong>Extend the network egress audit</strong> to inventory Swift
 call sites (AP-2).</li>
-<li><strong>Add Swift CI</strong> -- build, test, the accessibility
+<li><strong>Add Swift CI</strong> – build, test, the accessibility
 audit, and the two cross-language fixture tests (narration and
 sync).</li>
 <li><strong>Update <code>docs/legal/PRIVACY.md</code></strong> for
@@ -752,7 +772,7 @@ product before the second app depends on it.</p>
 </tr>
 <tr>
 <td>2</td>
-<td>--</td>
+<td>–</td>
 <td>Phase 2: WeatherKit, fusion, Audio Graphs</td>
 <td>Phase 2: resolver ladder, QuillAudio, Sound Enhancements, DVR</td>
 </tr>
@@ -783,12 +803,12 @@ product before the second app depends on it.</p>
 </tbody>
 </table>
 <ul>
-<li><strong>SQ-1.</strong> Stage 5 is where "settings and
-identifications track either way" actually lands, and it is deliberately
+<li><strong>SQ-1.</strong> Stage 5 is where “settings and
+identifications track either way” actually lands, and it is deliberately
 late: the scope map cannot be written honestly until both apps have real
 settings, and a sync bug in an app nobody uses yet is a bug nobody
 finds.</li>
-<li><strong>SQ-2.</strong> Quill Radio's favorites are the sync pilot
+<li><strong>SQ-2.</strong> Quill Radio’s favorites are the sync pilot
 for both platforms, per SY-18. Weather locations follow only after
 favorites have survived real use.</li>
 </ul>
@@ -796,28 +816,28 @@ favorites have survived real use.</li>
 <h2 id="11-open-questions-owned-by-this-document">11. Open questions
 owned by this document</h2>
 <ol type="1">
-<li><strong>scrypt in Swift</strong> -- select and audit the
+<li><strong>scrypt in Swift</strong> – select and audit the
 implementation, pin test vectors against the Python output, and confirm
 the binary-size and cold-start cost of the N = 2^15 parameter set on an
 iPhone (SY-8).</li>
-<li><strong>iCloud Drive as a commit-log transport</strong> -- validate
+<li><strong>iCloud Drive as a commit-log transport</strong> – validate
 coordinated file access, conflict-file behavior, and eventual
 consistency against a directory of many small files written concurrently
 from Windows and iOS, before making T1 the default (SY-4).</li>
-<li><strong>iCloud for Windows availability</strong> in the user base --
+<li><strong>iCloud for Windows availability</strong> in the user base –
 confirm that the recommended default transport is actually reachable for
 the desktop users we expect to pair, and keep T2 prominently offered if
 it is not.</li>
-<li><strong>QuillPush hosting</strong> -- confirm the shape and
+<li><strong>QuillPush hosting</strong> – confirm the shape and
 steady-state cost against the <code>quill-ai-gateway</code> deployment
 pattern before building (PU-7).</li>
-<li><strong>Corpus scope boundary</strong> -- decide how much of the
+<li><strong>Corpus scope boundary</strong> – decide how much of the
 official NWS prose passes through the corpus. The abbreviation-widening
 transform must be asserted; the upstream bulletin text itself cannot be,
 since NWS controls it.</li>
-<li><strong>Windows geocoder replacement</strong> -- choose the
-compliant alternative for item 8 of §9, balancing worldwide coverage
-against licensing and cost.</li>
+<li><strong>Windows geocoder replacement</strong> – choose the compliant
+alternative for item 8 of §9, balancing worldwide coverage against
+licensing and cost.</li>
 <li><strong>Whether QUILL Cast, Audio Studio, and Beacon follow</strong>
 onto iOS, and therefore how much of QuillKit should be generalized now
 versus later. The recommendation is to generalize nothing speculatively:
@@ -827,25 +847,26 @@ third app arrives.</li>
 <hr />
 <h2 id="12-related-documents">12. Related documents</h2>
 <ul>
-<li><code>standalone/weather/docs/prd-ios.md</code> -- Quill Weather for
+<li><code>standalone/weather/docs/prd-ios.md</code> – Quill Weather for
 iOS</li>
-<li><code>standalone/radio/docs/prd-ios.md</code> -- Quill Radio for
+<li><code>standalone/radio/docs/prd-ios.md</code> – Quill Radio for
 iOS</li>
-<li><code>standalone/weather/docs/prd.md</code> -- the authoritative
+<li><code>standalone/weather/docs/prd.md</code> – the authoritative
 weather domain spec</li>
-<li><code>standalone/radio/docs/prd.md</code> -- the authoritative radio
+<li><code>standalone/radio/docs/prd.md</code> – the authoritative radio
 domain spec</li>
-<li><code>standalone/beacon/docs/PRD.md</code> sections 45 and 46 -- the
+<li><code>standalone/beacon/docs/PRD.md</code> sections 45 and 46 – the
 QuillSync framework spec</li>
-<li><code>standalone/beacon/docs/PLAN-quillsync-integration.md</code> --
+<li><code>standalone/beacon/docs/PLAN-quillsync-integration.md</code> –
 the adapter plan, including its iOS section</li>
-<li><code>docs/engineering/sync-engine-history.md</code> -- the standing
+<li><code>docs/engineering/sync-engine-history.md</code> – the standing
 decision this document works within</li>
 <li><code>standalone/radio-mac/docs/superpowers/specs/2026-07-16-quill-radio-mac-design.md</code>
--- the macOS port design, whose data-directory and platform-shim
+– the macOS port design, whose data-directory and platform-shim
 decisions this document is consistent with</li>
-<li><code>docs/release/acceptance/app-weather.md</code> -- the existing
+<li><code>docs/release/acceptance/app-weather.md</code> – the existing
 literal-speech acceptance document that seeds the narration corpus</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>05-start-a-vault</title>
+  <title>Tutorial 5: Start an Accessible Vault</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="tutorial-5-start-an-accessible-vault">Tutorial 5: Start an
 Accessible Vault</h1>
 <p><strong>Goal:</strong> a working linked-notes vault — backlinks,
@@ -183,12 +203,12 @@ tags, daily notes, and sync — from an empty folder, in twenty
 minutes.</p>
 <p>A vault is <strong>just a folder of Markdown files</strong>. QUILL
 adds an index (a small cache you can delete without losing a word), and
-every "graph" question gets a spoken answer instead of a picture.</p>
+every “graph” question gets a spoken answer instead of a picture.</p>
 <h2 id="1-create-and-open-the-vault">1. Create and open the vault</h2>
 <ol type="1">
 <li>Make a folder, e.g. <code>Documents\Notes</code>.</li>
-<li><strong>Tools &gt; Vault &gt; Open Vault...</strong> and pick it.
-QUILL indexes it and announces: "Vault Notes: 0 notes, 0 links."</li>
+<li><strong>Tools &gt; Vault &gt; Open Vault…</strong> and pick it.
+QUILL indexes it and announces: “Vault Notes: 0 notes, 0 links.”</li>
 </ol>
 <h2 id="2-the-first-triangle">2. The first triangle</h2>
 <ol type="1">
@@ -202,7 +222,7 @@ vault folder.</li>
 and run <strong>Follow Wikilink</strong> — you land in
 <code>QUILL.md</code>.</li>
 <li>Now the magic: in <code>Projects.md</code>, run <strong>Show
-Backlinks</strong>. QUILL answers "2 notes link here" and reads each
+Backlinks</strong>. QUILL answers “2 notes link here” and reads each
 link <em>with the sentence it lives in</em>. Enter opens the source at
 the mention.</li>
 </ol>
@@ -218,7 +238,7 @@ supported) and opens hits at their line.</li>
 <li>Add <code>#project/quill</code> style tags anywhere; <strong>Show
 Tags</strong> rolls nested tags up (<code>#project</code> finds
 <code>#project/quill</code>).</li>
-<li><strong>Open Today's Note</strong> starts a dated journal entry;
+<li><strong>Open Today’s Note</strong> starts a dated journal entry;
 <strong>Previous/Next Daily Note</strong> page through your
 journal.</li>
 <li><strong>Insert Template</strong> fills
@@ -233,7 +253,7 @@ Configure the Templates folder in <strong>Vault Settings</strong>.</li>
 <strong>chooser</strong>, never a guess.</li>
 <li><strong>Rename Note</strong> updates the file, the H1, and every
 inbound link.</li>
-<li><strong>Unlinked Mentions</strong> finds where you wrote a note's
+<li><strong>Unlinked Mentions</strong> finds where you wrote a note’s
 name without linking it — stitch the web tighter.</li>
 <li><strong>Note Neighborhood</strong> lists everything one hop away,
 both directions.</li>
@@ -250,7 +270,7 @@ decide instead of overwriting.</li>
 <h2 id="6-ideas-that-stick">6. Ideas that stick</h2>
 <ul>
 <li><strong>Research</strong>: one note per source, links to topic
-notes; backlinks answer "which sources discuss this?"</li>
+notes; backlinks answer “which sources discuss this?”</li>
 <li><strong>Fiction</strong>: a note per character and place; from a
 character note, backlinks list every scene that mentions them (pairs
 beautifully with Story Studio).</li>
@@ -262,5 +282,6 @@ taxonomy you will never finish.</p>
 <p><strong>Next:</strong> <a
 href="06-make-it-accessible-with-glow.md">Make a document accessible
 with GLOW</a>.</p>
+</main>
 </body>
 </html>

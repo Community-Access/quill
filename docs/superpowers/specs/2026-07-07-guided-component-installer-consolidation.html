@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-07-guided-component-installer-consolidation</title>
+  <title>Guided Component Installer &amp; Speech Consolidation</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="guided-component-installer-speech-consolidation">Guided
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="guided-component-installer--speech-consolidation">Guided
 Component Installer &amp; Speech Consolidation</h1>
 <p><strong>Status:</strong> proposed · <strong>Date:</strong> 2026-07-07
 · <strong>Branch:</strong> <code>fix/hub-download-test-ux</code>
@@ -207,54 +231,65 @@ every user needs; download the big engines/models on first use.</li>
 </ul>
 <h2 id="scope">Scope</h2>
 <h3
-id="consolidate-the-tools-speech-submenu-remove-the-scattered-download-items">1.
+id="1-consolidate-the-tools--speech-submenu-remove-the-scattered-download-items">1.
 Consolidate the Tools &gt; Speech submenu (remove the scattered download
 items)</h3>
-<p>Remove these three menu items and fold their function into the hub: -
-<code>Download &amp;FFmpeg…</code> (<code>tools.speech_ffmpeg</code>) -
-<code>Download &amp;Offline Speech Engine…</code>
-(<code>tools.speech_offline_engine</code>, whisper.cpp) -
-<code>Download Faster Whisper &amp;Engine…</code>
-(<code>tools.speech_engine_download</code>)</p>
+<p>Remove these three menu items and fold their function into the
+hub:</p>
+<ul>
+<li><code>Download &amp;FFmpeg…</code>
+(<code>tools.speech_ffmpeg</code>)</li>
+<li><code>Download &amp;Offline Speech Engine…</code>
+(<code>tools.speech_offline_engine</code>, whisper.cpp)</li>
+<li><code>Download Faster Whisper &amp;Engine…</code>
+(<code>tools.speech_engine_download</code>)</li>
+</ul>
 <p>Keep the <em>usage</em> entries (<code>Speech and Dictation…</code>,
 <code>Dictate (Offline)</code>, Voice Command/Conversation/Wake, Speak
 Voice Status). Manage Speech Models and Manage Voices remain reachable
 from the hub’s <strong>Manage</strong> buttons (and from the Speech and
 Dictation dialog for choosing the <em>active</em> model/voice).</p>
-<h3 id="guided-offline-speech-whisper-flow">2. Guided offline-speech
+<h3 id="2-guided-offline-speech-whisper-flow">2. Guided offline-speech
 (Whisper) flow</h3>
 <p>A single hub entry — “Offline speech (dictation &amp; transcription)”
-— opens a short wizard: 1. <strong>Choose the engine</strong> with
-plain-language explanations of the trade-off: - <strong>Faster
-Whisper</strong> — most accurate, uses more disk/RAM, GPU-aware. -
-<strong>whisper.cpp</strong> — lighter and fast on CPU, great for most
-machines. 2. <strong>Choose a model</strong> — tiny → large, each with
-size and a “recommended for your computer” mark (Manage Speech Models
-already computes this). <strong>Default to tiny</strong> so the user is
-working immediately. 3. Install engine + selected model with visible
-progress; return to the hub with the row now showing Installed +
-Test.</p>
-<h3 id="guided-kokoro-flow-unbundle-for-footprint">3. Guided Kokoro flow
-+ unbundle for footprint</h3>
+— opens a short wizard:</p>
+<ol type="1">
+<li><strong>Choose the engine</strong> with plain-language explanations
+of the trade-off:
+<ul>
+<li><strong>Faster Whisper</strong> — most accurate, uses more disk/RAM,
+GPU-aware.</li>
+<li><strong>whisper.cpp</strong> — lighter and fast on CPU, great for
+most machines.</li>
+</ul></li>
+<li><strong>Choose a model</strong> — tiny → large, each with size and a
+“recommended for your computer” mark (Manage Speech Models already
+computes this). <strong>Default to tiny</strong> so the user is working
+immediately.</li>
+<li>Install engine + selected model with visible progress; return to the
+hub with the row now showing Installed + Test.</li>
+</ol>
+<h3 id="3-guided-kokoro-flow--unbundle-for-footprint">3. Guided Kokoro
+flow + unbundle for footprint</h3>
 <ul>
 <li><strong>Unbundle Kokoro from the installer.</strong> Remove
 <code>kokoro</code> from <code>DEFAULT_BUNDLED_DEPENDENCY_GROUPS</code>
 in <code>scripts/build_windows_distribution.py</code>. Verified safe:
-<code>install_kokoro_onnx()</code> pip-installs the full tree
-(incl. <code>babel</code> transitively via phonemizer→segments→csvw)
-into an engine-pack, and <code>activate_engine_packs()</code> puts it on
+<code>install_kokoro_onnx()</code> pip-installs the full tree (incl.
+<code>babel</code> transitively via phonemizer→segments→csvw) into an
+engine-pack, and <code>activate_engine_packs()</code> puts it on
 <code>sys.path</code>. This shrinks the installer <em>and</em> fixes
 #881 without bundling babel.</li>
 <li><strong>Guided install:</strong> one flow fetches the onnx package
 (+deps) <strong>and</strong> the voice models, then returns to the
 hub.</li>
 </ul>
-<h3 id="mp3-export-support-as-a-guided-download">4. MP3 export support
+<h3 id="4-mp3-export-support-as-a-guided-download">4. MP3 export support
 as a guided download</h3>
 <p>Fold the <code>mutagen</code> MP3-support acquisition into the same
 wizard-style flow (progress + friendly copy) instead of a bare
 dependency gap.</p>
-<h3 id="stay-in-the-hub-focus-the-beta-2-test-findings">5.
+<h3 id="5-stay-in-the-hub--focus-the-beta-2-test-findings">5.
 Stay-in-the-hub + focus (the beta-2 test findings)</h3>
 <ul>
 <li>Downloads run without leaving the hub; on completion the row
@@ -292,5 +327,6 @@ lightweight step panel) so it stays “one place.”</li>
 <li>Exact copy for the Faster Whisper vs whisper.cpp explanation (needs
 a friendly, screen-reader-first pass).</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>editor-surface-history</title>
+  <title>Editor Surface History: how QUILL ended up with one
+editor</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,20 +174,41 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="editor-surface-history-how-quill-ended-up-with-one-editor">Editor
 Surface History: how QUILL ended up with one editor</h1>
 <p>Canonical engineering record, written 2026-07-11 as part of the
-QuillRichEdit promotion (0.9.0-beta3, the "One Editor, Every Format"
+QuillRichEdit promotion (0.9.0-beta3, the “One Editor, Every Format”
 plan). It preserves the verdicts and post-mortems from the
 editor-surface experiments so the deleted code cannot be casually
 reintroduced without this history. The full analysis lived in
 <code>docs/planning/editor-surface-experiments.md</code> (retired with
 the experiment; recoverable from git history).</p>
 <h2 id="the-outcome-what-ships">The outcome (what ships)</h2>
-<p><strong>QuillRichEdit is QUILL's one editor surface on
+<p><strong>QuillRichEdit is QUILL’s one editor surface on
 Windows</strong>: the same native Rich Edit control
 (<code>RICHEDIT50W</code>, a <code>wx.TextCtrl</code> with
 <code>TE_RICH2 | TE_NOHIDESEL</code>) QUILL always shipped, plus a
@@ -215,14 +236,14 @@ PRD (converted rich, then the native NSTextView wrapper).</p>
 they stay dead</h2>
 <h3
 id="scintilla--wxstc--the-notepad-experiment-nvda-only-jaws-impossible">Scintilla
-/ wx.stc — the "Notepad++ experiment" (NVDA-only; JAWS impossible)</h3>
+/ wx.stc — the “Notepad++ experiment” (NVDA-only; JAWS impossible)</h3>
 <p>The most instructive failure. Scintilla was attractive (fast on huge
 documents, true multi-level undo/redo), and NVDA read and tracked it
 well. JAWS could not follow the caret. Three bridging rounds all failed
 on live hardware (2026-07-03):</p>
 <ol type="1">
 <li><strong>Caret mirror</strong> — a hidden classic caret positioned to
-match Scintilla's.</li>
+match Scintilla’s.</li>
 <li><strong>Classic message answers</strong> — responding to
 <code>WM_GETTEXT</code> / <code>WM_GETTEXTLENGTH</code> /
 <code>EM_GETSEL</code> / <code>EM_EXGETSEL</code> from the Scintilla
@@ -231,7 +252,7 @@ HWND.</li>
 <code>EM_POSFROMCHAR</code> / <code>EM_CHARFROMPOS</code> so JAWS could
 map offsets to screen positions.</li>
 </ol>
-<p>Verdict: JAWS's Notepad++ support is script-side and
+<p>Verdict: JAWS’s Notepad++ support is script-side and
 window-class-keyed; a foreign app cannot impersonate it by answering
 messages. The bridge was removed, the surface labeled NVDA-only, and the
 negative result pinned in tests while the surface existed. <strong>Do
@@ -239,7 +260,7 @@ not retry a JAWS/Scintilla bridge.</strong></p>
 <h3 id="raw-win32-edit-host-via-pywin32-silent-offset-corruption">Raw
 Win32 EDIT host via pywin32 (silent offset corruption)</h3>
 <p>Hosting the classic EDIT control directly worked for typing and
-selection but kept CRLF line endings in the control while QUILL's model
+selection but kept CRLF line endings in the control while QUILL’s model
 is LF-only. Every offset-anchored feature (search, spell, bookmarks, AI
 ranges) skewed silently past the first line break — the worst failure
 mode: no crash, wrong behavior. Translating at every boundary duplicated
@@ -247,12 +268,12 @@ the whole editor contract for no accessibility win over
 <code>SES_EMULATESYSEDIT</code> on the Rich Edit.</p>
 <h3 id="wxrichtextctrl-invisible-to-screen-readers">wx.RichTextCtrl
 (invisible to screen readers)</h3>
-<p>wxWidgets' own rich-text widget renders its document itself; there is
+<p>wxWidgets’ own rich-text widget renders its document itself; there is
 no native text control underneath, so JAWS/NVDA saw nothing they could
 read as a document. API-compatible enough for a demo, unusable for
-QUILL's audience.</p>
-<h3 id="the-read-only-rich-text-lens-superseded">The read-only "rich
-text lens" (superseded)</h3>
+QUILL’s audience.</p>
+<h3 id="the-read-only-rich-text-lens-superseded">The read-only “rich
+text lens” (superseded)</h3>
 <p><code>quill/ui/rich_text_surface.py</code> behind the locked-off
 <code>core.rich_text_lens</code> flag offered a read-only formatted view
 next to the markup editor. Rich mode on the native control delivers
@@ -273,7 +294,7 @@ avoids Python callbacks entirely: <code>EM_GETOLEINTERFACE</code> -&gt;
 file. Verified crash-free on-device. <strong>Never wire an EDITSTREAM
 callback from Python.</strong></p>
 <h3 id="the-margin-lever-that-didnt-help-alone">The margin lever that
-didn't help alone</h3>
+didn’t help alone</h3>
 <p><code>editor_zero_richedit_margins</code>
 (<code>EM_SETMARGINS</code>) was tried for the cell-2 offset and removed
 in beta2 (commit <code>094b630</code>) after testing showed it did not
@@ -301,5 +322,6 @@ does not carry seven dead surfaces to hedge. The only in-code fallback
 is inside <code>create_richedit_rtf</code> itself: any failure yields a
 stock multiline <code>wx.TextCtrl</code>, so the editor can never fail
 to build.</p>
+</main>
 </body>
 </html>

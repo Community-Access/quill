@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-tools-speech</title>
+  <title>Section — Speech, Dictation, Read Aloud &amp; OCR (`tools.*`,
+36 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--speech-dictation-read-aloud--ocr-tools-36-commands">Section
 — Speech, Dictation, Read Aloud &amp; OCR (<code>tools.*</code>, 36
@@ -179,7 +204,7 @@ commands)</h1>
 <p>Everything QUILL does with <strong>your voice and your ears</strong>:
 reading the document aloud in a TTS voice, turning that speech into
 audio files, <strong>dictating</strong> by microphone, driving QUILL
-hands-free with <strong>voice commands</strong> and "Hey QUILL", pulling
+hands-free with <strong>voice commands</strong> and “Hey QUILL”, pulling
 text out of images and the screen with <strong>OCR</strong>, choosing
 how spoken announcements are routed, and checking the <strong>dictionary
 / spelling</strong> status. Finish <strong>Part 0</strong> first.</p>
@@ -201,7 +226,7 @@ journey for the whole-feature flow.</p>
 preconditions</strong></p>
 <ul>
 <li><strong>A distinct TTS voice for Read Aloud.</strong> Read Aloud
-speaks through QUILL's own chosen TTS engine/voice (SAPI5, Piper,
+speaks through QUILL’s own chosen TTS engine/voice (SAPI5, Piper,
 Kokoro, DECtalk, eSpeak-NG, ElevenLabs, or the OS voice) —
 <strong>not</strong> your screen reader. Have at least one Windows/SAPI
 voice installed. When Read Aloud and your screen reader would talk at
@@ -236,9 +261,9 @@ paragraph is fine), and a quiet room to speak in.</p>
 id="tsp-01--read-aloud-start--pause-toolsread_aloud_start_pause-ctrlshiftgrave-r">TSP-01
 — Read Aloud: Start / Pause (<code>tools.read_aloud_start_pause</code>,
 Ctrl+Shift+Grave, R)</h2>
-<p><em>What &amp; why.</em> Read the document out loud in QUILL's TTS
+<p><em>What &amp; why.</em> Read the document out loud in QUILL’s TTS
 voice from the caret (or from your selection), and pause/resume on the
-same key. The everyday "read this back to me."</p>
+same key. The everyday “read this back to me.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <code>formatting.md</code>. Put the caret at the very top
@@ -261,8 +286,8 @@ paused.</li>
 <ul>
 <li>Reading begins from the caret in the <strong>Read Aloud TTS
 voice</strong> (audibly a different voice from your screen reader); the
-status bar shows <strong>"Read aloud started"</strong>. The second press
-pauses (status <strong>"Read aloud paused"</strong>) and the third
+status bar shows <strong>“Read aloud started”</strong>. The second press
+pauses (status <strong>“Read aloud paused”</strong>) and the third
 resumes from the pause point, not the top. If a range was selected, only
 that range is read. If no TTS voice is available, a spoken/OK message
 says so rather than failing silently.</li>
@@ -291,8 +316,8 @@ menu ▸ Reading and Dictation ▸ Stop Reading</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Speech stops immediately; the status bar shows <strong>"Read aloud
-stopped"</strong>. A fresh <strong>Start / Pause</strong> afterwards
+<li>Speech stops immediately; the status bar shows <strong>“Read aloud
+stopped”</strong>. A fresh <strong>Start / Pause</strong> afterwards
 begins from the caret/selection again (it does <strong>not</strong>
 resume the stopped position — that is what Pause is for).</li>
 </ul>
@@ -365,7 +390,7 @@ id="tsp-05--read-aloud-generate-audio-toolsread_aloud_generate_audio">TSP-05
 (<code>tools.read_aloud_generate_audio</code>)</h2>
 <p><em>What &amp; why.</em> Synthesize the current document (or your
 selection) to an <strong>audio file</strong> you can keep or share — a
-one-shot "save this as speech."</p>
+one-shot “save this as speech.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <code>formatting.md</code> (or select a paragraph in any
@@ -383,8 +408,8 @@ offered), name it, and confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>If nothing is open/typed, QUILL says <strong>"There is nothing to
-export…"</strong> rather than writing an empty file. Otherwise it
+<li>If nothing is open/typed, QUILL says <strong>“There is nothing to
+export…”</strong> rather than writing an empty file. Otherwise it
 synthesizes off the UI thread and writes the chosen file; markup like
 <code>#</code>, <code>**</code>, and links is cleaned before synthesis
 so it is not spoken as symbols. The compressed formats appear in the
@@ -403,14 +428,14 @@ id="tsp-06--read-in-browser-experimental-toolsread_aloud_edge-gated">TSP-06
 — Read in Browser (Experimental) (<code>tools.read_aloud_edge</code>)
 [GATED]</h2>
 <p><em>What &amp; why.</em> Open an accessible reader page in your real
-browser, where the full online/natural voices (e.g. Edge's Online
+browser, where the full online/natural voices (e.g. Edge’s Online
 voices) are available — richer than the embedded voices.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>This is <strong>experimental and opt-in</strong>. It appears in the
 menu (and is runnable) <strong>only</strong> after you enable it under
-<strong>Preferences ▸ Experimental</strong> ("Read the document aloud in
-your browser") and acknowledge the experimental notice. If it is off,
+<strong>Preferences ▸ Experimental</strong> (“Read the document aloud in
+your browser”) and acknowledge the experimental notice. If it is off,
 mark <strong>N/A</strong> (do not fail it for being missing).</li>
 <li>Some document text open.</li>
 </ul>
@@ -457,8 +482,8 @@ and the output; start the run.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The Audio Studio wizard opens as a keyboard-navigable, announced
-multi-step surface; each step's controls are labelled. Cancelling any
-step reports <strong>"Audio Studio cancelled"</strong> and writes
+multi-step surface; each step’s controls are labelled. Cancelling any
+step reports <strong>“Audio Studio cancelled”</strong> and writes
 nothing. On completion the batch produces the audio file(s) and your
 choices/source are remembered for next time. Progress is announced; the
 UI never blocks.</li>
@@ -489,7 +514,7 @@ run (<strong>Yes</strong>).</li>
 <ul>
 <li>A labelled file picker opens. Before recognizing, QUILL asks to run
 OCR <strong>locally with the built-in Windows engine</strong> and lets
-you decline (declining says <strong>"OCR cancelled"</strong>). On
+you decline (declining says <strong>“OCR cancelled”</strong>). On
 <strong>Yes</strong>, progress is announced off-thread and the
 recognized text appears in a review dialog / new document. It never
 uploads your image.</li>
@@ -515,10 +540,10 @@ Image</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>With no image on the clipboard, QUILL says <strong>"There is no
-image on the clipboard. Copy an image first…"</strong> and stops — no
-crash. With an image, the status shows <strong>"Reading clipboard
-image…"</strong> and the recognized text opens in the review pipeline
+<li>With no image on the clipboard, QUILL says <strong>“There is no
+image on the clipboard. Copy an image first…”</strong> and stops — no
+crash. With an image, the status shows <strong>“Reading clipboard
+image…”</strong> and the recognized text opens in the review pipeline
 (no extra confirmation, because you already chose to run it).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -547,8 +572,8 @@ confirm.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A labelled two-choice dialog (whole screen / active window) that is
-keyboard operable. On confirm the status shows <strong>"Reading screen
-capture…"</strong> and the recognized text opens in the review pipeline.
+keyboard operable. On confirm the status shows <strong>“Reading screen
+capture…”</strong> and the recognized text opens in the review pipeline.
 A capture error is reported in a message box, not swallowed.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -571,14 +596,14 @@ verified and opened for you, never installed silently.</p>
 <ol type="1">
 <li><strong>Tools menu ▸ Reading and Dictation ▸ OCR and Document
 Conversion ▸ Install Local OCR Engine (Tesseract)…</strong>.</li>
-<li>Read the confirmation (version, size, "runs on this computer, never
-uploads") and choose <strong>Yes</strong>.</li>
+<li>Read the confirmation (version, size, “runs on this computer, never
+uploads”) and choose <strong>Yes</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A clear confirmation stating the version, the download size (~MB),
 and that Tesseract is free and local; <strong>No</strong> cancels
-("Local OCR install cancelled"). On <strong>Yes</strong>, the download
+(“Local OCR install cancelled”). On <strong>Yes</strong>, the download
 runs behind an announced status, is verified byte-for-byte, and the
 installer is <strong>opened</strong> for you to complete. A
 download/launch failure is reported as an <strong>install</strong>
@@ -607,8 +632,8 @@ Conversion ▸ OCR and Conversion Services…</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A readable page that states the <strong>local OCR engine
-status</strong> ("installed (path)" or "not installed — free download
-available") and the <strong>cloud OCR status</strong> (Ready / needs an
+status</strong> (“installed (path)” or “not installed — free download
+available”) and the <strong>cloud OCR status</strong> (Ready / needs an
 API key / disabled). It is navigable by keyboard and closes back to the
 editor. It only reports status; it changes nothing.</li>
 </ul>
@@ -620,7 +645,7 @@ editor. It only reports status; it changes nothing.</li>
 <h2 id="tsp-13--ocr-service-settings-toolsocr_service_settings">TSP-13 —
 OCR Service Settings (<code>tools.ocr_service_settings</code>)</h2>
 <p><em>What &amp; why.</em> Configure the OCR/conversion services (e.g.
-a cloud provider's key and options) used by the conversion path.</p>
+a cloud provider’s key and options) used by the conversion path.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Any state.</li>
@@ -658,11 +683,11 @@ Conversion ▸ Delete OCR Temporary Files</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>With nothing to clear, the status shows <strong>"No OCR temporary
-files to delete"</strong>. Otherwise QUILL announces <strong>"Deleted N
-OCR temporary item(s)."</strong> and the status shows <strong>"OCR
-temporary files deleted"</strong>. No confirmation prompt is needed
-because only QUILL's own temp folder is touched.</li>
+<li>With nothing to clear, the status shows <strong>“No OCR temporary
+files to delete”</strong>. Otherwise QUILL announces <strong>“Deleted N
+OCR temporary item(s).”</strong> and the status shows <strong>“OCR
+temporary files deleted”</strong>. No confirmation prompt is needed
+because only QUILL’s own temp folder is touched.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -725,12 +750,12 @@ output format (text / Markdown / HTML); pick the file; let it run.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>If no model is installed, QUILL offers to open Manage Speech Models
-rather than failing. Otherwise it announces <strong>"Transcribing
-<name>. This can take a while…"</strong> behind a cancelable progress
+rather than failing. Otherwise it announces <strong>“Transcribing
+<name>. This can take a while…”</strong> behind a cancelable progress
 dialog; cancelling reports the cancel cleanly. On success a draft
 transcript opens in a new document and QUILL announces
-<strong>"Transcription complete[ with speaker labels]. N
-words."</strong></li>
+<strong>“Transcription complete[ with speaker labels]. N
+words.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -756,11 +781,11 @@ save.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Progress is announced (<strong>"Captioning <name>"</strong>). You
+<li>Progress is announced (<strong>“Captioning <name>”</strong>). You
 are offered the two caption formats in a labelled choice dialog, then a
 Save dialog defaulting to
 <code>&lt;name&gt;.srt</code>/<code>.vtt</code>. On save QUILL announces
-<strong>"Captions saved to <name>."</strong> If the clip produced no
+<strong>“Captions saved to <name>.”</strong> If the clip produced no
 timed segments, it says captions cannot be made rather than writing an
 empty file.</li>
 </ul>
@@ -779,7 +804,7 @@ speech audio. ffmpeg is not bundled.</p>
 <li>Network available. <strong>Windows only</strong> for the automatic
 download.</li>
 <li>Reach the command via <strong>Command Palette (Ctrl+Shift+P) →
-"Download FFmpeg"</strong> (it is also offered under <strong>Help ▸
+“Download FFmpeg”</strong> (it is also offered under <strong>Help ▸
 Download Optional Components</strong>).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -792,7 +817,7 @@ official builder) and choose <strong>Yes</strong>.</li>
 <ul>
 <li>On non-Windows, QUILL explains to install ffmpeg via Homebrew/your
 package manager instead — it does not error. If ffmpeg is already
-present it asks whether to fetch QUILL's own managed copy anyway. On
+present it asks whether to fetch QUILL’s own managed copy anyway. On
 <strong>Yes</strong> the download runs behind a cancelable, announced
 percentage; on success ffmpeg-only formats become available in
 TSP-05/16/17.</li>
@@ -806,7 +831,7 @@ TSP-05/16/17.</li>
 Hugging Face Token (<code>tools.speech_hf_token</code>)</h2>
 <p><em>What &amp; why.</em> Store an <strong>optional</strong> Hugging
 Face access token to raise model download rate limits. Not required —
-QUILL's models work without one.</p>
+QUILL’s models work without one.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Optionally a Hugging Face account and a <strong>Read</strong>-role
@@ -824,8 +849,8 @@ field and confirm. To remove a saved token, leave the field
 <ul>
 <li>Clear guidance that the token is optional. The entry field is a
 <strong>password (masked)</strong> field. On save QUILL announces
-<strong>"Hugging Face token saved."</strong>; a blank value announces
-<strong>"Hugging Face token cleared."</strong> The token is saved to the
+<strong>“Hugging Face token saved.”</strong>; a blank value announces
+<strong>“Hugging Face token cleared.”</strong> The token is saved to the
 <strong>OS credential store</strong>, not to settings and never
 printed.</li>
 </ul>
@@ -852,8 +877,8 @@ features record from.</p>
 <ul>
 <li>With no microphones (or no capture support) QUILL says so plainly in
 a message box. Otherwise a labelled, keyboard-navigable device list
-appears; selecting one saves it and QUILL announces <strong>"Dictation
-microphone set to <name>."</strong> That device is used by all the
+appears; selecting one saves it and QUILL announces <strong>“Dictation
+microphone set to <name>.”</strong> That device is used by all the
 listening features below.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -867,7 +892,7 @@ id="tsp-21--dictate-offline-toolsspeech_dictate-ctrlshiftgrave-shiftd">TSP-21
 Ctrl+Shift+Grave, Shift+D)</h2>
 <p><em>What &amp; why.</em> Push-to-talk dictation: run it to start
 listening, run it again to stop and insert the recognized text at the
-caret. The main "type with your voice" feature.</p>
+caret. The main “type with your voice” feature.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Microphone + capture support + a speech model (TSP-15). If any is
@@ -887,12 +912,12 @@ Speech ▸ Dictate (Offline)</strong>).</li>
 <ul>
 <li>Without capture support QUILL explains what to install and does not
 record. With no model it offers to open Manage Speech Models. When it
-starts you hear a start earcon and <strong>"Listening. Run Dictate
-(Offline) again to stop and insert."</strong> After stopping you hear
-<strong>"Transcribing dictation…"</strong>, then the text is written at
-the caret and QUILL announces <strong>"Inserted N words. Press Control+Z
-to undo."</strong> If nothing was heard it says <strong>"No speech
-detected."</strong></li>
+starts you hear a start earcon and <strong>“Listening. Run Dictate
+(Offline) again to stop and insert.”</strong> After stopping you hear
+<strong>“Transcribing dictation…”</strong>, then the text is written at
+the caret and QUILL announces <strong>“Inserted N words. Press Control+Z
+to undo.”</strong> If nothing was heard it says <strong>“No speech
+detected.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -911,7 +936,7 @@ the Speech menu.</p>
 <ul>
 <li>Reach it via the chord <strong>Ctrl+Shift+Grave</strong> then
 <strong>D</strong>, or <strong>Command Palette →
-"Dictation"</strong>.</li>
+“Dictation”</strong>.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -920,8 +945,8 @@ the Speech menu.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>If system dictation is unavailable on the machine (expected on most
-builds), a clear message box says <strong>"System dictation is
-unavailable on this system."</strong> — it must not crash or fail
+builds), a clear message box says <strong>“System dictation is
+unavailable on this system.”</strong> — it must not crash or fail
 silently. Where it <em>is</em> available, focus goes to the editor and
 the status shows it started/stopped. If it reports unavailable, record
 that and mark <strong>Blocked</strong> for the system path (offline
@@ -955,12 +980,12 @@ finish and insert.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A preflight guards it: Safe Mode ("Dictation is disabled in Safe
-Mode."), missing capture, missing engine (offers the ~8 MB verified
+<li>A preflight guards it: Safe Mode (“Dictation is disabled in Safe
+Mode.”), missing capture, missing engine (offers the ~8 MB verified
 download), or no model (points you at Speech and Dictation) each give a
 spoken message and stop. On first successful start you hear the one-time
-hint ("Press Control F9 to start… Escape to finish and insert; Shift
-Escape cancels."). Finishing transcribes off-thread and inserts the text
+hint (“Press Control F9 to start… Escape to finish and insert; Shift
+Escape cancels.”). Finishing transcribes off-thread and inserts the text
 as one undoable block.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1015,7 +1040,7 @@ session.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>When nothing is running it says <strong>"Dictation is off."</strong>
+<li>When nothing is running it says <strong>“Dictation is off.”</strong>
 During a session it speaks the current state (recording / paused /
 transcribing). The message is <strong>forced</strong> so it is heard
 even while other speech is queued.</li>
@@ -1086,7 +1111,7 @@ the rest of the time.</li>
 <h2 id="tsp-28--voice-command-offline-toolsvoice_command">TSP-28 — Voice
 Command (Offline) (<code>tools.voice_command</code>)</h2>
 <p><em>What &amp; why.</em> Push-to-talk <strong>command by
-voice</strong>: speak one command ("save file") and QUILL runs it —
+voice</strong>: speak one command (“save file”) and QUILL runs it —
 offline, and only commands on a safety allowlist.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1097,15 +1122,15 @@ Microphone + capture + a model. Else <strong>Blocked</strong>.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Tools menu ▸ Speech ▸ Voice Command (Offline)</strong>.</li>
-<li>Speak a simple command (e.g. "save file"); run the command again to
+<li>Speak a simple command (e.g. “save file”); run the command again to
 stop and act.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>If voice commands are off, QUILL says <strong>"Voice commands are
+<li>If voice commands are off, QUILL says <strong>“Voice commands are
 off. Turn them on in Settings (they are disabled in Safe
-Mode)."</strong> When on, it announces <strong>"Listening for a command.
-Run the command again to stop and act."</strong> After you stop it
+Mode).”</strong> When on, it announces <strong>“Listening for a command.
+Run the command again to stop and act.”</strong> After you stop it
 recognizes the phrase and, <strong>only if</strong> the resolved command
 is on the safe allowlist, announces and runs it; an unrecognized or
 unsafe phrase is reported and <strong>not</strong> run. (If Conversation
@@ -1150,8 +1175,8 @@ closing cue.</li>
 id="tsp-30--listen-for-hey-quill-wake-word-toolsvoice_wakeword">TSP-30 —
 Listen for Hey QUILL (Wake Word)
 (<code>tools.voice_wakeword</code>)</h2>
-<p><em>What &amp; why.</em> Always-listening for the phrase "Hey QUILL".
-"Hey QUILL, save file" runs a command inline; a bare "Hey QUILL" opens
+<p><em>What &amp; why.</em> Always-listening for the phrase “Hey QUILL”.
+“Hey QUILL, save file” runs a command inline; a bare “Hey QUILL” opens
 one command turn.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1162,14 +1187,14 @@ model. Else <strong>Blocked</strong>.</li>
 <ol type="1">
 <li><strong>Tools menu ▸ Speech ▸ Listen for Hey QUILL</strong> to
 start; run it again to stop.</li>
-<li>Say "Hey QUILL, save file" (with a document that can be saved).</li>
+<li>Say “Hey QUILL, save file” (with a document that can be saved).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Same guards as TSP-28/29 with spoken reasons. When on, the mic stays
 open in short windows; the live-mic state stays perceivable (visible
-status and a periodic reminder). An inline "Hey QUILL, <command>" runs
-the (allowlisted) command; a bare "Hey QUILL" opens one command turn.
+status and a periodic reminder). An inline “Hey QUILL, <command>” runs
+the (allowlisted) command; a bare “Hey QUILL” opens one command turn.
 Running it again stops listening. <strong>Speak Voice Status</strong>
 (TSP-31) confirms it is live.</li>
 </ul>
@@ -1181,7 +1206,7 @@ Running it again stops listening. <strong>Speak Voice Status</strong>
 <h2 id="tsp-31--speak-voice-status-toolsvoice_status">TSP-31 — Speak
 Voice Status (<code>tools.voice_status</code>)</h2>
 <p><em>What &amp; why.</em> Say out loud what the voice features are
-doing right now — the "is my mic live?" check.</p>
+doing right now — the “is my mic live?” check.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Optionally start Conversation (TSP-29) or Hey QUILL (TSP-30) first
@@ -1194,9 +1219,9 @@ while idle and while a voice feature is listening.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>When nothing is listening it says <strong>"Voice is not listening
-right now."</strong> When a wake/conversation/command session is active
-it speaks the live state(s) (e.g. "Listening for a command"). The same
+<li>When nothing is listening it says <strong>“Voice is not listening
+right now.”</strong> When a wake/conversation/command session is active
+it speaks the live state(s) (e.g. “Listening for a command”). The same
 text also appears in the status bar.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1224,8 +1249,8 @@ Announcement Backend…</strong>.</li>
 <ul>
 <li>A labelled single-choice dialog with exactly three options (Auto /
 Prism / Status only), pre-selected on the current setting;
-<strong>Escape</strong> cancels ("Announcement backend selection
-cancelled"). On confirm the routing changes and subsequent announcements
+<strong>Escape</strong> cancels (“Announcement backend selection
+cancelled”). On confirm the routing changes and subsequent announcements
 follow it — e.g. <strong>Status only</strong> shows announcements as
 status-bar text without speaking them.</li>
 </ul>
@@ -1248,13 +1273,13 @@ diagnostic log of what QUILL announced) is turned on/off.</p>
 <ol type="1">
 <li><strong>Tools menu ▸ Reading and Dictation ▸ Read Aloud ▸
 Announcement Trace (in Settings)…</strong> (or <strong>Command Palette →
-"Toggle Announcement Trace Capture"</strong>).</li>
+“Toggle Announcement Trace Capture”</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL opens <strong>Settings</strong> and the status bar says
-<strong>"Announcement trace setting is in Settings &gt;
-Accessibility"</strong> — it takes you to the toggle on the
+<strong>“Announcement trace setting is in Settings &gt;
+Accessibility”</strong> — it takes you to the toggle on the
 Accessibility tab rather than flipping it blindly. Settings is keyboard
 navigable and Escape closes it.</li>
 </ul>
@@ -1276,16 +1301,16 @@ path can be shown).</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Tools menu ▸ Writing and Language ▸ Dictionary
-Status…</strong> (or <strong>Command Palette → "Dictionary
-Status"</strong>).</li>
+Status…</strong> (or <strong>Command Palette → “Dictionary
+Status”</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A readable report naming the <strong>spell-check backend</strong>
 and its detail, whether the <strong>thesaurus</strong> is installed, and
 the <strong>Personal / Document / Project</strong> word counts with each
-file's path (or "not created yet" / "not available until the document is
-saved"). Navigable by keyboard; closes back to the editor.</li>
+file’s path (or “not created yet” / “not available until the document is
+saved”). Navigable by keyboard; closes back to the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1299,8 +1324,8 @@ Alt+Shift+L)</h2>
 jump straight to any one.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li>Type a few obvious misspellings into a document (e.g. "teh",
-"recieve").</li>
+<li>Type a few obvious misspellings into a document (e.g. “teh”,
+“recieve”).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -1310,12 +1335,12 @@ and Language ▸ Misspelling List…</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>With none, the status shows <strong>"No misspellings
-found"</strong>. Otherwise a keyboard-navigable navigator lists the
+<li>With none, the status shows <strong>“No misspellings
+found”</strong>. Otherwise a keyboard-navigable navigator lists the
 misspelled words; selecting one moves the caret and
 <strong>selects</strong> that word in the editor (status:
 <code>Jumped to misspelling "&lt;word&gt;"</code>).
-<strong>Escape</strong> cancels ("Misspelling list cancelled") and
+<strong>Escape</strong> cancels (“Misspelling list cancelled”) and
 leaves the caret where it was.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1357,7 +1382,7 @@ provider and offline.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <code>plain.txt</code>; put the caret in a common word (e.g.
-"quick").</li>
+“quick”).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -1391,7 +1416,7 @@ nothing to review — test that path too.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Run <strong>Review Last OCR Result</strong> (Tools, or Command
-Palette → "Review Last OCR").</li>
+Palette → “Review Last OCR”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1417,5 +1442,6 @@ exact wording and where the result opens.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Speech runtime + model coverage (Windows / macOS), post
+self-hosting</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="speech-runtime--model-coverage-windows--macos-post-self-hosting">Speech
+runtime + model coverage (Windows / macOS), post self-hosting</h1>
+<p>Status: verification as of 2026-07-20, after mirroring models +
+ffmpeg to <code>assets-v1</code>. Answers “are the <em>runtimes</em>
+handled as well as the models, on Windows and Mac?” Records two engine
+gaps for follow-up.</p>
+<h2 id="models--all-off-hugging-face-now-except-two-noted-cases">Models
+— all off Hugging Face now (except two noted cases)</h2>
+<table>
+<thead>
+<tr>
+<th>Model set</th>
+<th>Hosted on assets-v1</th>
+<th>Cross-platform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>whisper.cpp GGML</td>
+<td>tiny, base, small, small.en-tdrz, medium</td>
+<td>yes (<code>.bin</code> files)</td>
+</tr>
+<tr>
+<td>Faster Whisper CT2</td>
+<td>tiny, base, small, medium, distil-large-v3 (zipped)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Piper voices</td>
+<td>all 39 catalog voices (per-voice zip)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Kokoro</td>
+<td><code>kokoro-models.zip</code> (already hosted)</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Vosk</td>
+<td><code>vosk-*.whl</code> (already hosted)</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Not mirrored, by design: whisper/FW <strong>large-v3</strong> (~3 GB,
+exceeds GitHub’s 2 GiB/file release-asset limit -&gt; manual-obtain / HF
+fallback), and the <strong>gated <code>pyannote</code>
+diarization</strong> model (kept on Hugging Face, token-required,
+isolated).</p>
+<h2 id="runtimes-engines--windows-vs-macos">Runtimes (engines) — Windows
+vs macOS</h2>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th>Windows</th>
+<th>macOS</th>
+<th>Off Hugging Face?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>whisper.cpp</strong> engine</td>
+<td>assets-v1 <code>whisper-bin-x64.zip</code> (pinned) ✓</td>
+<td><strong>GAP</strong> — upstream ships no standalone mac CLI (only an
+xcframework for app embedding); can’t build from Windows</td>
+<td>yes (never HF)</td>
+</tr>
+<tr>
+<td><strong>Piper</strong> engine</td>
+<td>assets-v1 <code>piper</code> asset (pinned) ✓</td>
+<td><strong>GAP</strong> — mac binaries <em>exist</em> upstream
+(<code>piper_macos_x64</code>/<code>aarch64</code>) but
+<code>piper_install_supported()</code> is win32-only, so they aren’t
+offered</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><strong>Kokoro</strong> ONNX runtime</td>
+<td>pip wheel (<code>onnxruntime</code> + <code>kokoro-onnx</code>)
+✓</td>
+<td>✓ pip wheels (macOS)</td>
+<td>PyPI (never HF); models hosted</td>
+</tr>
+<tr>
+<td><strong>Faster Whisper</strong> runtime</td>
+<td>pip wheel (<code>ctranslate2</code>) ✓</td>
+<td>✓ pip wheels</td>
+<td>PyPI; models mirrored</td>
+</tr>
+<tr>
+<td><strong>Vosk</strong> runtime</td>
+<td>pip wheel / assets-v1 wheel ✓</td>
+<td>✓ pip wheel</td>
+<td>PyPI/assets-v1</td>
+</tr>
+<tr>
+<td><strong>DECtalk</strong></td>
+<td>assets-v1 (pinned) ✓</td>
+<td>N/A — DECtalk is a Windows-native synth (no mac build exists)</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Key point: the pip-installed engines (<strong>Kokoro, Faster Whisper,
+Vosk</strong>) are already cross-platform — their wheels include macOS
+builds — so on macOS QUILL has a complete offline TTS (Kokoro) + STT
+(Faster Whisper / Vosk) stack with <strong>no separate binary and no
+Hugging Face</strong>. macOS offline speech does not depend on the two
+engine gaps below.</p>
+<h2 id="the-two-engine-gaps">The two engine gaps</h2>
+<h3 id="1-piper-engine-on-macos--fixable-not-yet-done">1. Piper engine
+on macOS — fixable, not yet done</h3>
+<p>Upstream <code>rhasspy/piper</code> <code>2023.11.14-2</code>
+publishes <code>piper_macos_x64.tar.gz</code> and
+<code>piper_macos_aarch64.tar.gz</code>. To close this:</p>
+<ul>
+<li>Upload both tarballs to <code>assets-v1</code>, pin their
+SHA-256.</li>
+<li>Make <code>piper_install</code> platform-aware:
+<code>piper_install_supported()</code> returns true on darwin too;
+select the Windows zip vs the mac tarball by platform + arch; extract
+<code>.tar.gz</code> on mac (the current extractor is zip-only); and
+confirm the discover/resolve path finds <code>piper</code> in the
+managed mac dir. Deferred here because it is platform-specific engine +
+extraction + resolver code that cannot be exercised from this Windows
+environment; needs a mac to validate.</li>
+</ul>
+<h3
+id="2-whispercpp-engine-on-macos--needs-a-build-not-hostable-as-is">2.
+whisper.cpp engine on macOS — needs a build, not hostable as-is</h3>
+<p>Upstream ships <strong>no</strong> standalone macOS
+<code>whisper-cli</code> binary (the release’s
+<code>whisper-v1.9.1-xcframework.zip</code> is a library for embedding
+in an Xcode app, not a runnable CLI). Options, all requiring a mac/CI
+build:</p>
+<ul>
+<li>Compile <code>whisper-cli</code> for macOS (arm64 + x64) in CI, host
+on <code>assets-v1</code>, add a platform-aware <code>whispercpp</code>
+asset + resolver entry; or</li>
+<li>Bundle a mac <code>whisper-cli</code> in the mac app at build time.
+Until then, <strong>Faster Whisper is the recommended offline STT engine
+on macOS</strong> (pip wheels + the mirrored CT2 models — fully working
+today, no binary, no HF).</li>
+</ul>
+<h2 id="recommendation">Recommendation</h2>
+<ul>
+<li>macOS is already fully served for offline speech via Kokoro + Faster
+Whisper + Vosk (pip) and the mirrored models — nothing HF-bound.</li>
+<li>Close the Piper-mac gap by hosting the upstream mac tarballs +
+platform-aware install (a bounded change, best validated on a mac).</li>
+<li>Treat whisper.cpp-on-mac as a build task (CI-compiled
+<code>whisper-cli</code>), or accept Faster Whisper as the mac default
+and leave whisper.cpp Windows-only.</li>
+</ul>
+</main>
+</body>
+</html>

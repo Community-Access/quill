@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>latex_testing</title>
+  <title>Quill Math Test Document</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,11 +173,32 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-math-test-document">Quill Math Test Document</h1>
 <p>This document contains 10 mathematical formulas across algebra and
-calculus to test Quill's LaTeX and MathML integration.</p>
+calculus to test Quill’s LaTeX and MathML integration.</p>
 <hr />
 <h2 id="algebra-formulas">Algebra Formulas</h2>
 <h3 id="1-quadratic-formula">1. Quadratic Formula</h3>
@@ -219,9 +239,10 @@ class="math display">$$f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}
 <h3 id="9-integration-by-parts">9. Integration by Parts</h3>
 <p>A rule that transforms the integral of a product of functions: <span
 class="math display">∫<em>u</em> <em>d</em><em>v</em> = <em>u</em><em>v</em> − ∫<em>v</em> <em>d</em><em>u</em></span></p>
-<h3 id="10-eulers-identity">10. Euler's Identity</h3>
+<h3 id="10-eulers-identity">10. Euler’s Identity</h3>
 <p>A famous equation in complex analysis relating five fundamental
 mathematical constants: <span
 class="math display"><em>e</em><sup><em>i</em><em>π</em></sup> + 1 = 0</span></p>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>00-getting-started</title>
+  <title>Part 0 — Getting Started (you have never used QUILL)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,14 +173,35 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="part-0--getting-started-you-have-never-used-quill">Part 0 —
 Getting Started (you have never used QUILL)</h1>
 <p>Do this part <strong>first</strong>, once on each test machine,
-before any feature section. It takes you from "I have a download" to "I
+before any feature section. It takes you from “I have a download” to “I
 have created, saved, closed, and reopened a document in QUILL, using
-only the keyboard, hearing every step." If you can finish Part 0, the
+only the keyboard, hearing every step.” If you can finish Part 0, the
 machine is ready for the rest of the book. If you cannot, stop and
 report — nothing downstream will be trustworthy.</p>
 <p>Read §2 and §3 of <code>README.md</code> once before you begin so the
@@ -188,7 +212,7 @@ id="gs-01--turn-on-your-screen-reader-and-confirm-it-is-speaking">GS-01
 — Turn on your screen reader and confirm it is speaking</h2>
 <p><em>What &amp; why.</em> QUILL is designed to be used by ear. Before
 you touch QUILL, make sure the screen reader itself is running and
-talking, so that later "it was silent" means QUILL was silent, not that
+talking, so that later “it was silent” means QUILL was silent, not that
 your screen reader was off.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -370,8 +394,8 @@ returns focus to the editor.</li>
 <hr />
 <h2 id="gs-06--get-your-bearings-the-main-window">GS-06 — Get your
 bearings: the main window</h2>
-<p><em>What &amp; why.</em> Later sections say things like "focus
-returns to the editor" or "check the status bar." This scenario teaches
+<p><em>What &amp; why.</em> Later sections say things like “focus
+returns to the editor” or “check the status bar.” This scenario teaches
 you those places so the rest of the book makes sense.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -379,7 +403,7 @@ you those places so the rest of the book makes sense.</p>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Press <strong>F6</strong> a few times to cycle between the window's
+<li>Press <strong>F6</strong> a few times to cycle between the window’s
 main regions (editor, status bar, and any panels). Listen to what each
 region is called.</li>
 <li>Press <strong>Alt</strong> and <strong>Right Arrow</strong> across
@@ -392,7 +416,7 @@ reader says you are in the document / text area).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li><strong>F6</strong> moves between named regions and each is
-announced (e.g. the editor as a multi-line "Document" text area, and a
+announced (e.g. the editor as a multi-line “Document” text area, and a
 status bar). The menu bar lists the expected top-level menus. Escape
 lands you back in the editor.</li>
 </ul>
@@ -426,7 +450,7 @@ announcement.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Characters/words are echoed as you type (per your screen reader's
+<li>Characters/words are echoed as you type (per your screen reader’s
 echo setting). Arrowing reads each line back <strong>exactly</strong> as
 typed. <strong>Ctrl+A</strong> announces that all text is selected. The
 title bar now shows a <strong>modified</strong> indicator (an unsaved
@@ -439,8 +463,8 @@ change marker).</li>
 <hr />
 <h2 id="gs-08--save-it-close-it-reopen-it-the-round-trip">GS-08 — Save
 it, close it, reopen it (the round trip)</h2>
-<p><em>What &amp; why.</em> A newcomer's real first task is "write
-something and get it back later." This proves save, the unsaved-changes
+<p><em>What &amp; why.</em> A newcomer’s real first task is “write
+something and get it back later.” This proves save, the unsaved-changes
 guard, and reopen — the safety net every other scenario relies on.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -481,8 +505,8 @@ Cancel it.</li>
 <h2 id="gs-09--undo-redo-and-getting-unstuck">GS-09 — Undo, redo, and
 getting unstuck</h2>
 <p><em>What &amp; why.</em> Newcomers make mistakes; QUILL must make
-them recoverable. This also teaches Escape as the universal "get me out
-of here."</p>
+them recoverable. This also teaches Escape as the universal “get me out
+of here.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>first.md</code> open from GS-08.</li>
@@ -554,5 +578,6 @@ name.</strong></li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

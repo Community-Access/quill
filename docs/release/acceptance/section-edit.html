@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-edit</title>
+  <title>Section — Edit / insert / find (`edit.*`, 86 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--edit--insert--find-edit-86-commands">Section — Edit /
 insert / find (<code>edit.*</code>, 86 commands)</h1>
 <p>Everything about <strong>changing, selecting, moving, finding, and
@@ -188,12 +208,12 @@ and the line-transform tools. Finish <strong>Part 0</strong> first.</p>
 scenario layout and the Pass/Fail/Blocked/N-A +
 Works/Surface-exact/Accessible boxes.</p>
 <p><strong>A word on the QUILL chord.</strong> Several commands use
-QUILL's two-step chord: you press <strong>Ctrl+Shift+Grave</strong>
+QUILL’s two-step chord: you press <strong>Ctrl+Shift+Grave</strong>
 (Grave is the backtick key, top-left, above Tab), <strong>release all
 keys</strong>, then press the final key. Each scenario spells this
 out.</p>
 <p><strong>A word on the status announcement.</strong> Almost every
-command here announces its result through QUILL's status channel, which
+command here announces its result through QUILL’s status channel, which
 your screen reader speaks aloud. Exact wording varies by screen reader
 and QUILL version; the scenarios below give the
 <strong>substance</strong> you must hear (the count, the name, the
@@ -222,7 +242,7 @@ Undo</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The typed <strong><code>banana</code></strong> is removed and QUILL
-announces the undo in substance ("Undo"). On the second press with an
+announces the undo in substance (“Undo”). On the second press with an
 empty stack, QUILL says there is nothing to undo — it never errors or
 goes silent.</li>
 </ul>
@@ -248,7 +268,7 @@ Redo</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The word <strong><code>banana</code></strong> returns and QUILL
-announces the redo in substance ("Redo"). A second press with nothing to
+announces the redo in substance (“Redo”). A second press with nothing to
 redo announces that there is nothing to redo — no error, no
 silence.</li>
 </ul>
@@ -271,7 +291,7 @@ top.</li>
 <ol type="1">
 <li>Open the Command Palette (or <strong>Edit menu</strong>) and choose
 <strong>Repeat Next Command</strong>.</li>
-<li>In the prompt "Repeat the next command how many times?", the field
+<li>In the prompt “Repeat the next command how many times?”, the field
 shows <strong><code>2</code></strong>; type
 <strong><code>3</code></strong> and press <strong>Enter</strong>.</li>
 <li>Now run one repeatable command (for example <strong>Delete
@@ -281,8 +301,8 @@ Line</strong>).</li>
 <ul>
 <li>After step 2, QUILL announces that the <strong>next</strong> command
 will repeat 3 times. When you run the next command it applies three
-times. A non-numeric or zero entry is rejected with a spoken "Enter a
-whole number" / "Enter a count of 1 or more". Repeat Next Command cannot
+times. A non-numeric or zero entry is rejected with a spoken “Enter a
+whole number” / “Enter a count of 1 or more”. Repeat Next Command cannot
 repeat itself.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -307,8 +327,8 @@ Selection</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL plays a "selection started" sound and announces that selection
-started, with the anchor's <strong>line and column</strong>. No text is
+<li>QUILL plays a “selection started” sound and announces that selection
+started, with the anchor’s <strong>line and column</strong>. No text is
 highlighted yet; focus stays in the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -336,7 +356,7 @@ Selection</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The text from the anchor to the caret becomes selected; QUILL plays
-a "selection completed" sound and announces the <strong>character
+a “selection completed” sound and announces the <strong>character
 count</strong> plus the start and end line/column. If you never pressed
 F8 first, QUILL tells you to press F8 to set an anchor rather than
 erroring.</li>
@@ -362,8 +382,8 @@ Reselect</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The previous selection is restored and QUILL announces "Reselected N
-characters" with the start/end line and column. If there is no
+<li>The previous selection is restored and QUILL announces “Reselected N
+characters” with the start/end line and column. If there is no
 remembered selection (or it is no longer valid for the current text)
 QUILL says so plainly.</li>
 </ul>
@@ -392,7 +412,7 @@ Start of Selection</strong>).</li>
 <li>The caret moves to the start of the selection and QUILL announces
 the destination <strong>line and column</strong>. The selection is
 collapsed (the range is no longer highlighted). With nothing selected,
-QUILL announces "No selection." and does nothing else.</li>
+QUILL announces “No selection.” and does nothing else.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -403,7 +423,7 @@ QUILL announces "No selection." and does nothing else.</li>
 id="edit-08--toggle-extend-selection-mode-edittoggle_extend_selection_mode">EDIT-08
 — Toggle Extend Selection Mode
 (<code>edit.toggle_extend_selection_mode</code>)</h2>
-<p><em>What &amp; why.</em> Turn on a sticky "extend" mode so plain
+<p><em>What &amp; why.</em> Turn on a sticky “extend” mode so plain
 arrow keys keep growing the selection — hands-free from the Shift
 key.</p>
 <p><strong>Before you start</strong></p>
@@ -421,8 +441,8 @@ again to turn it <strong>off</strong>.</li>
 <ul>
 <li>Turning it <strong>on</strong> is announced with the anchor
 line/column; while on, arrow keys extend the selection. Turning it
-<strong>off</strong> is announced, reporting the last selected region's
-start/end line/column (or just "off" if none).</li>
+<strong>off</strong> is announced, reporting the last selected region’s
+start/end line/column (or just “off” if none).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -441,12 +461,12 @@ line.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Edit menu ▸ Select Line</strong> (or Command Palette →
-"Select Line").</li>
+“Select Line”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The current line is selected and QUILL announces "Selected line, N
-words". Focus stays in the editor with the line highlighted.</li>
+<li>The current line is selected and QUILL announces “Selected line, N
+words”. Focus stays in the editor with the line highlighted.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -469,8 +489,8 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The paragraph is selected and QUILL announces "Selected paragraph, N
-words".</li>
+<li>The paragraph is selected and QUILL announces “Selected paragraph, N
+words”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -479,7 +499,7 @@ words".</li>
 <hr />
 <h2 id="edit-11--select-block-editselect_block-ctrlshiftb">EDIT-11 —
 Select Block (<code>edit.select_block</code>, Ctrl+Shift+B)</h2>
-<p><em>What &amp; why.</em> Select the structural "block" around the
+<p><em>What &amp; why.</em> Select the structural “block” around the
 caret (a larger unit than a paragraph, e.g. a list or quoted
 region).</p>
 <p><strong>Before you start</strong></p>
@@ -494,8 +514,8 @@ Block</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The surrounding block is selected and QUILL announces "Selected
-block, N words".</li>
+<li>The surrounding block is selected and QUILL announces “Selected
+block, N words”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -504,7 +524,7 @@ block, N words".</li>
 <hr />
 <h2 id="edit-12--select-chunk-editselect_chunk-ctrlspace">EDIT-12 —
 Select Chunk (<code>edit.select_chunk</code>, Ctrl+Space)</h2>
-<p><em>What &amp; why.</em> Select the "chunk" (sentence-sized unit)
+<p><em>What &amp; why.</em> Select the “chunk” (sentence-sized unit)
 around the caret for quick review or copy.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -518,8 +538,8 @@ Chunk</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The chunk is selected. If it is 40 characters or fewer QUILL speaks
-the selected text itself ("Selected <text>"); for longer chunks it
-announces "Selected N characters". If there is nothing to select it says
+the selected text itself (“Selected <text>”); for longer chunks it
+announces “Selected N characters”. If there is nothing to select it says
 so.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -549,8 +569,8 @@ Selection</strong>.)</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each press selects the next larger unit and QUILL announces the new
-scope and word count (for example "Selected line, N words", then
-"Selected paragraph, N words"). When already at the whole document it
+scope and word count (for example “Selected line, N words”, then
+“Selected paragraph, N words”). When already at the whole document it
 says so. Each expansion is remembered so Shrink can reverse it
 (EDIT-14).</li>
 </ul>
@@ -578,9 +598,9 @@ Selection</strong>.)</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The previous, smaller selection is restored and QUILL announces
-"Shrank selection" (with a word count when the restored range has
-words). When there is nothing left on the expand stack it announces "No
-selection to shrink".</li>
+“Shrank selection” (with a word count when the restored range has
+words). When there is nothing left on the expand stack it announces “No
+selection to shrink”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -606,7 +626,7 @@ Start of Line</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Everything from the line start to the caret is selected and QUILL
-announces "Selected to start of line".</li>
+announces “Selected to start of line”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -632,7 +652,7 @@ End of Line</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Everything from the caret to the line end is selected and QUILL
-announces "Selected to end of line".</li>
+announces “Selected to end of line”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -658,7 +678,7 @@ Select to Start of Document</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Everything from position zero to the caret is selected and QUILL
-announces "Selected to start of document".</li>
+announces “Selected to start of document”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -684,7 +704,7 @@ to End of Document</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Everything from the caret to the last position is selected and QUILL
-announces "Selected to end of document".</li>
+announces “Selected to end of document”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -706,8 +726,8 @@ All</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The selection collapses to the caret and QUILL announces "Selection
-cleared." The caret does not jump.</li>
+<li>The selection collapses to the caret and QUILL announces “Selection
+cleared.” The caret does not jump.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -727,7 +747,7 @@ lines</strong> (so multi-line actions appear).</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Edit menu ▸ Selection Actions</strong> (or Command Palette).
-A choice dialog titled "Selection actions (<scope>, <N words>)"
+A choice dialog titled “Selection actions (<scope>, <N words>)”
 opens.</li>
 <li>Arrow the list; note the choices (Copy, Cut,
 Upper/Lower/Title/Sentence/Toggle case, Expand/Shrink; on multi-line:
@@ -737,9 +757,9 @@ Bold/Italic only on a markup surface).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>With nothing selected, QUILL says "Select text first to use
-selection actions". The dialog is keyboard-navigable with the first item
-preselected; Escape announces "Selection actions cancelled". Choosing an
+<li>With nothing selected, QUILL says “Select text first to use
+selection actions”. The dialog is keyboard-navigable with the first item
+preselected; Escape announces “Selection actions cancelled”. Choosing an
 action runs the matching command, whose own outcome is then announced
 (here, the selection is copied).</li>
 </ul>
@@ -765,9 +785,9 @@ Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A copy of the selection is inserted immediately after it and QUILL
-announces "Duplicated N chars"; the newly inserted duplicate becomes the
+announces “Duplicated N chars”; the newly inserted duplicate becomes the
 selection. With no selection, the current line is duplicated
-("Duplicated line").</li>
+(“Duplicated line”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -777,7 +797,7 @@ selection. With no selection, the current line is duplicated
 <h2 id="edit-22--say-selected-editsay_selected">EDIT-22 — Say Selected
 (<code>edit.say_selected</code>)</h2>
 <p><em>What &amp; why.</em> Speak the current selection aloud on demand
-— a quick "read me back what I just picked."</p>
+— a quick “read me back what I just picked.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <code>plain.txt</code>; select a sentence. (Not Safe
@@ -791,8 +811,8 @@ screen reader uses is fine.)</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL speaks the selected text aloud and sets a quiet status with a
-short preview of it. With nothing selected it announces "Nothing
-selected." and speaks nothing.</li>
+short preview of it. With nothing selected it announces “Nothing
+selected.” and speaks nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -817,12 +837,12 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A dialog titled "Review Buffer" opens with a
+<li>A dialog titled “Review Buffer” opens with a
 <strong>read-only</strong> multi-line text control (named as a read-only
 copy of the selected text) holding the selection; that control takes
-focus. With nothing selected QUILL says "Select text first to open in
-review buffer". Closing returns focus to the editor with the selection
-intact and a quiet "Closed review buffer (N words)".</li>
+focus. With nothing selected QUILL says “Select text first to open in
+review buffer”. Closing returns focus to the editor with the selection
+intact and a quiet “Closed review buffer (N words)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -831,7 +851,7 @@ intact and a quiet "Closed review buffer (N words)".</li>
 <hr />
 <h2 id="edit-24--set-mark-editset_mark-ctrlshiftm">EDIT-24 — Set Mark
 (<code>edit.set_mark</code>, Ctrl+Shift+M)</h2>
-<p><em>What &amp; why.</em> Drop a temporary "mark" at the caret onto
+<p><em>What &amp; why.</em> Drop a temporary “mark” at the caret onto
 the mark ring so you can wander off and jump back later.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -845,8 +865,8 @@ Mark</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces "Mark ring point set at line L, column C (temporary
-jump)". The caret and selection do not change.</li>
+<li>QUILL announces “Mark ring point set at line L, column C (temporary
+jump)”. The caret and selection do not change.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -869,9 +889,9 @@ Mark</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The caret jumps to the most recent mark and QUILL announces "Popped
-to mark ring point at line L, column C (temporary jump)". With an empty
-ring it says "No marks in ring…" rather than erroring.</li>
+<li>The caret jumps to the most recent mark and QUILL announces “Popped
+to mark ring point at line L, column C (temporary jump)”. With an empty
+ring it says “No marks in ring…” rather than erroring.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -895,9 +915,9 @@ Point and Mark</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The caret moves to the mark's position and QUILL announces
-"Exchanged point and mark to line L, column C"; the selection collapses
-there. With an empty ring it says "No marks in ring…".</li>
+<li>The caret moves to the mark’s position and QUILL announces
+“Exchanged point and mark to line L, column C”; the selection collapses
+there. With an empty ring it says “No marks in ring…”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -921,10 +941,10 @@ Marks</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A message box titled "Mark Ring (Temporary Jump Points)" lists each
+<li>A message box titled “Mark Ring (Temporary Jump Points)” lists each
 mark, numbered, with its line and column (newest first). After closing,
-QUILL announces "Listed N mark(s)" and focus returns to the editor. With
-no marks it just says "No marks in ring…".</li>
+QUILL announces “Listed N mark(s)” and focus returns to the editor. With
+no marks it just says “No marks in ring…”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -944,15 +964,15 @@ mark.</li>
 <ol type="1">
 <li><strong>Edit menu ▸ Set Named Mark</strong> (or Command
 Palette).</li>
-<li>In the "Set Named Mark" dialog, type
-<strong><code>intro</code></strong> in the "Mark name:" field and press
+<li>In the “Set Named Mark” dialog, type
+<strong><code>intro</code></strong> in the “Mark name:” field and press
 <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The dialog's single field is labelled and keyboard-complete. On
-confirm QUILL announces "Named mark 'intro' set at line L, column C". An
-empty name is rejected with "Mark name cannot be empty".</li>
+<li>The dialog’s single field is labelled and keyboard-complete. On
+confirm QUILL announces “Named mark ‘intro’ set at line L, column C”. An
+empty name is rejected with “Mark name cannot be empty”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -972,7 +992,7 @@ earlier.</p>
 <ol type="1">
 <li><strong>Edit menu ▸ Jump to Named Mark</strong> (or Command
 Palette).</li>
-<li>In the "Named Marks" dialog, arrow to
+<li>In the “Named Marks” dialog, arrow to
 <strong><code>intro (line L, col C)</code></strong> and press
 <strong>Enter</strong>.</li>
 </ol>
@@ -980,8 +1000,8 @@ Palette).</li>
 <ul>
 <li>A choice dialog lists each named mark with its line/column. Choosing
 one moves the caret there, returns focus to the editor, and announces
-"Jumped to mark 'intro' at line L, column C". With none defined it says
-"No named marks. Use Set Named Mark to create one."</li>
+“Jumped to mark ‘intro’ at line L, column C”. With none defined it says
+“No named marks. Use Set Named Mark to create one.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1004,8 +1024,8 @@ All</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL copies the whole document and announces the character count,
-e.g. "All text copied (N characters)." An empty document announces
-"Document is empty."; the caret and selection are not disturbed.</li>
+e.g. “All text copied (N characters).” An empty document announces
+“Document is empty.”; the caret and selection are not disturbed.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1032,10 +1052,10 @@ result.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces "Copied selection with source"; the clipboard holds
+<li>QUILL announces “Copied selection with source”; the clipboard holds
 the selected text followed by a source reference (file/location). With
 nothing selected it falls back to the current line; a clipboard failure
-says "Could not copy with source".</li>
+says “Could not copy with source”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1056,18 +1076,18 @@ where you want the paste.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Edit menu ▸ Magic Paste</strong> (or Command Palette).</li>
-<li>In the "Magic Paste: HTML detected" dialog, arrow the "Paste mode"
+<li>In the “Magic Paste: HTML detected” dialog, arrow the “Paste mode”
 choices; pick one and press the <strong>Paste</strong> button (or
 Enter).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>For non-plain content a dialog opens with a labelled "Paste mode"
+<li>For non-plain content a dialog opens with a labelled “Paste mode”
 radio group and Paste/Cancel; plain text pastes immediately with no
 dialog. The chosen mode inserts the transformed text at the caret (e.g.
-"Pasted cleaned HTML (N chars)"), focus returns to the editor, caret
-after the inserted text. An unreadable clipboard says "Clipboard is
-unavailable".</li>
+“Pasted cleaned HTML (N chars)”), focus returns to the editor, caret
+after the inserted text. An unreadable clipboard says “Clipboard is
+unavailable”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1096,7 +1116,7 @@ release, then the slot key — <strong>Shift+1</strong> for slot 1 …
 <ol type="1">
 <li>Select the phrase. Press <strong>Ctrl+Shift+Grave</strong>, release,
 then <strong>Shift+1</strong> — this is <strong>Copy to Tray Slot
-1</strong>. (Or Command Palette → "Copy to Tray Slot 1".)</li>
+1</strong>. (Or Command Palette → “Copy to Tray Slot 1”.)</li>
 <li>Select a different phrase and repeat with <strong>Shift+2</strong>
 for slot 2.</li>
 <li>Continue for each slot you are signing off (each has its own
@@ -1104,10 +1124,10 @@ sign-off line below).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>For each slot, QUILL plays that slot's distinct confirmation sound
-and announces "Copied to slot N" (plus the slot's label in parentheses
+<li>For each slot, QUILL plays that slot’s distinct confirmation sound
+and announces “Copied to slot N” (plus the slot’s label in parentheses
 if one is set), with a short preview in the status. With nothing
-selected it says "Select text first to copy to slot N". The paste-menu
+selected it says “Select text first to copy to slot N”. The paste-menu
 labels refresh to show the new contents.</li>
 </ul>
 <p><strong>Sign off (Copy to Tray Slot 1)</strong> —
@@ -1165,7 +1185,7 @@ id="edit-34--paste-from-tray-slots-112-editpaste_from_tray_1--editpaste_from_tra
 <code>edit.paste_from_tray_12</code>, Ctrl+Shift+digit)</h2>
 <p><em>What &amp; why.</em> Insert what you stored in a Copy Tray slot.
 These twelve commands are <strong>multi-press aware</strong>: press once
-to paste, twice to "peek" (hear the slot without pasting), three times
+to paste, twice to “peek” (hear the slot without pasting), three times
 to open the full Copy Tray.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1189,11 +1209,11 @@ sign-off line below).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A single press pastes the slot's text at the caret (or over the
-selection), plays that slot's sound, and announces "Pasted from slot N";
+<li>A single press pastes the slot’s text at the caret (or over the
+selection), plays that slot’s sound, and announces “Pasted from slot N”;
 focus stays in the editor with the caret after the inserted text. A
-double press announces the slot preview ("Slot N (label) [pinned]: …")
-without pasting. An empty slot says "Slot N is empty". A triple press
+double press announces the slot preview (“Slot N (label) [pinned]: …”)
+without pasting. An empty slot says “Slot N is empty”. A triple press
 opens the Copy Tray dialog (see EDIT-36).</li>
 </ul>
 <p><strong>Sign off (Paste from Tray Slot 1)</strong> —
@@ -1264,9 +1284,9 @@ Command Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL stores the selection in the first empty, non-pinned slot and
-announces "Copied to slot N (first empty)". With nothing selected it
-says "Select text first"; if all twelve slots are occupied it says "All
-12 slots occupied. Open Copy Tray to manage slots."</li>
+announces “Copied to slot N (first empty)”. With nothing selected it
+says “Select text first”; if all twelve slots are occupied it says “All
+12 slots occupied. Open Copy Tray to manage slots.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1289,15 +1309,15 @@ edit, and paste from any of the twelve slots.</p>
 <li>Press <strong>Ctrl+Shift+Grave</strong>, release, then
 <strong>X</strong>. (Or <strong>Edit menu ▸ Open Copy
 Tray</strong>.)</li>
-<li>Arrow the "Copy tray slots" list; Tab to the "&amp;Label" and
-"&amp;Content" fields to review/edit; close or paste a slot.</li>
+<li>Arrow the “Copy tray slots” list; Tab to the “&amp;Label” and
+“&amp;Content” fields to review/edit; close or paste a slot.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A dialog titled "Copy Tray" opens with a labelled slots list
+<li>A dialog titled “Copy Tray” opens with a labelled slots list
 (initial focus), a status line, and editable Label and Content fields.
 It is fully keyboard-operable. Choosing to paste a slot inserts its text
-at the caret ("Pasted from slot N") and refreshes the paste-menu labels;
+at the caret (“Pasted from slot N”) and refreshes the paste-menu labels;
 closing returns focus to the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1318,15 +1338,15 @@ paste the match — faster than remembering slot numbers.</p>
 <ol type="1">
 <li><strong>Edit menu ▸ Search Copy Tray Slots</strong> (or Command
 Palette).</li>
-<li>In the "Search Copy Tray Slots" dialog, type a word that appears in
-one slot; the "Matching slots" list filters live. Arrow to a match and
+<li>In the “Search Copy Tray Slots” dialog, type a word that appears in
+one slot; the “Matching slots” list filters live. Arrow to a match and
 press the <strong>Paste</strong> button (or Enter).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The search field takes focus and typing live-filters the results
-("Slot N (label) [pinned]: …"). If every slot is empty it announces "All
-copy tray slots are empty". Activating a match pastes that slot at the
+(“Slot N (label) [pinned]: …”). If every slot is empty it announces “All
+copy tray slots are empty”. Activating a match pastes that slot at the
 caret, focus returning to the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1346,8 +1366,8 @@ Destructive — so it asks first.</p>
 <ol type="1">
 <li><strong>Edit menu ▸ Clear All Tray Slots</strong> (or Command
 Palette).</li>
-<li>In the "Clear Copy Tray" prompt ("Clear all 12 copy tray slots? This
-cannot be undone."), first press
+<li>In the “Clear Copy Tray” prompt (“Clear all 12 copy tray slots? This
+cannot be undone.”), first press
 <strong>Escape</strong>/<strong>No</strong> to confirm cancel is safe;
 then repeat and choose <strong>Yes</strong>.</li>
 </ol>
@@ -1355,8 +1375,8 @@ then repeat and choose <strong>Yes</strong>.</li>
 <ul>
 <li>A Yes/No warning dialog (defaulting to <strong>No</strong>) appears
 — a hearable, cancellable confirmation before any loss. On Yes, QUILL
-announces "All copy tray slots cleared" and the status shows "Copy tray
-cleared"; focus returns to the editor.</li>
+announces “All copy tray slots cleared” and the status shows “Copy tray
+cleared”; focus returns to the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1381,10 +1401,10 @@ Command Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL saves the selection and announces "Kept in the Clip Library."
-(or "Already in the Clip Library." if it was a duplicate). With nothing
-selected it says "Select text first to keep it in the Clip
-Library".</li>
+<li>QUILL saves the selection and announces “Kept in the Clip Library.”
+(or “Already in the Clip Library.” if it was a duplicate). With nothing
+selected it says “Select text first to keep it in the Clip
+Library”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1411,9 +1431,9 @@ dialog.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The Clip Library dialog opens and is keyboard-navigable. Promoting a
-clip prompts for a Copy Tray slot (1–12) and reports "Promoted to Copy
-Tray slot N." An empty or out-of-range entry is rejected ("Enter a slot
-number." / "Slot must be 1-12.").</li>
+clip prompts for a Copy Tray slot (1–12) and reports “Promoted to Copy
+Tray slot N.” An empty or out-of-range entry is rejected (“Enter a slot
+number.” / “Slot must be 1-12.”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1423,7 +1443,7 @@ number." / "Slot must be 1-12.").</li>
 <h2 id="edit-41--restore-deleted-text-editrestore_deletion">EDIT-41 —
 Restore Deleted Text (<code>edit.restore_deletion</code>)</h2>
 <p><em>What &amp; why.</em> Re-insert text you recently deleted, from
-QUILL's deletion ring — a targeted "un-delete" that is distinct from
+QUILL’s deletion ring — a targeted “un-delete” that is distinct from
 Undo.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1434,17 +1454,17 @@ get multiple entries). Move the caret to where you want it back.</li>
 <ol type="1">
 <li><strong>Edit menu ▸ Restore Deleted Text</strong> (or Command
 Palette).</li>
-<li>If a "Restore Deleted Text" choice dialog appears (more than one
+<li>If a “Restore Deleted Text” choice dialog appears (more than one
 deletion), arrow to the preview you want and press
 <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>With several deletions, a choice dialog lists previews; with one it
-restores directly. The chosen text is inserted at the caret ("Restored
-deleted text"). An empty ring says "No deleted text to restore"; a
-read-only document says "Document is read-only"; cancelling says
-"Restore deleted text cancelled".</li>
+restores directly. The chosen text is inserted at the caret (“Restored
+deleted text”). An empty ring says “No deleted text to restore”; a
+read-only document says “Document is read-only”; cancelling says
+“Restore deleted text cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1497,9 +1517,9 @@ Next</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The next match forward is selected and the caret lands at its end;
-QUILL announces a "Found next at position N" style message and plays a
-found sound. If it wrapped past the end it appends "(wrapped)". No
-matches announces "No matches found" with a not-found sound; with no
+QUILL announces a “Found next at position N” style message and plays a
+found sound. If it wrapped past the end it appends “(wrapped)”. No
+matches announces “No matches found” with a not-found sound; with no
 stored query it opens the Find dialog.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1523,9 +1543,9 @@ Previous</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The previous match is selected; QUILL announces a "Found previous at
-position N" message (appending "(wrapped)" if it wrapped to the bottom).
-No match announces "No matches found".</li>
+<li>The previous match is selected; QUILL announces a “Found previous at
+position N” message (appending “(wrapped)” if it wrapped to the bottom).
+No match announces “No matches found”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1546,7 +1566,7 @@ with plain-text, whole-word, regex, or wildcard matching.</p>
 <ol type="1">
 <li>Press <strong>Ctrl+Shift+F3</strong> (or <strong>Edit menu ▸ Find
 All Matches</strong>).</li>
-<li>If prompted (no stored query), fill the "Find All Matches" form: the
+<li>If prompted (no stored query), fill the “Find All Matches” form: the
 find-text field, the <strong>Search mode</strong> select (Plain text /
 Whole word / Regular expression / Wildcard), and the
 <strong>Case-sensitive</strong> checkbox; submit.</li>
@@ -1554,9 +1574,9 @@ Whole word / Regular expression / Wildcard), and the
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A summary message box lists up to 25 matches as "N. Line X, Column
-Y" with a total count (and "…and N more" beyond 25). QUILL sets status
-"Found N match(es)" (or "No matches found" / "Find error" on a bad
+<li>A summary message box lists up to 25 matches as “N. Line X, Column
+Y” with a total count (and “…and N more” beyond 25). QUILL sets status
+“Found N match(es)” (or “No matches found” / “Find error” on a bad
 pattern). The editor selection is not moved.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1587,7 +1607,7 @@ replacement.</li>
 <li>The native Replace dialog opens with find and replace-with fields,
 Match Case and Whole Word checkboxes, and Find Next / Replace / Replace
 All / Cancel — all keyboard-operable and read aloud. A single Replace
-announces "Replaced at position N" (or "No replacements made"); the
+announces “Replaced at position N” (or “No replacements made”); the
 replaced text becomes the selection.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1612,8 +1632,8 @@ All…</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The same native Replace dialog opens (Replace All is its button).
-Running it announces "Replaced N occurrence(s)" (or "No replacements
-made"); a bad pattern shows a spoken error message box. The document
+Running it announces “Replaced N occurrence(s)” (or “No replacements
+made”); a bad pattern shows a spoken error message box. The document
 text updates accordingly.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1638,10 +1658,10 @@ Link</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL detects the link and announces "Opening <host>…", then the
-system browser opens the URL. With no link at the caret it says "No link
-at cursor"; a bare in-page anchor (<code>#…</code>) says "Anchor links
-are not yet supported". If no network is available, the browser may fail
+<li>QUILL detects the link and announces “Opening <host>…”, then the
+system browser opens the URL. With no link at the caret it says “No link
+at cursor”; a bare in-page anchor (<code>#…</code>) says “Anchor links
+are not yet supported”. If no network is available, the browser may fail
 to load — mark <strong>Blocked</strong> if you cannot verify the
 open.</li>
 </ul>
@@ -1652,7 +1672,7 @@ open.</li>
 <hr />
 <h2 id="edit-49--insert-link-editinsert_link-ctrlaltk">EDIT-49 — Insert
 Link… (<code>edit.insert_link</code>, Ctrl+Alt+K)</h2>
-<p><em>What &amp; why.</em> Insert a hyperlink in the document's markup
+<p><em>What &amp; why.</em> Insert a hyperlink in the document’s markup
 style, with display text and a URL.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1663,17 +1683,17 @@ the display text.</li>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+K</strong> (or <strong>Edit menu ▸ Insert
 Link…</strong>).</li>
-<li>In the "Insert Link" form, fill the <strong>Display text</strong>
+<li>In the “Insert Link” form, fill the <strong>Display text</strong>
 field and the <strong>URL</strong> field (default
 <code>https://</code>); activate <strong>Insert</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The form's fields are labelled and keyboard-complete (display text
+<li>The form’s fields are labelled and keyboard-complete (display text
 prefilled from any selection). On Insert, the link snippet is inserted
-and the caret lands after it; QUILL announces "Inserted link
-(<markup kind>)". Cancel or a blank URL announces "Insert link
-cancelled".</li>
+and the caret lands after it; QUILL announces “Inserted link
+(<markup kind>)”. Cancel or a blank URL announces “Insert link
+cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1694,7 +1714,7 @@ should go.</li>
 <ol type="1">
 <li>Press <strong>Ctrl+Shift+E</strong> (or <strong>Edit menu ▸ Insert
 Equation…</strong>).</li>
-<li>In the "Insert Equation" form, type LaTeX (e.g.
+<li>In the “Insert Equation” form, type LaTeX (e.g.
 <strong><code>E = mc^2</code></strong>) in the equation textarea; choose
 <strong>Display mode</strong> (Inline or Block); activate
 <strong>Insert</strong>.</li>
@@ -1704,7 +1724,7 @@ Equation…</strong>).</li>
 <li>The equation textarea and the Inline/Block select are labelled and
 keyboard-complete (prefilled if a selection held an equation). On Insert
 the snippet is inserted with the caret after it; QUILL announces
-"Inserted equation". Cancel announces "Insert equation cancelled".</li>
+“Inserted equation”. Cancel announces “Insert equation cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1725,7 +1745,7 @@ title, year).</li>
 <ol type="1">
 <li><strong>Edit menu ▸ Insert Citation…</strong> (or Command
 Palette).</li>
-<li>In the "Insert Citation" form, choose <strong>Source type</strong>,
+<li>In the “Insert Citation” form, choose <strong>Source type</strong>,
 <strong>Citation style</strong> (e.g. MLA), and what to
 <strong>Insert</strong> (Bibliography / In-text / Both); fill Author(s),
 Title, Year, and any other fields; activate
@@ -1735,7 +1755,7 @@ Title, Year, and any other fields; activate
 <ul>
 <li>Every select and field is labelled and reachable by keyboard. On
 Insert, the formatted citation text is inserted into the document.
-Cancel announces "Insert citation cancelled".</li>
+Cancel announces “Insert citation cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1763,8 +1783,8 @@ result; activate <strong>Insert</strong>.</li>
 <li>The Emoji Picker opens with a category list (Favorites, Recent, and
 Unicode categories), a search field, a results list, a description
 read-out, an Add/Remove Favorite button, and Insert — all
-keyboard-operable and announced. On Insert QUILL announces "Inserted
-<name>" and the emoji appears at the caret. If the catalog cannot load,
+keyboard-operable and announced. On Insert QUILL announces “Inserted
+<name>” and the emoji appears at the caret. If the catalog cannot load,
 a message box points you to the OS emoji input (Windows key + period)
 instead of failing silently.</li>
 </ul>
@@ -1793,10 +1813,10 @@ menu ▸ Word Prediction…</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A prediction popup appears near the caret listing up to eight
-completions; QUILL announces "{N} prediction(s). {first suggestion}" and
+completions; QUILL announces “{N} prediction(s). {first suggestion}” and
 accepting one inserts it, editor keeping focus. With no candidates it
-says "No predictions available". If the feature is off in this profile
-it says "Word prediction is unavailable in this profile" — mark
+says “No predictions available”. If the feature is off in this profile
+it says “Word prediction is unavailable in this profile” — mark
 <strong>N/A</strong> for that profile.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1807,7 +1827,7 @@ it says "Word prediction is unavailable in this profile" — mark
 <h2 id="edit-54--read-all-editread_all-altf8">EDIT-54 — Read All
 (<code>edit.read_all</code>, Alt+F8)</h2>
 <p><em>What &amp; why.</em> Read the whole document aloud from the top —
-a quick "read it back to me."</p>
+a quick “read it back to me.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <code>reading-order.txt</code>. <strong>Not available in Safe
@@ -1851,10 +1871,10 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The lines are reordered ascending and QUILL announces "Sorted lines
-ascending"; the sorted block is re-selected. If the format feature is
-off it says "…is unavailable in this profile"; a read-only document says
-"Document is read-only".</li>
+<li>The lines are reordered ascending and QUILL announces “Sorted lines
+ascending”; the sorted block is re-selected. If the format feature is
+off it says “…is unavailable in this profile”; a read-only document says
+“Document is read-only”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1876,8 +1896,8 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The lines are reordered descending and QUILL announces "Sorted lines
-descending"; the sorted block is re-selected.</li>
+<li>The lines are reordered descending and QUILL announces “Sorted lines
+descending”; the sorted block is re-selected.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1899,7 +1919,7 @@ Lines</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The line order is reversed and QUILL announces "Reversed lines"; the
+<li>The line order is reversed and QUILL announces “Reversed lines”; the
 block is re-selected.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1925,7 +1945,7 @@ Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Duplicate lines are removed (first kept) and QUILL announces
-"Removed duplicate lines"; the result is re-selected.</li>
+“Removed duplicate lines”; the result is re-selected.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1948,7 +1968,7 @@ Lines</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Every non-empty line gains a leading <code>&gt; </code> (blank lines
-untouched) and QUILL announces "Quoted lines"; the block is
+untouched) and QUILL announces “Quoted lines”; the block is
 re-selected.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1973,7 +1993,7 @@ Lines</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The leading <code>&gt; </code> (or bare <code>&gt;</code>) is
-stripped from each line and QUILL announces "Unquoted lines"; the block
+stripped from each line and QUILL announces “Unquoted lines”; the block
 is re-selected.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -2007,8 +2027,8 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Trailing whitespace is removed and QUILL announces "Trimmed trailing
-whitespace"; the block is re-selected. Absent on a public build
+<li>Trailing whitespace is removed and QUILL announces “Trimmed trailing
+whitespace”; the block is re-selected. Absent on a public build
 (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -2021,7 +2041,7 @@ id="edit-62--normalize-whitespace-editnormalize_whitespace-gated-futurecleanup">
 — Normalize Whitespace (<code>edit.normalize_whitespace</code>) [GATED
 future.cleanup]</h2>
 <p><em>What &amp; why.</em> Collapse runs of internal whitespace to
-single spaces and trim each line's ends, keeping blank lines.</p>
+single spaces and trim each line’s ends, keeping blank lines.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>Precondition:</strong> <code>future.cleanup</code> enabled
@@ -2036,7 +2056,7 @@ Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Internal whitespace is collapsed and ends trimmed; QUILL announces
-"Normalized whitespace"; the block is re-selected. Absent on a public
+“Normalized whitespace”; the block is re-selected. Absent on a public
 build (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -2050,7 +2070,7 @@ id="edit-63--convert-indentation-to-spaces-editconvert_indentation_to_spaces-gat
 (<code>edit.convert_indentation_to_spaces</code>) [GATED
 future.cleanup]</h2>
 <p><em>What &amp; why.</em> Turn leading tabs into spaces at the
-profile's indent width (leading indentation only).</p>
+profile’s indent width (leading indentation only).</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>Precondition:</strong> <code>future.cleanup</code> enabled
@@ -2064,8 +2084,8 @@ Command Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Leading tabs become spaces and QUILL announces "Converted
-indentation to spaces"; the block is re-selected. Absent on a public
+<li>Leading tabs become spaces and QUILL announces “Converted
+indentation to spaces”; the block is re-selected. Absent on a public
 build (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -2079,7 +2099,7 @@ id="edit-64--convert-indentation-to-tabs-editconvert_indentation_to_tabs-gated-f
 (<code>edit.convert_indentation_to_tabs</code>) [GATED
 future.cleanup]</h2>
 <p><em>What &amp; why.</em> Turn leading spaces into tabs at the
-profile's indent width (leading indentation only) — the reverse of
+profile’s indent width (leading indentation only) — the reverse of
 EDIT-63.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -2094,8 +2114,8 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Leading spaces become tabs and QUILL announces "Converted
-indentation to tabs"; the block is re-selected. Absent on a public build
+<li>Leading spaces become tabs and QUILL announces “Converted
+indentation to tabs”; the block is re-selected. Absent on a public build
 (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -2115,5 +2135,6 @@ indentation to tabs"; the block is re-selected. Absent on a public build
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

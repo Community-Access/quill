@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-table</title>
+  <title>Section — Tables, Reveal Codes, Notes &amp; misc (`table.*`
+`reveal.*` `notes.*` + `document/sync/ai/media`, 22 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--tables-reveal-codes-notes--misc-table-reveal-notes--documentsyncaimedia-22-commands">Section
 — Tables, Reveal Codes, Notes &amp; misc (<code>table.*</code>
@@ -200,23 +225,23 @@ one-line caption then a <strong>3-column</strong> table
 (<code>Region</code>, <code>Device</code>, <code>Notes</code>) with a
 header row and <strong>3 body rows</strong> (North / South / East), i.e.
 <strong>4 navigable rows</strong> once the <code>| --- |</code>
-separator is set aside. The South row's Device cell holds
+separator is set aside. The South row’s Device cell holds
 <code>Phone \| Watch</code> — an <strong>escaped pipe</strong> that must
 stay inside one cell. The table-navigation scenarios reuse the wording
 established in the core-journey plan,
 <code>../qa-core-journeys.md</code> → <strong>JOURNEY-002</strong>.</p>
 <p>The <code>table.*</code> chords all follow the same rule: they move
 only when the caret is <strong>inside</strong> a table, they
-<strong>speak position first then content</strong> ("Row 2 of 4, column
-3 of 3: Ships Q1"), an empty cell is spoken as <strong>"blank"</strong>,
+<strong>speak position first then content</strong> (“Row 2 of 4, column
+3 of 3: Ships Q1”), an empty cell is spoken as <strong>“blank”</strong>,
 and hitting an edge announces the edge and leaves the caret put. Outside
-a table every chord says <strong>"Not in a table"</strong> and does
+a table every chord says <strong>“Not in a table”</strong> and does
 nothing.</p>
 <hr />
 <h2 id="tbl-01--table-next-cell-tablenext_cell-ctrlaltright">TBL-01 —
 Table: Next Cell (<code>table.next_cell</code>, Ctrl+Alt+Right)</h2>
 <p><em>What &amp; why.</em> Step one cell to the right along a row — the
-everyday "read across the table" move, spoken so you always know which
+everyday “read across the table” move, spoken so you always know which
 cell you landed on.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -234,13 +259,13 @@ then once more.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The caret jumps into the next cell and QUILL speaks <strong>position
-then content</strong>, e.g. "Row 1 of 4, column 2 of 3: Device", then
-"…column 3 of 3: Notes". The count is <strong>4 rows</strong> (header +
+then content</strong>, e.g. “Row 1 of 4, column 2 of 3: Device”, then
+“…column 3 of 3: Notes”. The count is <strong>4 rows</strong> (header +
 3 body) and <strong>3 columns</strong>.</li>
 <li>At the <strong>last cell of a non-final row</strong> it says
-<strong>"No more cells"</strong> and the caret stays put. At the
+<strong>“No more cells”</strong> and the caret stays put. At the
 <strong>final cell of the final row</strong> (East / Backordered) it
-says <strong>"No more cells, end of table"</strong>.</li>
+says <strong>“No more cells, end of table”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -266,10 +291,10 @@ first column.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Each press moves one column left and speaks "Row R of 4, column C of
-3: …".</li>
+<li>Each press moves one column left and speaks “Row R of 4, column C of
+3: …”.</li>
 <li>From the <strong>first cell of a row</strong>, another Ctrl+Alt+Left
-says <strong>"No more cells"</strong> and the caret does not move.</li>
+says <strong>“No more cells”</strong> and the caret does not move.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -294,10 +319,10 @@ North → South → East.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each press moves down one row in the <strong>same column</strong>
-and speaks position + content, e.g. "Row 2 of 4, column 1 of 3:
-North".</li>
-<li>Below the last row it says <strong>"No more rows"</strong> (or
-<strong>"No more rows, end of table"</strong> if you are on the final
+and speaks position + content, e.g. “Row 2 of 4, column 1 of 3:
+North”.</li>
+<li>Below the last row it says <strong>“No more rows”</strong> (or
+<strong>“No more rows, end of table”</strong> if you are on the final
 cell of the final row); the caret stays put.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -312,7 +337,7 @@ mirror of TBL-03.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong><code>table.md</code></strong> open. Caret on the
-<strong>East</strong> row's Region cell (bottom of column 1).</li>
+<strong>East</strong> row’s Region cell (bottom of column 1).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -324,7 +349,7 @@ more.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each press moves up one row and speaks position + content.</li>
-<li>Above the top row it says <strong>"No more rows"</strong> and the
+<li>Above the top row it says <strong>“No more rows”</strong> and the
 caret does not move.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -339,7 +364,7 @@ whole table (row 1, column 1) from anywhere inside it.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong><code>table.md</code></strong> open. Caret somewhere in the
-middle of the table (e.g. the South row's Notes cell).</li>
+middle of the table (e.g. the South row’s Notes cell).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -347,8 +372,8 @@ middle of the table (e.g. the South row's Notes cell).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The caret lands on the top-left cell and QUILL says "Row 1 of 4,
-column 1 of 3: Region".</li>
+<li>The caret lands on the top-left cell and QUILL says “Row 1 of 4,
+column 1 of 3: Region”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -370,8 +395,8 @@ the table.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The caret lands on the bottom-right cell and QUILL says "Row 4 of 4,
-column 3 of 3: Backordered".</li>
+<li>The caret lands on the bottom-right cell and QUILL says “Row 4 of 4,
+column 3 of 3: Backordered”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -394,7 +419,7 @@ Table: First Cell in Row (<code>table.row_start</code>, Alt+Home)</h2>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The caret jumps to column 1 of the <strong>same</strong> row and
-QUILL says "Row 3 of 4, column 1 of 3: South". The row does not
+QUILL says “Row 3 of 4, column 1 of 3: South”. The row does not
 change.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -423,13 +448,13 @@ Table: Last Cell in Row (<code>table.row_end</code>, Alt+End)</h2>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Step 1: the caret jumps to column 3 of the same row: "Row 3 of 4,
-column 3 of 3: Bundle SKU".</li>
+<li>Step 1: the caret jumps to column 3 of the same row: “Row 3 of 4,
+column 3 of 3: Bundle SKU”.</li>
 <li>Step 2: the Device cell is announced as <strong>one cell</strong> —
-"…column 2 of 3: Phone | Watch" — the escaped pipe <code>\|</code> is
+“…column 2 of 3: Phone | Watch” — the escaped pipe <code>\|</code> is
 read as a literal pipe <strong>inside</strong> the cell and does
 <strong>not</strong> split it into an extra column. Position stays
-"column 2 of 3".</li>
+“column 2 of 3”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -440,18 +465,18 @@ read as a literal pipe <strong>inside</strong> the cell and does
 Codes: Next Code (<code>reveal.next_code</code>)</h2>
 <p><em>What &amp; why.</em> With the Reveal Codes pane open, jump to the
 <strong>next</strong> hidden formatting code (a bold-on, heading, link,
-list marker, …) and hear it named — WordPerfect's "show me the codes"
+list marker, …) and hear it named — WordPerfect’s “show me the codes”
 for a screen-reader user.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <strong><code>formatting.md</code></strong> (it is full of
 headings, bold/italic, a link and lists).</li>
 <li>Turn the pane on: press <strong>Alt+F3</strong> (<strong>View menu ▸
-Reveal Codes</strong>). You should hear "Reveal Codes shown." A status
+Reveal Codes</strong>). You should hear “Reveal Codes shown.” A status
 hint mentions <strong>F6</strong> to move into the pane.</li>
 <li>Note: <code>reveal.next_code</code> has <strong>no default
 shortcut</strong>. Run it from the <strong>Command Palette</strong>
-(<strong>Ctrl+Shift+P</strong> → "Reveal Codes: Next Code"), or move
+(<strong>Ctrl+Shift+P</strong> → “Reveal Codes: Next Code”), or move
 into the pane with <strong>F6</strong> and arrow through the flowed
 codes directly.</li>
 </ul>
@@ -464,10 +489,10 @@ press <strong>Down/Right</strong> in the pane after
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The pane selection advances to the next <strong>code</strong> token
-and QUILL <strong>speaks the code phrase</strong> (e.g. "Heading 1",
-"Bold on"); the editor caret follows to the matching spot. When there is
-nothing further it says <strong>"Reveal Codes: no further
-code."</strong> and stays put.</li>
+and QUILL <strong>speaks the code phrase</strong> (e.g. “Heading 1”,
+“Bold on”); the editor caret follows to the matching spot. When there is
+nothing further it says <strong>“Reveal Codes: no further
+code.”</strong> and stays put.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -492,8 +517,8 @@ or press <strong>Up/Left</strong> in the pane.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Selection moves to the previous code and its phrase is spoken; the
-editor caret follows. Before the first code it says <strong>"Reveal
-Codes: no earlier code."</strong> and the caret stays put.</li>
+editor caret follows. Before the first code it says <strong>“Reveal
+Codes: no earlier code.”</strong> and the caret stays put.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -521,7 +546,7 @@ a bold word.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Selection jumps to the <strong>partner</strong> code (the matching
-"off") and QUILL speaks the landing code; the editor caret follows. On a
+“off”) and QUILL speaks the landing code; the editor caret follows. On a
 code that has no partner the command does nothing rather than jumping
 somewhere wrong. <strong>Note:</strong> if nothing is spoken on an
 unpaired code, that is expected — confirm it did not move.</li>
@@ -537,8 +562,8 @@ Reveal Codes: Speak Codes Aloud (<code>reveal.toggle_speak</code>)</h2>
 <p><em>What &amp; why.</em> A verbosity switch. <strong>Off</strong>
 (the default) keeps your screen reader as the single voice while you
 arrow through the flowed view — QUILL mirrors the code phrase silently
-to the status bar so NVDA/JAWS don't double-speak. <strong>On</strong>
-restores QUILL's own spoken narration of each code for people who prefer
+to the status bar so NVDA/JAWS don’t double-speak. <strong>On</strong>
+restores QUILL’s own spoken narration of each code for people who prefer
 it.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -553,11 +578,11 @@ run it again to toggle back.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Turning it <strong>on</strong>: QUILL says <strong>"Reveal Codes
-will speak codes aloud."</strong> — now arrowing the flowed view speaks
-each code phrase in QUILL's voice as well.</li>
-<li>Turning it <strong>off</strong>: QUILL says <strong>"Reveal Codes
-codes are now silent; your screen reader reads the line."</strong> The
+<li>Turning it <strong>on</strong>: QUILL says <strong>“Reveal Codes
+will speak codes aloud.”</strong> — now arrowing the flowed view speaks
+each code phrase in QUILL’s voice as well.</li>
+<li>Turning it <strong>off</strong>: QUILL says <strong>“Reveal Codes
+codes are now silent; your screen reader reads the line.”</strong> The
 setting persists across restarts.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -589,7 +614,7 @@ Sticky Notes ▸</strong> the inline-note command.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The dialog is labelled and keyboard-complete. On Save, QUILL
-announces <strong>"Inline note added."</strong> and the status line
+announces <strong>“Inline note added.”</strong> and the status line
 shows the anchor text in quotes (e.g.
 <code>Inline note added on "…"</code>). Choosing <strong>Cancel</strong>
 (or saving an empty note) announces the add was cancelled and writes
@@ -618,11 +643,11 @@ press again to continue.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The caret moves to the next note's anchored text and QUILL announces
-its position and summary, e.g. <strong>"Inline note 1 of 2: Check this
-figure"</strong>. Past the last note it <strong>wraps</strong> to the
-first. With no notes at all it says <strong>"No inline notes in this
-document"</strong>.</li>
+<li>The caret moves to the next note’s anchored text and QUILL announces
+its position and summary, e.g. <strong>“Inline note 1 of 2: Check this
+figure”</strong>. Past the last note it <strong>wraps</strong> to the
+first. With no notes at all it says <strong>“No inline notes in this
+document”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -647,9 +672,9 @@ note; press again to continue.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The caret moves to the previous note and QUILL announces "Inline
-note N of M: …". Before the first note it <strong>wraps</strong> to the
-last. With no notes it says "No inline notes in this document".</li>
+<li>The caret moves to the previous note and QUILL announces “Inline
+note N of M: …”. Before the first note it <strong>wraps</strong> to the
+last. With no notes it says “No inline notes in this document”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -666,7 +691,7 @@ to open that note to view, edit, or delete it.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong><code>plain.txt</code></strong> open with an inline note;
-caret on the note's anchored line (use NOTE-02 to land on it
+caret on the note’s anchored line (use NOTE-02 to land on it
 first).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -679,13 +704,13 @@ use <strong>Delete</strong> — then run NOTE-04 again to confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Single press: QUILL speaks <strong>"Inline note: "</strong> followed
-by the note's full text. With the caret <strong>not</strong> on a note
-it says "No inline notes in this document".</li>
+<li>Single press: QUILL speaks <strong>“Inline note: “</strong> followed
+by the note’s full text. With the caret <strong>not</strong> on a note
+it says “No inline notes in this document”.</li>
 <li>Double press: the note opens in an edit dialog with
-<strong>Delete</strong> available. Saving announces <strong>"Inline note
-updated"</strong>; deleting announces <strong>"Inline note
-deleted"</strong>; Cancel changes nothing.</li>
+<strong>Delete</strong> available. Saving announces <strong>“Inline note
+updated”</strong>; deleting announces <strong>“Inline note
+deleted”</strong>; Cancel changes nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -716,8 +741,8 @@ Browser…</strong>, or run it from the Command Palette.</li>
 <ul>
 <li>The dialog is keyboard-navigable and announced: a search field, a
 results list you can arrow with a spoken preview, and an edit path.
-Opening a note whose underlying note no longer exists is reported ("That
-note no longer exists.") rather than erroring. Escape returns focus to
+Opening a note whose underlying note no longer exists is reported (“That
+note no longer exists.”) rather than erroring. Escape returns focus to
 where you were.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -743,9 +768,9 @@ Optionally type one word so it shows as modified.</li>
 <ul>
 <li>QUILL speaks a single sentence in substance: the file name, then
 <strong><code>N words, M lines</code></strong>, then a heading count
-(e.g. "6 heading(s)"), and — if the document is dirty — <strong>",
-unsaved changes."</strong> An unsaved/new document is named "unsaved
-document". With nothing open it says "No document open".</li>
+(e.g. “6 heading(s)”), and — if the document is dirty — <strong>“,
+unsaved changes.”</strong> An unsaved/new document is named “unsaved
+document”. With nothing open it says “No document open”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -755,12 +780,12 @@ document". With nothing open it says "No document open".</li>
 <h2 id="misc-02--sync-folder-with-github-syncsync_folder">MISC-02 — Sync
 Folder with GitHub… (<code>sync.sync_folder</code>)</h2>
 <p><em>What &amp; why.</em> Point QUILL at any folder and it commits,
-pulls, and pushes it over that folder's own git remote — the
+pulls, and pushes it over that folder’s own git remote — the
 general-purpose half of QUILL Sync. It never sets anything up silently:
 you always confirm before an <code>init</code> or a network call.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li><strong>Precondition:</strong> the user's own <strong>git</strong>
+<li><strong>Precondition:</strong> the user’s own <strong>git</strong>
 is installed and its credentials work (SSH key or the system git
 credential manager). A folder that is already a git repo with a remote
 is the simplest case; otherwise you will be asked for a repo URL. If you
@@ -823,15 +848,15 @@ through each proposed field; accept some and leave others; confirm with
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces <strong>"Asking the AI for metadata
-suggestions."</strong> then opens a field-by-field review dialog that is
+<li>QUILL announces <strong>“Asking the AI for metadata
+suggestions.”</strong> then opens a field-by-field review dialog that is
 labelled and keyboard-complete. Only the fields you accept are written
 into the front matter; a <strong>No-defaulted</strong> confirmation
 guards overwriting any non-empty existing field. On apply it announces
 how many fields were applied and names them, <strong>as one undo
-step</strong>. An empty document says "Document is empty - nothing to
-describe."; accepting nothing says "No metadata was applied; the
-document is unchanged."</li>
+step</strong>. An empty document says “Document is empty - nothing to
+describe.”; accepting nothing says “No metadata was applied; the
+document is unchanged.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -867,11 +892,11 @@ confirm.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The dialog is labelled and keyboard-operable. On confirm QUILL
-announces <strong>"Sleep timer set for 15 minutes"</strong> (matching
+announces <strong>“Sleep timer set for 15 minutes”</strong> (matching
 your value). Setting <strong>0</strong> (or confirming with the timer
-cleared) cancels it with "Sleep timer cancelled". When the countdown
+cleared) cancels it with “Sleep timer cancelled”. When the countdown
 reaches zero playback stops, the volume is restored, and QUILL announces
-<strong>"Sleep timer: playback stopped, volume restored."</strong></li>
+<strong>“Sleep timer: playback stopped, volume restored.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -898,10 +923,10 @@ Palette (or its menu item).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>With a timer running, QUILL announces <strong>"Sleep timer
-cancelled"</strong> and playback is no longer scheduled to stop. With
-<strong>no</strong> timer running it says <strong>"No sleep timer is
-running."</strong> rather than erroring.</li>
+<li>With a timer running, QUILL announces <strong>“Sleep timer
+cancelled”</strong> and playback is no longer scheduled to stop. With
+<strong>no</strong> timer running it says <strong>“No sleep timer is
+running.”</strong> rather than erroring.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -920,5 +945,6 @@ running."</strong> rather than erroring.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

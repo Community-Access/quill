@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>voice-interaction</title>
+  <title>Voice Interaction in QUILL</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="voice-interaction-in-quill">Voice Interaction in QUILL</h1>
 <p>QUILL can be driven by voice — hands-free, on your own device, with
 nothing uploaded. This page is the complete reference for what voice can
@@ -253,7 +273,7 @@ recognition on your machine.</p>
 <p><strong>Voice can only run a curated, non-destructive allowlist of
 commands.</strong> Saying the wrong thing cannot close a document
 without saving, send, publish, or delete anything — those actions are
-simply not in voice's vocabulary. The same allowlist bounds the AI
+simply not in voice’s vocabulary. The same allowlist bounds the AI
 agent. If you ask voice something it does not recognize as a safe
 command, it tells you what it heard and does nothing.</p>
 <h2 id="turning-voice-on">Turning voice on</h2>
@@ -283,17 +303,17 @@ you already use for dictation.</li>
 Voice Command and Conversation Mode when you want the most reliable
 recognition.</li>
 <li><strong>Vosk</strong> — fast and light, with low idle cost.
-<strong>Recommended for the always-listening "Hey QUILL" wake
+<strong>Recommended for the always-listening “Hey QUILL” wake
 word</strong>, where a small, quick engine matters more than
 transcription polish.</li>
 </ul>
 <p>Whichever you pick, you need a model installed for that engine
 (download one from <strong>Tools → Speech → Manage Speech
-Models</strong>). If the chosen engine or its model isn't available,
+Models</strong>). If the chosen engine or its model isn’t available,
 QUILL automatically falls back to your main engine, so voice always
 works.</p>
 <h2 id="the-four-ways-to-use-voice">The four ways to use voice</h2>
-<p>QUILL's voice support was built in four layers. Each one builds on
+<p>QUILL’s voice support was built in four layers. Each one builds on
 the one before it, and they share the same on-device recognition and the
 same safe allowlist.</p>
 <h3 id="1-voice-command-push-to-talk">1. Voice Command
@@ -301,16 +321,16 @@ same safe allowlist.</p>
 <p><strong>Tools → Speech → Voice Command (Offline).</strong></p>
 <p>The simplest mode. Run the command, speak <strong>one</strong>
 command, run it again to stop and act. QUILL recognizes the phrase on
-your device and runs the matching command. Say <strong>"cancel"</strong>
-or <strong>"never mind"</strong> to abort.</p>
+your device and runs the matching command. Say <strong>“cancel”</strong>
+or <strong>“never mind”</strong> to abort.</p>
 <p>Best when you want to fire a single command without touching the
 keyboard.</p>
 <h3 id="2-voice-conversation-mode">2. Voice Conversation Mode</h3>
 <p><strong>Tools → Speech → Voice Conversation Mode.</strong></p>
 <p>The hands-free version. Run it once and QUILL listens for a command,
 then keeps a short <strong>follow-up window</strong> open after acting
-so you can chain commands — "next heading", then "read aloud", then
-"word count" — without arming again between them. A warm audio cue marks
+so you can chain commands — “next heading”, then “read aloud”, then
+“word count” — without arming again between them. A warm audio cue marks
 every state:</p>
 <table>
 <thead>
@@ -330,7 +350,7 @@ every state:</p>
 </tr>
 <tr>
 <td>Gentle rise</td>
-<td>Your command was recognized (a brief "cancel" window follows)</td>
+<td>Your command was recognized (a brief “cancel” window follows)</td>
 </tr>
 <tr>
 <td>Sparkle</td>
@@ -350,14 +370,14 @@ every state:</p>
 </tr>
 </tbody>
 </table>
-<p>Run it again, or say <strong>"stop"</strong>, to turn conversation
+<p>Run it again, or say <strong>“stop”</strong>, to turn conversation
 mode off.</p>
 <p>Your turn ends <strong>when you stop speaking</strong> — QUILL
-listens to the microphone's energy and finishes the turn after your
+listens to the microphone’s energy and finishes the turn after your
 pause, rather than cutting you off at a fixed time. You can make it more
 personal, too: set <strong>your name</strong> in Settings and QUILL uses
-it in its prompts ("Listening, Jeff."), with wording that varies
-naturally and follows the time of day. If you'd like the prompts
+it in its prompts (“Listening, Jeff.”), with wording that varies
+naturally and follows the time of day. If you’d like the prompts
 <strong>spoken aloud</strong>, turn on <em>Speak prompts aloud</em>;
 QUILL keeps that silent whenever a screen reader is running, so it never
 talks over your reader.</p>
@@ -367,46 +387,46 @@ switch that part off):</p>
 <li><strong>Pause before a command ends</strong> — how long a pause
 finishes what you are saying (used by the silence detection above).</li>
 <li><strong>Cancel window</strong> — the beat after recognition during
-which "cancel" calls it off.</li>
+which “cancel” calls it off.</li>
 <li><strong>Follow-up window</strong> — how long QUILL keeps listening
 after acting.</li>
 <li><strong>Still-working tick interval</strong> — how often the
-"working" tick plays.</li>
+“working” tick plays.</li>
 </ul>
 <p>The nine cues are ordinary <strong>Sound Events</strong> — retune or
 replace them in any sound pack from the Sound Events dialog, exactly
 like every other QUILL earcon.</p>
-<h3 id="3-hey-quill-wake-word">3. "Hey QUILL" wake word</h3>
+<h3 id="3-hey-quill-wake-word">3. “Hey QUILL” wake word</h3>
 <p><strong>Tools → Speech → Listen for Hey QUILL.</strong></p>
 <p>Always-listening. QUILL listens continuously, on your device, for the
-phrase <strong>"Hey QUILL"</strong>. Two ways to use it:</p>
+phrase <strong>“Hey QUILL”</strong>. Two ways to use it:</p>
 <ul>
-<li><strong>"Hey QUILL, save file"</strong> — the trailing command runs
+<li><strong>“Hey QUILL, save file”</strong> — the trailing command runs
 straight away.</li>
-<li><strong>"Hey QUILL"</strong> on its own — QUILL wakes and listens
+<li><strong>“Hey QUILL”</strong> on its own — QUILL wakes and listens
 for your next command.</li>
 </ul>
 <p>While it is on, the status bar shows that the microphone is live and
 plays a periodic reminder, so an open microphone is never a surprise.
-Run the command again, or say <strong>"stop"</strong>, to turn listening
+Run the command again, or say <strong>“stop”</strong>, to turn listening
 off instantly.</p>
 <p><strong>It stays off unless you say otherwise.</strong>
 Always-listening turns itself off when QUILL closes; a separate setting
-— <strong>Keep listening for "Hey QUILL" across restarts</strong> — lets
+— <strong>Keep listening for “Hey QUILL” across restarts</strong> — lets
 you have it resume automatically at startup if you want that.</p>
 <h3 id="checking-what-voice-is-doing--speak-voice-status">Checking what
 voice is doing — Speak Voice Status</h3>
 <p><strong>Tools → Speech → Speak Voice Status</strong> tells you, at
-any moment, exactly what voice is up to: listening for "Hey QUILL", in
+any moment, exactly what voice is up to: listening for “Hey QUILL”, in
 conversation mode, capturing a command, or not listening at all. It is a
 quick way to confirm the microphone state — assign it a shortcut for an
 instant check.</p>
 <h3 id="4-ask-a-question--routed-to-ask-quill">4. Ask a question —
 routed to Ask Quill</h3>
 <p>When you speak something that is a <strong>question</strong> rather
-than a command — either starting with "ask" ("ask what a heading is") or
-shaped like a question ("how do I save my document") — voice hands it to
-<strong>Ask Quill</strong>, QUILL's AI assistant, with your question
+than a command — either starting with “ask” (“ask what a heading is”) or
+shaped like a question (“how do I save my document”) — voice hands it to
+<strong>Ask Quill</strong>, QUILL’s AI assistant, with your question
 <strong>pre-filled and ready to send</strong>.</p>
 <p>You press Enter to send it, so a person is always in the loop for
 anything that reaches the AI. Ask Quill answers with its own
@@ -417,7 +437,7 @@ its own.</p>
 <h2 id="what-voice-can-run--the-command-allowlist">What voice can run —
 the command allowlist</h2>
 <p>These are the commands voice understands today, with the phrases that
-select each. Matching is forgiving: the command's own name works too,
+select each. Matching is forgiving: the command’s own name works too,
 and close phrasings still match.</p>
 <table>
 <thead>
@@ -428,106 +448,106 @@ and close phrasings still match.</p>
 </thead>
 <tbody>
 <tr>
-<td>"save", "save file", "save document"</td>
+<td>“save”, “save file”, “save document”</td>
 <td>Save</td>
 </tr>
 <tr>
-<td>"save all", "save everything"</td>
+<td>“save all”, “save everything”</td>
 <td>Save All</td>
 </tr>
 <tr>
-<td>"new", "new document", "new file"</td>
+<td>“new”, “new document”, “new file”</td>
 <td>New</td>
 </tr>
 <tr>
-<td>"undo"</td>
+<td>“undo”</td>
 <td>Undo</td>
 </tr>
 <tr>
-<td>"redo"</td>
+<td>“redo”</td>
 <td>Redo</td>
 </tr>
 <tr>
-<td>"select all"</td>
+<td>“select all”</td>
 <td>Select All</td>
 </tr>
 <tr>
-<td>"bold", "make bold"</td>
+<td>“bold”, “make bold”</td>
 <td>Bold</td>
 </tr>
 <tr>
-<td>"italic", "make italic"</td>
+<td>“italic”, “make italic”</td>
 <td>Italic</td>
 </tr>
 <tr>
-<td>"uppercase", "make uppercase"</td>
+<td>“uppercase”, “make uppercase”</td>
 <td>Upper Case</td>
 </tr>
 <tr>
-<td>"lowercase", "make lowercase"</td>
+<td>“lowercase”, “make lowercase”</td>
 <td>Lower Case</td>
 </tr>
 <tr>
-<td>"title case"</td>
+<td>“title case”</td>
 <td>Title Case</td>
 </tr>
 <tr>
-<td>"sentence case"</td>
+<td>“sentence case”</td>
 <td>Sentence Case</td>
 </tr>
 <tr>
-<td>"bullet list", "bulleted list"</td>
+<td>“bullet list”, “bulleted list”</td>
 <td>Insert Bullet List</td>
 </tr>
 <tr>
-<td>"numbered list"</td>
+<td>“numbered list”</td>
 <td>Insert Numbered List</td>
 </tr>
 <tr>
-<td>"word count", "count words"</td>
+<td>“word count”, “count words”</td>
 <td>Word Count</td>
 </tr>
 <tr>
-<td>"spell check", "check spelling"</td>
+<td>“spell check”, “check spelling”</td>
 <td>Spell Check</td>
 </tr>
 <tr>
-<td>"read aloud", "start reading", "pause reading"</td>
+<td>“read aloud”, “start reading”, “pause reading”</td>
 <td>Read Aloud (start/pause)</td>
 </tr>
 <tr>
-<td>"stop reading", "stop read aloud"</td>
+<td>“stop reading”, “stop read aloud”</td>
 <td>Stop Read Aloud</td>
 </tr>
 <tr>
-<td>"next heading"</td>
+<td>“next heading”</td>
 <td>Next Heading</td>
 </tr>
 <tr>
-<td>"previous heading", "prior heading"</td>
+<td>“previous heading”, “prior heading”</td>
 <td>Previous Heading</td>
 </tr>
 <tr>
-<td>"outline", "show outline"</td>
+<td>“outline”, “show outline”</td>
 <td>Outline Navigator</td>
 </tr>
 <tr>
-<td>"find", "search", "find text"</td>
+<td>“find”, “search”, “find text”</td>
 <td>Find</td>
 </tr>
 <tr>
-<td>"soft wrap", "word wrap"</td>
+<td>“soft wrap”, “word wrap”</td>
 <td>Toggle Soft Wrap</td>
 </tr>
 <tr>
-<td>"command palette", "commands"</td>
+<td>“command palette”, “commands”</td>
 <td>Command Palette</td>
 </tr>
 </tbody>
 </table>
 <p>Anywhere you can speak a command, you can also say
-<strong>"cancel"</strong>, <strong>"never mind"</strong>,
-<strong>"stop"</strong>, or <strong>"dismiss"</strong> to abort.</p>
+<strong>“cancel”</strong>, <strong>“never mind”</strong>,
+<strong>“stop”</strong>, or <strong>“dismiss”</strong> to abort.</p>
 <h2 id="teaching-dictation-your-words-a-dictation-profile">Teaching
 dictation your words (a dictation profile)</h2>
 <p>Dictation can learn <em>your</em> vocabulary. QUILL reads a small,
@@ -549,9 +569,9 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>save everything =&gt; file.save_all</span></code></pre></div>
 <ul>
 <li><strong>Vocabulary</strong> — names, jargon, and acronyms you use.
-QUILL passes these to the speech engine as a hint (Whisper's <em>initial
-prompt</em>), so it spells them your way — "wxPython", not "w x python".
-(Engines that don't accept a hint simply ignore this; the other two
+QUILL passes these to the speech engine as a hint (Whisper’s <em>initial
+prompt</em>), so it spells them your way — “wxPython”, not “w x python”.
+(Engines that don’t accept a hint simply ignore this; the other two
 sections still work.)</li>
 <li><strong>Replacements</strong> — spoken-to-written fixes applied to
 the finished transcript, one per line as
@@ -593,8 +613,8 @@ enable voice commands, and each listening session is something you
 start.</li>
 <li><strong>Safe Mode.</strong> All voice modes are disabled in Safe
 Mode.</li>
-<li><strong>Instant off.</strong> Running a mode's command again, or
-saying "stop", ends it immediately; always-listening also ends when
+<li><strong>Instant off.</strong> Running a mode’s command again, or
+saying “stop”, ends it immediately; always-listening also ends when
 QUILL closes unless you opt into persistence.</li>
 <li><strong>Perceivable.</strong> Warm audio cues and a visible status
 keep the state of a hands-free session — and a live microphone — always
@@ -608,5 +628,6 @@ parity, the Speak Voice Status check, and the editable <strong>dictation
 profile</strong> (<code>dictation.md</code>) are all in place. The one
 genuinely future item is a dedicated low-power keyword spotter for the
 wake word (so always-listening costs even less than it does today).</p>
+</main>
 </body>
 </html>

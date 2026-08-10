@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>translating</title>
+  <title>Translating QUILL</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="translating-quill">Translating QUILL</h1>
 <p>QUILL uses GNU gettext catalogs and a GitHub pull-request workflow
 for translations. You do not need a Crowdin account, special access, or
@@ -219,7 +239,7 @@ msgstr &quot;&quot;
 &quot;Last-Translator: Your Name &lt;email@example.com&gt;\n&quot;
 &quot;Plural-Forms: nplurals=2; plural=(n &gt; 1);\n&quot;
 &quot;Content-Type: text/plain; charset=UTF-8\n&quot;</code></pre>
-<p>Set <code>Plural-Forms</code> to match your language's plural rules.
+<p>Set <code>Plural-Forms</code> to match your language’s plural rules.
 See the reference at <a
 href="https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html">https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html</a>.</p>
 <h3 id="3-translate">3. Translate</h3>
@@ -245,10 +265,10 @@ your PATH:</p>
 # or: pybabel compile -d quill/locale -D quill</code></pre>
 <pre><code>python -m quill</code></pre>
 <p>In QUILL, open <strong>Tools &gt; Writing &amp; Language &gt; Change
-Display Language...</strong> and choose your language (only languages
-with a compiled <code>.mo</code> appear in the list). Navigate the menus
-and dialogs to verify your translations appear and sound natural. The
-choice is saved; restart QUILL so every menu and dialog reloads in your
+Display Language…</strong> and choose your language (only languages with
+a compiled <code>.mo</code> appear in the list). Navigate the menus and
+dialogs to verify your translations appear and sound natural. The choice
+is saved; restart QUILL so every menu and dialog reloads in your
 language.</p>
 <p>Pay particular attention to:</p>
 <ul>
@@ -256,7 +276,7 @@ language.</p>
 <strong>Mnemonic <code>&amp;</code></strong> rules below).</li>
 <li>Announcement strings — what your screen reader says during
 actions.</li>
-<li>Plural forms — "1 word" vs "3 words".</li>
+<li>Plural forms — “1 word” vs “3 words”.</li>
 </ul>
 <h3 id="6-regenerate-the-html-and-epub-artifacts">6. Regenerate the HTML
 and EPUB artifacts</h3>
@@ -325,7 +345,7 @@ contributors apply it consistently.</p>
 <tbody>
 <tr>
 <td>Copy Tray</td>
-<td>QUILL's multi-slot clipboard feature</td>
+<td>QUILL’s multi-slot clipboard feature</td>
 </tr>
 <tr>
 <td>Ask Quill</td>
@@ -361,17 +381,17 @@ respond within three business days.</p>
 <hr />
 <h1 id="style-guide">Style guide</h1>
 <h2 id="tone-and-register">Tone and register</h2>
-<p>QUILL speaks to the user in the second person, directly. Use "your
-document", "press this key", not "the user's document" or "one presses
-this key."</p>
-<p>Match the register of the target language's screen reader
+<p>QUILL speaks to the user in the second person, directly. Use “your
+document”, “press this key”, not “the user’s document” or “one presses
+this key.”</p>
+<p>Match the register of the target language’s screen reader
 ecosystem:</p>
 <ul>
-<li>French: use "vous" (formal) unless the French-language community
-explicitly votes for "tu". Record the decision as a translator
+<li>French: use “vous” (formal) unless the French-language community
+explicitly votes for “tu”. Record the decision as a translator
 comment.</li>
-<li>German: use "Sie" (formal) by default.</li>
-<li>For other languages, follow the convention used by NVDA's official
+<li>German: use “Sie” (formal) by default.</li>
+<li>For other languages, follow the convention used by NVDA’s official
 translation into your language.</li>
 </ul>
 <h2 id="mnemonic-markers-">Mnemonic markers (<code>&amp;</code>)</h2>
@@ -399,7 +419,7 @@ automatically.</p>
 </ul>
 <p>A string like <code>&amp;Open...\tCtrl+O</code> should become (in
 French) <code>&amp;Ouvrir...\tCtrl+O</code>. The <code>\t</code>
-accelerator keeps <code>Ctrl+O</code>; only the label's
+accelerator keeps <code>Ctrl+O</code>; only the label’s
 <code>&amp;</code> mnemonic is yours to relocate.</p>
 <h2 id="announcement-strings-speech-strings">Announcement strings
 (speech strings)</h2>
@@ -411,17 +431,17 @@ msgid &quot;Copied to slot {n}&quot;</code></pre>
 <ol type="1">
 <li>Translate for natural speech, not literal label equivalence.</li>
 <li>Do not abbreviate. Spell out acronyms unless they are universally
-known in your language's technology community.</li>
+known in your language’s technology community.</li>
 <li>Add spoken context if the meaning would be lost without visual
 UI.</li>
 <li>Test every announcement string with a screen reader set to your
 language.</li>
 </ol>
 <h2 id="plural-forms">Plural forms</h2>
-<p>Follow your language's actual plural rules. Reference: <a
+<p>Follow your language’s actual plural rules. Reference: <a
 href="https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html">https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html</a></p>
 <p>The <code>Plural-Forms</code> header in your <code>.po</code> file
-must match your language's rules. The CI gate checks that every
+must match your language’s rules. The CI gate checks that every
 <code>msgstr[n]</code> entry exists.</p>
 <h2 id="placeholders">Placeholders</h2>
 <p>Placeholders are variable values QUILL inserts at runtime:</p>
@@ -436,7 +456,7 @@ must match your language's rules. The CI gate checks that every
 <li>Never translate a placeholder. <code>{n}</code> remains
 <code>{n}</code> in every language.</li>
 <li>Never remove a placeholder.</li>
-<li>You may reorder placeholders to match your language's grammar.</li>
+<li>You may reorder placeholders to match your language’s grammar.</li>
 </ol>
 <p>The CI gate checks placeholder preservation.</p>
 <h2 id="technical-identifiers--do-not-translate">Technical identifiers —
@@ -470,7 +490,7 @@ the app runs without translations.</li>
 <code>pybabel</code> CLI required); the release build runs this so
 installed copies ship the compiled catalogs.</li>
 <li><strong>Tools &gt; Writing &amp; Language &gt; Change Display
-Language...</strong> lets users switch the UI language to any installed
+Language…</strong> lets users switch the UI language to any installed
 translation at runtime.</li>
 <li><code>quill/locale</code> is packaged into the wheel, so
 <code>.pot</code> and <code>.mo</code> files ship.</li>
@@ -500,7 +520,7 @@ to 1,214 strings when the Audio Studio landed, and the refreshed
 </tr>
 </tbody>
 </table>
-<p>Italian was QUILL's <strong>first community translation</strong> —
+<p>Italian was QUILL’s <strong>first community translation</strong> —
 contributed exactly through the pipeline this document describes: a
 <code>.po</code> from the template, the CI placeholder/coverage gates,
 and a pull request. Grazie, Elena! Untranslated strings fall back to
@@ -521,5 +541,6 @@ template.</p>
 grows, QUILL may add Weblate or Crowdin as a browser-based alternative
 while keeping gettext catalogs as the source format. The PR workflow
 remains available at all times.</p>
+</main>
 </body>
 </html>

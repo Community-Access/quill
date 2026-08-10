@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>SIGNOFF-gated-apps</title>
+  <title>QUILL 1.0.0 Sign-off — Gated apps: verify ABSENCE from public
+surfaces</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="quill-100-sign-off--gated-apps-verify-absence-from-public-surfaces">QUILL
 1.0.0 Sign-off — Gated apps: verify ABSENCE from public surfaces</h1>
@@ -185,28 +210,26 @@ QuillVille. Check each is absent.</p>
 <code>podcasts.acb_media</code> — Podcasts: Subscribe to ACB Media
 Podcasts</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>podcasts.add</code> — Podcasts: Add Podcast...</label></li>
+<code>podcasts.add</code> — Podcasts: Add Podcast…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.add_local</code> — Podcasts: Add Local
-Podcast...</label></li>
+Podcast…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.add_note</code> — Podcasts: Add Episode
-Note...</label></li>
+Note…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>podcasts.export_opml</code> — Podcasts: Export
-OPML...</label></li>
+<code>podcasts.export_opml</code> — Podcasts: Export OPML…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>podcasts.import_opml</code> — Podcasts: Import
-OPML...</label></li>
+<code>podcasts.import_opml</code> — Podcasts: Import OPML…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.mute</code> — Podcasts: Mute/Unmute</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.next_chapter</code> — Podcasts: Next Chapter</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.open_manager</code> — Podcasts: Open
-Manager...</label></li>
+Manager…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>podcasts.open_queue</code> — Podcasts: Play Queue...</label></li>
+<code>podcasts.open_queue</code> — Podcasts: Play Queue…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.pause_all_downloads</code> — Podcasts: Pause All
 Downloads</label></li>
@@ -223,72 +246,72 @@ Downloads</label></li>
 New Episodes</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.settings</code> — Podcasts: Podcast
-Settings...</label></li>
+Settings…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.skip_back</code> — Podcasts: Skip Back</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.skip_forward</code> — Podcasts: Skip Forward</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.skip_settings</code> — Podcasts: Skip
-Settings...</label></li>
+Settings…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.sound_enhancements</code> — Podcasts: Sound
-Enhancements...</label></li>
+Enhancements…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>podcasts.stop</code> — Podcasts: Stop</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>story.open_studio</code> — Story Studio (organize a
 project)</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.acx</code> — ACX Compliance Check...</label></li>
+<code>studio.acx</code> — ACX Compliance Check…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.ai_setup</code> — Set Up AI...</label></li>
+<code>studio.ai_setup</code> — Set Up AI…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.build</code> — Build From Recordings...</label></li>
+<code>studio.build</code> — Build From Recordings…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.captions</code> — Generate Captions
-(Offline)...</label></li>
+<code>studio.captions</code> — Generate Captions (Offline)…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>studio.components</code> — Download Optional
-Components...</label></li>
+Components…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.convert_audio</code> — Convert Audio...</label></li>
+<code>studio.convert_audio</code> — Convert Audio…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.convert_from_url</code> — Convert from URL...</label></li>
+<code>studio.convert_from_url</code> — Convert from URL…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.edit</code> — Edit a Book...</label></li>
+<code>studio.edit</code> — Edit a Book…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>studio.feed</code> — Make a Podcast Feed From a
-Folder...</label></li>
+Folder…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.models</code> — Manage Speech Models...</label></li>
+<code>studio.models</code> — Manage Speech Models…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>studio.mute</code> — Mute Playback</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.narrate</code> — Narrate Documents...</label></li>
+<code>studio.narrate</code> — Narrate Documents…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>studio.narrate_translated</code> — Narrate a Document in Another
-Language...</label></li>
+Language…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.open</code> — Open Audio Studio...</label></li>
+<code>studio.open</code> — Open Audio Studio…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.open_job</code> — Open Job File...</label></li>
+<code>studio.open_job</code> — Open Job File…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.play_queue</code> — Play Queue...</label></li>
+<code>studio.play_queue</code> — Play Queue…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.preferences</code> — Preferences...</label></li>
+<code>studio.preferences</code> — Preferences…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>studio.pronunciation</code> — Pronunciation
-Dictionaries...</label></li>
+Dictionaries…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.publish</code> — Publish a Finished Book...</label></li>
+<code>studio.publish</code> — Publish a Finished Book…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.sleep_timer</code> — Sleep Timer...</label></li>
+<code>studio.sleep_timer</code> — Sleep Timer…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
 <code>studio.speech_hub</code> — Speech Hub (Voices and
-Engines)...</label></li>
+Engines)…</label></li>
 <li><label><input type="checkbox" />—bsent [ ] — [ ] —
-<code>studio.updates</code> — Check for Updates...</label></li>
+<code>studio.updates</code> — Check for Updates…</label></li>
 </ul>
+</main>
 </body>
 </html>

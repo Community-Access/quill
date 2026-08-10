@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>phase0-live-signoff-checklist</title>
+  <title>Phase 0 footprint — live sign-off checklist</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="phase-0-footprint--live-sign-off-checklist">Phase 0 footprint —
 live sign-off checklist</h1>
 <p>The footprint baseline has three parts. Two are automated; one is a
@@ -183,7 +203,7 @@ short manual pass. Run all three on the <strong>reference
 machine</strong> (the cheap CPU-only laptop the optimization work
 targets), with the AI + speech engines and at least one model of each
 installed.</p>
-<p>Roadmap: §1.1 "AI footprint &amp; optimization". Design: PRD
+<p>Roadmap: §1.1 “AI footprint &amp; optimization”. Design: PRD
 §5.25f.</p>
 <h2 id="1-static-inventory-automated">1. Static inventory
 (automated)</h2>
@@ -205,7 +225,7 @@ numbers. Add <code>--timeout N</code> to raise the per-engine cap on a
 slow machine.</p>
 <blockquote>
 <p>Note which engines actually reported timings. An engine that shows
-"engine not available" or "no model installed" needs its runtime/model
+“engine not available” or “no model installed” needs its runtime/model
 installed before its numbers count toward the baseline.</p>
 </blockquote>
 <h2 id="3-live-runtime-behaviors-manual--a-few-minutes">3. Live runtime
@@ -245,5 +265,6 @@ cross-platform task — see roadmap §1.1.</li>
 need real pinned files + SHA-256 hashes before they can be added to the
 download catalog.</li>
 </ul>
+</main>
 </body>
 </html>

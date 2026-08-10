@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>617-audit</title>
+  <title>Offline Speech / Dictation Stack Audit (#617, #663,
+#669)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="offline-speech--dictation-stack-audit-617-663-669">Offline
 Speech / Dictation Stack Audit (#617, #663, #669)</h1>
 <p><em>Audit date: 2026-08-04. Read-only assessment of the offline
@@ -185,11 +210,11 @@ The default whisper.cpp provider plus three optional engines (Faster
 Whisper, Vosk, Nemotron/sherpa-onnx) all implement
 <code>transcribe_file</code> and are registered lazily; the small
 Whisper models (tiny/base/small/medium) have working, SHA-pinned
-download paths via QUILL's own <code>assets-v1</code> mirror. There are
-three coexisting dictation systems: the full state-machine "Locked
-Dictation" (Ctrl+F9), a simpler "Dictate (Offline)" push-to-talk toggle,
+download paths via QUILL’s own <code>assets-v1</code> mirror. There are
+three coexisting dictation systems: the full state-machine “Locked
+Dictation” (Ctrl+F9), a simpler “Dictate (Offline)” push-to-talk toggle,
 and a legacy Win+H OS-panel shim that is still live. VAD
-auto-endpointing and the "Hey QUILL" wake word are both wired, but only
+auto-endpointing and the “Hey QUILL” wake word are both wired, but only
 into Conversation Mode / always-listening — not into dictation. The main
 gaps are dead scaffold, stale catalog data, and a near-total end-user
 documentation gap.</p>
@@ -222,7 +247,7 @@ adapters (network, skipped by the offline paths).</li>
 downloads go through the <code>assets-v1</code> mirror
 (<code>model_mirrors.py</code>). Tiny/Base/Small have complete, working
 paths.</li>
-<li><strong>Voice commands (#663), Conversation Mode, and "Hey QUILL"
+<li><strong>Voice commands (#663), Conversation Mode, and “Hey QUILL”
 wake word</strong> — all wired and menu-bound; off by default,
 Safe-Mode-gated, dispatch limited to <code>SAFE_TOOL_IDS</code>.</li>
 <li><strong>VAD auto-endpointing</strong> — live in Conversation Mode
@@ -246,7 +271,7 @@ Unreachable.</li>
 <code>WHISPER_CPP_MODELS</code> still carry <code>download_url</code> /
 <code>hf_filename</code> / <code>revision</code>, but
 <code>_download_to_file</code> uses only <code>model_mirrors</code>; the
-HF fields and the "left to fill in" module docstring are stale.</li>
+HF fields and the “left to fill in” module docstring are stale.</li>
 <li><strong>Legacy <code>dictation_*</code> settings</strong>
 (<code>settings.py:215-218</code>) are consumed only by the legacy Win+H
 path; the real dictation uses <code>speech_default_model_id</code>.</li>
@@ -255,9 +280,9 @@ path; the real dictation uses <code>speech_default_model_id</code>.</li>
 <ol type="1">
 <li><strong>Three overlapping dictation systems</strong> — legacy Win+H
 (<code>core/dictation.py</code>, still instantiated and key-routed),
-"Dictate (Offline)", and "Locked Dictation". A real source of
-user/maintainer confusion; the legacy shim's "QUILL does not yet capture
-or transcribe audio" premise is now false. <strong>[done
+“Dictate (Offline)”, and “Locked Dictation”. A real source of
+user/maintainer confusion; the legacy shim’s “QUILL does not yet capture
+or transcribe audio” premise is now false. <strong>[done
 2026-08-04]</strong> the false premise in <code>core/dictation.py</code>
 is corrected.</li>
 <li><strong>Wake word can clip inline commands</strong> — fixed 2.5s/4s
@@ -269,7 +294,7 @@ mono). <strong>[done 2026-08-04]</strong> corrected to
 <code>SAMPLE_RATE</code>.</li>
 <li><strong>large-v3 has no working auto-download</strong> (by design,
 &gt;2 GiB) yet the recommender can return it — worth surfacing as
-"manual install only".</li>
+“manual install only”.</li>
 <li><strong>Wake word runs full Whisper on rolling windows</strong> — a
 battery/perf concern the code does not bound.</li>
 </ol>
@@ -288,7 +313,7 @@ the code cites PRD sections.</li>
 — <code>userguide.md</code> has no mention of dictation / Dictate /
 Whisper.</li>
 <li><code>docs/user guide/voice-interaction.md</code> is good but scoped
-to "Hey QUILL".</li>
+to “Hey QUILL”.</li>
 </ul>
 <h2 id="concrete-recommendations-ranked">Concrete recommendations
 (ranked)</h2>
@@ -320,10 +345,10 @@ picker/recommender.</li>
 <h2 id="follow-up-landed-with-this-audit-2026-08-04">Follow-up landed
 with this audit (2026-08-04)</h2>
 <p>Beyond the fixes tagged above, the same change set delivered the two
-features the audit's #1 recommendation and the surrounding work called
+features the audit’s #1 recommendation and the surrounding work called
 for:</p>
 <ul>
-<li><strong>Hands-free voice in the Media Player</strong> — the player's
+<li><strong>Hands-free voice in the Media Player</strong> — the player’s
 command bar now listens (offline, small Whisper) and executes media
 commands. New modules: <code>quill/ui/media/voice_capture.py</code>,
 <code>quill/ui/media/listen_mixin.py</code>;
@@ -341,5 +366,6 @@ command aliases. Wired into Locked Dictation and
 catalog cleanup (#5), wake-word VAD (#6 part 2), the two coverage seams
 (#7), the large-v3 surfacing (#8), and the three-systems consolidation
 (#4).</p>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-05-math-feature-completion</title>
+  <title>Math Feature Completion (steps 4-6) Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="math-feature-completion-steps-4-6-implementation-plan">Math
 Feature Completion (steps 4-6) Implementation Plan</h1>
 <blockquote>
@@ -295,17 +319,25 @@ already export as readable literal text and that is left as-is).</li>
 <h3
 id="task-1-switch-math-equations-quillin-to-mathjax-default-delimiters">Task
 1: Switch math-equations Quillin to MathJax-default delimiters</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/quillins_bundled/math-equations/extension.py</code> -
-Modify: <code>quill/quillins_bundled/math-equations/manifest.json</code>
-- Modify: <code>quill/quillins_bundled/math-equations/README.md</code> -
-Modify:
-<code>tests/unit/core/test_quillins_bundled_math_equations.py</code></p>
-<p><strong>Interfaces:</strong> - Produces: inline equations wrapped as
-<code>\(...\)</code>; display/block equations wrapped as a single-line
-<code>$${eq}$$</code> on its own paragraph (blank line before/after, but
-no separate fence lines) — this is what Task 2 depends on (single-span,
-single-paragraph equations are what the docx splicer can find).</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify:
+<code>quill/quillins_bundled/math-equations/extension.py</code></li>
+<li>Modify:
+<code>quill/quillins_bundled/math-equations/manifest.json</code></li>
+<li>Modify:
+<code>quill/quillins_bundled/math-equations/README.md</code></li>
+<li>Modify:
+<code>tests/unit/core/test_quillins_bundled_math_equations.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: inline equations wrapped as <code>\(...\)</code>;
+display/block equations wrapped as a single-line <code>$${eq}$$</code>
+on its own paragraph (blank line before/after, but no separate fence
+lines) — this is what Task 2 depends on (single-span, single-paragraph
+equations are what the docx splicer can find).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 1: Update
 the failing tests first</strong></label></li>
@@ -513,21 +545,28 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="
 <h3
 id="task-2-splice-real-word-equations-into-the-native-docx-writer">Task
 2: Splice real Word equations into the native docx writer</h3>
-<p><strong>Files:</strong> - Create: <code>quill/io/docx_math.py</code>
-- Modify: <code>quill/io/docx_writer.py</code> - Test:
-<code>tests/unit/io/test_docx_math.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/io/docx_math.py</code></li>
+<li>Modify: <code>quill/io/docx_writer.py</code></li>
+<li>Test: <code>tests/unit/io/test_docx_math.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
 <code>quill.io.pandoc.convert_file_with_pandoc(source_path, target_path, *, from_format, to_format, ...) -&gt; Path</code>
 (raises <code>PandocUnavailableError</code> /
 <code>PandocConversionError</code> on failure);
 <code>docx.oxml.parse_xml(xml_string)</code> (returns an lxml element
-appendable via <code>paragraph._p.append(...)</code>). - Produces:
+appendable via <code>paragraph._p.append(...)</code>).</li>
+<li>Produces:
 <code>split_math_segments(text: str) -&gt; list[MathSegment]</code> and
 <code>omml_fragment_for_latex(latex: str, *, display: bool) -&gt; str | None</code>
 (returns <code>None</code>, not raises, when Pandoc is unavailable or
 the equation fails to convert) — Task 2’s <code>rich_to_docx</code>
 change is the only consumer, but both are public functions other docx
-code can reuse later.</p>
+code can reuse later.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 1: Write the
 failing tests for <code>docx_math.py</code></strong></label></li>
@@ -743,7 +782,7 @@ line):</p>
 class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.docx_math <span class="im">import</span> split_math_segments, omml_fragment_for_latex</span></code></pre></div>
 <p>Replace the per-span loop body (currently
 <code>for span in paragraph.spans: run = para.add_run(span.text)</code>
-through the end of that <code>for</code> block, i.e. lines 144-167)
+through the end of that <code>for</code> block, i.e. lines 144-167)
 with:</p>
 <div class="sourceCode" id="cb13"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> span <span class="kw">in</span> paragraph.spans:</span>
@@ -825,13 +864,18 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href=
 <h3
 id="task-3-lock-in-docx-math-read-fidelity-with-regression-tests">Task
 3: Lock in docx math read-fidelity with regression tests</h3>
-<p><strong>Files:</strong> - Test:
-<code>tests/unit/io/test_structured_math.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Test: <code>tests/unit/io/test_structured_math.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
 <code>quill.io.structured.read_structured_document(path: Path, encoding: str = "utf-8", *, docx_engine: str = "auto") -&gt; Document</code>
 (returns a <code>Document</code> with <code>.text</code>);
 <code>quill.io.docx_writer.rich_to_docx_bytes</code>;
-<code>quill.io.rtf_model.markdown_to_rich</code>.</p>
+<code>quill.io.rtf_model.markdown_to_rich</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" checked="" /><strong>Step 1: Write the
 regression test</strong></label></li>
@@ -921,5 +965,6 @@ adapted into the real module).</li>
 names and signatures match between Task 2’s test file and implementation
 file.</li>
 </ul>
+</main>
 </body>
 </html>

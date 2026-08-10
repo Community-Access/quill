@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-github</title>
+  <title>Section — GitHub, Local Git, and Publishing (`github.*`
+`localgit.*` `publishing.*`, 40 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--github-local-git-and-publishing-github-localgit-publishing-40-commands">Section
 — GitHub, Local Git, and Publishing (<code>github.*</code>
@@ -180,7 +205,7 @@ id="section--github-local-git-and-publishing-github-localgit-publishing-40-comma
 between QUILL and the wider world:</p>
 <ul>
 <li><strong>GitHub</strong> (<code>github.*</code>, 17) — operate a
-GitHub account's repositories, releases, branches, notifications,
+GitHub account’s repositories, releases, branches, notifications,
 security alerts, Codespaces, and Copilot CLI, without leaving QUILL.
 These live under <strong>Tools menu ▸ Git and GitHub ▸ GitHub</strong>.
 (The File-menu GitHub commands — save-back, open a file/repo/items,
@@ -221,7 +246,7 @@ secret store</strong> (Windows Credential Manager / DPAPI, portable
 correct, not a failure.</li>
 <li><strong>GitHub CLI (<code>gh</code>) for Codespaces and
 Copilot.</strong> GH-06, GH-07, GH-08, GH-14 additionally need the
-<strong>GitHub CLI</strong> installed and on your PATH (or QUILL's
+<strong>GitHub CLI</strong> installed and on your PATH (or QUILL’s
 self-hosted copy via <strong>Help ▸ Download Optional
 Components</strong>). These four are wired but flagged <strong>needs
 live-device verification</strong> — record exactly what you saw.</li>
@@ -233,7 +258,7 @@ git, mark <strong>Blocked</strong>). To make a throwaway repo, open a
 terminal and run:
 <code>mkdir qa-git &amp;&amp; cd qa-git &amp;&amp; git init &amp;&amp; echo one &gt; a.txt &amp;&amp; git add a.txt &amp;&amp; git commit -m "first" &amp;&amp; echo two &gt;&gt; a.txt &amp;&amp; git commit -am "second"</code>.
 Open <code>qa-git/a.txt</code> in QUILL so the repo is auto-detected, or
-let each command's folder picker point at <code>qa-git</code>.</li>
+let each command’s folder picker point at <code>qa-git</code>.</li>
 <li><strong>Publishing is feature-gated.</strong> The <strong>read-only
 half</strong> (PUB-01…PUB-03: connections, verify, browse) is behind
 <code>future.publishing_read</code> — off by default except in the
@@ -254,7 +279,7 @@ GH-01…GH-17.</strong> Every one is gated on Safe Mode, consent + the
 PyGithub library, and a signed-in token, and runs its network call on a
 background thread so the window never freezes. Errors are spoken via the
 status bar, not raised as silent crashes. Unless noted, the repository
-field prefills from the current document's GitHub origin and takes the
+field prefills from the current document’s GitHub origin and takes the
 form <strong><code>owner/repo</code></strong>.</p>
 <h2
 id="gh-01--browse-organization-repositories-githubbrowse_organization">GH-01
@@ -271,8 +296,8 @@ org.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Tools menu ▸ Git and GitHub ▸ GitHub ▸ Browse Organization
-Repositories…</strong> (or Command Palette → "Browse Organization
-Repositories").</li>
+Repositories…</strong> (or Command Palette → “Browse Organization
+Repositories”).</li>
 <li>In the first list, arrow to an organization; press
 <strong>Enter</strong>.</li>
 <li>In the repository list, arrow to a repo; press
@@ -280,11 +305,11 @@ Repositories").</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading organizations" is announced. A keyboard-navigable
+<li>“Loading organizations” is announced. A keyboard-navigable
 single-choice list of org names appears; choosing one loads and
 announces its repositories in a second list; choosing a repo opens the
 <strong>GitHub Items viewer</strong> for it. If the account is in no
-orgs, you hear "This account belongs to no organizations"; an org with
+orgs, you hear “This account belongs to no organizations”; an org with
 no visible repos says so — never a silent dead end.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -297,7 +322,7 @@ id="gh-02--change-default-branch-githubchange_default_branch-ctrlshiftgrave-then
 — Change Default Branch… (<code>github.change_default_branch</code>,
 Ctrl+Shift+Grave then Shift+B)</h2>
 <p><em>What &amp; why.</em> Set which branch GitHub treats as the
-repository's default.</p>
+repository’s default.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Connected account with <strong>write access</strong> to a repo that
@@ -316,10 +341,10 @@ confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The repo prompt is a labelled text field. "Loading branches for
-owner/repo" is announced, then a single-choice list of branch names. On
-confirm you hear "owner/repo's default branch is now
-<code>&lt;branch&gt;</code>". No branches found is reported.</li>
+<li>The repo prompt is a labelled text field. “Loading branches for
+owner/repo” is announced, then a single-choice list of branch names. On
+confirm you hear “owner/repo’s default branch is now
+<code>&lt;branch&gt;</code>”. No branches found is reported.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -352,13 +377,13 @@ confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Checking owner/repo" then a confirmation stating the current
-visibility and the target ("… is currently public. Make it private?").
+<li>“Checking owner/repo” then a confirmation stating the current
+visibility and the target (“… is currently public. Make it private?”).
 Making a repo <strong>public</strong> adds the warning about exposing
 full history. The typed-confirm field is labelled and must match before
 the button enables — cancelling or a mismatch leaves it unchanged and
-says "Visibility change cancelled". On success: "owner/repo is now
-private" (or public).</li>
+says “Visibility change cancelled”. On success: “owner/repo is now
+private” (or public).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -392,9 +417,9 @@ and a commit message.</li>
 <ul>
 <li>Labelled prompts for repo, branch, and message; a keyboard-operable
 multi-select file dialog. The confirmation lists the files (first ten,
-then "and N more") and the target branch — nothing is pushed until you
-confirm. On success: "Committed N file(s) to owner/repo
-(<code>&lt;short-sha&gt;</code>)".</li>
+then “and N more”) and the target branch — nothing is pushed until you
+confirm. On success: “Committed N file(s) to owner/repo
+(<code>&lt;short-sha&gt;</code>)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -421,17 +446,17 @@ Configure Branch Protection…</strong>.</li>
 <li>Enter <strong><code>owner/repo</code></strong>.</li>
 <li>In the Branch Protection dialog, pick the branch and set the options
 (or choose Remove); confirm.</li>
-<li>Answer the "Protect …?" / "Remove all protection …?"
+<li>Answer the “Protect …?” / “Remove all protection …?”
 confirmation.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading owner/repo", then a dialog whose branch chooser and option
+<li>“Loading owner/repo”, then a dialog whose branch chooser and option
 fields (required approving reviews, status checks, enforce admins) are
-labelled and keyboard-complete, defaulting to the repo's default branch.
-A plain confirmation precedes the change. On success: "Protected
-<code>&lt;branch&gt;</code> in owner/repo" or "Removed protection from
-<code>&lt;branch&gt;</code> in owner/repo".</li>
+labelled and keyboard-complete, defaulting to the repo’s default branch.
+A plain confirmation precedes the change. On success: “Protected
+<code>&lt;branch&gt;</code> in owner/repo” or “Removed protection from
+<code>&lt;branch&gt;</code> in owner/repo”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -460,10 +485,10 @@ Command…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Asking Copilot" is announced; the explanation appears in a
+<li>“Asking Copilot” is announced; the explanation appears in a
 readable, dismissible message box. If <code>gh</code> is missing you
-hear the "GitHub CLI Not Found" guidance instead of an error; an empty
-answer reports "Copilot did not explain that command."</li>
+hear the “GitHub CLI Not Found” guidance instead of an error; an empty
+answer reports “Copilot did not explain that command.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -490,8 +515,8 @@ confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Asking Copilot"; the suggested command appears in a readable
-message box; a blank result says "Copilot did not suggest anything."
+<li>“Asking Copilot”; the suggested command appears in a readable
+message box; a blank result says “Copilot did not suggest anything.”
 Missing <code>gh</code> gives the guidance message, not a crash.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -503,7 +528,7 @@ Missing <code>gh</code> gives the guidance message, not a crash.</li>
 Codespace… (<code>github.create_codespace</code>)</h2>
 <p><em>What &amp; why.</em> Start a new GitHub Codespace for a
 repository. <strong>Codespaces cost real compute/storage
-minutes</strong> on GitHub's side — the confirmation says so
+minutes</strong> on GitHub’s side — the confirmation says so
 explicitly.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -523,10 +548,10 @@ proceed.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The confirmation is titled "Confirm Create Codespace (uses paid
-GitHub compute)" and warns it is not a free action — nothing is created
-until you accept. On success: "Created codespace
-<code>&lt;name&gt;</code> (<code>&lt;state&gt;</code>)".</li>
+<li>The confirmation is titled “Confirm Create Codespace (uses paid
+GitHub compute)” and warns it is not a free action — nothing is created
+until you accept. On success: “Created codespace
+<code>&lt;name&gt;</code> (<code>&lt;state&gt;</code>)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -548,14 +573,14 @@ draft.</p>
 Release…</strong>.</li>
 <li>Enter <strong><code>owner/repo</code></strong>, then a tag (e.g.
 <strong><code>v1.0.0</code></strong>) and an optional title.</li>
-<li>Answer "Auto-generate release notes …?"; if No, enter notes.</li>
-<li>Answer "Save as a draft …?".</li>
+<li>Answer “Auto-generate release notes …?”; if No, enter notes.</li>
+<li>Answer “Save as a draft …?”.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Labelled prompts throughout. On success: "Created draft release
-<code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)" or "Created
-published release <code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)"
+<li>Labelled prompts throughout. On success: “Created draft release
+<code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)” or “Created
+published release <code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)”
 matching your draft choice. Errors (bad tag, no access) are spoken.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -581,14 +606,14 @@ offer to wire it up to a local sync folder.</p>
 Create Repository…</strong>.</li>
 <li>In the Create Repository dialog set name, private/public,
 description, and optional org; confirm.</li>
-<li>When asked "Set up a local folder to sync …?", either choose a
+<li>When asked “Set up a local folder to sync …?”, either choose a
 folder or decline.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The dialog's fields are labelled and keyboard-complete. On success:
-"Created <code>&lt;owner/name&gt;</code> at <code>&lt;url&gt;</code>",
-then the sync offer. Declining says "Local sync skipped"; accepting and
+<li>The dialog’s fields are labelled and keyboard-complete. On success:
+“Created <code>&lt;owner/name&gt;</code> at <code>&lt;url&gt;</code>”,
+then the sync offer. Declining says “Local sync skipped”; accepting and
 choosing a folder runs the local init/sync and announces progress.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -619,11 +644,11 @@ Delete Branch…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The branch list excludes the default branch ("No deletable branches
-… (default branch excluded)" if none remain). The confirmation warns
-"This cannot be undone from QUILL" and requires the exact branch name.
-On success: "Deleted branch <code>&lt;name&gt;</code> from
-owner/repo".</li>
+<li>The branch list excludes the default branch (“No deletable branches
+… (default branch excluded)” if none remain). The confirmation warns
+“This cannot be undone from QUILL” and requires the exact branch name.
+On success: “Deleted branch <code>&lt;name&gt;</code> from
+owner/repo”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -646,12 +671,12 @@ Workflow…</strong>.</li>
 <li>Enter <strong><code>owner/repo</code></strong>, the workflow file
 name (e.g. <strong><code>ci.yml</code></strong>), and a ref (defaults to
 <strong><code>main</code></strong>).</li>
-<li>Confirm "Dispatch … ?".</li>
+<li>Confirm “Dispatch … ?”.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Labelled prompts; a confirmation before firing. On success:
-"Dispatched <code>&lt;file&gt;</code> on <code>&lt;ref&gt;</code>". A
+“Dispatched <code>&lt;file&gt;</code> on <code>&lt;ref&gt;</code>”. A
 missing workflow or no access is reported clearly.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -678,13 +703,13 @@ Chord: <strong>Ctrl+Shift+Grave</strong> then
 Fork Repository…</strong>.</li>
 <li>Enter the source <strong><code>owner/repo</code></strong>;
 optionally an org to fork into (blank = your account); confirm.</li>
-<li>Decline or accept the "Set up a local folder to sync …?" offer.</li>
+<li>Decline or accept the “Set up a local folder to sync …?” offer.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Labelled prompts. On success: "Created
+<li>Labelled prompts. On success: “Created
 <code>&lt;your-owner&gt;/&lt;repo&gt;</code> at
-<code>&lt;url&gt;</code>" followed by the local-sync offer, same as
+<code>&lt;url&gt;</code>” followed by the local-sync offer, same as
 GH-10.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -711,11 +736,11 @@ pop-up menu choose <strong>Stop</strong> or
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading codespaces". With none: "No codespaces. Use GitHub: Create
-Codespace… to start one." With some: a single-choice list of "name
-(repo) — state"; a pop-up offers Stop / Delete; <strong>Delete</strong>
-requires a confirmation ("cannot be undone"). Results are spoken
-("Stopped …", "Deleted …").</li>
+<li>“Loading codespaces”. With none: “No codespaces. Use GitHub: Create
+Codespace… to start one.” With some: a single-choice list of “name
+(repo) — state”; a pop-up offers Stop / Delete; <strong>Delete</strong>
+requires a confirmation (“cannot be undone”). Results are spoken
+(“Stopped …”, “Deleted …”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -747,9 +772,9 @@ exactly</strong>; confirm.</li>
 <ul>
 <li>The confirmation notes GitHub will redirect the old URL but
 hardcoded references need updating, and requires the exact
-<code>owner/repo</code> to enable. On success: "Renamed to
-<code>&lt;owner/newname&gt;</code>". Cancel/mismatch says "Rename
-cancelled".</li>
+<code>owner/repo</code> to enable. On success: “Renamed to
+<code>&lt;owner/newname&gt;</code>”. Cancel/mismatch says “Rename
+cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -773,10 +798,10 @@ Notifications…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading notifications". With none: "No notifications". With some: a
-single-choice list reading "Unread/Read: repo — subject (reason)".
+<li>“Loading notifications”. With none: “No notifications”. With some: a
+single-choice list reading “Unread/Read: repo — subject (reason)”.
 Opening one launches the GitHub notifications page in your browser; an
-unread one is then marked read ("Marked as read").</li>
+unread one is then marked read (“Marked as read”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -785,7 +810,7 @@ unread one is then marked read ("Marked as read").</li>
 <hr />
 <h2 id="gh-17--security-alerts-githubview_security_alerts">GH-17 —
 Security Alerts… (<code>github.view_security_alerts</code>)</h2>
-<p><em>What &amp; why.</em> List a repository's open Dependabot/security
+<p><em>What &amp; why.</em> List a repository’s open Dependabot/security
 alerts and open one in the browser.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -800,9 +825,9 @@ Alerts…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading security alerts for owner/repo". With none: "No open
-security alerts". With some: a list reading "#N severity: package —
-summary"; opening one launches its GitHub page in the browser.</li>
+<li>“Loading security alerts for owner/repo”. With none: “No open
+security alerts”. With some: a list reading “#N severity: package —
+summary”; opening one launches its GitHub page in the browser.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -811,8 +836,8 @@ summary"; opening one launches its GitHub page in the browser.</li>
 <hr />
 <p><strong>Local Git (<code>localgit.*</code>) — 12 commands.
 GIT-01…GIT-12.</strong> All operate on a local git repository (never
-GitHub's API, never a remote). Each resolves the repo from the current
-document's folder, or prompts you to pick a folder; each needs a
+GitHub’s API, never a remote). Each resolves the repo from the current
+document’s folder, or prompts you to pick a folder; each needs a
 <code>git</code> executable and refuses in Safe Mode. Make the throwaway
 <code>qa-git</code> repo from the preconditions above and open
 <code>qa-git/a.txt</code> before you begin. If <code>git</code> cannot
@@ -831,16 +856,16 @@ read a diff, and stage or unstage files — by keyboard and by ear.</p>
 <ol type="1">
 <li><strong>Tools menu ▸ Git and GitHub ▸ Local Git ▸ Uncommitted
 Changes…</strong>.</li>
-<li>Arrow the change list; read a file's diff; use the dialog's Stage /
+<li>Arrow the change list; read a file’s diff; use the dialog’s Stage /
 Unstage / Stage All controls.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Checking for changes"; with none, "No uncommitted changes".
+<li>“Checking for changes”; with none, “No uncommitted changes”.
 Otherwise a keyboard-navigable list of changed files with a diff view
-(HEAD vs working copy); staging announces "Staged
-<code>&lt;path&gt;</code>", unstaging "Unstaged
-<code>&lt;path&gt;</code>", stage-all "Staged all changes".</li>
+(HEAD vs working copy); staging announces “Staged
+<code>&lt;path&gt;</code>”, unstaging “Unstaged
+<code>&lt;path&gt;</code>”, stage-all “Staged all changes”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -865,10 +890,10 @@ Branch…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading branches", then a single-choice list of other branches ("No
-other local branches" if none). On success the result is announced. If
-uncommitted changes block the switch, you are asked "…Switch anyway and
-carry them over?" and can cancel — never a silent overwrite.</li>
+<li>“Loading branches”, then a single-choice list of other branches (“No
+other local branches” if none). On success the result is announced. If
+uncommitted changes block the switch, you are asked “…Switch anyway and
+carry them over?” and can cancel — never a silent overwrite.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -891,8 +916,8 @@ Changes…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A labelled message field. "Stashing changes", then "Changes
-stashed". The working tree returns to a clean state.</li>
+<li>A labelled message field. “Stashing changes”, then “Changes
+stashed”. The working tree returns to a clean state.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -917,11 +942,11 @@ Stashes…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading stashes"; with none, "No stashes". Otherwise a
-single-choice list reading "<code>&lt;ref&gt;</code>:
-<code>&lt;message&gt;</code>"; a pop-up offers Apply / Drop, announcing
-"Applied <code>&lt;ref&gt;</code>" or "Dropped
-<code>&lt;ref&gt;</code>".</li>
+<li>“Loading stashes”; with none, “No stashes”. Otherwise a
+single-choice list reading “<code>&lt;ref&gt;</code>:
+<code>&lt;message&gt;</code>”; a pop-up offers Apply / Drop, announcing
+“Applied <code>&lt;ref&gt;</code>” or “Dropped
+<code>&lt;ref&gt;</code>”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -945,10 +970,10 @@ Line…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Line N: <code>&lt;author&gt;</code>, <code>&lt;summary&gt;</code>
-(<code>&lt;short-sha&gt;</code>)". With no open file, "No file to
-blame"; a file outside a repo, "This file is not inside a git
-repository".</li>
+<li>“Line N: <code>&lt;author&gt;</code>, <code>&lt;summary&gt;</code>
+(<code>&lt;short-sha&gt;</code>)”. With no open file, “No file to
+blame”; a file outside a repo, “This file is not inside a git
+repository”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -971,14 +996,14 @@ script gives you two; add a few more for a meaningful run).</li>
 Bisect…</strong>.</li>
 <li>Enter the bad commit (default <strong><code>HEAD</code></strong>)
 and a known-good commit or tag.</li>
-<li>Answer each "Is this version good or bad? (Yes = bad, No =
-good)".</li>
+<li>Answer each “Is this version good or bad? (Yes = bad, No =
+good)”.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Starting bisect", then for each step a confirmation telling you
+<li>“Starting bisect”, then for each step a confirmation telling you
 QUILL checked out the next commit to test and asking good/bad. When
-done: "Bisect complete: …".</li>
+done: “Bisect complete: …”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1001,7 +1026,7 @@ Bisect</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Ending bisect", then "Bisect ended"; the repo returns to its
+<li>“Ending bisect”, then “Bisect ended”; the repo returns to its
 pre-bisect state.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1011,7 +1036,7 @@ pre-bisect state.</li>
 <hr />
 <h2 id="git-08--resolve-conflicts-localgitresolve_conflicts">GIT-08 —
 Resolve Conflicts… (<code>localgit.resolve_conflicts</code>)</h2>
-<p><em>What &amp; why.</em> Walk each conflicted file's hunks and choose
+<p><em>What &amp; why.</em> Walk each conflicted file’s hunks and choose
 a resolution, then mark it resolved — accessible merge-conflict
 handling.</p>
 <p><strong>Before you start</strong></p>
@@ -1031,11 +1056,11 @@ dialog; confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Checking for conflicts"; with none, "No conflicts to resolve".
+<li>“Checking for conflicts”; with none, “No conflicts to resolve”.
 Otherwise each conflicted file opens a hunk-by-hunk dialog with keyboard
 choices; on finishing, the file is written and marked resolved. Skipping
-a file says how many remain. When all are done: "Resolved N
-file(s)".</li>
+a file says how many remain. When all are done: “Resolved N
+file(s)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1058,15 +1083,15 @@ branch).</li>
 <li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Interactive
 Rebase…</strong>.</li>
 <li>Enter the base (branch, tag, or commit).</li>
-<li>In the rebase dialog set each commit's action; confirm.</li>
-<li>If it pauses on conflicts, answer "Resolve them now?" and work
+<li>In the rebase dialog set each commit’s action; confirm.</li>
+<li>If it pauses on conflicts, answer “Resolve them now?” and work
 through them.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading commits"; "No commits between …" if the range is empty.
+<li>“Loading commits”; “No commits between …” if the range is empty.
 Otherwise a keyboard-navigable list of commits with per-commit actions.
-"Rebasing", then a spoken result. A conflict pause offers to resolve
+“Rebasing”, then a spoken result. A conflict pause offers to resolve
 conflicts (as in GIT-08) and continue.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1086,12 +1111,12 @@ original branch state.</p>
 <ol type="1">
 <li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Abort
 Rebase</strong>.</li>
-<li>Confirm "Abort the in-progress rebase …?".</li>
+<li>Confirm “Abort the in-progress rebase …?”.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A spoken confirmation you can cancel; on confirm, "Aborting rebase"
-then "Rebase aborted", with the branch back to its original state.</li>
+<li>A spoken confirmation you can cancel; on confirm, “Aborting rebase”
+then “Rebase aborted”, with the branch back to its original state.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1103,7 +1128,7 @@ then "Rebase aborted", with the branch back to its original state.</li>
 <p><em>What &amp; why.</em> List and manage git worktrees. QUILL prefers
 worktrees precisely because switching a branch in place silently
 rewrites the open file under a screen-reader user; a worktree makes
-"change branch" into "open a different file" you can hear.</p>
+“change branch” into “open a different file” you can hear.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>qa-git</code> repo.</li>
@@ -1117,9 +1142,9 @@ Lock/Unlock, Prune.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Loading worktrees", then a keyboard-navigable list of worktrees
+<li>“Loading worktrees”, then a keyboard-navigable list of worktrees
 with the actions above. <strong>Open</strong> opens the current
-document's counterpart from the chosen worktree (or offers a file picker
+document’s counterpart from the chosen worktree (or offers a file picker
 pointed there if there is none). <strong>Remove</strong> warns the
 folder will be deleted (branch kept) and confirms before force-removing
 uncommitted changes. Every action is announced before and after.</li>
@@ -1147,10 +1172,10 @@ start ref) and the parent folder; confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A labelled dialog defaulting the parent folder to the repo's parent;
+<li>A labelled dialog defaulting the parent folder to the repo’s parent;
 the branch chooser lists only branches not already checked out.
-"Creating the worktree. This can take a moment …" is announced, then the
-result. Cancel says "New worktree cancelled."</li>
+“Creating the worktree. This can take a moment …” is announced, then the
+result. Cancel says “New worktree cancelled.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1194,8 +1219,8 @@ save; then remove it to confirm removal.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A keyboard-operable connections dialog with labelled fields; saving
-announces "Updated publishing connections", cancelling "Publishing
-connections cancelled". The <strong>secret is written to the OS secret
+announces “Updated publishing connections”, cancelling “Publishing
+connections cancelled”. The <strong>secret is written to the OS secret
 store</strong>, not to any settings file in plain text — confirm you are
 never shown or asked to paste it back from a plain file.</li>
 </ul>
@@ -1224,8 +1249,8 @@ Connection</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A spoken result in a message box and the status bar: success or a
-clear failure reason. With no current connection selected: "No current
-publishing connection is selected." — never a silent no-op.</li>
+clear failure reason. With no current connection selected: “No current
+publishing connection is selected.” — never a silent no-op.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1236,7 +1261,7 @@ publishing connection is selected." — never a silent no-op.</li>
 id="pub-03--browse-publishing-content-publishingbrowse_content-gated-futurepublishing_read">PUB-03
 — Browse Publishing Content… (<code>publishing.browse_content</code>)
 [GATED future.publishing_read]</h2>
-<p><em>What &amp; why.</em> Browse the site's posts/pages and open one
+<p><em>What &amp; why.</em> Browse the site’s posts/pages and open one
 into the editor as an editable document.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1252,9 +1277,9 @@ Content…</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A keyboard-navigable browse dialog; opening an item creates a new
-document tab from its content and announces "Opened post from
-publishing." (or "page"). Cancel says "Browse publishing content
-cancelled". The opened document is tagged as remote so the send commands
+document tab from its content and announces “Opened post from
+publishing.” (or “page”). Cancel says “Browse publishing content
+cancelled”. The opened document is tagged as remote so the send commands
 (below) can target it.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1285,9 +1310,9 @@ choose <strong>Yes</strong>.</li>
 only)</em></p>
 <ul>
 <li>A review dialog stating what will be sent and where; nothing leaves
-until you accept. On success a "created" result with the remote
-title/URL; with no connection, "No current publishing connection is
-selected."</li>
+until you accept. On success a “created” result with the remote
+title/URL; with no connection, “No current publishing connection is
+selected.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1335,15 +1360,15 @@ future.publishing]</h2>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>File menu ▸ Publish ▸ Publish Post Now…</strong>.</li>
-<li>Review the "Publish … as published on <code>&lt;site&gt;</code>?"
+<li>Review the “Publish … as published on <code>&lt;site&gt;</code>?”
 confirmation; choose <strong>Yes</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
 only)</em></p>
 <ul>
 <li>An explicit publish confirmation; on success the document is linked
-to the remote item and the title bar updates. Cancel says "Publish
-current document cancelled".</li>
+to the remote item and the title bar updates. Cancel says “Publish
+current document cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1421,14 +1446,14 @@ status).</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>File menu ▸ Publish ▸ Update Remote Content…</strong>.</li>
-<li>Review "Update this remote …?" (title, authoring surface, remote
+<li>Review “Update this remote …?” (title, authoring surface, remote
 URL); choose <strong>Yes</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
 only)</em></p>
 <ul>
 <li>A review confirmation naming the exact remote item; on success an
-"updated" result and the document re-linked/marked saved.
+“updated” result and the document re-linked/marked saved.
 Connection/site mismatch and not-remote-sourced are guarded aloud.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1487,9 +1512,9 @@ if not fixed); review the confirmation; choose
 <p><strong>You should see and hear</strong> <em>(dev/admin build
 only)</em></p>
 <ul>
-<li>A labelled scheduling dialog; a review stating "Scheduled for:
-<code>&lt;local time&gt;</code>"; on success a "scheduled" result with
-the remote item's scheduled time recorded. No connection or a mismatch
+<li>A labelled scheduling dialog; a review stating “Scheduled for:
+<code>&lt;local time&gt;</code>”; on success a “scheduled” result with
+the remote item’s scheduled time recorded. No connection or a mismatch
 is reported, not silently ignored.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1509,5 +1534,6 @@ is reported, not silently ignored.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

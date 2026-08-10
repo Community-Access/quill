@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>wordpress-inbound-embed-and-safety-review-2026-06-29</title>
+  <title>WordPress Inbound Embed Map and Safety Review</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="wordpress-inbound-embed-map-and-safety-review">WordPress Inbound
 Embed Map and Safety Review</h1>
 <p>Date: 2026-06-29 Scope: Audit the WordPress publishing code already
@@ -200,7 +220,7 @@ is filtered out of the command palette, so nothing - inbound or outbound
 <li>The network layer is already hardened: an HTTPS-only endpoint
 policy, verified TLS contexts, egress-audit registration, and OS-backed
 secret storage.</li>
-<li>Conclusion: "do not light up the code to send content to WordPress"
+<li>Conclusion: “do not light up the code to send content to WordPress”
 is already satisfied by the locked feature flag. No change was required
 to keep send dark.</li>
 </ul>
@@ -209,8 +229,8 @@ touchpoints embed</h2>
 <h3 id="21-add-an-account-connection">2.1 Add an account
 (connection)</h3>
 <ul>
-<li>Command: <code>publishing.connections</code> ("Publishing
-Connections...").</li>
+<li>Command: <code>publishing.connections</code> (“Publishing
+Connections…”).</li>
 <li>Registered: <code>quill/ui/main_frame.py</code> (command registry)
 -&gt; handler <code>MainFrame._open_publishing_connections</code>
 (<code>main_frame.py:12470</code>).</li>
@@ -229,8 +249,8 @@ DPAPI-protected JSON (<code>save_publishing_secret</code> /
 </ul>
 <h3 id="22-show-pages-and-posts">2.2 Show pages and posts</h3>
 <ul>
-<li>Command: <code>publishing.browse_content</code> ("Browse Publishing
-Content...").</li>
+<li>Command: <code>publishing.browse_content</code> (“Browse Publishing
+Content…”).</li>
 <li>Handler: <code>MainFrame._browse_publishing_content</code>
 (<code>main_frame.py:12499</code>).</li>
 <li>Dialog: <code>BrowsePublishingContentDialog</code>
@@ -317,7 +337,7 @@ built in two independently gated halves
 (<code>main_frame_menu.py</code>). <code>future.publishing_read</code>
 is on by default only in the Full Quill profile; off elsewhere,
 individually enableable via Manage Individual Features. This lets a
-release expose "open my WordPress posts/pages in QUILL" while keeping
+release expose “open my WordPress posts/pages in QUILL” while keeping
 create/update/publish/schedule locked.</li>
 <li>Consider tightening HTTP allowance. <code>_is_local_host</code>
 currently permits <code>http</code> to private LAN ranges (10/8,
@@ -335,5 +355,6 @@ client. Low marginal value today (nothing bypasses
 <code>publishing.py</code>), but cheap and worth doing if a second
 provider lands.</li>
 </ol>
+</main>
 </body>
 </html>

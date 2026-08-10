@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QuillVille installer + shared runtime program</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quillville-installer--shared-runtime-program">QuillVille
+installer + shared runtime program</h1>
+<p>Status: proposed (2026-07-21). Author: consolidation work. This is
+the umbrella plan for the remaining packaging work requested: a
+<strong>shared Python runtime</strong> across all apps, and a
+<strong>rich installer experience</strong> (standard, portable, and
+offline variants, with optional-component selection) for every
+QuillVille app.</p>
+<p>It sits above the earlier
+<code>2026-07-20-quillville-runtime-and-component-plan.md</code> (which
+established the shared <em>component</em> store for
+ffmpeg/mpv/models/voices) and extends the same “fetch once, share,
+reference-count” philosophy to the Python runtime itself and to the
+installer UX.</p>
+<h2 id="apps-in-scope">Apps in scope</h2>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Entry</th>
+<th>Today’s packaging</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL (editor)</td>
+<td><code>quill.apps</code> / main_frame</td>
+<td>Inno <code>installer/quill.iss</code>, PyInstaller onedir</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td><code>quill.apps.radio</code></td>
+<td><code>standalone/radio</code> shell +
+<code>quill-radio.iss</code></td>
+</tr>
+<tr>
+<td>Quill Cast (podcasts)</td>
+<td><code>quill.apps.podcasts</code></td>
+<td><code>standalone/cast</code> + <code>quill-cast.iss</code></td>
+</tr>
+<tr>
+<td>Audio Studio</td>
+<td><code>quill.apps.studio</code></td>
+<td><code>standalone/studio</code> +
+<code>quill-audio-studio.iss</code></td>
+</tr>
+<tr>
+<td>QUILL Social</td>
+<td><code>quill_social</code> (self-contained)</td>
+<td><code>standalone/social</code> – <strong>no installer
+yet</strong></td>
+</tr>
+<tr>
+<td>Quill Radio (macOS)</td>
+<td><code>quill_radio_mac</code></td>
+<td><code>standalone/radio-mac</code> – mac bundle, no Inno</td>
+</tr>
+<tr>
+<td>Beacon</td>
+<td><code>quill.apps.beacon</code></td>
+<td><code>standalone/beacon</code> + <code>quill-beacon.iss</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="part-a--shared-python-runtime">Part A – Shared Python
+runtime</h2>
+<h3 id="problem">Problem</h3>
+<p>Each app is a PyInstaller <strong>onedir</strong> bundle that carries
+its own <code>python3xx.dll</code>, standard library, and wxPython in
+<code>_internal/</code>. Installing QUILL + Radio + Cast + Studio +
+Social today means ~5 copies of CPython and wxPython (~30-40 MB each).
+The user wants Python shared so the suite installs once and the apps
+reuse it.</p>
+<h3
+id="approach-recommended-a-reference-counted-quillville-runtime">Approach
+(recommended): a reference-counted “QuillVille Runtime”</h3>
+<p>A single versioned runtime folder shared by every app, installed to a
+common, non-per-app location and reference-counted exactly like the
+component store:</p>
+<pre><code>%LOCALAPPDATA%\QuillVille\runtime\&lt;py-version&gt;\   (or Program Files\QuillVille\runtime)
+    python.exe, python3xx.dll, Lib\, ...          (embeddable CPython)
+    site-packages\wxpython, quill\, quill_social\ (shared libs + app code)
+runtime.state.json  { &quot;3.13.1&quot;: [&quot;quill&quot;,&quot;radio&quot;,&quot;cast&quot;,&quot;studio&quot;,&quot;social&quot;] }</code></pre>
+<ul>
+<li>Each app ships only a <strong>thin launcher</strong> (a tiny native
+<code>.exe</code> that execs the shared
+<code>python.exe -m quill.apps.radio</code>) plus its icon, docs, and
+app-specific data – kilobytes, not tens of megabytes.</li>
+<li>The installer for any app <strong>installs the shared runtime if
+absent or older</strong> (a bundled payload, extracted to the shared
+location) and adds the app to <code>runtime.state.json</code>. The
+uninstaller decrements; the runtime is removed only when the last app
+referencing it is gone. This mirrors
+<code>quill/core/components.py</code> precisely – extend that module (or
+add <code>quill/core/runtime_refs.py</code>) with the same
+register/unregister/unreferenced API keyed by runtime version.</li>
+<li><strong>Version safety:</strong> the folder is keyed by exact Python
+version, so two apps pinned to different CPython minors coexist;
+upgrading an app that needs a newer runtime installs the new one
+alongside and repoints its launcher. No shared interpreter is ever
+mutated in place.</li>
+</ul>
+<h3 id="why-not-the-alternatives">Why not the alternatives</h3>
+<ul>
+<li><em>Keep per-app PyInstaller, dedupe at install time
+(hardlinks):</em> fragile across drives/filesystems, and Windows Inno
+cannot reliably hardlink; upgrades break links. Rejected.</li>
+<li><em>One giant “QuillVille” mega-installer with all apps:</em> loses
+independent install/update per app (a Radio-only user should not
+download Social). Rejected; the shared-runtime + thin-launcher model
+keeps apps independent AND shared.</li>
+</ul>
+<h3 id="build-system-change-needs-a-build-box-to-validate">Build-system
+change (needs a build box to validate)</h3>
+<p>This replaces the per-app PyInstaller onedir with: (1) build the
+shared runtime payload once (embeddable CPython +
+<code>pip install</code> the pinned deps + the <code>quill</code>/
+<code>quill_social</code> wheels), (2) build each thin launcher.
+Validation MUST happen on Windows (and macOS for the mac port) – it
+cannot be verified in this dev session. Until then, the existing onedir
+installers remain the shipping path; the shared runtime lands behind a
+build flag and is cut over once green.</p>
+<h2 id="part-b--rich-installer-experience-all-apps">Part B – Rich
+installer experience (all apps)</h2>
+<p>Every app’s <code>.iss</code> gains the same Inno structure so the
+experience is uniform:</p>
+<h3 id="types--install-profiles"><code>[Types]</code> – install
+profiles</h3>
+<ul>
+<li><strong>Full</strong> – app + shared runtime + the app’s common
+optional components pre-fetched (online) so it works out of the
+box.</li>
+<li><strong>Compact</strong> – app + shared runtime only; optional
+components fetch on demand.</li>
+<li><strong>Portable</strong> – see Part C.</li>
+<li><strong>Custom</strong> – user checks exactly the
+<code>[Components]</code> they want.</li>
+</ul>
+<h3
+id="components--optional-feature-selection"><code>[Components]</code> –
+optional feature selection</h3>
+<p>Driven by the same per-app catalog as #5
+(<code>_optional_component_allowlist</code>): Radio offers ffmpeg/mpv;
+Studio offers the speech engines + voices + audio pack; QUILL offers the
+full set (Pandoc, PDF/OCR, braille, speech, voices, tools,
+dictionaries). The installer either bundles the component (offline
+variant) or records the user’s choice for first-run fetch (online
+variant). Each component row shows its size, mirroring the in-app
+picker.</p>
+<h3 id="accessibility">Accessibility</h3>
+<p>Inno’s wizard is MSAA-exposed; keep it (the “Installer stays Inno
+Setup” memory). Add clear captions, logical tab order, and a plain-text
+summary page. No custom owner-drawn pages that break screen readers.</p>
+<h2 id="part-c--portable-and-offline-variants">Part C – Portable and
+Offline variants</h2>
+<ul>
+<li><strong>Portable</strong> – a no-installer <code>.zip</code> that
+runs from any folder (USB stick, locked-down machine). Writes
+settings/data next to the executable (a <code>portable.marker</code>
+next to the launcher flips <code>app_data_dir()</code> to a local
+<code>data\</code> folder). Carries the runtime inside the zip (not
+shared – portable is self-contained by definition). The
+<code>build_release.ps1</code> scripts already produce a portable zip
+for Radio; generalize that to every app.</li>
+<li><strong>Offline Edition</strong> – the installer bundles
+<strong>every</strong> optional component the app can use (no internet
+needed on the target). The <code>build_info.is_offline_edition</code>
+marker and <code>optional_components.status_label_for</code> “Bundled
+(offline edition)” path already exist; the offline installer sets the
+marker and stages the components into the bundle at build time. Extend
+each <code>build_release.ps1</code> with an <code>-Offline</code> switch
+that stages the app’s allowlisted components.</li>
+</ul>
+<h2 id="part-d--macos-runtime-gaps-6">Part D – macOS runtime gaps
+(#6)</h2>
+<p><code>model_mirrors.py</code> has zero macOS runtime entries. The mac
+<em>models</em> were staged; the mac <em>runtime binaries</em> were not.
+Close by staging to <code>assets-v1</code> and adding mirror
+entries:</p>
+<ul>
+<li><strong>piper (macOS)</strong> – the official
+<code>rhasspy/piper</code> macOS build (arm64 + x64).</li>
+<li><strong>whisper.cpp (macOS)</strong> – the <code>whisper-cli</code>
+macOS build (arm64 + x64).</li>
+</ul>
+<p>Same pipeline as the yesterday’s Windows staging (download -&gt;
+SHA-256 -&gt; <code>gh release upload assets-v1</code>), then a
+<code>MirrorAsset</code> per binary keyed <code>piper:macos-arm64</code>
+etc., and <code>register_running_app</code> wiring so the mac port and
+Studio-on-mac resolve them. Requires a Mac to validate end to end.</p>
+<h2 id="sequencing">Sequencing</h2>
+<ol type="1">
+<li><strong>[done]</strong> Per-app optional-components filtering
+(#5).</li>
+<li><strong>[done]</strong> Social + mac source captured into the
+monorepo (#10).</li>
+<li>Social build shell (<code>.spec</code>, <code>.iss</code>,
+<code>build_release.ps1</code>, <code>render_docs.ps1</code>) mirroring
+Radio – authorable now, validate on a build box.</li>
+<li>Rich <code>[Types]</code>/<code>[Components]</code> sections across
+all <code>.iss</code> – authorable now.</li>
+<li>Portable + Offline switches in each <code>build_release.ps1</code> –
+authorable now.</li>
+<li>Shared runtime: <code>runtime_refs</code> core (unit-testable now) +
+thin launcher + build changes – <strong>build box
+required</strong>.</li>
+<li>macOS piper/whisper runtime staging + mirrors (#6) – <strong>Mac
+required</strong>.</li>
+<li>Radio window-model modeless conversion (separate branch) –
+<strong>screen-reader validation required</strong>.</li>
+</ol>
+<h2 id="validation-ledger-what-this-dev-session-cannot-prove">Validation
+ledger (what this dev session cannot prove)</h2>
+<ul>
+<li>Inno compiles / installer wizard behavior -&gt; Windows build
+box.</li>
+<li>PyInstaller / shared-runtime launch -&gt; Windows build box.</li>
+<li>macOS bundles and mac piper/whisper runtimes -&gt; a Mac.</li>
+<li>Modeless radio surfaces with NVDA/JAWS -&gt; the screen-reader
+user.</li>
+</ul>
+<p>Everything authored here is written by mirroring the proven Radio
+shell and the existing component/offline machinery, and is gated by
+ruff/mypy(core)/size/ banned-patterns, but the four items above need
+their named environment before merge.</p>
+</main>
+</body>
+</html>

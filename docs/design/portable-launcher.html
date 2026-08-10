@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>portable-launcher</title>
+  <title>Portable &amp; Installed Launcher Contract</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="portable--installed-launcher-contract">Portable &amp; Installed
 Launcher Contract</h1>
 <blockquote>
@@ -194,9 +214,9 @@ directory as the embedded Python runtime it needs
 <code>python313._pth</code>, the <code>*.pyd</code> modules), and it
 must start QUILL with no command-line arguments.</strong></p>
 <p><code>quill.exe</code> is a byte-for-byte copy of the embeddable
-distribution's <code>pythonw.exe</code>, re-stamped with QUILL's
-VERSIONINFO via <code>rcedit</code> (so a screen reader's "what app is
-this" reads <em>QUILL for All</em>, not <em>Python</em>). It is
+distribution’s <code>pythonw.exe</code>, re-stamped with QUILL’s
+VERSIONINFO via <code>rcedit</code> (so a screen reader’s “what app is
+this” reads <em>QUILL for All</em>, not <em>Python</em>). It is
 <strong>still just <code>pythonw.exe</code></strong> — it has no idea it
 should run QUILL, and a bare <code>pythonw.exe</code> double-click does
 nothing useful. Two things make it work:</p>
@@ -260,7 +280,7 @@ nothing.</li>
 </tr>
 <tr>
 <td><code>quill.exe -m quill [args]</code></td>
-<td>no-op (argv[0] is quill's <code>__main__.py</code>)</td>
+<td>no-op (argv[0] is quill’s <code>__main__.py</code>)</td>
 <td>normal <code>-m quill</code> runs (shortcuts, file-assoc/verbs the
 installer registers)</td>
 </tr>
@@ -276,7 +296,7 @@ build)</td>
 console window, and no <code>.cmd</code> shim</strong> (an earlier
 <code>run-quill.cmd</code> approach was rejected because the console
 window flashed on launch). The installer additionally registers its
-file-association <em>open</em> command and right-click "Send to QUILL"
+file-association <em>open</em> command and right-click “Send to QUILL”
 verbs as
 <code>quill.exe -m quill ["%1" | --action &lt;verb&gt; "%1"]</code> —
 the <code>-m quill</code> is required because <code>pythonw</code>
@@ -301,7 +321,7 @@ bundle/install root, beside <code>quill.exe</code>:</p>
 subfolder and then <strong>flattens it to the root</strong>
 (<code>build_windows_distribution()</code>, the
 <code>for entry in sorted(staged_runtime.iterdir())</code> move). The
-runtime ships none of the bundle's own entries (<code>data/</code>,
+runtime ships none of the bundle’s own entries (<code>data/</code>,
 <code>docs/</code>, <code>tools/</code>, <code>vendor/</code>,
 <code>kokoro-models/</code>, <code>manifest.json</code>,
 <code>README.txt</code>), so the move cannot clobber them — and a future
@@ -318,8 +338,8 @@ resolves <code>{app}\quill.exe</code>, then
 <li><strong>#615</strong> introduced the VERSIONINFO-stamped
 <code>quill.exe</code> and nested the runtime under
 <code>python\</code>, hoisting an orphaned copy of
-<code>quill.exe</code> to the bundle root as a "portable-evidence
-marker." That root copy could not load the interpreter.</li>
+<code>quill.exe</code> to the bundle root as a “portable-evidence
+marker.” That root copy could not load the interpreter.</li>
 <li><strong>#722</strong> fixed the <em>installer shortcuts</em> to
 launch <code>python\quill.exe -m quill</code>, so installed users were
 fine — but the <em>portable</em> double-click still landed on the
@@ -367,7 +387,7 @@ README advises a clean extract.</p>
 <h2 id="4-portable-mode-detection-depends-on-this">4. Portable-mode
 detection depends on this</h2>
 <p><code>quill.core.storage_mode._has_portable_evidence</code> marks a
-bundle "portable" when the anchor has <strong><code>quill.exe</code> + a
+bundle “portable” when the anchor has <strong><code>quill.exe</code> + a
 sibling <code>data/</code></strong> folder. Therefore:</p>
 <ul>
 <li><code>data/</code> <strong>must ship in the bundle</strong> and must
@@ -400,7 +420,7 @@ string.</li>
 the hook forwards an OS-passed document (<code>quill.exe "doc"</code>)
 to QUILL via <code>argv</code> instead of running it as a script.</li>
 <li><code>test_shell_verb_command_launches_quill_exe_with_action</code>
-— the installer's open/verb commands pass <code>-m quill</code> so
+— the installer’s open/verb commands pass <code>-m quill</code> so
 <code>pythonw</code> runs QUILL, not the file.</li>
 <li><code>test_portable_bundle_flattens_runtime_to_root</code> — a built
 portable bundle has <code>quill.exe</code>,
@@ -432,7 +452,7 @@ non-GUI smoke check that the flat runtime loads.)</li>
 directly — both must work.</li>
 </ol>
 <h2 id="7-things-that-will-re-break-this--dont">7. Things that will
-re-break this — don't</h2>
+re-break this — don’t</h2>
 <ul>
 <li>Re-nesting the runtime under <code>python\</code> while leaving
 <code>quill.exe</code> at the root.</li>
@@ -446,5 +466,6 @@ vanish on zip/unzip).</li>
 <li>Hand-editing <code>installer/quill.iss</code> (it is generated; edit
 <code>build_inno_setup_script()</code> and regenerate).</li>
 </ul>
+</main>
 </body>
 </html>

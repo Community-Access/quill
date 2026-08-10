@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-help</title>
+  <title>Section — Help menu (`help.*`, 21 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,14 +173,35 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--help-menu-help-21-commands">Section — Help menu
 (<code>help.*</code>, 21 commands)</h1>
 <p>Everything about <strong>finding your way, proving the build, and
 getting unstuck</strong>: the About box, the user guide and keyboard
 help, diagnostics and bug reporting, the feature-profile controls, and
-the "what can I do here / why can't I see this" explainers. Finish
+the “what can I do here / why can’t I see this” explainers. Finish
 <strong>Part 0</strong> first — several scenarios below cross-check what
 you recorded in <code>00-getting-started.md</code>.</p>
 <p>Surface reference (label + shortcut) is
@@ -230,7 +254,7 @@ notebook.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A real tabbed dialog (not one flat blob): the first thing announced
-on Overview is the headline <strong>"QUILL for All 1.0.0"</strong>. The
+on Overview is the headline <strong>“QUILL for All 1.0.0”</strong>. The
 Copy block reports <strong>Product: QUILL for All</strong>,
 <strong>Version: 1.0.0</strong>, a <strong>Build</strong> stamp,
 <strong>Channel</strong> (a stable release reads
@@ -261,7 +285,7 @@ status bar — so you never have to memorise the whole map. This is an
 <li><code>plain.txt</code> open, focus in the editor. Chord: press
 <strong>Ctrl+Shift+Grave</strong>, release, then
 <strong>Shift+H</strong>. On the Help menu it is labelled
-<strong>Announce Mode Shortcuts</strong> (not "Context Help").</li>
+<strong>Announce Mode Shortcuts</strong> (not “Context Help”).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -272,7 +296,7 @@ again to hear the status-bar key set.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>In the editor you hear an <strong>"Editor mode shortcuts"</strong>
+<li>In the editor you hear an <strong>“Editor mode shortcuts”</strong>
 summary listing Save, Undo, Find, Go to line, Command palette, Go to
 anything, QUILL browse mode, Document summary, and Context help, each
 with its <strong>live key binding</strong> (the bindings are read from
@@ -310,8 +334,8 @@ Now</strong> first (confirm nothing changes), then repeat and choose
 <li>The dialog explains what braille mode adds and that the
 <strong>Braille Pack</strong> (translation engine) is a separate
 optional component. On <strong>Enable</strong>, QUILL announces
-<strong>"Braille Mode is now active. The Braille menu has been
-added."</strong>, the menu bar gains a <strong>Braille</strong> menu,
+<strong>“Braille Mode is now active. The Braille menu has been
+added.”</strong>, the menu bar gains a <strong>Braille</strong> menu,
 and in a real install you may be offered a one-time Braille Pack
 install. On <strong>Not Now / Escape</strong>, nothing changes.</li>
 </ul>
@@ -343,7 +367,7 @@ Check…</strong>.</li>
 <ul>
 <li>An information dialog titled <strong>Feature Profile Health
 Check</strong> containing a readable report (the active profile and any
-inconsistencies). The text is reachable by the screen reader's review
+inconsistencies). The text is reachable by the screen reader’s review
 cursor. Closing returns focus to the Help menu.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -354,19 +378,19 @@ cursor. Closing returns focus to the Help menu.</li>
 <h2 id="help-05--key-cheatsheet-helpkey_cheatsheet-altshift">HELP-05 —
 Key Cheatsheet (<code>help.key_cheatsheet</code>, Alt+Shift+/)</h2>
 <p><em>What &amp; why.</em> One searchable list of <strong>every command
-and its current key binding</strong> — the fastest way to answer "what's
-the shortcut for…?".</p>
+and its current key binding</strong> — the fastest way to answer “what’s
+the shortcut for…?”.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Any state. This command has <strong>no menu entry</strong>: use
-<strong>Alt+Shift+/</strong> or the Command Palette → "Key
-Cheatsheet".</li>
+<strong>Alt+Shift+/</strong> or the Command Palette → “Key
+Cheatsheet”.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Press <strong>Alt+Shift+/</strong>.</li>
-<li>Focus lands with a <strong>search box</strong> at the top ("Search
-by command name or key binding"); type
+<li>Focus lands with a <strong>search box</strong> at the top (“Search
+by command name or key binding”); type
 <strong><code>save</code></strong> and read the filtered results.</li>
 <li>Clear the search to see the full list; press <strong>Escape</strong>
 or the <strong>Close</strong> button.</li>
@@ -375,8 +399,8 @@ or the <strong>Close</strong> button.</li>
 <ul>
 <li>A <strong>Key Cheatsheet</strong> dialog with a labelled search
 field and a read-only, multi-line list of <code>Command: binding</code>
-rows (commands with no binding read "(no binding)"). Typing filters
-live; an empty match reads <strong>"No matching commands."</strong>
+rows (commands with no binding read “(no binding)”). Typing filters
+live; an empty match reads <strong>“No matching commands.”</strong>
 Everything is keyboard-reachable and announced.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -386,7 +410,7 @@ Everything is keyboard-reachable and announced.</li>
 <hr />
 <h2 id="help-06--open-logs-folder-helpopen_logs_folder">HELP-06 — Open
 Logs Folder (<code>help.open_logs_folder</code>)</h2>
-<p><em>What &amp; why.</em> Jumps straight to QUILL's log files in File
+<p><em>What &amp; why.</em> Jumps straight to QUILL’s log files in File
 Explorer — the first thing support will ask for.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -400,7 +424,7 @@ Folder</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>File Explorer opens on QUILL's logs folder (under your per-user
+<li>File Explorer opens on QUILL’s logs folder (under your per-user
 app-data directory, e.g. <code>…\Quill\logs</code>). The folder is
 created if it does not exist yet, so the command never errors on a fresh
 install.</li>
@@ -428,7 +452,7 @@ Diagnostics Folder</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>File Explorer opens on QUILL's diagnostics folder (e.g.
+<li>File Explorer opens on QUILL’s diagnostics folder (e.g.
 <code>…\Quill\diagnostics</code>), created if absent. Any bundle you
 saved in HELP-14 should appear here.</li>
 </ul>
@@ -457,8 +481,8 @@ Notices</strong>.</li>
 <li>A <strong>new document tab</strong> opens containing the third-party
 notices (dependency names, versions, and licences), focus in the editor
 so you can read it with the screen reader like any document. If
-dependency metadata is unavailable in this build, it opens a short "not
-available in this build" note rather than erroring.</li>
+dependency metadata is unavailable in this build, it opens a short “not
+available in this build” note rather than erroring.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -484,7 +508,7 @@ Guide</strong>.</li>
 <ul>
 <li>QUILL renders the guide to HTML (written under
 <code>…\Quill\user-guide</code>) and opens it in the browser; the status
-bar reports <strong>"Opened user guide in browser"</strong>. The page
+bar reports <strong>“Opened user guide in browser”</strong>. The page
 has a real heading outline you can navigate with your screen reader. If
 the guide file cannot be found, QUILL falls back to the in-app
 <strong>Welcome Guide</strong> and says so rather than failing
@@ -554,11 +578,11 @@ your clipboard.</li>
 <li><strong>Public build (token present):</strong> an in-app
 <strong>feedback form</strong> opens (labelled fields,
 keyboard-complete). Submitting files a GitHub issue directly and QUILL
-records <strong>"Submitted feedback"</strong>. If submission fails for
+records <strong>“Submitted feedback”</strong>. If submission fails for
 any reason, it must not strand you — it falls back to the online
 form.</li>
 <li><strong>Private / <code>-SkipToken</code> build (no token):</strong>
-QUILL says direct reporting isn't set up in this build, <strong>opens
+QUILL says direct reporting isn’t set up in this build, <strong>opens
 the online support form in your browser, copies the link to your
 clipboard</strong>, and speaks that it did so. Both paths end with a
 usable way to file the report — a dead-end at submit is a fail.</li>
@@ -573,8 +597,8 @@ id="help-12--reset-to-essential-profile-helpreset_feature_profile">HELP-12
 — Reset to Essential Profile
 (<code>help.reset_feature_profile</code>)</h2>
 <p><em>What &amp; why.</em> Returns the feature set to the safe
-<strong>Essential</strong> profile — the "put things back the simple
-way" button. Destructive to your current profile choice, so it confirms
+<strong>Essential</strong> profile — the “put things back the simple
+way” button. Destructive to your current profile choice, so it confirms
 first.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -586,15 +610,15 @@ Essential Profile</strong>.</li>
 <ol type="1">
 <li><strong>Help menu ▸ Feature Profiles ▸ Reset to Essential
 Profile</strong>.</li>
-<li>In the <strong>"Reset Quill to the Essential profile?"</strong>
+<li>In the <strong>“Reset Quill to the Essential profile?”</strong>
 Yes/No prompt, choose <strong>No</strong> first (confirm nothing
 changes), then repeat and choose <strong>Yes</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A hearable Yes/No confirmation (No default). On
-<strong>Yes</strong>, the status bar reports <strong>"Reset to Essential
-profile"</strong>, the title/menus reflect the simpler profile, and
+<strong>Yes</strong>, the status bar reports <strong>“Reset to Essential
+profile”</strong>, the title/menus reflect the simpler profile, and
 menus rebuild. On <strong>No/Escape</strong>, nothing changes.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -611,8 +635,8 @@ command id used by the Command Palette and onboarding flow. Run it here
 from the palette to prove the alias resolves to the wizard.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li>Any state. Reach it via the <strong>Command Palette → "Startup
-Wizard"</strong> (<code>help.run_profile_onboarding</code>).</li>
+<li>Any state. Reach it via the <strong>Command Palette → “Startup
+Wizard”</strong> (<code>help.run_profile_onboarding</code>).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -636,7 +660,7 @@ leaves settings unchanged.</li>
 <h2 id="help-14--save-diagnostics-helpsave_diagnostics">HELP-14 — Save
 Diagnostics… (<code>help.save_diagnostics</code>)</h2>
 <p><em>What &amp; why.</em> Packages logs, settings, and environment
-into a single redacted ZIP you can hand to support — showing you what's
+into a single redacted ZIP you can hand to support — showing you what’s
 inside first.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -647,8 +671,8 @@ Diagnostics…</strong>.</li>
 <ol type="1">
 <li><strong>Help menu ▸ Save Diagnostics…</strong>.</li>
 <li>In the <strong>Review Diagnostics Export</strong> dialog, read the
-preview; decide the <strong>"Include plain file paths in the
-bundle"</strong> checkbox; optionally press <strong>Copy
+preview; decide the <strong>“Include plain file paths in the
+bundle”</strong> checkbox; optionally press <strong>Copy
 Summary</strong>; press <strong>Continue</strong> (or
 <strong>Cancel</strong> to abort).</li>
 <li>In the file dialog, accept the suggested
@@ -657,10 +681,10 @@ Summary</strong>; press <strong>Continue</strong> (or
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The review dialog is keyboard-complete and its preview readable;
-<strong>Cancel</strong> at either step reports <strong>"Diagnostics
-export cancelled"</strong> and writes nothing. On Continue + Save, a ZIP
-is written and QUILL reports <strong>"Saved diagnostics bundle to
-…"</strong>; the file appears in the Diagnostics folder (HELP-07).
+<strong>Cancel</strong> at either step reports <strong>“Diagnostics
+export cancelled”</strong> and writes nothing. On Continue + Save, a ZIP
+is written and QUILL reports <strong>“Saved diagnostics bundle to
+…”</strong>; the file appears in the Diagnostics folder (HELP-07).
 Secrets are redacted and file paths are only included if you ticked the
 box.</li>
 </ul>
@@ -701,7 +725,7 @@ nothing. This is the same wizard reached in HELP-13.</li>
 <hr />
 <h2 id="help-16--status-page-helpstatus_page">HELP-16 — Status Page
 (<code>help.status_page</code>)</h2>
-<p><em>What &amp; why.</em> A live, at-a-glance panel of QUILL's runtime
+<p><em>What &amp; why.</em> A live, at-a-glance panel of QUILL’s runtime
 state — version, active profile, background tasks, queued notifications,
 and (when enabled) speech/BITS Whisperer readiness. Everything is read
 locally; <strong>no network is required</strong>.</p>
@@ -746,13 +770,13 @@ the Help menu it is labelled <strong>Switch Profile…</strong>.</p>
 <ol type="1">
 <li>Press <strong>Alt+Shift+P</strong>, or open <strong>Help menu ▸
 Feature Profiles ▸ Switch Profile…</strong>.</li>
-<li>Arrow through the profile list; read each profile's description;
+<li>Arrow through the profile list; read each profile’s description;
 select one and confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A keyboard-navigable <strong>profile picker</strong> announcing each
-profile's name and description. Choosing one applies it (menus and
+profile’s name and description. Choosing one applies it (menus and
 available commands change to match) and announces the new profile. This
 is undoable via HELP-18.</li>
 </ul>
@@ -781,9 +805,9 @@ Change</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>If there was a recent change, the status bar reports
-<strong>"Profile changed back to <name>"</strong> and menus rebuild to
-the previous profile. If there is nothing to undo, it says <strong>"No
-profile change to undo"</strong> rather than erroring.</li>
+<strong>“Profile changed back to <name>”</strong> and menus rebuild to
+the previous profile. If there is nothing to undo, it says <strong>“No
+profile change to undo”</strong> rather than erroring.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -824,19 +848,19 @@ closing returns focus to the editor.</li>
 <hr />
 <h2
 id="help-20--why-dont-i-see-a-feature-helpwhy_dont_i_see_feature">HELP-20
-— Why Don't I See a Feature?
+— Why Don’t I See a Feature?
 (<code>help.why_dont_i_see_feature</code>)</h2>
 <p><em>What &amp; why.</em> Look up any feature or command by name and
-hear <strong>why</strong> it is or isn't showing — usually the active
+hear <strong>why</strong> it is or isn’t showing — usually the active
 profile or a feature toggle.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li>Any state. Menu label: <strong>Why Don't I See a
+<li>Any state. Menu label: <strong>Why Don’t I See a
 Feature?</strong>.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li><strong>Help menu ▸ Why Don't I See a Feature?</strong>.</li>
+<li><strong>Help menu ▸ Why Don’t I See a Feature?</strong>.</li>
 <li>In the text box (pre-filled with
 <strong><code>regex</code></strong>), type a feature/command/topic —
 e.g. <strong><code>podcasts</code></strong> or a tool you cannot find —
@@ -847,7 +871,7 @@ and confirm.</li>
 <li>A labelled text-entry dialog, then an information dialog reporting
 whether the feature exists, whether it is enabled, and which
 profile/toggle governs it (and how to turn it on). Cancelling reports
-<strong>"Feature lookup cancelled"</strong>. All keyboard-operable and
+<strong>“Feature lookup cancelled”</strong>. All keyboard-operable and
 announced.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -879,9 +903,9 @@ message.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>On a disabled control, QUILL speaks/shows why it is unavailable
-(reading the control's help text / the reason it is gated). With nothing
-suitable focused, it guides you: <strong>"Focus the greyed-out button or
-menu item you are curious about, then press Alt+F1."</strong> — never a
+(reading the control’s help text / the reason it is gated). With nothing
+suitable focused, it guides you: <strong>“Focus the greyed-out button or
+menu item you are curious about, then press Alt+F1.”</strong> — never a
 silent no-op or an error.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -901,5 +925,6 @@ silent no-op or an error.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

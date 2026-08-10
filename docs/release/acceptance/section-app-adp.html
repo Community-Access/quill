@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-app-adp</title>
+  <title>Section — App launcher &amp; ADP (`app.*` 10, `adp.*`
+2)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--app-launcher--adp-app-10-adp-2">Section — App launcher
 &amp; ADP (<code>app.*</code> 10, <code>adp.*</code> 2)</h1>
 <p>Two small families that sit at the edges of the editor.
@@ -215,10 +240,10 @@ is out of scope here.</li>
 <hr />
 <h2 id="app-01--announcement-self-test-appannouncement_self_test">APP-01
 — Announcement Self-Test (<code>app.announcement_self_test</code>)</h2>
-<p><em>What &amp; why.</em> Answers "is anything actually reaching me?"
+<p><em>What &amp; why.</em> Answers “is anything actually reaching me?”
 It announces one test phrase on every channel, then shows exactly which
 channels delivered it and through which backend — the difference between
-"braille is broken" and "no display is connected."</p>
+“braille is broken” and “no display is connected.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>QUILL open, any document. A screen reader running; optionally a
@@ -232,13 +257,13 @@ Self-Test…</strong> (there is no default shortcut).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>You hear the phrase <strong>"QUILL announcement self-test."</strong>
+<li>You hear the phrase <strong>“QUILL announcement self-test.”</strong>
 spoken (and a sound plays). A report then opens (a copyable text
 surface) listing each channel — Speech, Braille, Visual, Transcript — as
-either <strong>"delivered, through <backend>."</strong> or <strong>"not
-delivered"</strong> with a plain-English reason (e.g. "no display
-bridge"). It ends with a one-line summary, e.g. <strong>"The self-test
-reached 3 channels: speech, transcript, visual."</strong> No status
+either <strong>“delivered, through <backend>.”</strong> or <strong>“not
+delivered”</strong> with a plain-English reason (e.g. “no display
+bridge”). It ends with a one-line summary, e.g. <strong>“The self-test
+reached 3 channels: speech, transcript, visual.”</strong> No status
 codes; prose you can read aloud.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -280,9 +305,9 @@ you ran from it, announced as it fires.</li>
 <hr />
 <h2 id="app-03--change-display-language-appdisplay_language">APP-03 —
 Change Display Language… (<code>app.display_language</code>)</h2>
-<p><em>What &amp; why.</em> Choose the language for QUILL's menus,
+<p><em>What &amp; why.</em> Choose the language for QUILL’s menus,
 dialogs, and messages. In 1.0.0 QUILL ships English only, so on a normal
-build this command's job is to say so honestly rather than pretend to
+build this command’s job is to say so honestly rather than pretend to
 offer choices that are not installed.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -328,13 +353,13 @@ save).</li>
 <li>Press <strong>Ctrl+Q</strong>, or <strong>File menu ▸ Exit</strong>
 (label <strong>Exit</strong>).</li>
 <li>At the unsaved-work guard, choose <strong>Cancel</strong> first
-(hear it), then repeat and choose <strong>Don't Save</strong> /
+(hear it), then repeat and choose <strong>Don’t Save</strong> /
 <strong>Save</strong> as appropriate.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Because there is unsaved work, a <strong>spoken
-confirmation</strong> appears offering Save / Don't Save / Cancel (the
+confirmation</strong> appears offering Save / Don’t Save / Cancel (the
 universal keyboard contract, README §3 — no destructive close without a
 cancellable prompt). <strong>Cancel</strong> keeps QUILL open exactly as
 it was. Confirming closes the window and the app exits cleanly. With
@@ -361,8 +386,8 @@ rather than embedding a second player. The Media Player is a
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Look for <strong>Tools ▸ Media ▸ Media Player…</strong>, or search
-the Command Palette (<strong>Ctrl+Shift+P</strong>) for "Media
-Player".</li>
+the Command Palette (<strong>Ctrl+Shift+P</strong>) for “Media
+Player”.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -373,10 +398,10 @@ Mark this <strong>N/A</strong> and record the real check in
 <strong><code>gated-absence.md</code></strong> — do not fail it for
 being missing.</li>
 <li><strong>Developer build only:</strong> the item appears (command
-label <strong>"Open the Media Player"</strong>; menu label
-<strong>"Media Player…"</strong> — note the wording differs). Running it
-opens Quill Media Player in its own window (<strong>"Opening Quill Media
-Player."</strong>); if it is not installed, QUILL offers to download it
+label <strong>“Open the Media Player”</strong>; menu label
+<strong>“Media Player…”</strong> — note the wording differs). Running it
+opens Quill Media Player in its own window (<strong>“Opening Quill Media
+Player.”</strong>); if it is not installed, QUILL offers to download it
 (Yes/No) or says it could not be opened — never a silent failure.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -404,7 +429,7 @@ shortcut.)</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Quill Radio opens in its own window with its own system-tray icon;
-QUILL announces <strong>"Opening Quill Radio."</strong> If Radio is
+QUILL announces <strong>“Opening Quill Radio.”</strong> If Radio is
 already running it simply comes to the front (single-instance) rather
 than opening a second copy. If it is <strong>not</strong> installed,
 QUILL warmly offers to download and install it (Yes/No) — and on a
@@ -433,7 +458,7 @@ Quill Weather</strong>. (No default shortcut.)</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Quill Weather opens in its own window; QUILL announces
-<strong>"Opening Quill Weather."</strong> Already running → it comes
+<strong>“Opening Quill Weather.”</strong> Already running → it comes
 forward instead of duplicating. Not installed → the same friendly Yes/No
 download offer as APP-06; never a silent failure. Confirm the QuillVille
 menu lists <strong>only</strong> released siblings (Radio, Weather) on a
@@ -447,7 +472,7 @@ appear (their absence is proven in <code>gated-absence.md</code>).</li>
 <hr />
 <h2 id="app-08--preferences-apppreferences-ctrl">APP-08 — Preferences…
 (<code>app.preferences</code>, Ctrl+,)</h2>
-<p><em>What &amp; why.</em> Open QUILL's Settings — the one place to
+<p><em>What &amp; why.</em> Open QUILL’s Settings — the one place to
 change how the app behaves, organized into categories with a search box
 and per-setting reset.</p>
 <p><strong>Before you start</strong></p>
@@ -466,8 +491,8 @@ cancel.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A dialog titled <strong>Settings</strong> opens with a
-<strong>tabbed notebook</strong> of categories (announced as "Settings
-categories"); every field is labelled and reachable by keyboard; the
+<strong>tabbed notebook</strong> of categories (announced as “Settings
+categories”); every field is labelled and reachable by keyboard; the
 search box jumps focus to a matching control; a per-setting Reset
 restores that one default. Saving applies and announces the change;
 <strong>Escape</strong> cancels with no change and returns focus to the
@@ -482,7 +507,7 @@ editor.</li>
 id="app-09--repeat-last-announcement-apprepeat_last_announcement">APP-09
 — Repeat Last Announcement
 (<code>app.repeat_last_announcement</code>)</h2>
-<p><em>What &amp; why.</em> "What did it just say?" Speech is gone the
+<p><em>What &amp; why.</em> “What did it just say?” Speech is gone the
 moment it finishes; this re-announces the most recent message so you can
 catch it again.</p>
 <p><strong>Before you start</strong></p>
@@ -505,7 +530,7 @@ Announcement</strong> (no default shortcut).</li>
 <strong>forcefully</strong> — it cuts across whatever the reader is
 currently saying (this one you asked for) — and reaches every available
 channel, including braille. On the negative check, instead of silence
-you hear <strong>"No announcement to repeat yet."</strong></li>
+you hear <strong>“No announcement to repeat yet.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -532,10 +557,10 @@ Surface</strong> (no default shortcut).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A single spoken (and status-bar) line naming the diagnostic state,
-e.g. <strong>"Editor surface … Native class … System edit emulation
+e.g. <strong>“Editor surface … Native class … System edit emulation
 on/off. Braille system edit fix on/off. Editor border shown/hidden.
 Braille output active/inactive/no display bridge. Announcement backend
-…."</strong> Confirm it names a real backend and a sensible braille
+….”</strong> Confirm it names a real backend and a sensible braille
 state, and that <strong>no words from your document</strong> are
 read.</li>
 </ul>
@@ -566,8 +591,8 @@ available (the query reaches the ADP server). Not in Safe Mode.</li>
 <ol type="1">
 <li>Open the <strong>Audio Description Project</strong> menu ▸
 <strong>Ask ADP…</strong>, or the Command Palette
-(<strong>Ctrl+Shift+P</strong>) → "ADP: Ask about Described Movies and
-TV".</li>
+(<strong>Ctrl+Shift+P</strong>) → “ADP: Ask about Described Movies and
+TV”.</li>
 <li>Type the question into the labelled field; press the
 <strong>Ask</strong> button (Alt+A) or Enter.</li>
 <li>Try <strong>New Conversation</strong> to clear context, then Escape
@@ -575,16 +600,16 @@ to close.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A dialog titled <strong>"Ask ADP — Audio Description
-Search"</strong> opens with a labelled question field, an
+<li>A dialog titled <strong>“Ask ADP — Audio Description
+Search”</strong> opens with a labelled question field, an
 <strong>Ask</strong> button, and a <strong>New Conversation</strong>
-button. On Ask you hear <strong>"Asking ADP…"</strong>; when the answer
+button. On Ask you hear <strong>“Asking ADP…”</strong>; when the answer
 returns, <strong>focus moves to a read-only answer region</strong> (a
 focus-managed region, deliberately <strong>not</strong> a live region)
 so the reader speaks the answer, and the structured results fill a
 navigable table with a row-count status. In <strong>Safe Mode</strong>,
-running it instead says <strong>"The ADP Assistant is disabled in Safe
-Mode."</strong> and does nothing else.</li>
+running it instead says <strong>“The ADP Assistant is disabled in Safe
+Mode.”</strong> and does nothing else.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -608,8 +633,8 @@ whether answers speak automatically.</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Open the <strong>Audio Description Project</strong> menu ▸
-<strong>ADP Settings…</strong>, or the Command Palette → "ADP:
-Settings".</li>
+<strong>ADP Settings…</strong>, or the Command Palette → “ADP:
+Settings”.</li>
 <li>Tab through the fields. Confirm the <strong>Server address</strong>,
 <strong>Client access key</strong> (masked), and <strong>first
 name</strong> fields and the <strong>Speak answers
@@ -621,16 +646,16 @@ Save.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A dialog titled <strong>"ADP Settings"</strong> with every field
+<li>A dialog titled <strong>“ADP Settings”</strong> with every field
 labelled and keyboard-complete: server address (https-only), a
 <strong>masked</strong> access-key field whose help says leaving it
 blank uses the built-in key, a first-name field, and a <strong>Speak
 answers automatically</strong> checkbox. <strong>Save</strong> persists
-and announces <strong>"ADP settings saved."</strong> (the key going to
+and announces <strong>“ADP settings saved.”</strong> (the key going to
 the credential vault, not plain text). On the negative check the
 non-https address is <strong>rejected before any save</strong> with a
-spoken <strong>"The server address must start with https; not
-saved."</strong> The hands-free "Route spoken questions to ADP" checkbox
+spoken <strong>“The server address must start with https; not
+saved.”</strong> The hands-free “Route spoken questions to ADP” checkbox
 is <strong>hidden</strong> unless the separate
 <code>future.adp_voice_mode</code> unlock is active — its absence here
 is correct.</li>
@@ -652,5 +677,6 @@ is correct.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>fresh-install-regression-0.8.0</title>
+  <title>QUILL 0.8.0 Beta 1 - Fresh-Install Regression Test Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-080-beta-1---fresh-install-regression-test-plan">QUILL
 0.8.0 Beta 1 - Fresh-Install Regression Test Plan</h1>
 <p>Goal: validate the 0.8.0 Beta 1 installer exactly as a brand-new user
@@ -265,15 +285,15 @@ machine</h2>
 <p>Pick ONE of the two approaches. Approach A is the most
 trustworthy.</p>
 <h3 id="a-windows-sandbox-recommended---guarantees-never-installed">A.
-Windows Sandbox (recommended - guarantees "never installed")</h3>
+Windows Sandbox (recommended - guarantees “never installed”)</h3>
 <p>Windows Sandbox is a disposable, clean Windows instance. Nothing from
 your current machine is present, so it is the truest test of a
 first-time install.</p>
 <ol type="1">
-<li>Enable it once: Start -&gt; "Turn Windows features on or off" -&gt;
-check "Windows Sandbox" -&gt; reboot. (Requires Windows Pro/Enterprise
+<li>Enable it once: Start -&gt; “Turn Windows features on or off” -&gt;
+check “Windows Sandbox” -&gt; reboot. (Requires Windows Pro/Enterprise
 and virtualization enabled in BIOS.)</li>
-<li>Launch "Windows Sandbox" from the Start menu.</li>
+<li>Launch “Windows Sandbox” from the Start menu.</li>
 <li>Copy <code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code> into the
 sandbox (drag-drop or shared folder).</li>
 <li>Run the installer inside the sandbox.</li>
@@ -290,7 +310,7 @@ QUILL state first so it behaves as a first install.</p>
 <ol type="1">
 <li>Uninstall any existing QUILL:
 <ul>
-<li>Settings -&gt; Apps -&gt; Installed apps -&gt; "QUILL for All" -&gt;
+<li>Settings -&gt; Apps -&gt; Installed apps -&gt; “QUILL for All” -&gt;
 Uninstall, or run the uninstaller in
 <code>%LOCALAPPDATA%\Programs\QUILL for All</code>.</li>
 </ul></li>
@@ -304,7 +324,7 @@ dir)</li>
 <li><code>%APPDATA%\Quill</code> (settings, keymap, recovery, AI)</li>
 <li><code>%LOCALAPPDATA%\Quill</code> (caches, if present)</li>
 </ul></li>
-<li>Confirm no Start Menu shortcut remains under "QUILL for All".</li>
+<li>Confirm no Start Menu shortcut remains under “QUILL for All”.</li>
 </ol>
 <p>Or just run the cleanup script in this folder, which stops QUILL,
 runs the uninstaller, removes both data dirs, and verifies the machine
@@ -325,8 +345,8 @@ test a true fresh install.</p>
 <h2 id="2-install">2. Install</h2>
 <ol type="1">
 <li>Run <code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code>.</li>
-<li>Confirm the installer title/version reads "QUILL for All 0.8.0 Beta
-1".</li>
+<li>Confirm the installer title/version reads “QUILL for All 0.8.0 Beta
+1”.</li>
 <li>Accept defaults (per-user, all components) unless you are
 specifically testing component selection.</li>
 <li>Finish and launch QUILL from the Start menu shortcut.</li>
@@ -340,8 +360,8 @@ flag).</label></li>
 <li><label><input type="checkbox" />App launches with no crash dialog;
 screen reader announces the window on foreground (the post-show idle
 fix).</label></li>
-<li><label><input type="checkbox" />About QUILL (Help menu) shows "0.8.0
-Beta 1" and the build stamp.</label></li>
+<li><label><input type="checkbox" />About QUILL (Help menu) shows “0.8.0
+Beta 1” and the build stamp.</label></li>
 <li><label><input type="checkbox" />Help -&gt; Check for Updates does
 NOT report a newer version (feed left on prior release on
 purpose).</label></li>
@@ -375,7 +395,7 @@ download on demand).</label></li>
 <li><label><input type="checkbox" />whisper.cpp offline engine:
 <code>...\tools\speech\whispercpp\whisper-cli.exe</code> plus
 <code>whisper.dll</code> and the <code>ggml*.dll</code> runtime
-libraries (the "speechwhisper" installer component). Bundled from
+libraries (the “speechwhisper” installer component). Bundled from
 whisper.cpp v1.9.1 (CPU build, <code>whisper-bin-x64.zip</code>). The
 Whisper <em>model</em> still downloads on first use via Tools -&gt;
 Speech -&gt; Manage Speech Models.</label></li>
@@ -418,5 +438,6 @@ dir is removed.</label></li>
 <p>For each failure, capture: the step, expected vs actual, the
 screen-reader announcement (or silence), and the crash-bundle path if
 one was produced. File issues against the 0.8.0 Beta 1 milestone.</p>
+</main>
 </body>
 </html>

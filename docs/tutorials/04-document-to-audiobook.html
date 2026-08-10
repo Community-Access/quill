@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>04-document-to-audiobook</title>
+  <title>Tutorial 4: From document to published audiobook — voices, Read
+Aloud, and the Audio Studio</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,22 +174,43 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="tutorial-4-from-document-to-published-audiobook--voices-read-aloud-and-the-audio-studio">Tutorial
 4: From document to published audiobook — voices, Read Aloud, and the
 Audio Studio</h1>
 <p><strong>Goal:</strong> hear your document in the voice you want, then
-walk the Audio Studio's three journeys: narrate a folder of documents
+walk the Audio Studio’s three journeys: narrate a folder of documents
 into a chaptered audiobook, combine a folder of recordings into one
 book, fix its chapters by ear, and publish the result — plus DAISY for
 accessible book players.</p>
 <p>Everything here is keyboard-first and announced; a screen reader
 narrates every step, and nothing is applied without your review.</p>
 <h2 id="1-pick-a-voice">1. Pick a voice</h2>
-<p><strong>Tools &gt; Speech &gt; Speech and Dictation...</strong> opens
-the speech hub. QUILL's voice lineup spans eras:</p>
+<p><strong>Tools &gt; Speech &gt; Speech and Dictation…</strong> opens
+the speech hub. QUILL’s voice lineup spans eras:</p>
 <ul>
 <li><strong>SAPI 5</strong> — the Windows voices you already have; zero
 downloads.</li>
@@ -201,9 +222,9 @@ The QUILL Cast podcast is narrated by two of these.</li>
 <li><strong>ElevenLabs</strong> (optional) — a premium cloud voice if
 you have an account; every use is per-session consented.</li>
 <li><strong>Read in Browser</strong> (experimental, Settings &gt;
-Experimental) — an accessible reader page using your browser's voice
-catalog, including Edge's online natural voices. QUILL states plainly
-that online browser voices synthesize in the vendor's cloud.</li>
+Experimental) — an accessible reader page using your browser’s voice
+catalog, including Edge’s online natural voices. QUILL states plainly
+that online browser voices synthesize in the vendor’s cloud.</li>
 </ul>
 <p>Every download is checksum-verified with visible progress.</p>
 <h2 id="2-read-aloud">2. Read aloud</h2>
@@ -222,7 +243,7 @@ helper installed (Help &gt; Download Optional Components), you also get
 <h2 id="3-open-the-audio-studio-and-pick-a-journey">3. Open the Audio
 Studio and pick a journey</h2>
 <p>For anything bigger than one file, <strong>Tools &gt; Speech &gt;
-Audio Studio...</strong> is the workshop (also in the command palette,
+Audio Studio…</strong> is the workshop (also in the command palette,
 default binding <code>Ctrl+Shift+Grave, Y</code>). The first page asks
 the only question that matters:</p>
 <ul>
@@ -234,7 +255,7 @@ builds the book.</li>
 MP3/M4B and reshape it.</li>
 </ul>
 <p>The wizard remembers your last journey and pre-selects it. Every page
-is announced ("Step 2 of 7: What should I read?"), <strong>Back</strong>
+is announced (“Step 2 of 7: What should I read?”), <strong>Back</strong>
 and <strong>Next</strong> move between steps, and <strong>Skip to
 summary</strong> fast-forwards when a saved project profile already
 fills every page — a repeat run is three keystrokes.</p>
@@ -261,9 +282,9 @@ dialogue-heavy fiction gets cast deliberately.</li>
 <li><strong>Audition</strong> converts only the first document — judge
 the voice and pace in minutes before an overnight run.</li>
 <li><strong>Reuse unchanged audio from the last run</strong> (on by
-default) is the authoring loop: QUILL fingerprints each document's text
+default) is the authoring loop: QUILL fingerprints each document’s text
 plus every audio-shaping setting. Re-run after editing one chapter and
-the rest announce "Reused ... (unchanged since last run)". Only what
+the rest announce “Reused … (unchanged since last run)”. Only what
 changed is re-synthesized — draft with a fast local voice, then swap in
 your best voice for the money pass and everything rebuilds
 automatically.</li>
@@ -289,8 +310,8 @@ M4B (native chapters) or MP3 (chapter markers), with optional silence
 trimming, fades, tempo, and ACX loudness.</p>
 <p>Two scale-ups when you need them: <strong>Library mode</strong>
 builds every subfolder as its own audiobook, unattended, each titled
-after its folder; and the <strong>watch action</strong> ("Build
-audiobook from the folder") rebuilds a watched folder's master
+after its folder; and the <strong>watch action</strong> (“Build
+audiobook from the folder”) rebuilds a watched folder’s master
 automatically whenever new recordings land.</p>
 <h2 id="6-journey-three-the-chapter-workbench">6. Journey three: the
 Chapter Workbench</h2>
@@ -314,9 +335,9 @@ move.</li>
 original</strong> round it out.</li>
 </ol>
 <p>Two analysis helpers propose, never impose: <strong>Propose chapters
-from silences...</strong> scans the recording and lands a proposal in
-the list for review; <strong>Propose AI titles...</strong> slices each
-chapter's opening minute, transcribes it <em>on your machine</em> with
+from silences…</strong> scans the recording and lands a proposal in the
+list for review; <strong>Propose AI titles…</strong> slices each
+chapter’s opening minute, transcribes it <em>on your machine</em> with
 the local speech model, sends only that text to your configured AI, and
 proposes a short title per chapter — review, rename, or <strong>Restore
 original</strong>. <strong>Check against ACX</strong> speaks a
@@ -337,7 +358,7 @@ library there is a tree (Favorites, In Progress, Recently Played, Inbox,
 plus your own folders), and the Studio can resume the last book at its
 saved position when you launch it.</p>
 <h2 id="7-publish-it">7. Publish it</h2>
-<p>The Workbench's <strong>Publish...</strong> button offers explicit,
+<p>The Workbench’s <strong>Publish…</strong> button offers explicit,
 consent-first paths:</p>
 <ul>
 <li><strong>Podcast feed</strong> — a complete <code>.rss</code> written
@@ -350,7 +371,7 @@ chapter link. One button regenerates the complete feed after every
 build; another writes an accessible <code>show-notes.html</code> beside
 it.</li>
 <li><strong>SFTP upload</strong> — the book and its companions go to
-your server through QUILL's own SSH machinery (strict host keys,
+your server through QUILL’s own SSH machinery (strict host keys,
 password in the Windows Credential Manager), with spoken percent
 progress and a real <strong>Cancel</strong>.</li>
 <li><strong>Auphonic</strong> — professional mastering in your own
@@ -378,5 +399,6 @@ items, or a summary, reviewably. QUILL Cast episode 24 walks this whole
 tutorial by ear.</p>
 <p><strong>Next:</strong> <a href="05-start-a-vault.md">Start an
 Accessible Vault</a>.</p>
+</main>
 </body>
 </html>

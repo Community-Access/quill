@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-power</title>
+  <title>Section — Power-user commands (`power.*`, 75 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--power-user-commands-power-75-commands">Section —
 Power-user commands (<code>power.*</code>, 75 commands)</h1>
 <p>The <strong>power tools</strong>: keyboard-first text surgery,
@@ -195,7 +215,7 @@ re-shuffle the power tools live where a user expects them, spread across
 <strong>Search</strong>, and a cohesive <strong>Tools ▸
 Advanced</strong> submenu. Each scenario gives the exact menu path.
 <strong>Every</strong> one of them is also in the <strong>Command
-Palette</strong> — open it and type the command's name — so if a menu
+Palette</strong> — open it and type the command’s name — so if a menu
 path has moved, the palette is the fallback and you should fail
 <strong>Surface-exact</strong> for the menu, not
 <strong>Works</strong>.</p>
@@ -229,14 +249,14 @@ DASH, <code>—</code>).</li>
 <ol type="1">
 <li>Press <strong>Shift+F2</strong>, or <strong>Insert menu (Alt, I) ▸
 Special Character…</strong>.</li>
-<li>In the <strong>"Unicode code point (hex, d-prefix for decimal, or
-U+):"</strong> field type <strong><code>2014</code></strong>; press
+<li>In the <strong>“Unicode code point (hex, d-prefix for decimal, or
+U+):”</strong> field type <strong><code>2014</code></strong>; press
 <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>An em dash <strong><code>—</code></strong> is inserted at the caret
-and the status/announcement reads <strong>"Inserted U+2014"</strong>.
+and the status/announcement reads <strong>“Inserted U+2014”</strong>.
 Hex is the default; <code>d8212</code> (decimal) or <code>U+2014</code>
 are also accepted. A nonsense value is rejected with a spoken error, not
 a crash.</li>
@@ -265,8 +285,8 @@ press <strong>Enter</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The three paragraphs of <code>plain.txt</code> appear at the caret;
-the announcement reads <strong>"Inserted contents of
-plain.txt"</strong>. QUILL auto-detects the text encoding (UTF-8 /
+the announcement reads <strong>“Inserted contents of
+plain.txt”</strong>. QUILL auto-detects the text encoding (UTF-8 /
 UTF-16 / Latin-1 fallback), so accented text comes in readable.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -279,7 +299,7 @@ id="pow-03--insert-table-of-contents-powerinsert_table_of_contents">POW-03
 — Insert Table of Contents
 (<code>power.insert_table_of_contents</code>)</h2>
 <p><em>What &amp; why.</em> Build a table of contents straight from the
-document's headings — no AI, always exactly matching the headings
+document’s headings — no AI, always exactly matching the headings
 present.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -293,9 +313,9 @@ of each level, H1–H6). Put the caret at the very top.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A TOC built from the six ATX headings is inserted; the announcement
-reads <strong>"Inserted table of contents (6 headings)"</strong>. On a
-document with no headings it does nothing and says <strong>"No headings
-were found to build a table of contents"</strong>.</li>
+reads <strong>“Inserted table of contents (6 headings)”</strong>. On a
+document with no headings it does nothing and says <strong>“No headings
+were found to build a table of contents”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -305,7 +325,7 @@ were found to build a table of contents"</strong>.</li>
 <h2 id="pow-04--insert-image-powerinsert_image-ctrlalti">POW-04 — Insert
 Image… (<code>power.insert_image</code>, Ctrl+Alt+I)</h2>
 <p><em>What &amp; why.</em> Insert an image with <strong>mandatory alt
-text</strong> (or an explicit "decorative" choice) — the one insertion
+text</strong> (or an explicit “decorative” choice) — the one insertion
 path built so no image ships unlabelled.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -326,9 +346,9 @@ Image…</strong>.</li>
 <ul>
 <li>Every field is labelled and keyboard-reachable; the Alt-text field
 is required unless Decorative is ticked. On confirm, Markdown image
-markup with the alt text is inserted and the status reads <strong>"Image
-inserted (md)."</strong> (In an HTML document the dialog offers
-width/height/caption and the status reads <strong>"…(html)."</strong>)
+markup with the alt text is inserted and the status reads <strong>“Image
+inserted (md).”</strong> (In an HTML document the dialog offers
+width/height/caption and the status reads <strong>“…(html).”</strong>)
 If an AI provider is connected, a <strong>Suggest alt text</strong>
 control may appear — that part is <strong>[GATED]</strong> on AI and may
 be marked <strong>Blocked</strong>; the manual path must still
@@ -364,8 +384,8 @@ or <strong>Escape</strong> to cancel.</li>
 <li>A dialog with a labelled snippet list, a read-only
 <strong>Preview</strong> pane, and <strong>Insert / Cancel</strong>
 buttons — all keyboard-reachable. Insert drops the snippet at the caret.
-If no Quillin contributes gallery snippets, the command says <strong>"No
-gallery snippets are available."</strong> rather than opening an empty
+If no Quillin contributes gallery snippets, the command says <strong>“No
+gallery snippets are available.”</strong> rather than opening an empty
 dialog (mark <strong>N/A</strong> for the gallery if your build ships
 none).</li>
 </ul>
@@ -399,9 +419,9 @@ Paste HTML as Markdown</strong>.</li>
 <li>The HTML is converted to Markdown (headings become <code>#</code>,
 lists become <code>-</code>/<code>1.</code>, links become
 <code>[text](url)</code>) and inserted at the caret; the status reads
-<strong>"Pasted HTML as Markdown"</strong>. If the clipboard has only
+<strong>“Pasted HTML as Markdown”</strong>. If the clipboard has only
 plain text it is treated as HTML; an empty clipboard says
-<strong>"Clipboard is empty"</strong>.</li>
+<strong>“Clipboard is empty”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -427,9 +447,9 @@ document; caret at the start.</li>
 <ul>
 <li>Rendered HTML (<code>&lt;h1&gt;</code>,
 <code>&lt;ul&gt;&lt;li&gt;…</code>) is inserted at the caret using the
-same renderer as preview/export; the status reads <strong>"Pasted
-Markdown as HTML"</strong>. An empty clipboard says <strong>"Clipboard
-is empty"</strong>.</li>
+same renderer as preview/export; the status reads <strong>“Pasted
+Markdown as HTML”</strong>. An empty clipboard says <strong>“Clipboard
+is empty”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -454,10 +474,10 @@ brand-new document.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A new untitled document opens containing the clipboard text, with
-focus in the editor; the status reads <strong>"New document from
-clipboard"</strong>. If the clipboard was empty, an empty document opens
-and the status reads <strong>"New document (clipboard was
-empty)"</strong> — never an error.</li>
+focus in the editor; the status reads <strong>“New document from
+clipboard”</strong>. If the clipboard was empty, an empty document opens
+and the status reads <strong>“New document (clipboard was
+empty)”</strong> — never an error.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -486,9 +506,9 @@ leave the caret right after it.</li>
 <ul>
 <li>The abbreviation just before the caret is replaced with an unordered
 list containing three <code>&lt;li&gt;</code> items; the status reads
-<strong>"Abbreviation expanded"</strong>. An unrecognized abbreviation
-reports a clear message (e.g. a syntax error or <strong>"Unknown CSS
-abbreviation"</strong>) and changes nothing.</li>
+<strong>“Abbreviation expanded”</strong>. An unrecognized abbreviation
+reports a clear message (e.g. a syntax error or <strong>“Unknown CSS
+abbreviation”</strong>) and changes nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -514,8 +534,8 @@ Preview Abbreviation… (<code>power.preview_abbreviation</code>)</h2>
 <ul>
 <li>The expansion opens in a <strong>new untitled buffer</strong> titled
 <em>Abbreviation preview</em>; your original document is untouched. An
-empty entry says <strong>"Enter an abbreviation to
-preview"</strong>.</li>
+empty entry says <strong>“Enter an abbreviation to
+preview”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -540,8 +560,8 @@ abbreviation means — a learning aid for the Emmet syntax.</p>
 <ul>
 <li>A new untitled buffer titled <em>Abbreviation explanation</em> opens
 describing the structure in words (an unordered list with three list
-items). Empty entry says <strong>"Enter an abbreviation to
-explain"</strong>.</li>
+items). Empty entry says <strong>“Enter an abbreviation to
+explain”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -567,10 +587,10 @@ renaming a shared sample).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The file is renamed on disk, the title bar updates, and the status
-reads <strong>"Renamed to renamed.txt"</strong>. If the target name
-already exists it refuses with <strong>"A file named renamed.txt already
-exists"</strong>. An unsaved/untitled document says <strong>"Save the
-document before renaming it"</strong>.</li>
+reads <strong>“Renamed to renamed.txt”</strong>. If the target name
+already exists it refuses with <strong>“A file named renamed.txt already
+exists”</strong>. An unsaved/untitled document says <strong>“Save the
+document before renaming it”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -589,16 +609,16 @@ POW-12 (or another disposable copy).</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>File menu ▸ Delete Current File…</strong>.</li>
-<li>Read the warning <strong>"Delete renamed.txt from disk? This cannot
-be undone."</strong>; choose <strong>No</strong> first (nothing
+<li>Read the warning <strong>“Delete renamed.txt from disk? This cannot
+be undone.”</strong>; choose <strong>No</strong> first (nothing
 happens), then repeat and choose <strong>Yes</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li><strong>No</strong> cancels with the file intact.
 <strong>Yes</strong> deletes the file, closes the tab, and the status
-reads <strong>"Deleted renamed.txt"</strong>. An unsaved document says
-<strong>"This document has not been saved to disk"</strong> instead of
+reads <strong>“Deleted renamed.txt”</strong>. An unsaved document says
+<strong>“This document has not been saved to disk”</strong> instead of
 erroring. The <strong>No</strong> button is the safe default.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -624,9 +644,9 @@ machine. If none, mark <strong>Blocked</strong>.</li>
 <ul>
 <li>Your mail client opens a new message with the content as the body
 (rendered per the <em>content handoff format</em> setting) and the
-document name as the subject; the status reads <strong>"Opened your mail
-client with this content as the body."</strong> An empty document says
-<strong>"Nothing to send: the document is empty."</strong></li>
+document name as the subject; the status reads <strong>“Opened your mail
+client with this content as the body.”</strong> An empty document says
+<strong>“Nothing to send: the document is empty.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -651,9 +671,9 @@ document).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The rendered content lands on the clipboard and the status reads
-<strong>"Copied to the clipboard as an email body."</strong> Paste into
-any editor to confirm. An empty document says <strong>"Nothing to copy:
-the document is empty."</strong></li>
+<strong>“Copied to the clipboard as an email body.”</strong> Paste into
+any editor to confirm. An empty document says <strong>“Nothing to copy:
+the document is empty.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -681,8 +701,8 @@ selection numbers only the selected lines.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each line gains a running number starting at 1; the status reads
-<strong>"Numbered lines"</strong>. A non-numeric start says
-<strong>"Start value must be a whole number"</strong>.</li>
+<strong>“Numbered lines”</strong>. A non-numeric start says
+<strong>“Start value must be a whole number”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -713,10 +733,10 @@ start fresh).</li>
 <ul>
 <li>A keyboard-navigable form with labelled fields; on confirm the lines
 are prefixed <code>I. </code>, <code>II. </code>, <code>III. </code>…
-and the status reads <strong>"Numbered lines"</strong>. Non-numeric
-Start/Increment/pad values say <strong>"Start, increment, and pad width
-must be whole numbers"</strong>. Cancel says <strong>"Number Lines
-(Advanced) cancelled"</strong>.</li>
+and the status reads <strong>“Numbered lines”</strong>. Non-numeric
+Start/Increment/pad values say <strong>“Start, increment, and pad width
+must be whole numbers”</strong>. Cancel says <strong>“Number Lines
+(Advanced) cancelled”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -737,14 +757,14 @@ characters).</li>
 <li><strong>Format menu ▸ Hard-Wrap Lines…</strong>.</li>
 <li>In <strong>Wrap width:</strong> type
 <strong><code>40</code></strong>; confirm. (The default offered is the
-widest line's width.)</li>
+widest line’s width.)</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The paragraph is broken into lines no wider than 40 characters; the
-status reads <strong>"Hard-wrapped at 40 characters"</strong>. Zero or
-negative width says <strong>"Wrap width must be greater than
-zero"</strong>; non-numeric says it must be a whole number.</li>
+status reads <strong>“Hard-wrapped at 40 characters”</strong>. Zero or
+negative width says <strong>“Wrap width must be greater than
+zero”</strong>; non-numeric says it must be a whole number.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -767,7 +787,7 @@ middle paragraph.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The paragraph under the caret is removed; the status reads
-<strong>"Deleted paragraph"</strong>. The remaining two paragraphs stay
+<strong>“Deleted paragraph”</strong>. The remaining two paragraphs stay
 intact and the caret lands sensibly.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -781,7 +801,7 @@ id="pow-2023--delete-to-bounds-powerdelete_to_line_start-powerdelete_to_line_end
 <code>power.delete_to_line_end</code>,
 <code>power.delete_to_document_start</code>,
 <code>power.delete_to_document_end</code>)</h2>
-<p><em>What &amp; why.</em> Four "delete from the caret to an edge"
+<p><em>What &amp; why.</em> Four “delete from the caret to an edge”
 commands: to the start or end of the current line, or to the top or
 bottom of the document.</p>
 <p><strong>Before you start</strong></p>
@@ -793,14 +813,14 @@ the document variants).</li>
 <p><strong>Do this</strong> (Format menu ▸ each item; run one, undo with
 <strong>Ctrl+Z</strong>, run the next)</p>
 <ol type="1">
-<li><strong>Delete to Line Start</strong> — announces <strong>"Deleted
-to start of line"</strong>.</li>
-<li><strong>Delete to Line End</strong> — announces <strong>"Deleted to
-end of line"</strong>.</li>
+<li><strong>Delete to Line Start</strong> — announces <strong>“Deleted
+to start of line”</strong>.</li>
+<li><strong>Delete to Line End</strong> — announces <strong>“Deleted to
+end of line”</strong>.</li>
 <li><strong>Delete to Document Start</strong> — announces
-<strong>"Deleted to top of document"</strong>.</li>
-<li><strong>Delete to Document End</strong> — announces <strong>"Deleted
-to bottom of document"</strong>.</li>
+<strong>“Deleted to top of document”</strong>.</li>
+<li><strong>Delete to Document End</strong> — announces <strong>“Deleted
+to bottom of document”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -845,9 +865,9 @@ This command always acts on the whole document.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each heading gains a literal outline number matching its level; the
-status reads <strong>"Outline numbering updated."</strong> A document
-with no headings says <strong>"No headings to number."</strong> A
-read-only document says <strong>"Document is read-only"</strong>.</li>
+status reads <strong>“Outline numbering updated.”</strong> A document
+with no headings says <strong>“No headings to number.”</strong> A
+read-only document says <strong>“Document is read-only”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -871,9 +891,9 @@ POW-24.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The numbers are removed and the status reads <strong>"Outline
-numbering removed."</strong> If there is nothing to remove it says
-<strong>"No outline numbering to remove."</strong></li>
+<li>The numbers are removed and the status reads <strong>“Outline
+numbering removed.”</strong> If there is nothing to remove it says
+<strong>“No outline numbering to remove.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -896,7 +916,7 @@ numbering removed."</strong> If there is nothing to remove it says
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The same five lines come back in a random order (no lines added or
-lost); the status reads <strong>"Shuffled lines"</strong>.</li>
+lost); the status reads <strong>“Shuffled lines”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -922,12 +942,12 @@ small document.)</li>
 </ul>
 <p><strong>Do this</strong> (Format menu ▸ each item)</p>
 <ol type="1">
-<li><strong>Sort Lines Numerically</strong> → <strong>"Sorted lines
-numerically"</strong>.</li>
-<li><strong>Sort Lines by Date</strong> → <strong>"Sorted lines by
-date"</strong>.</li>
-<li><strong>Sort Lines by Length</strong> → <strong>"Sorted lines by
-length"</strong>.</li>
+<li><strong>Sort Lines Numerically</strong> → <strong>“Sorted lines
+numerically”</strong>.</li>
+<li><strong>Sort Lines by Date</strong> → <strong>“Sorted lines by
+date”</strong>.</li>
+<li><strong>Sort Lines by Length</strong> → <strong>“Sorted lines by
+length”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -971,7 +991,7 @@ Unique Lines</strong>.</li>
 <ul>
 <li>Only <code>apple</code>, <code>banana</code>, <code>cherry</code>
 remain (first occurrences kept, in order); the status reads
-<strong>"Kept unique lines (removed duplicates)"</strong>.</li>
+<strong>“Kept unique lines (removed duplicates)”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1000,8 +1020,8 @@ expression.</p>
 <ul>
 <li>The two <code>drop…</code> lines are removed,
 <code>keep 1</code>/<code>keep 2</code> remain; the status reads
-<strong>"Deleted lines containing pattern"</strong>. An invalid regex
-reports <strong>"Invalid pattern: …"</strong> and changes nothing.</li>
+<strong>“Deleted lines containing pattern”</strong>. An invalid regex
+reports <strong>“Invalid pattern: …”</strong> and changes nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1023,15 +1043,15 @@ Input regex: <strong><code>keep</code></strong>.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Format menu ▸ Delete Lines Not Containing…</strong>.</li>
-<li>In the field (labelled <strong>"Regular expression (keep matching
-lines):"</strong>) type <strong><code>keep</code></strong>;
+<li>In the field (labelled <strong>“Regular expression (keep matching
+lines):”</strong>) type <strong><code>keep</code></strong>;
 confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Only the two <code>keep…</code> lines remain; the status reads
-<strong>"Kept only lines containing pattern"</strong>. An invalid regex
-reports <strong>"Invalid pattern: …"</strong>.</li>
+<strong>“Kept only lines containing pattern”</strong>. An invalid regex
+reports <strong>“Invalid pattern: …”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1056,8 +1076,8 @@ Trim Blank Lines</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Excess blank lines are removed; the status reads <strong>"Trimmed
-blank lines"</strong>. The three text lines survive.</li>
+<li>Excess blank lines are removed; the status reads <strong>“Trimmed
+blank lines”</strong>. The three text lines survive.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1081,7 +1101,7 @@ document).</li>
 <ul>
 <li>Tags such as <code>&lt;h1&gt;</code>, <code>&lt;li&gt;</code>,
 <code>&lt;a&gt;</code> are gone and only the text remains; the status
-reads <strong>"Stripped HTML tags"</strong>.</li>
+reads <strong>“Stripped HTML tags”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1103,10 +1123,10 @@ type <code>Tom &amp; Jerry &lt;3</code>.</li>
 </ul>
 <p><strong>Do this</strong> (Format menu ▸ each item)</p>
 <ol type="1">
-<li><strong>Decode HTML Entities</strong> → <strong>"Decoded HTML
-entities"</strong>.</li>
-<li><strong>Encode HTML Entities</strong> → <strong>"Encoded HTML
-entities"</strong>.</li>
+<li><strong>Decode HTML Entities</strong> → <strong>“Decoded HTML
+entities”</strong>.</li>
+<li><strong>Encode HTML Entities</strong> → <strong>“Encoded HTML
+entities”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1148,9 +1168,9 @@ Entities</strong>.</li>
 <li>A brief progress announcement (this runs on a background thread so
 QUILL and the screen reader stay responsive), then every
 accented/currency character becomes a numeric or named HTML entity; the
-status reads <strong>"Converted non-ASCII characters to HTML
-entities"</strong>. A read-only document says <strong>"Document is
-read-only"</strong>.</li>
+status reads <strong>“Converted non-ASCII characters to HTML
+entities”</strong>. A read-only document says <strong>“Document is
+read-only”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1200,10 +1220,10 @@ to that exact line in the original document.</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Focus switches to the source document's tab and moves to the
+<li>Focus switches to the source document’s tab and moves to the
 referenced line. If the current line is not a <code>line:column</code>
 entry it says so; if you have not run Show Non-ASCII it says
-<strong>"Run Show Non-ASCII Characters first."</strong></li>
+<strong>“Run Show Non-ASCII Characters first.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1227,8 +1247,8 @@ back to the report tab.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Focus returns to the <em>Non-ASCII characters</em> report tab. If
-the report is closed it says <strong>"No Non-ASCII report is open. Run
-Show Non-ASCII Characters first."</strong></li>
+the report is closed it says <strong>“No Non-ASCII report is open. Run
+Show Non-ASCII Characters first.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1239,7 +1259,7 @@ Show Non-ASCII Characters first."</strong></li>
 id="pow-41--analyze-encoding-requirements-poweranalyze_encoding_requirements">POW-41
 — Analyze Encoding Requirements
 (<code>power.analyze_encoding_requirements</code>)</h2>
-<p><em>What &amp; why.</em> Report the document's current encoding
+<p><em>What &amp; why.</em> Report the document’s current encoding
 versus the <strong>minimum</strong> encoding that would still hold every
 character losslessly.</p>
 <p><strong>Before you start</strong></p>
@@ -1283,9 +1303,9 @@ Encoding…</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL picks the minimum lossless encoding, writes the copy, and the
-status reads <strong>"Saved copy using minimum required encoding
-(<label>) to <path>"</strong>. Cancel says <strong>"Save using minimum
-required encoding cancelled"</strong>.</li>
+status reads <strong>“Saved copy using minimum required encoding
+(<label>) to <path>”</strong>. Cancel says <strong>“Save using minimum
+required encoding cancelled”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1310,9 +1330,9 @@ path.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A labelled, keyboard-navigable single-choice encoding list, then a
-save dialog; on success the status reads <strong>"Saved re-encoded copy
-(<label>) to <path>"</strong>. Cancelling either dialog says
-<strong>"Re-encode cancelled"</strong>.</li>
+save dialog; on success the status reads <strong>“Saved re-encoded copy
+(<label>) to <path>”</strong>. Cancelling either dialog says
+<strong>“Re-encode cancelled”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1337,8 +1357,8 @@ characters that pile up in replied-to email text.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The leading <code>&gt;</code> markers are removed, leaving the plain
-text; the status reads <strong>"Removed email quote
-markers"</strong>.</li>
+text; the status reads <strong>“Removed email quote
+markers”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1361,10 +1381,10 @@ you have one; otherwise verify it leaves clean text untouched.</li>
 </ul>
 <p><strong>Do this</strong> (Format menu ▸ each item)</p>
 <ol type="1">
-<li><strong>Strip Low ASCII Characters</strong> → <strong>"Stripped low
-ASCII control characters"</strong>.</li>
-<li><strong>Strip High ASCII Characters</strong> → <strong>"Stripped
-high ASCII (non-ASCII) characters"</strong>.</li>
+<li><strong>Strip Low ASCII Characters</strong> → <strong>“Stripped low
+ASCII control characters”</strong>.</li>
+<li><strong>Strip High ASCII Characters</strong> → <strong>“Stripped
+high ASCII (non-ASCII) characters”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1420,10 +1440,10 @@ return.</li>
 </ul>
 <p><strong>Do this</strong> (Format menu ▸ each item)</p>
 <ol type="1">
-<li><strong>Convert OEM (DOS) to ANSI</strong> → <strong>"Converted OEM
-(DOS) text to ANSI (Windows-1252)"</strong>.</li>
-<li><strong>Convert ANSI to OEM (DOS)</strong> → <strong>"Converted ANSI
-(Windows-1252) text to OEM (DOS)"</strong>.</li>
+<li><strong>Convert OEM (DOS) to ANSI</strong> → <strong>“Converted OEM
+(DOS) text to ANSI (Windows-1252)”</strong>.</li>
+<li><strong>Convert ANSI to OEM (DOS)</strong> → <strong>“Converted ANSI
+(Windows-1252) text to OEM (DOS)”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1459,10 +1479,10 @@ insert them with POW-01 (e.g. code points <code>2502</code>
 them)</p>
 <ol type="1">
 <li><strong>Convert Line-Drawing Characters to ASCII</strong> →
-<strong>"Converted line-drawing characters to +, -, and
-|"</strong>.</li>
-<li><strong>Strip Line-Drawing Characters</strong> → <strong>"Stripped
-line-drawing characters"</strong>.</li>
+<strong>“Converted line-drawing characters to +, -, and
+|”</strong>.</li>
+<li><strong>Strip Line-Drawing Characters</strong> → <strong>“Stripped
+line-drawing characters”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1498,7 +1518,7 @@ id="pow-52--select-markdown-profile-powerselect_markdown_profile">POW-52
 <ul>
 <li>A labelled single-choice list with the current profile pre-selected;
 on confirm the status describes the chosen profile. Cancel says
-<strong>"Markdown profile selection cancelled"</strong>.</li>
+<strong>“Markdown profile selection cancelled”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1509,7 +1529,7 @@ on confirm the status describes the chosen profile. Cancel says
 id="pow-53--preserve-single-line-breaks-powertoggle_preserve_line_breaks">POW-53
 — Preserve Single Line Breaks
 (<code>power.toggle_preserve_line_breaks</code>)</h2>
-<p><em>What &amp; why.</em> Apply the "nl2br" transform so single line
+<p><em>What &amp; why.</em> Apply the “nl2br” transform so single line
 breaks in Markdown become real line breaks in the output (some Markdown
 flavours otherwise fold them).</p>
 <p><strong>Before you start</strong></p>
@@ -1524,7 +1544,7 @@ them.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The transform is applied to the selection (or document) and the
-status reads <strong>"Preserved single line breaks"</strong>.</li>
+status reads <strong>“Preserved single line breaks”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1536,7 +1556,7 @@ id="pow-54--read-markdown-processing-status-powerread_markdown_status">POW-54
 — Read Markdown Processing Status
 (<code>power.read_markdown_status</code>)</h2>
 <p><em>What &amp; why.</em> Announce which Markdown profile is active
-and which extensions it enables — a quick "where am I" check.</p>
+and which extensions it enables — a quick “where am I” check.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Any document; ideally after POW-52 so you know what to expect.</li>
@@ -1571,9 +1591,9 @@ extensions. No document change; nothing but the spoken report.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A labelled single-choice list with the current style pre-selected;
-on confirm the status reads <strong>"Citation style set to
-<style>"</strong>. Cancel says <strong>"Citation style selection
-cancelled"</strong>.</li>
+on confirm the status reads <strong>“Citation style set to
+<style>”</strong>. Cancel says <strong>“Citation style selection
+cancelled”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1599,9 +1619,9 @@ middle).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The caret moves to roughly the middle of the document (the jump is
-recorded so Back works) and the status reads <strong>"Moved to
-50%"</strong>. A non-numeric value says <strong>"Percentage must be a
-number"</strong>.</li>
+recorded so Back works) and the status reads <strong>“Moved to
+50%”</strong>. A non-numeric value says <strong>“Percentage must be a
+number”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1631,8 +1651,8 @@ character; announces the character there.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The caret lands on the first/last visible character (skipping
-whitespace) and the screen reader speaks that character (or <strong>"End
-of line"</strong> at a line end).</li>
+whitespace) and the screen reader speaks that character (or <strong>“End
+of line”</strong> at a line end).</li>
 </ul>
 <p><strong>Sign off (First Non-Blank)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1660,12 +1680,12 @@ URL. Network available for the URL case.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The URL opens in your browser and the status reads <strong>"Opened
-<a href="https://example.com">https://example.com</a>"</strong>. For an
+<li>The URL opens in your browser and the status reads <strong>“Opened
+<a href="https://example.com">https://example.com</a>”</strong>. For an
 email address it opens a <code>mailto:</code> compose and says
-<strong>"Opened email to …"</strong>. For a file path it opens the file;
-a missing path says <strong>"Path does not exist: …"</strong>; nothing
-runnable says <strong>"Nothing to run at the cursor"</strong> — never a
+<strong>“Opened email to …”</strong>. For a file path it opens the file;
+a missing path says <strong>“Path does not exist: …”</strong>; nothing
+runnable says <strong>“Nothing to run at the cursor”</strong> — never a
 silent no-op.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1693,7 +1713,7 @@ Matches…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The announcement reads <strong>"N match(es)"</strong> with the
+<li>The announcement reads <strong>“N match(es)”</strong> with the
 correct count. An invalid regex is reported clearly and nothing is
 counted.</li>
 </ul>
@@ -1750,9 +1770,9 @@ caret on the <strong>boundary</strong> — the start of the
 <p><strong>Do this</strong> (Search menu ▸ each item)</p>
 <ol type="1">
 <li><strong>Lines in First Block Only</strong> → new buffer; status
-<strong>"N line(s) in first block only"</strong>.</li>
+<strong>“N line(s) in first block only”</strong>.</li>
 <li><strong>Lines Common to Both Blocks</strong> → new buffer; status
-<strong>"N line(s) common to both blocks"</strong>.</li>
+<strong>“N line(s) common to both blocks”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1794,8 +1814,8 @@ fourth pair blank, keep <strong>Case sensitive</strong> ticked; press
 <ul>
 <li>All three replacements apply in one pass (empty search fields are
 skipped) giving <code>one two three one</code>; the status reads
-<strong>"Applied multi replace"</strong>. Cancel says <strong>"Multi
-Replace cancelled"</strong>.</li>
+<strong>“Applied multi replace”</strong>. Cancel says <strong>“Multi
+Replace cancelled”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1821,8 +1841,8 @@ appears (not a regex — plain text).</p>
 <ul>
 <li>The status reads
 <strong><code>Found 3 occurrences of "red"</code></strong> (singular
-"occurrence" when the count is 1). Empty input says <strong>"Enter text
-to count"</strong>.</li>
+“occurrence” when the count is 1). Empty input says <strong>“Enter text
+to count”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1848,12 +1868,12 @@ File</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL saves first, then opens the file in its default app (the
-browser for HTML); the status reads <strong>"Running
-sample.html"</strong>. An unsaved document says <strong>"Save the
-document before running it"</strong>. An executable/script
+browser for HTML); the status reads <strong>“Running
+sample.html”</strong>. An unsaved document says <strong>“Save the
+document before running it”</strong>. An executable/script
 (<code>.exe</code>, <code>.bat</code>, <code>.ps1</code>…) is refused
-with <strong>"Refusing to launch an executable or script for
-safety"</strong>.</li>
+with <strong>“Refusing to launch an executable or script for
+safety”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1878,10 +1898,10 @@ to type. Toggle again.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>First toggle announces <strong>"Document is read-only"</strong> and
-typing is blocked; transform commands report <strong>"Document is
-read-only"</strong> rather than changing text. Second toggle announces
-<strong>"Document is editable"</strong> and typing works again. The
+<li>First toggle announces <strong>“Document is read-only”</strong> and
+typing is blocked; transform commands report <strong>“Document is
+read-only”</strong> rather than changing text. Second toggle announces
+<strong>“Document is editable”</strong> and typing works again. The
 read-only state persists for that file when reopened.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1910,11 +1930,11 @@ Toggle again to stop.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Turning on announces <strong>"Clipboard collector on; anything you
-copy, in any program, appends to this document"</strong>. Each distinct
+<li>Turning on announces <strong>“Clipboard collector on; anything you
+copy, in any program, appends to this document”</strong>. Each distinct
 copy is appended to the end (once per payload, not duplicated) and the
-status reads <strong>"Collected clipboard text"</strong>. Turning off
-announces <strong>"Clipboard collector off"</strong>.</li>
+status reads <strong>“Collected clipboard text”</strong>. Turning off
+announces <strong>“Clipboard collector off”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1923,7 +1943,7 @@ announces <strong>"Clipboard collector off"</strong>.</li>
 <hr />
 <h2 id="pow-69--collect-clipboard-now-powercollect_clipboard_now">POW-69
 — Collect Clipboard Now (<code>power.collect_clipboard_now</code>)</h2>
-<p><em>What &amp; why.</em> Append the clipboard's current text to the
+<p><em>What &amp; why.</em> Append the clipboard’s current text to the
 document once, on demand, without leaving the collector running.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1936,7 +1956,7 @@ document once, on demand, without leaving the collector running.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The clipboard text is appended to the end of the document and the
-status reads <strong>"Collected clipboard text"</strong>. An empty
+status reads <strong>“Collected clipboard text”</strong>. An empty
 clipboard, a read-only document, or a repeat of the last-collected text
 is a quiet no-op (nothing duplicated).</li>
 </ul>
@@ -1947,7 +1967,7 @@ is a quiet no-op (nothing duplicated).</li>
 <hr />
 <h2 id="pow-70--toggle-key-describer-powertoggle_key_describer">POW-70 —
 Toggle Key Describer (<code>power.toggle_key_describer</code>)</h2>
-<p><em>What &amp; why.</em> A "what does this key do?" mode: while on,
+<p><em>What &amp; why.</em> A “what does this key do?” mode: while on,
 pressing a shortcut speaks the command it is bound to <strong>instead of
 running it</strong> — a safe way to learn the keymap.</p>
 <p><strong>Before you start</strong></p>
@@ -1962,11 +1982,11 @@ mode off and press it again.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Turning on announces <strong>"Key Describer on; press a key to hear
-its action"</strong>. While on, <strong>Ctrl+S</strong> is announced as
-its command label (e.g. "Ctrl+S: Save") and is <strong>not</strong>
-executed; an unbound key says "<key>: no action". Turning off announces
-<strong>"Key Describer off"</strong> and shortcuts run normally
+<li>Turning on announces <strong>“Key Describer on; press a key to hear
+its action”</strong>. While on, <strong>Ctrl+S</strong> is announced as
+its command label (e.g. “Ctrl+S: Save”) and is <strong>not</strong>
+executed; an unbound key says “<key>: no action”. Turning off announces
+<strong>“Key Describer off”</strong> and shortcuts run normally
 again.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1995,10 +2015,10 @@ stop.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Turning on announces <strong>"Indentation announcements
-on"</strong>; moving to a line at a different indent speaks the change
-(e.g. deeper/shallower). Turning off announces <strong>"Indentation
-announcements off"</strong> and movement is silent again.</li>
+<li>Turning on announces <strong>“Indentation announcements
+on”</strong>; moving to a line at a different indent speaks the change
+(e.g. deeper/shallower). Turning off announces <strong>“Indentation
+announcements off”</strong> and movement is silent again.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -2008,7 +2028,7 @@ announcements off"</strong> and movement is silent again.</li>
 <h2 id="pow-72--infer-indentation-powerinfer_indent">POW-72 — Infer
 Indentation… (<code>power.infer_indent</code>)</h2>
 <p><em>What &amp; why.</em> Detect whether a document indents with tabs
-or N spaces and offer to adopt that as the document's indent
+or N spaces and offer to adopt that as the document’s indent
 setting.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -2023,10 +2043,10 @@ spaces</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL describes the inferred unit (e.g. "4 spaces") and asks
-<strong>"Adopt it for this document?"</strong> with Yes/No.
-<strong>Yes</strong> applies it and announces <strong>"Adopted
-indentation: …"</strong>; <strong>No</strong> just re-states the
+<li>QUILL describes the inferred unit (e.g. “4 spaces”) and asks
+<strong>“Adopt it for this document?”</strong> with Yes/No.
+<strong>Yes</strong> applies it and announces <strong>“Adopted
+indentation: …”</strong>; <strong>No</strong> just re-states the
 inference. If it cannot infer a unit, it reports that via the status bar
 with no prompt.</li>
 </ul>
@@ -2062,8 +2082,8 @@ is untouched.</li>
 id="pow-74--describe-character-at-cursor-powerdescribe_character">POW-74
 — Describe Character at Cursor
 (<code>power.describe_character</code>)</h2>
-<p><em>What &amp; why.</em> The screen-reader descendant of "Reveal
-Codes": name the exact character under the caret — its Unicode name,
+<p><em>What &amp; why.</em> The screen-reader descendant of “Reveal
+Codes”: name the exact character under the caret — its Unicode name,
 code point, and notes for invisibles (no-break space, zero-width
 characters, smart quotes, line endings).</p>
 <p><strong>Before you start</strong></p>
@@ -2080,8 +2100,8 @@ Cursor</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A short summary in the status bar <strong>and</strong> an accessible
-read-only dialog titled <strong>"Character at Cursor"</strong> giving
-the character's Unicode name, code point (e.g. U+2014 EM DASH),
+read-only dialog titled <strong>“Character at Cursor”</strong> giving
+the character’s Unicode name, code point (e.g. U+2014 EM DASH),
 category, and any plain-language note. The dialog is read in one pass
 and closes with Escape, returning focus to the editor.</li>
 </ul>
@@ -2100,7 +2120,7 @@ without any AI.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <strong><code>formatting.md</code></strong> and move the caret
-onto the image reference (alt text <strong>"Red circle"</strong>). (This
+onto the image reference (alt text <strong>“Red circle”</strong>). (This
 is the offline, markup-reading command; the AI vision description is a
 separate Tools/AI feature.)</li>
 </ul>
@@ -2112,8 +2132,8 @@ Cursor</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The status/announcement describes the image at the caret — its alt
-text <strong>"Red circle"</strong> and source path. With the caret not
-on an image it says <strong>"No image at the cursor."</strong></li>
+text <strong>“Red circle”</strong> and source path. With the caret not
+on an image it says <strong>“No image at the cursor.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -2132,5 +2152,6 @@ on an image it says <strong>"No image at the cursor."</strong></li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

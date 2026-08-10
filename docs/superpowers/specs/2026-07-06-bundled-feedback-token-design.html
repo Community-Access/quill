@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-06-bundled-feedback-token-design</title>
+  <title>Bundled feedback-hub GitHub token — design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="bundled-feedback-hub-github-token-design">Bundled feedback-hub
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="bundled-feedback-hub-github-token--design">Bundled feedback-hub
 GitHub token — design</h1>
 <h2 id="problem">Problem</h2>
 <p>The “Report a Bug” dialog (and the crash-recovery auto-report path)
@@ -183,7 +207,7 @@ needs a GitHub token to file an issue against
 QUILL’s own encrypted token store (populated only if a user manually
 signs in to GitHub for the unrelated repo-browser feature) or from a
 short list of environment variables no ordinary user will ever set. An
-ordinary user (e.g. Michael) has neither, so
+ordinary user (e.g. Michael) has neither, so
 <code>effective_github_token()</code> returns <code>""</code> and the
 dialog can’t push. <code>feedback_hub.resolve_token()</code> is
 explicitly designed to accept the app’s own bundled, narrowly-scoped PAT
@@ -227,7 +251,7 @@ checkouts, tests, and CI runs without the secret are unaffected.</li>
 <li><code>quill/core/feedback_token.py::effective_github_token()</code>
 imports <code>BUNDLED_TOKEN</code> from the generated module
 (best-effort: falls back to <code>""</code> if the module doesn’t exist,
-e.g. an unbuilt dev checkout) and passes it as the first candidate to
+e.g. an unbuilt dev checkout) and passes it as the first candidate to
 <code>feedback_hub.resolve_token(BUNDLED_TOKEN)</code>, ahead of the
 existing env-var fallback. A user’s personally-configured token (from
 the secure store) still takes priority over the bundled one, unchanged
@@ -252,5 +276,6 @@ model).</li>
 <li>Any change to the crash-recovery auto-report flow’s behavior beyond
 picking up the same token resolution change.</li>
 </ul>
+</main>
 </body>
 </html>

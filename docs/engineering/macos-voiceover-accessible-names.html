@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>macos-voiceover-accessible-names</title>
+  <title>macOS VoiceOver accessible names (#1012)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="macos-voiceover-accessible-names-1012">macOS VoiceOver
 accessible names (#1012)</h1>
 <p><strong>Status:</strong> implemented and live-validated under
@@ -188,10 +208,10 @@ behaviour.</p>
 <h2 id="the-problem">The problem</h2>
 <p>On macOS, most input controls in Settings and other dialogs were
 announced by VoiceOver with only their <em>value</em> — the Font size
-spin box read "0", the SSH port read "22" — with no indication of what
+spin box read “0”, the SSH port read “22” — with no indication of what
 the value was for.</p>
 <p>The same controls read correctly on Windows because NVDA/JAWS infer a
-control's name from the neighbouring <code>wx.StaticText</code> (and the
+control’s name from the neighbouring <code>wx.StaticText</code> (and the
 <code>&amp;</code>-mnemonic), and wxMSW exposes that association through
 MSAA/UIA. <strong>VoiceOver does not synthesize that
 association</strong>: a control is announced only by its own
@@ -203,7 +223,7 @@ causes:</p>
 <li><strong>Cause B</strong> — <code>wx.SpinCtrl</code> /
 <code>wx.SpinCtrlDouble</code> on macOS is a composite (inner
 <code>NSTextField</code> + stepper). VoiceOver lands on the inner text
-field, which does <strong>not</strong> inherit the composite's name, so
+field, which does <strong>not</strong> inherit the composite’s name, so
 even spin controls that set a name read as a bare number
 (support#69).</li>
 </ul>
@@ -211,9 +231,9 @@ even spin controls that set a name read as a bare number
 hard way)</h3>
 <p>Issue #1012 assumed wxOSX maps <code>wx.Window.SetName</code> to the
 NSAccessibility label. <strong>Live VoiceOver testing disproved
-that</strong>: wx's accessibility plumbing (<code>wxAccessible</code>)
+that</strong>: wx’s accessibility plumbing (<code>wxAccessible</code>)
 is MSW-only, and wxOSX bridges <em>nothing</em> into NSAccessibility —
-every <code>SetName</code> in the codebase (including the two "working"
+every <code>SetName</code> in the codebase (including the two “working”
 workarounds the issue cited) was inaudible on macOS. The existing #616
 editor role pin was likewise a silent no-op: on macOS
 <code>GetHandle()</code> returns the <code>NSView</code> as a bare
@@ -223,7 +243,7 @@ editor role pin was likewise a silent no-op: on macOS
 <code>objc.objc_object(c_void_p=ctrl.GetHandle())</code> — and call
 <code>setAccessibilityLabel_(name)</code> on the resulting
 <code>NSView</code> (for multiline text controls, also on the scroll
-view's <code>documentView</code>, which is what VoiceOver focuses).
+view’s <code>documentView</code>, which is what VoiceOver focuses).
 PyObjC is already bundled by the <code>[macos]</code> extra.
 <code>SetName</code> is still applied everywhere (it feeds the label
 inference, tests, and the Alt+F1 announcer), but the native push is the
@@ -232,7 +252,7 @@ part macOS hears.</p>
 <em>already</em> explicitly named (the Settings Theme choice etc.) get
 their existing wx name pushed natively during the show-time walk (a
 direct <code>SetName</code> call alone never reaches NSAccessibility),
-and composite propagation covers the spin control's
+and composite propagation covers the spin control’s
 <code>SpinButton</code> stepper — VoiceOver walks it as its own object
 right after the edit field.</p>
 <h2 id="the-fix--one-global-mechanism-not-per-site-edits">The fix — one
@@ -242,7 +262,7 @@ global mechanism, not per-site edits</h2>
 <li><code>ensure_accessible_names(root)</code> walks a widget tree in
 creation order and gives every <em>labelable</em> control (text fields,
 choices, combos, lists, trees, spins, sliders, gauges, pickers — see
-<code>_LABELABLE_CLASSES</code>) that still has wx's <em>default</em>
+<code>_LABELABLE_CLASSES</code>) that still has wx’s <em>default</em>
 window name an accessible name inferred from the nearest preceding
 <code>StaticText</code> — the same association Windows already makes.
 Mnemonics (<code>&amp;</code>), trailing <code>:</code> and ellipses are
@@ -277,7 +297,7 @@ its topic key (<code>quill/ui/context_help.py</code>, e.g.
 <code>quill/ui/audio_studio/wizard.py</code> locates widgets with
 <code>FindWindowByName</code>. The walker touches only controls whose
 name is still a wx default (<code>"text"</code>, <code>"choice"</code>,
-<code>"wxSpinCtrl"</code>, ...).</li>
+<code>"wxSpinCtrl"</code>, …).</li>
 <li><strong>Prose is not a label.</strong> A <code>StaticText</code>
 longer than 60 characters or containing a sentence break is treated as
 instructions: it never becomes a control name, and it clears any pending
@@ -342,11 +362,11 @@ sticky-notes vault list/preview (<code>Sticky notes</code> /
 <code>Note preview</code> — its only preceding text is prose).</li>
 <li><strong>Machine-key names stay silent on macOS.</strong> Controls
 named for F1 help topics (<code>info_pages.py</code>,
-<code>setup_wizard_pages.py</code>, ...) keep their wx names for the
-help system, and the walker pushes an <em>existing</em> explicit name to
+<code>setup_wizard_pages.py</code>, …) keep their wx names for the help
+system, and the walker pushes an <em>existing</em> explicit name to
 NSAccessibility only when it is human-shaped (contains a space or an
 uppercase letter — see <code>_speakable_name</code>). Speaking
-"wizard.kb_pack_choice" would be worse than the nameless status quo.
+“wizard.kb_pack_choice” would be worse than the nameless status quo.
 Giving those controls real labels means a separate help-topic key
 channel (follow-up candidate).</li>
 <li><strong>Controls with no visible label anywhere</strong> stay
@@ -358,7 +378,7 @@ vault.</li>
 <p>The fix is one shared code path, so testing does not require visiting
 all ~570 control sites. Verify the mechanism once per <em>pattern</em>,
 then spot-check. Expected result everywhere: VoiceOver announces
-<strong>"<label>, <value>"</strong> (e.g. "Font size, 12"), not a bare
+<strong>“<label>, <value>”</strong> (e.g. “Font size, 12”), not a bare
 value.</p>
 <table>
 <thead>
@@ -388,8 +408,8 @@ Aloud rate</td>
 <tr>
 <td>3</td>
 <td>Hand-rolled dialog, label + <code>TextCtrl</code> (Cause A)</td>
-<td>Pronunciation dictionary → Add entry ("Word or phrase")</td>
-<td>Text field announces "Word or phrase"</td>
+<td>Pronunciation dictionary → Add entry (“Word or phrase”)</td>
+<td>Text field announces “Word or phrase”</td>
 </tr>
 <tr>
 <td>4</td>
@@ -400,9 +420,9 @@ Speed</td>
 </tr>
 <tr>
 <td>5</td>
-<td>SSH port spin (named composite, previously bare "22")</td>
+<td>SSH port spin (named composite, previously bare “22”)</td>
 <td>SSH Quick Connect dialog</td>
-<td>"Port, 22"</td>
+<td>“Port, 22”</td>
 </tr>
 <tr>
 <td>6</td>
@@ -414,14 +434,14 @@ Speed</td>
 <td>7</td>
 <td>Non-modal editor surfaces</td>
 <td>Open a .csv and a .docx</td>
-<td>Grid/text announce "CSV grid"/"CSV text"; Word view announces "Word
-view"/"Document text"; main editor announces "Document"</td>
+<td>Grid/text announce “CSV grid”/“CSV text”; Word view announces “Word
+view”/“Document text”; main editor announces “Document”</td>
 </tr>
 <tr>
 <td>8</td>
 <td>No-label controls (explicit names)</td>
 <td>Sticky Notes vault</td>
-<td>List announces "Sticky notes", preview "Note preview"</td>
+<td>List announces “Sticky notes”, preview “Note preview”</td>
 </tr>
 <tr>
 <td>9</td>
@@ -453,5 +473,6 @@ on the test Mac, unzip and either right-click → Open (twice) or
 <code>xattr -dr com.apple.quarantine Quill.app</code>, then launch and
 test with VoiceOver (Cmd+F5). Signed builds still come from
 <code>macos-release.yml</code> only.</p>
+</main>
 </body>
 </html>

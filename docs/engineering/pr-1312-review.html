@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>pr-1312-review</title>
+  <title>Review record — PR #1312 (environment API key fallback)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="review-record--pr-1312-environment-api-key-fallback">Review
 record — PR #1312 (environment API key fallback)</h1>
 <p>Reviewed 2026-08-07 against main <code>9810e81</code>. PR: external
@@ -205,19 +225,19 @@ key field with <code>load_provider_api_key(provider)</code>. With the
 fallback, an env-sourced key appears in that field and Save persists it
 to the credential store — defeating the migration guard by another road.
 Same risk at <code>ai_hub_dialog.py:143</code>. The load path must
-distinguish "stored" from "ambient" for UI purposes (a
+distinguish “stored” from “ambient” for UI purposes (a
 <code>provider_key_source()</code> helper, or prefill from
-<code>_cs_load</code> directly and label "using environment key").</li>
+<code>_cs_load</code> directly and label “using environment key”).</li>
 </ul>
 <h2 id="policy-decisions-required-product-level">Policy decisions
 required (product-level)</h2>
 <ul>
 <li><strong>Ambient authorization.</strong> Key presence is treated as
-"configured" (<code>onboarding.py:417</code>, the setup wizard). An env
+“configured” (<code>onboarding.py:417</code>, the setup wizard). An env
 var set by an unrelated tool would make a cloud provider silently ready
-to send data. Given QUILL's consent-first egress posture, gate the
-fallback behind an explicit setting, or at minimum announce "using
-OPENAI_API_KEY from the environment" in the AI Hub.</li>
+to send data. Given QUILL’s consent-first egress posture, gate the
+fallback behind an explicit setting, or at minimum announce “using
+OPENAI_API_KEY from the environment” in the AI Hub.</li>
 <li><strong>Harness cross-contamination.</strong>
 <code>harness_credentials. apply_all_stored_keys()</code> exports
 agent-pack keys to <code>OPENAI_API_KEY</code> /
@@ -236,7 +256,7 @@ L-5 wrong-Windows-user UX contract; should be a conscious choice.</li>
 picks up a stray <code>OLLAMA_API_KEY</code>; <code>"off"</code> looks
 up <code>OFF_API_KEY</code>. Restrict the fallback to
 <code>_CLOUD_PROVIDERS</code>.</li>
-<li>Alias branches ("google", "anthropic") are dead given
+<li>Alias branches (“google”, “anthropic”) are dead given
 <code>_SUPPORTED_PROVIDERS</code>; the generic lookup re-checks names
 the specific branch already checked. A dict table matching
 <code>harness_credentials. _ENV_VARS</code> convention would halve the
@@ -264,5 +284,6 @@ source of the concern — wrong reference.</li>
 <li>Crash-report redaction unaffected: crash bundles do not capture
 <code>os.environ</code>.</li>
 </ul>
+</main>
 </body>
 </html>

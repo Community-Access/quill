@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-format</title>
+  <title>Section — Format &amp; Insert (`format.*`, 56 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--format--insert-format-56-commands">Section — Format
 &amp; Insert (<code>format.*</code>, 56 commands)</h1>
 <p>Everything about <strong>shaping</strong> a document: making words
@@ -206,7 +226,7 @@ Where a scenario uses one it is spelled out.</li>
 <li><strong>Markdown vs rich text.</strong> Most of these behave in a
 <strong>Markdown</strong> document by inserting literal Markdown/HTML
 markup (so bold becomes <code>**word**</code>), and the spoken
-confirmation names the surface, e.g. "(markdown)". In a rich-text
+confirmation names the surface, e.g. “(markdown)”. In a rich-text
 document the same command applies real styling and speaks the bare style
 name. Every scenario below is written for the <strong>Markdown</strong>
 sample so the outcomes are concrete; if you test in rich text, expect
@@ -222,8 +242,8 @@ inline and fenced code, a link, and an image) and
 <h2 id="fmt-01--bold-formatbold-ctrlb">FMT-01 — Bold
 (<code>format.bold</code>, Ctrl+B)</h2>
 <p><em>What &amp; why.</em> Make selected text bold — the most-used
-emphasis, and the first place to prove "what I formatted was
-announced."</p>
+emphasis, and the first place to prove “what I formatted was
+announced.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <strong><code>formatting.md</code></strong>. In the first
@@ -236,7 +256,7 @@ to select exactly <code>sample</code>).</li>
 <ol type="1">
 <li>Press <strong>Ctrl+B</strong>, or <strong>Format menu (Alt, O) ▸
 Bold</strong>.</li>
-<li>Now test "off": select the just-bolded text <strong>including its
+<li>Now test “off”: select the just-bolded text <strong>including its
 <code>**</code> markers</strong> and read it with the review cursor;
 delete the markers (or re-select and Clear Formatting, FMT-06) to
 confirm emphasis can be removed.</li>
@@ -244,12 +264,12 @@ confirm emphasis can be removed.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The selection is wrapped as <code>**sample**</code>; QUILL announces
-the action in substance — "Applied bold (markdown)" (in a rich-text
-document it speaks "Bold" instead). The change is <em>not</em> silent.
+the action in substance — “Applied bold (markdown)” (in a rich-text
+document it speaks “Bold” instead). The change is <em>not</em> silent.
 Note: in Markdown, bold is expressed as literal <code>**</code> markers,
-not a hidden on/off attribute — so "turning it off" means removing those
-markers, and re-applying bold does not report a spoken "bold off" state.
-If the profile forbids it you hear "Bold is unavailable in this profile"
+not a hidden on/off attribute — so “turning it off” means removing those
+markers, and re-applying bold does not report a spoken “bold off” state.
+If the profile forbids it you hear “Bold is unavailable in this profile”
 (mark <strong>N/A</strong>, not Fail).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -269,14 +289,14 @@ If the profile forbids it you hear "Bold is unavailable in this profile"
 <ol type="1">
 <li>Press <strong>Ctrl+I</strong>, or <strong>Format menu ▸
 Italic</strong>.</li>
-<li>Test "off" as in FMT-01: inspect the <code>*…*</code> markers and
+<li>Test “off” as in FMT-01: inspect the <code>*…*</code> markers and
 remove them to confirm the emphasis is reversible.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The selection is wrapped as <code>*exercises*</code>; QUILL
-announces "Applied italic (markdown)" (rich text: "Italic"). Not silent.
-Disabled profile: "Italic is unavailable in this profile" →
+announces “Applied italic (markdown)” (rich text: “Italic”). Not silent.
+Disabled profile: “Italic is unavailable in this profile” →
 <strong>N/A</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -296,16 +316,16 @@ default shortcut</strong> — reach it from the menu or palette.</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Format menu ▸ Underline</strong> (or Command Palette →
-"Underline").</li>
+“Underline”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The selection is wrapped with an HTML underline tag,
 <code>&lt;u&gt;inline&lt;/u&gt;</code> (underline has no plain-Markdown
 form, so it is inserted as inline HTML in both Markdown and HTML
-documents); QUILL announces "Applied underline (markdown)" (rich text:
-"Underline"). Not silent. Disabled profile: "Underline is unavailable in
-this profile" → <strong>N/A</strong>.</li>
+documents); QUILL announces “Applied underline (markdown)” (rich text:
+“Underline”). Not silent. Disabled profile: “Underline is unavailable in
+this profile” → <strong>N/A</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -332,8 +352,8 @@ paragraph contains four styled words: <strong>bold</strong>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Place the caret <strong>inside the word <code>bold</code></strong>.
-Press <strong>Ctrl+Shift+D</strong> (or Command Palette → "Describe
-Formatting at Cursor").</li>
+Press <strong>Ctrl+Shift+D</strong> (or Command Palette → “Describe
+Formatting at Cursor”).</li>
 <li>Repeat with the caret inside <strong><code>italic</code></strong>,
 then <strong><code>underline</code></strong>, then
 <strong><code>strike</code></strong>.</li>
@@ -343,15 +363,15 @@ again.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Each invocation speaks a formatting phrase, led by "Formatting: …":
+<li>Each invocation speaks a formatting phrase, led by “Formatting: …”:
 <strong>bold</strong> reads as <strong>bold</strong>,
 <strong>italic</strong> as <strong>italic</strong>,
 <strong>underline</strong> as <strong>underlined</strong>,
 <strong>strike</strong> as <strong>strikethrough</strong> — each state
 is <em>named</em>, none is silent (matching TC-001d). On a heading line
-the phrase begins with "heading level N"; inside a list it says
-"bullet". On the unstyled word it reports the equivalent of
-<strong>"plain text, no formatting"</strong>. In a non-Markdown/rich
+the phrase begins with “heading level N”; inside a list it says
+“bullet”. On the unstyled word it reports the equivalent of
+<strong>“plain text, no formatting”</strong>. In a non-Markdown/rich
 document that cannot be described it says formatting description is
 available in Markdown documents.</li>
 </ul>
@@ -375,8 +395,8 @@ in without asking. No default shortcut.</p>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Command Palette → <strong>"Announce Formatting on Cursor
-Move"</strong> (this is the label for
+<li>Command Palette → <strong>“Announce Formatting on Cursor
+Move”</strong> (this is the label for
 <code>format.toggle_announce_formatting</code>). Note the spoken
 state.</li>
 <li>Arrow <strong>Right</strong> through the first paragraph, crossing
@@ -386,10 +406,10 @@ spoken state flips.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Toggling announces the new state in substance: "Formatting
-announcements on cursor move: on" then, on the second invocation, "…:
-off". While <strong>on</strong>, moving the caret into <code>bold</code>
-speaks the change (e.g. "bold") and moving out speaks the return to
+<li>Toggling announces the new state in substance: “Formatting
+announcements on cursor move: on” then, on the second invocation, “…:
+off”. While <strong>on</strong>, moving the caret into <code>bold</code>
+speaks the change (e.g. “bold”) and moving out speaks the return to
 plain — a delta, not the whole phrase. While <strong>off</strong>,
 arrowing is silent about formatting again.</li>
 </ul>
@@ -410,11 +430,11 @@ markers) or place the caret in a styled paragraph.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Command Palette → <strong>"Clear Formatting"</strong>.</li>
+<li>Command Palette → <strong>“Clear Formatting”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The formatting is removed and QUILL announces "Formatting cleared"
+<li>The formatting is removed and QUILL announces “Formatting cleared”
 (spoken, not silent). In a non-Markdown document it reports that clear
 formatting is only available in Markdown documents; a disabled profile
 says clear formatting is unavailable in this profile
@@ -437,16 +457,16 @@ a rich-text/<code>.docx</code> document to see the applied font.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Command Palette → <strong>"Font..."</strong>.</li>
+<li>Command Palette → <strong>“Font…”</strong>.</li>
 <li>Tab through the family, size, and colour controls by keyboard;
 choose a value; confirm with <strong>Enter</strong> (or
 <strong>Escape</strong> to cancel).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The dialog's controls are labelled and keyboard-complete. On confirm
-QUILL announces "Font applied"; with no change it says "Font unchanged"
-/ "No font changes selected". In a Markdown document it may report that
+<li>The dialog’s controls are labelled and keyboard-complete. On confirm
+QUILL announces “Font applied”; with no change it says “Font unchanged”
+/ “No font changes selected”. In a Markdown document it may report that
 font is only available in Markdown documents / a disabled profile says
 font tools are unavailable (<strong>N/A</strong>). Escape cancels with
 no change.</li>
@@ -468,14 +488,14 @@ selection, the current word) to UPPER CASE. No default shortcut.</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Format menu ▸ Upper Case</strong> (or Command Palette →
-"Upper Case").</li>
+“Upper Case”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The text becomes <code>THE QUICK BROWN FOX</code>; QUILL announces
-in substance "Upper case applied to selection" (with no selection:
-"…applied to current word"). With neither a selection nor a word under
-the caret it says "No current word to transform" rather than doing
+in substance “Upper case applied to selection” (with no selection:
+“…applied to current word”). With neither a selection nor a word under
+the caret it says “No current word to transform” rather than doing
 nothing silently.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -490,7 +510,7 @@ case. No default shortcut.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>plain.txt</code> open. Select
-<strong><code>THE QUICK BROWN FOX</code></strong> (reuse FMT-08's
+<strong><code>THE QUICK BROWN FOX</code></strong> (reuse FMT-08’s
 result).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -500,8 +520,8 @@ result).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The text becomes <code>the quick brown fox</code>; QUILL announces
-"Lower case applied to selection" (or "…to current word"). Empty target:
-"No current word to transform".</li>
+“Lower case applied to selection” (or “…to current word”). Empty target:
+“No current word to transform”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -524,7 +544,7 @@ default shortcut.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The text becomes <code>The Quick Brown Fox</code>; QUILL announces
-"Title case applied to selection" (or "…to current word").</li>
+“Title case applied to selection” (or “…to current word”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -547,7 +567,7 @@ selection/sentence. No default shortcut.</p>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The text becomes <code>The quick brown fox</code>; QUILL announces
-"Sentence case applied to selection" (or "…to current word").</li>
+“Sentence case applied to selection” (or “…to current word”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -569,8 +589,8 @@ becomes lower and vice-versa). No default shortcut.</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The text becomes <code>tHE qUICK</code>; QUILL announces "Toggle
-case applied to selection" (or "…to current word"). Invoking again
+<li>The text becomes <code>tHE qUICK</code>; QUILL announces “Toggle
+case applied to selection” (or “…to current word”). Invoking again
 returns to the original.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -606,11 +626,11 @@ or <strong>Insert menu (Alt, I) ▸ Heading ▸ Heading 1</strong>.</li>
 <ul>
 <li>Each command prefixes the line with the right number of
 <code>#</code> marks (<code>#</code> … <code>######</code>) and
-announces in substance "Inserted heading N (markdown)" (rich text speaks
-"Heading N"). Afterwards, the screen reader's heading quick-key
+announces in substance “Inserted heading N (markdown)” (rich text speaks
+“Heading N”). Afterwards, the screen reader’s heading quick-key
 <strong>H</strong> should walk all six in order, each spoken with its
 level — confirming the levels are real, not cosmetic. Disabled profile:
-"Heading tools are unavailable in this profile"
+“Heading tools are unavailable in this profile”
 (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off (Heading 1 — <code>format.heading_1</code>,
@@ -663,10 +683,10 @@ Heading ▸ Increase Level</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The line gains one <code>#</code> (H2 becomes H3); QUILL announces
-"Adjusted heading level". At the deepest level it says "Heading already
-at maximum level"; off a heading line, "Place cursor on a heading line
-to adjust its level"; in a non-markup document, "Headings are only
-available in Markdown or HTML documents".</li>
+“Adjusted heading level”. At the deepest level it says “Heading already
+at maximum level”; off a heading line, “Place cursor on a heading line
+to adjust its level”; in a non-markup document, “Headings are only
+available in Markdown or HTML documents”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -692,8 +712,8 @@ Heading ▸ Decrease Level</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The line loses one <code>#</code> (H3 becomes H2); QUILL announces
-"Adjusted heading level". At the top level it says "Heading already at
-minimum level"; the same off-heading and non-markup messages as FMT-19
+“Adjusted heading level”. At the top level it says “Heading already at
+minimum level”; the same off-heading and non-markup messages as FMT-19
 apply.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -714,16 +734,16 @@ levels).</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Insert menu ▸ Heading ▸ Style Headings…</strong> (or Command
-Palette → "Style Headings").</li>
+Palette → “Style Headings”).</li>
 <li>Choose the level scope and a style in the dialog by keyboard;
 confirm (or <strong>Escape</strong> to cancel).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The dialog controls are labelled and keyboard-navigable. On confirm
-QUILL announces how many were changed — "Styled 1 heading" / "Styled N
-headings"; with no matches, "No headings matched the selected level";
-Escape reports "Heading styling cancelled". In a non-markup document it
+QUILL announces how many were changed — “Styled 1 heading” / “Styled N
+headings”; with no matches, “No headings matched the selected level”;
+Escape reports “Heading styling cancelled”. In a non-markup document it
 says headings are only available in Markdown or HTML documents.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -742,13 +762,13 @@ caret. No default shortcut.</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Insert menu (Alt, I) ▸ List ▸ Bullet</strong> (or Command
-Palette → "Insert Bullet List").</li>
+Palette → “Insert Bullet List”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A bullet list marker (<code>- </code>) is inserted; QUILL announces
-"Inserted bullet list (markdown)". In a non-markup document it says
-"Bullet List is only available in Markdown or HTML documents".</li>
+“Inserted bullet list (markdown)”. In a non-markup document it says
+“Bullet List is only available in Markdown or HTML documents”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -766,12 +786,12 @@ caret. No default shortcut.</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Insert menu ▸ List ▸ Numbered</strong> (or Command Palette →
-"Insert Numbered List").</li>
+“Insert Numbered List”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A numbered marker (<code>1. </code>) is inserted; QUILL announces
-"Inserted numbered list (markdown)".</li>
+“Inserted numbered list (markdown)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -788,7 +808,7 @@ them if it is already inside a bullet list.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <strong><code>formatting.md</code></strong> and put the caret
-inside the unordered list under "Heading Two — Lists" (e.g. on the
+inside the unordered list under “Heading Two — Lists” (e.g. on the
 <code>Apples</code> line). Then, for the add path, put the caret on a
 plain paragraph line.</li>
 </ul>
@@ -802,10 +822,10 @@ to <strong>remove</strong> them.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Adding announces "Inserted bullet list (markdown)"; removing (caret
-already in a bullet list) strips the markers and announces "Bullet List
-removed". Non-markup document: "Bullet List is only available in
-Markdown or HTML documents".</li>
+<li>Adding announces “Inserted bullet list (markdown)”; removing (caret
+already in a bullet list) strips the markers and announces “Bullet List
+removed”. Non-markup document: “Bullet List is only available in
+Markdown or HTML documents”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -821,8 +841,8 @@ from a numbered list — and, when adding, it can auto-number the lines
 that follow.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li><code>formatting.md</code> open. Use the ordered list under "Heading
-Two — Lists" (the <code>First / Second / Third</code> lines) for the
+<li><code>formatting.md</code> open. Use the ordered list under “Heading
+Two — Lists” (the <code>First / Second / Third</code> lines) for the
 remove path, and a plain multi-line block for the add path.</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -835,10 +855,10 @@ again to <strong>remove</strong> it.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Adding announces "Inserted numbered list (markdown)"; if the
-auto-fill path fires it says "Numbered list applied (with numbers)" and
-arms auto-numbering for a few minutes. Removing announces "Numbered List
-removed".</li>
+<li>Adding announces “Inserted numbered list (markdown)”; if the
+auto-fill path fires it says “Numbered list applied (with numbers)” and
+arms auto-numbering for a few minutes. Removing announces “Numbered List
+removed”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -856,12 +876,12 @@ Task List (<code>format.insert_task_list</code>)</h2>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Insert menu ▸ List ▸ Task</strong> (or Command Palette →
-"Insert Task List").</li>
+“Insert Task List”).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A task-list item is inserted; QUILL announces "Inserted task list
-(markdown)".</li>
+<li>A task-list item is inserted; QUILL announces “Inserted task list
+(markdown)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -877,7 +897,7 @@ caret is inside — reorder, renumber, change marker — by keyboard.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>formatting.md</code> open, caret <strong>inside</strong> the
-bullet list under "Heading Two".</li>
+bullet list under “Heading Two”.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -890,12 +910,12 @@ Manager…</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The dialog is labelled and keyboard-operable. On confirm QUILL
-announces "Applied list manager changes"; Escape says "List Manager
-cancelled"; a no-op confirm says "List Manager closed without changes".
-If the caret is <strong>not</strong> in a list it says "Place the cursor
-inside a Markdown list to open List Manager"; in a non-Markdown
-document, "List Manager is only available in Markdown documents";
-disabled profile, "List Manager is unavailable in this profile"
+announces “Applied list manager changes”; Escape says “List Manager
+cancelled”; a no-op confirm says “List Manager closed without changes”.
+If the caret is <strong>not</strong> in a list it says “Place the cursor
+inside a Markdown list to open List Manager”; in a non-Markdown
+document, “List Manager is only available in Markdown documents”;
+disabled profile, “List Manager is unavailable in this profile”
 (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -911,25 +931,25 @@ multi-level list with a full undo path.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>formatting.md</code> open. Select the three bullet lines under
-"Heading Two", or place the caret in that list.</li>
+“Heading Two”, or place the caret in that list.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Press <strong>F2</strong>, or <strong>Insert menu ▸ List ▸
 Structured List Studio…</strong>.</li>
-<li>Build/adjust the list by keyboard; confirm with the dialog's OK (or
+<li>Build/adjust the list by keyboard; confirm with the dialog’s OK (or
 <strong>Escape</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Studio opens as a keyboard-navigable, announced surface. On OK it
-inserts or replaces and speaks a summary followed by "Inserted. Press
-Control+Z to undo." or "Replaced. Press Control+Z to undo."; Escape says
-"Structured List Studio cancelled"; an empty build says "Structured List
-Studio: nothing to insert"; a validation failure says "…list not
-inserted (validation)". Disabled profile / read-only document are
-announced ("…unavailable in this profile" → <strong>N/A</strong>;
-"Document is read-only").</li>
+inserts or replaces and speaks a summary followed by “Inserted. Press
+Control+Z to undo.” or “Replaced. Press Control+Z to undo.”; Escape says
+“Structured List Studio cancelled”; an empty build says “Structured List
+Studio: nothing to insert”; a validation failure says “…list not
+inserted (validation)”. Disabled profile / read-only document are
+announced (“…unavailable in this profile” → <strong>N/A</strong>;
+“Document is read-only”).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -956,10 +976,10 @@ Command Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The settings dialog is labelled and keyboard-complete. Saving
-announces the scope: "List Studio settings saved for all documents" or
-"…saved for this document"; clearing a document override says "…for this
-document cleared (back to defaults)"; a no-change confirm says "List
-Studio settings unchanged".</li>
+announces the scope: “List Studio settings saved for all documents” or
+“…saved for this document”; clearing a document override says “…for this
+document cleared (back to defaults)”; a no-change confirm says “List
+Studio settings unchanged”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -986,10 +1006,10 @@ Command Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The selection is wrapped in a <code>```</code> fence; QUILL
-announces "Inserted code block (markdown, python)" (blank language
-reports "…plain"); Escape at the prompt says "Insert code block
-cancelled". Non-markup document: "Code Block is only available in
-Markdown or HTML documents".</li>
+announces “Inserted code block (markdown, python)” (blank language
+reports “…plain”); Escape at the prompt says “Insert code block
+cancelled”. Non-markup document: “Code Block is only available in
+Markdown or HTML documents”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1012,7 +1032,7 @@ Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A footnote marker and definition stub are inserted; QUILL announces
-"Inserted footnote (markdown)".</li>
+“Inserted footnote (markdown)”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1036,8 +1056,8 @@ columns, header <strong>yes</strong>; confirm.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A 3×4 Markdown table is inserted; QUILL announces "Inserted 3x4
-table (markdown)"; Escape says "Insert table cancelled". (You can later
+<li>A 3×4 Markdown table is inserted; QUILL announces “Inserted 3x4
+table (markdown)”; Escape says “Insert table cancelled”. (You can later
 verify cell navigation in the Table section.)</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1062,8 +1082,8 @@ Block Quote</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The line is prefixed with <code>&gt; </code>; QUILL announces
-"Inserted block quote (markdown)"; Escape (if a prompt appears) says
-"Insert block quote cancelled".</li>
+“Inserted block quote (markdown)”; Escape (if a prompt appears) says
+“Insert block quote cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1089,8 +1109,8 @@ Horizontal Rule</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A <code>---</code> rule is inserted on its own line; QUILL announces
-"Inserted horizontal rule (markdown)"; a cancel says "Insert horizontal
-rule cancelled".</li>
+“Inserted horizontal rule (markdown)”; a cancel says “Insert horizontal
+rule cancelled”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1109,14 +1129,14 @@ line.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Command Palette → <strong>"Insert Page Break"</strong>.</li>
+<li>Command Palette → <strong>“Insert Page Break”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A page-break marker is inserted on its own line; QUILL announces
-"Page break inserted". In a non-Markdown document it says "Page break is
-only available in Markdown documents"; a disabled profile says "Page
-break is unavailable in this profile" (<strong>N/A</strong>).</li>
+“Page break inserted”. In a non-Markdown document it says “Page break is
+only available in Markdown documents”; a disabled profile says “Page
+break is unavailable in this profile” (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1145,8 +1165,8 @@ keyboard; confirm.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The selection is wrapped in the chosen tag; QUILL announces
-"Inserted HTML tag <span>" (the tag name reflects your choice). A
-disabled profile says "HTML tag tools are unavailable in this profile"
+“Inserted HTML tag <span>” (the tag name reflects your choice). A
+disabled profile says “HTML tag tools are unavailable in this profile”
 (<strong>N/A</strong>); cancel returns quietly to the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1159,7 +1179,7 @@ Insert Markdown Tag… (<code>format.insert_markdown_tag</code>)</h2>
 <p><em>What &amp; why.</em> Pick a Markdown construct (link, image,
 emphasis, etc.) from a searchable list; for link/image it prompts for
 the URL. No default shortcut. This is the ideal way to reproduce the
-sample's <code>[QUILL project](…)</code> link and
+sample’s <code>[QUILL project](…)</code> link and
 <code>![Red circle]</code> image.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1177,9 +1197,9 @@ Palette).</li>
 <ul>
 <li>A Markdown link
 <code>[QUILL project](https://example.com/quill)</code> is inserted;
-QUILL announces "Inserted markdown link" (the kind reflects your choice,
-e.g. "…image"). A disabled profile says "Markdown tag tools are
-unavailable in this profile" (<strong>N/A</strong>).</li>
+QUILL announces “Inserted markdown link” (the kind reflects your choice,
+e.g. “…image”). A disabled profile says “Markdown tag tools are
+unavailable in this profile” (<strong>N/A</strong>).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1208,8 +1228,8 @@ Snippet…</strong>.</li>
 <ul>
 <li>The rendered snippet is inserted; QUILL announces
 <code>Inserted snippet "&lt;name&gt;".</code>. If none are defined it
-says "No snippets available. Open Manage Snippets to add one."; Escape
-says "Snippet insertion cancelled"; a bad placeholder is reported, not
+says “No snippets available. Open Manage Snippets to add one.”; Escape
+says “Snippet insertion cancelled”; a bad placeholder is reported, not
 crashed.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1237,10 +1257,10 @@ persisted.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The manager's action chooser (create/edit/delete/import/export) is
-labelled and keyboard-operable; a cancel says "Manage snippets
-cancelled". Import outcomes are spoken clearly (e.g. "No snippets found
-in selected file", "Snippet import cancelled"). The snippet you add is
+<li>The manager’s action chooser (create/edit/delete/import/export) is
+labelled and keyboard-operable; a cancel says “Manage snippets
+cancelled”. Import outcomes are spoken clearly (e.g. “No snippets found
+in selected file”, “Snippet import cancelled”). The snippet you add is
 available in FMT-38.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1265,7 +1285,7 @@ Indent</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The line(s) shift right by one indent unit; QUILL announces
-"Indented lines" (force-announced, never silent).</li>
+“Indented lines” (force-announced, never silent).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1288,7 +1308,7 @@ Outdent</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The line(s) shift left by one indent unit; QUILL announces
-"Outdented lines" (force-announced).</li>
+“Outdented lines” (force-announced).</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1318,8 +1338,8 @@ behaviour.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Toggling announces the new mode: "Tab key inserts a tab character"
-or "Tab key indents the line". Pressing <strong>Tab</strong> then does
+<li>Toggling announces the new mode: “Tab key inserts a tab character”
+or “Tab key indents the line”. Pressing <strong>Tab</strong> then does
 exactly what was announced.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1330,7 +1350,7 @@ exactly what was announced.</li>
 <h2 id="fmt-43--auto-indent-newline-formatauto_indent_newline">FMT-43 —
 Auto-Indent Newline (<code>format.auto_indent_newline</code>)</h2>
 <p><em>What &amp; why.</em> Insert a newline that keeps the current
-line's leading whitespace (and adds one level after a trailing
+line’s leading whitespace (and adds one level after a trailing
 <code>:</code> or <code>{</code>) — the smart-Enter used while writing
 indented text. No default shortcut.</p>
 <p><strong>Before you start</strong></p>
@@ -1340,13 +1360,13 @@ then <code>item:</code> , and leave the caret at the end of it.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Command Palette → <strong>"Auto-Indent Newline"</strong>.</li>
+<li>Command Palette → <strong>“Auto-Indent Newline”</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A new line is created that carries the previous line's indentation
+<li>A new line is created that carries the previous line’s indentation
 (and one extra level after the <code>:</code>); QUILL announces
-"Auto-indent newline". The caret lands ready to type at the new
+“Auto-indent newline”. The caret lands ready to type at the new
 indent.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1359,7 +1379,7 @@ id="fmt-44--toggle-line-comment-formattoggle_line_comment-ctrl">FMT-44 —
 Toggle Line Comment (<code>format.toggle_line_comment</code>,
 Ctrl+/)</h2>
 <p><em>What &amp; why.</em> Comment or uncomment the selected line(s)
-using the document language's line-comment syntax.</p>
+using the document language’s line-comment syntax.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open a document whose language has line comments (e.g. a
@@ -1375,8 +1395,8 @@ uncomment.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The line(s) gain (then lose) the language's comment marker; QUILL
-announces "Toggled line comment" each time.</li>
+<li>The line(s) gain (then lose) the language’s comment marker; QUILL
+announces “Toggled line comment” each time.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1402,7 +1422,7 @@ Comments ▸ Toggle Block Comment</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The selection is wrapped (then unwrapped) in a block comment; QUILL
-announces "Toggled block comment".</li>
+announces “Toggled block comment”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1425,9 +1445,9 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The line moves up one position; QUILL announces "Moved line up" (or
-"Moved N lines up" for a multi-line selection). At the top it says
-"Already at the top" rather than doing nothing silently.</li>
+<li>The line moves up one position; QUILL announces “Moved line up” (or
+“Moved N lines up” for a multi-line selection). At the top it says
+“Already at the top” rather than doing nothing silently.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1450,9 +1470,9 @@ Palette).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The line moves down one position; QUILL announces "Moved line down"
-(or "Moved N lines down"). At the bottom it says "Already at the
-bottom".</li>
+<li>The line moves down one position; QUILL announces “Moved line down”
+(or “Moved N lines down”). At the bottom it says “Already at the
+bottom”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1475,7 +1495,7 @@ Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>An identical line appears below the current one; QUILL announces
-"Duplicated line".</li>
+“Duplicated line”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1499,7 +1519,7 @@ Palette).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The whole line is removed and the caret lands sensibly on an
-adjacent line; QUILL announces "Deleted line". (Undo with
+adjacent line; QUILL announces “Deleted line”. (Undo with
 <strong>Ctrl+Z</strong> to confirm it is recoverable.)</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1521,8 +1541,8 @@ paragraph) into a single line. No default shortcut.</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The selected lines become one; QUILL announces "Joined N lines" (or
-"Joined lines"). With nothing to join it says "No lines to join".</li>
+<li>The selected lines become one; QUILL announces “Joined N lines” (or
+“Joined lines”). With nothing to join it says “No lines to join”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1538,7 +1558,7 @@ sibling — restructuring by ear. Markdown/HTML only.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Open <strong><code>formatting.md</code></strong>. Put the caret on
-the <strong>"Heading Two — Lists"</strong> heading line (it has a
+the <strong>“Heading Two — Lists”</strong> heading line (it has a
 sibling section above and below it).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -1548,12 +1568,12 @@ Section Up</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The whole "Heading Two" section swaps above the section before it;
-QUILL speaks "Section moved above <sibling>" (naming the section it
-jumped over). At the top it says "Top!"; with no sibling, "No sibling to
-swap with"; off a heading, "No section to move"; in a non-markup
-document, "Section move is only available in Markdown or HTML
-documents".</li>
+<li>The whole “Heading Two” section swaps above the section before it;
+QUILL speaks “Section moved above <sibling>” (naming the section it
+jumped over). At the top it says “Top!”; with no sibling, “No sibling to
+swap with”; off a heading, “No section to move”; in a non-markup
+document, “Section move is only available in Markdown or HTML
+documents”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1568,8 +1588,8 @@ Alt+Shift+Down)</h2>
 sibling. Markdown/HTML only.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li><code>formatting.md</code> open; caret on the <strong>"Heading Two —
-Lists"</strong> heading line (or wherever it now sits after
+<li><code>formatting.md</code> open; caret on the <strong>“Heading Two —
+Lists”</strong> heading line (or wherever it now sits after
 FMT-51).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -1579,8 +1599,8 @@ Section Down</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The section swaps below the next one; QUILL speaks "Section moved
-below <sibling>". At the bottom it says "Bottom!"; the same no-op /
+<li>The section swaps below the next one; QUILL speaks “Section moved
+below <sibling>”. At the bottom it says “Bottom!”; the same no-op /
 non-markup messages as FMT-51 apply.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1612,10 +1632,10 @@ Abbreviation</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The <code>qq</code> is replaced by its expansion; QUILL speaks
-"Expanded to: <preview>" (the preview is truncated with "…" if long). If
-expansion is disabled it says "Abbreviation expansion is disabled"; with
-nothing before the caret, "No word before cursor"; with no match, "No
-abbreviation match".</li>
+“Expanded to: <preview>” (the preview is truncated with “…” if long). If
+expansion is disabled it says “Abbreviation expansion is disabled”; with
+nothing before the caret, “No word before cursor”; with no match, “No
+abbreviation match”.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1643,7 +1663,7 @@ Abbreviations…</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The manager is labelled and keyboard-operable; on save QUILL
-announces "Abbreviations updated". The abbreviation you add is then
+announces “Abbreviations updated”. The abbreviation you add is then
 usable in FMT-53.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1671,9 +1691,9 @@ Expansion</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL speaks "Abbreviation expansion on" then, on the second
-invocation, "Abbreviation expansion off" (status line: "Abbreviations
-on" / "Abbreviations off"). The state genuinely changes — with it off,
+<li>QUILL speaks “Abbreviation expansion on” then, on the second
+invocation, “Abbreviation expansion off” (status line: “Abbreviations
+on” / “Abbreviations off”). The state genuinely changes — with it off,
 typing an abbreviation does not auto-expand.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1708,9 +1728,9 @@ confirm the no-op path.</li>
 <ul>
 <li>The format menu is a native radio list whose items and checked state
 the screen reader announces as you arrow. Choosing a new format converts
-the document and announces the change in substance (e.g. "Now saving as
-<format>"); choosing the format it already is says "Already editing as
-<format>". An unknown target is reported, not applied silently.</li>
+the document and announces the change in substance (e.g. “Now saving as
+<format>”); choosing the format it already is says “Already editing as
+<format>”. An unknown target is reported, not applied silently.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1729,5 +1749,6 @@ the document and announces the change in substance (e.g. "Now saving as
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

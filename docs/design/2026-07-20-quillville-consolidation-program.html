@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-20-quillville-consolidation-program</title>
+  <title>QuillVille consolidation program — one repo, many
+products</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="quillville-consolidation-program--one-repo-many-products">QuillVille
 consolidation program — one repo, many products</h1>
@@ -185,7 +206,7 @@ for the update-safety rules) by widening it to the whole family: Radio,
 Cast, Audio Studio, Beacon, Social, and the macOS radio port (QRM).
 Goal: the <code>quill</code> repo is the single source of truth and can
 build and ship every standalone product, with no code duplicated across
-repos and no shipped user's updater ever broken.</p>
+repos and no shipped user’s updater ever broken.</p>
 <h2 id="the-family-and-why-the-products-differ">The family, and why the
 products differ</h2>
 <p>There are two fundamentally different kinds of product, and they take
@@ -342,20 +363,95 @@ same app.</li>
 <h2
 id="update-safety-rules-unchanged-apply-to-every-shipped-repo">Update-safety
 rules (unchanged, apply to every shipped repo)</h2>
-<p>Every shipped product's updater polls its own repo
+<p>Every shipped product’s updater polls its own repo
 (<code>quill/apps/&lt;app&gt;.py: _REPO</code>). Therefore:</p>
 <ul>
-<li><strong>Never delete or rename a shipped product's GitHub
+<li><strong>Never delete or rename a shipped product’s GitHub
 repo.</strong> Its <code>/releases</code> API is live infrastructure. To
 retire one, follow the migration in
 <code>2026-07-20-radio-cast-consolidation-plan.md</code> (repoint
 <code>_REPO</code>, ship a transitional release from the old repo, wait
 for adoption) and then <strong>archive, not delete</strong>.</li>
-<li>Archiving is the safe "remove": read-only, reversible, releases stay
+<li>Archiving is the safe “remove”: read-only, reversible, releases stay
 served. That is what was done to quill-cast.</li>
 <li>Audio Studio and any never-shipped product are exempt (no users, no
 updater).</li>
 </ul>
+<h2 id="status-2026-07-21">Status (2026-07-21)</h2>
+<ul>
+<li><strong>Radio, Cast, Beacon, Audio Studio</strong> each have a full
+<code>standalone/&lt;product&gt;/</code> build shell (launcher,
+PyInstaller spec, Inno <code>.iss</code> supporting per-user OR
+per-machine, <code>build_release.ps1</code> producing an installer
+<code>.exe</code> + a portable <code>.zip</code>, docs). Beacon is
+reverse-vendored into <code>quill/apps/beacon</code>; Radio / Cast /
+Studio <em>are</em> <code>quill.apps.*</code> entry points.</li>
+<li><strong>QUILL Social and the macOS Radio port (QRM)</strong> are
+captured verbatim into <code>standalone/social/</code> and
+<code>standalone/radio-mac/</code> with <code>MIGRATION.md</code> notes;
+the external <code>s:\quill-social</code> and <code>s:\qrm</code> repos
+are removed (content lives in quill + git history). Social’s build shell
+and the QRM→shared-Radio merge are the remaining follow-ups.</li>
+<li>The shared runtime is <strong>Hugging-Face-free by default</strong>:
+whisper.cpp, Faster Whisper, and all Piper voices are mirrored,
+SHA-verified, on QUILL’s own <code>assets-v1</code> release;
+<code>huggingface_hub</code> is no longer a base dependency (only the
+gated pyannote diarization extra pulls it).</li>
+</ul>
+<h2 id="benefits-of-this-approach-distribution-and-beyond">Benefits of
+this approach (distribution and beyond)</h2>
+<p>Why one repo of shared code with thin per-product shells beats
+separate per-product codebases:</p>
+<p><strong>Distribution.</strong></p>
+<ul>
+<li>One <code>onedir</code> build per product feeds <em>both</em>
+deliverables — zip it for the portable, point Inno Setup at it for the
+installer — and each <code>.iss</code> carries per-user
+<strong>and</strong> per-machine install in one script
+(<code>PrivilegesRequired=lowest</code>
+<ul>
+<li>dialog override). One build recipe, two install types, every
+product.</li>
+</ul></li>
+<li>Everything is bundled (no install- or first-run downloads); the
+heavy speech engines are fetched on demand through the shared,
+<strong>SHA-256-verified</strong> <code>assets-v1</code> component
+system, so base builds stay small and no product depends on a
+third-party host (Hugging Face) staying up.</li>
+<li>Every product inherits the same verified self-update path (Quill’s
+signed release feed + the decompression-safety fix), so “Install and
+restart” behaves identically everywhere.</li>
+</ul>
+<p><strong>Maintenance and correctness.</strong></p>
+<ul>
+<li>Single source of truth: a fix or feature written once in the
+<code>quill</code> package reaches <em>every</em> product at once — no
+vendoring, no re-pinning, no drift. The design rule holds: “if it
+breaks, it breaks everywhere,” so a defect surfaces once across the
+whole family instead of hiding in a stale copy.</li>
+<li>One gate suite guards all shared code — ruff, strict mypy on
+<code>core</code>/<code>io</code>, module-size budgets, the
+dialog-surface inventory, the accessible-name audit, the network-egress
+audit, and the banned-pattern check — so quality is uniform, not
+per-repo.</li>
+<li>Apps declare <code>REQUIRED_COMPONENTS</code> and a refcount
+registry shares downloaded components (ffmpeg, mpv) across co-installed
+products, so a listener with Radio <em>and</em> Studio downloads ffmpeg
+once.</li>
+</ul>
+<p><strong>Accessibility.</strong> One accessibility contract
+(<code>dialog_contract</code>, accessible-name inference,
+region-entry/-exit announcements, the transition-cue policy) is enforced
+across every surface of every product, so the screen-reader experience
+is consistent — a fix to focus or naming lands everywhere.</p>
+<p><strong>Footprint and the user.</strong> A shared
+<code>%APPDATA%\Quill</code> data store means favorites, settings,
+voices, and recordings are shared across QUILL, Radio, Cast, and Studio;
+the total on-disk footprint is one codebase plus small shells; and users
+get every product’s fixes automatically.</p>
+<p><strong>Velocity.</strong> Contributors work in one repo with one
+test suite and one CI; a new product is a thin <code>standalone/</code>
+shell over the existing package, not a fork to keep in sync.</p>
 <h2 id="recommendation">Recommendation</h2>
 <p>Phase 1 is safe and finishes the easy consolidation — do it next
 (strip quill-radio to a release-host README; recreate the AS shell).
@@ -363,5 +459,6 @@ Treat Phase 2 (Beacon, Social) as separate, verified migrations on their
 own branches, and Phase 3 (QRM/macOS) after. Resist doing all
 reverse-vendors at once — one GATE-green app at a time keeps
 <code>main</code> shippable throughout.</p>
+</main>
 </body>
 </html>

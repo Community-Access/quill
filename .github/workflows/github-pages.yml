@@ -58,7 +58,14 @@ jobs:
 
           # 3. Render the project's top-level contributor/governance docs to
           #    HTML so the site is self-contained (no links off to raw Markdown).
-          render_root() { [ -f "$1" ] && pandoc "$1" -f gfm -t html5 -s --metadata title="$3" -o "site-root/docs/$2" || true; }
+          #    Uses the same accessible template and +smart reader as
+          #    scripts/release_readiness.py, so pages published from here carry
+          #    <html lang>, a skip link and a <main> landmark like every other
+          #    rendered doc. Without the template these served straight to the
+          #    public site with no language and no landmarks at all.
+          template=docs/pandoc/quill-accessible.html5
+          test -f "$template" || { echo "Missing accessible pandoc template: $template" >&2; exit 1; }
+          render_root() { [ -f "$1" ] && pandoc "$1" -f gfm+smart -t html5 -s --template "$template" --metadata pagetitle="$3" --metadata title="$3" -o "site-root/docs/$2" || true; }
           render_root docs/CONTRIBUTING.md       contributing.html        "Contributing to QUILL"
           render_root docs/GOVERNANCE.md         governance.html          "QUILL Governance"
           render_root docs/CODE_OF_CONDUCT.md    code-of-conduct.html     "Code of Conduct"

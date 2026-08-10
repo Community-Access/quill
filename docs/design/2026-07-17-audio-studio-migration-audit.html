@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-17-audio-studio-migration-audit</title>
+  <title>QUILL Audio Studio migration audit</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-audio-studio-migration-audit">QUILL Audio Studio migration
 audit</h1>
 <p>Date: 2026-07-17. Research only; no code changed. Sources: full reads
@@ -205,11 +225,11 @@ code. The serious problems cluster in four places:</p>
 <li>The Phase 2 listening layer is substantially broken at the seams.
 The home library never populates, its pinned views are never filled, the
 tree context menu would crash, the play queue skips a book on
-auto-advance, and the sleep timer's end-of-chapter mode is ignored. Most
+auto-advance, and the sleep timer’s end-of-chapter mode is ignored. Most
 of this is shared code that embedded QUILL never exercises, so it
 shipped without a second user.</li>
 <li>Screen reader output is silently broken in the shell. The
-standalone's _set_status never speaks, so a dozen "announcements"
+standalone’s _set_status never speaks, so a dozen “announcements”
 (including the sleep timer firing and voice-preview guidance) are
 visual-only. For a screen-reader-first product this is the single most
 corrosive defect.</li>
@@ -218,46 +238,46 @@ PyInstaller freeze cannot install on-demand engines (no pip); the
 portable build omits declared extras (SFTP, feedback dialog) and stages
 ffmpeg from a hardcoded path with only a warning if absent.</li>
 <li>Re-vendoring is currently a foot-gun. Nine local edits to vendored
-files, six of them uncommitted, are unprotected by the vendor script's
+files, six of them uncommitted, are unprotected by the vendor script’s
 PRESERVE list; a re-vendor today reintroduces top-level ImportErrors.
 Root cause: the import-rewrite regex misses quill.build_info,
 quill.branding, quill.<strong>main</strong>, and
 quill._feedback_token.</li>
 </ol>
 <h2
-id="status-update----2026-07-20-what-has-shipped-since-this-audit">Status
-update -- 2026-07-20 (what has shipped since this audit)</h2>
+id="status-update--2026-07-20-what-has-shipped-since-this-audit">Status
+update – 2026-07-20 (what has shipped since this audit)</h2>
 <p>This audit was written 2026-07-17. Since then:</p>
 <ul>
-<li><strong>Part 2 (recordings) is done and shipped</strong> -- R1-R4 in
+<li><strong>Part 2 (recordings) is done and shipped</strong> – R1-R4 in
 Quill Radio 2.0.0-2.0.2 (Part 2 below is now collapsed to a
 pointer).</li>
 <li><strong>Quill Radio 2.1.0-2.1.1 shipped</strong> on top: a
 text-first Weather menu (NWS), the unified Browse Stations tree,
 one-click updates, then the NOAA Weather Radio (WeatherIndex)
 authoritative directory, Radio Reading Services, iHeart in Browse, and
-"Find in this folder" -- all in the shared <code>quill</code>
+“Find in this folder” – all in the shared <code>quill</code>
 package.</li>
-<li><strong>16.1 unpinned dependency: FIXED.</strong> quill-radio's
+<li><strong>16.1 unpinned dependency: FIXED.</strong> quill-radio’s
 pyproject now pins <code>quill @ &lt;SHA&gt;</code> (build-time
 reproducibility per the section 20 decision); the release build ships
 that exact commit.</li>
-<li><strong>Tier 0.1 (qrm git init): DONE</strong> -- qrm is now under
+<li><strong>Tier 0.1 (qrm git init): DONE</strong> – qrm is now under
 version control.</li>
 <li><strong>The GATE suite is healthy on <code>main</code></strong>
 (module-size, persistence, accessible-name / dialog inventory,
 dialog-hardening, docs-artifact) after a 2026-07-20 cleanup pass.</li>
 </ul>
 <p>Still open from Tier 0: the stray <code>pr.md</code> /
-<code>pr.html</code> press releases in quill-radio (and quill-cast) --
-finish or delete. Audio Studio's own P1 set (section 1) has not been
+<code>pr.html</code> press releases in quill-radio (and quill-cast) –
+finish or delete. Audio Studio’s own P1 set (section 1) has not been
 reverified against current code and is kept below.</p>
 <h2 id="where-we-go-from-here-2026-07-20-recommendation">Where we go
 from here (2026-07-20 recommendation)</h2>
-<p>The strategic questions -- merge Audio Studio into QUILL as an app?
+<p>The strategic questions – merge Audio Studio into QUILL as an app?
 standalone vs integrated? a shared runtime component future apps rely
-on? -- were already decided in sections 20 and 22-25 and remain the
-right calls. Current state makes the next move concrete:</p>
+on? – were already decided in sections 20 and 22-25 and remain the right
+calls. Current state makes the next move concrete:</p>
 <ol type="1">
 <li><p><strong>Merge Audio Studio into QUILL as
 <code>quill/apps/studio.py</code> (the Option D reverse-vendor, section
@@ -265,10 +285,10 @@ right calls. Current state makes the next move concrete:</p>
 the source of truth; <code>quillas/</code> is only a vendored snapshot,
 so this is a move + wrapper conversion, not a rewrite. It puts Audio
 Studio beside <code>radio.py</code> / <code>podcasts.py</code>, deletes
-the 283-file vendored closure and its drift tooling, and -- most
-valuable -- brings Audio Studio under the same GATE suite that just kept
-Radio 2.1.1 clean. Highest-leverage structural step, and the literal
-answer to "merge it in as an app."</p></li>
+the 283-file vendored closure and its drift tooling, and – most valuable
+– brings Audio Studio under the same GATE suite that just kept Radio
+2.1.1 clean. Highest-leverage structural step, and the literal answer to
+“merge it in as an app.”</p></li>
 <li><p><strong>Build-time sharing, NOT a runtime shared library (section
 22).</strong> Each app ships its own frozen copy of <code>quill/</code>
 off a <strong>pinned tag</strong>; a per-app hotfix is a pin bump, and
@@ -276,17 +296,17 @@ one app can never break another. The heavy assets (ffmpeg, libmpv,
 engine packs, neural voices) already runtime-share in
 <code>%APPDATA%\Quill</code>, which is where the real disk win is;
 runtime-sharing the Python code would add a compatibility-matrix support
-burden for little gain. Radio 2.1.1's pinned-SHA build already proves
+burden for little gain. Radio 2.1.1’s pinned-SHA build already proves
 this model end to end.</p></li>
-<li><p><strong>The "component future apps rely on" is the data contract
+<li><p><strong>The “component future apps rely on” is the data contract
 + core seams, not a shared install.</strong> What makes the apps a
 family is the shared <code>%APPDATA%\Quill</code> store and the wx-free
 <code>quill/core</code> seams (player, recorder, speech, publish,
 versioned-store), consumed at build time. The concrete enabling work is
 <strong>Tier 1 data-store hardening</strong> (preserve unknown fields on
 rewrite, rewrite-only-on-legacy, last-writer stamp) plus a
-<strong>FAMILY-DATA.md</strong> ownership map -- do this before more
-apps pin/vendor, so a newer app can't silently downgrade an older app's
+<strong>FAMILY-DATA.md</strong> ownership map – do this before more apps
+pin/vendor, so a newer app can’t silently downgrade an older app’s
 settings.</p></li>
 </ol>
 <p><strong>Recommended order:</strong> (a) finish Tier 0 hygiene (the pr
@@ -294,8 +314,8 @@ files); (b) land Tier 1 data-store hardening on a branch with the GATE
 suite; (c) reverse-vendor Audio Studio into
 <code>quill/apps/studio.py</code> per section 25 and pin its wrapper to
 a QUILL tag; (d) then unify the four packaging stacks into one
-parameterized toolkit (section 24). Audio Studio being "in good shape
-for now" is exactly the moment to reverse-vendor it -- before it drifts
+parameterized toolkit (section 24). Audio Studio being “in good shape
+for now” is exactly the moment to reverse-vendor it – before it drifts
 further from <code>quill/</code> HEAD.</p>
 <h2 id="1-critical-bugs-p1">1. Critical bugs (P1)</h2>
 <h3 id="11-library-never-shows-any-books-both-hidden">1.1 Library never
@@ -304,10 +324,10 @@ shows any books [BOTH-HIDDEN]</h3>
 reads persisted state (quillas/core/audio_studio/library.py:54-79);
 there is no add function and studio.py only synthesizes a temporary
 BookEntry (studio.py:381). The tree renders state.books
-(quillas/ui/audio_studio/library_tree.py:86-88), so "Your books" is four
+(quillas/ui/audio_studio/library_tree.py:86-88), so “Your books” is four
 permanently empty headers. Everything downstream - Enter to open,
 Delete, Favorites, Move to Folder, the whole context menu - is
-unreachable. Meanwhile the status bar reports "N books in your library"
+unreachable. Meanwhile the status bar reports “N books in your library”
 from the recent-files MRU (studio.py:1945-1948), contradicting the empty
 tree. This is the 1.1.0 headline feature and it does not function.</p>
 <h3 id="12-pinned-views-are-empty-decorations-both-hidden">1.2 Pinned
@@ -320,32 +340,32 @@ and release-notes-1.1.md.</p>
 <h3
 id="13-shell-announcements-are-silent-for-screen-readers-as-only">1.3
 Shell announcements are silent for screen readers [AS-ONLY]</h3>
-<p>studio.py's _set_status (1927-1932) and _set_status_quiet (1934-1940)
+<p>studio.py’s _set_status (1927-1932) and _set_status_quiet (1934-1940)
 both resolve to the status-bar-only AppShellFrame._set_status
 (app_shell.py:76-79); only _announce (app_shell.py:71-74) speaks.
-QUILL's MainFrame _set_status speaks; the standalone's does not. Silent
-as a result: "Sleep timer: playback stopped" (studio.py:488), "Download
-this voice to hear a preview." (1894), "Choose a voice to preview"
-(991), "Voice configured: X" (1404), "Audio Studio cancelled" (1018),
-"Piper voice already downloaded" (1450). A blind user pressing Preview
+QUILL’s MainFrame _set_status speaks; the standalone’s does not. Silent
+as a result: “Sleep timer: playback stopped” (studio.py:488), “Download
+this voice to hear a preview.” (1894), “Choose a voice to preview”
+(991), “Voice configured: X” (1404), “Audio Studio cancelled” (1018),
+“Piper voice already downloaded” (1450). A blind user pressing Preview
 on a not-installed voice hears nothing.</p>
 <h3 id="14-tree-context-menu-crashes-when-invoked-as-only">1.4 Tree
 context menu crashes when invoked [AS-ONLY]</h3>
 <p>studio.py:656-658 calls PopupMenu(menu, item) passing a TreeItemId
 where wx expects a point - TypeError. Latent only because 1.1 makes book
 items unreachable. The keyboard path (Applications key, _on_tree_key at
-studio.py:577-579) hits the same call, and the tree's accessible name
+studio.py:577-579) hits the same call, and the tree’s accessible name
 (studio.py:314-319) advertises that key.</p>
 <h3
 id="15-two-vendored-call-sites-crash-on-_show_message_box-both-live">1.5
 Two vendored call sites crash on _show_message_box [BOTH-LIVE]</h3>
 <p>AppShellFrame._show_message_box(message, caption, style) has no
-default style (app_shell.py:81) - and neither does QUILL's MainFrame
+default style (app_shell.py:81) - and neither does QUILL’s MainFrame
 version (quill/ui/main_frame.py:5661). Two shared call sites pass only
 two args:</p>
 <ul>
 <li>publish_dialog.py:609-612 - the Safe Mode refusal raises TypeError
-instead of showing "Publishing is disabled in Safe Mode."</li>
+instead of showing “Publishing is disabled in Safe Mode.”</li>
 <li>chapter_workbench.py:781-784 - the unreadable-book error dialog
 itself crashes, masking the real failure.</li>
 </ul>
@@ -354,20 +374,20 @@ crash.</p>
 <h3 id="16-play-queue-skips-a-book-on-auto-advance-as-only">1.6 Play
 queue skips a book on auto-advance [AS-ONLY]</h3>
 <p>next_entry mutates current_index (play_queue.py:71-76).
-_on_book_finished advances once to announce "Up next" (studio.py:439)
+_on_book_finished advances once to announce “Up next” (studio.py:439)
 and _on_book_closed advances again to open (studio.py:461) - the
-announced book is skipped. Also the "Up next" announcement fires at end
+announced book is skipped. Also the “Up next” announcement fires at end
 of playback, but nothing opens until the Workbench closes, which
 misleads about what happens next.</p>
-<h3 id="17-reveal-in-workbench-is-a-no-op-both-hidden">1.7 "Reveal in
-Workbench" is a no-op [BOTH-HIDDEN]</h3>
-<p>library_tree.py:217-224 only announces "Revealing {title} in the
-Chapter Workbench" - no reveal, no open. userguide.md:55 documents it as
-"Reveal in Folder". Speech-only success is especially confusing for SR
+<h3 id="17-reveal-in-workbench-is-a-no-op-both-hidden">1.7 “Reveal in
+Workbench” is a no-op [BOTH-HIDDEN]</h3>
+<p>library_tree.py:217-224 only announces “Revealing {title} in the
+Chapter Workbench” - no reveal, no open. userguide.md:55 documents it as
+“Reveal in Folder”. Speech-only success is especially confusing for SR
 users.</p>
 <h3
 id="18-sleep-timer-stop-at-end-of-chapter-does-nothing-both-hidden">1.8
-Sleep timer "stop at end of chapter" does nothing [BOTH-HIDDEN]</h3>
+Sleep timer “stop at end of chapter” does nothing [BOTH-HIDDEN]</h3>
 <p>The dialog exposes and persists the flag
 (sleep_timer_dialog.py:60-62; core/audio_studio/sleep_timer.py:37,68)
 but should_fire checks only elapsed minutes (sleep_timer.py:42-46) and
@@ -387,8 +407,8 @@ On-demand engine installs cannot work in the PyInstaller build
 [AS-ONLY]</h3>
 <p>quillas/core/speech/engine_install.py gates every install (Kokoro,
 Vosk, Faster-Whisper, MP3) on pip being importable; a PyInstaller onedir
-has no pip, so all four fail with "This build cannot install X
-automatically." The spec excludes those engines on the promise they
+has no pip, so all four fail with “This build cannot install X
+automatically.” The spec excludes those engines on the promise they
 install on demand - a promise that build cannot keep. This is the exact
 defect scripts/build_studio_portable.py was written to fix, yet
 scripts/build_release.ps1 still drives the broken path and both
@@ -406,8 +426,8 @@ the command palette, and the update flow all made the jump.</p>
 <li>Offline transcription and caption generation: fully vendored
 (quillas/ui/ai_transcribe_dialog.py, core/speech/transcribe.py,
 cloud_transcribers.py) but no menu item or command surfaces them. QUILL
-exposes "Transcribe Audio or Video (Offline)" and "Generate Captions
-(Offline)" (quill/ui/main_frame_menu.py:2235, 2707). For an audio-first
+exposes “Transcribe Audio or Video (Offline)” and “Generate Captions
+(Offline)” (quill/ui/main_frame_menu.py:2235, 2707). For an audio-first
 app this is the most obviously in-scope missing feature, and it is
 nearly free to wire.</li>
 <li>Watch-folder automation is half-vendored: the actions
@@ -454,7 +474,7 @@ never installs extras beyond ui, so SFTP publishing - an advertised 1.0
 feature - reports paramiko missing in the portable build.</li>
 <li>sounddevice: mic capture and live PCM playback of cloud TTS
 unavailable (core/speech/capture.py, core/ai/tts.py).</li>
-<li>elevenlabs: the advertised "ElevenLabs cloud voices" provider is
+<li>elevenlabs: the advertised “ElevenLabs cloud voices” provider is
 inert without it.</li>
 <li>winrt-Windows.* (OCR): scanned-PDF/image text extraction backend
 absent.</li>
@@ -472,16 +492,16 @@ ffmpeg - compressed export, M4B chapters, and loudness all break - with
 no hard error. Make ffmpeg a hard requirement like build_release.ps1
 does.</li>
 <li>No offline wheelhouse: engine_install.py still looks for
-{app}/wheels/<name> (as QUILL's Offline Edition provides) but neither
+{app}/wheels/<name> (as QUILL’s Offline Edition provides) but neither
 QUILL-AS build script stages one, so on-demand engines always need
 PyPI.</li>
-<li>pyproject has no force-include for package data (QUILL's does:
+<li>pyproject has no force-include for package data (QUILL’s does:
 data/*.dat, schemas, sound packs, audio). PyInstaller collect_all and
 the portable copytree read the source tree so current builds are fine,
 but any wheel-based install silently drops voice previews, schemas, and
 sound packs. Latent trap.</li>
 <li>Installer: no .quilljob file association despite double-click open
-being a shipped feature (CHANGELOG 1.0.0); QUILL's installer registers
+being a shipped feature (CHANGELOG 1.0.0); QUILL’s installer registers
 associations and shell verbs. Uninstall behavior (never touches
 %APPDATA%\Quill) is correct and documented.</li>
 <li>Assets verified present and tracked: 84 voice-preview mp3s, sound
@@ -497,7 +517,7 @@ edits that a re-vendor today would revert:</p>
 <p>Committed:</p>
 <ul>
 <li>core/storage_mode.py - adds QuillAudioStudio.exe to portable
-detection. Revert loses portable-mode detection for the app's own
+detection. Revert loses portable-mode detection for the app’s own
 binary.</li>
 <li>ui/optional_components_dialog.py - quillas.build_info import. Revert
 is a top-level ImportError at module load.</li>
@@ -538,14 +558,14 @@ Studio ships both an installer and a portable zip.</li>
 <li>4287997 fix(ui): guard AI dialog CallAfter callbacks against a
 destroyed dialog (ui/dialog_contract.py). Relevant - Workbench AI title
 proposals use CallAfter.</li>
-<li>core/feature_command_map.py upstream gained "studio.play_queue":
-"core.read_aloud" - an Audio Studio mapping the extraction itself
+<li>core/feature_command_map.py upstream gained “studio.play_queue”:
+“core.read_aloud” - an Audio Studio mapping the extraction itself
 missed.</li>
 <li>4fc3317 (stability/logging_config.py relocate_log) - radio-only, low
 priority.</li>
 </ul>
 <p>Otherwise upstream has barely moved; no uncommitted upstream work
-touches vendored paths. core/recent.py's remove_recent_audiobook_file
+touches vendored paths. core/recent.py’s remove_recent_audiobook_file
 has been upstreamed, so that delta can retire from the local-deltas
 list.</p>
 <h2 id="5-misrepresentations-claims-vs-reality">5. Misrepresentations
@@ -558,19 +578,19 @@ download_piper_exe, download_espeak_exe
 (main_frame_speech_downloads.py:1332/1400/1569) and
 studio._download_piper_voice (1429) have no Safe Mode check, and both
 the Speech Hub and Download Optional Components menu items are reachable
-in Safe Mode. Upstream QUILL's code is identical, so this is a
+in Safe Mode. Upstream QUILL’s code is identical, so this is a
 documentation overstatement of a shared code limitation. Either gate the
-engine downloads or correct the docs - given Safe Mode's purpose, gate
+engine downloads or correct the docs - given Safe Mode’s purpose, gate
 the downloads upstream.</li>
-<li>Workbench AI-titles error points to "AI &gt; AI Hub"
+<li>Workbench AI-titles error points to “AI &gt; AI Hub”
 (chapter_workbench.py:607-616), a menu that exists in QUILL but not in
-the standalone (its AI menu has only "Set Up AI..."). Works upstream,
+the standalone (its AI menu has only “Set Up AI…”). Works upstream,
 stale here. [DOCS]</li>
-<li>DECtalk download success text says "Open Manage Voices"
+<li>DECtalk download success text says “Open Manage Voices”
 (main_frame_speech_downloads.py:1353, 1388) - a surface the standalone
 does not have; the action actually opens the Speech Hub. Minor.
 [DOCS]</li>
-<li>Publish dialog promises "macOS Keychain" credential storage
+<li>Publish dialog promises “macOS Keychain” credential storage
 (publish_dialog.py:113 via core/platform_nouns.py) but every secret
 save/load imports only platform/windows/credential_manager (lines 338,
 347, 429, 515); on macOS the imports fail silently and nothing persists.
@@ -597,38 +617,38 @@ Workbench on every launch and can contend with the startup update prompt
 watcher is never re-armed (loaded at studio.py:239 but only
 _on_sleep_timer starts it), so the dialog says enabled while nothing is
 armed. No remaining-time readout. Firing with no active player still
-claims "playback stopped".</li>
+claims “playback stopped”.</li>
 <li>Modality trap: the Workbench is modal, so Ctrl+M, Sleep Timer, and
 Play Queue in the shell menu are unreachable exactly while a book is
-playing; with no book open Ctrl+M announces "No book open to mute."
+playing; with no book open Ctrl+M announces “No book open to mute.”
 userguide.md:155/283 documents muting from the shell.</li>
 <li>Media keys are grabbed system-wide for the whole session
 (app_shell.py:209-232) but no-op without an active player
-(studio.py:467-481) - Studio swallows the user's media keys while idle.
+(studio.py:467-481) - Studio swallows the user’s media keys while idle.
 Release them when idle, or make play/pause resume the last book.</li>
 <li>Play Queue dialog: no announcements after Add/Remove/Clear/Next, no
 current/next marker on rows, selection and focus lost after Remove, no
 Delete-key handling, missing-file entries indistinguishable, and
 auto-advance stops silently at a missing file (studio.py:462).</li>
-<li>Duplicate menu mnemonics: Help "&amp;User Guide" vs "Check for
-&amp;Updates" (studio.py:738/744); context menu "&amp;Reveal..." vs
-"&amp;Remove..." (588/596) and "Remove from &amp;Favorites" vs "New
-&amp;Folder" (590/594). Letter-press cycles instead of activating.</li>
+<li>Duplicate menu mnemonics: Help “&amp;User Guide” vs “Check for
+&amp;Updates” (studio.py:738/744); context menu “&amp;Reveal…” vs
+“&amp;Remove…” (588/596) and “Remove from &amp;Favorites” vs “New
+&amp;Folder” (590/594). Letter-press cycles instead of activating.</li>
 <li>Safe Mode has no visible or spoken indicator (title set once at
 studio.py:228; _refresh_statusbar 1942-1950); users discover it only on
 refusal, and the Publish path makes them pick a file first
 (studio.py:1028-1049) before refusing (then crashes, per 1.5).</li>
-<li>New Folder is only reachable from a book's context menu
+<li>New Folder is only reachable from a book’s context menu
 (studio.py:582-585), so with an empty library folders can never be
 created.</li>
 <li>Stale versions and doc mismatches: userguide.md:3/17 and
 prd.md:3/485/493 still say 1.0.0 while everything else is 1.1.0;
 userguide.md:23 omits the required data\storage-mode.json marker for
 portable mode (core/paths.py:44-53) - a hand-made data folder silently
-uses %APPDATA%; "(missing)" library markers promised at userguide.md:42
+uses %APPDATA%; “(missing)” library markers promised at userguide.md:42
 do not exist.</li>
 <li>Undocumented shipped features: Pronunciation Dictionaries menu
-(studio.py:713-720), the "Generating preview" cue and its setting
+(studio.py:713-720), the “Generating preview” cue and its setting
 (1714-1721), diagnostics-bundle save (1544-1570), palette commands for
 sleep/mute/queue (869-871).</li>
 <li>Dead code and small inconsistencies: _on_library_key (556-564) never
@@ -708,28 +728,28 @@ Community-Access/support) were not checked for existence.</li>
 <li>feature_catalog.py orphaned entries for unwired commands not
 audited.</li>
 <li>The monorepo-affordance sweep in the UX pass was partial; the parity
-agent's section 2 covers the same ground independently.</li>
+agent’s section 2 covers the same ground independently.</li>
 </ul>
 <hr />
-<h1 id="part-2-quill-radio-recordings-audit----completed-shipped">Part
-2: QUILL Radio recordings audit -- COMPLETED (shipped)</h1>
+<h1 id="part-2-quill-radio-recordings-audit--completed-shipped">Part 2:
+QUILL Radio recordings audit – COMPLETED (shipped)</h1>
 <p>Sections 9-14 (the recordings scheduler, recorder, and Recordings
 Manager audit, plus the R1-R4 remediation plan) are <strong>done and
 shipped</strong>. All four phases landed in <code>quill/</code> on
 2026-07-17 and reached users in <strong>Quill Radio
 2.0.0-2.0.2</strong>:</p>
 <ul>
-<li><strong>R1</strong> -- flicker-free, place-keeping Recordings list;
+<li><strong>R1</strong> – flicker-free, place-keeping Recordings list;
 temp-dir active-row visibility; honest scheduled/active counts; live
-elapsed time; tray "(recording)".</li>
-<li><strong>R2</strong> -- next-due-timestamp scheduler (fires
-throughout the window, launch catch-up); lock-guarded catch-log-continue
-thread; success-only stamping; busy-defer; shared missed-recording
-reporting for embedded QUILL.</li>
-<li><strong>R3</strong> -- crash-resume across restart (active-recording
+elapsed time; tray “(recording)”.</li>
+<li><strong>R2</strong> – next-due-timestamp scheduler (fires throughout
+the window, launch catch-up); lock-guarded catch-log-continue thread;
+success-only stamping; busy-defer; shared missed-recording reporting for
+embedded QUILL.</li>
+<li><strong>R3</strong> – crash-resume across restart (active-recording
 marker, temp-stray reconciliation, ask/always/never launch dialog);
 periodic last-seen stamp.</li>
-<li><strong>R4</strong> -- absolute end-time across reconnects; filename
+<li><strong>R4</strong> – absolute end-time across reconnects; filename
 uniquify (no <code>-y</code> overwrite); fatal-vs-transient drop
 classification; Windows job-object child
 <ul>
@@ -764,7 +784,7 @@ with import remaps and no tooling - a vendored closure without the
 vendor script.</li>
 <li>Independent silo (quille-beacon): own engine, own SQLite store, own
 data dir (%APPDATA%\QuillBeacon), own sync layer (QuillSync) intended to
-become the family's - but today no other app has an adapter and Beacon
+become the family’s - but today no other app has an adapter and Beacon
 exchanges nothing with the family at runtime.</li>
 </ul>
 <h2 id="16-per-repo-findings">16. Per-repo findings</h2>
@@ -795,7 +815,7 @@ built, stamped, or released.</li>
 has (radio lines 50-62, 90-98) - the cast build is the older pre-mpv
 template.</li>
 <li>Same 1.0-only release-notes gap as radio; pr.md:45 contains an
-unfilled "[Space reserved for a quote...]" placeholder, also baked into
+unfilled “[Space reserved for a quote…]” placeholder, also baked into
 the rendered pr.html.</li>
 <li>Cast CHANGELOG never records features it inherits automatically via
 the shared quill package (documentation drift by design of the
@@ -824,7 +844,7 @@ directory_search/station_status).</li>
 <li>Its data-dir contract is exemplary: same Quill folder name, same
 JSON schemas, same QUILL_DATA_DIR/QUILL_PORTABLE/QUILL_APP_ROOT env
 contract, cross-platform (~/Library/Application Support/Quill on macOS).
-Proof that the data contract is the family's real handshake layer.</li>
+Proof that the data contract is the family’s real handshake layer.</li>
 <li>Every Part 2 scheduler/recorder bug was ported along with the code
 (recording.py is a near-verbatim copy) - fixes in quill/ must be
 re-ported or the port re-based.</li>
@@ -835,10 +855,10 @@ posture, axe-core CI on the publish surface) with real defects:</p>
 <ul>
 <li>Data loss in sync merge [CONFIRMED]: beacon_merge hardcodes local
 locations (quill_beacon/sync.py:117-119), so a location added on device
-B is silently dropped when merging into device A - the app's headline
+B is silently dropped when merging into device A - the app’s headline
 data does not sync. The note merge (quillsync/merge.py:42-64) has no
-true common ancestor and resurrects remotely deleted lines as "local
-removed" conflict markers.</li>
+true common ancestor and resurrects remotely deleted lines as “local
+removed” conflict markers.</li>
 <li>Security: device bearer token stored plaintext in sync_config.json
 (sync_ui.py:57, 247); no TLS enforcement toward remote sync servers
 (server/client.py); capture-bridge origin check passes when the Origin
@@ -851,7 +871,7 @@ constants later makes every existing vault underivable.</li>
 <li>Efficiency: ServerTransport pulls the entire commit history on every
 sync (transports.py:111-128), defeating the incremental have-list the
 server supports.</li>
-<li>Server hints() reports total commit count as "new" (server/app.py:
+<li>Server hints() reports total commit count as “new” (server/app.py:
 105-112).</li>
 <li>Stack divergences from the family: SQLite+FTS5 vs JSON files; own
 %APPDATA%\QuillBeacon silo vs shared %APPDATA%\Quill; hatchling; no
@@ -864,22 +884,22 @@ shared-store risk is confirmed, not theoretical</h3>
 <p>All Windows apps read and rewrite %APPDATA%\Quill\settings.json and
 keymap.json through versioned_store.py. Two confirmed failure modes:</p>
 <ul>
-<li>to_versioned serializes only the fields the running binary's
+<li>to_versioned serializes only the fields the running binary’s
 Settings dataclass knows, and load_with_migration rewrites the file
 whenever the content differs. A newer QUILL writes a new setting; an
 older vendored QUILL-AS launches, silently drops it, and rewrites the
 file - with no backup, because the schema_version matches
 (settings_migration.py ~116-137, versioned_store.py ~95-100).</li>
 <li>merge_keymaps drops any binding for a command id not in the running
-app's DEFAULT_KEYMAP and rewrites the cleaned file (keymap.py ~832-838).
-The oldest app launched last wins; newer apps' custom bindings
+app’s DEFAULT_KEYMAP and rewrites the cleaned file (keymap.py ~832-838).
+The oldest app launched last wins; newer apps’ custom bindings
 vanish.</li>
 <li>No cross-process locking: concurrent QUILL + Radio sessions
 last-writer-wins on shared files.</li>
 </ul>
-<p>Today quillas's copies are byte-identical so the risk is latent - but
+<p>Today quillas’s copies are byte-identical so the risk is latent - but
 it is activated by exactly the drift the vendoring model produces. This
-is the single most important "shaking hands" fix in the family.</p>
+is the single most important “shaking hands” fix in the family.</p>
 <h3 id="172-evidence-of-sharing-model-costs">17.2 Evidence of
 sharing-model costs</h3>
 <ul>
@@ -915,7 +935,7 @@ skew.</li>
 regardless; then reverse-vendor Audio Studio into quill/apps/studio.py
 and turn quill-audio-studio into a radio/cast-style wrapper pinned to a
 QUILL tag; consolidate the four packaging stacks into one parameterized
-toolkit; Beacon and qrm converge on their own schedules (Beacon's PRD
+toolkit; Beacon and qrm converge on their own schedules (Beacon’s PRD
 already targets quill/apps/beacon.py).</li>
 </ul>
 <p>Recommendation: D, in the order data-store hardening -&gt;
@@ -987,7 +1007,7 @@ lacks.</p>
 resume-on-restart (R3) and pipeline hardening (R4). 18. Audio Studio:
 surface transcription/captions, decide watch-folders, first-run
 onboarding, library ingestion model (section 7). 19. QuillSync as the
-family handshake: after Tier 1's merge fixes, write the quill adapter
+family handshake: after Tier 1’s merge fixes, write the quill adapter
 (settings/keymaps/favorites first), then radio favorites across Windows
 and Mac - this is what makes the apps literally shake hands across
 devices. 20. qrm decision: finish the UI (its core is good) or re-base
@@ -1022,13 +1042,13 @@ common state)?</p>
 <p>Platform strategy: 8. What is the macOS ambition: Radio only (finish
 qrm), or the whole family? If the latter, qrm should be re-based on
 shared wx code, not completed as a hand-port. 9. Is wxPython the
-committed UI stack family-wide (Beacon says yes, qrm's plan says yes)?
+committed UI stack family-wide (Beacon says yes, qrm’s plan says yes)?
 Any appetite for a different mac-native shell?</p>
 <p>Sync and Beacon: 10. Is QuillSync the blessed sync layer for the
 whole family? If so, which data syncs first (Beacon beacons, then radio
 favorites, then settings/keymaps?) and does the hosted server become a
 real product (FastAPI/Postgres) or stay bring-your-own-folder? 11.
-Beacon's store diverges (SQLite, own dir). Bless per-app silos, or
+Beacon’s store diverges (SQLite, own dir). Bless per-app silos, or
 require the shared contract when it merges into the family?</p>
 <p>Quality bar: 12. Should the GATE suite (accessible-name audit, dialog
 inventory, persistence audit, size ratchets) run in every repo, not just
@@ -1065,7 +1085,7 @@ day):</p>
 <ul>
 <li>macOS/qrm: re-base into quill/. Commit qrm as-is for history, fold
 its Mac adaptations (paths, VoiceOver announce, updates) into quill/
-behind platform seams; Radio's UI is built once for both platforms.</li>
+behind platform seams; Radio’s UI is built once for both platforms.</li>
 <li>QuillSync: blessed as the family sync layer, folder-first.
 Bring-your-own-folder is the supported transport; the hosted server
 stays a reference implementation. Adapter order: Beacon, then radio
@@ -1079,7 +1099,7 @@ Radio/Cast/Beacon; one parameterized toolkit drives both.</li>
 wx.media kept only as emergency fallback.</li>
 <li>Updates: one shared signed-manifest update module (Ed25519) with
 per-app repo slugs, for every app including Beacon and Mac.</li>
-<li>CI baseline: shared workflow (ruff with QUILL's config + pytest
+<li>CI baseline: shared workflow (ruff with QUILL’s config + pytest
 everywhere; wx-free GATE checks where core lives; full GATE where UI
 lives), a scripted pre-release NVDA smoke test, and toolchain
 unification (pytest + hatchling + Python 3.12 family-wide).</li>
@@ -1087,16 +1107,16 @@ unification (pytest + hatchling + Python 3.12 family-wide).</li>
 versioned-store rules; SQLite permitted for app-private indexes in
 per-app namespaces (Beacon keeps its engine); rule documented in
 FAMILY-DATA.md.</li>
-<li>Hub model: "Switch to..." family submenu in every app's tray and
-menu bar now; a thin Quill Home launcher app (Continue list + app
-buttons, powered by the shared store) after the reverse-vendor; Beacon
-feeds it places once its QuillSync adapters exist. Underpinning both: a
+<li>Hub model: “Switch to…” family submenu in every app’s tray and menu
+bar now; a thin Quill Home launcher app (Continue list + app buttons,
+powered by the shared store) after the reverse-vendor; Beacon feeds it
+places once its QuillSync adapters exist. Underpinning both: a
 documented handoff protocol per app (single-instance + open arguments:
 station/at, book/chapter, episode) in FAMILY-DATA.md.</li>
 <li>Menus: a family menu-grammar spec (journeys first, Help last,
 Ctrl+Comma Preferences, Ctrl+Shift+P palette with cross-app launch
-commands, Switch to... everywhere); QUILL's existing menu structure
-stays untouched - no muscle-memory churn.</li>
+commands, Switch to… everywhere); QUILL’s existing menu structure stays
+untouched - no muscle-memory churn.</li>
 <li>Release Wave 1 (first priority): ship together - (a) Audio Studio
 re-versioned to 1.0.0 - it has not truly shipped, so 1.0.0/1.1.0 history
 collapses into one clean 1.0.0 carrying the Part 1 P1 fixes; (b) the
@@ -1127,13 +1147,13 @@ that all apps utilize instead of each app shipping its own copy, while
 preserving per-app release flexibility for urgent fixes.</p>
 <p>Framing that matters before deciding:</p>
 <ul>
-<li>"One shared library" has two very different meanings. Build-time
+<li>“One shared library” has two very different meanings. Build-time
 sharing: one codebase (quill/ as the single source), every app builds
 against a pinned tag and ships its own frozen copy inside its installer.
 Users never share code on disk; developers share 100% of it. Per-app
 releases = pin bumps. This is what the decided plan (Option D + pinned
 tags) already delivers. Runtime sharing: one installed copy of the core
-on the user's machine (like a shared runtime), apps resolve it at
+on the user’s machine (like a shared runtime), apps resolve it at
 launch. Smaller installs and one core update fixes all apps at once -
 but it introduces the compatibility-matrix problem: upgrading the shared
 core for app A can break app B that was tested against an older core.
@@ -1149,12 +1169,12 @@ are update-once (also achievable with per-app updates) and conceptual
 cleanliness.</li>
 <li>Release flexibility requirement: hotfixing one app must not force
 releasing all apps. Build-time sharing satisfies this trivially (hotfix
-branch off the app's pinned tag, cherry-pick, rebuild one app). Runtime
+branch off the app’s pinned tag, cherry-pick, rebuild one app). Runtime
 sharing satisfies it only with side-by-side versioning.</li>
 <li>Early quill/apps consolidation vs the Michael constraint: the P1
 fixes that are in shared code get built in quill/ regardless. The
-question is only whether AS's shell (studio.py) moves into quill/apps/
-before or after Michael's build. Before = one codebase sooner, but the
+question is only whether AS’s shell (studio.py) moves into quill/apps/
+before or after Michael’s build. Before = one codebase sooner, but the
 packaging-toolkit work lands on the critical path of his build. After =
 fastest path to a working build, small re-vendor churn in the
 interim.</li>
@@ -1176,18 +1196,18 @@ Radio 1.2.0, Cast 1.0.0 can all be QuillVille 1 apps) and release on
 their own cadence off pinned core tags.</li>
 <li>A suite major bump is the only place breaking changes to shared
 spaces are allowed, and it is coordinated across all apps.</li>
-<li>Display suggestion: About boxes and diagnostics show both ("Quill
-Radio 1.2.0 - QuillVille 1"), so support can instantly know the contract
+<li>Display suggestion: About boxes and diagnostics show both (“Quill
+Radio 1.2.0 - QuillVille 1”), so support can instantly know the contract
 vintage.</li>
 </ul>
 <p>Still open before execution starts (recommendations stated):</p>
 <ul>
 <li>Core sharing model: one codebase with each app shipping its own
 frozen copy off a pinned tag (recommended - per-app hotfix freedom,
-users' apps can never break each other) vs a side-by-side shared runtime
+users’ apps can never break each other) vs a side-by-side shared runtime
 on disk vs a single shared runtime. Heavy assets stay runtime-shared in
 %APPDATA%\Quill either way.</li>
-<li>Consolidation timing: reverse-vendor right after Michael's AS build
+<li>Consolidation timing: reverse-vendor right after Michael’s AS build
 ships (recommended) vs consolidating quill/apps first vs parallel
 tracks.</li>
 <li>Components/downloads standard: one shared component service in
@@ -1216,7 +1236,7 @@ later.</li>
 <li>Recording/processing: ffmpeg subprocess everywhere - already
 uniform; formalize one shared ffmpeg locator/downloader (three exist:
 quill, quillas vendored, qrm rewritten).</li>
-<li>Earcons: sound_lib with winsound fallback vs Beacon's own announce
+<li>Earcons: sound_lib with winsound fallback vs Beacon’s own announce
 path. Recommend one shared earcon/announce module with the sound events
 config dialog surfaced in every app.</li>
 <li>Capture: sounddevice is the only mic path and is undeclared in AS -
@@ -1227,15 +1247,15 @@ fine; keep it wx-free so qrm/mac can reuse it.</li>
 </ul>
 <p>Libraries and runtime:</p>
 <ul>
-<li>Storage engine: JSON-in-Quill-dir everywhere vs Beacon's
+<li>Storage engine: JSON-in-Quill-dir everywhere vs Beacon’s
 SQLite+FTS5. Recommend: keep JSON for shared contract files (settings,
-keymaps, favorites), allow SQLite for app-private indexes (Beacon's
+keymaps, favorites), allow SQLite for app-private indexes (Beacon’s
 store, and a future Audio Studio library index if it grows), document
 the rule in FAMILY-DATA.md.</li>
 <li>Crypto: two libraries in play (PyNaCl signing, cryptography AES-GCM
 in QuillSync). Recommend consolidating on cryptography (it can do
 Ed25519 signing too) unless the signed-update format is frozen.</li>
-<li>HTTP: requests in apps, stdlib http.server for Beacon's local
+<li>HTTP: requests in apps, stdlib http.server for Beacon’s local
 surfaces. Fine as-is; write it down as the rule (requests out, stdlib
 serve-local).</li>
 <li>Python floor: 3.12 everywhere except qrm (3.11). Recommend 3.12
@@ -1243,7 +1263,7 @@ family-wide when qrm re-bases.</li>
 <li>Build backend: hatchling everywhere except qrm (setuptools).
 Recommend hatchling family-wide.</li>
 <li>Test framework: pytest in QUILL/AS/qrm, unittest in Beacon.
-Recommend pytest family-wide (Beacon's suite runs under pytest
+Recommend pytest family-wide (Beacon’s suite runs under pytest
 unmodified).</li>
 <li>Lint/format: ruff configured only in QUILL and AS. Recommend the
 same ruff config (line 100, py312, E,F,I,UP,B) in every repo via a
@@ -1252,7 +1272,7 @@ shared config file in the packaging toolkit.</li>
 <p>Packaging and updates:</p>
 <ul>
 <li>Two Windows packaging models: PyInstaller onedir (QUILL, Radio,
-Cast) vs AS's portable embeddable-CPython (invented because frozen
+Cast) vs AS’s portable embeddable-CPython (invented because frozen
 builds cannot pip-install engines on demand). Decide the blessed model:
 recommend portable-CPython for any app with on-demand engine installs
 (AS, and QUILL itself if optional components matter), PyInstaller for
@@ -1284,7 +1304,7 @@ wrappers - fold into the toolkit; fix stale release-notes wiring as part
 of Tier 3 item 11.</li>
 <li>Timers: the family default of 2 s polling UI timers (recordings
 dialog) should give way to event-driven updates via the existing
-callback contracts; write it into the toolkit's UI guidelines.</li>
+callback contracts; write it into the toolkit’s UI guidelines.</li>
 </ul>
 <h2
 id="24-installer-strategy-and-execution-state-2026-07-17-current">24.
@@ -1299,13 +1319,13 @@ the two portable zips in S:\QUILL prove it).</p>
 ffmpeg/mpv (basic audio must work offline), and DOWNLOADS neural engines
 (Kokoro, Whisper, Vosk) and optional voices on demand via Voices &gt;
 Download Optional Components. Small download. This is the answer to
-"people want a smaller install and download components."</li>
+“people want a smaller install and download components.”</li>
 <li>Offline installer = FULL (a second, additive artifact). Same payload
 plus a staged wheelhouse (wheels\kokoro, wheels\faster-whisper,
 wheels\vosk, wheels\mp3) and the engine binaries, for field/ACB use
-without reliable internet. QUILL's engine_install.py already looks for
+without reliable internet. QUILL’s engine_install.py already looks for
 {app}\wheels&lt;name&gt;, so this is staging, not new code.</li>
-<li>"Lean now, full later" is zero-risk to the now: the offline variant
+<li>“Lean now, full later” is zero-risk to the now: the offline variant
 is a superset build that does not change the lean one. Lean ships first;
 offline improves later.</li>
 </ul>
@@ -1316,10 +1336,10 @@ This is the crux fix below.</p>
 Studio installer must switch payloads</h3>
 <p>Today build_release.ps1 produces BOTH the portable zip and the system
 installer from the PyInstaller freeze (dist\QuillAudioStudio, _internal,
-no pip). That frozen build is the exact artifact the portable script's
-docstring calls "the root cause of the Kokoro/audio breakage" - it
+no pip). That frozen build is the exact artifact the portable script’s
+docstring calls “the root cause of the Kokoro/audio breakage” - it
 cannot run on-demand engine installs. So the installed Audio Studio is
-broken for engines, and today's dependency fixes (below) only reach the
+broken for engines, and today’s dependency fixes (below) only reach the
 ZIP.</p>
 <p>Fix (the golden installer): restructure so ONE embeddable-Python
 payload (build_studio_portable.py output) feeds both artifacts,
@@ -1333,7 +1353,7 @@ dist\QuillAudioStudio-portable\QuillAudioStudio;</li>
 <li>lean by default (exclude the heavy engine/wheel trees), offline
 variant additive. This needs a real build + install + launch to
 validate, so it is NOT a blind edit - do it in a validated build
-session, not as a "no-risk-now" change.</li>
+session, not as a “no-risk-now” change.</li>
 </ul>
 <h3 id="per-app-installer-verdict-payload-today">Per-app installer
 verdict (payload today)</h3>
@@ -1358,7 +1378,7 @@ extras; build_studio_portable.py now bundles base + ui + ssh + speech
 <li>feedback + audio (was base + ui only). paramiko pulls cryptography,
 fixing the PuTTY-key hard-import crash path. Validated by a real build:
 all 23 requirements install into the bundle and the app imports under
-the bundle's own Python. Fixes SFTP publish, mic capture / cloud-TTS
+the bundle’s own Python. Fixes SFTP publish, mic capture / cloud-TTS
 preview, earcon mixing, and the accessible Report-a-Bug dialog.</li>
 </ul></li>
 <li>ElevenLabs is deliberately NOT bundled: the SDK ships auto-generated
@@ -1405,7 +1425,7 @@ publish_dialog.py:610).</li>
 <ul>
 <li>git init + first commit in S:\qrm (entire repo unversioned).</li>
 <li>Commit the S:\QUILL-AS working-tree deltas (vendoring fixes +
-today's dependency/tooling edits), now that PRESERVE protects them.</li>
+today’s dependency/tooling edits), now that PRESERVE protects them.</li>
 </ul>
 <h2
 id="25-queued-reverse-vendor-audio-studio-into-quillapps-post-release">25.
@@ -1430,7 +1450,7 @@ quill.apps.studio:main (mirror radio.py/podcasts.py) and register it
 wherever radio/podcasts are.</li>
 <li>Upstream the app-owned deltas that only existed in quillas (so
 nothing is lost when the closure is deleted). From the vendor design doc
-"Upstream sync policy" + this session's PRESERVE list:
+“Upstream sync policy” + this session’s PRESERVE list:
 <ul>
 <li>core/recent.py remove_recent_audiobook_file (already upstreamed -
 verify).</li>
@@ -1443,12 +1463,12 @@ core/accessibility_agent.py) OR, better, land the
 audio-studio-optimization Phase 1 guarding upstream so the denylist
 works without per-file deltas (preferred - removes the shims).</li>
 <li>core/feedback_token.py bundled-token import (build_info/branding
-wired to quill's own).</li>
+wired to quill’s own).</li>
 </ul></li>
 <li>Move the standalone-only tests (tests/unit/ui/test_studio_shell_*,
 test_no_stray_quill_imports is obsolete once vendoring is gone) into
-QUILL's suite, rewriting imports. Delete the reachability analyzer.</li>
-<li>GATE compliance for the new app: register studio.py's dialogs in the
+QUILL’s suite, rewriting imports. Delete the reachability analyzer.</li>
+<li>GATE compliance for the new app: register studio.py’s dialogs in the
 dialog inventory, run accessible_name_audit, persistence_audit
 (audio_studio save sites already classified as content), and
 module_size_budget (studio.py is a new tracked file - give it a
@@ -1461,17 +1481,17 @@ that exports QUILL_APP_ROOT/QUILL_PORTABLE and calls
 quill.apps.studio.main (mirror quill_radio/<strong>init</strong>.py).
 Delete the vendored closure, scripts/vendor_*.py,
 scripts/analyze_reachability.py, and the vendored test tree. 6.
-pyproject: dependencies = ["quill[ui] @ git+...@<QUILL tag>"] (pinned
-like Radio/Cast). Keep the audio extras (ssh/speech/feedback/audio) so
-the wrapper build installs them - or fold them into quill's bundled
-groups. 7. Packaging decision (section 3/17 "split by need"): Audio
-Studio needs the pip-capable embeddable-Python payload for on-demand
-engines. Either (a) keep build_studio_portable.py + build_release.ps1 in
-the wrapper (they already produce the right artifact), or (b) hook Audio
-Studio into QUILL's build_windows_distribution.py (which is the
-embeddable-Python builder) as a second app target. (a) is less work and
-already proven this release. 8. Installer: the quill-audio-studio.iss
-already wraps the embeddable payload; keep it in the wrapper.</p>
+pyproject: dependencies = [“quill[ui] @ git+…@<QUILL tag>”] (pinned like
+Radio/Cast). Keep the audio extras (ssh/speech/feedback/audio) so the
+wrapper build installs them - or fold them into quill’s bundled groups.
+7. Packaging decision (section 3/17 “split by need”): Audio Studio needs
+the pip-capable embeddable-Python payload for on-demand engines. Either
+(a) keep build_studio_portable.py + build_release.ps1 in the wrapper
+(they already produce the right artifact), or (b) hook Audio Studio into
+QUILL’s build_windows_distribution.py (which is the embeddable-Python
+builder) as a second app target. (a) is less work and already proven
+this release. 8. Installer: the quill-audio-studio.iss already wraps the
+embeddable payload; keep it in the wrapper.</p>
 <p>Phase C - validate and cut over: 9. Build the wrapper (portable +
 installer, token-embedded), install, launch, exercise: a narrate run,
 the Workbench, a voice preview + on-demand Kokoro install, SFTP publish
@@ -1482,5 +1502,6 @@ the wrapper to that tag, ship. Retire the vendoring docs.</p>
 studio.py + app_shell deltas. The main work is GATE registration and the
 wrapper conversion. Do it on a branch with the full QUILL suite + GATE
 green before merging.</p>
+</main>
 </body>
 </html>

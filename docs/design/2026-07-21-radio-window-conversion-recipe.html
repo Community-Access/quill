@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Radio surface conversion recipe: modal dialog -&gt; modeless
+frame</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="radio-surface-conversion-recipe-modal-dialog---modeless-frame">Radio
+surface conversion recipe: modal dialog -&gt; modeless frame</h1>
+<p>Branch: <code>radio-window-model</code>. This is the step-by-step for
+converting each heavy radio surface (Browse, Station Browser, Favorites
+Manager, Schedule Recording, Weather) from a <code>wx.Dialog</code>
+shown modally to a modeless <code>wx.Frame</code> that carries the
+persistent menu bar + numbered <code>&amp;Window</code> menu. Do these
+on the branch and validate each with a screen reader before merging
+(this is the part that cannot be verified headlessly).</p>
+<h2 id="what-already-exists-tested-on-the-branch">What already exists
+(tested, on the branch)</h2>
+<ul>
+<li><code>quill/ui/window_manager.py</code> -&gt;
+<code>WindowRegistry</code> (pure numbered/cyclic order).</li>
+<li><code>quill/ui/window_menu.py</code> -&gt;
+<code>WindowManager</code> (wx: key-&gt;frame, <code>&amp;Window</code>
+menu, Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 accelerators,
+raise/show/focus).</li>
+<li><code>quill/ui/dialog_contract.py::show_modeless_surface</code>
+-&gt; entry onboarding (accessible names + region/announce + Show +
+focus first control).</li>
+</ul>
+<h2 id="one-time-app-wiring-radiopy">One-time app wiring (radio.py)</h2>
+<ol type="1">
+<li>Create one manager: <code>self._windows = WindowManager(wx)</code>
+in the app frame’s init (the main window and every surface share
+it).</li>
+<li>In <code>_build_menu_bar</code>, after appending the app menus, add
+the shared menu:
+<code>self._windows.install(self.frame, menu_bar)</code> (appends
+<code>&amp;Window</code> + installs the accelerators on the main
+frame).</li>
+<li>Register the main window:
+<code>self._windows.register(self.frame, "Quill Radio")</code> right
+after it is created, and refresh its title (station name) where the
+title bar is updated so the <code>&amp;Window</code> entry tracks
+it.</li>
+</ol>
+<h2
+id="per-surface-conversion-worked-example-browse_tree_dialogpy">Per-surface
+conversion (worked example: browse_tree_dialog.py)</h2>
+<ol type="1">
+<li><p><strong>Dialog -&gt; Frame.</strong> Replace
+<code>self.dialog = wx.Dialog(parent, title=..., style=DEFAULT_DIALOG_STYLE|RESIZE_BORDER)</code>
+with
+<code>self.frame = wx.Frame(parent, title=..., style=wx.DEFAULT_FRAME_STYLE)</code>.
+Rename <code>self.dialog</code> -&gt; <code>self.frame</code> throughout
+the class (it is the wx object).</p></li>
+<li><p><strong>Menu bar.</strong> Build a small <code>wx.MenuBar</code>
+for the surface and set it on the frame: a <code>&amp;Window</code> menu
+via <code>windows.install(self.frame, menu_bar)</code>, plus a
+<code>&amp;Close\tCtrl+W</code> item bound to
+<code>self.frame.Close</code>. (The surface keeps its action buttons;
+the menu bar exists so Alt always lands on a real menu and the
+&amp;Window traversal is reachable.) Pass the shared
+<code>WindowManager</code> into the surface’s <code>__init__</code> (new
+keyword arg <code>windows</code>).</p></li>
+<li><p><strong>Escape closes.</strong> A frame has no automatic
+Escape-&gt;Cancel. Bind a char hook:
+<code>self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)</code> and
+in it, on <code>WXK_ESCAPE</code>, call <code>self.frame.Close()</code>;
+else <code>event.Skip()</code>.</p></li>
+<li><p><strong>Show (replace the modal <code>show()</code>).</strong>
+Replace the body of <code>show()</code>:</p>
+<ul>
+<li>remove <code>apply_modal_ids(...)</code> and the
+<code>show_modal_dialog(...); finally: Destroy()</code>;</li>
+<li><code>self._windows.register(self.frame, "Browse Stations")</code>;</li>
+<li><code>show_modeless_surface(self.frame, "Browse Stations", announce=self._announce, enter_region=&lt;region.enter&gt;)</code>;</li>
+<li>do NOT Destroy here – teardown is in EVT_CLOSE. <code>show()</code>
+now returns immediately (modeless).</li>
+</ul></li>
+<li><p><strong>Close lifecycle.</strong> Bind
+<code>self.frame.Bind(wx.EVT_CLOSE, self._on_close)</code>:</p>
+<ul>
+<li><code>previous = self._windows.previous_key(self.frame)</code>
+(capture before unregister);</li>
+<li><code>self._windows.unregister(self.frame)</code>;</li>
+<li>region exit + <code>announce("Exited Browse Stations")</code>;</li>
+<li><code>self._on_favorites_changed()</code> if the surface mutated
+favorites;</li>
+<li><code>event.Skip()</code> then <code>self.frame.Destroy()</code> (or
+<code>Destroy</code> in the handler);</li>
+<li><code>if previous: self._windows.activate(previous)</code> so focus
+returns to the window the listener came from.</li>
+</ul></li>
+<li><p><strong>Caller (radio.py
+<code>open_browse_stations</code>).</strong> It currently constructs the
+surface and calls <code>.show()</code> expecting a blocking modal. Now
+<code>.show()</code> is non-blocking; drop any post-show code that
+assumed the dialog had closed (move it into the surface’s EVT_CLOSE via
+the existing <code>on_favorites_changed</code> callback). Guard against
+opening a second copy: if a Browse frame is already registered,
+<code>activate</code> it instead of building a new one.</p></li>
+</ol>
+<h2 id="gates-to-re-run-after-each-surface">Gates to re-run after each
+surface</h2>
+<ul>
+<li><code>python -m quill.tools.dialog_inventory --write</code> (the
+surface leaves the modal registry; its child controls still need
+accessible names -&gt; <code>accessible_name</code> audit).</li>
+<li>ruff, mypy(core/io unaffected), module-size budget (frames + menu
+bars add lines -&gt; rebaseline with a dated note),
+banned-patterns.</li>
+</ul>
+<h2 id="order--validation">Order + validation</h2>
+<p>Convert Browse first (this example), validate with NVDA/JAWS: menu
+bar present, Alt reaches it, Ctrl+Tab / Ctrl+1..9 move between the main
+window and Browse, Escape closes and returns focus. Only then replicate
+to Station Browser, Favorites Manager, Schedule Recording, and Weather
+(same six steps).</p>
+</main>
+</body>
+</html>

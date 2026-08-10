@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>RELEASE-1.0.0-READINESS</title>
+  <title>QUILL 1.0.0 — Release Readiness Program</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-100--release-readiness-program">QUILL 1.0.0 — Release
 Readiness Program</h1>
 <p><strong>Owner:</strong> Jeff Bishop · <strong>Status:</strong> in
@@ -189,8 +209,8 @@ only.</strong> Player, Converter, Cast, Audio Studio, and Beacon are
 gated behind a <strong>developer/private/admin flag</strong> (existing
 <code>future.&lt;feature&gt;</code> mechanism) — installed but not
 publicly surfaced.</li>
-<li><strong>App "own repo" extraction = DOCS ONLY.</strong> Move
-other-app documentation out of QUILL's user guide / PRD / release notes
+<li><strong>App “own repo” extraction = DOCS ONLY.</strong> Move
+other-app documentation out of QUILL’s user guide / PRD / release notes
 into their own docs; app <strong>code stays in this repo</strong>
 (gated). No code repo split this cycle.</li>
 <li><strong>Branches:</strong> <strong>merge all <code>feat/*</code> to
@@ -253,7 +273,7 @@ announcement about the QUILL editor features only</strong>
 <strong>other-app</strong> sections
 (Player/Converter/Cast/Studio/Beacon) out of the user guide, PRD, and
 release notes into per-app docs under <code>docs/apps/</code> (Audio
-Studio's joined <code>docs/audio-studio/</code>); Radio + Weather kept
+Studio’s joined <code>docs/audio-studio/</code>); Radio + Weather kept
 public (02a8968).</label></li>
 <li><label><input type="checkbox" checked="" />Verify the <strong>user
 guide</strong> and <strong>PRD</strong> are complete and accurate for
@@ -264,13 +284,13 @@ chords, menu paths, dialogs, settings) verified against code surfaces by
 a two-agent sweep. 9 discrepancies found and fixed in
 <code>release1.0.0.md</code>: Outline Navigator scope (headings only),
 Go to Anything scope (commands + headings; the element index is Quick
-Nav), no "Bookmarks Manager" surface, Search in Files / Replace Across
+Nav), no “Bookmarks Manager” surface, Search in Files / Replace Across
 Files naming, no clipboard-compare command, the retired editor-control
-chooser, "AI Spell Check" naming, Radio's cross-app launcher lives on
+chooser, “AI Spell Check” naming, Radio’s cross-app launcher lives on
 the QuillVille menu, and the View-menu vs Settings vs palette split for
 dark mode / overwrite / contrast. One in-app status string that pointed
-at the nonexistent "Bookmarks Manager (Ctrl+Shift+G)" was corrected to
-"List Bookmarks (Alt+Shift+B)" (<code>quill/ui/main_frame.py</code>).
+at the nonexistent “Bookmarks Manager (Ctrl+Shift+G)” was corrected to
+“List Bookmarks (Alt+Shift+B)” (<code>quill/ui/main_frame.py</code>).
 Everything else verified, including all Radio/Weather chords, catalog
 counts, and gated-app absence.</label></li>
 </ul>
@@ -376,5 +396,6 @@ gate.</strong></li>
 <p><em>The per-feature sign-off checklist lives in
 <code>QUILL-1.0.0-SIGNOFF.md</code> (Phase 4) and is populated from the
 code inventory so it covers every feature.</em></p>
+</main>
 </body>
 </html>

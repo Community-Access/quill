@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-16-podcast-feed-auth</title>
+  <title>Podcast Feed Authentication Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="podcast-feed-authentication-implementation-plan">Podcast Feed
 Authentication Implementation Plan</h1>
 <blockquote>
@@ -295,31 +319,37 @@ with:
 </ul>
 <hr />
 <h3
-id="task-1-core-credential-module-feed_auth.py-url-userinfo-redaction">Task
+id="task-1-core-credential-module-feed_authpy--url-userinfo-redaction">Task
 1: Core credential module <code>feed_auth.py</code> + URL userinfo
 redaction</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/podcasts/feed_auth.py</code> - Modify:
-<code>quill/stability/redaction.py</code> (add
-<code>redact_url_userinfo</code>) - Test:
-<code>tests/unit/core/test_podcast_feed_auth.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/podcasts/feed_auth.py</code></li>
+<li>Modify: <code>quill/stability/redaction.py</code> (add
+<code>redact_url_userinfo</code>)</li>
+<li>Test: <code>tests/unit/core/test_podcast_feed_auth.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
 <code>quill.platform.windows.credential_store.load_secret/save_secret/delete_secret</code>;
 <code>PodcastShow</code> (existing fields; <code>feed_username</code>
 arrives in Task 2 – use <code>getattr(show, "feed_username", "")</code>
 is NOT needed, Task 2 lands before any UI consumes this; within this
-task’s tests, set the attribute via a stub object). - Produces (used by
-Tasks 3-10): -
-<code>save_feed_password(show_id: str, password: str) -&gt; None</code>
-- <code>load_feed_password(show_id: str) -&gt; str</code> -
-<code>delete_feed_password(show_id: str) -&gt; None</code> -
-<code>basic_auth_header(username: str, password: str) -&gt; str</code> -
-<code>auth_for_url(show: PodcastShow, url: str) -&gt; tuple[str, str]</code>
--
-<code>auth_header_for_url(show: PodcastShow, url: str) -&gt; str</code>
-- <code>url_with_auth(show: PodcastShow, url: str) -&gt; str</code> -
-<code>redact_url_userinfo(text: str) -&gt; str</code> (in
-<code>quill.stability.redaction</code>)</p>
+task’s tests, set the attribute via a stub object).</li>
+<li>Produces (used by Tasks 3-10):
+<ul>
+<li><code>save_feed_password(show_id: str, password: str) -&gt; None</code></li>
+<li><code>load_feed_password(show_id: str) -&gt; str</code></li>
+<li><code>delete_feed_password(show_id: str) -&gt; None</code></li>
+<li><code>basic_auth_header(username: str, password: str) -&gt; str</code></li>
+<li><code>auth_for_url(show: PodcastShow, url: str) -&gt; tuple[str, str]</code></li>
+<li><code>auth_header_for_url(show: PodcastShow, url: str) -&gt; str</code></li>
+<li><code>url_with_auth(show: PodcastShow, url: str) -&gt; str</code></li>
+<li><code>redact_url_userinfo(text: str) -&gt; str</code> (in
+<code>quill.stability.redaction</code>)</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -616,18 +646,22 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/podcasts/feed_auth.py quill/stability/redaction.py tests/unit/core/test_podcast_feed_auth.py</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(podcasts): feed_auth credential module with same-host gate&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-2-podcastshow.feed_username-field">Task 2:
+<h3 id="task-2-podcastshowfeed_username-field">Task 2:
 <code>PodcastShow.feed_username</code> field</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/podcasts/models.py:344-428</code>
-(<code>PodcastShow</code>) - Test:
-<code>tests/unit/core/test_podcast_models.py</code>,
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/podcasts/models.py:344-428</code>
+(<code>PodcastShow</code>)</li>
+<li>Test: <code>tests/unit/core/test_podcast_models.py</code>,
 <code>tests/unit/core/test_podcast_opml.py</code>,
-<code>tests/unit/core/test_podcast_feed_auth.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
-<code>PodcastShow.feed_username: str = ""</code> – persisted in
-<code>to_dict</code>/<code>from_dict</code>, defaulting <code>""</code>
-for old data. Consumed by Tasks 1 (gate), 7, 10.</p>
+<code>tests/unit/core/test_podcast_feed_auth.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>PodcastShow.feed_username: str = ""</code> –
+persisted in <code>to_dict</code>/<code>from_dict</code>, defaulting
+<code>""</code> for old data. Consumed by Tasks 1 (gate), 7, 10.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -663,8 +697,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a hr
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> export_opml(library)</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;member&quot;</span> <span class="kw">not</span> <span class="kw">in</span> text</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;feed_username&quot;</span> <span class="kw">not</span> <span class="kw">in</span> text</span></code></pre></div>
-<p>(If that file imports differently –
-e.g. <code>opml.export_opml</code> – match its existing import style
+<p>(If that file imports differently – e.g.
+<code>opml.export_opml</code> – match its existing import style
 exactly.)</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
@@ -679,22 +713,26 @@ Expected: FAIL with
 field</strong></label></li>
 </ul>
 <p>In <code>quill/core/podcasts/models.py</code>,
-<code>PodcastShow</code>: - After <code>feed_url: str = ""</code> (line
-350) add:</p>
+<code>PodcastShow</code>:</p>
+<ul>
+<li>After <code>feed_url: str = ""</code> (line 350) add:</li>
+</ul>
 <div class="sourceCode" id="cb7"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">#: Private feeds (HTTP Basic auth): the sign-in username. Not a secret;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#: the password lives in the platform secret store (feed_auth.py) and is</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">#: deliberately NOT a field here -- it must never reach podcasts.json.</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    feed_username: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></span></code></pre></div>
 <ul>
-<li><p>In <code>to_dict()</code> after
+<li>In <code>to_dict()</code> after
 <code>"feed_url": self.feed_url,</code> add
-<code>"feed_username": self.feed_username,</code></p></li>
-<li><p>In <code>from_dict()</code> after
+<code>"feed_username": self.feed_username,</code></li>
+<li>In <code>from_dict()</code> after
 <code>feed_url=str(data.get("feed_url", "")),</code> add
-<code>feed_username=str(data.get("feed_username", "")),</code></p></li>
-<li><p><label><input type="checkbox" /><strong>Step 4: Remove the Task 1
-skips</strong></label></p></li>
+<code>feed_username=str(data.get("feed_username", "")),</code></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Remove the Task 1
+skips</strong></label></li>
 </ul>
 <p>In <code>tests/unit/core/test_podcast_feed_auth.py</code>, delete the
 <code>pytest.mark.skip</code> markers added in Task 1 and simplify
@@ -716,17 +754,21 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/podcasts/models.py tests/unit/core/test_podcast_models.py tests/unit/core/test_podcast_opml.py tests/unit/core/test_podcast_feed_auth.py</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(podcasts): PodcastShow.feed_username field (password stays in secret store)&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-3-feedautherror-honest-401403-from-the-feed-reader">Task 3:
-<code>FeedAuthError</code> – honest 401/403 from the feed reader</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/podcasts/feed_reader.py:49-101</code> - Test:
-<code>tests/unit/core/test_podcast_feed_reader.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
-<code>class FeedAuthError(FeedReaderError)</code> with
+<h3 id="task-3-feedautherror--honest-401403-from-the-feed-reader">Task
+3: <code>FeedAuthError</code> – honest 401/403 from the feed reader</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/podcasts/feed_reader.py:49-101</code></li>
+<li>Test: <code>tests/unit/core/test_podcast_feed_reader.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>class FeedAuthError(FeedReaderError)</code> with
 <code>code = "QUILL-PODCASTS-FEED-AUTH"</code>, raised from
 <code>_fetch_feed_bytes</code> (and therefore
 <code>fetch_and_parse_feed</code>) on HTTP 401/403. Consumed by Tasks 7
-and 8.</p>
+and 8.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -813,17 +855,23 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href=
 <hr />
 <h3 id="task-4-authenticated-episode-downloads">Task 4: Authenticated
 episode downloads</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/podcasts/download_queue.py</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/podcasts/download_queue.py</code>
 (<code>DownloadItem</code> ~line 64, <code>_fetch_chunked</code> ~line
-87, <code>enqueue</code> ~line 179, worker call ~line 322) - Test:
-<code>tests/unit/core/test_podcast_download_queue.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: header string produced by
-<code>feed_auth.auth_header_for_url</code> (Task 1). - Produces:
-<code>enqueue(..., auth_header: str = "")</code>;
+87, <code>enqueue</code> ~line 179, worker call ~line 322)</li>
+<li>Test:
+<code>tests/unit/core/test_podcast_download_queue.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: header string produced by
+<code>feed_auth.auth_header_for_url</code> (Task 1).</li>
+<li>Produces: <code>enqueue(..., auth_header: str = "")</code>;
 <code>DownloadItem.auth_header: str = ""</code>;
 <code>_fetch_chunked(url, destination, *, auth_header: str = "", pause_event, cancel_event, on_progress)</code>.
-Consumed by Task 8’s call-site wiring.</p>
+Consumed by Task 8’s call-site wiring.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -921,8 +969,11 @@ Expected: new tests FAIL with
 <li><label><input type="checkbox" /><strong>Step 3:
 Implement</strong></label></li>
 </ul>
-<p>In <code>quill/core/podcasts/download_queue.py</code>: -
-<code>DownloadItem</code>: after <code>destination: Path</code> add:</p>
+<p>In <code>quill/core/podcasts/download_queue.py</code>:</p>
+<ul>
+<li><code>DownloadItem</code>: after <code>destination: Path</code>
+add:</li>
+</ul>
 <div class="sourceCode" id="cb14"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">#: Ready &quot;Authorization&quot; header value for private feeds (&quot;&quot; = none).</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#: Computed by the enqueueing UI via feed_auth.auth_header_for_url, so</span></span>
@@ -938,18 +989,20 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a h
 class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> auth_header:</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>        headers[<span class="st">&quot;Authorization&quot;</span>] <span class="op">=</span> auth_header</span></code></pre></div>
 <ul>
-<li><p><code>enqueue</code> signature gains
+<li><code>enqueue</code> signature gains
 <code>auth_header: str = ""</code> (keyword-only) and passes
 <code>auth_header=auth_header</code> into the
-<code>DownloadItem(...)</code> construction.</p></li>
-<li><p>The worker’s <code>_fetch_chunked(item.url, ...)</code> call
-(~line 322) gains <code>auth_header=item.auth_header</code>.</p></li>
-<li><p>If <code>DownloadItem</code> is persisted/serialized anywhere in
+<code>DownloadItem(...)</code> construction.</li>
+<li>The worker’s <code>_fetch_chunked(item.url, ...)</code> call (~line
+322) gains <code>auth_header=item.auth_header</code>.</li>
+<li>If <code>DownloadItem</code> is persisted/serialized anywhere in
 this module (search for <code>to_dict</code>/<code>asdict</code> in the
 file), EXCLUDE <code>auth_header</code> from persistence – the header
-encodes the password. Recompute at enqueue time only.</p></li>
-<li><p><label><input type="checkbox" /><strong>Step 4: Run the file’s
-tests</strong></label></p></li>
+encodes the password. Recompute at enqueue time only.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run the file’s
+tests</strong></label></li>
 </ul>
 <p>Run:
 <code>python -m pytest tests/unit/core/test_podcast_download_queue.py -v</code>
@@ -964,19 +1017,25 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href=
 <hr />
 <h3 id="task-5-authenticated-transcripts-and-chapters">Task 5:
 Authenticated transcripts and chapters</h3>
-<p><strong>Files:</strong> - Modify:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify:
 <code>quill/core/podcasts/transcripts.py:52-63,121-128</code>;
-<code>quill/core/podcasts/chapters.py:58-71,105-111</code> - Test:
-<code>tests/unit/core/test_podcast_transcripts.py</code>,
-<code>tests/unit/core/test_podcast_chapters.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
+<code>quill/core/podcasts/chapters.py:58-71,105-111</code></li>
+<li>Test: <code>tests/unit/core/test_podcast_transcripts.py</code>,
+<code>tests/unit/core/test_podcast_chapters.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
 <code>fetch_and_parse_transcript(url, transcript_type, *, safe_mode=False, auth_header: str = "")</code>
 and
 <code>fetch_and_parse_chapters(url, *, safe_mode=False, auth_header: str = "")</code>,
 threading the header into
 <code>_fetch_transcript_bytes(url, auth_header="")</code> /
 <code>_fetch_chapters_bytes(url, auth_header="")</code>. Consumed by
-Task 8.</p>
+Task 8.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -1053,12 +1112,19 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href=
 <hr />
 <h3 id="task-6-the-feed-credentials-dialog">Task 6: The Feed Credentials
 dialog</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/ui/podcasts/feed_credentials_dialog.py</code> - Test:
-<code>tests/unit/ui/test_podcast_feed_credentials_dialog.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.ui.dialog_contract.apply_modal_ids/show_modal_dialog</code>.
-- Produces (consumed by Tasks 7 and 10):</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create:
+<code>quill/ui/podcasts/feed_credentials_dialog.py</code></li>
+<li>Test:
+<code>tests/unit/ui/test_podcast_feed_credentials_dialog.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
+<code>quill.ui.dialog_contract.apply_modal_ids/show_modal_dialog</code>.</li>
+<li>Produces (consumed by Tasks 7 and 10):</li>
+</ul>
 <div class="sourceCode" id="cb20"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(slots<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> FeedCredentialsResult:</span>
@@ -1271,19 +1337,23 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href=
 <p>(Include <code>tests/unit/ui/fixtures/dialog_inventory.json</code> in
 the add if it changed.)</p>
 <hr />
-<h3 id="task-7-add-podcast-prompt-on-401-and-retry">Task 7: Add Podcast
+<h3 id="task-7-add-podcast--prompt-on-401-and-retry">Task 7: Add Podcast
 – prompt on 401 and retry</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/podcasts/add_podcast_dialog.py:178-218</code>
-(<code>_subscribe_to_feed</code>, <code>_on_fetch_done</code>) - Test:
-<code>tests/unit/ui/test_podcast_add_dialog_auth.py</code> (new,
-source-contract style)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>feed_reader.FeedAuthError</code> (Task 3),
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/podcasts/add_podcast_dialog.py:178-218</code>
+(<code>_subscribe_to_feed</code>, <code>_on_fetch_done</code>)</li>
+<li>Test: <code>tests/unit/ui/test_podcast_add_dialog_auth.py</code>
+(new, source-contract style)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>feed_reader.FeedAuthError</code> (Task 3),
 <code>fetch_and_parse_feed(..., username=, password=)</code>,
 <code>FeedCredentialsDialog</code> (Task 6),
 <code>feed_auth.save_feed_password</code> (Task 1),
-<code>PodcastShow.feed_username</code> (Task 2).</p>
+<code>PodcastShow.feed_username</code> (Task 2).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 source-contract test</strong></label></li>
@@ -1445,25 +1515,30 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href=
 <h3
 id="task-8-wire-credentials-into-refresh-downloads-transcripts-chapters">Task
 8: Wire credentials into refresh, downloads, transcripts, chapters</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame_podcasts.py</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame_podcasts.py</code>
 (<code>refresh_podcast_feed</code> ~line 713;
 <code>_maybe_backfill_always_sync</code> ~line 736/763;
-<code>_maybe_reload_podcast_chapters</code> ~line 145-153) - Modify:
-<code>quill/ui/podcasts/manager_dialog.py</code>
+<code>_maybe_reload_podcast_chapters</code> ~line 145-153)</li>
+<li>Modify: <code>quill/ui/podcasts/manager_dialog.py</code>
 (<code>_on_download</code> ~line 1014-1019;
-<code>_on_chapters_click</code> ~line 825-835) - Modify:
-<code>quill/ui/podcasts/manager_phase4.py</code>
-(<code>_fetch_transcript_then</code> ~line 730-741) - Modify:
-<code>quill/ui/podcasts/show_actions.py</code>
-(<code>download_all_episodes</code> line 233-259) - Test:
-<code>tests/unit/ui/test_podcast_feed_auth_wiring.py</code> (new,
-source-contract style)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>feed_auth.auth_for_url</code> / <code>auth_header_for_url</code>
-(Task 1), <code>enqueue(..., auth_header=)</code> (Task 4),
+<code>_on_chapters_click</code> ~line 825-835)</li>
+<li>Modify: <code>quill/ui/podcasts/manager_phase4.py</code>
+(<code>_fetch_transcript_then</code> ~line 730-741)</li>
+<li>Modify: <code>quill/ui/podcasts/show_actions.py</code>
+(<code>download_all_episodes</code> line 233-259)</li>
+<li>Test: <code>tests/unit/ui/test_podcast_feed_auth_wiring.py</code>
+(new, source-contract style)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>feed_auth.auth_for_url</code> /
+<code>auth_header_for_url</code> (Task 1),
+<code>enqueue(..., auth_header=)</code> (Task 4),
 <code>fetch_and_parse_transcript/chapters(..., auth_header=)</code>
-(Task 5), <code>FeedAuthError</code> (Task 3).</p>
+(Task 5), <code>FeedAuthError</code> (Task 3).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 source-contract test</strong></label></li>
@@ -1610,20 +1685,27 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href=
 <hr />
 <h3 id="task-9-authenticated-streaming-playback">Task 9: Authenticated
 streaming playback</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/podcasts/feed_auth.py</code> (add
-<code>playback_source</code>) - Modify the seven
-<code>play_episode</code> call sites’ <code>source</code> resolution:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/podcasts/feed_auth.py</code> (add
+<code>playback_source</code>)</li>
+<li>Modify the seven <code>play_episode</code> call sites’
+<code>source</code> resolution:
 <code>quill/ui/podcasts/manager_dialog.py:878</code>,
 <code>quill/ui/podcasts/manager_phase4.py:~385</code>,
 <code>quill/ui/main_frame_podcasts.py:~214/~331/~361</code>,
-<code>quill/apps/podcasts.py:~385/~548</code> - Test:
-<code>tests/unit/core/test_podcast_feed_auth.py</code> (extend),
-<code>tests/unit/ui/test_podcast_feed_auth_wiring.py</code> (extend)</p>
-<p><strong>Interfaces:</strong> - Produces:
+<code>quill/apps/podcasts.py:~385/~548</code></li>
+<li>Test: <code>tests/unit/core/test_podcast_feed_auth.py</code>
+(extend), <code>tests/unit/ui/test_podcast_feed_auth_wiring.py</code>
+(extend)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
 <code>feed_auth.playback_source(show: PodcastShow, episode: PodcastEpisode) -&gt; str</code>
 – downloaded path if present, else
-<code>url_with_auth(show, episode.audio_url)</code>.</p>
+<code>url_with_auth(show, episode.audio_url)</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -1720,23 +1802,30 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href=
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(podcasts): authenticated streaming via playback_source&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-10-feed-credentials-menu-item-credential-cleanup-on-unsubscribe">Task
+id="task-10-feed-credentials-menu-item--credential-cleanup-on-unsubscribe">Task
 10: Feed Credentials… menu item + credential cleanup on unsubscribe</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/podcasts/show_actions.py</code> (new
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/podcasts/show_actions.py</code> (new
 <code>feed_credentials_prompt</code>;
-<code>unsubscribe_show_prompt</code> line 188-230) - Modify:
-<code>quill/ui/podcasts/manager_dialog.py</code>
+<code>unsubscribe_show_prompt</code> line 188-230)</li>
+<li>Modify: <code>quill/ui/podcasts/manager_dialog.py</code>
 (<code>_show_tree_context_menu</code> ~line 670-710; its own unsubscribe
-handler ~line 1160-1195) - Modify: <code>quill/apps/podcasts.py</code>
+handler ~line 1160-1195)</li>
+<li>Modify: <code>quill/apps/podcasts.py</code>
 (<code>_on_library_context_menu</code> ~line 230-271 and its handler
-wiring) - Test:
+wiring)</li>
+<li>Test:
 <code>tests/unit/ui/test_podcast_show_actions_credentials.py</code>
-(new)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>FeedCredentialsDialog</code> (Task 6),
+(new)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>FeedCredentialsDialog</code> (Task 6),
 <code>feed_auth.save_feed_password/delete_feed_password</code> (Task 1),
-<code>PodcastShow.feed_username</code> (Task 2). - Produces:</p>
+<code>PodcastShow.feed_username</code> (Task 2).</li>
+<li>Produces:</li>
+</ul>
 <div class="sourceCode" id="cb35"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> feed_credentials_prompt(parent, library: PodcastLibrary, show: PodcastShow,</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                            <span class="op">*</span>, announce: Callable[[<span class="bu">str</span>], <span class="va">None</span>]) <span class="op">-&gt;</span> <span class="bu">bool</span></span></code></pre></div>
@@ -1887,7 +1976,7 @@ add a
 entry to the show-kind <code>entries</code> list (after “Remove All
 Episodes…”, before “Unsubscribe”), skipped when the show has no
 <code>feed_url</code> (local shows). Handler, mirroring the neighboring
-<code>show_actions</code>-backed handlers (e.g. the
+<code>show_actions</code>-backed handlers (e.g. the
 <code>move_show_to_folder</code> one at ~line 319):</li>
 </ol>
 <div class="sourceCode" id="cb41"><pre
@@ -1920,10 +2009,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb42-1"><a href=
 <hr />
 <h3 id="task-11-full-suite-verification-and-audit-gates">Task 11:
 Full-suite verification and audit gates</h3>
-<p><strong>Files:</strong> - Possibly modify:
-<code>quill/tools/network_egress_audit.py</code>,
+<p><strong>Files:</strong></p>
+<ul>
+<li>Possibly modify: <code>quill/tools/network_egress_audit.py</code>,
 <code>quill/tools/persistence_audit.py</code> expectations,
-<code>quill/tools/module_size_budgets.json</code> - No new tests.</p>
+<code>quill/tools/module_size_budgets.json</code></li>
+<li>No new tests.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Run the complete
 podcast test set</strong></label></li>
@@ -1981,5 +2073,6 @@ audit-expectation updates</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span></span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;chore(podcasts): audit-gate expectations for feed auth&quot;</span></span></code></pre></div>
 <p>(Skip the commit if nothing changed.)</p>
+</main>
 </body>
 </html>

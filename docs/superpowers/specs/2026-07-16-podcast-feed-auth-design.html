@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-16-podcast-feed-auth-design</title>
+  <title>Podcast Feed Authentication (Username/Password) --
+Design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,15 +174,36 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="podcast-feed-authentication-usernamepassword-design">Podcast
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="podcast-feed-authentication-usernamepassword--design">Podcast
 Feed Authentication (Username/Password) – Design</h1>
 <p>Date: 2026-07-16 Status: approved for planning Ships in: quill
 package (<code>quill.core.podcasts</code> /
 <code>quill.ui.podcasts</code>), so QUILL, QUILL Cast, and any future
 wrapper get it identically.</p>
-<h2 id="problem">1. Problem</h2>
+<h2 id="1-problem">1. Problem</h2>
 <p>Private and premium podcast feeds (Patreon, Supporting Cast,
 self-hosted members-only shows) protect the RSS document – and usually
 the audio enclosures – with HTTP Basic auth.
@@ -189,7 +214,7 @@ calls it: there is no credential storage, no UI to enter credentials,
 and downloads, streaming, transcripts, and chapters ignore auth
 entirely. Subscribing to a private feed today fails with a generic
 “Could not reach that feed” error.</p>
-<h2 id="goals">2. Goals</h2>
+<h2 id="2-goals">2. Goals</h2>
 <ul>
 <li>Subscribe to, refresh, download from, and stream
 Basic-auth-protected feeds.</li>
@@ -200,7 +225,7 @@ with the existing dialog contract.</li>
 <li>Distinguish “wrong credentials” from “network down” in every error
 message.</li>
 </ul>
-<h2 id="non-goals">3. Non-goals</h2>
+<h2 id="3-non-goals">3. Non-goals</h2>
 <ul>
 <li>OAuth, token, or cookie-based feed auth.</li>
 <li>Per-episode credentials (one username/password per show).</li>
@@ -208,7 +233,7 @@ message.</li>
 machine-locked; documented, not solved).</li>
 <li>Exporting credentials via OPML (deliberately never).</li>
 </ul>
-<h2 id="decisions-settled-with-the-user-2026-07-16">4. Decisions
+<h2 id="4-decisions-settled-with-the-user-2026-07-16">4. Decisions
 (settled with the user, 2026-07-16)</h2>
 <ul>
 <li>D-1 <strong>Full coverage, same-host only.</strong> Stored
@@ -226,7 +251,7 @@ error instead.</li>
 user guide, changelog, and README, plus QUILL’s podcasts tutorial and
 release notes.</li>
 </ul>
-<h2 id="storage-design">5. Storage design</h2>
+<h2 id="5-storage-design">5. Storage design</h2>
 <ul>
 <li><strong>Username</strong> is not treated as a secret. New field on
 <code>PodcastShow</code> (<code>quill/core/podcasts/models.py</code>):
@@ -253,7 +278,7 @@ the username clears the stored password too (no orphaned secrets).</li>
 stick moved to another PC keeps subscriptions but cannot decrypt stored
 feed passwords; the user re-enters them once. The refresh error path
 (section 8) already gives the recovery instruction.</p>
-<h2 id="new-core-module-quillcorepodcastsfeed_auth.py">6. New core
+<h2 id="6-new-core-module-quillcorepodcastsfeed_authpy">6. New core
 module: <code>quill/core/podcasts/feed_auth.py</code></h2>
 <p>Small, wx-free, strict-typed. Public API:</p>
 <ul>
@@ -272,7 +297,7 @@ uses.</li>
 download/transcript/chapter fetchers build the identical header.</li>
 </ul>
 <h2
-id="wiring-all-inside-existing-reviewed-egress-sites-no-new-egress">7.
+id="7-wiring-all-inside-existing-reviewed-egress-sites-no-new-egress">7.
 Wiring (all inside existing reviewed egress sites; no new egress)</h2>
 <ul>
 <li><code>feed_reader.py</code>: already takes
@@ -310,7 +335,7 @@ username.</li>
 <code>_fetch_chunked</code> etc. updated only if the audit keys on
 signatures; no new egress sites are introduced.</li>
 </ul>
-<h2 id="ui-and-error-handling">8. UI and error handling</h2>
+<h2 id="8-ui-and-error-handling">8. UI and error handling</h2>
 <ul>
 <li><strong>Add Podcast dialog</strong>
 (<code>add_podcast_dialog.py</code>): on <code>FeedAuthError</code> from
@@ -343,7 +368,7 @@ download-error path.</li>
 cleared, retry failed) is announced. No color-only or unlabeled state
 anywhere.</li>
 </ul>
-<h2 id="tests">9. Tests</h2>
+<h2 id="9-tests">9. Tests</h2>
 <p>Core (wx-free, fast):</p>
 <ul>
 <li><code>auth_for_url</code>: same host -&gt; credentials; different
@@ -366,7 +391,8 @@ store (<code>QUILL_PORTABLE=1</code> in a temp dir).</li>
 </ul>
 <p>Existing egress-audit and persistence-audit gates must stay
 green.</p>
-<h2 id="documentation-deliverables">10. Documentation deliverables</h2>
+<h2 id="10-documentation-deliverables">10. Documentation
+deliverables</h2>
 <p>quill-cast repo:</p>
 <ul>
 <li><code>docs/prd.md</code>: “Since 1.0” entry for Private Feeds; a
@@ -387,10 +413,11 @@ bullet.</li>
 <li>Upstream changelog/release-notes entry per that repo’s
 convention.</li>
 </ul>
-<h2 id="out-of-scope-restated">11. Out of scope, restated</h2>
+<h2 id="11-out-of-scope-restated">11. Out of scope, restated</h2>
 <p>OAuth/token auth, per-episode credentials, cross-machine credential
 sync, credentials in OPML, auto-detecting auth for iTunes search results
 (search returns public feeds; a 401 there flows through the same prompt
 anyway).</p>
+</main>
 </body>
 </html>

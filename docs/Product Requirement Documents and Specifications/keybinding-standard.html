@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>keybinding-standard</title>
+  <title>QUILL Keybinding Standard</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-keybinding-standard">QUILL Keybinding Standard</h1>
 <p>This document is the canonical reference for the keybinding rules
 QUILL follows. The gate that enforces these rules lives in
@@ -192,7 +212,7 @@ intercepts app-globally.</li>
 <li><strong>A QUILL-key chord</strong> of the form
 <code>Ctrl+Shift+Grave, &lt;second-key&gt;</code> for everything else.
 The grave-prefix is easy to type without looking, has no native
-screen-reader collision, and chains naturally so that the user's left
+screen-reader collision, and chains naturally so that the user’s left
 hand never leaves the home row.</li>
 </ol>
 <p>The default-second-key is single-character. Shift variants use the
@@ -215,7 +235,7 @@ keymap; the user-facing surfaces use the display form.</p>
 (revised 0.7.0)</h2>
 <p><code>Ctrl+Alt+</code> is screen-reader-hostile because NVDA, JAWS,
 and Windows Speech Recognition intercept most of those chords
-app-globally. For years QUILL's policy was a flat ban.</p>
+app-globally. For years QUILL’s policy was a flat ban.</p>
 <p>In 0.7.0 the policy is relaxed: a <code>Ctrl+Alt+</code> binding may
 enter <code>DEFAULT_KEYMAP</code> when <strong>either</strong>:</p>
 <ul>
@@ -226,7 +246,7 @@ comment <code># §edsharp-ok — &lt;justification&gt;</code>.</li>
 </ul>
 <p>The rename from <code>_CTRL_ALT_ALLOWED</code> to
 <code>_CTRL_ALT_DOCUMENTED</code> makes the narrower scope explicit: the
-allowlist is now "documented exceptions," not a free pass.</p>
+allowlist is now “documented exceptions,” not a free pass.</p>
 <h3 id="documented-bindings-allowlist-as-of-070">Documented bindings
 (allowlist, as of 0.7.0)</h3>
 <table>
@@ -332,7 +352,7 @@ the QUILL-key chord (see Migration map).</td>
 </tr>
 </tbody>
 </table>
-<p>NVDA's switch-to-synth-N has a documented QUILL-key alternative
+<p>NVDA’s switch-to-synth-N has a documented QUILL-key alternative
 (<code>Ctrl+Shift+Grave, &lt;N&gt;</code>) for users who want both
 behaviours.</p>
 <p>The AI and compare chord classes share
@@ -348,7 +368,7 @@ escape hatch</h3>
 <p>A <code>Ctrl+Alt+</code> binding outside the allowlist passes the
 gate if the line ends with the comment <code># §edsharp-ok</code>. The
 comment must name the screen-reader binding the chord overrides (e.g.
-"overrides NVDA review-cursor"). This is the path for one-off bindings
+“overrides NVDA review-cursor”). This is the path for one-off bindings
 that need a documented exception without growing the global
 allowlist.</p>
 <h3 id="process-for-adding-a-new-ctrlalt-binding">Process for adding a
@@ -356,7 +376,7 @@ new <code>Ctrl+Alt+</code> binding</h3>
 <ol type="1">
 <li>Add the command id to <code>_CTRL_ALT_DOCUMENTED</code> in
 <code>menu_lint.py</code> if the binding is permanent. Skip this step if
-the binding is one-off and you'll use the inline escape hatch
+the binding is one-off and you’ll use the inline escape hatch
 instead.</li>
 <li>In <code>keymap.py</code>, append the <code># §edsharp-ok</code>
 comment to the binding line (or update the comment to reference the new
@@ -416,5 +436,6 @@ silently routed to the new chord without losing muscle memory:</p>
 </table>
 <p>See <code>docs/release notes/release0.7.0.md</code> for the per-PR
 changelog.</p>
+</main>
 </body>
 </html>

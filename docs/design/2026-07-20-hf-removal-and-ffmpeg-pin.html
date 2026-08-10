@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Self-hosting: HuggingFace removal + ffmpeg pin (prepared,
+activate on upload)</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="self-hosting-huggingface-removal--ffmpeg-pin-prepared-activate-on-upload">Self-hosting:
+HuggingFace removal + ffmpeg pin (prepared, activate on upload)</h1>
+<p>Status: code prepared and merged; inert until assets are uploaded.
+2026-07-20.</p>
+<p>Goal: stop depending on external hosts for redistributable components
+– serve them from QUILL’s own SHA-pinned <code>assets-v1</code> release
+– to cut complexity and fragility. The <strong>gated</strong>
+<code>pyannote/speaker-diarization-3.1</code> diarization model stays on
+Hugging Face (it requires a token and is isolated in
+<code>quill/core/ai/diarization.py</code>); everything below is the
+<em>public</em> models only.</p>
+<p>The code is written so that <strong>each cut-over is a data change,
+not a code change</strong>, and rolls out one component at a time with a
+safe fallback to the current host.</p>
+<h2 id="ffmpeg-assets-v1-pin">ffmpeg (assets-v1 pin)</h2>
+<p><code>quill/core/speech/ffmpeg_install.py</code> -&gt;
+<code>ffmpeg_download_source()</code> returns the moving Gyan.dev
+upstream URL (unpinned) today, and the pinned <code>assets-v1</code>
+mirror the moment three constants are filled:</p>
+<ol type="1">
+<li>Download the exact Gyan “essentials” zip to pin.</li>
+<li>Upload it to the <code>assets-v1</code> release; note the asset
+filename.</li>
+<li>Set <code>FFMPEG_PINNED_FILENAME</code>,
+<code>FFMPEG_PINNED_VERSION</code>, <code>FFMPEG_PINNED_SHA256</code> (a
+real 64-hex digest). A blank/placeholder SHA is ignored.</li>
+</ol>
+<p>No fallback needed once pinned: a pinned mirror is a single
+self-hosted URL, SHA verified, like the eSpeak/Tesseract installers.</p>
+<h2
+id="whispercpp--faster-whisper-the-two-huggingface_hub-library-call-sites">whisper.cpp
++ Faster Whisper (the two <code>huggingface_hub</code> library call
+sites)</h2>
+<p>The only two library uses of <code>huggingface_hub</code> are
+<code>whispercpp._download_to_file</code> (<code>hf_hub_download</code>,
+single GGML file) and <code>fasterwhisper._download_repo</code>
+(<code>snapshot_download</code>, CT2 repo). Both now consult one shared
+manifest before touching Hugging Face:</p>
+<ul>
+<li><code>quill/core/speech/model_mirrors.py</code> –
+<code>_MIRRORS: dict[str, MirrorAsset]</code> keyed
+<code>"&lt;provider_id&gt;:&lt;model_id&gt;"</code>
+(<code>whispercpp:small</code>, <code>fasterwhisper:small</code>).
+<code>mirror_for(provider, model)</code> returns a validly-pinned entry
+or <code>None</code>.</li>
+<li>Each provider: if a mirror is configured, fetch it through the
+shared, SHA-verified download core; on any
+<code>ReleaseAssetError</code> it <strong>falls back to Hugging
+Face</strong>. So a not-yet-uploaded or transiently-failing mirror never
+blocks a download during rollout.</li>
+</ul>
+<h3 id="activation-per-model-no-code-change">Activation, per model (no
+code change)</h3>
+<ol type="1">
+<li>Upload to the <code>assets-v1</code> release:
+<ul>
+<li>whisper.cpp: the single <code>ggml-&lt;id&gt;.bin</code>
+(byte-identical to the HF file – its SHA-256 is already the one pinned
+in <code>catalog.py</code>, so you can reuse it).</li>
+<li>Faster Whisper: a <strong>zip of the CT2 model directory</strong>
+(the multi-file repo).</li>
+</ul></li>
+<li>Add a <code>MirrorAsset(filename, sha256[, archive_member])</code>
+entry to <code>_MIRRORS</code>. For a Faster Whisper zip set
+<code>archive_member</code> (e.g. <code>"model.bin"</code>) so a
+malformed archive is caught.</li>
+</ol>
+<p>whisper.cpp SHAs are already known (in <code>catalog.py</code>);
+Faster Whisper zip SHAs must be computed from the archives you build and
+upload.</p>
+<h3
+id="final-cut-over-once-every-whispercpp--fw-model-is-mirrored-and-proven">Final
+cut-over (once every whisper.cpp + FW model is mirrored and proven)</h3>
+<ol type="1">
+<li>Remove the Hugging Face fallback branch in
+<code>_download_to_file</code> and <code>_download_repo</code> (and
+their <code>huggingface_hub</code> imports).</li>
+<li>Demote <code>huggingface_hub</code> from a base dependency to the
+<code>fasterwhisper</code> / diarization extra in
+<code>pyproject.toml</code> (it is still needed transitively by
+<code>pyannote</code> for gated diarization).</li>
+<li>Update <code>tests/unit/test_packaging_dependencies.py::</code>
+<code>test_huggingface_hub_is_a_base_runtime_dependency</code> to
+reflect the demotion.</li>
+</ol>
+<h2
+id="piper-voices-follow-up-separate-from-the-library-dependency">Piper
+voices (follow-up, separate from the library dependency)</h2>
+<p>Piper voices are already fetched by plain <code>urllib</code> from
+<code>huggingface.co/rhasspy/piper-voices/resolve/main/...</code> (not
+the <code>huggingface_hub</code> library), in two duplicated
+<code>_download_piper_voice</code> methods
+(<code>quill/ui/main_frame.py</code>, <code>quill/apps/studio.py</code>)
+with <strong>no SHA pinning</strong>.</p>
+<p>To fully sever <code>huggingface.co</code>: re-host each voice’s
+<code>.onnx</code> + <code>.onnx.json</code> (or a per-voice zip) on
+<code>assets-v1</code>, add per-voice SHAs, consolidate the duplicated
+download into one helper, and route it through
+<code>model_mirrors.fetch_mirror_file</code> /
+<code>fetch_mirror_archive</code>. Deferred here because it is
+UI-duplicated code and adds checksums that do not exist today; the
+mechanism already supports it.</p>
+</main>
+</body>
+</html>

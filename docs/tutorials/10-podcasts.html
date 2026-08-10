@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>10-podcasts</title>
+  <title>Tutorial 10: Podcasts</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,46 +173,67 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="tutorial-10-podcasts">Tutorial 10: Podcasts</h1>
 <p><strong>Goal:</strong> subscribe to a show, organize your library
 into folders, download an episode for offline listening, and control
-playback without ever leaving the keyboard — QUILL's own podcast client,
-built on the same "one player that outlives any dialog" idea as <a
+playback without ever leaving the keyboard — QUILL’s own podcast client,
+built on the same “one player that outlives any dialog” idea as <a
 href="09-internet-radio.md">Internet Radio</a>.</p>
 <p>Podcasts need a network connection to subscribe and download, and are
 disabled entirely in Safe Mode. Everything below lives under
-<strong>Tools &gt; Media &gt; Podcasts...</strong>.</p>
+<strong>Tools &gt; Media &gt; Podcasts…</strong>.</p>
 <h2 id="1-subscribe-to-a-show">1. Subscribe to a show</h2>
 <ol type="1">
-<li><strong>Tools &gt; Media &gt; Podcasts...</strong> opens the Podcast
+<li><strong>Tools &gt; Media &gt; Podcasts…</strong> opens the Podcast
 Manager: an empty folder tree on the left, an empty episode list on the
 right, the first time you use it.</li>
-<li>Press <strong>Add Podcast...</strong>. Three ways in, all on the
-same dialog:
+<li>Press <strong>Add Podcast…</strong>. Three ways in, all on the same
+dialog:
 <ul>
 <li>Type a show name in the search box and press <strong>Search</strong>
-— this queries Apple's free iTunes Search directory. Arrow to a result
+— this queries Apple’s free iTunes Search directory. Arrow to a result
 and press <strong>Subscribe to Selected</strong>.</li>
 <li>Already know the feed address? Paste it into <strong>Add by Feed
 URL</strong> and press <strong>Add</strong> — skips the search
 entirely.</li>
-<li>Coming from another podcast app? <strong>Import OPML...</strong>
-reads its whole exported subscription list — folders included — in one
+<li>Coming from another podcast app? <strong>Import OPML…</strong> reads
+its whole exported subscription list — folders included — in one
 step.</li>
 </ul></li>
 <li>Close the Add Podcast dialog. Your new show appears in the Podcast
-Manager's tree, and its episodes fill the list on the right when you
+Manager’s tree, and its episodes fill the list on the right when you
 select it.</li>
 </ol>
 <h2 id="2-organize-into-folders">2. Organize into folders</h2>
-<p>Press <strong>New Folder...</strong> to create one, nested under
-whatever's selected in the tree — select a folder first, then New Folder
-again, to nest one inside it. There's no drag-and-drop yet; moving a
+<p>Press <strong>New Folder…</strong> to create one, nested under
+whatever’s selected in the tree — select a folder first, then New Folder
+again, to nest one inside it. There’s no drag-and-drop yet; moving a
 show between folders is a planned follow-up (see the end of this
 tutorial).</p>
-<p>Not ready to unsubscribe from a show but don't want new episodes
+<p>Not ready to unsubscribe from a show but don’t want new episodes
 right now? Right-click it in the tree (or open its context menu with
 Menu/Shift+F10) and choose <strong>Pause Downloads for This
 Podcast</strong> — it stays in your library, episodes and all, but QUILL
@@ -229,9 +249,9 @@ while it works through the queue.</p>
 <p>Two separate pause controls, worth knowing apart:</p>
 <ul>
 <li><strong>Pause All Downloads</strong> / <strong>Resume All
-Downloads</strong> — reachable from the tray menu, the status bar's
+Downloads</strong> — reachable from the tray menu, the status bar’s
 Podcasts cell, or the Podcast Manager — stops the queue from
-<em>starting</em> anything new. Whatever's already mid-transfer keeps
+<em>starting</em> anything new. Whatever’s already mid-transfer keeps
 running to completion.</li>
 <li><strong>Pause Download</strong> on one specific episode (its button,
 or its context menu) halts that one transfer immediately, right where it
@@ -240,14 +260,14 @@ up from the exact byte it stopped at — nothing already downloaded is
 thrown away.</li>
 </ul>
 <p>Try it: start downloading a longer episode, then immediately pause
-just that one episode. Its status column shows "Paused." Resume it and
-watch the status move back through "Downloading" to "Downloaded."</p>
+just that one episode. Its status column shows “Paused.” Resume it and
+watch the status move back through “Downloading” to “Downloaded.”</p>
 <h2 id="4-play-an-episode-and-control-speed">4. Play an episode, and
 control speed</h2>
 <p>Select an episode and press <strong>Play/Pause</strong>, double-click
 it, or use its context menu. Starting a different episode always
 replaces whatever was playing — QUILL never plays two things at once,
-whether that's two episodes or an episode and a radio station. Closing
+whether that’s two episodes or an episode and a radio station. Closing
 the Podcast Manager never stops playback, exactly like Browse Stations
 in Internet Radio.</p>
 <p>Your place in an episode is saved automatically. Come back to it
@@ -255,13 +275,13 @@ later — even much later, even after closing QUILL — and it resumes
 exactly where you stopped.</p>
 <p>The <strong>Speed</strong> control on the player row sets playback
 rate for whichever podcast you currently have selected, from 0.75x up to
-2.0x. It's remembered per show, so a fast-talking interview show and a
+2.0x. It’s remembered per show, so a fast-talking interview show and a
 slow, dense lecture series can each have their own comfortable
 speed.</p>
 <h2 id="5-chapters-sorting-and-show-notes">5. Chapters, sorting, and
 show notes</h2>
 <p>If a show publishes Podcasting 2.0 chapters (or the episode has ID3
-chapters once downloaded), a <strong>Chapters...</strong> button appears
+chapters once downloaded), a <strong>Chapters…</strong> button appears
 on the player row — opens a list of chapter titles and start times;
 picking one jumps playback straight there.</p>
 <p>Two <strong>Sort by</strong> choices, one above the folder tree
@@ -269,15 +289,15 @@ picking one jumps playback straight there.</p>
 episode list (episodes: Newest, Oldest, Title, Duration, Unplayed
 First), are remembered between sessions. Each show and folder in the
 tree also shows an unheard-episode count in parentheses, so you can see
-what's waiting without opening it.</p>
-<p><strong>View Show Notes...</strong> on an episode's context menu
-opens its description in a plain, readable window — HTML stripped to
-text with links shown as <code>text (url)</code> rather than raw markup,
-or switch to a rich view if you'd rather see it formatted. <strong>Send
-Show Notes to Editor</strong> copies that same plain text into a new
-document tab, if you want to keep or annotate it.</p>
+what’s waiting without opening it.</p>
+<p><strong>View Show Notes…</strong> on an episode’s context menu opens
+its description in a plain, readable window — HTML stripped to text with
+links shown as <code>text (url)</code> rather than raw markup, or switch
+to a rich view if you’d rather see it formatted. <strong>Send Show Notes
+to Editor</strong> copies that same plain text into a new document tab,
+if you want to keep or annotate it.</p>
 <h2 id="6-podcast-settings">6. Podcast Settings</h2>
-<p><strong>Podcast Settings...</strong> on the Podcast Manager toolbar
+<p><strong>Podcast Settings…</strong> on the Podcast Manager toolbar
 sets the defaults every show starts from: stream vs. download, retention
 (keep everything, keep the last N, or delete after playing), download
 location, and what happens to downloaded files when you unsubscribe from
@@ -296,23 +316,23 @@ hidden.</li>
 <li><strong>The keyboard, from anywhere in the editor.</strong> Your
 QUILL Key (<strong>Ctrl+Shift+Grave</strong>), then <strong>8</strong>,
 toggles play/pause; then <strong>7</strong> stops. Deliberately parked
-right next to Radio's N/0/9 chords, not on top of them. Remap either in
+right next to Radio’s N/0/9 chords, not on top of them. Remap either in
 <strong>Preferences &gt; Keyboard Shortcuts</strong>.</li>
 </ul>
 <h2 id="8-take-your-library-with-you">8. Take your library with you</h2>
-<p><strong>Export OPML...</strong> on the Podcast Manager writes your
+<p><strong>Export OPML…</strong> on the Podcast Manager writes your
 whole subscription list — folder structure included — to a standard
 <code>.opml</code> file that any other podcast app can read. Bring it
 back into QUILL (or take it somewhere else) with <strong>Import
-OPML...</strong>, the same button you used in step 1.</p>
-<h2 id="whats-not-here-yet">What's not here yet</h2>
+OPML…</strong>, the same button you used in step 1.</p>
+<h2 id="whats-not-here-yet">What’s not here yet</h2>
 <p>No video podcasts — audio only, matching every other playback surface
 in QUILL. Moving a show between folders is keyboard-menu-only for now
 (no drag-and-drop). Transcript viewing/export is parsed from the feed
 already but has no UI of its own yet; a separate Inbox view, a
 cross-show reorderable Play Queue, local (imported-file) podcasts, and
 richer filtering (beyond the sorting above) are the next planned phases
-— see the PRD's Podcasts section (5.84g) if you want the full list — the
+— see the PRD’s Podcasts section (5.84g) if you want the full list — the
 once-planned next phases (Inbox, Play Queue, transcripts, local
 podcasts, Search Everywhere) have since shipped.</p>
 <h2 id="the-shape-of-it">The shape of it</h2>
@@ -323,5 +343,6 @@ closed a dialog. Right-click nearly anything for the full set of
 actions, and reach the essentials — play, pause, stop — from the status
 bar, the tray, or the keyboard without ever opening the Podcast Manager
 at all.</p>
+</main>
 </body>
 </html>

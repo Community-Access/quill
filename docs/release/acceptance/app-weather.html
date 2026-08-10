@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>app-weather</title>
+  <title>App — Quill Weather (public standalone app, version
+2.2.0)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,15 +174,36 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="app--quill-weather-public-standalone-app-version-220">App —
 Quill Weather (public standalone app, version 2.2.0)</h1>
 <p>Quill Weather is a small, screen-reader-first Windows app whose whole
 job is to <strong>watch official National Weather Service alerts for the
 places you care about and speak new warnings the moment they are
 issued</strong> — even when its window is closed, even when nothing of
-Quill's is running at all. It ships alongside QUILL 1.0.0 and Quill
+Quill’s is running at all. It ships alongside QUILL 1.0.0 and Quill
 Radio; the three share the same weather code, so what you verify here is
 the same feature a Radio or editor user meets under their
 <strong>Weather</strong> menu.</p>
@@ -200,12 +225,12 @@ fetches conditions, forecasts, or real alerts talks to the National
 Weather Service (and, for the extended outlook, Open-Meteo) over the
 internet. On a machine with <strong>no network</strong>, those fetches
 fail with a spoken, non-silent error — mark such scenarios
-<strong>Blocked</strong> and say "offline", not <strong>Fail</strong>.
+<strong>Blocked</strong> and say “offline”, not <strong>Fail</strong>.
 The scenarios that do <strong>not</strong> need the network (Test Alert,
 the settings and options surfaces, the tray, Safe Mode) are called out
 so you can still run them offline.</li>
 <li><strong>The background alert check is not a running
-program.</strong> When you turn on "Check for alerts in the background,"
+program.</strong> When you turn on “Check for alerts in the background,”
 Quill Weather registers a <strong>Windows Scheduled Task</strong> named
 <code>QuillWeatherAlertCheck</code>. That task — not any open window —
 wakes a tiny <code>quill-weather --check-once</code> process on a
@@ -245,8 +270,8 @@ settle.</li>
 <li>A window titled <strong>Quill Weather</strong> opens. Focus lands on
 the <strong>Open Weather Center…</strong> button (announced as a
 button). If this is a first-ever run with no saved location, you will
-also hear, a moment later, <strong>"Add a weather location to begin
-monitoring."</strong></li>
+also hear, a moment later, <strong>“Add a weather location to begin
+monitoring.”</strong></li>
 <li>If a copy of Quill Weather is already running (including one sitting
 in the system tray), a second launch does <strong>not</strong> open a
 second window — the existing one comes to the front instead.</li>
@@ -273,7 +298,7 @@ scenario.</li>
 <strong>Left/Right Arrow</strong> across every top menu, reading each
 name.</li>
 <li>Press <strong>Escape</strong> to leave the menu bar, then
-<strong>Tab</strong> through the window's controls and read each
+<strong>Tab</strong> through the window’s controls and read each
 one.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
@@ -283,15 +308,15 @@ one.</li>
 Description Project</strong> menu may appear — it is a shared
 pre-release menu, fine to skip), <strong>QuillVille</strong>,
 <strong>Help</strong>. The standalone app does <strong>not</strong>
-offer an "Open the Quill Weather App" item in its own Weather menu (that
+offer an “Open the Quill Weather App” item in its own Weather menu (that
 item is only for host apps like the editor and Radio).</li>
 <li>Tabbing the body reaches three buttons: <strong>Open Weather
 Center…</strong>, <strong>Start/Stop Monitoring</strong> (its label
 reads <strong>Start Monitoring</strong> or <strong>Stop
 Monitoring</strong> to match the current state), and <strong>Add
 Location…</strong>. There is also a status line that reads in substance
-<strong>"Quill Weather — monitoring is off"</strong> (or "on for
-<place>") — the same text the status bar carries.</li>
+<strong>“Quill Weather — monitoring is off”</strong> (or “on for
+<place>”) — the same text the status bar carries.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -306,7 +331,7 @@ named the same are never confused.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Quill Weather open. <strong>Network required</strong> (the search
-uses OpenStreetMap's free US geocoder); offline, mark
+uses OpenStreetMap’s free US geocoder); offline, mark
 <strong>Blocked</strong>.</li>
 <li>Input to type: a place you can verify, e.g.
 <strong><code>Springfield, IL</code></strong> (or a ZIP such as
@@ -332,15 +357,15 @@ double-click a result).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The dialog is titled <strong>Add Weather Location</strong>. The
-search field is announced as "Search: ZIP, city, county, or address";
+search field is announced as “Search: ZIP, city, county, or address”;
 <strong>Add Selected</strong> starts <strong>disabled</strong> and
 enables once results exist.</li>
-<li>On search you hear <strong>"Searching for Springfield,
-IL."</strong>, then, in substance, <strong>"N results. Arrow to a place
-and press Add Selected."</strong> and focus moves into the results list.
+<li>On search you hear <strong>“Searching for Springfield,
+IL.”</strong>, then, in substance, <strong>“N results. Arrow to a place
+and press Add Selected.”</strong> and focus moves into the results list.
 Each entry is a full place name so same-named towns are
 distinguishable.</li>
-<li>On Add you hear <strong>"Added Home."</strong> (or the place's name
+<li>On Add you hear <strong>“Added Home.”</strong> (or the place’s name
 if you left the friendly name blank) and the dialog closes. A bare
 <strong><code>lat,lon</code></strong> typed into search resolves to that
 exact point with no lookup. <strong>Escape</strong> cancels with no
@@ -358,7 +383,7 @@ id="weather-04--weather-center-open-and-read-current-conditions-weathercenterdia
 <p><em>What &amp; why.</em> The Weather Center is the text-only weather
 workspace: alerts, then current conditions, then forecasts, laid out as
 plain screen-reader controls in reading order. This scenario opens it
-and reads today's conditions.</p>
+and reads today’s conditions.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>At least one location saved (WEATHER-03). <strong>Network
@@ -366,11 +391,11 @@ required</strong>; offline, <strong>Blocked</strong>.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Press <strong>Ctrl+Shift+W</strong>, or the main window's
+<li>Press <strong>Ctrl+Shift+W</strong>, or the main window’s
 <strong>Open Weather Center…</strong> button, or <strong>Weather menu ▸
 Weather Now…</strong>.</li>
 <li>Let it load. <strong>Tab</strong> to the <strong>Current
-conditions</strong> field and read it with your screen reader's review
+conditions</strong> field and read it with your screen reader’s review
 keys.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
@@ -379,16 +404,16 @@ keys.</li>
 app it is a real window with its own menu bar (a
 <strong>Weather</strong> menu with <strong>Close Ctrl+W</strong>, plus
 the shared <strong>Window</strong> menu), not a modal box.</li>
-<li>Because refresh-on-open is on by default, you hear <strong>"Loading
-weather for <place>."</strong> then a one-sentence summary in substance
-— <strong>"Weather for <place>. There are no active alerts.
-<temperature and sky>."</strong> (or the active-alert count if
+<li>Because refresh-on-open is on by default, you hear <strong>“Loading
+weather for <place>.”</strong> then a one-sentence summary in substance
+— <strong>“Weather for <place>. There are no active alerts.
+<temperature and sky>.”</strong> (or the active-alert count if
 any).</li>
 <li>Tab order runs: <strong>Location</strong> chooser,
 <strong>Refresh</strong>, <strong>Add Location…</strong>, <strong>Remove
 Location</strong>, <strong>Settings…</strong>, then <strong>Active
 Alerts</strong> list, then <strong>Current conditions</strong>
-(read-only, announced "Current conditions"), then the
+(read-only, announced “Current conditions”), then the
 <strong>Forecast</strong>, <strong>Hourly forecast</strong>, and
 <strong>Daily outlook</strong> lists, then a <strong>status</strong>
 line, then <strong>Close</strong>. The current-conditions box carries
@@ -403,7 +428,7 @@ in Settings.</li>
 <h2 id="weather-05--weather-center-the-period-forecast">WEATHER-05 —
 Weather Center: the period forecast</h2>
 <p><em>What &amp; why.</em> The multi-day forecast is a list you arrow
-through, with each period's full detailed text in a read-only box below
+through, with each period’s full detailed text in a read-only box below
 it.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -420,12 +445,12 @@ Tomorrow…).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Each list line reads in substance <strong>"<period name>:
-<temperature> degrees <scale>, <short forecast>"</strong> — e.g.
-"Tonight: 54 degrees Fahrenheit, Partly Cloudy." As you arrow, the
-<strong>Selected period</strong> box updates to that period's full
-detailed forecast, with abbreviations like "mph" spoken in full ("miles
-per hour"). The number of periods shown follows your Settings
+<li>Each list line reads in substance <strong>“<period name>:
+<temperature> degrees <scale>, <short forecast>”</strong> — e.g.
+“Tonight: 54 degrees Fahrenheit, Partly Cloudy.” As you arrow, the
+<strong>Selected period</strong> box updates to that period’s full
+detailed forecast, with abbreviations like “mph” spoken in full (“miles
+per hour”). The number of periods shown follows your Settings
 choice.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -446,7 +471,7 @@ value must be <strong>greater than 0</strong> (the default is on).</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>Tab</strong> to the <strong>Hourly forecast</strong> list
-(announced "Hourly forecast, one line per hour").</li>
+(announced “Hourly forecast, one line per hour”).</li>
 <li><strong>Arrow</strong> through several hours, then
 <strong>Tab</strong> to <strong>Selected hour (read-only)</strong> and
 read it.</li>
@@ -469,7 +494,7 @@ empty) — a screen-reader user never lands on a blank field.</li>
 id="weather-07--weather-center-the-extended-daily-outlook">WEATHER-07 —
 Weather Center: the extended daily outlook</h2>
 <p><em>What &amp; why.</em> A longer-range day-by-day outlook (from
-Open-Meteo) that reaches past the National Weather Service's seven
+Open-Meteo) that reaches past the National Weather Service’s seven
 days.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -521,7 +546,7 @@ field again.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The current-conditions text now includes a <strong>moon</strong>
-line in substance — the phase name (e.g. "Waxing Gibbous") and
+line in substance — the phase name (e.g. “Waxing Gibbous”) and
 moonrise/moonset times. Unchecking a detail in Settings and re-reading
 removes exactly that detail; temperature and sky always remain. (Note:
 the exact moon wording comes from the renderer; verify the phase and
@@ -541,7 +566,7 @@ safety-critical surface.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>A location saved. Network required. If your area currently has
-<strong>no</strong> alerts you can still verify the "none" wording; to
+<strong>no</strong> alerts you can still verify the “none” wording; to
 exercise a real alert, pick a location that is under an active
 watch/warning (the National Weather Service alerts map can tell you
 where).</li>
@@ -556,9 +581,9 @@ Center with focus on the alerts list). Or open Weather Center and
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The alerts label reads <strong>"Active Alerts (N):"</strong> with
-the count, or <strong>"Active Alerts (none):"</strong>. With no alerts
-the list shows a single <strong>"No active alerts."</strong> line and
+<li>The alerts label reads <strong>“Active Alerts (N):”</strong> with
+the count, or <strong>“Active Alerts (none):”</strong>. With no alerts
+the list shows a single <strong>“No active alerts.”</strong> line and
 the selected-alert detail box is hidden (no empty box to land on).</li>
 <li>With an alert present, each list line reads event, area, and tier;
 the detail box gives headline; severity/urgency/certainty; area;
@@ -593,12 +618,12 @@ to remove the shown place.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Choosing a place makes it the primary and reloads its weather — you
-hear <strong>"Loading weather for <place>."</strong> and then its
+hear <strong>“Loading weather for <place>.”</strong> and then its
 summary.</li>
-<li>Remove announces <strong>"Removed <place>."</strong> and reloads the
+<li>Remove announces <strong>“Removed <place>.”</strong> and reloads the
 remaining one. Remove the last location and you hear, in substance,
-<strong>"Removed <place>. No locations left. Choose Add Location to
-begin."</strong> and every reading field clears.</li>
+<strong>“Removed <place>. No locations left. Choose Add Location to
+begin.”</strong> and every reading field clears.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -610,8 +635,8 @@ id="weather-11--quick-weather-weather--quick-weather-ctrlshiftq">WEATHER-11
 — Quick Weather (<code>Weather ▸ Quick Weather</code>,
 Ctrl+Shift+Q)</h2>
 <p><em>What &amp; why.</em> A one-line spoken summary of the primary
-location with <strong>no window at all</strong> — the fastest "what's it
-doing outside" answer.</p>
+location with <strong>no window at all</strong> — the fastest “what’s it
+doing outside” answer.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>A location saved. Network required; offline,
@@ -624,12 +649,12 @@ Weather</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>You hear <strong>"Getting weather for <place>."</strong> then, a
+<li>You hear <strong>“Getting weather for <place>.”</strong> then, a
 moment later, a single spoken line — temperature and sky, plus whatever
 Quick Weather extras (feels-like, wind, humidity, alert count, data age)
 you enabled in Settings. No window opens.</li>
 <li>With <strong>no</strong> location saved yet, Quick Weather says
-<strong>"No weather location yet. Opening Add Location."</strong> and
+<strong>“No weather location yet. Opening Add Location.”</strong> and
 opens the Add Location dialog instead of failing silently.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -674,8 +699,8 @@ events</strong> box.</li>
 control is announced with a meaningful name and is reachable and
 operable by keyboard (choices with arrows, spin controls with up/down,
 checkboxes with Space).</li>
-<li><strong>Save</strong> announces <strong>"Weather settings
-saved."</strong> and closes; the change is visible on reopen and in the
+<li><strong>Save</strong> announces <strong>“Weather settings
+saved.”</strong> and closes; the change is visible on reopen and in the
 next reading (Celsius temperatures, changed alert filtering, etc.).
 <strong>Escape</strong> / <strong>Cancel</strong> discards changes and
 closes with no save.</li>
@@ -713,16 +738,16 @@ it.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The sound row exposes a read-only <strong>Alert sound</strong> path
-field (announced "Chosen alert sound file", showing <strong>(default
+field (announced “Chosen alert sound file”, showing <strong>(default
 chime)</strong> when no custom file is set), plus
 <strong>Choose…</strong>, <strong>Play</strong>, and <strong>Use
 Default</strong> buttons and a <strong>repeat</strong> spin control
 (1–10).</li>
 <li><strong>Play</strong> plays the current sound the chosen number of
-times back-to-back and says <strong>"Playing the alert sound."</strong>
+times back-to-back and says <strong>“Playing the alert sound.”</strong>
 <strong>Use Default</strong> resets the path to <strong>(default
-chime)</strong> and says <strong>"Using the default alert
-sound."</strong> With the sound <strong>unchecked</strong>, no sound
+chime)</strong> and says <strong>“Using the default alert
+sound.”</strong> With the sound <strong>unchecked</strong>, no sound
 plays on a real or test alert (the alert is still spoken and
 shown).</li>
 </ul>
@@ -754,8 +779,8 @@ select.</li>
 <ul>
 <li>A standard Windows <strong>Choose an alert sound</strong> file
 dialog opens, filtered to <strong>Sound files (*.wav)</strong>, fully
-keyboard-navigable and screen-read. On Open you hear <strong>"Alert
-sound chosen."</strong> and the path field shows your file.
+keyboard-navigable and screen-read. On Open you hear <strong>“Alert
+sound chosen.”</strong> and the path field shows your file.
 <strong>Play</strong> now previews your file; <strong>Save</strong>
 persists it. Cancelling the file dialog leaves the prior choice
 untouched.</li>
@@ -788,14 +813,14 @@ dialog)</strong>.</li>
 <ul>
 <li>In quick succession: the alert <strong>sound</strong> (if enabled),
 a <strong>spoken</strong> line that interrupts other speech —
-<strong>"Test weather alert. This is a TEST of Quill Weather alerts. No
-action is needed."</strong> — a system-tray <strong>toast</strong>
-titled <strong>"[TEST] Weather alert"</strong>, and a dialog titled
+<strong>“Test weather alert. This is a TEST of Quill Weather alerts. No
+action is needed.”</strong> — a system-tray <strong>toast</strong>
+titled <strong>“[TEST] Weather alert”</strong>, and a dialog titled
 <strong>Test Weather Alert</strong> whose body is clearly labelled a
 TEST (sample severity/urgency/certainty, a note that real instructions
 would appear here) with an <strong>OK</strong> button.</li>
 <li>Afterward, nothing about your real monitoring has changed — no
-location was fetched, no alert was recorded as "seen", monitoring is
+location was fetched, no alert was recorded as “seen”, monitoring is
 neither started nor stopped.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -818,7 +843,7 @@ the real polls; offline you can still confirm the toggle speaks but mark
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Press <strong>Ctrl+Shift+M</strong>, or <strong>Weather menu ▸ Start
-Weather Monitoring</strong>, or the main window's <strong>Start
+Weather Monitoring</strong>, or the main window’s <strong>Start
 Monitoring</strong> button.</li>
 <li>Listen to the start-up speech.</li>
 <li>Press <strong>Ctrl+Shift+M</strong> again (now <strong>Stop Weather
@@ -826,17 +851,17 @@ Monitoring</strong>) to turn it off.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>On start you hear immediate feedback — <strong>"Turning on weather
-monitoring for <place>."</strong> — then, once the first (baseline) poll
-returns, a one-time summary in substance: <strong>"Weather monitoring on
+<li>On start you hear immediate feedback — <strong>“Turning on weather
+monitoring for <place>.”</strong> — then, once the first (baseline) poll
+returns, a one-time summary in substance: <strong>“Weather monitoring on
 for <place>. N active alerts right now… . Checking every 10 minutes, or
-every 60 seconds while an alert is active."</strong> The menu item and
+every 60 seconds while an alert is active.”</strong> The menu item and
 the main-window button relabel to <strong>Stop…</strong>. The status
-line updates to "monitoring on".</li>
-<li>On stop you hear <strong>"Weather monitoring off for
-<place>."</strong> and the labels revert. With <strong>no</strong>
-location saved, Start says <strong>"No weather location to monitor yet.
-Opening Add Location."</strong> rather than doing nothing.</li>
+line updates to “monitoring on”.</li>
+<li>On stop you hear <strong>“Weather monitoring off for
+<place>.”</strong> and the labels revert. With <strong>no</strong>
+location saved, Start says <strong>“No weather location to monitor yet.
+Opening Add Location.”</strong> rather than doing nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -849,7 +874,7 @@ id="weather-17--pause--resume-alert-checks-weather--pauseresume-alert-checks">WE
 (<code>Weather ▸ Pause/Resume Alert Checks</code>)</h2>
 <p><em>What &amp; why.</em> A temporary snooze that halts the polling
 without turning monitoring off — different from Stop. A paused watch
-stays "on" and resumes cleanly.</p>
+stays “on” and resumes cleanly.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Monitoring <strong>on</strong> (WEATHER-16). Network required for
@@ -863,10 +888,10 @@ item, relabelled).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Pause says <strong>"Weather alert checks paused. Choose Resume Alert
-Checks to continue."</strong> and the polling stops. The Pause/Resume
+<li>Pause says <strong>“Weather alert checks paused. Choose Resume Alert
+Checks to continue.”</strong> and the polling stops. The Pause/Resume
 item is only enabled while monitoring is running.</li>
-<li>Resume says <strong>"Resuming weather alert checks."</strong> and an
+<li>Resume says <strong>“Resuming weather alert checks.”</strong> and an
 immediate poll re-arms the timer. Choosing Pause/Resume while monitoring
 is <strong>off</strong> tells you monitoring is not on and to Start it
 first.</li>
@@ -880,7 +905,7 @@ first.</li>
 Severe-weather poll tightening</h2>
 <p><em>What &amp; why.</em> While an alert is active, the watch tightens
 its cadence toward near-real-time (down to the National Weather
-Service's 30-second courtesy floor), then relaxes back to the normal
+Service’s 30-second courtesy floor), then relaxes back to the normal
 interval once the alert clears. This approaches push latency without a
 paid feed.</p>
 <p><strong>Before you start</strong></p>
@@ -889,13 +914,13 @@ paid feed.</p>
 <strong>under an active alert</strong> (choose one from the NWS alerts
 map). <strong>Network required.</strong> This is inherently a timing
 observation — plan to sit with it a few minutes. If nowhere is alerting
-while you test, mark <strong>Blocked</strong> and note "no live alert
-available".</li>
+while you test, mark <strong>Blocked</strong> and note “no live alert
+available”.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Start monitoring for the alerting location and note the start
-summary's cadence phrase.</li>
+summary’s cadence phrase.</li>
 <li>Observe the polling rhythm while the alert is active, then (if the
 alert clears during your window, or by switching to a clear location)
 observe it relax.</li>
@@ -903,8 +928,8 @@ observe it relax.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The start summary states both cadences in substance:
-<strong>"Checking every N minutes, or every 60 seconds while an alert is
-active."</strong> While an alert is active the watch polls on the
+<strong>“Checking every N minutes, or every 60 seconds while an alert is
+active.”</strong> While an alert is active the watch polls on the
 tighter interval (default 60 seconds, never below 30); when no alert is
 active it uses the normal interval (default 10 minutes, never below 5).
 <em>(Note: cadence is internal timing — verify by observing that fresh
@@ -921,7 +946,7 @@ id="weather-19--background-alert-check-with-no-quill-process-running-windows-sch
 — Background alert check with no Quill process running (Windows
 Scheduled Task)</h2>
 <p><em>What &amp; why.</em> The headline promise: alerts reach you even
-when nothing of Quill's is open. Turning this on registers a
+when nothing of Quill’s is open. Turning this on registers a
 <strong>Windows Scheduled Task</strong> that wakes a tiny one-shot
 checker on a cadence and toasts new alerts. This scenario proves the
 task exists and fires with <strong>every Quill window
@@ -938,7 +963,7 @@ to verify — no developer tools needed, both ship with Windows.</li>
 in the background (even when Quill Weather is closed)</strong> — check
 it (Space).</li>
 <li>Verify the task now exists: open <strong>Task Scheduler</strong>
-(Start menu ▸ type "Task Scheduler") and find
+(Start menu ▸ type “Task Scheduler”) and find
 <strong><code>QuillWeatherAlertCheck</code></strong> in the task
 library; or open a terminal and run
 <strong><code>schtasks /Query /TN QuillWeatherAlertCheck</code></strong>
@@ -946,15 +971,15 @@ and confirm it is listed.</li>
 <li><strong>Fully exit</strong> Quill Weather (<strong>File ▸
 Exit</strong>, and confirm no tray icon remains — see WEATHER-26). No
 Quill window or tray icon should be running.</li>
-<li>With everything closed, either wait for the task's next scheduled
+<li>With everything closed, either wait for the task’s next scheduled
 run or, in Task Scheduler, select the task and choose
 <strong>Run</strong> to fire it now.</li>
 <li>Watch for a Windows toast.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Checking the option announces <strong>"Quill Weather will check for
-alerts in the background, even when closed."</strong> and the task
+<li>Checking the option announces <strong>“Quill Weather will check for
+alerts in the background, even when closed.”</strong> and the task
 appears in Task Scheduler / <code>schtasks</code> output, scheduled on a
 MINUTE cadence.</li>
 <li>With <strong>no Quill process open</strong>, a scheduled (or
@@ -963,7 +988,7 @@ raises a Windows <strong>toast</strong> that your screen reader
 announces (and plays the alert sound if enabled). The <strong>very
 first</strong> background check after enabling only records a baseline —
 it does not toast alerts already in effect. Unchecking the option says
-<strong>"Background alert checks are off."</strong> and the task
+<strong>“Background alert checks are off.”</strong> and the task
 disappears. <em>(Note: on a machine where corporate policy blocks
 <code>schtasks</code>, enabling it says background checks need Windows /
 cannot be created rather than crashing — record that as the
@@ -976,7 +1001,7 @@ outcome.)</em></li>
 <hr />
 <h2
 id="weather-20--already-told-you-dedupe-across-the-live-watch-and-the-background-check">WEATHER-20
-— "Already told you" dedupe across the live watch and the background
+— “Already told you” dedupe across the live watch and the background
 check</h2>
 <p><em>What &amp; why.</em> The live in-app watch and the background
 Scheduled Task share one record of which alerts you have already been
@@ -1002,10 +1027,10 @@ running, and again after exiting the app.</li>
 <li>The alert is announced <strong>once</strong>. A subsequent
 background check for the same, still-active alert does
 <strong>not</strong> re-toast it, because the running watch has already
-recorded that alert id to the shared on-disk "notified" record and the
+recorded that alert id to the shared on-disk “notified” record and the
 background checker reads the same record. A genuinely
 <strong>new</strong> alert (a different id) is still announced.
-<em>(Note: this is a "no duplicate" observation — the pass condition is
+<em>(Note: this is a “no duplicate” observation — the pass condition is
 the absence of a repeat toast for an alert already spoken.)</em></li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1034,17 +1059,17 @@ it.</li>
 <li><strong>Options ▸ Close button keeps monitoring in the tray</strong>
 — toggle it.</li>
 <li>To verify start-with-Windows end-to-end: with it <strong>on</strong>
-and "start minimized" on, sign out and back in (or reboot) and confirm
+and “start minimized” on, sign out and back in (or reboot) and confirm
 Quill Weather is watching from the tray with no window shown.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each toggle is a checkable menu item that announces its new state in
-plain words — e.g. <strong>"Quill Weather will start with
-Windows."</strong> / <strong>"…will not start with Windows."</strong>,
-<strong>"Quill Weather will start minimized to the tray."</strong>,
-<strong>"Closing the window will keep monitoring in the tray."</strong>
-/ <strong>"…will exit Quill Weather."</strong></li>
+plain words — e.g. <strong>“Quill Weather will start with
+Windows.”</strong> / <strong>“…will not start with Windows.”</strong>,
+<strong>“Quill Weather will start minimized to the tray.”</strong>,
+<strong>“Closing the window will keep monitoring in the tray.”</strong>
+/ <strong>“…will exit Quill Weather.”</strong></li>
 <li>After login (step 4) with both options on, Quill Weather is running
 in the tray, no window is shown, and monitoring is active. <em>(Note: if
 a locked-down registry refuses the startup entry, the menu reflects what
@@ -1065,7 +1090,7 @@ summon it with a global hotkey.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Quill Weather open, with <strong>Close button keeps monitoring in
-the tray</strong> on (WEATHER-21) if you want the window's
+the tray</strong> on (WEATHER-21) if you want the window’s
 Close/<strong>Ctrl+W</strong> to minimize rather than exit. No network
 needed.</li>
 </ul>
@@ -1084,11 +1109,11 @@ show/hide the window.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Minimizing says <strong>"Quill Weather is monitoring in the system
-tray."</strong> The tray icon tooltip reads <strong>Quill
+<li>Minimizing says <strong>“Quill Weather is monitoring in the system
+tray.”</strong> The tray icon tooltip reads <strong>Quill
 Weather</strong>.</li>
-<li>The tray menu offers a disabled status line <strong>"Monitoring:
-on/off"</strong>, then <strong>Open Weather Center</strong>,
+<li>The tray menu offers a disabled status line <strong>“Monitoring:
+on/off”</strong>, then <strong>Open Weather Center</strong>,
 <strong>Quick Weather</strong>, <strong>Start/Stop Monitoring</strong>,
 and entries to reach the sibling QuillVille apps. Open Weather Center
 restores the app and opens the Center.</li>
@@ -1103,7 +1128,7 @@ hides it again), from anywhere.</li>
 <h2
 id="weather-23--customize-features-options--customize-features">WEATHER-23
 — Customize Features (<code>Options ▸ Customize Features…</code>)</h2>
-<p><em>What &amp; why.</em> Turn Quill Weather's optional areas —
+<p><em>What &amp; why.</em> Turn Quill Weather’s optional areas —
 <strong>Alert Monitoring</strong> and <strong>NOAA Weather
 Radio</strong> — on or off. Switching an area off drops its Weather-menu
 items at the next launch. No network needed.</p>
@@ -1124,9 +1149,9 @@ menu.</li>
 <ul>
 <li>The dialog lists <strong>Alert Monitoring</strong> and <strong>NOAA
 Weather Radio</strong>, each with a plain-language description, all
-keyboard-operable. On save you hear, in substance, <strong>"Feature
+keyboard-operable. On save you hear, in substance, <strong>“Feature
 settings saved. Menu changes take effect the next time you open Quill
-Weather."</strong></li>
+Weather.”</strong></li>
 <li>After relaunch with NOAA Weather Radio off, the <strong>Listen to
 your Local NOAA Weather Radio</strong> and <strong>Update NOAA Weather
 Radio Directory</strong> items are gone from the Weather menu;
@@ -1160,15 +1185,15 @@ Directory</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>"Listen" says <strong>"Finding your local NOAA Weather Radio station
-for <place>…"</strong> then names the nearest station. Because this app
+<li>“Listen” says <strong>“Finding your local NOAA Weather Radio station
+for <place>…”</strong> then names the nearest station. Because this app
 has no radio engine, it explains in substance that your nearest station
 is <strong><name></strong> and that <strong>playing it needs Quill
 Radio</strong> — it does not silently do nothing. (No location saved →
 it opens Add Location.)</li>
-<li>"Update" says <strong>"Updating the NOAA Weather Radio
-directory…"</strong> then reports the refreshed counts (<strong>"…N
-stations, M states, as of <date>."</strong>), or a clear error if the
+<li>“Update” says <strong>“Updating the NOAA Weather Radio
+directory…”</strong> then reports the refreshed counts (<strong>“…N
+stations, M states, as of <date>.”</strong>), or a clear error if the
 pull failed — never a silent stale fallback.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1221,7 +1246,7 @@ needed.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li><strong>File menu ▸ Exit</strong> (from the window), or the tray
-menu's exit path.</li>
+menu’s exit path.</li>
 <li>Confirm the app is truly gone: no window, <strong>no tray
 icon</strong>, and (in Task Manager) no
 <code>quill-weather</code>/QuillWeather process.</li>
@@ -1243,7 +1268,7 @@ WEATHER-19).</li>
 <h2
 id="weather-27--safe-mode-weather-is-a-network-service-and-is-turned-off">WEATHER-27
 — Safe Mode: weather is a network service and is turned off</h2>
-<p><em>What &amp; why.</em> In Safe Mode, Quill Weather's network
+<p><em>What &amp; why.</em> In Safe Mode, Quill Weather’s network
 features are deliberately disabled and say so — a diagnostic state, not
 a broken one. No live network activity should occur.</p>
 <p><strong>Before you start</strong></p>
@@ -1261,10 +1286,10 @@ Monitoring</strong> (Ctrl+Shift+M).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The network-backed items report, in substance, <strong>"Weather is a
+<li>The network-backed items report, in substance, <strong>“Weather is a
 network service and is turned off in Safe Mode. Restart without Safe
-Mode to use it."</strong> Monitoring does not start; on launch you may
-hear <strong>"Weather monitoring is off in Safe Mode."</strong> No
+Mode to use it.”</strong> Monitoring does not start; on launch you may
+hear <strong>“Weather monitoring is off in Safe Mode.”</strong> No
 weather fetch occurs. Non-network surfaces (Settings, Options, Test
 Alert) still behave normally.</li>
 </ul>
@@ -1285,5 +1310,6 @@ Alert) still behave normally.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

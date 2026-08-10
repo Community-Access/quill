@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>upgrade-path-regression-0.8.0</title>
+  <title>QUILL 0.8.0 Beta 1 - Upgrade-Path Regression Test Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-080-beta-1---upgrade-path-regression-test-plan">QUILL
 0.8.0 Beta 1 - Upgrade-Path Regression Test Plan</h1>
 <p>Goal: validate that a user on an older QUILL release can install
@@ -268,7 +288,7 @@ principle: launch and run EACH version - do not chain installers</h2>
 <p>You must <strong>install -&gt; launch -&gt; use -&gt; close each
 version in turn</strong>, in order, before installing the next one. Do
 not run the three installers back-to-back.</p>
-<p>The reason is that QUILL's upgrade logic runs <em>in the app at
+<p>The reason is that QUILL’s upgrade logic runs <em>in the app at
 launch</em>, not in the installer:</p>
 <ul>
 <li>Settings are persisted as a <strong>versioned document</strong>
@@ -279,7 +299,7 @@ that understands it actually loads it.</li>
 <li>Field-level migrations fire on read, e.g. the retired
 <code>pyttsx3</code> read-aloud engine id -&gt; <code>sapi5</code>, and
 the dictation engine <code>vosk</code>/<code>whisper</code> -&gt;
-<code>offline</code> (#617). These only execute when that version's code
+<code>offline</code> (#617). These only execute when that version’s code
 runs.</li>
 <li>A pending <strong>data-location move</strong> is applied very early
 in <code>quill.__main__.main()</code> on the next launch, not by the
@@ -516,10 +536,11 @@ preserved across uninstall).</label></li>
 either <code>Quill</code> or <code>QUILL for All</code>.</label></li>
 </ul>
 <h2 id="6-record-results">6. Record results</h2>
-<p>For each failure capture: the upgrade step (e.g. "0.5.0 -&gt;
-0.7.0"), expected vs actual, the install-dir / Add-Remove / Start-Menu
+<p>For each failure capture: the upgrade step (e.g. “0.5.0 -&gt;
+0.7.0”), expected vs actual, the install-dir / Add-Remove / Start-Menu
 state, the screen-reader announcement (or silence), any data that was
 lost, and the crash-bundle path if one was produced. File issues against
 the 0.8.0 Beta 1 milestone and tag them <code>upgrade-path</code>.</p>
+</main>
 </body>
 </html>

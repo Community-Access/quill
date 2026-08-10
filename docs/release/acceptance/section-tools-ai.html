@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-tools-ai</title>
+  <title>Section — Tools: AI writing &amp; analysis (`tools.*`, AI
+subset)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--tools-ai-writing--analysis-tools-ai-subset">Section —
 Tools: AI writing &amp; analysis (<code>tools.*</code>, AI subset)</h1>
 <p>The <strong>AI writing and analysis</strong> tools: the conversation
@@ -215,7 +240,7 @@ or a <strong>cloud</strong> provider with an API key. Set one up in
 <strong>no provider is configured and the Set Up AI wizard cannot be
 completed</strong> on the test machine, mark the affected scenario
 <strong>Blocked</strong> and say so — a feature that only routes you to
-"Set Up AI" is not a failure of that feature.</li>
+“Set Up AI” is not a failure of that feature.</li>
 <li><strong>AI is OFF in Safe Mode.</strong> If QUILL was launched with
 <code>--safe-mode</code> (or <code>QUILL_SAFE_MODE=1</code>), every AI
 feature is disabled and must say so plainly and send nothing. Run this
@@ -234,7 +259,7 @@ the whole document to a remote host with neither consent in place, that
 is a release-blocking failure.</li>
 <li><strong>Results open as a NEW, unsaved document where the feature
 reflows or generates whole-document text</strong> (Improve Reading
-Order; the "open in a new document" option of Translate). Proofreading
+Order; the “open in a new document” option of Translate). Proofreading
 and transform tools instead show a review/correction dialog you apply
 into the current document. Each scenario states which behaviour to
 expect — hold it to that.</li>
@@ -269,10 +294,10 @@ offered; confirm with <strong>OK</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Every field is labelled and keyboard-complete. On confirm QUILL
-announces the outcome in substance — "Updated AI connection settings.
-Ready." on a good connection, or "…Needs attention." with a
+announces the outcome in substance — “Updated AI connection settings.
+Ready.” on a good connection, or “…Needs attention.” with a
 plain-language reason if verification failed. <strong>Escape</strong>
-cancels with "AI connection settings cancelled" and changes nothing. The
+cancels with “AI connection settings cancelled” and changes nothing. The
 API key is stored in the platform secret store (Credential Manager /
 DPAPI), never echoed or written in plain text.</li>
 </ul>
@@ -355,8 +380,8 @@ round-robin has somewhere to go).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces the engine it switched to (in substance "Switched to
-<engine>"); the status bar's AI cell updates to match. With AI off it
+<li>QUILL announces the engine it switched to (in substance “Switched to
+<engine>”); the status bar’s AI cell updates to match. With AI off it
 says AI is turned off rather than switching silently. With only one
 engine it reports there is nothing to switch to rather than
 erroring.</li>
@@ -370,7 +395,7 @@ erroring.</li>
 Quill Chat (<code>tools.ask_quill_chat</code>, Alt+Q)</h2>
 <p><em>What &amp; why.</em> The conversation front door — ask questions,
 request edits, and let QUILL act on the current document through its
-tool catalog. The everyday "talk to the assistant."</p>
+tool catalog. The everyday “talk to the assistant.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>A provider configured <strong>and</strong> its share consent granted
@@ -381,8 +406,8 @@ ask about.</li>
 <ol type="1">
 <li>Press <strong>Alt+Q</strong>, or <strong>AI menu ▸ Ask
 Quill…</strong>.</li>
-<li>Type a question in the composer (for example "How many headings does
-this document have?") and send it.</li>
+<li>Type a question in the composer (for example “How many headings does
+this document have?”) and send it.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -449,7 +474,7 @@ confirm-before-send flow; it mirrors <code>../qa-core-journeys.md</code>
 <strong><code>reading-order.txt</code></strong> (a four-step tea recipe
 printed out of order, one step broken across a mid-sentence line break;
 the file records the intended order for you to check against). Do
-<strong>not</strong> send the tester's note block to the AI.</li>
+<strong>not</strong> send the tester’s note block to the AI.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
@@ -461,22 +486,22 @@ the file records the intended order for you to check against). Do
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li><strong>Before anything is sent</strong>, a confirmation names the
-provider and approximate size, in substance: "QUILL will send this
+provider and approximate size, in substance: “QUILL will send this
 document — about 1 page — to <provider>(host) to repair its reading
 order… The result opens as a new, unsaved document; your current
-document is not changed… Send the document now?" Default is
-<strong>No</strong>; choosing No announces <strong>"Improve Reading
-Order cancelled — nothing was sent."</strong></li>
-<li>On <strong>Yes</strong>: a progress status speaks ("Improving
-reading order… this can take a moment."); on success a <strong>new,
-unsaved</strong> document opens, announced "Reading order improved —
-opened as a new unsaved document (Save As to keep it)." The four steps
-read <strong>First → Second → Third → Fourth</strong>, the broken "Third
-… steep …" step is rejoined into one sentence, wording is unchanged, and
+document is not changed… Send the document now?” Default is
+<strong>No</strong>; choosing No announces <strong>“Improve Reading
+Order cancelled — nothing was sent.”</strong></li>
+<li>On <strong>Yes</strong>: a progress status speaks (“Improving
+reading order… this can take a moment.”); on success a <strong>new,
+unsaved</strong> document opens, announced “Reading order improved —
+opened as a new unsaved document (Save As to keep it).” The four steps
+read <strong>First → Second → Third → Fourth</strong>, the broken “Third
+… steep …” step is rejoined into one sentence, wording is unchanged, and
 the original <code>reading-order.txt</code> is untouched on disk and in
 its tab.</li>
-<li><strong>Guards:</strong> in Safe Mode it says "Improve Reading Order
-is unavailable in Safe Mode" and sends nothing; a document over the page
+<li><strong>Guards:</strong> in Safe Mode it says “Improve Reading Order
+is unavailable in Safe Mode” and sends nothing; a document over the page
 limit is refused with the over-limit message and sends nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -500,10 +525,10 @@ a paragraph (with no selection the whole document is used).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces "Checking grammar with <model>…"; on completion a
-<strong>read-only</strong> result dialog presents the AI's grammar
+<li>QUILL announces “Checking grammar with <model>…”; on completion a
+<strong>read-only</strong> result dialog presents the AI’s grammar
 notes, announced and keyboard-navigable. With nothing to check it says
-"No text to check grammar for." If AI is not configured it routes to
+“No text to check grammar for.” If AI is not configured it routes to
 setup rather than failing silently. <strong>Note:</strong> this variant
 reports findings; it does not auto-apply edits (contrast
 TAI-10/TAI-11).</li>
@@ -532,11 +557,11 @@ Proofread ▸ Grammar and Style Check…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces "AI grammar check running…"; if none are found it
-says "AI grammar check: no issues found." Otherwise a keyboard-navigable
+<li>QUILL announces “AI grammar check running…”; if none are found it
+says “AI grammar check: no issues found.” Otherwise a keyboard-navigable
 issues dialog opens; the fixes you accept are applied into the
-<strong>current document</strong> and QUILL announces the count ("AI
-grammar check: N fix(es) applied"); accepting none says so. An empty
+<strong>current document</strong> and QUILL announces the count (“AI
+grammar check: N fix(es) applied”); accepting none says so. An empty
 document is reported, not sent.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -562,10 +587,10 @@ Proofread ▸ Spell Check…</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces "AI spell check running…"; with no issues it says
-"AI spell check: no issues found." Otherwise a corrections dialog opens
+<li>QUILL announces “AI spell check running…”; with no issues it says
+“AI spell check: no issues found.” Otherwise a corrections dialog opens
 (labelled, keyboard- navigable); applying updates the document and
-announces "AI spell check: N correction(s) applied"; applying none says
+announces “AI spell check: N correction(s) applied”; applying none says
 so. An empty document is reported.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -626,11 +651,11 @@ applying.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces "Expand: generating…"; on completion a result dialog
+<li>QUILL announces “Expand: generating…”; on completion a result dialog
 shows the expanded text, keyboard-navigable, with
 <strong>Insert</strong> and <strong>Replace</strong> actions — no silent
-edit. With no selection and an empty paragraph it says "Select text
-first." Applying a change lands it in the current document.</li>
+edit. With no selection and an empty paragraph it says “Select text
+first.” Applying a change lands it in the current document.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -640,7 +665,7 @@ first." Applying a change lands it in the current document.</li>
 <h2 id="tai-13--generate-table-of-contents-toolsai_generate_toc">TAI-13
 — Generate Table of Contents (<code>tools.ai_generate_toc</code>)</h2>
 <p><em>What &amp; why.</em> Build a table of contents from the whole
-document's headings, offered for insertion through the result
+document’s headings, offered for insertion through the result
 dialog.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -658,7 +683,7 @@ want it, or close.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>QUILL announces it is generating; the result dialog presents a TOC
-that reflects the document's six headings in order, keyboard-navigable,
+that reflects the document’s six headings in order, keyboard-navigable,
 with an insert action. It works on the <strong>whole document</strong>
 (not a selection). An empty document is reported.</li>
 </ul>
@@ -692,11 +717,11 @@ document</strong> on another.</li>
 <ul>
 <li>A labelled translation dialog: pick language and provider by
 keyboard. <strong>Replace</strong> swaps just the selected text and
-announces "Translation applied." <strong>Open in new document</strong>
+announces “Translation applied.” <strong>Open in new document</strong>
 opens the translation as a <strong>new unsaved</strong> buffer,
-announced "Opened translation (<language>) in new document," leaving the
-original untouched. With no selection it says "No selection text to
-translate."</li>
+announced “Opened translation (<language>) in new document,” leaving the
+original untouched. With no selection it says “No selection text to
+translate.”</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -756,9 +781,9 @@ image with alt text — material for the agent to reason about).</li>
 <li>On open, QUILL <strong>announces the plan</strong> in substance
 (what it intends to check/fix). The dialog is keyboard-navigable and its
 findings are announced. On <strong>Apply</strong>, the changes land in
-the current document, a status line reports "Accessibility Tune-Up
-applied N changes; M findings remain," and a <strong>new named
-tab</strong> ("Accessibility Tune-Up - <document>") holds the report.
+the current document, a status line reports “Accessibility Tune-Up
+applied N changes; M findings remain,” and a <strong>new named
+tab</strong> (“Accessibility Tune-Up - <document>”) holds the report.
 Closing without applying changes nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -784,7 +809,7 @@ verbs (add/edit/…); close.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The manager opens as a keyboard-navigable, announced dialog; each
-tab's list and its action buttons are labelled and reachable by
+tab’s list and its action buttons are labelled and reachable by
 keyboard. Closing returns focus to the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -862,7 +887,7 @@ Palette.</li>
 <li>With a saved session: a keyboard-navigable branch tree opens,
 announced, with jump/compare actions. With <strong>none</strong>: a
 clear, <strong>announced dialog</strong> (not just a status line) says
-"No saved AI writing sessions yet…" and points you to Ask Quill — it
+“No saved AI writing sessions yet…” and points you to Ask Quill — it
 does not fail silently.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -895,7 +920,7 @@ its AI-menu item if the flag exposes one).</li>
 absence in <code>gated-absence.md</code>). On a flagged build: the
 assistant dialog opens, keyboard- navigable and announced, seeded with
 the current selection/document. In <strong>Safe Mode</strong> it refuses
-with "Writing assistant is unavailable in safe mode" and opens
+with “Writing assistant is unavailable in safe mode” and opens
 nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -909,7 +934,7 @@ id="tai-22--continue-writing-toolsai_continue_writing-gated-futureai">TAI-22
 <strong>[GATED future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Continue the prose from your selection (or
 the whole document) by opening the Writing Assistant pre-seeded with a
-"continue" prompt.</p>
+“continue” prompt.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>[GATED future.ai]</strong> — public build =
@@ -926,7 +951,7 @@ passage).</li>
 <ul>
 <li>On a flagged build the Writing Assistant opens with a continuation
 prompt built from your text; with nothing to continue from it says
-"Nothing to continue from. Type some text first." With AI off it
+“Nothing to continue from. Type some text first.” With AI off it
 announces AI is disabled. On a public build, <strong>N/A</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -939,7 +964,7 @@ Fix Grammar (<code>tools.ai_fix_grammar</code>) <strong>[GATED
 future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Grammar fix for the
 selection/paragraph/document via the Writing Assistant, seeded with a
-"grammar" prompt.</p>
+“grammar” prompt.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>[GATED future.ai]</strong> — public build =
@@ -955,8 +980,8 @@ paragraph).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>On a flagged build the assistant opens seeded with the grammar
-prompt, and QUILL announces the scope it is checking ("Checking grammar
-in <scope>…"); with nothing to check it says so. With AI off it
+prompt, and QUILL announces the scope it is checking (“Checking grammar
+in <scope>…”); with nothing to check it says so. With AI off it
 announces AI is disabled. Public build = <strong>N/A</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -984,7 +1009,7 @@ Expand).</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>On a flagged build QUILL announces "Rewrite: generating…"; a result
+<li>On a flagged build QUILL announces “Rewrite: generating…”; a result
 dialog offers the rewritten text with
 <strong>Insert</strong>/<strong>Replace</strong> — no silent edit. With
 no selection it uses the current paragraph and says so, or asks you to
@@ -1030,7 +1055,7 @@ id="tai-26--describe-image-toolsdescribe_image-ctrlshiftgrave-i-gated-futureai">
 — Describe Image (<code>tools.describe_image</code>, Ctrl+Shift+Grave,
 I) <strong>[GATED future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Send an image (file, clipboard, or screen
-capture) to the provider's <strong>vision</strong> model and get a
+capture) to the provider’s <strong>vision</strong> model and get a
 written description you can insert, copy, or discard — alt text on
 demand. Behind <code>future.ai</code> for 1.0.</p>
 <p><strong>Before you start</strong></p>
@@ -1054,12 +1079,12 @@ style picker appears, choose a style. Wait for the description.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>On a flagged build: a keyboard-navigable image-source picker, then a
-progress dialog ("Asking the model to describe the image…"), then a
+progress dialog (“Asking the model to describe the image…”), then a
 review dialog with the written description — announced, with
-Insert/Copy/retry/Discard actions. If AI is off it says "AI is turned
-off…"; if no vision provider is connected it says "No AI provider is
-connected…" and describes nothing. Cancelling the picker announces
-"Image description cancelled." Public build = <strong>N/A</strong>.</li>
+Insert/Copy/retry/Discard actions. If AI is off it says “AI is turned
+off…”; if no vision provider is connected it says “No AI provider is
+connected…” and describes nothing. Cancelling the picker announces
+“Image description cancelled.” Public build = <strong>N/A</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1072,14 +1097,14 @@ Library (<code>tools.prompt_library</code>)</h2>
 on your text and import/export as <code>.pqp</code> files.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li>AI provider configured (else the dialog shows a "not configured"
+<li>AI provider configured (else the dialog shows a “not configured”
 guard at open — verify that path too). A scratch document with a
 sentence selected.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Open <strong>Tools ▸ AI ▸ Prompt Library</strong> (or Command
-Palette → "Prompt Library").</li>
+Palette → “Prompt Library”).</li>
 <li>Tab through the list and its add/edit/import/export controls; run a
 prompt against the selection.</li>
 </ol>
@@ -1098,7 +1123,7 @@ confirm the exact spoken wording against the build.</li>
 <hr />
 <h2 id="tai-28--skill-library-toolsskill_library">TAI-28 — Skill Library
 (<code>tools.skill_library</code>)</h2>
-<p><em>What &amp; why.</em> Multi-step AI "skills" (a chain of steps)
+<p><em>What &amp; why.</em> Multi-step AI “skills” (a chain of steps)
 you can run on a document, with intermediate step output and a cancel
 button.</p>
 <p><strong>Before you start</strong></p>
@@ -1108,13 +1133,13 @@ button.</p>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Open <strong>Tools ▸ AI Assistant ▸ Skill Library…</strong> (or
-Command Palette → "Skill Library").</li>
+Command Palette → “Skill Library”).</li>
 <li>Pick a skill; run it; watch the per-step progress; try
 <strong>Cancel</strong> mid-run.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Keyboard-navigable list; each step's progress/name is announced;
+<li>Keyboard-navigable list; each step’s progress/name is announced;
 intermediate outputs are reachable; Cancel stops cleanly. With no AI
 configured, an early guard says so at open. <strong>Note:</strong>
 verify exact announcements.</li>
@@ -1136,7 +1161,7 @@ scratch document.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Select text, then run <strong>Run Agent on Selection</strong> (Tools
-▸ AI, or Command Palette → "Run Agent").</li>
+▸ AI, or Command Palette → “Run Agent”).</li>
 <li>Pick the agent if prompted; confirm any send; wait for the
 result.</li>
 </ol>
@@ -1185,7 +1210,7 @@ exact wording and where the profile is stored.</li>
 id="tai-31--open-writing-instructions-toolswriting_instructions-gated-futureai">TAI-31
 — Open Writing Instructions (<code>tools.writing_instructions</code>)
 [GATED future.ai]</h2>
-<p><em>What &amp; why.</em> Edit the standing "writing instructions" the
+<p><em>What &amp; why.</em> Edit the standing “writing instructions” the
 AI applies to your writing tasks. Present only when
 <code>future.ai</code> is on — on a public build, mark
 <strong>N/A</strong> (verify absence in
@@ -1198,7 +1223,7 @@ Otherwise N/A.</li>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Open <strong>Writing Instructions</strong> (Tools ▸ AI, or Command
-Palette → "Writing Instructions").</li>
+Palette → “Writing Instructions”).</li>
 <li>Tab through the fields; edit the instruction text; save.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
@@ -1224,5 +1249,6 @@ the command is absent. <strong>Note:</strong> verify exact wording.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

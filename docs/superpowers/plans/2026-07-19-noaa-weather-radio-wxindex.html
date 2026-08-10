@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-19-noaa-weather-radio-wxindex</title>
+  <title>NOAA Weather Radio (wxindex) Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="noaa-weather-radio-wxindex-implementation-plan">NOAA Weather
 Radio (wxindex) Implementation Plan</h1>
 <blockquote>
@@ -287,18 +311,23 @@ fetcher</strong> — no real network in tests. DRY, YAGNI, frequent
 commits.</li>
 </ul>
 <hr />
-<h3 id="task-1-wxstation-model-pure-json-parsers">Task 1:
+<h3 id="task-1-wxstation-model--pure-json-parsers">Task 1:
 <code>WxStation</code> model + pure JSON parsers</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/radio/wxindex_models.py</code> - Test:
-<code>tests/unit/core/radio/test_wxindex_models.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/radio/wxindex_models.py</code></li>
+<li>Test: <code>tests/unit/core/radio/test_wxindex_models.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
 <code>WxState(slug: str, name: str, station_count: int)</code>;
 <code>WxStation(callsign, frequency_mhz: float, name, state, counties: tuple[str,...], same_codes: tuple[str,...], wfo: str, latitude: float, longitude: float, feeds: tuple[str,...])</code>;
 <code>parse_states(data: object) -&gt; list[WxState]</code>;
 <code>parse_stations(data: object) -&gt; list[WxStation]</code>;
 <code>parse_station(data: object) -&gt; WxStation | None</code>;
-<code>to_radio_station(s: WxStation) -&gt; RadioStation</code>.</p>
+<code>to_radio_station(s: WxStation) -&gt; RadioStation</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -446,20 +475,24 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex_models.py tests/unit/core/radio/test_wxindex_models.py</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): wxindex WxStation model + JSON parsers&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-2-wxindex-http-fetcher-reviewed-egress-safe-mode">Task 2:
+<h3 id="task-2-wxindex-http-fetcher-reviewed-egress--safe-mode">Task 2:
 wxindex HTTP fetcher (reviewed egress) + Safe Mode</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/radio/wxindex_http.py</code> - Test:
-<code>tests/unit/core/radio/test_wxindex_http.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: nothing from Task 1 (pure
-transport). - Produces:
-<code>WxIndexError(RadioError-style Exception)</code>;
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/radio/wxindex_http.py</code></li>
+<li>Test: <code>tests/unit/core/radio/test_wxindex_http.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing from Task 1 (pure transport).</li>
+<li>Produces: <code>WxIndexError(RadioError-style Exception)</code>;
 <code>refuse_in_safe_mode(safe_mode: bool) -&gt; None</code>;
 <code>http_json(path: str, *, fetcher: Fetcher | None = None) -&gt; object</code>
 where <code>Fetcher = Callable[[str], str]</code> (returns the response
 body for a full URL). Real fetches go through
 <code>quill/tools/network_egress_audit.py</code>; tests pass a
-<code>fetcher</code>.</p>
+<code>fetcher</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -560,20 +593,27 @@ confirm no violation).</p>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex_http.py tests/unit/core/radio/test_wxindex_http.py quill/tools/network_egress_audit.py</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): wxindex reviewed egress fetcher + Safe Mode&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-3-bundled-snapshot-loader-scriptssnapshot_wxindex.py">Task
+<h3 id="task-3-bundled-snapshot-loader--scriptssnapshot_wxindexpy">Task
 3: Bundled snapshot loader +
 <code>scripts/snapshot_wxindex.py</code></h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/radio/wxindex_snapshot.py</code> - Create:
-<code>quill/data/noaa_directory.json</code> (real snapshot, generated by
-the script) - Create: <code>scripts/snapshot_wxindex.py</code> - Test:
-<code>tests/unit/core/radio/test_wxindex_snapshot.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: <code>parse_states</code>,
-<code>parse_stations</code> (Task 1). - Produces:
-<code>load_snapshot() -&gt; Snapshot</code> where
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/radio/wxindex_snapshot.py</code></li>
+<li>Create: <code>quill/data/noaa_directory.json</code> (real snapshot,
+generated by the script)</li>
+<li>Create: <code>scripts/snapshot_wxindex.py</code></li>
+<li>Test:
+<code>tests/unit/core/radio/test_wxindex_snapshot.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>parse_states</code>, <code>parse_stations</code>
+(Task 1).</li>
+<li>Produces: <code>load_snapshot() -&gt; Snapshot</code> where
 <code>Snapshot(generated_at: str, states: list[WxState], stations: list[WxStation])</code>;
 <code>snapshot_path() -&gt; Path</code>. Missing/corrupt snapshot -&gt;
-empty <code>Snapshot</code>, logged, never raises.</p>
+empty <code>Snapshot</code>, logged, never raises.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -692,15 +732,21 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href=
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): bundled NOAA directory snapshot + generator&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-4-three-tier-resolver-live---cache---snapshot-manual-refresh">Task
+id="task-4-three-tier-resolver-live---cache---snapshot--manual-refresh">Task
 4: Three-tier resolver (live -&gt; cache -&gt; snapshot) + manual
 refresh</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/radio/wxindex.py</code> (the public facade) - Test:
-<code>tests/unit/core/radio/test_wxindex_resolver.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: <code>http_json</code>,
-<code>refuse_in_safe_mode</code> (Task 2); <code>load_snapshot</code>
-(Task 3); parsers (Task 1). - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/radio/wxindex.py</code> (the public
+facade)</li>
+<li>Test:
+<code>tests/unit/core/radio/test_wxindex_resolver.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>http_json</code>, <code>refuse_in_safe_mode</code>
+(Task 2); <code>load_snapshot</code> (Task 3); parsers (Task 1).</li>
+<li>Produces:
 <code>list_states(*, safe_mode=False, fetcher=None) -&gt; list[WxState]</code>;
 <code>stations_for_state(slug, *, safe_mode=False, fetcher=None) -&gt; list[WxStation]</code>;
 <code>refresh_directory(*, safe_mode=False, fetcher=None) -&gt; RefreshResult</code>
@@ -709,7 +755,8 @@ refresh</h3>
 internal <code>_cache_dir() -&gt; Path</code> under
 <code>app_data_dir()/radio/wxindex-cache</code>. Resolution order for
 reads: fresh cache (&lt; max_age) -&gt; live (then write cache) -&gt;
-stale cache -&gt; snapshot.</p>
+stale cache -&gt; snapshot.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -872,15 +919,20 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex.py tests/unit/core/radio/test_wxindex_resolver.py</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): three-tier wxindex resolver + manual refresh&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-5-search-routing-same-callsign-county-local_stations">Task
+<h3
+id="task-5-search-routing-same--callsign--county--local_stations">Task
 5: Search routing (SAME / callsign / county) +
 <code>local_stations</code></h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/radio/wxindex.py</code> (add
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/radio/wxindex.py</code> (add
 <code>search_stations</code>, <code>station_detail</code>,
-<code>local_stations</code>) - Test:
-<code>tests/unit/core/radio/test_wxindex_search.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
+<code>local_stations</code>)</li>
+<li>Test: <code>tests/unit/core/radio/test_wxindex_search.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
 <code>search_stations(query: str, *, safe_mode=False, fetcher=None) -&gt; list[WxStation]</code>
 — routes a 6-digit SAME code to <code>?same=</code>, a callsign
 (<code>^[A-Z]{3}\d{2,3}$</code>) to
@@ -889,7 +941,8 @@ text to <code>?c=</code>/<code>?s=</code>; empty for non-matching free
 text. <code>station_detail(callsign, ...) -&gt; WxStation | None</code>.
 <code>local_stations(lat, lon, *, county="", safe_mode=False, fetcher=None) -&gt; list[WxStation]</code>
 — county/SAME match first, else nearest-by-coordinate over the
-snapshot.</p>
+snapshot.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1002,23 +1055,29 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/radio/wxindex.py tests/unit/core/radio/test_wxindex_search.py</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): wxindex search routing + local-station resolution&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-6-browse-tree-replace-the-weather-noaa-source">Task 6:
+<h3 id="task-6-browse-tree--replace-the-weather--noaa-source">Task 6:
 Browse tree — replace the “Weather / NOAA” source</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/radio/browse_tree_dialog.py</code> (the
-<code>"weather"</code> loader + expansion to State -&gt; Station) -
-Modify: <code>quill/core/radio/radio_browser.py</code> (remove the
-now-unused <code>noaa_weather_stations</code>) - Test:
-<code>tests/unit/ui/test_browse_tree_weather_noaa.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>wxindex.list_states</code>,
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/radio/browse_tree_dialog.py</code> (the
+<code>"weather"</code> loader + expansion to State -&gt; Station)</li>
+<li>Modify: <code>quill/core/radio/radio_browser.py</code> (remove the
+now-unused <code>noaa_weather_stations</code>)</li>
+<li>Test:
+<code>tests/unit/ui/test_browse_tree_weather_noaa.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>wxindex.list_states</code>,
 <code>wxindex.stations_for_state</code>,
-<code>wxindex_models.to_radio_station</code>. - Produces: the Browse
-“Weather / NOAA” branch expands to states (genre-like folders); each
-state expands to <code>RadioStation</code> leaves. Reuses the dialog’s
-existing lazy <code>genres</code>/<code>genre</code> machinery — add a
-source kind <code>("Weather / NOAA", "wx_states", None)</code> and a
-<code>wx_state</code> child kind.</p>
+<code>wxindex_models.to_radio_station</code>.</li>
+<li>Produces: the Browse “Weather / NOAA” branch expands to states
+(genre-like folders); each state expands to <code>RadioStation</code>
+leaves. Reuses the dialog’s existing lazy
+<code>genres</code>/<code>genre</code> machinery — add a source kind
+<code>("Weather / NOAA", "wx_states", None)</code> and a
+<code>wx_state</code> child kind.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 characterization test</strong></label></li>
@@ -1100,18 +1159,25 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/radio/browse_tree_dialog.py quill/core/radio/radio_browser.py tests/unit/ui/test_browse_tree_weather_noaa.py</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): Browse Weather/NOAA -&gt; authoritative wxindex state tree&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-7-unified-search-blend-noaa-results">Task 7: Unified Search
-— blend NOAA results</h3>
-<p><strong>Files:</strong> - Modify: the unified search entry point
+<h3 id="task-7-unified-search--blend-noaa-results">Task 7: Unified
+Search — blend NOAA results</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: the unified search entry point
 (<code>quill/core/radio/directory_search.py</code> — confirm the
-aggregator function that fans out to sources) - Test:
-<code>tests/unit/core/radio/test_directory_search_noaa.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>wxindex.search_stations</code>, <code>to_radio_station</code>. -
-Produces: NOAA stations appear in unified search results (as
+aggregator function that fans out to sources)</li>
+<li>Test:
+<code>tests/unit/core/radio/test_directory_search_noaa.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>wxindex.search_stations</code>,
+<code>to_radio_station</code>.</li>
+<li>Produces: NOAA stations appear in unified search results (as
 <code>RadioStation</code> with <code>source="NOAA Weather Radio"</code>)
 when the query is a SAME code, callsign, or “County, ST”/state;
-free-text queries still hit the other sources unchanged.</p>
+free-text queries still hit the other sources unchanged.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1159,27 +1225,32 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href=
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): blend authoritative NOAA results into unified search&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-8-weather-menu-your-local-noaa-weather-radio-update-directory">Task
+id="task-8-weather-menu--your-local-noaa-weather-radio--update-directory">Task
 8: Weather menu — “Your Local NOAA Weather Radio” + “Update
 directory”</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame_weather.py</code> (two menu items + handlers)
-- Modify: the play path to accept a <code>RadioStation</code> (reuse the
-existing “play this station” call the Browse dialog uses) - Test:
-<code>tests/unit/ui/test_weather_noaa_menu.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>wxindex.local_stations</code>,
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame_weather.py</code> (two menu items
++ handlers)</li>
+<li>Modify: the play path to accept a <code>RadioStation</code> (reuse
+the existing “play this station” call the Browse dialog uses)</li>
+<li>Test: <code>tests/unit/ui/test_weather_noaa_menu.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>wxindex.local_stations</code>,
 <code>wxindex.refresh_directory</code>, <code>to_radio_station</code>;
 the Weather feature’s saved location (lat/lon + county from
 <code>quill/core/weather/locations.py</code> /
 <code>geocoding.py</code>); the existing
-play-a-<code>RadioStation</code> entry point. - Produces: menu command
-“Listen to your local NOAA Weather Radio” (resolves via
-<code>local_stations</code>, plays the first, offers pin-to-Favorites);
-menu command “Update NOAA Weather Radio directory” (off-thread
-<code>refresh_directory</code>, announces <code>RefreshResult</code>
-counts + <code>generated_at</code>, Safe-Mode aware). No-location case
-prompts to set one / pick a state.</p>
+play-a-<code>RadioStation</code> entry point.</li>
+<li>Produces: menu command “Listen to your local NOAA Weather Radio”
+(resolves via <code>local_stations</code>, plays the first, offers
+pin-to-Favorites); menu command “Update NOAA Weather Radio directory”
+(off-thread <code>refresh_directory</code>, announces
+<code>RefreshResult</code> counts + <code>generated_at</code>, Safe-Mode
+aware). No-location case prompts to set one / pick a state.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test (core resolution used by the handler)</strong></label></li>
@@ -1238,14 +1309,17 @@ Commit</strong></label></p></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame_weather.py tests/unit/ui/test_weather_noaa_menu.py</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(radio): Weather menu local NOAA Weather Radio + directory update&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-9-release-2.1.1-version-changelog-docs">Task 9: Release
+<h3 id="task-9-release-211--version-changelog-docs">Task 9: Release
 2.1.1 — version, changelog, docs</h3>
-<p><strong>Files:</strong> - Modify:
-<code>s:\quill-radio\pyproject.toml</code>
-(<code>version = "2.1.1"</code>) - Modify:
-<code>s:\quill-radio\CHANGELOG.md</code> (and QUILL’s changelog if radio
-changes are listed there) - Modify: the Radio user guide section on
-Browse/Weather (docs source used by <code>render_docs.ps1</code>)</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>s:\quill-radio\pyproject.toml</code>
+(<code>version = "2.1.1"</code>)</li>
+<li>Modify: <code>s:\quill-radio\CHANGELOG.md</code> (and QUILL’s
+changelog if radio changes are listed there)</li>
+<li>Modify: the Radio user guide section on Browse/Weather (docs source
+used by <code>render_docs.ps1</code>)</li>
+</ul>
 <p><strong>Interfaces:</strong> none (release metadata + docs).</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Bump the
@@ -1313,7 +1387,7 @@ name/shape before Task 7 (the plan assumes a
 instead of the illustrative <code>_Folder</code> in Task 6.</li>
 </ul>
 <hr />
-<h1 id="part-2-radio-reading-services-also-2.1.1">Part 2 — Radio Reading
+<h1 id="part-2--radio-reading-services-also-211">Part 2 — Radio Reading
 Services (also 2.1.1)</h1>
 <p><strong>Goal:</strong> Add a “Radio Reading Services” category (audio
 information services for the print-disabled) to Browse and unified
@@ -1333,7 +1407,7 @@ Recording Library of West Texas, Audible Local Ledger, Down East RRS,
 Connecticut Radio Information System, 95alive). Clean it: replace
 mangled <code>�</code> in ACB names with <code>-</code>, and dedupe
 <code>95alive</code> to one entry.</p>
-<h3 id="task-10-bundled-reading-services-snapshot-loader">Task 10:
+<h3 id="task-10-bundled-reading-services-snapshot--loader">Task 10:
 Bundled reading-services snapshot + loader</h3>
 <p><strong>Files:</strong> Create
 <code>quill/data/reading_services.json</code>; Create
@@ -1369,7 +1443,7 @@ Corrupt/missing -&gt; <code>[]</code> with
 <code>mypy quill/core</code>, ruff) then commit
 <code>feat(radio): bundled Radio Reading Services snapshot + loader</code>.</label></li>
 </ul>
-<h3 id="task-11-rrs-resolver-live-radio-browser-refresh">Task 11: RRS
+<h3 id="task-11-rrs-resolver--live-radio-browser-refresh">Task 11: RRS
 resolver + live Radio Browser refresh</h3>
 <p><strong>Files:</strong> Modify
 <code>quill/core/radio/reading_services.py</code>; Test
@@ -1410,7 +1484,7 @@ keyword via the <code>searcher</code> seam; re-stamp
 <li><label><input type="checkbox" />Step 5 — gates + commit
 <code>feat(radio): Radio Reading Services resolver + Radio Browser refresh</code>.</label></li>
 </ul>
-<h3 id="task-12-browse-category-unified-search-blend">Task 12: Browse
+<h3 id="task-12-browse-category--unified-search-blend">Task 12: Browse
 category + unified-search blend</h3>
 <p><strong>Files:</strong> Modify
 <code>quill/ui/radio/browse_tree_dialog.py</code> (add source); Modify
@@ -1447,8 +1521,8 @@ Add the search helper and wire into <code>_do_search</code>
 <code>wxindex_search_stations</code> wiring).</label></li>
 <li><label><input type="checkbox" />Step 4 — run, pass;
 <code>pytest -q -k "browse or directory_search or station_browser"</code>.</label></li>
-<li><label><input type="checkbox" />Step 5 — gates
-(incl. <code>check_banned_patterns</code>) + commit
+<li><label><input type="checkbox" />Step 5 — gates (incl.
+<code>check_banned_patterns</code>) + commit
 <code>feat(radio): Radio Reading Services in Browse and Search</code>.</label></li>
 </ul>
 <h3 id="task-13-update-radio-reading-services-refresh-command">Task 13:
@@ -1483,7 +1557,7 @@ handler mirroring <code>update_noaa_radio_directory</code>.</label></li>
 <li><label><input type="checkbox" />Step 5 — gates + commit
 <code>feat(radio): 'Update Radio Reading Services' refresh command</code>.</label></li>
 </ul>
-<h3 id="task-14-combined-2.1.1-release-wxindex-rrs">Task 14: Combined
+<h3 id="task-14-combined-211-release-wxindex--rrs">Task 14: Combined
 2.1.1 release (wxindex + RRS)</h3>
 <p><strong>Files:</strong> Modify
 <code>s:\quill-radio\pyproject.toml</code>
@@ -1510,5 +1584,6 @@ error-code audit.</label></li>
 <li><label><input type="checkbox" />Step 4 — commit
 <code>chore(radio): release 2.1.1 — NOAA Weather Radio + Radio Reading Services</code>.</label></li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-20-radio-cast-consolidation-plan</title>
+  <title>Consolidating Quill Radio and Quill Cast into quill —
+safely</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="consolidating-quill-radio-and-quill-cast-into-quill--safely">Consolidating
 Quill Radio and Quill Cast into quill — safely</h1>
@@ -202,7 +223,7 @@ is no vendored code to merge — that part is already done.</li>
 <li><strong>Both are shipped.</strong> quill-radio has published
 releases 2.0.2 → 2.1.2; quill-cast has published 1.0.0. Real users are
 running them.</li>
-<li><strong>The in-app updater polls each product's own repo.</strong>
+<li><strong>The in-app updater polls each product’s own repo.</strong>
 <code>radio.py: _REPO = "Community-Access/quill-radio"</code>,
 <code>podcasts.py: _REPO = "Community-Access/quill-cast"</code>. Every
 installed copy calls
@@ -210,11 +231,11 @@ installed copy calls
 updates.</li>
 </ul>
 <p><strong>Therefore: deleting either GitHub repo would 404 every
-existing user's update check — breaking updates for everyone already on
+existing user’s update check — breaking updates for everyone already on
 Radio or Cast.</strong> The local folder is re-clonable (it is on
 GitHub), but the <em>GitHub repo</em> is a live piece of infrastructure
 users depend on. It cannot be abruptly removed.</p>
-<h2 id="what-consolidation-actually-means-here">What "consolidation"
+<h2 id="what-consolidation-actually-means-here">What “consolidation”
 actually means here</h2>
 <p>The valuable consolidation — one codebase, no drift — is
 <strong>already achieved</strong>: the wrapper repos hold no code, only
@@ -228,14 +249,14 @@ tidy now (safe, no user impact) — DONE THIS PASS</h3>
 <ol type="1">
 <li><strong>Move the open issues to quill</strong>, where the code and
 every other radio/cast bug already live (feedback-hub already files
-"[Quill]" reports to quill). Transferred (GitHub leaves a redirect from
+“[Quill]” reports to quill). Transferred (GitHub leaves a redirect from
 the old numbers):
 <ul>
 <li>quill-radio #15 → <strong>quill #1187</strong> (weather: worldwide
 locations).</li>
 <li>quill-radio #8 → <strong>quill #1188</strong> (jump cursor to radio
 list).</li>
-<li>quill-cast #2 → <strong>quill #1189</strong> (episodes don't load
+<li>quill-cast #2 → <strong>quill #1189</strong> (episodes don’t load
 after subscribe; wants tree-expand + shortcuts).</li>
 </ul></li>
 <li><strong>Docs stay where they are.</strong> Do <em>not</em> copy the
@@ -272,7 +293,7 @@ installs poll the old repo until they update:</p>
 <ol type="1">
 <li><strong>Repoint the updater</strong> in quill: change
 <code>_REPO</code> to a repo that will persist (e.g. a single long-lived
-<code>Community-Access/quill-releases</code>, or the quill repo's own
+<code>Community-Access/quill-releases</code>, or the quill repo’s own
 releases), and give the updater a small fallback that tries the new
 target and then the old.</li>
 <li><strong>Ship one transitional release from the OLD repo</strong>
@@ -282,7 +303,7 @@ are already pointed and their app then polls the new target.</li>
 <li><strong>Wait for adoption</strong> (weeks/months). Late updaters
 still poll the old repo.</li>
 <li><strong>Archive, do not delete, the old repo.</strong> GitHub
-"Archive" keeps the releases and the API alive (no 404) while freezing
+“Archive” keeps the releases and the API alive (no 404) while freezing
 the repo. Deleting it would break every user who has not yet updated —
 possibly forever.</li>
 </ol>
@@ -301,6 +322,7 @@ pass). Adopt <strong>Tier 1</strong> as the steady state: one codebase,
 thin release shells, no drift, updates intact. Treat <strong>Tier
 2</strong> (deleting a repo) as a deliberate, migration-gated project,
 not a cleanup — and even then, <em>archive</em> rather than delete, so
-no user's update check ever 404s.</p>
+no user’s update check ever 404s.</p>
+</main>
 </body>
 </html>

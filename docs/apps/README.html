@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>Companion apps that are not part of public QUILL 1.0</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="companion-apps-that-are-not-part-of-public-quill-10">Companion
 apps that are not part of public QUILL 1.0</h1>
 <p>QUILL 1.0.0 ships as the editor plus <strong>two</strong> public
@@ -216,7 +236,7 @@ dev-build-only for 1.0</td>
 <td>Quill Converter (standalone audio converter)</td>
 <td><a
 href="converter/README.md"><code>converter/README.md</code></a></td>
-<td><code>RELEASED_APPS</code>; the "Convert with Quill" shell verb is
+<td><code>RELEASED_APPS</code>; the “Convert with Quill” shell verb is
 gated with it</td>
 </tr>
 <tr>
@@ -239,15 +259,16 @@ file is the material to promote back.</p>
 <p><strong>Two things this folder is not:</strong></p>
 <ul>
 <li><code>docs/podcast/</code> is the 54-episode audio course
-<em>about</em> QUILL, not Quill Cast's documentation. The name collision
-is unfortunate; the app's docs are in <a
+<em>about</em> QUILL, not Quill Cast’s documentation. The name collision
+is unfortunate; the app’s docs are in <a
 href="cast/README.md"><code>cast/</code></a>.</li>
 <li>The <em>editor-embedded</em> audio tools stay public and stay in the
 user guide: <strong>Tools &gt; Speech &gt; Audiobook &amp; Batch
-Speech...</strong>, the Chapter Workbench, <strong>Export to Translated
-Speech Audio</strong>, the <strong>Voices &gt; Convert Audio...</strong>
+Speech…</strong>, the Chapter Workbench, <strong>Export to Translated
+Speech Audio</strong>, the <strong>Voices &gt; Convert Audio…</strong>
 dialog, the <code>quill convert</code> CLI, and the <strong>Book
 Library</strong>. Only the standalone apps moved.</li>
 </ul>
+</main>
 </body>
 </html>

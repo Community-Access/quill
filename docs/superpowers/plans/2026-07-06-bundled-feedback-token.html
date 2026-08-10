@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-06-bundled-feedback-token</title>
+  <title>Bundled Feedback Token Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="bundled-feedback-token-implementation-plan">Bundled Feedback
 Token Implementation Plan</h1>
 <blockquote>
@@ -278,15 +302,20 @@ quillin-hub proxy).</li>
 </ul>
 <hr />
 <h3 id="task-1-generator-script">Task 1: Generator script</h3>
-<p><strong>Files:</strong> - Create:
-<code>tools/generate_feedback_token.py</code> - Test:
-<code>tests/unit/tools/test_generate_feedback_token.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
-<code>tools/generate_feedback_token.py</code> is a standalone script
-(like <code>tools/generate_build_info.py</code>) with a
-<code>main() -&gt; int</code> entry point and a
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>tools/generate_feedback_token.py</code></li>
+<li>Test:
+<code>tests/unit/tools/test_generate_feedback_token.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>tools/generate_feedback_token.py</code> is a
+standalone script (like <code>tools/generate_build_info.py</code>) with
+a <code>main() -&gt; int</code> entry point and a
 <code>write_module(token: str, output_path: Path) -&gt; None</code>
-helper that later tasks/tests can call directly.</p>
+helper that later tasks/tests can call directly.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -407,10 +436,16 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat: add generator for the bundled feedback-hub GitHub token&quot;</span></span></code></pre></div>
 <hr />
 <h3 id="task-2-gitignore-entry">Task 2: Gitignore entry</h3>
-<p><strong>Files:</strong> - Modify: <code>.gitignore</code></p>
-<p><strong>Interfaces:</strong> - Consumes: nothing. - Produces:
-<code>quill/_feedback_token.py</code> is untracked, matching
-<code>quill/_build_info.py</code>.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>.gitignore</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing.</li>
+<li>Produces: <code>quill/_feedback_token.py</code> is untracked,
+matching <code>quill/_build_info.py</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add the
 entry</strong></label></li>
@@ -439,17 +474,22 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="
 <h3 id="task-3-wire-the-bundled-token-into-effective_github_token">Task
 3: Wire the bundled token into
 <code>effective_github_token()</code></h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/feedback_token.py</code> - Test:
-<code>tests/unit/core/test_feedback_token.py</code> (new)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill._feedback_token.BUNDLED_TOKEN</code> (str) when the
-generated module exists; falls back to <code>""</code> when it doesn’t
-(import error). - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/feedback_token.py</code></li>
+<li>Test: <code>tests/unit/core/test_feedback_token.py</code> (new)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill._feedback_token.BUNDLED_TOKEN</code> (str)
+when the generated module exists; falls back to <code>""</code> when it
+doesn’t (import error).</li>
+<li>Produces:
 <code>effective_github_token(*, import_from_env: bool = True) -&gt; str</code>
 keeps its existing public signature and return type; behavior changes
 only in that a bundled token is now tried as a
-<code>resolve_token()</code> candidate before the env-var fallback.</p>
+<code>resolve_token()</code> candidate before the env-var fallback.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -625,16 +665,22 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="
 <hr />
 <h3 id="task-4-wire-the-generator-into-both-build-scripts">Task 4: Wire
 the generator into both build scripts</h3>
-<p><strong>Files:</strong> - Modify:
-<code>scripts/build_windows_distribution.py:1304-1312</code>
-(immediately before the <code>shutil.copytree</code> call) - Modify:
-<code>scripts/build_macos.sh</code> (already has a
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>scripts/build_windows_distribution.py:1304-1312</code>
+(immediately before the <code>shutil.copytree</code> call)</li>
+<li>Modify: <code>scripts/build_macos.sh</code> (already has a
 <code>generate_build_info.py</code> call from the earlier mac
-version-stamping fix; add the new call alongside it)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>tools/generate_feedback_token.py</code>’s <code>main()</code>
-(Task 1), run as a subprocess/CLI, not imported. - Produces: nothing new
-for later tasks — this is the last task in the plan.</p>
+version-stamping fix; add the new call alongside it)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>tools/generate_feedback_token.py</code>’s
+<code>main()</code> (Task 1), run as a subprocess/CLI, not
+imported.</li>
+<li>Produces: nothing new for later tasks — this is the last task in the
+plan.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add the call in
 <code>build_windows_distribution.py</code></strong></label></li>
@@ -696,5 +742,6 @@ Commit</strong></label></li>
 <div class="sourceCode" id="cb12"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add scripts/build_windows_distribution.py scripts/build_macos.sh</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;build: generate the bundled feedback token before packaging&quot;</span></span></code></pre></div>
+</main>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>Quill Converter -- the standalone audio converter app (not part
+of public QUILL 1.0)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,27 +174,48 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="quill-converter----the-standalone-audio-converter-app-not-part-of-public-quill-10">Quill
-Converter -- the standalone audio converter app (not part of public
-QUILL 1.0)</h1>
+id="quill-converter--the-standalone-audio-converter-app-not-part-of-public-quill-10">Quill
+Converter – the standalone audio converter app (not part of public QUILL
+1.0)</h1>
 <blockquote>
 <p><strong>Not part of the public 1.0 product.</strong> Quill Converter
 is one of the five companion apps gated behind
 <code>RELEASED_APPS</code> (<code>quill/core/app_launcher.py</code>) for
 QUILL 1.0.0. It is not in the QuillVille menu, not in the command
-palette, and its Windows Explorer <strong>"Convert with Quill"</strong>
+palette, and its Windows Explorer <strong>“Convert with Quill”</strong>
 shell verb is never registered in a public build
 (<code>quill/core/shell_verbs.py</code> skips the <code>convert</code>
 verb unless <code>is_app_released("converter")</code>).</p>
-<p>The <em>engine</em> is public. QUILL's editor-embedded Universal
-Audio Converter -- the <strong>Voices &gt; Convert Audio...</strong>
+<p>The <em>engine</em> is public. QUILL’s editor-embedded Universal
+Audio Converter – the <strong>Voices &gt; Convert Audio…</strong>
 dialog, the headless <code>quill convert</code> CLI, and <strong>Convert
-from URL...</strong> -- stays fully documented in the public user guide
-and PRD. Only the standalone app's own surfaces were relocated here,
-during the 1.0.0 documentation consolidation. Nothing was deleted.</p>
+from URL…</strong> – stays fully documented in the public user guide and
+PRD. Only the standalone app’s own surfaces were relocated here, during
+the 1.0.0 documentation consolidation. Nothing was deleted.</p>
 </blockquote>
 <p><strong>Where each part came from</strong></p>
 <table>
@@ -207,61 +228,61 @@ during the 1.0.0 documentation consolidation. Nothing was deleted.</p>
 <tbody>
 <tr>
 <td><code>docs/user guide/userguide.md</code></td>
-<td>"The Universal Audio Converter" -- the standalone-app door and the
+<td>“The Universal Audio Converter” – the standalone-app door and the
 Explorer shell-verb door</td>
 </tr>
 <tr>
 <td><code>docs/user guide/userguide.md</code></td>
-<td>"The Universal Audio Converter" -- the Advanced-mode standalone
+<td>“The Universal Audio Converter” – the Advanced-mode standalone
 clause</td>
 </tr>
 <tr>
 <td><code>QUILL-PRD.md</code></td>
-<td><code>### 5.25g Universal Audio Converter</code> -- the standalone
+<td><code>### 5.25g Universal Audio Converter</code> – the standalone
 surfaces and the deferred build entry</td>
 </tr>
 <tr>
 <td><code>QUILL-PRD.md</code></td>
-<td><code>§35.1 The apps</code> -- the Quill Converter family entry</td>
+<td><code>§35.1 The apps</code> – the Quill Converter family entry</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h1 id="part-1----relocated-user-guide-material">Part 1 -- relocated
-user guide material</h1>
-<p><em>Moved from the user guide's "The Universal Audio Converter"
+<h1 id="part-1--relocated-user-guide-material">Part 1 – relocated user
+guide material</h1>
+<p><em>Moved from the user guide’s “The Universal Audio Converter”
 section, which stays public and now describes <strong>three</strong>
 doors (the dialog, the CLI, and Convert from URL) instead of
 five.</em></p>
 <h2 id="the-standalone-app-as-a-door-onto-the-shared-engine">The
 standalone app, as a door onto the shared engine</h2>
 <ul>
-<li><strong>Quill Converter</strong> -- a standalone tray app, launched
+<li><strong>Quill Converter</strong> – a standalone tray app, launched
 with <code>python -m quill.apps.converter</code> (or its own icon). It
 carries the QuillVille menu like the other family apps, minimizes to the
 tray, and has its own show/hide hotkey (Ctrl+Alt+Shift+C).</li>
-<li><strong>Windows Explorer</strong> -- turn on <strong>Settings -&gt;
-Integration -&gt; Offer "Convert with QUILL"</strong> and right-clicking
+<li><strong>Windows Explorer</strong> – turn on <strong>Settings -&gt;
+Integration -&gt; Offer “Convert with QUILL”</strong> and right-clicking
 an audio or video file gains a <strong>Convert with Quill</strong> entry
 that opens the standalone converter with that file already queued.</li>
 </ul>
 <h2 id="advanced-mode-in-the-standalone-app">Advanced mode in the
 standalone app</h2>
-<p>The user guide's Advanced-mode paragraph described the panel as "a
-checkbox that reveals more controls, or the <strong>Advanced...</strong>
-button in the standalone app". The public text now names only the
-checkbox; the standalone app reaches the same full processing catalog --
+<p>The user guide’s Advanced-mode paragraph described the panel as “a
+checkbox that reveals more controls, or the <strong>Advanced…</strong>
+button in the standalone app”. The public text now names only the
+checkbox; the standalone app reaches the same full processing catalog –
 bit rate, sample rate, channels, bit depth, loudness targets, gain,
-high-pass, trim silence, speed, compressor, leveler, and fades --
-through its <strong>Advanced...</strong> button.</p>
+high-pass, trim silence, speed, compressor, leveler, and fades – through
+its <strong>Advanced…</strong> button.</p>
 <hr />
-<h1 id="part-2----relocated-prd-material">Part 2 -- relocated PRD
+<h1 id="part-2--relocated-prd-material">Part 2 – relocated PRD
 material</h1>
 <p><em>Moved from
 <code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>.
 The PRD keeps 5.25g for the public engine and its three public surfaces
 and points here for the app.</em></p>
-<h2 id="prd-525g----the-standalone-surfaces">PRD 5.25g -- the standalone
+<h2 id="prd-525g--the-standalone-surfaces">PRD 5.25g – the standalone
 surfaces</h2>
 <p>The single wx-free engine (<code>core/audio/convert.py</code>,
 <code>presets.py</code>, <code>dsp.py</code>,
@@ -271,14 +292,14 @@ surfaced through:</p>
 <li>a standalone <strong>Quill Converter</strong> app
 (<code>apps/converter.py</code>, an <code>AppShellFrame</code>
 registered in <code>core/app_launcher.py</code>);</li>
-<li>a Windows Explorer <strong>"Convert with Quill"</strong> shell verb
+<li>a Windows Explorer <strong>“Convert with Quill”</strong> shell verb
 (<code>core/shell_verbs.py</code>, gated by
 <code>shell_verb_convert</code>, routed through
 <code>--action convert</code> to the converter app). For 1.0.0 the verb
 is additionally gated on <code>is_app_released("converter")</code>, so a
 public build never registers it.</li>
 </ul>
-<p><strong>Deferred:</strong> the standalone app's PyInstaller build
+<p><strong>Deferred:</strong> the standalone app’s PyInstaller build
 entry + launcher tile icon (after the build refactor settles); the app
 runs today via <code>python -m quill.apps.converter</code>.</p>
 <h2 id="prd-351-the-quill-converter-family-entry">PRD 35.1 The Quill
@@ -288,20 +309,21 @@ Converter family entry</h2>
 publicly released apps and points here for the gated ones.</em></p>
 <ul>
 <li><strong>Quill Converter</strong>
-(<code>quill/apps/converter.py</code>) -- the Universal Audio Converter
+(<code>quill/apps/converter.py</code>) – the Universal Audio Converter
 as its own app. Was to ship as a standalone product from 1.0.0:
 <code>standalone/converter/</code> is the wrapper (launcher package,
 tile icon + regenerable
 <code>assets/make_quill_converter_icon.py</code>, PyInstaller spec,
 <code>pyproject.toml</code>), <code>build_portable.py</code> carries a
 <code>converter</code> product entry (<code>QuillConverter.exe</code>,
-ffmpeg staged, no speech engines and no mpv -- the conversion work is
-entirely FFmpeg's), and <code>QuillConverter.exe</code> is in
-<code>storage_mode</code>'s portable-evidence allowlist so a portable
+ffmpeg staged, no speech engines and no mpv – the conversion work is
+entirely FFmpeg’s), and <code>QuillConverter.exe</code> is in
+<code>storage_mode</code>’s portable-evidence allowlist so a portable
 bundle keeps its data next to the exe like every sibling. yt-dlp is
 never bundled: URL import installs it on demand with consent.
 <strong>Held back from the public QUILL 1.0.0 release</strong> via
 <code>RELEASED_APPS</code>.</li>
 </ul>
+</main>
 </body>
 </html>

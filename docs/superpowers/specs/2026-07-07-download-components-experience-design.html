@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-07-download-components-experience-design</title>
+  <title>Download Optional Components — the warm, complete experience
+(design)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,10 +174,31 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="download-optional-components-the-warm-complete-experience-design">Download
+id="download-optional-components--the-warm-complete-experience-design">Download
 Optional Components — the warm, complete experience (design)</h1>
 <p>Extends GitHub issue #874 (the unified missing-component surface).
 #874 wired the <em>routing</em> into one picker; this spec makes that
@@ -233,22 +258,25 @@ an upgrader’s <code>{app}</code> copy, or anything QUILL did not
 fetch.</li>
 </ul>
 <h2 id="design">Design</h2>
-<h3 id="importance-ordering">1. Importance ordering</h3>
+<h3 id="1-importance-ordering">1. Importance ordering</h3>
 <p><code>OptionalComponent</code> gains an integer <code>priority</code>
 (lower = higher in the list); <code>gather_optional_components()</code>
 sorts by <code>(priority, name)</code>. Proposed order: Pandoc, braille
 pack, whisper.cpp, Kokoro, Piper, eSpeak, DECtalk, ffmpeg, libmpv,
 MathCAT, Vosk, then the spell-check dictionaries (alphabetical). The
 dialog renders in returned order (no re-sort in the UI).</p>
-<h3 id="sizes-on-every-row">2. Sizes on every row</h3>
+<h3 id="2-sizes-on-every-row">2. Sizes on every row</h3>
 <p>Give the dictionary rows a real <code>size_hint</code>. Two options —
-decide in implementation: - <strong>(a)</strong> a static per-dictionary
-estimate (“~4 MB”), simplest; or - <strong>(b)</strong> read the pinned
-asset’s size where one exists (the <code>release_assets</code> entries
-know their <code>filename</code>; a size field could be added).
-Recommend (a) for now (dictionaries are all a few MB), with a TODO for
-(b).</p>
-<h3 id="rich-description-box">3. Rich description box</h3>
+decide in implementation:</p>
+<ul>
+<li><strong>(a)</strong> a static per-dictionary estimate (“~4 MB”),
+simplest; or</li>
+<li><strong>(b)</strong> read the pinned asset’s size where one exists
+(the <code>release_assets</code> entries know their
+<code>filename</code>; a size field could be added). Recommend (a) for
+now (dictionaries are all a few MB), with a TODO for (b).</li>
+</ul>
+<h3 id="3-rich-description-box">3. Rich description box</h3>
 <p>Replace the one-line <code>optional_components_detail</code>
 StaticText with a <strong>read-only multiline</strong>
 <code>TextCtrl</code> (<code>wx.TE_MULTILINE | wx.TE_READONLY</code>).
@@ -258,7 +286,7 @@ Remove to free ~X and turn off Y” / “Not installed — Download to enable
 Y”). Copy is warm and concrete. The text is built by a wx-free
 <code>describe_component(component)</code> helper in
 <code>optional_components.py</code> so it is unit-testable.</p>
-<h3 id="install-remove-installed-state-controls">4. Install + Remove,
+<h3 id="4-install--remove-installed-state-controls">4. Install + Remove,
 installed-state controls</h3>
 <ul>
 <li>The <strong>Download</strong> button is disabled (and labeled
@@ -268,31 +296,35 @@ row is installed and is a QUILL-downloaded copy that can be
 removed.</li>
 <li>Removal logic is wx-free in <code>optional_components.py</code>:
 <code>removable_path(component_id) -&gt; Path | None</code> (None =
-nothing QUILL can safely remove, e.g. a system Pandoc or bundled copy)
+nothing QUILL can safely remove, e.g. a system Pandoc or bundled copy)
 and <code>remove_component(component_id) -&gt; bool</code> (delete that
 path, clear any discover cache). The dialog confirms, calls it, then
 refreshes the row.</li>
 </ul>
-<h3 id="remove-closes-the-loop-disable-dependent-features">5. Remove
+<h3 id="5-remove-closes-the-loop-disable-dependent-features">5. Remove
 closes the loop (disable dependent features)</h3>
 <p>Removing a component turns off what it powered. Most engine
-availability is already <em>dynamic</em>
-(e.g. <code>kokoro_engine_ready()</code>,
+availability is already <em>dynamic</em> (e.g.
+<code>kokoro_engine_ready()</code>,
 <code>discover_piper_executable()</code>), so read paths degrade on
 their own. What needs explicit handling is durable settings/menus that
-assume a component (e.g. braille translation surfaces, a selected Read
+assume a component (e.g. braille translation surfaces, a selected Read
 Aloud engine that just went away). Introduce a small map,
 <code>COMPONENT_FEATURES: dict[str, tuple[str, ...]]</code>, from
-component_id to the feature ids it enables, and on removal: - if the
-removed engine is the <em>active</em> <code>read_aloud_engine</code>,
-reset it to the always-present SAPI 5 floor; and - surface (do not
-silently flip) any feature the component gated, via the existing feature
-manager.</p>
+component_id to the feature ids it enables, and on removal:</p>
+<ul>
+<li>if the removed engine is the <em>active</em>
+<code>read_aloud_engine</code>, reset it to the always-present SAPI 5
+floor; and</li>
+<li>surface (do not silently flip) any feature the component gated, via
+the existing feature manager.</li>
+</ul>
 <p><strong>Open question for implementation:</strong> exact depth —
-reset active-engine + refresh menus (recommended) vs. also toggling
+reset active-engine + refresh menus (recommended) vs. also toggling
 <code>features.json</code> entries. Pin the concrete braille and Read
 Aloud call sites first, the way #874 pinned its sites.</p>
-<h3 id="hear-this-voice-test-button">6. Hear-this-voice test button</h3>
+<h3 id="6-hear-this-voice-test-button">6. Hear-this-voice test
+button</h3>
 <p>For voice-engine rows (Kokoro, Piper, eSpeak, DECtalk — those with an
 installed speech engine), a <strong>Test</strong> button synthesizes a
 short, fixed QUILL blurb in a default voice for that engine and plays
@@ -304,22 +336,27 @@ sample of <engine>…”. The button is hidden for non-voice components and
 disabled until the engine is installed.</p>
 <p><strong>Open question:</strong> the blurb text. Recommend one short,
 on-brand line (a new <code>TEST_BLURB</code> in
-<code>optional_components.py</code>), e.g. <em>“This is QUILL, reading
+<code>optional_components.py</code>), e.g. <em>“This is QUILL, reading
 to you with the <engine> voice.”</em> — confirm wording.</p>
-<h3 id="keep-the-hub-open-focus-to-progress-then-back">7. Keep the hub
+<h3 id="7-keep-the-hub-open-focus-to-progress-then-back">7. Keep the hub
 open; focus to progress, then back</h3>
 <p>Restructure so the picker <strong>stays open</strong> and drives the
-download in place: - Activating Download runs the component’s installer,
-showing the existing <code>AIProgressDialog</code> (which takes focus
-and announces progress). - On completion the progress dialog closes,
-<strong>focus returns to the picker</strong>, the row refreshes to
-“Installed”, Download disables, Remove/Test enable, and the description
-updates — the user never leaves the hub. - This replaces the current
-“return the chosen id and <code>EndModal</code>, dispatch after close”
-flow in <code>open_optional_components</code>; the dispatch table moves
-into the dialog (or a controller it calls back into).</p>
-<h3 id="route-the-scattered-prompts-here-with-a-guiding-popup">8. Route
-the scattered prompts here (with a guiding popup)</h3>
+download in place:</p>
+<ul>
+<li>Activating Download runs the component’s installer, showing the
+existing <code>AIProgressDialog</code> (which takes focus and announces
+progress).</li>
+<li>On completion the progress dialog closes, <strong>focus returns to
+the picker</strong>, the row refreshes to “Installed”, Download
+disables, Remove/Test enable, and the description updates — the user
+never leaves the hub.</li>
+<li>This replaces the current “return the chosen id and
+<code>EndModal</code>, dispatch after close” flow in
+<code>open_optional_components</code>; the dispatch table moves into the
+dialog (or a controller it calls back into).</li>
+</ul>
+<h3 id="8-route-the-scattered-prompts-here-with-a-guiding-popup">8.
+Route the scattered prompts here (with a guiding popup)</h3>
 <ul>
 <li><strong>Startup braille prompt</strong>
 (<code>_maybe_prompt_braille_pack_install</code>): instead of its own
@@ -334,7 +371,7 @@ translation, or Escape to skip.” Gate the popup on a
 already land here preselected; they inherit the richer dialog
 automatically.</li>
 </ul>
-<h3 id="warm-and-fuzzy-throughout">9. Warm and fuzzy throughout</h3>
+<h3 id="9-warm-and-fuzzy-throughout">9. Warm and fuzzy throughout</h3>
 <p>Encouraging, plain-language copy on buttons, descriptions, and
 announcements; the Test button; the guiding popup; and the stay-in-place
 flow together make the hub feel like a friendly setup assistant rather
@@ -417,7 +454,7 @@ must add a test that in portable mode the resolved download/remove path
 is under the portable root, not <code>%APPDATA%</code>.</p>
 <h2 id="round-2-requirements-2026-07-07">Round 2 requirements
 (2026-07-07)</h2>
-<h3 id="r1.-every-component-has-a-verify-touch-point-prove-it-works">R1.
+<h3 id="r1-every-component-has-a-verify-touch-point-prove-it-works">R1.
 Every component has a verify touch point (“prove it works”)</h3>
 <p>The Test button generalises from voices to <strong>a per-type verify
 action on every component</strong>, so a user can always confirm what
@@ -446,7 +483,7 @@ language.</li>
 optional detail), so the dialog just renders/announces it. Disabled
 until the component is installed.</p>
 <h3
-id="r2.-whisper-and-vosk-stt-self-test-closing-the-confidence-loop">R2.
+id="r2-whisper-and-vosk-stt-self-test--closing-the-confidence-loop">R2.
 Whisper (and Vosk) STT self-test — closing the confidence loop</h3>
 <p>To prove an offline STT engine works with no bundled audio asset,
 close the loop through TTS: synthesize a fixed known phrase with the
@@ -457,7 +494,7 @@ installed engine, and show the user what it heard — “Whisper heard:
 read as failure. Reuses the existing transcription path; announced for
 screen-reader users. This is the STT arm of R1’s
 <code>verify_component</code>.</p>
-<h3 id="r3.-rich-failure-info-one-click-bug-report">R3. Rich failure
+<h3 id="r3-rich-failure-info--one-click-bug-report">R3. Rich failure
 info + one-click bug report</h3>
 <p>Every download/install/verify failure must surface the <em>real</em>
 cause and offer to send it, not just flash a status line:</p>
@@ -476,7 +513,7 @@ stays redacted (no document content).</li>
 message, detail, log_excerpt, target) carries the info from the core
 installers up to the dialog.</li>
 </ul>
-<h3 id="r4.-catalog-completeness-add-the-missing-components">R4. Catalog
+<h3 id="r4-catalog-completeness--add-the-missing-components">R4. Catalog
 completeness — add the missing components</h3>
 <p><code>gather_optional_components()</code> is missing two downloadable
 components; add both so the dialog has a touch point for everything
@@ -503,10 +540,11 @@ future downloadable component can’t silently miss the dialog again.</p>
 <code>removable_path</code>/<code>remove_component</code>
 (portable-aware), installed-state gating, engine-reset loop;
 portable-path test.</li>
-<li><strong>Phase 3</strong> — verify touch points (R1) incl. voice Test
+<li><strong>Phase 3</strong> — verify touch points (R1) incl. voice Test
 and Whisper/Vosk self-test (R2), rich failure + bug report (R3).</li>
 <li><strong>Phase 4</strong> — stay-open focus flow, reroute the startup
 braille prompt with the guiding popup, and the #874 failure routes.</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-settings</title>
+  <title>Section — Settings / Preferences (every pane of the Settings
+dialog)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--settings--preferences-every-pane-of-the-settings-dialog">Section
 — Settings / Preferences (every pane of the Settings dialog)</h1>
@@ -181,7 +206,7 @@ your configuration safe — it persists across a relaunch, it can be
 reset, a corrupt file is quarantined not lost, secrets never land in
 plain text, and Safe Mode ignores the settings it must. Finish
 <strong>Part 0</strong> first.</p>
-<p>Unlike a single command, "Settings" is a <strong>surface</strong>:
+<p>Unlike a single command, “Settings” is a <strong>surface</strong>:
 one dialog (<code>app.preferences</code>, <strong>Ctrl+,</strong>) with
 a <strong>notebook of category tabs</strong>. This section walks the way
 in (SET-01), then one scenario per tab, then the cross-cutting safety
@@ -231,7 +256,7 @@ move to the next tab, and <strong>Ctrl+Shift+Tab</strong> to move back.
 (You can also focus the tab strip and use <strong>Left/Right
 Arrow</strong>.)</li>
 <li>Press <strong>Tab</strong> to move from the tab strip into the
-current pane's controls, walking them in order;
+current pane’s controls, walking them in order;
 <strong>Shift+Tab</strong> to go back.</li>
 <li>Do <strong>not</strong> save yet — press <strong>Escape</strong> to
 close.</li>
@@ -240,7 +265,7 @@ close.</li>
 <ul>
 <li>A dialog titled <strong>Settings</strong> opens; it is announced as
 a tabbed (notebook/property-page) dialog whose selector is named
-<strong>"Settings categories."</strong> The first tab,
+<strong>“Settings categories.”</strong> The first tab,
 <strong>General</strong>, is selected.</li>
 <li>Each tab is announced by name as you Ctrl+Tab across
 (<strong>General</strong>, <strong>Editing</strong>, <strong>Navigation
@@ -249,7 +274,7 @@ pane content swaps to match.</li>
 <li>Along the bottom are three buttons: <strong>OK</strong>,
 <strong>Cancel</strong>, and <strong>Apply</strong>.
 <strong>Apply</strong> starts <strong>disabled</strong> and only enables
-once you change something (so an untouched visit can't "apply" nothing).
+once you change something (so an untouched visit can’t “apply” nothing).
 <strong>OK</strong> saves and closes; <strong>Cancel</strong> (and
 <strong>Escape</strong>) discards and closes; focus returns to where you
 were.</li>
@@ -282,7 +307,7 @@ set <strong>Theme</strong> to <strong>Dark</strong>.</li>
 <li>The Theme control is announced as a labelled combo box with its
 current value; arrowing changes the selection audibly. On
 <strong>Apply</strong> the UI repaints to the dark theme and the status
-bar confirms in substance <strong>"Settings applied."</strong></li>
+bar confirms in substance <strong>“Settings applied.”</strong></li>
 <li>The pane also exposes (each labelled, keyboard-reachable): <em>Title
 bar path</em>, <em>Unsaved-change title style</em>, <em>Show tab
 control</em>, <em>Recent files to remember</em> (a number), <em>Default
@@ -315,7 +340,7 @@ control, default <strong>30</strong>).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The spin control is announced with its label and value; changing it
-is audible. On <strong>Apply</strong>, "Settings applied" is confirmed
+is audible. On <strong>Apply</strong>, “Settings applied” is confirmed
 and the live autosave timer is re-armed to the new interval (no restart
 needed).</li>
 <li>Other labelled controls here include <em>Autoformat straight quotes
@@ -348,7 +373,7 @@ speech / both / none).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The combo box is labelled and announced; the choice changes audibly
-and "Settings applied" is confirmed.</li>
+and “Settings applied” is confirmed.</li>
 <li>Other labelled controls include <em>QUILL key prefix timeout
 (seconds)</em>, <em>Browse mode follow-on timeout</em> (a combo whose
 <strong>Custom…</strong> value enables a sibling milliseconds spin — the
@@ -382,7 +407,7 @@ warnings / never).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The combo is labelled and announced; "Settings applied" is
+<li>The combo is labelled and announced; “Settings applied” is
 confirmed.</li>
 <li>Other labelled controls include <em>Show announcements in
 braille</em>, <em>Braille announcement style</em> (speech / compact),
@@ -400,7 +425,7 @@ checkbox/combo/slider is reachable and announced with its state.</li>
 <h2 id="set-06--read-aloud-pane-spoken-playback-engine-and-voice">SET-06
 — Read Aloud pane (spoken playback engine and voice)</h2>
 <p><em>What &amp; why.</em> Choose the Read-Aloud engine and tune the
-voice — rate, volume, pitch — for QUILL's own document narration.</p>
+voice — rate, volume, pitch — for QUILL’s own document narration.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Settings open. Sample change: set <strong>Read Aloud rate</strong>
@@ -462,12 +487,12 @@ command</strong> fields.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The master switch is announced as <strong>"Use Artificial
-Intelligence. Master switch for all AI features."</strong>; toggling it
+<li>The master switch is announced as <strong>“Use Artificial
+Intelligence. Master switch for all AI features.”</strong>; toggling it
 enables/disables the rest of the AI menus on Apply. The <strong>Open AI
 Hub…</strong> button is labelled for its purpose.</li>
-<li>The static text confirms <strong>"All other AI settings (providers,
-models, API keys) are managed in the AI Hub."</strong> — i.e. <strong>no
+<li>The static text confirms <strong>“All other AI settings (providers,
+models, API keys) are managed in the AI Hub.”</strong> — i.e. <strong>no
 API key field lives here</strong> (see SET-21 for why). <strong>Allow
 external engines</strong> is off by default and only accepts an
 allow-listed helper command.</li>
@@ -499,7 +524,7 @@ number, default 10) and set it to <strong>5</strong>.</li>
 <ul>
 <li>Both controls are labelled and announced. On <strong>Apply</strong>
 the model-lifecycle policy is reconfigured live (no restart): idle
-models now unload after 5 minutes. "Settings applied" is confirmed.</li>
+models now unload after 5 minutes. “Settings applied” is confirmed.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -509,10 +534,10 @@ models now unload after 5 minutes. "Settings applied" is confirmed.</li>
 <h2 id="set-09--transcription-pane-offline-speech--wake-word">SET-09 —
 Transcription pane (offline speech / wake word)</h2>
 <p><em>What &amp; why.</em> Defaults for offline speech-recognition
-models and the optional "Hey QUILL" wake word.</p>
+models and the optional “Hey QUILL” wake word.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li>Settings open. Sample check: read the <strong>Listen for 'Hey QUILL'
+<li>Settings open. Sample check: read the <strong>Listen for ‘Hey QUILL’
 (wake word)</strong> checkbox (default <strong>off</strong>).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -524,8 +549,8 @@ it; press <strong>Cancel</strong> if you changed nothing.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Controls are labelled and announced, including <em>Listen for 'Hey
-QUILL' (wake word)</em> and <em>Keep listening for 'Hey QUILL' across
+<li>Controls are labelled and announced, including <em>Listen for ‘Hey
+QUILL’ (wake word)</em> and <em>Keep listening for ‘Hey QUILL’ across
 restarts</em>. <strong>Note:</strong> the wake word is off by default
 and, unless you also enable persistence, must not survive a restart on
 its own — verify that in SET-17 if you turn it on.</li>
@@ -558,7 +583,7 @@ subfolders</em>, and <em>Watch folder: play a sound on each check</em> /
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Every control is labelled and keyboard-reachable; the folder path
-field accepts typed text. "Settings applied" is confirmed.
+field accepts typed text. “Settings applied” is confirmed.
 <strong>Note:</strong> the ambient tick and interrupt flags default
 <strong>off</strong> — an unrequested check should be silent and must
 not talk over your screen reader.</li>
@@ -668,11 +693,11 @@ border</em>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Number and checkbox controls are labelled and announced. Unchecking
-<em>Hide editor border</em> raises a spoken warning ("showing the editor
-border breaks braille cell alignment…") with <strong>Show border / Keep
+<em>Hide editor border</em> raises a spoken warning (“showing the editor
+border breaks braille cell alignment…”) with <strong>Show border / Keep
 it hidden</strong> choices; declining keeps it hidden. Changing either
-braille-editor fix on <strong>Apply</strong> shows a <strong>"Restart to
-apply"</strong> message and speaks that a restart is needed for every
+braille-editor fix on <strong>Apply</strong> shows a <strong>“Restart to
+apply”</strong> message and speaks that a restart is needed for every
 document to use the new setting.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -703,7 +728,7 @@ beginning</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Each control is labelled and announced; the change is confirmed with
-"Settings applied." Verify later in an F7 review that the new verbosity
+“Settings applied.” Verify later in an F7 review that the new verbosity
 is honoured.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -738,7 +763,7 @@ is a single reachable checkbox; the experimental options (GLOW
 review/repair, WordPress publishing, Table Studio, browser Read Aloud)
 drop out of the Tab order and cannot be focused or changed.</li>
 <li>Ticking the master switch <strong>on</strong> live-enables those
-controls (they enter the Tab order). The pane's own text reminds you to
+controls (they enter the Tab order). The pane’s own text reminds you to
 <strong>restart</strong> after changing anything here.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -756,13 +781,13 @@ folder, a move can only take effect on the next launch.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>Settings open on <strong>General</strong>. This scenario
-<strong>moves QUILL's data</strong> — do it on a test machine, and know
+<strong>moves QUILL’s data</strong> — do it on a test machine, and know
 your current data folder first.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>On the <strong>General</strong> tab, Tab down to the <strong>Data
-location</strong> block (<strong>"Store QUILL's data:"</strong>
+location</strong> block (<strong>“Store QUILL’s data:”</strong>
 combo).</li>
 <li>Choose <strong>Custom folder</strong>; the <strong>Choose
 Folder…</strong> button enables. Activate it and pick an empty test
@@ -774,10 +799,10 @@ Now</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The mode combo is labelled <strong>"Data location"</strong>; the
+<li>The mode combo is labelled <strong>“Data location”</strong>; the
 <strong>Choose Folder…</strong> button only enables for <strong>Custom
 folder</strong>; the chosen path is displayed. On OK a spoken
-<strong>"Data Location Changed"</strong> dialog explains the move takes
+<strong>“Data Location Changed”</strong> dialog explains the move takes
 effect on the next start and offers <strong>Restart Now /
 Later</strong>. After the restart, QUILL reads and writes under the new
 folder (a status/announcement reports the completed move).
@@ -839,12 +864,12 @@ then repeat and choose <strong>Yes</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A spoken confirmation warns <strong>"Reset every setting to its
-factory default? This cannot be undone."</strong> with a Yes/No you can
+<li>A spoken confirmation warns <strong>“Reset every setting to its
+factory default? This cannot be undone.”</strong> with a Yes/No you can
 cancel. On Yes, every setting returns to its default (Theme back to
 <strong>System</strong>, Autosave back to <strong>30</strong>), the UI
-re-applies (theme, menus, title), and the status confirms <strong>"Reset
-settings to factory defaults."</strong></li>
+re-applies (theme, menus, title), and the status confirms <strong>“Reset
+settings to factory defaults.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -875,12 +900,12 @@ settings…</strong>; pick
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Export writes a <code>.qsf</code> file and confirms
-<strong>"Exported settings to qa-settings.qsf."</strong> Import reads it
+<strong>“Exported settings to qa-settings.qsf.”</strong> Import reads it
 back and re-applies; <strong>Autosave</strong> returns to
 <strong>12</strong>. A malformed or partial file is handled gracefully
 (unknown keys ignored, values re-validated) — it never produces an
-invalid configuration or a crash; an unreadable file reports "Could not
-read settings from …" plainly.</li>
+invalid configuration or a crash; an unreadable file reports “Could not
+read settings from …” plainly.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -897,9 +922,9 @@ install).</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>Precondition:</strong> a dev/test build where you can reach
-the data folder. Locate <code>settings.json</code> in QUILL's data
+the data folder. Locate <code>settings.json</code> in QUILL’s data
 folder (see SET-16 for where that is; on a normal install it is under
-your user profile's app-data area). QUILL should be
+your user profile’s app-data area). QUILL should be
 <strong>closed</strong>.</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -953,8 +978,8 @@ your key</strong>.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The AI Hub confirms the key is accepted and, in substance, that
-<strong>"Your key is stored securely on this device and never
-shared."</strong> The key does <strong>not</strong> appear anywhere in
+<strong>“Your key is stored securely on this device and never
+shared.”</strong> The key does <strong>not</strong> appear anywhere in
 <code>settings.json</code> or in an exported <code>.qsf</code> — those
 hold only non-secret knobs. (SSH site secrets behave the same way; see
 FILE-24.) If a raw key is found in either file, that is a
@@ -1007,7 +1032,7 @@ them; it did not rewrite them.</li>
 <hr />
 <h2 id="set-23--glow-accessibility-settings-gated-coreglow">SET-23 —
 GLOW Accessibility settings [GATED <code>core.glow</code>]</h2>
-<p><em>What &amp; why.</em> QUILL's built-in accessibility engine
+<p><em>What &amp; why.</em> QUILL’s built-in accessibility engine
 (GLOW): on by default and local; its optional networked features are
 consent-gated and off until you turn them on.</p>
 <p><strong>Before you start</strong></p>
@@ -1033,9 +1058,9 @@ confirm it stuck.</li>
 <ul>
 <li>The dialog explains GLOW is on by default and runs on your computer,
 and that the networked options are off until you enable them and that
-<strong>"Quill never sends your document anywhere without asking
-first."</strong> Each checkbox is labelled and keyboard-operable; on OK
-the status confirms <strong>"GLOW settings saved"</strong> and the
+<strong>“Quill never sends your document anywhere without asking
+first.”</strong> Each checkbox is labelled and keyboard-operable; on OK
+the status confirms <strong>“GLOW settings saved”</strong> and the
 choice persists.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -1055,5 +1080,6 @@ choice persists.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

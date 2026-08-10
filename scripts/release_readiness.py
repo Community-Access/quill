@@ -26,6 +26,28 @@ def _page_title(source: Path) -> str:
     return source.stem
 
 
+# Directories under ``docs/`` whose HTML belongs to a different generator.
+# ``gen_acceptance_html.py`` and ``gen_signoff_html.py`` each write an
+# ``interactive/`` tree of their own; Pandoc must not render into those.
+_FOREIGN_HTML_DIRS = frozenset({"interactive"})
+
+
+def _pandoc_sources(docs_dir: Path) -> list[Path]:
+    """Every Markdown file under ``docs/`` that Pandoc owns the rendering of.
+
+    Recursive on purpose. This used to be a non-recursive ``docs/*.md`` glob
+    while ``check_docs_artifacts.py`` validated the tree recursively, so the
+    nested docs were gated but never rebuilt -- 163 of them sat in the repo
+    with no lang attribute, no <main> landmark, and no skip link.
+
+    ``docs/site/`` contains no Markdown at all (it is a separate pipeline) and
+    so is naturally excluded.
+    """
+    return [
+        source for source in docs_dir.rglob("*.md") if _FOREIGN_HTML_DIRS.isdisjoint(source.parts)
+    ]
+
+
 def _build_docs(repo_root: Path) -> None:
     pandoc_path = shutil.which("pandoc")
     if pandoc_path is None:
@@ -43,7 +65,7 @@ def _build_docs(repo_root: Path) -> None:
             "drops <html lang>, the skip link, and the <main> landmark."
         )
     docs_dir = repo_root / "docs"
-    for source in sorted(docs_dir.glob("*.md")):
+    for source in sorted(_pandoc_sources(docs_dir)):
         html_out = source.with_suffix(".html")
         epub_out = source.with_suffix(".epub")
         # +smart turns ASCII "--", "..." and straight quotes into real

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-17-audio-studio-optimization</title>
+  <title>Audio Studio Optimization Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="audio-studio-optimization-implementation-plan">Audio Studio
 Optimization Implementation Plan</h1>
 <blockquote>
@@ -299,10 +323,6 @@ DENYLIST in <code>vendor_from_quill.py</code>.</p>
 Authoritative vendored guard-site list (confirmed by grep against
 <code>S:/QUILL-AS/quillas/</code>):</p>
 <table>
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 77%" />
-</colgroup>
 <thead>
 <tr>
 <th>DROP module</th>
@@ -375,13 +395,19 @@ spellcheck/glow as feature-definition <em>data</em> (not module
 imports); those entries stay harmless in the standalone - only the
 installer imports in <code>optional_components.py</code> get
 guarded.</p>
-<h3 id="task-1.1-establish-the-absent-path-test-harness-in-quill">Task
+<h3 id="task-11-establish-the-absent-path-test-harness-in-quill">Task
 1.1: Establish the absent-path test harness in QUILL</h3>
-<p><strong>Files:</strong> - Create:
-<code>tests/unit/core/test_optional_import_guards.py</code></p>
-<p><strong>Interfaces:</strong> - Produces: a reusable
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create:
+<code>tests/unit/core/test_optional_import_guards.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: a reusable
 <code>assert_module_absent(monkeypatch, dotted)</code> helper later
-tasks call to simulate a DROP module being missing.</p>
+tasks call to simulate a DROP module being missing.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -442,19 +468,26 @@ baseline)</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feature/as-trim</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add tests/unit/core/test_optional_import_guards.py</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;test(as-trim): add absent-path guard harness (red)&quot;</span></span></code></pre></div>
-<h3 id="task-1.2-guard-the-optional_components.py-imports">Task 1.2:
-Guard the optional_components.py imports</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/optional_components.py</code> (import block near lines
-214-263, and usages at 604, 631, 695, 719, 746, 758, 764, 770, 994) -
-Test: <code>tests/unit/core/test_optional_import_guards.py</code></p>
-<p><strong>Interfaces:</strong> - Produces: module-level
-<code>None</code>-or-module sentinels (<code>_braille_pack</code>,
-<code>_pandoc_install</code>, <code>_pdf_ocr_install</code>,
-<code>_node_install</code>, <code>_git_binaries</code>,
-<code>_math</code>, <code>_spellcheck</code>) used by the rest of this
-module; installer functions degrade to “not available” when the sentinel
-is <code>None</code>.</p>
+<h3 id="task-12-guard-the-optional_componentspy-imports">Task 1.2: Guard
+the optional_components.py imports</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/optional_components.py</code> (import block
+near lines 214-263, and usages at 604, 631, 695, 719, 746, 758, 764,
+770, 994)</li>
+<li>Test:
+<code>tests/unit/core/test_optional_import_guards.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: module-level <code>None</code>-or-module sentinels
+(<code>_braille_pack</code>, <code>_pandoc_install</code>,
+<code>_pdf_ocr_install</code>, <code>_node_install</code>,
+<code>_git_binaries</code>, <code>_math</code>,
+<code>_spellcheck</code>) used by the rest of this module; installer
+functions degrade to “not available” when the sentinel is
+<code>None</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Replace the hard
 import block with guarded imports</strong></label></li>
@@ -476,8 +509,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a hr
 <li><label><input type="checkbox" /><strong>Step 2: Guard each usage
 site</strong></label></li>
 </ul>
-<p>At every function that uses the imported names
-(e.g. <code>managed_braille_dir</code>,
+<p>At every function that uses the imported names (e.g.
+<code>managed_braille_dir</code>,
 <code>is_braille_pack_installed</code>,
 <code>braille_pack_version</code>, <code>managed_pandoc_dir</code>,
 <code>managed_pandoc_executable</code>, <code>pdf_ocr_pack_dir</code>,
@@ -524,23 +557,32 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/optional_components.py tests/unit/core/test_optional_import_guards.py</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-trim): guard optional_components imports for standalone absence&quot;</span></span></code></pre></div>
 <h3
-id="task-1.3-guard-release_assets.py-external_tools.py-speechquillin_providers.py-speechservice.py-speechearcon.py">Task
+id="task-13-guard-release_assetspy-external_toolspy-speechquillin_providerspy-speechservicepy-speechearconpy">Task
 1.3: Guard release_assets.py, external_tools.py,
 speech/quillin_providers.py, speech/service.py, speech/earcon.py</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/release_assets.py</code> (braille_pack, git_binaries,
-math imports) - Modify: <code>quill/core/external_tools.py:271</code>
-(pandoc_install) - Modify:
-<code>quill/core/speech/quillin_providers.py:24</code> (quillins) -
-Modify: <code>quill/core/speech/service.py:112,191</code> (bw_speech) -
-Modify: <code>quill/core/speech/earcon.py</code> (math) - Test:
-<code>tests/unit/core/test_optional_import_guards.py</code></p>
-<p><strong>Interfaces:</strong> - Produces: guarded sentinels in each
-module; <code>quillin_providers</code> returns no Quillin-sourced
-providers when <code>quillins</code> is absent;
-<code>speech/service</code> degrades GPU detection when
-<code>bw_speech</code> is absent; <code>release_assets</code> omits
-braille/git/math asset entries when absent.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/release_assets.py</code> (braille_pack,
+git_binaries, math imports)</li>
+<li>Modify: <code>quill/core/external_tools.py:271</code>
+(pandoc_install)</li>
+<li>Modify: <code>quill/core/speech/quillin_providers.py:24</code>
+(quillins)</li>
+<li>Modify: <code>quill/core/speech/service.py:112,191</code>
+(bw_speech)</li>
+<li>Modify: <code>quill/core/speech/earcon.py</code> (math)</li>
+<li>Test:
+<code>tests/unit/core/test_optional_import_guards.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: guarded sentinels in each module;
+<code>quillin_providers</code> returns no Quillin-sourced providers when
+<code>quillins</code> is absent; <code>speech/service</code> degrades
+GPU detection when <code>bw_speech</code> is absent;
+<code>release_assets</code> omits braille/git/math asset entries when
+absent.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Apply the
 guarded-import pattern to each site</strong></label></li>
@@ -584,25 +626,29 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a h
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core <span class="im">import</span> math <span class="im">as</span> _math</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">ImportError</span>:</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    _math <span class="op">=</span> <span class="va">None</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Guard each call
+site</strong></label></li>
+</ul>
 <ul>
-<li><p><label><input type="checkbox" /><strong>Step 2: Guard each call
-site</strong></label></p></li>
-<li><p><code>release_assets.py</code>: wrap braille/git/math asset
-entries with <code>if _braille_pack is not None:</code>,
+<li><code>release_assets.py</code>: wrap braille/git/math asset entries
+with <code>if _braille_pack is not None:</code>,
 <code>if _git_binaries is not None:</code>,
-<code>if _math is not None:</code>.</p></li>
-<li><p><code>external_tools.py</code>:
-<code>def pandoc_executable(): return managed_pandoc_executable() if managed_pandoc_executable else None</code>.</p></li>
-<li><p><code>quillin_providers.py</code>:
+<code>if _math is not None:</code>.</li>
+<li><code>external_tools.py</code>:
+<code>def pandoc_executable(): return managed_pandoc_executable() if managed_pandoc_executable else None</code>.</li>
+<li><code>quillin_providers.py</code>:
 <code>def provider_contributions(): if TranscriptionProviderContribution is None: return []</code>
-then existing logic.</p></li>
-<li><p><code>speech/service.py</code>: callers of
+then existing logic.</li>
+<li><code>speech/service.py</code>: callers of
 <code>has_nvidia_gpu</code>/<code>total_ram_gb</code> already get safe
-fallbacks; verify no <code>NameError</code> paths.</p></li>
-<li><p><code>speech/earcon.py</code>: guard the math-using earcon
-builder with <code>if _math is not None:</code>.</p></li>
-<li><p><label><input type="checkbox" /><strong>Step 3: Extend the
-absent-path test to cover these modules</strong></label></p></li>
+fallbacks; verify no <code>NameError</code> paths.</li>
+<li><code>speech/earcon.py</code>: guard the math-using earcon builder
+with <code>if _math is not None:</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Extend the
+absent-path test to cover these modules</strong></label></li>
 </ul>
 <p>Add to the <code>@pytest.mark.parametrize</code> list is already
 present; run:</p>
@@ -625,18 +671,24 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/release_assets.py quill/core/external_tools.py quill/core/speech/quillin_providers.py quill/core/speech/service.py quill/core/speech/earcon.py tests/unit/core/test_optional_import_guards.py</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-trim): guard release_assets/external_tools/speech imports&quot;</span></span></code></pre></div>
 <h3
-id="task-1.4-guard-watch_actions.py-and-diagnostics.py-python_sandbox-glow">Task
+id="task-14-guard-watch_actionspy-and-diagnosticspy-python_sandbox-glow">Task
 1.4: Guard watch_actions.py and diagnostics.py (python_sandbox,
 glow)</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/watch_actions.py:361</code> (python_sandbox),
-<code>:654</code> (glow action) - Modify:
-<code>quill/core/diagnostics.py:17</code> (glow) - Test:
-<code>tests/unit/core/test_optional_import_guards.py</code></p>
-<p><strong>Interfaces:</strong> - Produces: <code>watch_actions</code>
-skips the python-sandbox action and the <code>glow_audit</code> action
-when their modules are absent; <code>diagnostics</code> omits the GLOW
-engine version summary line when <code>glow</code> is absent.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/watch_actions.py:361</code>
+(python_sandbox), <code>:654</code> (glow action)</li>
+<li>Modify: <code>quill/core/diagnostics.py:17</code> (glow)</li>
+<li>Test:
+<code>tests/unit/core/test_optional_import_guards.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>watch_actions</code> skips the python-sandbox action
+and the <code>glow_audit</code> action when their modules are absent;
+<code>diagnostics</code> omits the GLOW engine version summary line when
+<code>glow</code> is absent.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Guard
 watch_actions.py</strong></label></li>
@@ -693,17 +745,23 @@ Commit</strong></label></li>
 <div class="sourceCode" id="cb16"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/watch_actions.py quill/core/diagnostics.py tests/unit/core/test_optional_import_guards.py</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-trim): guard watch_actions/diagnostics (python_sandbox, glow)&quot;</span></span></code></pre></div>
-<h3 id="task-1.5-guard-uimain_frame_speech_downloads.py">Task 1.5: Guard
+<h3 id="task-15-guard-uimain_frame_speech_downloadspy">Task 1.5: Guard
 ui/main_frame_speech_downloads.py</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame_speech_downloads.py</code> (imports of
-braille_pack, pandoc_install, pdf_ocr_install, node_install, math) -
-Test: <code>tests/unit/core/test_optional_import_guards.py</code> (add a
-UI-level absent-path import smoke)</p>
-<p><strong>Interfaces:</strong> - Produces: the downloads mixin offers
-only components whose backing modules resolved; the existing
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame_speech_downloads.py</code>
+(imports of braille_pack, pandoc_install, pdf_ocr_install, node_install,
+math)</li>
+<li>Test: <code>tests/unit/core/test_optional_import_guards.py</code>
+(add a UI-level absent-path import smoke)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: the downloads mixin offers only components whose backing
+modules resolved; the existing
 <code>_optional_component_allowlist</code> frame attribute still filters
-further.</p>
+further.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Guard each
 import</strong></label></li>
@@ -758,16 +816,21 @@ Commit</strong></label></li>
 <div class="sourceCode" id="cb18"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame_speech_downloads.py tests/unit/core/test_optional_import_guards.py</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-trim): guard speech_downloads imports for standalone absence&quot;</span></span></code></pre></div>
-<h3
-id="task-1.6-add-denylist-to-vendor_from_quill.py-and-re-vendor">Task
+<h3 id="task-16-add-denylist-to-vendor_from_quillpy-and-re-vendor">Task
 1.6: Add DENYLIST to vendor_from_quill.py and re-vendor</h3>
-<p><strong>Files:</strong> - Modify:
-<code>S:/QUILL-AS/scripts/vendor_from_quill.py</code> (add DENYLIST;
-extend <code>copy_module</code>/<code>wanted_modules</code>) - Run:
-<code>python S:/QUILL-AS/scripts/vendor_from_quill.py</code> then
-<code>python S:/QUILL-AS/scripts/vendor_tests.py</code></p>
-<p><strong>Interfaces:</strong> - Produces: a smaller
-<code>quillas/</code> package missing the DROP modules.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>S:/QUILL-AS/scripts/vendor_from_quill.py</code> (add
+DENYLIST; extend
+<code>copy_module</code>/<code>wanted_modules</code>)</li>
+<li>Run: <code>python S:/QUILL-AS/scripts/vendor_from_quill.py</code>
+then <code>python S:/QUILL-AS/scripts/vendor_tests.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: a smaller <code>quillas/</code> package missing the DROP
+modules.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add the DENYLIST
 set</strong></label></li>
@@ -831,10 +894,13 @@ repo)</strong></label></li>
 </ul>
 <div class="sourceCode" id="cb22"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> S:/QUILL-AS <span class="kw">&amp;&amp;</span> <span class="fu">git</span> add scripts/vendor_from_quill.py quillas tests <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-trim): deny-list unneeded modules; re-vendor slim closure&quot;</span></span></code></pre></div>
-<h3 id="task-1.7-iterate-quill-as-tests-to-green-and-measure">Task 1.7:
+<h3 id="task-17-iterate-quill-as-tests-to-green-and-measure">Task 1.7:
 Iterate QUILL-AS tests to green and measure</h3>
-<p><strong>Files:</strong> - Modify (as needed): guarded sites in
-<code>quill/</code> re-vendored into <code>quillas/</code></p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify (as needed): guarded sites in <code>quill/</code> re-vendored
+into <code>quillas/</code></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Run the QUILL-AS
 suite</strong></label></li>
@@ -843,14 +909,16 @@ suite</strong></label></li>
 possibly FAIL with <code>ImportError</code> for a missed guard. For each
 failure:</p>
 <ul>
-<li><p>Read the traceback’s file (it will be a <code>quillas/...</code>
-path that maps 1:1 to a <code>quill/...</code> path).</p></li>
-<li><p>Add the missing guard in <code>quill/</code> (Tasks 1.2-1.5
-pattern).</p></li>
-<li><p>Re-run <code>vendor_from_quill.py</code>.</p></li>
-<li><p>Re-run <code>pytest -q</code>.</p></li>
-<li><p><label><input type="checkbox" /><strong>Step 2: Repeat until
-green</strong></label></p></li>
+<li>Read the traceback’s file (it will be a <code>quillas/...</code>
+path that maps 1:1 to a <code>quill/...</code> path).</li>
+<li>Add the missing guard in <code>quill/</code> (Tasks 1.2-1.5
+pattern).</li>
+<li>Re-run <code>vendor_from_quill.py</code>.</li>
+<li>Re-run <code>pytest -q</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Repeat until
+green</strong></label></li>
 </ul>
 <p>Iterate until <code>pytest -q</code> in <code>S:/QUILL-AS</code> is
 fully green. Each iteration is one guard + one re-vendor. Keep commits
@@ -877,7 +945,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href=
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/<span class="op">&lt;</span>path<span class="op">&gt;</span> <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-trim): guard &lt;module&gt; import (found by QUILL-AS suite)&quot;</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># in S:/QUILL-AS, re-vendor result:</span></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> S:/QUILL-AS <span class="kw">&amp;&amp;</span> <span class="fu">git</span> add quillas tests <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;chore(as-trim): re-vendor after guard for &lt;module&gt;&quot;</span></span></code></pre></div>
-<h3 id="task-1.8-phase-1-gate">Task 1.8: Phase 1 gate</h3>
+<h3 id="task-18-phase-1-gate">Task 1.8: Phase 1 gate</h3>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Confirm both suites
 green</strong></label></li>
@@ -908,11 +976,13 @@ both suites.</p>
 exist yet). Each feature: TDD the backing module, then wire UI, then
 re-vendor. Re-use <code>vendor_from_quill.py</code> SEED additions (Task
 2.0).</p>
-<h3 id="task-2.0-add-new-package-to-vendor-seed">Task 2.0: Add new
+<h3 id="task-20-add-new-package-to-vendor-seed">Task 2.0: Add new
 package to vendor SEED</h3>
-<p><strong>Files:</strong> - Modify:
-<code>S:/QUILL-AS/scripts/vendor_from_quill.py</code> SEED_PACKAGES /
-SEED_MODULES</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>S:/QUILL-AS/scripts/vendor_from_quill.py</code>
+SEED_PACKAGES / SEED_MODULES</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add
 core/audio_studio and the new UI modules to SEED</strong></label></li>
@@ -929,35 +999,42 @@ In <code>SEED_MODULES</code> add
 </ul>
 <div class="sourceCode" id="cb25"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> S:/QUILL-AS <span class="kw">&amp;&amp;</span> <span class="fu">git</span> add scripts/vendor_from_quill.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;build(as-port): seed core/audio_studio + new audio_studio UI modules&quot;</span></span></code></pre></div>
-<h3 id="task-2.1-library-tree-backing---coreaudio_studiolibrary.py">Task
+<h3 id="task-21-library-tree-backing---coreaudio_studiolibrarypy">Task
 2.1: Library tree backing - core/audio_studio/library.py</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/audio_studio/__init__.py</code> - Create:
-<code>quill/core/audio_studio/library.py</code> - Test:
-<code>tests/unit/core/audio_studio/test_library.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.storage.write_json_atomic</code>,
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/audio_studio/__init__.py</code></li>
+<li>Create: <code>quill/core/audio_studio/library.py</code></li>
+<li>Test: <code>tests/unit/core/audio_studio/test_library.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.storage.write_json_atomic</code>,
 <code>quill.core.recent.recent_audiobook_files</code> (for the Inbox
-view). - Produces: - <code>BookEntry</code> dataclass:
-<code>path: str, title: str, folder: str = "", favorite: bool = False, last_played_at: float = 0.0, added_at: float = 0.0</code>
-- <code>LibraryState</code> dataclass:
+view).</li>
+<li>Produces:
+<ul>
+<li><code>BookEntry</code> dataclass:
+<code>path: str, title: str, folder: str = "", favorite: bool = False, last_played_at: float = 0.0, added_at: float = 0.0</code></li>
+<li><code>LibraryState</code> dataclass:
 <code>books: list[BookEntry]</code>, <code>folders: list[str]</code>
-(path-nested, <code>/</code>-separated like radio favorites) -
-<code>PINNED_VIEWS = ("Favorites", "In Progress", "Recently Played", "Inbox")</code>
-- <code>load_library(data_dir: Path) -&gt; LibraryState</code> -
-<code>save_library(data_dir: Path, state: LibraryState) -&gt; None</code>
-(atomic) -
-<code>record_play(state: LibraryState, path: str, *, now: float) -&gt; None</code>
-(sets <code>last_played_at</code>, moves nothing) -
-<code>toggle_favorite(state: LibraryState, path: str) -&gt; bool</code>
--
-<code>move_to_folder(state: LibraryState, path: str, folder: str) -&gt; None</code>
--
-<code>view_query(state: LibraryState, view: str) -&gt; list[BookEntry]</code>
+(path-nested, <code>/</code>-separated like radio favorites)</li>
+<li><code>PINNED_VIEWS = ("Favorites", "In Progress", "Recently Played", "Inbox")</code></li>
+<li><code>load_library(data_dir: Path) -&gt; LibraryState</code></li>
+<li><code>save_library(data_dir: Path, state: LibraryState) -&gt; None</code>
+(atomic)</li>
+<li><code>record_play(state: LibraryState, path: str, *, now: float) -&gt; None</code>
+(sets <code>last_played_at</code>, moves nothing)</li>
+<li><code>toggle_favorite(state: LibraryState, path: str) -&gt; bool</code></li>
+<li><code>move_to_folder(state: LibraryState, path: str, folder: str) -&gt; None</code></li>
+<li><code>view_query(state: LibraryState, view: str) -&gt; list[BookEntry]</code>
 (Favorites -&gt; favorite; In Progress -&gt; has last_played_at but not
 finished; Recently Played -&gt; sort by last_played_at desc; Inbox -&gt;
-recent_audiobook_files not yet in state) - Persistence file:
-<code>data_dir / "audio_studio_library.json"</code></p>
+recent_audiobook_files not yet in state)</li>
+<li>Persistence file:
+<code>data_dir / "audio_studio_library.json"</code></li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write failing
 tests</strong></label></li>
@@ -1112,28 +1189,34 @@ Commit</strong></label></li>
 </ul>
 <div class="sourceCode" id="cb28"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/audio_studio tests/unit/core/audio_studio <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add audio_studio library backing store&quot;</span></span></code></pre></div>
-<h3
-id="task-2.2-library-tree-widget---uiaudio_studiolibrary_tree.py">Task
+<h3 id="task-22-library-tree-widget---uiaudio_studiolibrary_treepy">Task
 2.2: Library tree widget - ui/audio_studio/library_tree.py</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/ui/audio_studio/library_tree.py</code> - Test:
-<code>tests/unit/ui/audio_studio/test_library_tree.py</code> (headless
-build smoke; no wx display needed if guarded)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.audio_studio.library</code> (<code>LibraryState</code>,
-<code>view_query</code>, <code>PINNED_VIEWS</code>),
-<code>quill.ui.podcasts.show_actions</code> folder-prompt pattern. -
-Produces: -
-<code>build_library_tree(tree: wx.TreeCtrl, state: LibraryState, *, keep_key: tuple[str, str] | None = None) -&gt; None</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/ui/audio_studio/library_tree.py</code></li>
+<li>Test: <code>tests/unit/ui/audio_studio/test_library_tree.py</code>
+(headless build smoke; no wx display needed if guarded)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.audio_studio.library</code>
+(<code>LibraryState</code>, <code>view_query</code>,
+<code>PINNED_VIEWS</code>), <code>quill.ui.podcasts.show_actions</code>
+folder-prompt pattern.</li>
+<li>Produces:
+<ul>
+<li><code>build_library_tree(tree: wx.TreeCtrl, state: LibraryState, *, keep_key: tuple[str, str] | None = None) -&gt; None</code>
 (mirrors <code>quill/apps/podcasts.py:_reload_library_tree</code> at
 line 131: root “Library”, pinned views, folders, books; each item tagged
-<code>(kind, key)</code> via <code>tree.SetItemData</code>). -
-<code>LibraryTreeActions</code> namespace with <code>open_book</code>,
-<code>reveal_in_workbench</code>, <code>toggle_favorite</code>,
-<code>delete_book</code>, <code>new_folder</code>,
-<code>move_to_folder</code> mirroring <code>show_actions.py</code>
-signatures:
-<code>(parent, store: LibraryState, entry: BookEntry, *, announce: Callable[[str], None]) -&gt; bool</code>.</p>
+<code>(kind, key)</code> via <code>tree.SetItemData</code>).</li>
+<li><code>LibraryTreeActions</code> namespace with
+<code>open_book</code>, <code>reveal_in_workbench</code>,
+<code>toggle_favorite</code>, <code>delete_book</code>,
+<code>new_folder</code>, <code>move_to_folder</code> mirroring
+<code>show_actions.py</code> signatures:
+<code>(parent, store: LibraryState, entry: BookEntry, *, announce: Callable[[str], None]) -&gt; bool</code>.</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write a headless
 build smoke test</strong></label></li>
@@ -1200,14 +1283,17 @@ Commit</strong></label></li>
 </ul>
 <div class="sourceCode" id="cb30"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/audio_studio/library_tree.py tests/unit/ui/audio_studio <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add audio_studio library tree widget + actions&quot;</span></span></code></pre></div>
-<h3 id="task-2.3-wire-the-library-tree-into-the-standalone-shell">Task
+<h3 id="task-23-wire-the-library-tree-into-the-standalone-shell">Task
 2.3: Wire the library tree into the standalone shell</h3>
-<p><strong>Files:</strong> - Modify:
-<code>S:/QUILL-AS/quillas/apps/studio.py:213-252</code> (replace
-<code>wx.ListBox</code> “Your books” with <code>wx.TreeCtrl</code> via
-<code>build_library_tree</code>) - Modify (for embedded parity of the
-<em>backing</em> only; embedded has no list to replace):
-<code>quill/core/audio_studio/library.py</code> already shared.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>S:/QUILL-AS/quillas/apps/studio.py:213-252</code>
+(replace <code>wx.ListBox</code> “Your books” with
+<code>wx.TreeCtrl</code> via <code>build_library_tree</code>)</li>
+<li>Modify (for embedded parity of the <em>backing</em> only; embedded
+has no list to replace): <code>quill/core/audio_studio/library.py</code>
+already shared.</li>
+</ul>
 <p>Note: The standalone shell is hand-written in QUILL-AS, so this
 wiring is a QUILL-AS local delta (record in the spec delta list). The
 shared widget + backing live in <code>quill/</code> and are
@@ -1280,27 +1366,34 @@ the spec</strong></label></li>
 </ul>
 <p>Append to the spec’s “local deltas” list:
 <code>quillas/apps/studio.py: "Your books" wx.ListBox -&gt; wx.TreeCtrl via quill/ui/audio_studio/library_tree.py</code>.</p>
-<h3
-id="task-2.4-recently-played-store---coreaudio_studiohistory.py">Task
+<h3 id="task-24-recently-played-store---coreaudio_studiohistorypy">Task
 2.4: Recently Played store - core/audio_studio/history.py</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/audio_studio/history.py</code> - Test:
-<code>tests/unit/core/audio_studio/test_history.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.storage.write_json_atomic</code>. - Produces (mirror
-<code>quill/core/podcasts/history.py:22-126</code>): -
-<code>PlayedBook</code> dataclass:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/audio_studio/history.py</code></li>
+<li>Test: <code>tests/unit/core/audio_studio/test_history.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.storage.write_json_atomic</code>.</li>
+<li>Produces (mirror
+<code>quill/core/podcasts/history.py:22-126</code>):
+<ul>
+<li><code>PlayedBook</code> dataclass:
 <code>path: str, title: str, position_ms: int = 0, chapter: int = 0</code>;
-<code>to_dict</code>/<code>from_dict</code>. -
-<code>AudioStudioHistory</code> dataclass:
+<code>to_dict</code>/<code>from_dict</code>.</li>
+<li><code>AudioStudioHistory</code> dataclass:
 <code>books: list[PlayedBook]</code>,
 <code>resume_on_launch: bool = True</code>;
 <code>record(path, *, title, position_ms, chapter) -&gt; None</code>
 (dedup by path, cap <code>_MAX_ENTRIES=15</code>, move to front);
-<code>last_played</code> property -&gt; <code>PlayedBook | None</code>.
-- <code>load_history(data_dir: Path) -&gt; AudioStudioHistory</code>,
-<code>save_history(data_dir, history) -&gt; None</code>. - File:
-<code>data_dir / "audio_studio_history.json"</code>.</p>
+<code>last_played</code> property -&gt;
+<code>PlayedBook | None</code>.</li>
+<li><code>load_history(data_dir: Path) -&gt; AudioStudioHistory</code>,
+<code>save_history(data_dir, history) -&gt; None</code>.</li>
+<li>File: <code>data_dir / "audio_studio_history.json"</code>.</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write failing
 tests</strong> (mirror the podcasts/history.test shape)</label></li>
@@ -1362,23 +1455,28 @@ Commit</strong></label></li>
 <div class="sourceCode" id="cb34"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/audio_studio/history.py tests/unit/core/audio_studio/test_history.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add audio_studio recently-played history store&quot;</span></span></code></pre></div>
 <h3
-id="task-2.5-resume-on-launch-recently-played-submenu-standalone-shell">Task
+id="task-25-resume-on-launch--recently-played-submenu-standalone-shell">Task
 2.5: Resume-on-launch + Recently Played submenu (standalone shell)</h3>
-<p><strong>Files:</strong> - Modify:
-<code>S:/QUILL-AS/quillas/apps/studio.py</code> (startup hook near line
-168; menu in <code>_build_menu_bar</code> line 293; resume menu check
-item mirroring <code>quill/apps/podcasts.py:607-609</code>) - Test:
-<code>tests/unit/ui/test_app_shell.py</code> (extend with a resume-flag
-toggle test, mirroring the existing QUILL-AS <code>**_kw</code>
-regression pattern)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quillas.core.audio_studio.history</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>S:/QUILL-AS/quillas/apps/studio.py</code> (startup
+hook near line 168; menu in <code>_build_menu_bar</code> line 293;
+resume menu check item mirroring
+<code>quill/apps/podcasts.py:607-609</code>)</li>
+<li>Test: <code>tests/unit/ui/test_app_shell.py</code> (extend with a
+resume-flag toggle test, mirroring the existing QUILL-AS
+<code>**_kw</code> regression pattern)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quillas.core.audio_studio.history</code>
 (<code>load_history</code>, <code>save_history</code>,
-<code>AudioStudioHistory</code>). - Produces:
-<code>_maybe_resume_last_book()</code> in <code>StudioAppFrame</code>; a
-“Recently Played” submenu listing <code>history.books</code>; a “Resume
-Last Book on La&amp;unch” check item bound to
-<code>_toggle_resume_on_launch</code>.</p>
+<code>AudioStudioHistory</code>).</li>
+<li>Produces: <code>_maybe_resume_last_book()</code> in
+<code>StudioAppFrame</code>; a “Recently Played” submenu listing
+<code>history.books</code>; a “Resume Last Book on La&amp;unch” check
+item bound to <code>_toggle_resume_on_launch</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add the startup
 hook</strong></label></li>
@@ -1391,8 +1489,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a h
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">self</span>._history.resume_on_launch:</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    wx.CallAfter(<span class="va">self</span>._maybe_resume_last_book)</span></code></pre></div>
 <ul class="task-list">
-<li><label><input type="checkbox" />**Step 2: Implement
-_maybe_resume_last_book**</label></li>
+<li><label><input type="checkbox" /><strong>Step 2: Implement
+_maybe_resume_last_book</strong></label></li>
 </ul>
 <div class="sourceCode" id="cb36"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _maybe_resume_last_book(<span class="va">self</span>, <span class="op">**</span>_kw) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
@@ -1454,26 +1552,35 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href=
 spec</strong> (shell wiring is a standalone delta; backing is
 shared).</label></li>
 </ul>
-<h3 id="task-2.6-sleep-timer---coreaudio_studiosleep_timer.py">Task 2.6:
+<h3 id="task-26-sleep-timer---coreaudio_studiosleep_timerpy">Task 2.6:
 Sleep timer - core/audio_studio/sleep_timer.py</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/audio_studio/sleep_timer.py</code> - Test:
-<code>tests/unit/core/audio_studio/test_sleep_timer.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.storage.write_json_atomic</code>. Model on
-<code>quill/core/radio/wake_timer.py</code> (pure check + daemon-thread
-watcher). - Produces: - <code>SleepTimerSetting</code> dataclass:
-<code>enabled: bool, delay_minutes: float = 30.0, end_of_chapter: bool = False, last_started_at: float = 0.0</code>
--
-<code>should_fire(setting, now: float, *, started_at: float) -&gt; bool</code>
-(pure) - <code>SleepTimerWatcher</code> class:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/audio_studio/sleep_timer.py</code></li>
+<li>Test:
+<code>tests/unit/core/audio_studio/test_sleep_timer.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.storage.write_json_atomic</code>. Model
+on <code>quill/core/radio/wake_timer.py</code> (pure check +
+daemon-thread watcher).</li>
+<li>Produces:
+<ul>
+<li><code>SleepTimerSetting</code> dataclass:
+<code>enabled: bool, delay_minutes: float = 30.0, end_of_chapter: bool = False, last_started_at: float = 0.0</code></li>
+<li><code>should_fire(setting, now: float, *, started_at: float) -&gt; bool</code>
+(pure)</li>
+<li><code>SleepTimerWatcher</code> class:
 <code>__init__(self, *, on_sleep: Callable[[], None], check_interval: float = 5.0) -&gt; None</code>;
 <code>start(setting, *, now: float) -&gt; None</code>;
 <code>cancel() -&gt; None</code>; <code>shutdown() -&gt; None</code>;
-daemon thread named <code>"quill-as-sleep-timer"</code>. -
-<code>load_sleep_setting(data_dir) -&gt; SleepTimerSetting</code>,
+daemon thread named <code>"quill-as-sleep-timer"</code>.</li>
+<li><code>load_sleep_setting(data_dir) -&gt; SleepTimerSetting</code>,
 <code>save_sleep_setting(data_dir, setting) -&gt; None</code>. File:
-<code>data_dir / "audio_studio_sleep_timer.json"</code>.</p>
+<code>data_dir / "audio_studio_sleep_timer.json"</code>.</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write failing
 tests</strong> (mirror wake_timer test shape)</label></li>
@@ -1527,22 +1634,28 @@ Commit</strong></label></li>
 </ul>
 <div class="sourceCode" id="cb40"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/audio_studio/sleep_timer.py tests/unit/core/audio_studio/test_sleep_timer.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add audio_studio sleep timer&quot;</span></span></code></pre></div>
-<h3 id="task-2.7-media-keys-sleep-timer-dialog-standalone-shell">Task
+<h3 id="task-27-media-keys--sleep-timer-dialog-standalone-shell">Task
 2.7: Media keys + Sleep Timer dialog (standalone shell)</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/ui/audio_studio/sleep_timer_dialog.py</code> - Modify:
-<code>S:/QUILL-AS/quillas/apps/studio.py</code> (register media keys in
-<code>__init__</code>; add Sleep Timer menu item)</p>
-<p><strong>Interfaces:</strong> - Consumes:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create:
+<code>quill/ui/audio_studio/sleep_timer_dialog.py</code></li>
+<li>Modify: <code>S:/QUILL-AS/quillas/apps/studio.py</code> (register
+media keys in <code>__init__</code>; add Sleep Timer menu item)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
 <code>quillas.ui.app_shell.AppShellFrame._register_media_keys</code>
 (already vendored; handler dict shape
 <code>{"play_pause": fn, "stop": fn, "next": fn, "previous": fn}</code>,
 per <code>quill/ui/app_shell.py:202-231</code>);
-<code>quillas.core.audio_studio.sleep_timer</code>. - Produces:
-<code>_register_media_keys({...})</code> call in
+<code>quillas.core.audio_studio.sleep_timer</code>.</li>
+<li>Produces: <code>_register_media_keys({...})</code> call in
 <code>StudioAppFrame.__init__</code>; <code>_on_sleep_timer</code>
 handler opening <code>SleepTimerDialog</code>; a Sleep Timer menu item
-in the Book Tools menu.</p>
+in the Book Tools menu.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Register media keys
 in <strong>init</strong></strong></label></li>
@@ -1593,8 +1706,8 @@ bind to <code>_on_sleep_timer</code> which opens the dialog, persists
 <code>save_sleep_setting</code>, and
 <code>self._sleep_watcher.start(setting, now=time.time())</code>.</p>
 <ul class="task-list">
-<li><label><input type="checkbox" />**Step 5: Implement
-_on_sleep_fired**</label></li>
+<li><label><input type="checkbox" /><strong>Step 5: Implement
+_on_sleep_fired</strong></label></li>
 </ul>
 <div class="sourceCode" id="cb42"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _on_sleep_fired(<span class="va">self</span>, <span class="op">**</span>_kw) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
@@ -1622,25 +1735,34 @@ module</strong></label></li>
 up <code>ui/audio_studio/sleep_timer_dialog.py</code> from SEED added in
 Task 2.0). Commit the re-vendor in QUILL-AS.</p>
 <h3
-id="task-2.8-per-book-volume-mute---coreaudio_studiobook_prefs.py">Task
+id="task-28-per-book-volume--mute---coreaudio_studiobook_prefspy">Task
 2.8: Per-book volume + Mute - core/audio_studio/book_prefs.py</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/audio_studio/book_prefs.py</code> - Test:
-<code>tests/unit/core/audio_studio/test_book_prefs.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.storage.write_json_atomic</code>. Mirror
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/audio_studio/book_prefs.py</code></li>
+<li>Test:
+<code>tests/unit/core/audio_studio/test_book_prefs.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.storage.write_json_atomic</code>. Mirror
 <code>quill/core/radio/favorites.py:55,169</code>
-(<code>volume_percent</code>, <code>set_volume</code>). - Produces: -
-<code>BookPrefs</code> dataclass: <code>volume_percent: int = -1</code>
-(-1 = unset), <code>muted: bool = False</code> -
-<code>BookPrefsStore</code> dataclass:
-<code>entries: dict[str, BookPrefs]</code> -
-<code>get_prefs(store, book_path: str) -&gt; BookPrefs</code> -
-<code>set_volume(store, book_path: str, volume_percent: int) -&gt; bool</code>
-- <code>set_muted(store, book_path: str, muted: bool) -&gt; None</code>
-- <code>load_prefs(data_dir) -&gt; BookPrefsStore</code>,
+(<code>volume_percent</code>, <code>set_volume</code>).</li>
+<li>Produces:
+<ul>
+<li><code>BookPrefs</code> dataclass:
+<code>volume_percent: int = -1</code> (-1 = unset),
+<code>muted: bool = False</code></li>
+<li><code>BookPrefsStore</code> dataclass:
+<code>entries: dict[str, BookPrefs]</code></li>
+<li><code>get_prefs(store, book_path: str) -&gt; BookPrefs</code></li>
+<li><code>set_volume(store, book_path: str, volume_percent: int) -&gt; bool</code></li>
+<li><code>set_muted(store, book_path: str, muted: bool) -&gt; None</code></li>
+<li><code>load_prefs(data_dir) -&gt; BookPrefsStore</code>,
 <code>save_prefs(data_dir, store) -&gt; None</code>. File:
-<code>data_dir / "audio_studio_book_prefs.json"</code>.</p>
+<code>data_dir / "audio_studio_book_prefs.json"</code>.</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write failing
 tests</strong> (mirror radio favorites volume tests)</label></li>
@@ -1679,23 +1801,32 @@ Commit</strong></label></p></li>
 </ul>
 <div class="sourceCode" id="cb45"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/audio_studio/book_prefs.py tests/unit/core/audio_studio/test_book_prefs.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add per-book prefs store (volume/mute)&quot;</span></span></code></pre></div>
-<h3 id="task-2.9-wire-per-book-volume-mute-into-playerpanel-shell">Task
+<h3 id="task-29-wire-per-book-volume--mute-into-playerpanel--shell">Task
 2.9: Wire per-book volume + Mute into PlayerPanel + shell</h3>
-<p><strong>Files:</strong> - Modify:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify:
 <code>quill/ui/audio_studio/player_panel.py:80-82, 328-330</code>
 (volume slider already exists; apply per-book prefs on load; add Mute
-toggle button) - Modify: <code>S:/QUILL-AS/quillas/apps/studio.py</code>
-(load/save book prefs; Mute menu item) - Test:
-<code>tests/unit/ui/audio_studio/test_player_panel_volume.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.audio_studio.book_prefs</code> (<code>get_prefs</code>,
-<code>set_volume</code>, <code>set_muted</code>,
-<code>load_prefs</code>, <code>save_prefs</code>). - Produces:
+toggle button)</li>
+<li>Modify: <code>S:/QUILL-AS/quillas/apps/studio.py</code> (load/save
+book prefs; Mute menu item)</li>
+<li>Test:
+<code>tests/unit/ui/audio_studio/test_player_panel_volume.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.audio_studio.book_prefs</code>
+(<code>get_prefs</code>, <code>set_volume</code>,
+<code>set_muted</code>, <code>load_prefs</code>,
+<code>save_prefs</code>).</li>
+<li>Produces:
 <code>PlayerPanel.load(path, chapters, *, book_prefs: BookPrefs | None = None, resume_ms=0)</code>
 applies <code>volume_percent</code>/<code>muted</code> to the slider +
 engine before play; <code>PlayerPanel.toggle_mute() -&gt; None</code>
 caches pre-mute volume (mirror
-<code>quill/ui/radio/player_controller.py:506</code>).</p>
+<code>quill/ui/radio/player_controller.py:506</code>).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write failing test
 for per-book volume applied on load</strong></label></li>
@@ -1774,26 +1905,34 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb48-1"><a href=
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/audio_studio/player_panel.py tests/unit/ui/audio_studio/test_player_panel_volume.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): PlayerPanel applies per-book volume + Mute&quot;</span></span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co"># QUILL-AS</span></span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> S:/QUILL-AS <span class="kw">&amp;&amp;</span> <span class="ex">python</span> scripts/vendor_from_quill.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> add quillas apps <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): wire per-book volume/mute in standalone shell&quot;</span></span></code></pre></div>
-<h3 id="task-2.10-play-queue---coreaudio_studioplay_queue.py">Task 2.10:
+<h3 id="task-210-play-queue---coreaudio_studioplay_queuepy">Task 2.10:
 Play Queue - core/audio_studio/play_queue.py</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/core/audio_studio/play_queue.py</code> - Test:
-<code>tests/unit/core/audio_studio/test_play_queue.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.storage.write_json_atomic</code>. - Produces: -
-<code>QueueEntry</code> dataclass:
-<code>path: str, title: str, chapter: int = 0</code> -
-<code>PlayQueue</code> dataclass:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/core/audio_studio/play_queue.py</code></li>
+<li>Test:
+<code>tests/unit/core/audio_studio/test_play_queue.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.storage.write_json_atomic</code>.</li>
+<li>Produces:
+<ul>
+<li><code>QueueEntry</code> dataclass:
+<code>path: str, title: str, chapter: int = 0</code></li>
+<li><code>PlayQueue</code> dataclass:
 <code>entries: list[QueueEntry]</code>,
-<code>current_index: int = -1</code> -
-<code>add(queue, entry) -&gt; None</code> (append, dedup by path),
+<code>current_index: int = -1</code></li>
+<li><code>add(queue, entry) -&gt; None</code> (append, dedup by path),
 <code>next(queue) -&gt; QueueEntry | None</code>,
 <code>remove(queue, path) -&gt; None</code>,
 <code>clear(queue) -&gt; None</code>, <code>is_empty</code> property,
-<code>at(queue, index) -&gt; QueueEntry | None</code>. -
-<code>load_queue(data_dir) -&gt; PlayQueue</code>,
+<code>at(queue, index) -&gt; QueueEntry | None</code>.</li>
+<li><code>load_queue(data_dir) -&gt; PlayQueue</code>,
 <code>save_queue(data_dir, queue) -&gt; None</code>. File:
-<code>data_dir / "audio_studio_play_queue.json"</code>.</p>
+<code>data_dir / "audio_studio_play_queue.json"</code>.</li>
+</ul></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write failing
 tests</strong></label></li>
@@ -1840,22 +1979,26 @@ Commit</strong></label></p></li>
 </ul>
 <div class="sourceCode" id="cb50"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/audio_studio/play_queue.py tests/unit/core/audio_studio/test_play_queue.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add chapter play queue store&quot;</span></span></code></pre></div>
-<h3 id="task-2.11-play-queue-ui-top-level-menucommand">Task 2.11: Play
+<h3 id="task-211-play-queue-ui--top-level-menucommand">Task 2.11: Play
 Queue UI + top-level menu/command</h3>
-<p><strong>Files:</strong> - Create:
-<code>quill/ui/audio_studio/play_queue_dialog.py</code> - Modify:
-<code>S:/QUILL-AS/quillas/apps/studio.py</code> (Play Queue menu item +
-command; auto-advance on chapter end) - Modify:
-<code>S:/QUILL/quill/core/feature_command_map.py</code> (register
-<code>studio.play_queue</code> command id; mirror
-<code>tools.speech_batch_export</code> mapping)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill.core.audio_studio.play_queue</code>. - Produces:
-<code>PlayQueueDialog</code> (a <code>wx.Dialog</code> listing queue
-entries with Add/Next/Remove/Clear); <code>studio.play_queue</code>
-command id; auto-advance wiring in the shell on
-<code>EVT_MEDIA_FINISHED</code> (or the player’s end-of-track
-callback).</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/ui/audio_studio/play_queue_dialog.py</code></li>
+<li>Modify: <code>S:/QUILL-AS/quillas/apps/studio.py</code> (Play Queue
+menu item + command; auto-advance on chapter end)</li>
+<li>Modify: <code>S:/QUILL/quill/core/feature_command_map.py</code>
+(register <code>studio.play_queue</code> command id; mirror
+<code>tools.speech_batch_export</code> mapping)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill.core.audio_studio.play_queue</code>.</li>
+<li>Produces: <code>PlayQueueDialog</code> (a <code>wx.Dialog</code>
+listing queue entries with Add/Next/Remove/Clear);
+<code>studio.play_queue</code> command id; auto-advance wiring in the
+shell on <code>EVT_MEDIA_FINISHED</code> (or the player’s end-of-track
+callback).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write a headless
 build smoke test</strong></label></li>
@@ -1922,11 +2065,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href=
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/audio_studio/play_queue_dialog.py quill/core/feature_command_map.py tests/unit/ui/audio_studio <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): add Play Queue dialog + studio.play_queue command&quot;</span></span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="co"># QUILL-AS</span></span>
 <span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> S:/QUILL-AS <span class="kw">&amp;&amp;</span> <span class="ex">python</span> scripts/vendor_from_quill.py <span class="kw">&amp;&amp;</span> <span class="fu">git</span> add quillas apps <span class="kw">&amp;&amp;</span> <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(as-port): wire Play Queue top-level menu + auto-advance&quot;</span></span></code></pre></div>
-<h3 id="task-2.12-uia-regression-coverage-phase-2-gate">Task 2.12: UIA
+<h3 id="task-212-uia-regression-coverage--phase-2-gate">Task 2.12: UIA
 regression coverage + Phase 2 gate</h3>
-<p><strong>Files:</strong> - Modify:
-<code>tests/uia/test_audio_studio_dialogs.py</code> (extend to cover
-Sleep Timer dialog, Play Queue dialog, library tree context menu)</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>tests/uia/test_audio_studio_dialogs.py</code> (extend
+to cover Sleep Timer dialog, Play Queue dialog, library tree context
+menu)</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Extend the UIA
 suite</strong></label></li>
@@ -1984,5 +2130,6 @@ per-book volume shell wiring, play queue menu) is in
 spec delta list; the shared modules they call are vendored from
 <code>quill/</code>.</li>
 </ul>
+</main>
 </body>
 </html>

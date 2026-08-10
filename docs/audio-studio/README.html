@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>QUILL Audio Studio</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-audio-studio">QUILL Audio Studio</h1>
 <p>Accessible, screen-reader-first audio production as a standalone
 Windows app, from the QUILL project.</p>
@@ -250,7 +270,7 @@ Windows app, from the QUILL project.</p>
 code QUILL itself uses: the same waveform editing, chapter markers, TTS
 narration, loudness checks, and publishing. This folder holds only what
 exists because QUILL is not in the picture: the product wrapper (entry
-point), the installer, and this app's own documentation. Everything
+point), the installer, and this app’s own documentation. Everything
 shared stays upstream, so QUILL Audio Studio tracks QUILL
 automatically.</p>
 <h2 id="what-it-does">What it does</h2>
@@ -262,7 +282,7 @@ audiobooks.</li>
 <li>Narrate text with neural text-to-speech (Kokoro / Piper), fetched on
 demand.</li>
 <li>Run an ACX-style loudness/quality check so an audiobook meets the
-retailer's spec before you submit it.</li>
+retailer’s spec before you submit it.</li>
 <li>Convert and export common formats via bundled FFmpeg (MP3, M4A/M4B,
 OGG, Opus, FLAC), including a batch converter with presets, advanced
 DSP, and audio import from a link.</li>
@@ -277,46 +297,46 @@ Radio, and QUILL Cast (one data store in
 <li>Check for its own updates from Help &gt; Check for Updates.</li>
 </ul>
 <h2 id="install">Install</h2>
-<p>Audio Studio is built at 2.2.0 -- the shared QuillVille family
-version -- but has <strong>not been publicly released yet</strong>, so
-there is no download page for it. When it ships it will be published,
-like every QuillVille app, from the <a
+<p>Audio Studio is built at 2.2.0 – the shared QuillVille family version
+– but has <strong>not been publicly released yet</strong>, so there is
+no download page for it. When it ships it will be published, like every
+QuillVille app, from the <a
 href="https://github.com/Community-Access/quill">quill</a> Releases
 page, where each app recognizes its own downloads:</p>
 <ul>
 <li><strong><code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code></strong>
--- the system install: its own directory, Start Menu entry, uninstaller.
+– the system install: its own directory, Start Menu entry, uninstaller.
 Choose per-user or per-machine at install time. Installs the shared
 QuillVille Runtime if it is not already present, plus the app. Uses the
 shared Quill data in your Windows profile.</li>
 <li><strong><code>QUILL-Audio-Studio-Lite-Setup-&lt;version&gt;.exe</code></strong>
--- the thin installer: downloads the shared runtime only if it is
+– the thin installer: downloads the shared runtime only if it is
 missing, then installs the app.</li>
 <li><strong><code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code></strong>
--- extract anywhere (a USB stick included) and run
+– extract anywhere (a USB stick included) and run
 <code>QuillAudioStudio\QuillAudioStudio.exe</code>. Fully
 self-contained: a genuine, unmodified CPython plus the offline speech
 engines, ffmpeg, and mpv. The bundled <code>data</code> folder keeps
-your settings inside the app folder, so the whole thing travels --
+your settings inside the app folder, so the whole thing travels –
 exactly like QUILL portable.</li>
 <li><strong><code>QUILL-Audio-Studio-Companion-&lt;version&gt;.zip</code></strong>
--- the feather-light edition (a few MB): the app and its docs only,
+– the feather-light edition (a few MB): the app and its docs only,
 running on the shared QuillVille Runtime, which it offers to download
 once on first launch.</li>
 </ul>
 <p>FFmpeg is bundled. The neural TTS engine and any transcription engine
-are fetched on demand through QUILL's shared, SHA-verified component
+are fetched on demand through QUILL’s shared, SHA-verified component
 system (the assets-v1 mirrors); to ship a fully-offline Studio with TTS
 bundled, see the note in <code>quill-audio-studio.spec</code>.</p>
 <p>Help &gt; Check for Updates knows which flavor you run, resolves
-Audio Studio's own artifact from the shared releases page, and can
+Audio Studio’s own artifact from the shared releases page, and can
 install it and restart the app for you in one step.</p>
 <h3 id="a-note-on-the-smartscreen-warning-unsigned-builds">A note on the
 SmartScreen warning (unsigned builds)</h3>
 <p>These releases are not yet code-signed, so Windows SmartScreen may
 warn the first time you run the installer or the portable exe. Choose
 <strong>More info</strong>, then <strong>Run anyway</strong>. The builds
-are produced directly from this repository's source by the maintainers;
+are produced directly from this repository’s source by the maintainers;
 code signing is planned, and the warning will disappear once releases
 are signed.</p>
 <h2 id="run-from-source">Run from source</h2>
@@ -333,18 +353,18 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># rather than shipping a broken Report a Bug).</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>TokenFile S<span class="op">:</span>\token<span class="op">.</span><span class="fu">txt</span> <span class="op">-</span>FfmpegDir C<span class="op">:</span>\path\to\ffmpeg\bin</span></code></pre></div>
 <p>The portable bundle is a genuine, unmodified CPython embeddable
-runtime with a small native launcher -- not a PyInstaller onedir, and
-not a renamed <code>pythonw.exe</code>, the pattern antivirus tools used
-to flag. One staged folder feeds both the portable zip and the
-installer. It pulls the entire <code>quill</code> package -- code and
-data -- and excludes the heavy speech/science stacks, which are fetched
-on demand.</p>
+runtime with a small native launcher – not a PyInstaller onedir, and not
+a renamed <code>pythonw.exe</code>, the pattern antivirus tools used to
+flag. One staged folder feeds both the portable zip and the installer.
+It pulls the entire <code>quill</code> package – code and data – and
+excludes the heavy speech/science stacks, which are fetched on
+demand.</p>
 <h2 id="documentation">Documentation</h2>
 <ul>
 <li><a href="userguide.md">User Guide</a></li>
-<li><a href="release-notes-2.2.md">Release Notes 2.2</a> -- the current
+<li><a href="release-notes-2.2.md">Release Notes 2.2</a> – the current
 build</li>
-<li><a href="release-notes-1.0.md">Release Notes 1.0</a> -- the first
+<li><a href="release-notes-1.0.md">Release Notes 1.0</a> – the first
 release</li>
 <li><a href="CHANGELOG.md">Changelog</a></li>
 <li><a href="prd.md">Product Requirements</a></li>
@@ -360,77 +380,76 @@ behind <code>RELEASED_APPS</code>
 (<code>quill/core/app_launcher.py</code>) for QUILL 1.0.0; its
 QuillVille launcher is hidden in a public build.</p>
 <p>The <em>editor-embedded</em> audio tooling is <strong>not</strong>
-gated and stays fully documented in QUILL's public user guide and PRD:
-<strong>Tools &gt; Speech &gt; Audiobook &amp; Batch Speech...</strong>
+gated and stays fully documented in QUILL’s public user guide and PRD:
+<strong>Tools &gt; Speech &gt; Audiobook &amp; Batch Speech…</strong>
 (<code>tools.speech_batch_export</code>), the Chapter Workbench it
 opens, <strong>Export to Translated Speech Audio</strong>, and the
-Universal Audio Converter dialog. Only the standalone app's own material
+Universal Audio Converter dialog. Only the standalone app’s own material
 was relocated here, during the 1.0.0 documentation consolidation.
 Nothing was deleted.</p>
-<p>Sign-off note: the embedded wizard's menu label was changed from
-"Audio Studio..." to "Audiobook &amp; Batch Speech..." precisely to
-remove the name clash with this app
+<p>Sign-off note: the embedded wizard’s menu label was changed from
+“Audio Studio…” to “Audiobook &amp; Batch Speech…” precisely to remove
+the name clash with this app
 (<code>docs/planning/signoff/QUILL-1.0.0-SIGNOFF.md</code>, section
 G).</p>
 </blockquote>
-<h3 id="from-quill-prdmd-351----the-audio-studio-family-entry">From
-<code>QUILL-PRD.md</code> 35.1 -- the Audio Studio family entry</h3>
-<p><em>The PRD's family inventory now lists only the publicly released
+<h3 id="from-quill-prdmd-351--the-audio-studio-family-entry">From
+<code>QUILL-PRD.md</code> 35.1 – the Audio Studio family entry</h3>
+<p><em>The PRD’s family inventory now lists only the publicly released
 apps and points here for the gated ones.</em></p>
 <ul>
-<li><strong>Audio Studio</strong> (<code>quill/apps/studio.py</code>) --
+<li><strong>Audio Studio</strong> (<code>quill/apps/studio.py</code>) –
 the audiobook/narration studio. Reverse-vendored from the former
 standalone <code>quill-audio-studio</code> repo (Option D); targets a
 clean <strong>1.0.0</strong>. Held back from the public QUILL 1.0.0
 release via <code>RELEASED_APPS</code>.</li>
 </ul>
 <p>The consolidation roadmap that stays in the PRD (<code>35.5</code>)
-carries this app's two remaining steps: the Audio Studio reverse-vendor
+carries this app’s two remaining steps: the Audio Studio reverse-vendor
 (<code>quill/apps/studio.py</code>, Phase A landed under the GATE suite,
 then the thin-wrapper cutover and closure deletion), and the packaging
-toolkit -- one parameterized spec/installer/build script consumed by
+toolkit – one parameterized spec/installer/build script consumed by
 QUILL, Radio, Cast, and Audio Studio, retiring the four forks.
 <code>35.3</code> also reserves SQLite for app-private indexes such as a
 future Audio Studio library index.</p>
-<h3
-id="from-quill-prdmd-525e----what-the-standalone-shell-wires-up">From
-<code>QUILL-PRD.md</code> 5.25e -- what the standalone shell wires
+<h3 id="from-quill-prdmd-525e--what-the-standalone-shell-wires-up">From
+<code>QUILL-PRD.md</code> 5.25e – what the standalone shell wires
 up</h3>
 <p><em>The PRD keeps the shared-module half of this bullet (the embedded
 Chapter Workbench uses the same code); the standalone-only half is
 below.</em></p>
 <p><code>open_book_in_workbench</code> and
-<code>ChapterWorkbenchDialog</code> thread optional host callbacks --
+<code>ChapterWorkbenchDialog</code> thread optional host callbacks –
 <code>on_player_ready(player, path)</code>,
 <code>on_finished(path)</code>, <code>on_volume(path, pct)</code>,
 <code>on_mute(path, muted)</code>,
-<code>on_closed(path, position_ms, chapter)</code> -- down to
+<code>on_closed(path, position_ms, chapter)</code> – down to
 <code>PlayerPanel</code>. Embedded QUILL passes none (fully backward
-compatible -- its single call site is unchanged), and the
+compatible – its single call site is unchanged), and the
 <strong>standalone QUILL-AS Studio shell</strong> wires them to route
 media keys (Play/Pause, Stop, Next/Previous chapter via
 <code>RegisterHotKey</code>), persist per-book volume/mute, stamp
 Recently Played history, and auto-advance the play queue on
 finish-then-close. The wx-free stores in
-<code>quill/core/audio_studio/</code> -- <code>library.py</code> (book
+<code>quill/core/audio_studio/</code> – <code>library.py</code> (book
 entries + user folders), <code>history.py</code> (Recently Played),
 <code>play_queue.py</code> (ordered queue + <code>next_entry</code>),
 <code>sleep_timer.py</code> (<code>SleepTimerSetting</code> +
-<code>SleepTimerWatcher</code>) -- and the shared UI
+<code>SleepTimerWatcher</code>) – and the shared UI
 (<code>library_tree.py</code>, <code>play_queue_dialog.py</code>,
 <code>sleep_timer_dialog.py</code>) are all vendored into QUILL-AS.</p>
-<h3 id="from-quill-prdmd-589e----the-standalone-apps-non-goal">From
-<code>QUILL-PRD.md</code> 5.89e -- the standalone-apps non-goal</h3>
-<p><em>The PRD's standalone companion-app section is now Quill Radio
+<h3 id="from-quill-prdmd-589e--the-standalone-apps-non-goal">From
+<code>QUILL-PRD.md</code> 5.89e – the standalone-apps non-goal</h3>
+<p><em>The PRD’s standalone companion-app section is now Quill Radio
 only.</em></p>
 <p><strong>Non-goals (v1).</strong> No single-instance enforcement; no
-Audio Studio standalone app yet -- the phased plan, including those,
+Audio Studio standalone app yet – the phased plan, including those,
 lives in <code>docs/planning/apps.md</code>.</p>
 <h3
-id="from-docsuser-guideuserguidemd----the-shared-announcement-mentions">From
-<code>docs/user guide/userguide.md</code> -- the shared-announcement
+id="from-docsuser-guideuserguidemd--the-shared-announcement-mentions">From
+<code>docs/user guide/userguide.md</code> – the shared-announcement
 mentions</h3>
-<p><em>The public user guide's announcement and earcon sections now name
+<p><em>The public user guide’s announcement and earcon sections now name
 only the publicly released apps.</em></p>
 <ul>
 <li><strong>The four announcement channels.</strong> The same
@@ -443,5 +462,6 @@ along with the rest.</li>
 </ul>
 <h2 id="license">License</h2>
 <p>MIT, same as QUILL.</p>
+</main>
 </body>
 </html>

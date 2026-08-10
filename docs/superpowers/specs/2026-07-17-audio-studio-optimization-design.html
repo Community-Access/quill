@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-17-audio-studio-optimization-design</title>
+  <title>Audio Studio optimization - design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="audio-studio-optimization---design">Audio Studio optimization -
 design</h1>
 <p>Date: 2026-07-17. Status: design (pending implementation). Related:
@@ -270,7 +294,7 @@ present and functional in <code>quill/</code>.</li>
 <li>A packaging/Inno/PyInstaller rebuild (separate step, after code is
 green).</li>
 </ul>
-<h2 id="architecture-sync-model">Architecture &amp; sync model</h2>
+<h2 id="architecture--sync-model">Architecture &amp; sync model</h2>
 <ul>
 <li><strong>Source of truth:</strong> <code>quill/</code>. Embedded
 Audio Studio (inside <code>MainFrame</code> and its mixins) and
@@ -348,10 +372,6 @@ automatically without separate config.</p>
 <h3 id="import-sites-to-guard-audit-table">Import sites to guard (audit
 table)</h3>
 <table>
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 77%" />
-</colgroup>
 <thead>
 <tr>
 <th>DROP module</th>
@@ -461,7 +481,7 @@ only import sites become tolerant of absence.</p>
 Radio/Cast structure. New <code>core/audio_studio/</code> package holds
 the data-layer pieces (parallel to <code>core/radio/</code>,
 <code>core/podcasts/</code>).</p>
-<h3 id="feature-1---library-tree-pinned-views">Feature 1 - Library tree
+<h3 id="feature-1---library-tree--pinned-views">Feature 1 - Library tree
 + pinned views</h3>
 <ul>
 <li><strong>Source pattern:</strong> Cast’s flat list -&gt; real tree
@@ -483,7 +503,7 @@ home and in embedded Audio Studio’s library mode.</li>
 mode. Both consume the same <code>library.py</code> and tree
 widget.</li>
 </ul>
-<h3 id="feature-2---resume-on-launch-recently-played">Feature 2 -
+<h3 id="feature-2---resume-on-launch--recently-played">Feature 2 -
 Resume-on-launch + Recently Played</h3>
 <ul>
 <li><strong>Source pattern:</strong> Cast’s
@@ -499,7 +519,7 @@ recently-played != continue-listening).</li>
 Played submenu in the File/Library menu.</li>
 <li><strong>Delta note:</strong> startup hook lives in both shells.</li>
 </ul>
-<h3 id="feature-3---media-keys-sleep-timer">Feature 3 - Media keys +
+<h3 id="feature-3---media-keys--sleep-timer">Feature 3 - Media keys +
 sleep timer</h3>
 <ul>
 <li><strong>Source pattern:</strong> Radio’s <code>RegisterHotKey</code>
@@ -520,7 +540,7 @@ keystrokes are separate from QUILL’s keymap - the standalone registers
 its own media-key hotkeys, does not extend
 <code>core/keymap</code>.</li>
 </ul>
-<h3 id="feature-4---per-book-volume-mute-play-queue">Feature 4 -
+<h3 id="feature-4---per-book-volume--mute--play-queue">Feature 4 -
 Per-book volume + Mute + Play Queue</h3>
 <ul>
 <li><strong>Source pattern:</strong> Radio per-favorite
@@ -549,11 +569,11 @@ feature</h3>
 <code>ui/audio_studio/library_tree.py</code> are added to SEED so they
 vendor.</li>
 <li><code>pytest -q</code> in <code>S:\QUILL-AS</code> (standalone path,
-incl. the new deny-list).</li>
+incl. the new deny-list).</li>
 <li>UIA regression coverage for new dialogs (Sleep Timer, Play Queue
 drawer) extended in <code>tests/uia/</code>.</li>
 </ul>
-<h2 id="error-handling-risks">Error handling &amp; risks</h2>
+<h2 id="error-handling--risks">Error handling &amp; risks</h2>
 <ul>
 <li><strong>Missed guard -&gt; standalone ImportError.</strong>
 Mitigated by the iterate-until- green verification loop and the
@@ -593,5 +613,6 @@ added; local-deltas list updated.</li>
 the QUILL CI gate scripts (module size budgets, dialog inventory, egress
 audit) remain QUILL-side; the vendored copies of shared code are
 validated there.</p>
+</main>
 </body>
 </html>

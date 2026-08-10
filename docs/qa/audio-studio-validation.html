@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>audio-studio-validation</title>
+  <title>Audio Studio: The Road to Feature Complete</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,17 +173,38 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="audio-studio-the-road-to-feature-complete">Audio Studio: The
 Road to Feature Complete</h1>
 <h2
 id="tier-1--merge-gate-two-items-both-now-scoped-to-what-only-jeff-can-do">Tier
 1 — Merge gate: two items, both now scoped to what only Jeff can do</h2>
 <p>Both items below were partially executed 2026-07-05 at the level an
-agent can safely reach on Jeff's own desktop (never launching the real
-app or sending synthetic keystrokes — see the "no desktop UI automation"
-rule). What's left in each is now exactly the part that needs a human at
+agent can safely reach on Jeff’s own desktop (never launching the real
+app or sending synthetic keystrokes — see the “no desktop UI automation”
+rule). What’s left in each is now exactly the part that needs a human at
 the keyboard with a real screen reader.</p>
 <h3 id="1-real-screen-reader-validation-jaws-then-nvda--needs-jeff">1.
 Real screen-reader validation (JAWS, then NVDA) — needs Jeff</h3>
@@ -195,14 +215,14 @@ Chapter Workbench (list refresh after each surgery operation, the title
 edit flow, button states), the player (transport labels, spoken position
 slider, chapter-crossing announcements, Where am I?), and the Publish
 dialog. Fix what your ears find.</p>
-<p><strong>Why an agent can't do this:</strong> it requires launching
+<p><strong>Why an agent can’t do this:</strong> it requires launching
 the real <code>quill.exe</code> and driving it with a live JAWS/NVDA
-session — exactly the desktop UI automation that's off-limits on Jeff's
+session — exactly the desktop UI automation that’s off-limits on Jeff’s
 machine (it fights JAWS: focus theft, Dictionary Manager triggered by
 intercepted keystrokes). The <code>tests/uia</code> pywinauto harness
-covers this mechanically in CI/a VM, but "does JAWS announce this well"
+covers this mechanically in CI/a VM, but “does JAWS announce this well”
 is a human judgment call, not a pass/fail an agent can render.</p>
-<p><strong>Outcome:</strong> The feature's core promise —
+<p><strong>Outcome:</strong> The feature’s core promise —
 screen-reader-first audiobook production — is verified by the person it
 was built for, not just by the dialog gates.</p>
 <h3
@@ -224,7 +244,7 @@ timestamps; the untouched original file still round-tripped
 afterward.</p>
 <p><strong>Real bug found this way, not by any stubbed-source unit
 test:</strong> the resave step failed against a real Windows-encoded M4B
-with <code>ffmpeg</code>'s "Tag text incompatible with output codec id"
+with <code>ffmpeg</code>’s “Tag text incompatible with output codec id”
 — the source carried a stray
 <code>bin_data</code>/<code>SubtitleHandler</code> data track that
 <code>-map 0</code> blindly copied into the <code>ipod</code> muxer,
@@ -239,13 +259,13 @@ Workbench and listening — loading the file into
 <code>WxMediaEngine</code>/<code>MpvAudioEngine</code> requires a live
 <code>wx.App</code> pumping the Windows message loop, which is the same
 JAWS-hostile territory as item 1. The remaining risk is narrower now:
-whether the WMP backend's <em>audio playback and seek feel</em>, not the
-file's correctness, holds up on a real 8-hour book. If it doesn't, the
+whether the WMP backend’s <em>audio playback and seek feel</em>, not the
+file’s correctness, holds up on a real 8-hour book. If it doesn’t, the
 already-shipped libmpv backend (Help &gt; Download Optional Components
 &gt; mpv player engine) is the fallback.</p>
 <p><strong>Outcome:</strong> File-format correctness is proven
-end-to-end with real tools; only the subjective "does it play and seek
-well by ear" question remains.</p>
+end-to-end with real tools; only the subjective “does it play and seek
+well by ear” question remains.</p>
 <h2
 id="tier-2--phase-2-port-in-validation-shared-modules-standalone-surfaced">Tier
 2 — Phase 2 port-in validation (shared modules,
@@ -268,7 +288,7 @@ volume to about 40%, mute (Ctrl+M), unmute — confirm volume restores to
 40. Close and reopen the same book — confirm it remembers 40% and the
 mute state. With the book playing, press the media Play/Pause, Stop, and
 Next/Previous keys — confirm they route to the Workbench player.</p>
-<p><strong>Why an agent can't do this:</strong> media-key hotkeys and
+<p><strong>Why an agent can’t do this:</strong> media-key hotkeys and
 audible volume need a real desktop session; the headless tests only
 assert the callbacks delegate and the prefs round-trip to JSON.</p>
 <p><strong>Outcome:</strong> per-book prefs persist across launches and
@@ -281,7 +301,7 @@ queue auto-advance + sleep timer — needs Jeff</h3>
 confirm the Studio announces the next and opens it on close. Set Book
 Tools &gt; Sleep Timer to one minute (or end of chapter) — confirm
 playback stops on cue and the status announces it.</p>
-<p><strong>Why an agent can't do this:</strong> end-of-book and the
+<p><strong>Why an agent can’t do this:</strong> end-of-book and the
 timer fire against a live player pumping the message loop; the headless
 test only asserts <code>wx.CallAfter(open_book, next)</code> is
 scheduled on finish-then-close and the watcher calls
@@ -296,11 +316,12 @@ Played / Inbox + your folders) reads correctly with JAWS/NVDA and the
 context menu (Open / Reveal / Favorite / Move / New Folder / Remove) is
 keyboard-complete. Toggle Studio &gt; Resume on launch, close
 mid-chapter, relaunch — confirm it reopens at the saved position.</p>
-<p><strong>Why an agent can't do this:</strong> tree navigation and
+<p><strong>Why an agent can’t do this:</strong> tree navigation and
 resume-on-launch need a live app and screen reader; the headless tests
 assert the tree builds from <code>library.py</code> and the resume flag
 persists.</p>
 <p><strong>Outcome:</strong> the library tree is screen-reader-navigable
 and resume-on-launch lands you where you stopped.</p>
+</main>
 </body>
 </html>

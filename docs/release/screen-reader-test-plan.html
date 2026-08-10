@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>screen-reader-test-plan</title>
+  <title>QUILL Screen-Reader and Keyboard Test Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-screen-reader-and-keyboard-test-plan">QUILL Screen-Reader
 and Keyboard Test Plan</h1>
 <p>Manual validation steps for every accessibility/focus/keyboard fix in
@@ -186,9 +206,9 @@ matching case here.</p>
 <li>Test with NVDA and JAWS (and Narrator where noted) on a real Windows
 build.</li>
 <li>For each case: follow the steps with the mouse unplugged (keyboard
-only), then again reading with the screen reader's virtual/focus
+only), then again reading with the screen reader’s virtual/focus
 cursor.</li>
-<li>Record Pass/Fail and the actual spoken text. "Expected" describes
+<li>Record Pass/Fail and the actual spoken text. “Expected” describes
 the intended announcement; exact wording varies by screen reader, but
 the field name, role, and state must be present and correct.</li>
 <li>A case fails if focus is lost, a control is unnamed/misnamed, Tab
@@ -208,51 +228,51 @@ announced generically; each now has a name.</p>
 <ul>
 <li>Steps: Help &gt; Application Status. Tab to the tab control; arrow
 Left/Right across tabs.</li>
-<li>Expected: the tab control is announced as "System status sections"
-(tab list / page tab list role); tabs read "Status", "Tasks &amp;
-Downloads", "Features", "Actions"; each page's list is reachable and
+<li>Expected: the tab control is announced as “System status sections”
+(tab list / page tab list role); tabs read “Status”, “Tasks &amp;
+Downloads”, “Features”, “Actions”; each page’s list is reachable and
 named (see A11Y-002).</li>
 </ul></li>
 <li>TC-A11Y-001b — About dialogs
 <ul>
-<li>Steps: Help &gt; About (and the "About" tabbed dialog). Move to the
+<li>Steps: Help &gt; About (and the “About” tabbed dialog). Move to the
 tab control.</li>
-<li>Expected: the tab group is announced as "About sections", not an
+<li>Expected: the tab group is announced as “About sections”, not an
 unnamed tab control.</li>
 </ul></li>
 <li>TC-A11Y-001c — Word view / Rich text view / CSV view surfaces
 <ul>
 <li>Steps: open a document that offers the Word/Rich-text/CSV view; move
 to its view switcher tab control.</li>
-<li>Expected: announced as "Word view" / "Rich text view" / "CSV view"
+<li>Expected: announced as “Word view” / “Rich text view” / “CSV view”
 respectively.</li>
 </ul></li>
 <li>TC-A11Y-001d — Document tab bar
 <ul>
 <li>Steps: open two or more documents; move focus to the document tab
 control.</li>
-<li>Expected: announced as "Open documents" (not a bare/unnamed
+<li>Expected: announced as “Open documents” (not a bare/unnamed
 notebook).</li>
 </ul></li>
 </ul>
 <h2
 id="a11y-002--controls-use-human-readable-names-not-snake_case">A11Y-002
 — Controls use human-readable names (not snake_case)</h2>
-<p>Fix: controls previously named like "status_overview" (spoken
+<p>Fix: controls previously named like “status_overview” (spoken
 letter-for-letter) now use readable names.</p>
 <ul>
 <li>TC-A11Y-002a — Application Status lists
 <ul>
-<li>Steps: Help &gt; Application Status; Tab through each tab's
+<li>Steps: Help &gt; Application Status; Tab through each tab’s
 list/control.</li>
-<li>Expected: the lists/fields are announced as "Status overview",
-"Tasks and downloads", "Features", "Recent actions", and the button as
-"Refresh" — never "status underscore overview" or similar.</li>
+<li>Expected: the lists/fields are announced as “Status overview”,
+“Tasks and downloads”, “Features”, “Recent actions”, and the button as
+“Refresh” — never “status underscore overview” or similar.</li>
 </ul></li>
 <li>TC-A11Y-002b — Verbosity preferences status line
 <ul>
 <li>Steps: open Verbosity preferences; navigate to the status line.</li>
-<li>Expected: announced as "Verbosity status".</li>
+<li>Expected: announced as “Verbosity status”.</li>
 </ul></li>
 </ul>
 <h2 id="focus-001--html-preview-fallback-opens-on-its-content">FOCUS-001
@@ -268,7 +288,7 @@ backend, this path is not exercised; note that and skip.</li>
 <li>Steps: open a dialog that renders HTML content (e.g. an
 About/preview surface) in the fallback path.</li>
 <li>Expected: on open, the screen reader begins reading the content (the
-HTML view has focus), not "Close button". Tab still reaches Close;
+HTML view has focus), not “Close button”. Tab still reaches Close;
 Escape closes.</li>
 </ul></li>
 </ul>
@@ -282,7 +302,7 @@ an explicit accessible name.</p>
 <li>Steps: open the Skill Library; Tab through the Skills list, the
 Description field, and (when running a skill with parameters) each
 parameter control.</li>
-<li>Expected: "Skills" (list), "Description" (text), and each parameter
+<li>Expected: “Skills” (list), “Description” (text), and each parameter
 field announced by its parameter label; no unnamed edit/combo/spin
 controls.</li>
 </ul></li>
@@ -290,8 +310,8 @@ controls.</li>
 <ul>
 <li>Steps: open the prompt-authoring dialog and the model-search dialog;
 Tab through the fields.</li>
-<li>Expected: fields announced as "Title", "Tone", "Audience", "Goal",
-"Template", "Prompt", and "Search models" respectively.</li>
+<li>Expected: fields announced as “Title”, “Tone”, “Audience”, “Goal”,
+“Template”, “Prompt”, and “Search models” respectively.</li>
 </ul></li>
 <li>TC-A11Y-003c — Web form dialog
 <ul>
@@ -302,7 +322,7 @@ areas or selects.</li>
 <li>TC-A11Y-003d — Sticky note editor
 <ul>
 <li>Steps: create/edit a sticky note (native fallback path).</li>
-<li>Expected: the two editors are announced as "Title" and "Note".</li>
+<li>Expected: the two editors are announced as “Title” and “Note”.</li>
 </ul></li>
 </ul>
 <h2 id="key-001--tab-is-not-trapped-in-prose-multiline-fields">KEY-001 —
@@ -342,16 +362,16 @@ the behavior and note it.</li>
 <h2
 id="a11y-004--validation-errors-move-focus-to-the-offending-field">A11Y-004
 — Validation errors move focus to the offending field</h2>
-<p>Fix: the GitHub "open repository" form announced an error but left
+<p>Fix: the GitHub “open repository” form announced an error but left
 focus on the button; it now moves focus to the field.</p>
 <ul>
 <li>TC-A11Y-004 — GitHub open-repository validation
 <ul>
 <li>Steps: open File &gt; Open from Remote &gt; GitHub (open-repository
-form). Leave the repository box empty (or enter a value without a "/")
+form). Leave the repository box empty (or enter a value without a “/”)
 and activate Load.</li>
-<li>Expected: the status message is announced ("Enter a repository
-name..." or "Repository must be in owner/repo format."), AND focus moves
+<li>Expected: the status message is announced (“Enter a repository
+name…” or “Repository must be in owner/repo format.”), AND focus moves
 to the repository edit field so you can correct it without hunting for
 it.</li>
 </ul></li>
@@ -366,7 +386,7 @@ build.</p>
 <li>TC-EDIT-001 — Editor control
 <ul>
 <li>Steps: open a document; move focus into the text area.</li>
-<li>Expected: announced as "Document", edit/text-area role, multi-line;
+<li>Expected: announced as “Document”, edit/text-area role, multi-line;
 typed text reads back; the selection is announced and stays visible when
 focus leaves.</li>
 </ul></li>
@@ -381,17 +401,17 @@ not trapped; it does not insert a tab character).</li>
 <li>Steps: open two+ documents; arrow across the document tab control;
 press Enter on one; toggle/focus the side preview (View &gt; Focus
 Preview).</li>
-<li>Expected: the tab control is "Open documents"; each tab announces
-its document name; Enter announces "Focused document <name>" and lands
-in the editor; the preview pane is announced as "Preview".</li>
+<li>Expected: the tab control is “Open documents”; each tab announces
+its document name; Enter announces “Focused document <name>” and lands
+in the editor; the preview pane is announced as “Preview”.</li>
 </ul></li>
 <li>TC-EDIT-004 — Status bar segments
 <ul>
 <li>Steps: invoke the focus-status-bar command; Tab across the cells;
 press Escape.</li>
-<li>Expected: each cell announces "Status bar, <label>, <value>" (e.g.
-language, position); Tab moves between cells; Escape announces "Returned
-to editor" and returns focus to the document.</li>
+<li>Expected: each cell announces “Status bar, <label>, <value>” (e.g.
+language, position); Tab moves between cells; Escape announces “Returned
+to editor” and returns focus to the document.</li>
 </ul></li>
 </ul>
 <hr />
@@ -414,7 +434,7 @@ are in <code>docs/qa/converter-bakeoff.md</code>.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Original repro:</strong> new
 document, 8 lines, Ctrl-S, switch type to Word, name it, Enter. Verify:
-title bar reads "name.docx - QUILL for All ..." (no [modified]); second
+title bar reads “name.docx - QUILL for All …” (no [modified]); second
 Ctrl-S saves silently with no dialog; the save announcement speaks; the
 file opens in Word with 8 paragraphs.</label></li>
 <li><label><input type="checkbox" /><strong>Save As each type:</strong>
@@ -437,7 +457,7 @@ same doc — 8 phrases in the book (line breaks and headings map to
 phrases; it was built line-oriented).</label></li>
 <li><label><input type="checkbox" /><strong>First-line title:</strong>
 untitled doc starting <code># Trip Report</code>, Ctrl-S — name box
-pre-filled "Trip Report".</label></li>
+pre-filled “Trip Report”.</label></li>
 <li><label><input type="checkbox" /><strong>Engine preference:</strong>
 flip <code>docx_write_engine</code> to pandoc, Save As .docx, open in
 Word — structure present, fonts absent, matching the documented
@@ -452,5 +472,6 @@ outcome.</label></li>
 <li>Overall result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

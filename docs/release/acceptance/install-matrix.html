@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>install-matrix</title>
+  <title>Section — Install matrix (portable vs system, secrets, updates,
+migration)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--install-matrix-portable-vs-system-secrets-updates-migration">Section
 — Install matrix (portable vs system, secrets, updates, migration)</h1>
@@ -305,7 +330,7 @@ in the resolved dir.</li>
 id="inst-02--secrets-go-to-the-correct-protected-store-never-plain-text">INST-02
 — Secrets go to the correct protected store (never plain text)</h2>
 <p><em>What &amp; why.</em> The highest-risk check: an API key/token
-must be stored in the platform's protected store for this mode, and
+must be stored in the platform’s protected store for this mode, and
 never written in the clear.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -330,7 +355,7 @@ and any crash bundle for the raw secret string.</li>
 (Credential Manager / DPAPI <code>keys.enc</code> / Keychain) and
 appears <strong>nowhere in plain text</strong> in settings, logs,
 diagnostics, or crash bundles (redaction, SEC-13). Signing out of the
-service removes only that service's entry.</li>
+service removes only that service’s entry.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -343,7 +368,7 @@ id="inst-03--the-split-signal-case-e3-keystore-follows-the-resolved-data-dir">IN
 dir</h2>
 <p><em>What &amp; why.</em> When <code>QUILL_PORTABLE=1</code> but the
 data dir is <code>%APPDATA%</code>, the keystore must follow the
-<strong>resolved data dir</strong>, not the user's abstract choice. This
+<strong>resolved data dir</strong>, not the user’s abstract choice. This
 is the #1100 landmine.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -418,13 +443,13 @@ apply it and let QUILL relaunch.</li>
 (<code>.exe</code>/<code>.msi</code>; macOS
 <code>.dmg</code>/<code>.pkg</code>), applied via elevated silent setup
 then relaunch. E2: offered the <strong>portable
-<code>.zip</code></strong> (name contains "portable"), applied via
+<code>.zip</code></strong> (name contains “portable”), applied via
 mirror-copy that <strong>excludes <code>data/</code></strong>, then
 relaunch — your documents/settings survive. E3 (#1100):
 <code>running_portable()</code> returns False (the <code>unins000</code>
 marker), so it gets the installer, not the zip. Discovery is HTTPS-only,
 host-allowlisted, and signed-manifest verified in every mode. A
-dev/non-frozen run falls back to "reveal download" instead of applying
+dev/non-frozen run falls back to “reveal download” instead of applying
 (no crash).</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -435,7 +460,7 @@ dev/non-frozen run falls back to "reveal download" instead of applying
 <h2 id="inst-06--first-run-migration-and-importing-prior-data">INST-06 —
 First run, migration, and importing prior data</h2>
 <p><em>What &amp; why.</em> A brand-new user gets the Startup Wizard; an
-existing user's data is migrated safely with backups.</p>
+existing user’s data is migrated safely with backups.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>For the fresh-install path: a machine/profile with no prior QUILL
@@ -550,7 +575,7 @@ in both install modes; the alert-dedupe store follows the data dir.</li>
 <li>Each app resolves its own portable/installed verdict (a bare
 <code>unins000</code>-beside-exe check plus
 <code>prefer_portable</code>); files land in the right place; Radio
-backup/restore round-trips; Weather's Scheduled Task fires and dedupe
+backup/restore round-trips; Weather’s Scheduled Task fires and dedupe
 persists — all correct in both modes.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -570,5 +595,6 @@ persists — all correct in both modes.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-08-voice-preview-feedback</title>
+  <title>Voice Preview Feedback Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="voice-preview-feedback-implementation-plan">Voice Preview
 Feedback Implementation Plan</h1>
 <blockquote>
@@ -288,16 +312,21 @@ file per task, not the full suite, per project convention
 <hr />
 <h3 id="task-1-register-the-voice_preview_generating-sound-event">Task
 1: Register the <code>VOICE_PREVIEW_GENERATING</code> sound event</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/sound_events.py</code> - Modify:
-<code>quill/assets/sound_packs/ink/manifest.json</code> - Modify:
-<code>quill/ui/sound_events_dialog.py</code> - Test:
-<code>tests/unit/core/test_voice_preview_sound_event.py</code> (new)</p>
-<p><strong>Interfaces:</strong> - Produces:
-<code>SoundEvent.VOICE_PREVIEW_GENERATING</code> (value
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/sound_events.py</code></li>
+<li>Modify: <code>quill/assets/sound_packs/ink/manifest.json</code></li>
+<li>Modify: <code>quill/ui/sound_events_dialog.py</code></li>
+<li>Test: <code>tests/unit/core/test_voice_preview_sound_event.py</code>
+(new)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>SoundEvent.VOICE_PREVIEW_GENERATING</code> (value
 <code>"voice_preview_generating"</code>), usable anywhere via
 <code>from quill.core.sound_events import SoundEvent</code> and
-<code>post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)</code>.</p>
+<code>post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -424,20 +453,26 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 <hr />
 <h3 id="task-2-add-the-voice_preview_announce_generating-setting">Task
 2: Add the <code>voice_preview_announce_generating</code> setting</h3>
-<p><strong>Files:</strong> - Modify: <code>quill/core/settings.py</code>
-- Modify: <code>quill/core/settings_specs.py</code> - Test:
-<code>tests/unit/core/test_settings.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/settings.py</code></li>
+<li>Modify: <code>quill/core/settings_specs.py</code></li>
+<li>Test: <code>tests/unit/core/test_settings.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
 <code>Settings.voice_preview_announce_generating: bool</code> (default
 <code>True</code>), round-tripped through
 <code>save_settings</code>/<code>load_settings</code> like every other
-field.</p>
+field.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
 </ul>
 <p>In <code>tests/unit/core/test_settings.py</code>, add (near the other
-sound-related round-trip tests, e.g. after
+sound-related round-trip tests, e.g. after
 <code>test_settings_persists_batch_speech_chapter_fields</code>):</p>
 <div class="sourceCode" id="cb10"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_voice_preview_announce_generating_defaults_true_and_round_trips(</span>
@@ -549,19 +584,25 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href=
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(settings): add voice_preview_announce_generating (default on)&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-3-generation-token-tracking-stop-a-prior-preview-instead-of-overlapping-it">Task
+id="task-3-generation-token-tracking--stop-a-prior-preview-instead-of-overlapping-it">Task
 3: Generation-token tracking — stop a prior preview instead of
 overlapping it</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame.py:17683-17842</code>
-(<code>_play_preview_asset</code>, <code>_preview_voice</code>) - Test:
-<code>tests/unit/ui/test_voice_preview_generation.py</code> (new)</p>
-<p><strong>Interfaces:</strong> - Consumes: nothing new from other
-tasks. - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame.py:17683-17842</code>
+(<code>_play_preview_asset</code>, <code>_preview_voice</code>)</li>
+<li>Test: <code>tests/unit/ui/test_voice_preview_generation.py</code>
+(new)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new from other tasks.</li>
+<li>Produces:
 <code>MainFrame._stop_active_voice_preview() -&gt; None</code>,
 <code>MainFrame._preview_generation: int</code> (an ever-increasing
 counter read by later tasks to decide whether a callback is stale),
-<code>MainFrame._purge_preview_playback() -&gt; None</code>.</p>
+<code>MainFrame._purge_preview_playback() -&gt; None</code>.</li>
+</ul>
 <p>This task does <strong>not</strong> yet add the cue or the
 <code>on_state_change</code> callback (Tasks 4-5) — it only fixes the
 overlap bug: starting a new preview stops the old one’s playback and
@@ -901,18 +942,25 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href=
 <hr />
 <h3 id="task-4-the-generating-please-wait-cue">Task 4: The “generating,
 please wait” cue</h3>
-<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
-(<code>_preview_voice</code>) - Test:
-<code>tests/unit/ui/test_voice_preview_generation.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>SoundEvent.VOICE_PREVIEW_GENERATING</code> (Task 1),
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame.py</code>
+(<code>_preview_voice</code>)</li>
+<li>Test:
+<code>tests/unit/ui/test_voice_preview_generation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>SoundEvent.VOICE_PREVIEW_GENERATING</code> (Task 1),
 <code>settings.voice_preview_announce_generating</code> (Task 2),
 <code>self._preview_generation</code>/<code>_still_current</code>
-pattern (Task 3). - Produces:
+pattern (Task 3).</li>
+<li>Produces:
 <code>MainFrame._fire_generating_cue(generation: int) -&gt; None</code>;
 a pending <code>wx.CallLater</code> stored on
 <code>self._preview_cue_timer</code>, cancelled by
-<code>_stop_active_voice_preview</code>.</p>
+<code>_stop_active_voice_preview</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1092,20 +1140,26 @@ Commit</strong></label></li>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame.py tests/unit/ui/test_voice_preview_generation.py</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(speech): play/announce a &#39;generating preview&#39; cue for slow voice previews&quot;</span></span></code></pre></div>
 <hr />
-<h3 id="task-5-play-stop-button-in-the-voice-browser-dialog">Task 5:
+<h3 id="task-5-play--stop-button-in-the-voice-browser-dialog">Task 5:
 Play ↔︎ Stop button in the Voice Browser dialog</h3>
-<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
-(<code>_preview_voice</code> signature) - Modify:
-<code>quill/ui/voice_browser_dialog.py</code> - Test:
-<code>tests/unit/ui/test_voice_browser_dialog.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame.py</code>
+(<code>_preview_voice</code> signature)</li>
+<li>Modify: <code>quill/ui/voice_browser_dialog.py</code></li>
+<li>Test: <code>tests/unit/ui/test_voice_browser_dialog.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
 <code>MainFrame._preview_voice(..., on_state_change: Callable[[str], None] | None = None)</code>;
-<code>MainFrame._stop_active_voice_preview()</code> (Task 3). -
-Produces:
+<code>MainFrame._stop_active_voice_preview()</code> (Task 3).</li>
+<li>Produces:
 <code>VoiceBrowserDialog._on_preview_state(state: str) -&gt; None</code>;
 <code>_preview_btn</code> toggles between
 <code>"&amp;Preview Selected Voice"</code> and
-<code>"&amp;Stop Preview"</code>.</p>
+<code>"&amp;Stop Preview"</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Give
 <code>_preview_voice</code> an <code>on_state_change</code>
@@ -1354,23 +1408,30 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href=
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(speech): Voice Browser Preview button toggles to Stop while active&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-6-play-stop-button-in-the-download-optional-components-hub-voice-rows">Task
+id="task-6-play--stop-button-in-the-download-optional-components-hub-voice-rows">Task
 6: Play ↔︎ Stop button in the Download Optional Components hub (voice
 rows)</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/optional_components_dialog.py</code> - Modify:
-<code>quill/ui/main_frame_speech.py</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/optional_components_dialog.py</code></li>
+<li>Modify: <code>quill/ui/main_frame_speech.py</code>
 (<code>_test_optional_component</code>, <code>_Controller</code> in
-<code>open_optional_components</code>) - Test:
-<code>tests/unit/ui/test_optional_components_dialog.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
+<code>open_optional_components</code>)</li>
+<li>Test:
+<code>tests/unit/ui/test_optional_components_dialog.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
 <code>MainFrame._preview_voice(..., on_state_change=...)</code> (Task
 5), <code>MainFrame._stop_active_voice_preview()</code> (Task 3),
 <code>oc.read_aloud_engine_for_component(component_id) -&gt; str | None</code>
-(existing). - Produces:
+(existing).</li>
+<li>Produces:
 <code>ComponentsController.test(component_id, on_state_change=None)</code>,
 <code>ComponentsController.stop_test(component_id) -&gt; None</code>,
-<code>ComponentsController.is_previewable(component_id) -&gt; bool</code>.</p>
+<code>ComponentsController.is_previewable(component_id) -&gt; bool</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Extend the
 <code>ComponentsController</code> protocol</strong></label></li>
@@ -1608,13 +1669,16 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb73-1"><a href=
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(speech): hub Test button toggles to Stop for voice components&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-7-documentation-user-guide-prd-changelog-release-notes">Task 7:
-Documentation — user guide, PRD, CHANGELOG, release notes</h3>
-<p><strong>Files:</strong> - Modify:
-<code>docs/user guide/userguide.md</code> - Modify:
-<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>
-- Modify: <code>CHANGELOG.md</code> - Modify:
-<code>docs/release notes/release0.9.0-beta2.md</code></p>
+id="task-7-documentation--user-guide-prd-changelog-release-notes">Task
+7: Documentation — user guide, PRD, CHANGELOG, release notes</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>docs/user guide/userguide.md</code></li>
+<li>Modify:
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></li>
+<li>Modify: <code>CHANGELOG.md</code></li>
+<li>Modify: <code>docs/release notes/release0.9.0-beta2.md</code></li>
+</ul>
 <p><strong>Interfaces:</strong> none (prose only).</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: User
@@ -1720,7 +1784,8 @@ type="checkbox" /><code>mypy quill/core quill/io</code> (scoped, per
 project convention — <code>quill/ui</code> is gradually typed and
 excluded)</label></li>
 <li><label><input type="checkbox" />Report the working tree state (clean
-vs. remaining diffs) and a summary of the 7 commits.</label></li>
+vs. remaining diffs) and a summary of the 7 commits.</label></li>
 </ul>
+</main>
 </body>
 </html>

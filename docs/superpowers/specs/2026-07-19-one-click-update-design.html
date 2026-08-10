@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-19-one-click-update-design</title>
+  <title>One-Click Update (Apply and Restart) — Design</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="one-click-update-apply-and-restart-design">One-Click Update
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="one-click-update-apply-and-restart--design">One-Click Update
 (Apply and Restart) — Design</h1>
 <p>Date: 2026-07-19 Status: Approved (design), pending implementation
 Target release: Quill Radio 2.0.3 (shared <code>quill</code> package;
@@ -213,7 +237,7 @@ today.</li>
 <code>_running_portable_build()</code> check (<code>unins000.exe</code>
 beside the exe ⇒ installed; absent ⇒ portable). Dev runs report
 installed and are unaffected (they never reach a real apply).</p>
-<h3 id="installed-build-silent-installer-relaunch">Installed build →
+<h3 id="installed-build--silent-installer--relaunch">Installed build →
 silent installer + relaunch</h3>
 <p>Run the downloaded Inno setup <code>.exe</code> with silent flags and
 a relaunch, then close the app:</p>
@@ -223,7 +247,7 @@ prompt, since the install dir is under Program Files). Relaunch is via
 the installer’s own postinstall run entry, or by the same apply-helper
 waiting on PID then starting the exe — whichever the installer supports.
 This path largely reuses the current <code>_launch_installer</code>.</p>
-<h3 id="portable-build-apply-update-helper">Portable build →
+<h3 id="portable-build--apply-update-helper">Portable build →
 apply-update helper</h3>
 <p>A running <code>.exe</code> cannot overwrite itself on Windows, so an
 external helper does the swap after the app exits:</p>
@@ -259,7 +283,7 @@ inside the excluded <code>data</code> dir and survives the swap that
 overwrites everything else.</p>
 <h2 id="components">Components</h2>
 <h3
-id="quillcoreupdates.py-wx-free-unit-tested"><code>quill/core/updates.py</code>
+id="quillcoreupdatespy-wx-free-unit-tested"><code>quill/core/updates.py</code>
 (wx-free, unit-tested)</h3>
 <ul>
 <li><code>install_root_and_exe() -&gt; tuple[Path, Path] | None</code> —
@@ -288,24 +312,26 @@ pin them.</li>
 argv.</li>
 </ul>
 <h3
-id="quilluiapp_shell.py-radio-cast"><code>quill/ui/app_shell.py</code>
+id="quilluiapp_shellpy-radio--cast"><code>quill/ui/app_shell.py</code>
 (Radio + Cast)</h3>
 <p>Replace <code>_offer_app_update_install</code>’s portable
 “instructions only” branch and installer branch with a single
 <strong>“Install and restart now”</strong> default button (plus the
-existing Open folder / Close). On click: - installed ⇒
-<code>build_silent_installer_command</code>, launch detached, then
-<code>self.frame.Close()</code>; - portable ⇒
-<code>stage_portable_update</code>, write + launch the helper, then
-<code>self.frame.Close()</code>. Both announce “Installing update and
-restarting…” first. A staging/launch failure is announced and leaves the
-app running (fall back to Open folder).</p>
+existing Open folder / Close). On click:</p>
+<ul>
+<li>installed ⇒ <code>build_silent_installer_command</code>, launch
+detached, then <code>self.frame.Close()</code>;</li>
+<li>portable ⇒ <code>stage_portable_update</code>, write + launch the
+helper, then <code>self.frame.Close()</code>. Both announce “Installing
+update and restarting…” first. A staging/launch failure is announced and
+leaves the app running (fall back to Open folder).</li>
+</ul>
 <p>The app’s own close handler already releases the lock and shuts
 controllers down (<code>quill/apps/radio.py</code>
 <code>_on_radio_app_close</code>), so closing after launching the helper
 is the clean-exit signal the helper’s PID-wait keys on.</p>
 <h3
-id="quilluimain_frame_updates.py-quill-windows"><code>quill/ui/main_frame_updates.py</code>
+id="quilluimain_frame_updatespy-quill-windows"><code>quill/ui/main_frame_updates.py</code>
 (QUILL, Windows)</h3>
 <p>Give <code>_offer_post_download_actions</code> the same apply
 behavior for Windows portable and installed builds. macOS falls through
@@ -360,5 +386,6 @@ style.</li>
 <p>Ships in 2.0.3 (already the target). Adds a release-notes bullet
 (“Update Quill Radio in one click — it downloads, applies, and restarts
 itself”). Version already bumped to 2.0.3.</p>
+</main>
 </body>
 </html>

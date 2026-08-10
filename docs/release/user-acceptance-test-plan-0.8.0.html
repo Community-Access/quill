@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>user-acceptance-test-plan-0.8.0</title>
+  <title>QUILL 0.8.0 Beta - User Acceptance Test Runbook (Step by
+Step)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="quill-080-beta---user-acceptance-test-runbook-step-by-step">QUILL
 0.8.0 Beta - User Acceptance Test Runbook (Step by Step)</h1>
@@ -183,7 +204,7 @@ id="quill-080-beta---user-acceptance-test-runbook-step-by-step">QUILL
 Every action and every validation is a single numbered step with its own
 checkbox. Numbers run straight through from start to finish and never
 restart, so you always know exactly where you left off: your resume
-point is simply "I am on Step N."</p>
+point is simply “I am on Step N.”</p>
 <p>Work top to bottom. Check a box <code>[x]</code> only when that step
 actually passed in front of you. If a step fails, write the step number,
 what you saw, and any crash-bundle path in the Issue Log at the end,
@@ -204,7 +225,7 @@ it on faith.</li>
 or platform.</li>
 </ul></li>
 <li>Run the first pass of every UI step <strong>keyboard-only</strong>
-(ignore the mouse), then a second pass reading with the screen reader's
+(ignore the mouse), then a second pass reading with the screen reader’s
 review/virtual cursor.</li>
 <li>For every step, the honest outcomes are Pass, Fail, Blocked, or Not
 tested.</li>
@@ -248,7 +269,7 @@ EXPECT: a backup exists (the reset deletes this folder).</label></li>
 in <code>docs\release</code>. Run
 <code>.\clean-quill-install.ps1 -Backup</code>. EXPECT: it stops any
 QUILL process, runs any uninstaller, and removes both branding folders
-and the data dirs; it prints "Clean."</label></li>
+and the data dirs; it prints “Clean.”</label></li>
 <li><label><input type="checkbox" /><strong>5.</strong> Verify clean:
 <code>Test-Path "$env:LOCALAPPDATA\Programs\Quill"</code>,
 <code>...\Programs\QUILL for All"</code>,
@@ -378,7 +399,7 @@ wizard appears, app launches with SR announcement, About reads 0.8.0
 Beta 1, settings/keymap/recovery created fresh. RELEASE BLOCKER on a
 fresh-install crash.</label></li>
 <li><label><input type="checkbox" /><strong>35.</strong> Confirm every
-bundled dependency from that plan's section 4 is present in the install
+bundled dependency from that plan’s section 4 is present in the install
 dir (embedded Python, Pandoc, eSpeak-NG, DECtalk, Piper, braille pack,
 whisper.cpp binary + dlls, Vosk/Kokoro/OCR/spellcheck wheels). EXPECT:
 all present.</label></li>
@@ -392,7 +413,7 @@ Launch with <code>--safe-mode</code>. EXPECT: AI, watch folder, and
 Quillin contributions are disabled and say so when invoked; core editing
 still works.</label></li>
 <li><label><input type="checkbox" /><strong>37.</strong> Invoke an AI
-action in Safe Mode. EXPECT: a clear "disabled in Safe Mode" style
+action in Safe Mode. EXPECT: a clear “disabled in Safe Mode” style
 message, no network call.</label></li>
 <li><label><input type="checkbox" /><strong>38.</strong> Relaunch
 normally. EXPECT: AI is off by default and requires explicit
@@ -462,8 +483,8 @@ several times, then File &gt; Restore Backup. [needs setup:
 autosave/backup on] EXPECT: prior versions listed and restore
 correctly.</label></li>
 <li><label><input type="checkbox" /><strong>60.</strong> Check Open
-Recent; with "Drop missing recent files automatically" on, delete a
-fixed-drive entry's file. EXPECT: fixed-drive entry drops; USB/network
+Recent; with “Drop missing recent files automatically” on, delete a
+fixed-drive entry’s file. EXPECT: fixed-drive entry drops; USB/network
 entries are kept even when the drive is absent.</label></li>
 <li><label><input type="checkbox" /><strong>61.</strong> File &gt;
 Snapshots: save a snapshot of several open docs, close all, reopen the
@@ -656,7 +677,7 @@ Wrap. EXPECT: wrapping changes; file content unchanged.</label></li>
 Side-by-Side Preview; edit and watch it update. EXPECT: preview tracks
 edits.</label></li>
 <li><label><input type="checkbox" /><strong>118.</strong> Focus Preview,
-then return to the editor. EXPECT: SR focus moves to the named "Preview"
+then return to the editor. EXPECT: SR focus moves to the named “Preview”
 pane and back (see screen-reader TC-EDIT-003).</label></li>
 <li><label><input type="checkbox" /><strong>119.</strong> Show Tab
 Control toggle. EXPECT: the document tab strip shows/hides.</label></li>
@@ -716,7 +737,7 @@ to Speech Audio for one document. EXPECT: audio file produced; progress
 announced; cancel works.</label></li>
 <li><label><input type="checkbox" /><strong>137.</strong> [needs setup:
 AI/translation] Export to Translated Speech Audio (one doc). EXPECT:
-translated audio produced, or a clear "needs X" message.</label></li>
+translated audio produced, or a clear “needs X” message.</label></li>
 <li><label><input type="checkbox" /><strong>138.</strong> Build
 Audiobook from a folder of documents. EXPECT: combined audiobook with
 per-document structure; progress and completion announced.</label></li>
@@ -794,12 +815,12 @@ each documented message appears and is reachable.</label></li>
 clear.</label></li>
 <li><label><input type="checkbox" /><strong>155.</strong> Rewrite
 Selection with a selection, then without. EXPECT: announces scope
-("Rewrite paragraph (N words)"); empty target says "Nothing to
-rewrite".</label></li>
+(“Rewrite paragraph (N words)”); empty target says “Nothing to
+rewrite”.</label></li>
 <li><label><input type="checkbox" /><strong>156.</strong> Summarize
 Selection, Continue Writing, Fix Grammar (with and without a selection).
-EXPECT: correct scope each; with AI off all announce "AI is turned
-off..." and do nothing.</label></li>
+EXPECT: correct scope each; with AI off all announce “AI is turned off…”
+and do nothing.</label></li>
 <li><label><input type="checkbox" /><strong>157.</strong> Ask AI
 (one-off question). EXPECT: a single answer returns.</label></li>
 <li><label><input type="checkbox" /><strong>158.</strong> Check Grammar
@@ -864,7 +885,7 @@ Set verbosity low, then medium, then high; perform move/ select/save
 actions at each. EXPECT: announcement detail scales with the
 level.</label></li>
 <li><label><input type="checkbox" /><strong>173.</strong> Confirm the
-verbosity status line is named "Verbosity status" (screen-reader
+verbosity status line is named “Verbosity status” (screen-reader
 TC-A11Y-002b). EXPECT: correct name.</label></li>
 <li><label><input type="checkbox" /><strong>174.</strong> [unit-backed]
 Confirm no status-bar update is silent (GATE-12). EXPECT: every status
@@ -874,7 +895,7 @@ change is announced.</label></li>
 Accessibility core (run the screen-reader plan)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>175.</strong> Editor
-surface: focus the editor. EXPECT: announced "Document", text-area role,
+surface: focus the editor. EXPECT: announced “Document”, text-area role,
 multi-line; typed text reads back; selection stays visible
 (screen-reader TC-EDIT-001).</label></li>
 <li><label><input type="checkbox" /><strong>176.</strong> With focus in
@@ -883,11 +904,11 @@ trapped and inserts no tab character (TC-EDIT-002). RELEASE BLOCKER if
 trapped.</label></li>
 <li><label><input type="checkbox" /><strong>177.</strong> Document tabs
 and side preview: arrow across tabs, Enter on one, focus the preview.
-EXPECT: "Open documents" tab group; Enter announces "Focused document
-<name>"; preview named "Preview" (TC-EDIT-003).</label></li>
+EXPECT: “Open documents” tab group; Enter announces “Focused document
+<name>”; preview named “Preview” (TC-EDIT-003).</label></li>
 <li><label><input type="checkbox" /><strong>178.</strong> Status bar
 segments: invoke focus-status-bar; Tab across cells; Escape. EXPECT:
-each cell "Status bar, <label>, <value>"; Escape "Returned to editor"
+each cell “Status bar, <label>, <value>”; Escape “Returned to editor”
 (TC-EDIT-004).</label></li>
 <li><label><input type="checkbox" /><strong>179.</strong> Dialog
 naming/focus contract across representative dialogs: names present,
@@ -1045,7 +1066,7 @@ for this beta; the check is accessible and clear.</label></li>
 <li><label><input type="checkbox" /><strong>216.</strong> Confirm the
 automatic-update setting and release-channel selection behave; no
 surprise downloads. EXPECT: consent respected.</label></li>
-<li><label><input type="checkbox" /><strong>217.</strong> Change QUILL's
+<li><label><input type="checkbox" /><strong>217.</strong> Change QUILL’s
 display language; restart if required. EXPECT: UI strings localize; no
 raw <code>lazy_gettext</code> proxy leaks into a control (#261 class);
 untranslated strings fall back to English, not blank.</label></li>
@@ -1179,5 +1200,6 @@ sessions.</p>
 <li>Overall: Pass / Pass-with-known-issues / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

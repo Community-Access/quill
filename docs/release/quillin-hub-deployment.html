@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>quillin-hub-deployment</title>
+  <title>Quillin Hub deployment runbook</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,13 +238,34 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quillin-hub-deployment-runbook">Quillin Hub deployment
 runbook</h1>
 <p>The Quillin Hub is a Flask app that serves the Quillin, AI agent, and
-skill-pack storefront. This is the runbook for going from "the container
-builds" to "the storefront is serving verified artifacts".</p>
+skill-pack storefront. This is the runbook for going from “the container
+builds” to “the storefront is serving verified artifacts”.</p>
 <h2 id="topology">Topology</h2>
 <ul>
 <li>One Flask process (Gunicorn, 4 workers).</li>
@@ -334,7 +354,7 @@ submission cap matches
 leaves room for the sidecar and multipart overhead.</p>
 <h2 id="health-check">Health check</h2>
 <p>The Hub has no <code>/healthz</code> endpoint today. Add one if
-you're putting this behind a load balancer:</p>
+you’re putting this behind a load balancer:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@web_bp.route</span>(<span class="st">&quot;/healthz&quot;</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> healthz():</span>
@@ -354,7 +374,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="
 do not roll forward until it is green.</p>
 <h2 id="sync-worker">Sync worker</h2>
 <p><code>worker/sync_to_pages.py</code> enumerates the QUILL GitHub repo
-and upserts every Quillin, AI agent, and skill pack into the Hub's
+and upserts every Quillin, AI agent, and skill pack into the Hub’s
 <code>artifacts</code> table. The worker is idempotent: it filters by
 <code>manifest_id</code> and upserts, so it is safe to run on a cron
 every 15 minutes.</p>
@@ -374,37 +394,38 @@ matching <code>&lt;file&gt;.minisig</code> sidecar from main and stores
 the key id in <code>signer_key_id</code> for the storefront badge.</li>
 </ul>
 <p>The worker <strong>does not</strong> verify the signature against the
-public key when syncing from main -- main is post-review by definition,
+public key when syncing from main – main is post-review by definition,
 and the sidecar is the human-readable provenance. The desktop app does
 the actual verification at download time.</p>
 <h2 id="submission-forge-cap">Submission Forge cap</h2>
 <p>The Submission Forge accepts artifacts up to 32 MB
 (<code>_MAX_UPLOAD_BYTES</code> in <code>app/forge/forms.py</code>).
-Anything bigger is rejected with "archive expands beyond the 32 MB
-submission limit". Larger artifacts should land via a GitHub PR using
+Anything bigger is rejected with “archive expands beyond the 32 MB
+submission limit”. Larger artifacts should land via a GitHub PR using
 the prefilled links the Forge generates on the report page.</p>
 <h2 id="failure-modes">Failure modes</h2>
 <ul>
-<li><strong>DB connection drops</strong> -- Gunicorn workers will 500.
+<li><strong>DB connection drops</strong> – Gunicorn workers will 500.
 The reverse proxy should retry on 502/503/504 with a 1 s backoff.
 PostgreSQL reconnects are handled by SQLAlchemy.</li>
-<li><strong>Sync worker 401</strong> -- the GitHub token rotated or
-expired. The worker prints "Skipping <root>: 401" for every root. Rotate
+<li><strong>Sync worker 401</strong> – the GitHub token rotated or
+expired. The worker prints “Skipping <root>: 401” for every root. Rotate
 the token and re-run.</li>
-<li><strong>Bad sidecar floods the Forge</strong> -- the
+<li><strong>Bad sidecar floods the Forge</strong> – the
 <code>audit_submission</code> returns FAIL and the artifact does not
 become a row. No cleanup needed.</li>
-<li><strong>Database migration</strong> -- the schema is currently
+<li><strong>Database migration</strong> – the schema is currently
 managed by <code>db.create_all()</code> in dev. For production, switch
 to <code>flask --app quillin-hub/app db upgrade</code> with a real
 migrations directory (deferred to the next cut).</li>
 </ul>
 <h2 id="rollback">Rollback</h2>
-<p>There is no in-place schema migration framework yet, so "rollback" is
+<p>There is no in-place schema migration framework yet, so “rollback” is
 a redeploy against the previous commit. The storefront is
 forward-compatible: an artifact row in the DB renders even if its
 backing code path is missing. The Forge is the only place where runtime
 changes can break submissions, and a Forge regression is surfaced
 immediately by the smoke test.</p>
+</main>
 </body>
 </html>

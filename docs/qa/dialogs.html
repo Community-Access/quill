@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>dialogs</title>
+  <title>QUILL dialog regression checklist</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-dialog-regression-checklist">QUILL dialog regression
 checklist</h1>
 <p>This is the master manual regression checklist for every user-facing
@@ -193,8 +213,8 @@ build.</li>
 issue next to it.</li>
 <li>Keep this file up to date: whenever a dialog is added, removed, or
 rebound, update the matching row in the same change. See the contributor
-rule in <code>.github/copilot-instructions.md</code> ("Keep dialogs.md
-current").</li>
+rule in <code>.github/copilot-instructions.md</code> (“Keep dialogs.md
+current”).</li>
 </ul>
 <p>This manual checklist is the human companion to the machine-enforced
 dialog registry. The authoritative, source-of-truth inventory of every
@@ -206,9 +226,9 @@ banned-pattern gate and
 any dialog is unregistered, unclassified, or on a bespoke surface.
 Regenerate the snapshot with
 <code>python -m quill.tools.dialog_inventory --write</code> whenever you
-add, move, or remove a dialog. See "Dialog Excellence Mandates" in the
+add, move, or remove a dialog. See “Dialog Excellence Mandates” in the
 copilot instructions.</p>
-<p>What "passes" means for every dialog (the A11Y-4 contract):</p>
+<p>What “passes” means for every dialog (the A11Y-4 contract):</p>
 <ol type="1">
 <li>It opens from the listed command or menu path.</li>
 <li>Tab and Shift+Tab reach every control in a sensible order.</li>
@@ -226,13 +246,13 @@ cancels.</li>
 screen-reader announcement capture, SR detection, and announcement
 grammar. Run with <code>pytest tests/accessibility/ -q</code>.</li>
 <li><strong>Manual QA procedure</strong> —
-<code>docs/QUILL-PRD.md</code> §6 ("Dialog estate pass") describes the
+<code>docs/QUILL-PRD.md</code> §6 (“Dialog estate pass”) describes the
 full human-executed pass against this checklist, including the SR
 coverage matrix (NVDA full, JAWS spot, Narrator sanity) and the A11Y-4
 sign-off criteria.</li>
 </ul>
-<p>Legend: "QUILL key" is the prefix chord, default
-<code>Ctrl+Shift+Grave</code> (backtick). "via menu" means there is no
+<p>Legend: “QUILL key” is the prefix chord, default
+<code>Ctrl+Shift+Grave</code> (backtick). “via menu” means there is no
 default keybinding; reach it through the named menu or the command
 palette (<code>Ctrl+Shift+P</code>).</p>
 <h2 id="a-file-open-save-and-session">A. File: open, save, and
@@ -246,8 +266,8 @@ session</h2>
 <code>Ctrl+Shift+S</code></label></li>
 <li><label><input type="checkbox" />Reload in matching view (after Save
 As changes the format): native Yes/No prompt, shown after
-<code>Ctrl+Shift+S</code> when <code>save_as_surface_sync</code> is "Ask
-each time"</label></li>
+<code>Ctrl+Shift+S</code> when <code>save_as_surface_sync</code> is “Ask
+each time”</label></li>
 <li><label><input type="checkbox" />Page Setup: via File
 menu</label></li>
 <li><label><input type="checkbox" />Print:
@@ -258,7 +278,7 @@ menu</label></li>
 menu</label></li>
 <li><label><input type="checkbox" />Open from URL: via File
 menu</label></li>
-<li><label><input type="checkbox" />Open from Remote...: QUILL key, then
+<li><label><input type="checkbox" />Open from Remote…: QUILL key, then
 <code>Shift+O</code> (issues #154, #155, #156, #157)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Site list (saved FTP, SFTP, WebDAV,
@@ -268,7 +288,7 @@ buttons</label></li>
 <li><label><input type="checkbox" />Open button enabled only when a file
 is selected</label></li>
 </ul></li>
-<li><label><input type="checkbox" />Save to Remote...: QUILL key, then
+<li><label><input type="checkbox" />Save to Remote…: QUILL key, then
 <code>W</code> (issues #154, #155, #156, #157)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Site list and remote directory
@@ -276,9 +296,9 @@ browser</label></li>
 <li><label><input type="checkbox" />Save button enabled only when a
 target file is selected</label></li>
 </ul></li>
-<li><label><input type="checkbox" />Save Copy to Remote...: via File
+<li><label><input type="checkbox" />Save Copy to Remote…: via File
 menu</label></li>
-<li><label><input type="checkbox" />Manage Remote Sites...: QUILL key,
+<li><label><input type="checkbox" />Manage Remote Sites…: QUILL key,
 then <code>Shift+M</code> (issues #154, #155, #156, #157)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Add / Edit / Delete saved
@@ -296,7 +316,7 @@ menu</label></li>
 <h3 id="a1-edit-over-ssh-issue-139">A.1. Edit over SSH (issue #139)</h3>
 <ul class="task-list">
 <li><label><input type="checkbox" />SSH Quick Connect: File &gt; Open
-over SSH &gt; Quick Connect... (no default key; command palette
+over SSH &gt; Quick Connect… (no default key; command palette
 <code>Ctrl+Shift+P</code>)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Host / port / username /
@@ -306,7 +326,7 @@ button and a tooltip explaining supported formats (OpenSSH, PEM, PuTTY
 .ppk)</label></li>
 </ul></li>
 <li><label><input type="checkbox" />SSH Site Manager: File &gt; Open
-over SSH &gt; Site Manager... (no default key; command palette)</label>
+over SSH &gt; Site Manager… (no default key; command palette)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Saved-sites list with New / Edit /
 Delete / Connect / Close</label></li>
@@ -343,7 +363,7 @@ within Settings)</label></li>
 <li><label><input type="checkbox" />Import profile from
 <code>.qpf</code> (button within Settings)</label></li>
 <li><label><input type="checkbox" />Customize Menus (Menu Editor, three
-tabs): Tools &gt; Customize &gt; Customize Menus...
+tabs): Tools &gt; Customize &gt; Customize Menus…
 (<code>app.menu_editor</code>)</label>
 <ul class="task-list">
 <li><label><input type="checkbox" />Top-Level Menus tab: reorder,
@@ -353,7 +373,7 @@ reorder, rename, show/hide its items</label></li>
 <li><label><input type="checkbox" />Context Menu tab: reorder, rename,
 show/hide context menu items</label></li>
 <li><label><input type="checkbox" />Rename Menu/Item (text entry,
-nested): Rename... button within any tab</label></li>
+nested): Rename… button within any tab</label></li>
 </ul></li>
 <li><label><input type="checkbox" />GLOW Accessibility settings
 (accessible web form): Preferences (<code>Ctrl+,</code>) &gt; GLOW
@@ -465,16 +485,16 @@ disabled (SEC-8 <code>core.third_party_plugins</code> is locked off for
 read-only.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Quillins Manager (list, details,
-Enable/Disable/Reload/Remove): Tools &gt; Quillins &gt; Manage
-Quillins... (<code>tools.quillins_manager</code>)</label></li>
+Enable/Disable/Reload/Remove): Tools &gt; Quillins &gt; Manage Quillins…
+(<code>tools.quillins_manager</code>)</label></li>
 </ul>
 <h2 id="k-tools-keyboard">K. Tools: keyboard</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Keymap Editor: via Tools
 menu</label></li>
 <li><label><input type="checkbox" />Edit Keybinding (text entry, nested
-in Keymap Editor): Edit Keybinding... button or double-click within
-Keymap Editor</label></li>
+in Keymap Editor): Edit Keybinding… button or double-click within Keymap
+Editor</label></li>
 <li><label><input type="checkbox" />Export Keymap: via Tools
 menu</label></li>
 <li><label><input type="checkbox" />Import Keymap: via Tools
@@ -486,12 +506,12 @@ behavior</h2>
 <li><label><input type="checkbox" />Status Bar Layout: via Tools
 menu</label></li>
 <li><label><input type="checkbox" />Export and Back Up (share/backup
-export): Tools &gt; Customize &gt; Export and Back Up... (via
+export): Tools &gt; Customize &gt; Export and Back Up… (via
 menu)</label></li>
 <li><label><input type="checkbox" />Save export (file picker, nested in
 Export and Back Up): Save button within Export and Back Up</label></li>
 <li><label><input type="checkbox" />Import or Restore (share/backup
-import): Tools &gt; Customize &gt; Import or Restore... (via
+import): Tools &gt; Customize &gt; Import or Restore… (via
 menu)</label></li>
 <li><label><input type="checkbox" />Open profile or backup (file picker,
 nested in Import or Restore): opens before the Import or Restore
@@ -500,10 +520,10 @@ preview</label></li>
 <h2 id="m-tools-watch-folder">M. Tools: watch folder</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Watch Folder Profiles: Tools &gt;
-Dictation and Watch Folder &gt; Watch Folder Profiles...
+Dictation and Watch Folder &gt; Watch Folder Profiles…
 (<code>tools.watch_folder_settings</code>)</label></li>
 <li><label><input type="checkbox" />Watch Queue Monitor: Tools &gt;
-Dictation and Watch Folder &gt; Watch Folder Queue...
+Dictation and Watch Folder &gt; Watch Folder Queue…
 (<code>tools.watch_folder_status</code>)</label></li>
 </ul>
 <h2 id="n-tools-notifications">N. Tools: notifications</h2>
@@ -545,13 +565,13 @@ menu</label></li>
 menu</label></li>
 <li><label><input type="checkbox" />Accessibility Tune-Up: via Tools
 &gt; AI Assistant (Tools &gt; AI Assistant &gt; Accessibility
-Tune-Up...)</label></li>
+Tune-Up…)</label></li>
 <li><label><input type="checkbox" />AI Hub: via Tools menu</label></li>
 <li><label><input type="checkbox" />Set Up GitHub Copilot: via AI menu
-(AI &gt; Set Up GitHub Copilot...), or by choosing GitHub Copilot in the
+(AI &gt; Set Up GitHub Copilot…), or by choosing GitHub Copilot in the
 AI engine switcher when its SDK is not installed</label></li>
 <li><label><input type="checkbox" />Validate Agents: via AI menu (AI
-&gt; Validate Agents...). Lints built-in agents by default; Choose
+&gt; Validate Agents…). Lints built-in agents by default; Choose
 Folder/File to validate your own</label></li>
 </ul>
 <h2 id="r-tools-bits-whisperer-speech">R. Tools: BITS Whisperer
@@ -577,16 +597,16 @@ menu</label></li>
 <h2 id="r2-publishing">R2. Publishing</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Publishing Connections: File &gt;
-Publish &gt; Publishing Connections...</label></li>
+Publish &gt; Publishing Connections…</label></li>
 <li><label><input type="checkbox" />Verify Current Publishing
 Connection: File &gt; Publish &gt; Verify Current Publishing
 Connection</label></li>
 <li><label><input type="checkbox" />Browse Published Content: File &gt;
-Publish &gt; Browse Published Content...</label></li>
+Publish &gt; Browse Published Content…</label></li>
 <li><label><input type="checkbox" />Edit Publishing Connection: from
 Publishing Connections</label></li>
 <li><label><input type="checkbox" />Schedule Publish: File &gt; Publish
-&gt; Schedule Publish...</label></li>
+&gt; Schedule Publish…</label></li>
 </ul>
 <h2 id="s-help-features-and-profile">S. Help: features and profile</h2>
 <ul class="task-list">
@@ -596,8 +616,8 @@ Publishing Connections</label></li>
 Help menu</label></li>
 <li><label><input type="checkbox" />Manage Individual Features: via Help
 menu (Help &gt; Feature Profiles &gt; Manage Individual
-Features...)</label></li>
-<li><label><input type="checkbox" />Why Don't I See a Feature?: via Help
+Features…)</label></li>
+<li><label><input type="checkbox" />Why Don’t I See a Feature?: via Help
 menu</label></li>
 <li><label><input type="checkbox" />Profiles and Features: via Help
 menu</label></li>
@@ -679,12 +699,12 @@ Tools)</label></li>
 <li><label><input type="checkbox" />Update downloaded (from Check for
 Updates, after a successful download)</label></li>
 <li><label><input type="checkbox" />Remove Quillin confirm (from
-Quillins Manager, Remove... button)</label></li>
+Quillins Manager, Remove… button)</label></li>
 <li><label><input type="checkbox" />Quillin permission request (from
 running a third-party Quillin that requests a consent-gated capability:
 fs.read, fs.write, or net)</label></li>
 <li><label><input type="checkbox" />Site editor sub-dialog (from Manage
-Remote Sites, New site... or Edit site... button)</label></li>
+Remote Sites, New site… or Edit site… button)</label></li>
 </ul>
 <h2 id="w-power-tools-and-recirculated-editor-conveniences">W. Power
 Tools and recirculated editor conveniences</h2>
@@ -740,10 +760,10 @@ Delete buttons): <code>hardened_custom</code> (wires
 Snapshots</label></li>
 <li><label><input type="checkbox" />Go to Entry in Notebook (tree
 navigator — <code>_show_tree_navigator</code>): Navigate &gt; Notebook
-&gt; Go to Entry...</label></li>
+&gt; Go to Entry…</label></li>
 <li><label><input type="checkbox" />Go to Heading in Notebook (tree
 navigator — <code>_show_tree_navigator</code>): Navigate &gt; Notebook
-&gt; Go to Heading...</label></li>
+&gt; Go to Heading…</label></li>
 </ul>
 <h2 id="y-startup-only-dialogs">Y. Startup-only dialogs</h2>
 <p>These appear only during a specific startup condition. Test by
@@ -756,12 +776,12 @@ a file from an untrusted folder)</label></li>
 <li><label><input type="checkbox" />Safe Mode banner / status-bar
 indicator (when <code>QUILL_SAFE_MODE=1</code> is set on the
 environment, or <code>quill --safe-mode</code> is passed): the status
-bar shows "Safe Mode — plugins, AI, and network disabled" and a one-shot
+bar shows “Safe Mode — plugins, AI, and network disabled” and a one-shot
 announcement fires on first show. Verified manually by setting the env
 var before launch and confirming the AI / assistant surfaces and
 watch-folder network calls short-circuit per
 <code>quill/stability/safe_mode.py</code>. Cross-reference: the
-pre-release review's N-10 / H-SAFE-1 fixes.</label></li>
+pre-release review’s N-10 / H-SAFE-1 fixes.</label></li>
 </ul>
 <h2 id="maintenance-note">Maintenance note</h2>
 <p>This checklist was generated from a full source scrub of
@@ -788,5 +808,6 @@ Center all short-circuit. Manual verification: launch with
 <code>--safe-mode</code> (CLI flag); confirm the status-bar banner and
 the AI/assistant menu items are disabled.</li>
 </ul>
+</main>
 </body>
 </html>

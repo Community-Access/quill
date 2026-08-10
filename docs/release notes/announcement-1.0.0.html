@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>announcement-1.0.0</title>
+  <title>QUILL 1.0.0 is here</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-100-is-here">QUILL 1.0.0 is here</h1>
 <h2
 id="a-writing-suite-built-by-and-for-the-people-who-work-by-ear-and-by-touch">A
@@ -204,7 +224,7 @@ four channels at once: speech, braille, sound, and the status line.
 Speech reaches your screen reader through a dedicated bridge for each
 one, so announcements arrive in your own voice at your own rate instead
 of through a second, competing synthesizer. JAWS, NVDA, and Narrator on
-Windows; VoiceOver on macOS. When any screen reader is running, QUILL's
+Windows; VoiceOver on macOS. When any screen reader is running, QUILL’s
 own built-in voice stays silent so it can never talk over you. Sound
 carries its own share of the load, because a sound never talks over a
 screen reader: starting a selection opens with a rising two-note gate
@@ -221,7 +241,7 @@ interface</h2>
 ways: from the menu bar, from the Command Palette, and from a shortcut
 you assign. Nothing hides in a toolbar with no menu equivalent. The
 palette matches multi-word queries in any order, finds a command by its
-shortcut, and speaks each result's shortcut alongside its name, so it
+shortcut, and speaks each result’s shortcut alongside its name, so it
 quietly teaches you the faster route while it runs the command for you.
 The status bar is a control panel too, not a decoration: arrow to any
 cell and press Enter to act on it.</p>
@@ -241,8 +261,8 @@ default, because braille readers tested them and reported back.</p>
 know which code it uses, and picking wrong produces garbage with no
 explanation. <strong>Back-Translate to Text (Auto-Detect Code)</strong>
 removes that burden: QUILL scores the file against every English braille
-code it knows and announces the winner, "Detected UEB Grade 2
-(contracted)." You learn what your file is instead of being quizzed
+code it knows and announces the winner, “Detected UEB Grade 2
+(contracted).” You learn what your file is instead of being quizzed
 about it. Around it sit print-page navigation, page-by-page proofing
 status, layout validation, and an exportable report.</p>
 <h2 id="every-format-and-it-speaks-the-language-of-each-one">Every
@@ -276,17 +296,17 @@ bring-your-own-key cloud voices. Audiobook and Batch Speech exports a
 whole folder to chaptered audio with real MP3 chapter markers and ACX
 loudness normalization.</p>
 <p>Dictation runs <strong>on your own machine</strong>, on whisper.cpp,
-Faster Whisper, Vosk, or NVIDIA's Nemotron, with a model manager that
+Faster Whisper, Vosk, or NVIDIA’s Nemotron, with a model manager that
 checks your actual RAM and GPU before recommending one. A safety net
 saves your audio before transcription runs, so a session is never lost
 to a failed transcription.</p>
 <h2 id="ai-entirely-on-your-terms">AI, entirely on your terms</h2>
-<p>QUILL's AI is optional, opt-in, and silent until invited. If you
+<p>QUILL’s AI is optional, opt-in, and silent until invited. If you
 never set it up, no menu nags you. If you do, there is a genuinely free
 path and the wizard shows it rather than hiding it behind the paid
 options: run Ollama locally and everything happens on your own machine
 at no cost, or pick OpenRouter, where the wizard preselects a free model
-and labels every free model as "Free." QUILL bundles no keys and takes
+and labels every free model as “Free.” QUILL bundles no keys and takes
 no cut.</p>
 <p>The discipline underneath every AI feature is that <strong>the AI
 proposes, you dispose.</strong> Every suggested edit stops at a review
@@ -317,7 +337,7 @@ Your answer picks a feature profile, from Just a Text Editor through
 Writer, Braille Professional, and AI-Powered Author to Full QUILL, with
 a plain-English preview of what each one turns on before you commit. No
 profile is a trap: switch at any time, toggle any single feature, and
-ask <strong>Help &gt; Why Don't I See a Feature?</strong> when something
+ask <strong>Help &gt; Why Don’t I See a Feature?</strong> when something
 you read about here is not on your menus. Install it with the Windows
 installer, unpack the portable ZIP onto a USB stick, or take the Offline
 Edition, which carries every optional component inside it for an
@@ -326,17 +346,18 @@ signed.</p>
 <h2 id="built-with-you">Built with you</h2>
 <p>QUILL is free, and it is built by and with the community that uses
 it. The ranked spelling workflow came from a longtime Kurzweil 1000
-user's side-by-side comparison. The braille cell-alignment correction
+user’s side-by-side comparison. The braille cell-alignment correction
 became the default because braille readers tested it and reported back.
 The Offline Edition became genuinely offline because someone checked the
 promise instead of assuming the label was enough.</p>
 <p>If something surprises you, beautifully or badly, tell us.
 <strong>Help &gt; Report a Bug</strong> is the direct line, and a report
-that says "this works perfectly" is worth as much as one that says it
+that says “this works perfectly” is worth as much as one that says it
 does not. The complete QUILL 1.0.0 release notes describe the editor
 feature by feature, and also cover the companion apps that ship
 alongside it.</p>
 <p><strong>QUILL 1.0.0. One editor. Every format. Built with
 you.</strong></p>
+</main>
 </body>
 </html>

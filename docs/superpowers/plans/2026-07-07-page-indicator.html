@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-07-page-indicator</title>
+  <title>Page Indicator Implementation Plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -235,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="page-indicator-implementation-plan">Page Indicator
 Implementation Plan</h1>
 <blockquote>
@@ -285,18 +309,23 @@ Task 7 to match.</li>
 new headline features” line gets a carve-out, per Jeff).</li>
 </ul>
 <hr />
-<h3 id="task-1-estimate-exact-page-count-core-functions">Task 1:
+<h3 id="task-1-estimate--exact-page-count-core-functions">Task 1:
 Estimate + exact page-count core functions</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/navigation.py</code> - Test:
-<code>tests/unit/core/test_navigation.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/navigation.py</code></li>
+<li>Test: <code>tests/unit/core/test_navigation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
 <code>estimate_page_count(text: str, words_per_page: int) -&gt; int</code>,
 <code>estimate_page_for_position(text: str, position: int, words_per_page: int) -&gt; int</code>,
 <code>estimate_page_start_for_number(text: str, page_number: int, words_per_page: int) -&gt; int | None</code>
 — all pure, no wx, no I/O. <code>words_per_page</code> is always the
 caller-supplied setting value (no default baked in here — the default of
-300 lives in Task 2’s setting).</p>
+300 lives in Task 2’s setting).</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -446,18 +475,24 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <hr />
 <h3 id="task-2-page_estimate_words_per_page-setting">Task 2:
 <code>page_estimate_words_per_page</code> setting</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/settings.py:469</code> (field),
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/settings.py:469</code> (field),
 <code>quill/core/settings.py:1070</code> (parsing),
-<code>quill/core/settings.py:1438</code> (constructor) - Modify:
-<code>quill/core/settings_specs.py:1827</code> (SettingSpec) - Test:
-<code>tests/unit/core/test_settings.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: nothing new. - Produces:
-<code>Settings.page_estimate_words_per_page: int</code> (default
-<code>300</code>, clamped <code>[150, 600]</code> on load), a searchable
-<code>SettingSpec</code> named
+<code>quill/core/settings.py:1438</code> (constructor)</li>
+<li>Modify: <code>quill/core/settings_specs.py:1827</code>
+(SettingSpec)</li>
+<li>Test: <code>tests/unit/core/test_settings.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new.</li>
+<li>Produces: <code>Settings.page_estimate_words_per_page: int</code>
+(default <code>300</code>, clamped <code>[150, 600]</code> on load), a
+searchable <code>SettingSpec</code> named
 <code>"page_estimate_words_per_page"</code> in the
-<code>"navigation"</code> group.</p>
+<code>"navigation"</code> group.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -576,21 +611,27 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 <hr />
 <h3 id="task-3-register-the-page-status-bar-item">Task 3: Register the
 “page” status bar item</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/settings_normalizers.py:10-61</code>
-(<code>STATUS_BAR_ITEMS</code> tuple) - Modify:
-<code>quill/ui/main_frame.py:792-891</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/settings_normalizers.py:10-61</code>
+(<code>STATUS_BAR_ITEMS</code> tuple)</li>
+<li>Modify: <code>quill/ui/main_frame.py:792-891</code>
 (<code>_STATUS_BAR_LABELS</code>, <code>_STATUS_BAR_WIDTHS</code>,
-<code>_STATUS_BAR_FEATURES</code>) - Test:
-<code>tests/unit/core/test_settings.py</code>,
-<code>tests/unit/ui/test_main_frame_statusbar_context.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: nothing new. - Produces:
-<code>"page"</code> is a member of <code>STATUS_BAR_ITEMS</code>,
-positioned right after <code>"line_column"</code>; <code>"page"</code>
-is <strong>not</strong> in <code>_default_status_bar_hidden()</code>;
+<code>_STATUS_BAR_FEATURES</code>)</li>
+<li>Test: <code>tests/unit/core/test_settings.py</code>,
+<code>tests/unit/ui/test_main_frame_statusbar_context.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new.</li>
+<li>Produces: <code>"page"</code> is a member of
+<code>STATUS_BAR_ITEMS</code>, positioned right after
+<code>"line_column"</code>; <code>"page"</code> is <strong>not</strong>
+in <code>_default_status_bar_hidden()</code>;
 <code>MainFrame._STATUS_BAR_LABELS["page"] == "Page"</code>,
 <code>_STATUS_BAR_WIDTHS["page"] == 220</code>,
-<code>_STATUS_BAR_FEATURES["page"] == "core.analysis"</code>.</p>
+<code>_STATUS_BAR_FEATURES["page"] == "core.analysis"</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -689,22 +730,28 @@ of existing entries in that file, as part of this commit.)</em></p>
 id="task-4-status-bar-cell-rendering-help-text-activation-and-brf-suppression">Task
 4: Status bar cell rendering, help text, activation, and BRF
 suppression</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame_statusbar.py</code> - Test:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame_statusbar.py</code></li>
+<li>Test:
 <code>tests/unit/ui/test_main_frame_statusbar_context.py</code>,
-<code>tests/unit/ui/test_main_frame_navigation.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>estimate_page_count</code>,
+<code>tests/unit/ui/test_main_frame_navigation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>estimate_page_count</code>,
 <code>estimate_page_for_position</code> from
 <code>quill.core.navigation</code> (Task 1); <code>page_starts</code>
 from <code>quill.core.navigation</code> (pre-existing);
-<code>settings.page_estimate_words_per_page</code> (Task 2). - Produces:
+<code>settings.page_estimate_words_per_page</code> (Task 2).</li>
+<li>Produces:
 <code>StatusBarMixin._statusbar_page_text() -&gt; str</code>; the
 <code>"page"</code> branch in <code>_statusbar_text_for_item</code>;
 <code>"page"</code> entry in the help-text dict;
 <code>"page": self.go_to_page</code> in the activation actions dict;
 <code>"page"</code> removed from <code>_statusbar_items()</code>’s
-visible list whenever the <code>"braille"</code> cell is active.</p>
+visible list whenever the <code>"braille"</code> cell is active.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -908,19 +955,23 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href=
 <hr />
 <h3 id="task-5-track-aware-go-to-page-command">Task 5: Track-aware Go To
 Page command</h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/ui/main_frame.py:15176-15209</code>
-(<code>go_to_page</code>) - Test:
-<code>tests/unit/ui/test_main_frame_navigation.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>estimate_page_count</code>,
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame.py:15176-15209</code>
+(<code>go_to_page</code>)</li>
+<li>Test: <code>tests/unit/ui/test_main_frame_navigation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>estimate_page_count</code>,
 <code>estimate_page_start_for_number</code> from
 <code>quill.core.navigation</code>; <code>page_starts</code>,
 <code>page_start_for_number</code> (already imported in
-<code>main_frame.py</code>, lines 197-198). - Produces:
-<code>MainFrame.go_to_page()</code> now prompts and jumps using the
-estimate when the document has no real page breaks, and says so in the
-prompt.</p>
+<code>main_frame.py</code>, lines 197-198).</li>
+<li>Produces: <code>MainFrame.go_to_page()</code> now prompts and jumps
+using the estimate when the document has no real page breaks, and says
+so in the prompt.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -1108,15 +1159,21 @@ committing, as in Task 3’s note.)</em></p>
 <hr />
 <h3 id="task-6-pdf-import-preserves-real-page-boundaries">Task 6: PDF
 import preserves real page boundaries</h3>
-<p><strong>Files:</strong> - Modify: <code>quill/io/pdf.py:75-98</code>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/io/pdf.py:75-98</code>
 (<code>_extract_with_pdfplumber</code>,
-<code>_extract_with_pypdf</code>) - Test:
-<code>tests/unit/io/test_pdf.py</code></p>
-<p><strong>Interfaces:</strong> - Consumes: nothing new. - Produces:
-<code>extract_pdf_text(path).text</code> now joins pages with
-<code>"\f"</code> instead of <code>"\n\n"</code>, so
+<code>_extract_with_pypdf</code>)</li>
+<li>Test: <code>tests/unit/io/test_pdf.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new.</li>
+<li>Produces: <code>extract_pdf_text(path).text</code> now joins pages
+with <code>"\f"</code> instead of <code>"\n\n"</code>, so
 <code>quill.core.navigation.page_starts()</code> on the resulting
-<code>Document.text</code> reports one boundary per real PDF page.</p>
+<code>Document.text</code> reports one boundary per real PDF page.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -1233,16 +1290,19 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href=
 <span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(pdf): preserve real page boundaries as form feeds (#872)&quot;</span></span></code></pre></div>
 <hr />
 <h3
-id="task-7-documentation-spec-amendment-prd-user-guide-changelog-release-notes">Task
+id="task-7-documentation--spec-amendment-prd-user-guide-changelog-release-notes">Task
 7: Documentation — spec amendment, PRD, user guide, CHANGELOG, release
 notes</h3>
-<p><strong>Files:</strong> - Modify:
-<code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code>
-- Modify:
-<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>
-- Modify: <code>docs/user guide/userguide.md</code> - Modify:
-<code>CHANGELOG.md</code> - Modify:
-<code>docs/release notes/release0.9.0-beta2.md</code></p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify:
+<code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code></li>
+<li>Modify:
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></li>
+<li>Modify: <code>docs/user guide/userguide.md</code></li>
+<li>Modify: <code>CHANGELOG.md</code></li>
+<li>Modify: <code>docs/release notes/release0.9.0-beta2.md</code></li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Amend the spec’s
 Track B section</strong></label></li>
@@ -1466,5 +1526,6 @@ close #872 once merged</strong></label></li>
 <p>Once CI is green and the PR is merged to <code>main</code>:</p>
 <div class="sourceCode" id="cb52"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> issue close 872 <span class="at">--comment</span> <span class="st">&quot;Shipped: an always-on Page status bar cell (exact for PDF, clearly-labeled estimate for everything else) plus a track-aware Go To Page. Documented in the PRD, user guide, CHANGELOG, and 0.9.0 Beta 2 release notes.&quot;</span></span></code></pre></div>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>SIGNOFF-radio</title>
+  <title>QUILL 1.0.0 Sign-off — Quill Radio (public app)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-100-sign-off--quill-radio-public-app">QUILL 1.0.0 Sign-off
 — Quill Radio (public app)</h1>
 <p><strong>29 commands</strong> + <strong>36 dialog surfaces.</strong>
@@ -181,16 +205,16 @@ Legend: W/S/A as in the master.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.add_custom_station</code> — Internet Radio: Add Custom
-Station...</label></li>
+Station…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.browse</code> — Internet Radio: Browse
-Stations...</label></li>
+Stations…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>radio.copy_whats_playing</code> — Internet Radio: Copy What's
+<code>radio.copy_whats_playing</code> — Internet Radio: Copy What’s
 Playing</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.find_streams</code> — Internet Radio: Find Streams from a
-Website...</label></li>
+Website…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.forward</code> — Internet Radio: Forward 30
 Seconds</label></li>
@@ -199,7 +223,7 @@ Seconds</label></li>
 Live</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.manage_favorites</code> — Internet Radio: Manage
-Favorites...</label></li>
+Favorites…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.mute_toggle</code> — Internet Radio: Mute/Unmute
 <code>Ctrl+Shift+Grave, 9</code></label></li>
@@ -211,25 +235,24 @@ Station</label></li>
 <code>Ctrl+Shift+Grave, N</code></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.record_station</code> — Internet Radio: Record
-Station...</label></li>
+Station…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.record_toggle</code> — Internet Radio: Record Now / Stop
 Recording <code>Ctrl+Shift+Grave, 6</code></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.recording_settings</code> — Internet Radio: Recording
-Settings...</label></li>
+Settings…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>radio.recordings</code> — Internet Radio:
-Recordings...</label></li>
+<code>radio.recordings</code> — Internet Radio: Recordings…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.rewind</code> — Internet Radio: Rewind 30
 Seconds</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.schedule_recording</code> — Internet Radio: Schedule
-Recording...</label></li>
+Recording…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.sound_enhancements</code> — Internet Radio: Sound
-Enhancements...</label></li>
+Enhancements…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.stop</code> — Internet Radio: Stop
 <code>Ctrl+Shift+Grave, 0</code></label></li>
@@ -249,18 +272,18 @@ Down</label></li>
 <code>radio.volume_up</code> — Internet Radio: Volume Up</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>radio.wake_timer</code> — Internet Radio: Wake-Up
-Timer...</label></li>
+Timer…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>radio.whats_playing</code> — Internet Radio: What's
+<code>radio.whats_playing</code> — Internet Radio: What’s
 Playing?</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>radio.whats_playing_details</code> — Internet Radio: What's
-Playing - Review and Copy...</label></li>
+<code>radio.whats_playing_details</code> — Internet Radio: What’s
+Playing - Review and Copy…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>spotify.browse</code> — Spotify: Browse Spotify Podcasts...
+<code>spotify.browse</code> — Spotify: Browse Spotify Podcasts…
 <strong>[GATED future.spotify]</strong></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
-<code>spotify.connect</code> — Spotify: Connect to Spotify...
+<code>spotify.connect</code> — Spotify: Connect to Spotify…
 <strong>[GATED future.spotify]</strong></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>view.toggle_window_to_tray</code> — Show/Hide QUILL Cast to the
@@ -399,5 +422,6 @@ QUILL/Weather.</label></li>
 across restart; media keys / tray hotkey
 (Ctrl+Alt+Shift+R).</label></li>
 </ul>
+</main>
 </body>
 </html>

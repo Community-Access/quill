@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>Media Player -- not part of public QUILL 1.0</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,13 +173,34 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="media-player----not-part-of-public-quill-10">Media Player -- not
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="media-player--not-part-of-public-quill-10">Media Player – not
 part of public QUILL 1.0</h1>
 <blockquote>
 <p><strong>Not part of the public 1.0 product.</strong> <strong>Tools
-&gt; Media &gt; Media Player...</strong>
+&gt; Media &gt; Media Player…</strong>
 (<code>app.open_media_player</code>) is gated for QUILL 1.0.0:
 <code>main_frame_menu.py</code> only appends the item when
 <code>is_app_released("player")</code> is true, and <code>player</code>
@@ -188,7 +208,7 @@ is not in <code>RELEASED_APPS</code>
 (<code>quill/core/app_launcher.py</code>). The command is absent from
 the menu bar and from the command palette in a public build.</p>
 <p>The Media Player never had a chapter of its own in the user guide or
-a section of its own in the PRD -- it appeared only as passing mentions
+a section of its own in the PRD – it appeared only as passing mentions
 inside otherwise public prose about dictation and voice interaction.
 Those sentences were rewritten to drop the mention during the 1.0.0
 documentation consolidation, and the removed material is preserved here
@@ -206,25 +226,25 @@ to promote back.</p>
 <tbody>
 <tr>
 <td><code>docs/user guide/userguide.md</code></td>
-<td>"Locked Dictation (Ctrl+F9)" -- "Teach dictation your words"
+<td>“Locked Dictation (Ctrl+F9)” – “Teach dictation your words”
 bullet</td>
 </tr>
 <tr>
 <td><code>docs/user guide/voice-interaction.md</code></td>
-<td>"Teaching dictation your words" -- where the profile applies</td>
+<td>“Teaching dictation your words” – where the profile applies</td>
 </tr>
 <tr>
 <td><code>docs/user guide/voice-interaction.md</code></td>
-<td>"Choosing a speech engine and model" -- which engine the player
+<td>“Choosing a speech engine and model” – which engine the player
 uses</td>
 </tr>
 <tr>
 <td><code>docs/user guide/voice-interaction.md</code></td>
-<td>"Roadmap" -- the shipped hands-free-voice item</td>
+<td>“Roadmap” – the shipped hands-free-voice item</td>
 </tr>
 <tr>
 <td><code>QUILL-PRD.md</code></td>
-<td>(nothing -- the PRD has no Media Player section)</td>
+<td>(nothing – the PRD has no Media Player section)</td>
 </tr>
 </tbody>
 </table>
@@ -232,25 +252,25 @@ uses</td>
 <h1 id="relocated-material">Relocated material</h1>
 <h2 id="the-dictation-profile-applies-to-the-media-player-too">The
 dictation profile applies to the Media Player too</h2>
-<p><em>From the user guide's "Teach dictation your words" bullet, and
-from <code>voice-interaction.md</code>'s "Teaching dictation your words"
+<p><em>From the user guide’s “Teach dictation your words” bullet, and
+from <code>voice-interaction.md</code>’s “Teaching dictation your words”
 section. Both now list only Locked Dictation and the Dictate (Offline)
 toggle.</em></p>
-<p>The <code>dictation.md</code> profile in your QUILL data folder --
+<p>The <code>dictation.md</code> profile in your QUILL data folder –
 your own vocabulary, spoken-to-written replacements, and custom spoken
-command phrases -- applies everywhere dictation transcribes:
+command phrases – applies everywhere dictation transcribes:
 <strong>Locked Dictation</strong>, the <strong>Dictate
-(Offline)</strong> toggle, and the <strong>Media Player's</strong>
+(Offline)</strong> toggle, and the <strong>Media Player’s</strong>
 hands-free voice commands.</p>
-<h2 id="the-media-players-speech-engine">The Media Player's speech
+<h2 id="the-media-players-speech-engine">The Media Player’s speech
 engine</h2>
-<p><em>From <code>voice-interaction.md</code>, "Choosing a speech engine
-and model". The public text now ends with the list of engines.</em></p>
+<p><em>From <code>voice-interaction.md</code>, “Choosing a speech engine
+and model”. The public text now ends with the list of engines.</em></p>
 <p>The engine you set as default in QUILL is the one the Media Player
 uses for hands-free voice too. For short commands the player
 automatically prefers a small, fast model.</p>
 <h2 id="roadmap-entry">Roadmap entry</h2>
-<p><em>From <code>voice-interaction.md</code>, "Roadmap". The public
+<p><em>From <code>voice-interaction.md</code>, “Roadmap”. The public
 list of shipped polish refinements no longer names the player.</em></p>
 <p>Hands-free voice commands in the <strong>Media Player</strong>
 shipped as part of the voice interaction polish refinements, alongside
@@ -262,7 +282,7 @@ dictation profile (<code>dictation.md</code>).</p>
 <li>Command id: <code>app.open_media_player</code>
 (<code>quill/ui/main_frame_media_player.py</code>).</li>
 <li>Menu path when released: <strong>Tools &gt; Media &gt; Media
-Player...</strong> (<code>quill/ui/main_frame_menu.py</code>, guarded by
+Player…</strong> (<code>quill/ui/main_frame_menu.py</code>, guarded by
 <code>is_app_released("player")</code>).</li>
 <li>Default key binding: none (<code>quill/core/keymap.py</code> maps it
 to the empty string).</li>
@@ -271,5 +291,6 @@ from every public surface
 (<code>docs/planning/signoff/QUILL-1.0.0-SIGNOFF.md</code>, section
 G).</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>quill-macos-signing-notarization-runbook</title>
+  <title>QUILL macOS DMG Signing and Notarization Runbook</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-macos-dmg-signing-and-notarization-runbook">QUILL macOS
 DMG Signing and Notarization Runbook</h1>
 <p><strong>Last updated:</strong> 2026-07-02<br />
@@ -259,7 +279,7 @@ Bishop<br />
 <p>QUILL can and should produce a working macOS DMG through GitHub
 Actions. GitHub Actions can automate the build, signing, notarization,
 stapling, verification, and artifact upload steps, but GitHub does not
-provide Apple trust. Apple trust comes from Jeff Bishop's active Apple
+provide Apple trust. Apple trust comes from Jeff Bishop’s active Apple
 Developer Program membership, a Developer ID Application certificate,
 and Apple notarization credentials.</p>
 <p>For the first QUILL macOS beta, sign under:</p>
@@ -273,7 +293,7 @@ Distribution format: signed and notarized DMG</code></pre>
 <p>Recommended public wording:</p>
 <blockquote>
 <p>QUILL is a Community Access project. The macOS build is signed and
-notarized by Apple under Jeff Bishop's Apple Developer account.</p>
+notarized by Apple under Jeff Bishop’s Apple Developer account.</p>
 </blockquote>
 <p>For any external beta, sign and notarize. Unsigned builds should be
 limited to short-lived internal engineering use only.</p>
@@ -1008,7 +1028,7 @@ Actions workflow</h2>
 <li>Notarizes and staples.</li>
 <li>Uploads the final artifact.</li>
 </ul>
-<p>You must adapt the build commands to QUILL's actual macOS build
+<p>You must adapt the build commands to QUILL’s actual macOS build
 process.</p>
 <div class="sourceCode" id="cb35"><pre
 class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> macOS Release</span></span>
@@ -1666,5 +1686,6 @@ signing.</li>
 <p>The goal is a release process that feels almost magical to
 maintainers and completely ordinary to users: download, open, drag to
 Applications, launch QUILL, and get to work.</p>
+</main>
 </body>
 </html>

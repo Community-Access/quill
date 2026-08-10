@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>roadmap</title>
+  <title>QUILL — Plan of Record (outstanding work)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill--plan-of-record-outstanding-work">QUILL — Plan of Record
 (outstanding work)</h1>
 <blockquote>
@@ -217,8 +237,8 @@ QUILL</strong> as optional, keyboard-clear, screen-reader-first feature
 families. The consolidation itself is <strong>done</strong> — BITS
 Whisperer, GLOW, and ChapterForge (now the Audio Studio) all live in
 QUILL; the only sibling still feeding open work is
-<strong>GLOW</strong>'s extended family (§5). The discipline: take what
-clears QUILL's quality and accessibility bar, re-home it on QUILL's
+<strong>GLOW</strong>’s extended family (§5). The discipline: take what
+clears QUILL’s quality and accessibility bar, re-home it on QUILL’s
 invariants (atomic storage, the dialog contract, the announcement
 grammar, Safe Mode, the network-egress audit), and leave behind anything
 superseded or off-mission.</p>
@@ -228,7 +248,7 @@ superseded or off-mission.</p>
 id="11-ai-footprint--optimization--remaining-wiring--buildhardware-sign-off">1.1
 AI footprint &amp; optimization — remaining wiring + build/hardware
 sign-off</h3>
-<p>The measurement-first effort to make QUILL's full AI + speech feature
+<p>The measurement-first effort to make QUILL’s full AI + speech feature
 set install small, start fast, and run on a cheap CPU-only laptop. The
 durable design (principles, reliable-acquisition model,
 host/redistribution rules, size/RAM reference) lives in <a
@@ -313,16 +333,16 @@ remaining</h3>
 <p>Internet Radio shipped (PR #987), including stream recording and
 in-app scheduled recording (0.9.0 Beta 3; canonical: PRD §5.84f, user
 guide, CHANGELOG). Not being built right now, parked for later: an
-<strong>ACB Media events/meetings calendar</strong> — a read-only "ACB
-Media Events" view (or an .ics/iCal export) surfaced from the same place
+<strong>ACB Media events/meetings calendar</strong> — a read-only “ACB
+Media Events” view (or an .ics/iCal export) surfaced from the same place
 the ACB Media station category lives. Researched from
-<code>S:\code\acb_link_desktop</code>'s
+<code>S:\code\acb_link_desktop</code>’s
 <code>categories.xml</code>-family feeds served from
 <code>link.acb.org</code>; needs the exact events-feed URL confirmed
 (only <code>streams.xml</code>/<code>link.opml</code> were concretely
 verified), a new <code>network_egress_audit.py</code> entry, and parsing
 with stdlib <code>xml.etree.ElementTree</code> (matching
-<code>link_finder.py</code>). The rest of ACB Link's surface (affiliate
+<code>link_finder.py</code>). The rest of ACB Link’s surface (affiliate
 directories, publications, SIG info, voice control) is out of scope —
 this feed is the one piece directly relevant to Radio.</p>
 <hr />
@@ -377,18 +397,18 @@ speech-adjacent lock remains.</p>
 <blockquote>
 <p><strong>Docs framing.</strong> GLOW ships as an experimental opt-in
 (2026-07-02) and its preserved user-facing content has been restored
-into the user guide ("GLOW Workflows Inside QUILL"), glossary, help
+into the user guide (“GLOW Workflows Inside QUILL”), glossary, help
 topics, and PRD §5.92 — the §2.1 preservation block this file used to
 carry is gone because the real docs now own it. The <strong>BITS
-Whisperer</strong> brand is retired — earlier drafts named a "BITS
-Whisperer speech suite" / "Tools &gt; Speech &gt; Whisperer"; that is
+Whisperer</strong> brand is retired — earlier drafts named a “BITS
+Whisperer speech suite” / “Tools &gt; Speech &gt; Whisperer”; that is
 now the flat <strong>Tools &gt; Speech</strong> menu and a plain
-"private, on-device speech suite," with no brand to restore.</p>
+“private, on-device speech suite,” with no brand to restore.</p>
 </blockquote>
 <hr />
 <h2 id="3-release-gap-list-path-to-green">3. Release gap list (path to
 green)</h2>
-<p>What's left between QUILL and a <strong>green, release-ready</strong>
+<p>What’s left between QUILL and a <strong>green, release-ready</strong>
 state is now just <strong>routine validation</strong>, handled in the
 normal QA pass rather than tracked as release blockers (the same
 disposition as the closed #506 / #518 / #526):</p>
@@ -398,10 +418,10 @@ engines (Faster Whisper, Vosk) on the real installer, not just from
 source.</li>
 <li><strong>Watch Folder queue</strong> — a live repro confirming the
 by-design priming (drop a <em>new</em> matching file into a running
-profile, or enable "Process existing files").</li>
+profile, or enable “Process existing files”).</li>
 <li><strong>Save As conversion (shipped 2026-07-04)</strong> — the
 manual JAWS/NVDA spot checks for the Save As conversion / window-title /
-export-fidelity fix (the retired plan's Task 9); the step-by-step script
+export-fidelity fix (the retired plan’s Task 9); the step-by-step script
 is SAVE-001 in <a
 href="../release/screen-reader-test-plan.md"><code>docs/release/screen-reader-test-plan.md</code></a>,
 and the converter verdicts live in <a
@@ -437,8 +457,8 @@ ships.</li>
 <li><strong>Voice interaction / Hey QUILL</strong> — <strong>shipped
 0.9.0</strong> (all four phases + refinements: push-to-talk Voice
 Command, Voice Conversation Mode with sounders + VAD, always-listening
-"Hey QUILL" wake word, Ask Quill routing). Canonical docs: PRD §5776
-"Voice input", user guide "Voice Interaction". Commands stay bounded by
+“Hey QUILL” wake word, Ask Quill routing). Canonical docs: PRD §5776
+“Voice input”, user guide “Voice Interaction”. Commands stay bounded by
 the agent safe-tool allowlist. The one open follow-up is a dedicated
 low-power keyword spotter for the wake word.</li>
 <li><strong>BITS Whisperer remainder</strong> (tracker #680) — the
@@ -461,11 +481,11 @@ post-processing, RSS podcast feeds, SFTP publishing, and MusicBrainz /
 Open Library metadata lookup.</li>
 <li><strong>ElevenLabs Tier-2/3 extras</strong> — live streaming
 Read-Aloud refinements (SDK streaming, sentence prefetch, an aggressive
-<code>tts_cache</code>, a persistent "reading via ElevenLabs (cloud)"
+<code>tts_cache</code>, a persistent “reading via ElevenLabs (cloud)”
 indicator); voice management / cloning / design / server-side
 pronunciation dictionaries; and the SFX / voice-changer /
 generation-history surfaces (if ever built, as <strong>optional
-Quillins</strong>, not core). QUILL narrates with the account's existing
+Quillins</strong>, not core). QUILL narrates with the account’s existing
 voices and does <strong>not</strong> clone.</li>
 <li><strong>Native Google Docs support</strong> — read/write/round-trip
 Google Docs (Drive API, OAuth, accessible doc model); spec in <a
@@ -475,7 +495,7 @@ href="QUILL-Native-Google-Docs-Support-PRD.md"><code>QUILL-Native-Google-Docs-Su
 what stays future is the extended family: ACB Large-Print Guidelines /
 Microsoft Accessibility Checker / WCAG 2.2 AA document-audit profiles
 (#528–#534) and the WATCH-8 GLOW watch action (#566), re-homed on
-QUILL's invariants. GLOW's server/Keycloak/Office-add-in/MCP surfaces
+QUILL’s invariants. GLOW’s server/Keycloak/Office-add-in/MCP surfaces
 stay in the GLOW product (<code>s:\code\glow</code>); QUILL takes the
 authoring-time checks.</li>
 <li><strong>OCR / document-conversion depth extras</strong> — the
@@ -512,7 +532,7 @@ independent verbosity per category (nav / edit / search / system) on top
 of the global profile.</li>
 <li><strong>Markdown-aware (#427) / Code-aware (#428) verbosity</strong>
 — context-sensitive announcements when editing Markdown or source.</li>
-<li><strong>"Undo available" cues (#502)</strong> and richer
+<li><strong>“Undo available” cues (#502)</strong> and richer
 <strong>destructive-action warnings (#501)</strong> (the confirm dialog
 ships; the spoken cue is the increment).</li>
 <li><strong>Boundary announcements (#419)</strong> and
@@ -525,8 +545,8 @@ demand):</strong></p>
 <ul>
 <li><em>Settings UX:</em> searchable settings (#406), recipes (#407),
 bulk edit (#464), undo for settings (#465), change history (#466),
-export preview (#482), import-conflict wizard (#483), "try without
-applying" (#484), reset granularity (#481), explain-my-settings (#446),
+export preview (#482), import-conflict wizard (#483), “try without
+applying” (#484), reset granularity (#481), explain-my-settings (#446),
 test-my-settings (#467), recommended settings (#468), persona setup
 (#469).</li>
 <li><em>Packs:</em> community pack preview/diff (#442), trust labels
@@ -636,7 +656,7 @@ deferred backlog, roughly in value order:</p>
 <ul>
 <li><strong>Open in QUILL</strong> — open a file from a PR diff or
 commit straight into the editor.</li>
-<li><strong>Vault linking</strong> — "Link to Vault" reference notes for
+<li><strong>Vault linking</strong> — “Link to Vault” reference notes for
 issues/PRs.</li>
 <li><strong>Branch comparison</strong> — side-by-side compare of two
 branches/tags.</li>
@@ -653,5 +673,6 @@ snappiness.</li>
 <li><strong>Context sharing</strong> — let QUILL agents read the current
 view for coding tasks.</li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-editor-behaviors</title>
+  <title>Section — Editor and document behaviors (`core.editor` and the
+cross-cutting document features)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--editor-and-document-behaviors-coreeditor-and-the-cross-cutting-document-features">Section
 — Editor and document behaviors (<code>core.editor</code> and the
@@ -180,7 +205,7 @@ cross-cutting document features)</h1>
 <em>not</em> a single menu command: how typing is echoed, how the caret
 and status bar report where you are, how QUILL keeps your work safe
 (autosave, backups, crash recovery), how it reacts to what you type
-(live spell-check, abbreviation expansion), and how it reads a file's
+(live spell-check, abbreviation expansion), and how it reads a file’s
 encoding and line endings when you open it. These are the behaviors a
 release must prove work <strong>for a real person, by keyboard and by
 ear</strong> — they underpin every command in the other sections. Finish
@@ -224,7 +249,7 @@ QUILL stays out of the way — no double-speaking.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>A new empty document (<strong>Ctrl+N</strong>), focus in the editor.
-Your screen reader's typing echo set to speak characters and/or words
+Your screen reader’s typing echo set to speak characters and/or words
 (its default).</li>
 <li>Text to type:
 <strong><code>The quick brown fox jumps over the lazy dog.</code></strong></li>
@@ -238,10 +263,10 @@ Your screen reader's typing echo set to speak characters and/or words
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Each character (and/or word, per your screen reader's echo) is
+<li>Each character (and/or word, per your screen reader’s echo) is
 spoken <strong>as you type</strong>, by the screen reader. Backspace
 announces the deleted character. QUILL itself does <strong>not</strong>
-re-speak keystrokes or say "Modified" on every key — that would be noise
+re-speak keystrokes or say “Modified” on every key — that would be noise
 over the screen reader. The editor is announced as a multi-line
 <strong>Document</strong> text area. Nothing is silent that should
 speak, and nothing double-speaks.</li>
@@ -253,12 +278,12 @@ speak, and nothing double-speaks.</li>
 <hr />
 <h2
 id="doc-02--caret-movement-and-where-am-i-coreeditor-navigate-verbosity">DOC-02
-— Caret movement and "where am I" (<code>core.editor</code>,
+— Caret movement and “where am I” (<code>core.editor</code>,
 <code>navigate.*</code>, <code>verbosity.*</code>)</h2>
 <p><em>What &amp; why.</em> Moving the caret must always tell you where
-you landed, and you must be able to ask "where am I?" at any moment.
+you landed, and you must be able to ask “where am I?” at any moment.
 QUILL keeps a live <strong>Position</strong> status cell (line and
-column) and offers a spoken "Where Am I."</p>
+column) and offers a spoken “Where Am I.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>plain.txt</code> open (three paragraphs). Focus in the
@@ -284,8 +309,8 @@ status cell tracks the caret as
 <strong><code>Ln &lt;line&gt;, Col &lt;column&gt;</code></strong>
 (1-based) but is not spoken on every move — it is read when you focus
 the status bar (DOC-05) or run a status command (DOC-06).</li>
-<li><strong>Where Am I</strong> speaks in substance <strong>"Line <n> of
-<total>, column <c>"</strong>.</li>
+<li><strong>Where Am I</strong> speaks in substance <strong>“Line <n> of
+<total>, column <c>”</strong>.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -296,7 +321,7 @@ the status bar (DOC-05) or run a status command (DOC-06).</li>
 modified / unsaved marker (<code>core.editor</code>)</h2>
 <p><em>What &amp; why.</em> You must always be able to tell, by title
 bar and by tab, whether the document has unsaved changes — the
-difference between "safe to close" and "you'll lose work."</p>
+difference between “safe to close” and “you’ll lose work.”</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>plain.txt</code> open and <strong>saved</strong> (no unsaved
@@ -307,14 +332,14 @@ asterisk — see below.)</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Read the window title (your screen reader's read-title command, e.g.
+<li>Read the window title (your screen reader’s read-title command, e.g.
 <strong>NVDA+T</strong>). Note it shows the file name with
 <strong>no</strong> modified marker.</li>
 <li>Type one character. Read the title again.</li>
 <li>Press <strong>Ctrl+S</strong> (Save). Read the title again.</li>
 <li><em>(Optional surface check.)</em> Command Palette → run
-<strong><code>view.set_dirty_title_style</code></strong> / the "dirty
-title style" setting and switch to <strong>asterisk</strong>; type a
+<strong><code>view.set_dirty_title_style</code></strong> / the “dirty
+title style” setting and switch to <strong>asterisk</strong>; type a
 character and confirm the marker becomes
 <strong><code> *</code></strong>.</li>
 </ol>
@@ -378,15 +403,15 @@ listed at the bottom.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Each switch announces <strong>"Switched to <name>"</strong> and
-moves focus into that document's editor; the title bar and (if shown)
+<li>Each switch announces <strong>“Switched to <name>”</strong> and
+moves focus into that document’s editor; the title bar and (if shown)
 the tab update. <strong>Alt+N</strong> jumps to that document or says
-<strong>"No document <n> open"</strong> if out of range. With only one
-document open, Next/Previous says <strong>"Only one document
-open."</strong></li>
+<strong>“No document <n> open”</strong> if out of range. With only one
+document open, Next/Previous says <strong>“Only one document
+open.”</strong></li>
 <li><strong>Ctrl+T</strong> opens a fresh untitled tab. Revealing the
 tab strip exposes a keyboard- reachable <strong>Document Tabs</strong>
-region (accessible name "Open documents"); each tab reads its file name
+region (accessible name “Open documents”); each tab reads its file name
 plus the <strong><code>[modified]</code></strong> marker when dirty. The
 Window menu lists every open document.</li>
 </ul>
@@ -416,7 +441,7 @@ the screen reader says you are on the <strong>Status bar</strong> region
 (Shift+F6 goes back).</li>
 <li>On the status bar, press <strong>Right Arrow</strong> / <strong>Left
 Arrow</strong> to move between cells; <strong>Home</strong> /
-<strong>End</strong> jump to the first/last cell. Listen to each cell's
+<strong>End</strong> jump to the first/last cell. Listen to each cell’s
 name and value.</li>
 <li>Press <strong>Enter</strong> (or <strong>Space</strong>) on the
 <strong>Position</strong> cell to activate it (this opens <strong>Go To
@@ -426,12 +451,12 @@ editor.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Entering the region is announced as <strong>"Status bar"</strong>;
-then each cell announces <strong>"<label>, <value>"</strong> — e.g.
-<strong>"Position, Ln 1, Col 1"</strong>, <strong>"Word Count, N
-words"</strong>, <strong>"Format, Markdown"</strong>. Enter activates a
+<li>Entering the region is announced as <strong>“Status bar”</strong>;
+then each cell announces <strong>“<label>, <value>”</strong> — e.g.
+<strong>“Position, Ln 1, Col 1”</strong>, <strong>“Word Count, N
+words”</strong>, <strong>“Format, Markdown”</strong>. Enter activates a
 cell (Position → Go To Line). <strong>Escape</strong> returns to the
-editor with <strong>"Returned to editor."</strong> (A spoken help line
+editor with <strong>“Returned to editor.”</strong> (A spoken help line
 is available via <strong>Ctrl+Shift+H</strong> describing the
 Left/Right/Enter/Escape keys.)</li>
 </ul>
@@ -463,11 +488,11 @@ type one character so it is modified.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>The summary speaks, in substance, the <strong>document
-name</strong>, its <strong>path</strong>, <strong>"modified"</strong>
-(before saving) or <strong>"saved"</strong> (after), and
-<strong>"encoding <encoding>"</strong> — e.g. <em>"formatting.md …
-modified. encoding utf-8."</em> then <em>"… saved. encoding
-utf-8."</em></li>
+name</strong>, its <strong>path</strong>, <strong>“modified”</strong>
+(before saving) or <strong>“saved”</strong> (after), and
+<strong>“encoding <encoding>”</strong> — e.g. <em>“formatting.md …
+modified. encoding utf-8.”</em> then <em>“… saved. encoding
+utf-8.”</em></li>
 <li><strong>Note.</strong> This command reads <em>document</em> status,
 not every status-bar cell; to hear individual cells (counts, line
 endings, etc.) use DOC-05.</li>
@@ -492,7 +517,7 @@ the file-dependent cells appear).</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Using DOC-05's method (F6 to the status bar, then arrows), confirm
+<li>Using DOC-05’s method (F6 to the status bar, then arrows), confirm
 you can find and read these cells with correct values:
 <ul>
 <li><strong>Position</strong> → <code>Ln &lt;n&gt;, Col &lt;n&gt;</code>
@@ -533,7 +558,7 @@ add.</li>
 Selection announcements and Select All (<code>edit.*</code>)</h2>
 <p><em>What &amp; why.</em> When you select text you must know
 <strong>what</strong> and <strong>how much</strong> you selected. Plain
-Shift+arrow selection is left to your screen reader (so it isn't
+Shift+arrow selection is left to your screen reader (so it isn’t
 double-spoken); QUILL adds spoken feedback for its own
 structural-selection commands and for clearing a selection.</p>
 <p><strong>Before you start</strong></p>
@@ -558,12 +583,12 @@ Paragraph</strong>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Plain Shift+arrow selection is announced by the screen reader
-("selected …"). <strong>Ctrl+A</strong> selects the whole document
+(“selected …”). <strong>Ctrl+A</strong> selects the whole document
 (announced as all selected).</li>
-<li>QUILL's structural commands announce the scope <strong>and word
-count</strong> in substance — e.g. <strong>"Selected line, N
-words"</strong>, <strong>"Selected paragraph, N words"</strong>.
-<strong>Unselect All</strong> says <strong>"Selection cleared."</strong>
+<li>QUILL’s structural commands announce the scope <strong>and word
+count</strong> in substance — e.g. <strong>“Selected line, N
+words”</strong>, <strong>“Selected paragraph, N words”</strong>.
+<strong>Unselect All</strong> says <strong>“Selection cleared.”</strong>
 If a <strong>Selection Length</strong> cell is shown it reads
 <strong><code>Sel &lt;length&gt;</code></strong> while a selection is
 active.</li>
@@ -613,7 +638,7 @@ the interval.</li>
 each time (e.g. a longer or shorter value) and the Autosave cell updates
 to match.</li>
 <li><strong>Note.</strong> Autosave snapshots (up to the newest 10 per
-document) are written under the app data folder's <code>autosave\</code>
+document) are written under the app data folder’s <code>autosave\</code>
 directory; they are not the same as <code>.bak</code> backups (DOC-11).
 You confirm they actually restore in DOC-10.</li>
 </ul>
@@ -633,7 +658,7 @@ autosave snapshot — you should not lose work to a crash.</p>
 <ul>
 <li><strong>Precondition.</strong> You must be able to induce a
 <em>real</em> crash (one that writes an ERROR / Traceback to the log). A
-clean <strong>Task Manager "End task"</strong> that leaves only normal
+clean <strong>Task Manager “End task”</strong> that leaves only normal
 heartbeat log lines is, by design, treated like a clean exit and will
 <strong>not</strong> trigger the offer — so a plain kill is not a valid
 test. If you have no way to force an actual crash, mark this
@@ -653,19 +678,19 @@ Snapshot</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A dialog titled <strong>"Crash Recovery"</strong> appears, saying in
-substance <strong>"Quill detected an unclean exit"</strong> and offering
+<li>A dialog titled <strong>“Crash Recovery”</strong> appears, saying in
+substance <strong>“Quill detected an unclean exit”</strong> and offering
 <strong>Restore Latest Snapshot</strong>, <strong>Open Logs
 Folder</strong>, <strong>Save Diagnostics…</strong>, <strong>Send Bug
 Report</strong>, and <strong>Skip Recovery</strong>; it shows a
 read-only snapshot preview. It is fully keyboard-operable.</li>
 <li><strong>Restore</strong> opens the recovered text as a <strong>new,
 modified, untitled tab</strong>, restores the caret position, and says
-in substance <strong>"Recovered latest autosave snapshot."</strong>
-<strong>Skip</strong> says <strong>"Skipped crash
-recovery."</strong></li>
+in substance <strong>“Recovered latest autosave snapshot.”</strong>
+<strong>Skip</strong> says <strong>“Skipped crash
+recovery.”</strong></li>
 <li><strong>Note.</strong> This restores one <em>latest</em> snapshot
-per crashed session — it is not a "reopen all my tabs" prompt (that is
+per crashed session — it is not a “reopen all my tabs” prompt (that is
 the Session feature, <code>file.open_session</code>, see
 FILE-21/22).</li>
 </ul>
@@ -698,14 +723,14 @@ backup is taken).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The <strong>Restore Backup</strong> dialog ("Choose a backup to
-restore:") lists one or more <strong>timestamped</strong>
+<li>The <strong>Restore Backup</strong> dialog (“Choose a backup to
+restore:”) lists one or more <strong>timestamped</strong>
 <code>.bak</code> entries for this file, newest first, and is keyboard-
 navigable. Selecting one and confirming replaces the editor text and
-announces <strong>"Restored backup <name>."</strong> If a file was never
+announces <strong>“Restored backup <name>.”</strong> If a file was never
 saved-over there are no backups and QUILL says so plainly.</li>
 <li><strong>Note.</strong> Backups are only taken on save when the
-document is modified, and are stored under the app data folder's
+document is modified, and are stored under the app data folder’s
 <code>backups\</code> directory. The full Restore Backup command is
 signed off in <strong>FILE-11</strong>; here you are only proving
 backups get created.</li>
@@ -799,14 +824,14 @@ the Tools/Speech section, not here.</li>
 <strong>selects</strong> the next misspelled word, gives it focus, and
 announces in substance
 <strong><code>Next misspelling: "&lt;word&gt;"</code></strong>. When
-none remain ahead it says <strong>"No misspellings ahead; N misspellings
-behind"</strong> (so silence never misleads you). Previous mirrors it.
+none remain ahead it says <strong>“No misspellings ahead; N misspellings
+behind”</strong> (so silence never misleads you). Previous mirrors it.
 The Misspelling List is keyboard- navigable and announced.</li>
 <li><strong>Surface caveat.</strong> Some in-app help text mentions
-<strong>Ctrl+Period</strong> for "next misspelling," but the shipping
+<strong>Ctrl+Period</strong> for “next misspelling,” but the shipping
 default keymap binds it to <strong>Ctrl+F7</strong>. If Ctrl+Period does
 nothing, that is the known text/keymap mismatch — record it under
-Surface-exact, and verify against the build's actual keymap.</li>
+Surface-exact, and verify against the build’s actual keymap.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -817,7 +842,7 @@ Surface-exact, and verify against the build's actual keymap.</li>
 id="doc-14--encoding-detection-on-open-coretext_encoding-uses-encoding-cp1252txt">DOC-14
 — Encoding detection on open (<code>core.text_encoding</code>; uses
 <code>encoding-cp1252.txt</code>)</h2>
-<p><em>What &amp; why.</em> Legacy files aren't always UTF-8. QUILL
+<p><em>What &amp; why.</em> Legacy files aren’t always UTF-8. QUILL
 detects a non-UTF-8 text file, opens it <strong>correctly</strong>
 (accents and symbols intact), and tells you it did so — never a silent
 wall of mojibake.</p>
@@ -843,7 +868,7 @@ Endings</strong> status cells (DOC-07).</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>On open QUILL announces / shows in the status message, in substance,
-<strong>"Opened using cp1252 text encoding (not UTF-8)."</strong> The
+<strong>“Opened using cp1252 text encoding (not UTF-8).”</strong> The
 text reads <strong>correctly</strong> —
 <code>Café résumé — naïve façade. Prices in £ and €.</code> — because
 QUILL detected the code page and decoded with it (it does
@@ -895,8 +920,8 @@ listen.</li>
 opens as <strong><code>utf-8</code></strong> with <strong>no</strong>
 encoding announcement (only the line-ending cell distinguishes it) —
 there is no spoken line-ending announcement on open.</li>
-<li>Toggling announces <strong>"Line endings set to LF"</strong> (then
-<strong>"…set to CRLF"</strong> on a second toggle); the cell updates,
+<li>Toggling announces <strong>“Line endings set to LF”</strong> (then
+<strong>“…set to CRLF”</strong> on a second toggle); the cell updates,
 and the change is written on the next save.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -909,7 +934,7 @@ id="doc-16--watch-folder-drop-a-file-in-and-it-opens-corewatch_folder-quiet--off
 — Watch folder: drop a file in and it opens
 (<code>core.watch_folder</code>) [QUIET / off by default]</h2>
 <p><em>What &amp; why.</em> QUILL can monitor a folder and automatically
-open supported files that appear in it — an "inbox" for documents. It is
+open supported files that appear in it — an “inbox” for documents. It is
 <strong>off by default</strong> and quiet by design (no tick sound, no
 interrupting speech), so you must turn it on and point it at a
 folder.</p>
@@ -944,14 +969,14 @@ queue.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Starting monitoring announces in substance <strong>"Watch folder
-monitoring started (1 profile)"</strong> (or <strong>"…on, but no
-profiles are enabled"</strong> if you skipped step 2).</li>
+<li>Starting monitoring announces in substance <strong>“Watch folder
+monitoring started (1 profile)”</strong> (or <strong>“…on, but no
+profiles are enabled”</strong> if you skipped step 2).</li>
 <li>Within a few seconds of the copy, <code>plain.txt</code> opens in a
-<strong>new tab</strong> and QUILL says <strong>"Watch folder opened
-plain.txt."</strong> The <strong>Watch Folder Queue</strong> dialog is
+<strong>new tab</strong> and QUILL says <strong>“Watch folder opened
+plain.txt.”</strong> The <strong>Watch Folder Queue</strong> dialog is
 keyboard- navigable and shows the file as done. A failure would announce
-<strong>"Watch failed for <name>: <message>"</strong> rather than being
+<strong>“Watch failed for <name>: <message>”</strong> rather than being
 silent.</li>
 <li><strong>Note.</strong> If you are testing a build where this feature
 is gated out, mark <strong>N/A</strong>. Turn monitoring back off after
@@ -975,7 +1000,7 @@ the non-AI counterpart to the AI Table-of-Contents agent.</p>
 <ul>
 <li><strong>Precondition.</strong> In the Essential profile
 <code>core.markdown_profiles</code> is <em>quiet</em> (still reachable).
-If the Format ▸ Markdown items aren't visible, enable <strong>Markdown
+If the Format ▸ Markdown items aren’t visible, enable <strong>Markdown
 Profiles and Extensions</strong> via <strong>Preferences ▸ Profiles and
 Features</strong>, or use the Command Palette.</li>
 <li><code>formatting.md</code> open (a Markdown document).</li>
@@ -995,14 +1020,14 @@ Breaks</strong>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Selecting a profile announces in substance <strong>"Markdown
+<li>Selecting a profile announces in substance <strong>“Markdown
 profile: Poetry and Lyrics. 1 extension enabled.
-<description>."</strong> (The profile names carry their full labels,
-e.g. <strong>"Standard Markdown"</strong>, <strong>"GitHub-Style
-Markdown"</strong>, <strong>"PRD and Release Notes"</strong>.)</li>
+<description>.”</strong> (The profile names carry their full labels,
+e.g. <strong>“Standard Markdown”</strong>, <strong>“GitHub-Style
+Markdown”</strong>, <strong>“PRD and Release Notes”</strong>.)</li>
 <li><strong>Read Markdown Processing Status</strong> speaks the same
 profile summary. <strong>Preserve Single Line Breaks</strong> announces
-<strong>"Preserved single line breaks."</strong></li>
+<strong>“Preserved single line breaks.”</strong></li>
 <li><strong>Note.</strong> Switching a profile stores the choice and
 changes how Markdown structure is generated/rendered (preview, export,
 TOC, line breaks); it does not reflow the text already in the editor.
@@ -1047,17 +1072,17 @@ the list; close it.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Enabling announces <strong>"Abbreviation expansion on"</strong>.
+<li>Enabling announces <strong>“Abbreviation expansion on”</strong>.
 Typing <code>btw</code> + Space replaces it with
 <strong><code>by the way </code></strong> and announces in substance
-<strong>"Expanded: by the way"</strong> (a short sound may also play). A
+<strong>“Expanded: by the way”</strong> (a short sound may also play). A
 single <strong>Backspace</strong> right after undoes it — announcing
-<strong>"Expansion deleted"</strong> (or <strong>"Reverted to:
-btw"</strong>, per the backspace-behavior setting).</li>
+<strong>“Expansion deleted”</strong> (or <strong>“Reverted to:
+btw”</strong>, per the backspace-behavior setting).</li>
 <li>The <strong>Manage Abbreviations</strong> dialog is
 keyboard-complete, lists the built-ins (btw, asap, imo, imho, fwiw, …)
-and any you add, and closing it says <strong>"Abbreviations
-updated."</strong></li>
+and any you add, and closing it says <strong>“Abbreviations
+updated.”</strong></li>
 <li><strong>Note.</strong> The trigger characters include Space, Enter,
 Tab, and common punctuation. Turn expansion back off afterward if you
 prefer.</li>
@@ -1071,7 +1096,7 @@ prefer.</li>
 id="doc-19--document-analysis-word-count-and-reading-time-toolsword_count-quiet-in-essential">DOC-19
 — Document analysis: word count and reading time
 (<code>tools.word_count</code>) [quiet in Essential]</h2>
-<p><em>What &amp; why.</em> A quick, accurate count of what you've
+<p><em>What &amp; why.</em> A quick, accurate count of what you’ve
 written, plus an at-a-glance reading-time estimate.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1093,7 +1118,7 @@ it.</li>
 <li>The <strong>Word Count</strong> dialog reports
 <strong>Words</strong>, <strong>Lines</strong>, and
 <strong>Characters</strong> for the document, is fully readable by
-keyboard, and a spoken summary (<strong>"Word count: N words"</strong>)
+keyboard, and a spoken summary (<strong>“Word count: N words”</strong>)
 is given. The <strong>Reading Time</strong> cell reads e.g.
 <strong><code>&lt;1 min read</code></strong> or
 <strong><code>N min read</code></strong> (about 200 words/minute).</li>
@@ -1115,7 +1140,7 @@ id="doc-20--links-insert-follow-and-copy-editinsert_link-editfollow_link-quiet-i
 — Links: insert, follow, and copy (<code>edit.insert_link</code>,
 <code>edit.follow_link</code>) [quiet in Essential]</h2>
 <p><em>What &amp; why.</em> Writing and using hyperlinks by keyboard:
-build a link in the document's own markup, follow the link under the
+build a link in the document’s own markup, follow the link under the
 caret to a browser, and copy its address.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -1143,17 +1168,17 @@ confirm.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>With the caret on a link, <strong>Follow Link</strong> announces in
-substance <strong>"Opening <host>…"</strong> and opens the target (a
-bare anchor <code>#…</code> says anchors aren't supported; no link at
-the caret says <strong>"No link at cursor"</strong>).</li>
+substance <strong>“Opening <host>…”</strong> and opens the target (a
+bare anchor <code>#…</code> says anchors aren’t supported; no link at
+the caret says <strong>“No link at cursor”</strong>).</li>
 <li>The context menu shows
 <strong><code>Open Link  "&lt;target&gt;"</code></strong> and
 <strong><code>Copy Link Address</code></strong>; Copy announces
-<strong>"Copied link: <target>."</strong></li>
+<strong>“Copied link: <target>.”</strong></li>
 <li><strong>Insert Link</strong> opens a labelled Display-text + URL web
-form and inserts a link in the document's markup (Markdown
+form and inserts a link in the document’s markup (Markdown
 <code>[Example](https://example.com)</code> here), announcing
-<strong>"Inserted link (markdown)."</strong></li>
+<strong>“Inserted link (markdown).”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1166,7 +1191,7 @@ id="doc-21--notes-anchored-in-the-document-inline-notes-and-sticky-notes-notes-c
 (<code>notes.*</code>, <code>core.notes</code>) [off by default]</h2>
 <p><em>What &amp; why.</em> Attach a private note to a place in the
 document and jump back to it later — inline notes follow the text
-they're anchored to, and sticky notes are a position-anchored list.</p>
+they’re anchored to, and sticky notes are a position-anchored list.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong>Precondition.</strong> <code>core.notes</code>
@@ -1197,14 +1222,14 @@ New Sticky Note…</strong>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Adding announces <strong>"Inline note added."</strong> (status shows
+<li>Adding announces <strong>“Inline note added.”</strong> (status shows
 the anchor phrase). Next/ Previous jump the caret and announce
-<strong>"Inline note <i> of <n>: <summary>"</strong>, wrapping around,
-or <strong>"No inline notes in this document"</strong> if none.
-<strong>Speak Inline Note</strong> reads <strong>"Inline note:
-<text>"</strong>; a quick double-press opens an edit dialog whose
-Delete/OK announce <strong>"Inline note deleted" / "Inline note
-updated."</strong></li>
+<strong>“Inline note <i> of <n>: <summary>”</strong>, wrapping around,
+or <strong>“No inline notes in this document”</strong> if none.
+<strong>Speak Inline Note</strong> reads <strong>“Inline note:
+<text>”</strong>; a quick double-press opens an edit dialog whose
+Delete/OK announce <strong>“Inline note deleted” / “Inline note
+updated.”</strong></li>
 <li>The <strong>New Sticky Note</strong> dialog is keyboard-complete;
 sticky notes live under <strong>Navigate ▸ Sticky Notes</strong> (they
 are position-anchored, hence the Navigate menu).</li>
@@ -1218,7 +1243,7 @@ are position-anchored, hence the Navigate menu).</li>
 id="doc-22--read-the-document-back-from-the-editor-editread_all-editsay_selected-coreread_aloud">DOC-22
 — Read the document back from the editor (<code>edit.read_all</code>,
 <code>edit.say_selected</code>) (<code>core.read_aloud</code>)</h2>
-<p><em>What &amp; why.</em> Beyond the screen reader's own reading,
+<p><em>What &amp; why.</em> Beyond the screen reader’s own reading,
 QUILL can read the whole document or just your selection aloud with its
 chosen Read Aloud voice — driven straight from the editor.</p>
 <p><strong>Before you start</strong></p>
@@ -1241,9 +1266,9 @@ again.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li><strong>Read All</strong> moves to the top and reads the document
-aloud (announcing "Read aloud started"). <strong>Say Selected</strong>
-speaks the selected sentence; with no selection it says <strong>"Nothing
-selected."</strong></li>
+aloud (announcing “Read aloud started”). <strong>Say Selected</strong>
+speaks the selected sentence; with no selection it says <strong>“Nothing
+selected.”</strong></li>
 <li><strong>Cross-reference.</strong> Start/Pause
 (<strong>Ctrl+Shift+Grave, R</strong>), voice, speed, and Read Aloud
 settings are signed off in <code>section-tools-speech.md</code> — do not
@@ -1258,9 +1283,9 @@ duplicate them here.</li>
 id="doc-23--type-ahead-navigation-and-how-find-works-in-the-editor-navigatego_to_anything">DOC-23
 — Type-ahead navigation, and how find works in the editor
 (<code>navigate.go_to_anything</code>)</h2>
-<p><em>What &amp; why.</em> QUILL's document search is a
+<p><em>What &amp; why.</em> QUILL’s document search is a
 <strong>dialog</strong> (there is intentionally <strong>no</strong>
-incremental "find-as-you-type" that jumps the caret while you type into
+incremental “find-as-you-type” that jumps the caret while you type into
 the editor). The type-ahead behavior lives in the navigator dialogs,
 which filter a list as you type — this proves it and clears up the
 expectation.</p>
@@ -1301,14 +1326,14 @@ id="doc-24--encoding-requirements-and-minimum-encoding-coretext_encoding-power-t
 <p><em>What &amp; why.</em> Before publishing text to a picky target,
 you may need to know which non-ASCII characters a document contains and
 the simplest encoding that can hold it without loss. This is the manual
-"prepare text for the web" toolset (distinct from the open-time
+“prepare text for the web” toolset (distinct from the open-time
 detection in DOC-14).</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><strong><code>encoding-cp1252.txt</code></strong> open (it contains
 accented letters and the £/€ symbols). These commands live under the
 <code>power.*</code> namespace; enable <strong>Text Encoding and HTML
-Entities</strong> via Profiles and Features if the items aren't
+Entities</strong> via Profiles and Features if the items aren’t
 visible.</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -1326,8 +1351,8 @@ sign-off in <code>section-power.md</code>.</li>
 <ul>
 <li>The analysis lists each non-ASCII character (with position and name)
 and states the <strong>minimum required encoding</strong> in substance,
-e.g. <strong>"Minimum required encoding: Windows-1252 /
-MS-ANSI."</strong> The surface is keyboard-navigable and announced.</li>
+e.g. <strong>“Minimum required encoding: Windows-1252 /
+MS-ANSI.”</strong> The surface is keyboard-navigable and announced.</li>
 <li><strong>Note.</strong> This toolset also converts non-ASCII to HTML
 entities and finds non-ASCII characters; those commands are enumerated
 in <code>section-power.md</code>. Here you are confirming the analysis
@@ -1350,5 +1375,6 @@ behavior works and is accessible.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

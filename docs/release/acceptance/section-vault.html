@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-vault</title>
+  <title>Section — Vault (`vault.*`, 22 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +155,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,15 +173,36 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="section--vault-vault-22-commands">Section — Vault
 (<code>vault.*</code>, 22 commands)</h1>
-<p>QUILL's <strong>Vault</strong> is a <strong>knowledge base</strong>:
+<p>QUILL’s <strong>Vault</strong> is a <strong>knowledge base</strong>:
 you point it at a folder of Markdown notes and QUILL indexes them so you
 can jump between notes, follow <code>[[wikilinks]]</code>, list
 backlinks and tags, keep daily notes, insert templates, export the whole
-thing as a website, and sync it over your own git remote. It is QUILL's
+thing as a website, and sync it over your own git remote. It is QUILL’s
 answer to Obsidian, built to be driven entirely by keyboard and read
 entirely by ear. Finish <strong>Part 0</strong> first.</p>
 <p>Surface reference (label + shortcut) is
@@ -188,7 +212,7 @@ scenario layout and the Pass/Fail/Blocked/N-A +
 Works/Surface-exact/Accessible boxes.</p>
 <blockquote>
 <p><strong>Read this before you test — what the Vault is, and is
-<em>not</em>.</strong> Despite the word "vault," this feature is
+<em>not</em>.</strong> Despite the word “vault,” this feature is
 <strong>not an encrypted store for secrets</strong>. There is <strong>no
 passphrase, no lock/unlock, no idle-lock, and no encryption</strong>.
 Notes are ordinary <code>.md</code> text files in a folder you choose;
@@ -200,7 +224,7 @@ would be a different feature. The one place credentials could be
 involved is <strong>Sync Vault</strong> (VAULT-21), which runs <em>your
 own</em> <code>git</code> against <em>your own</em> remote; QUILL does
 not collect or store a git password itself. If a scenario below ever
-surprises you by demanding a passphrase or claiming to "encrypt" a note,
+surprises you by demanding a passphrase or claiming to “encrypt” a note,
 that is a <strong>surface bug</strong> — record it. (This corrects the
 security framing some earlier drafts assumed.)</p>
 </blockquote>
@@ -211,7 +235,7 @@ assigned only if you add them yourself in the Keymap editor. Every
 command lives under <strong>Tools menu ▸ Vault ▸ …</strong>. To open
 that submenu by keyboard: press <strong>Alt</strong>, then
 <strong>T</strong> (Tools), then <strong>V</strong> (Vault), then the
-item's underlined letter. Any command can also be run from the
+item’s underlined letter. Any command can also be run from the
 <strong>Command Palette</strong> by its label.</p>
 <p><strong>Common inputs used below.</strong> Make a throwaway vault
 folder once, before VAULT-01, so nothing important is touched. Create a
@@ -254,22 +278,22 @@ with its three notes on disk.</li>
 <ol type="1">
 <li>Open <strong>Tools menu (Alt, T) ▸ Vault (V) ▸ Open Vault…</strong>
 (mnemonic <strong>O</strong>).</li>
-<li>In the folder picker ("Choose a vault folder (a folder of notes)"),
+<li>In the folder picker (“Choose a vault folder (a folder of notes)”),
 navigate to and select the <strong><code>qa-vault</code></strong>
 folder; press <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A keyboard-navigable folder picker, announced. On confirm QUILL
-scans the folder ("Scanning vault…" may flash in the status bar) and
-then announces the size in substance: <strong>"Vault qa-vault: 2 notes,
-1 link."</strong> (The <code>Templates/Daily.md</code> note is counted
+scans the folder (“Scanning vault…” may flash in the status bar) and
+then announces the size in substance: <strong>“Vault qa-vault: 2 notes,
+1 link.”</strong> (The <code>Templates/Daily.md</code> note is counted
 too if it is inside the vault root — a count of 2 or 3 is fine; the
 load-bearing part is that it names the vault and reports non-zero
-notes.) Choosing <strong>Cancel</strong> instead says <strong>"Open
-Vault cancelled"</strong> and changes nothing. A folder it cannot scan
-is reported ("Could not open the vault" / "Could not scan the vault:
-…"), never a silent failure.</li>
+notes.) Choosing <strong>Cancel</strong> instead says <strong>“Open
+Vault cancelled”</strong> and changes nothing. A folder it cannot scan
+is reported (“Could not open the vault” / “Could not scan the vault:
+…”), never a silent failure.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -294,13 +318,13 @@ so you can browse and open notes without touching the file system.</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A dialog titled <strong>"Vault Explorer"</strong> with an announced
+<li>A dialog titled <strong>“Vault Explorer”</strong> with an announced
 tree of notes and standard <strong>Open</strong> /
-<strong>Cancel</strong> buttons. Arrowing reads each note's title.
+<strong>Cancel</strong> buttons. Arrowing reads each note’s title.
 Activating <strong>Open</strong> closes the dialog and opens that note
 in the editor with focus in the text. <strong>Escape</strong> cancels
 and returns focus to the editor. If the vault had no notes, QUILL would
-say <strong>"The vault has no notes yet"</strong> instead of opening an
+say <strong>“The vault has no notes yet”</strong> instead of opening an
 empty dialog.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -312,7 +336,7 @@ empty dialog.</li>
 id="vault-03--go-to-note-vaultquick_switch-no-default-shortcut">VAULT-03
 — Go to Note (<code>vault.quick_switch</code>, no default shortcut)</h2>
 <p><em>What &amp; why.</em> A filter-as-you-type switcher: start typing
-part of a note's title and jump straight to it. The fastest way around a
+part of a note’s title and jump straight to it. The fastest way around a
 large vault.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -322,7 +346,7 @@ large vault.</p>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Go to Note…</strong> (mnemonic
 <strong>G</strong>).</li>
-<li>In the field ("Type part of a note title:"), type
+<li>In the field (“Type part of a note title:”), type
 <strong><code>ide</code></strong>.</li>
 <li>Arrow to the <strong>Ideas</strong> match and press
 <strong>Enter</strong>.</li>
@@ -331,10 +355,10 @@ large vault.</p>
 <ul>
 <li>A dialog with a labelled text field and a results list that
 <strong>narrows as you type</strong>; the result count is announced (in
-"matches"). Typing <code>ide</code> leaves <strong>Ideas</strong>
+“matches”). Typing <code>ide</code> leaves <strong>Ideas</strong>
 matched. Enter closes the dialog and opens <strong>Ideas.md</strong>
 with focus in the editor. Escape cancels. An empty vault would say
-<strong>"The vault has no notes yet."</strong></li>
+<strong>“The vault has no notes yet.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -354,7 +378,7 @@ line.</p>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Search Vault…</strong> (mnemonic
 <strong>S</strong>).</li>
-<li>In the field ("Search all notes:"), type
+<li>In the field (“Search all notes:”), type
 <strong><code>dummy</code></strong>.</li>
 <li>Tab to the <strong>Regex</strong> and <strong>Whole word</strong>
 checkboxes — confirm both are present and toggle-able; leave them
@@ -365,8 +389,8 @@ checkboxes — confirm both are present and toggle-able; leave them
 <ul>
 <li>A labelled search field, a live results list, and two option
 checkboxes named <strong>Regex</strong> and <strong>Whole word</strong>.
-Each result is announced in substance as <strong>"Ideas, line 3:
-…dummy…"</strong> — the note <strong>title</strong>, the <strong>line
+Each result is announced in substance as <strong>“Ideas, line 3:
+…dummy…”</strong> — the note <strong>title</strong>, the <strong>line
 number</strong>, and a match-centred snippet. Activating a result opens
 that note <strong>at the matching line</strong> (the caret lands on that
 line, announced). An empty query yields no results (not an error).</li>
@@ -389,20 +413,20 @@ filter the tag list, then list every note carrying a chosen tag.</p>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Show Tags…</strong> (mnemonic
 <strong>T</strong>).</li>
-<li>In the field ("Filter tags:"), optionally type
+<li>In the field (“Filter tags:”), optionally type
 <strong><code>pro</code></strong>.</li>
 <li>Arrow to <strong>#project</strong> and press
 <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A filterable tag list whose rows read as <strong>"#project — 2
-note(s)"</strong> (tag plus a note count). Activating a tag announces
-<strong>"#project: 2 note(s)"</strong> and opens a second list titled
-<strong>"Notes tagged #project"</strong> listing
+<li>A filterable tag list whose rows read as <strong>“#project — 2
+note(s)”</strong> (tag plus a note count). Activating a tag announces
+<strong>“#project: 2 note(s)”</strong> and opens a second list titled
+<strong>“Notes tagged #project”</strong> listing
 <strong>Welcome</strong> and <strong>Ideas</strong>; activating one
-opens it. A vault with no tags says <strong>"This vault has no tags
-yet."</strong></li>
+opens it. A vault with no tags says <strong>“This vault has no tags
+yet.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -425,16 +449,16 @@ the caret on a blank line at the end.</li>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Insert Link to Note…</strong> (mnemonic
 <strong>I</strong>).</li>
-<li>In the list ("Insert link to note"), arrow to <strong>Ideas</strong>
+<li>In the list (“Insert link to note”), arrow to <strong>Ideas</strong>
 and press <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A labelled list of note titles. Activating <strong>Ideas</strong>
 inserts the literal text <strong><code>[[Ideas]]</code></strong> at the
-caret and announces <strong>"Linked to Ideas."</strong> If the vault had
-no notes, QUILL says <strong>"The vault has no notes to link
-to."</strong></li>
+caret and announces <strong>“Linked to Ideas.”</strong> If the vault had
+no notes, QUILL says <strong>“The vault has no notes to link
+to.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -459,22 +483,22 @@ the <code>d</code>.</li>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Complete Link or Tag…</strong> (mnemonic
 <strong>C</strong>).</li>
-<li>In the completer ("Complete Link", prompt "Note:"), arrow to
+<li>In the completer (“Complete Link”, prompt “Note:”), arrow to
 <strong>Ideas</strong>; press <strong>Enter</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>Because the caret sits inside a <code>[[…</code> trigger, a
-completer titled <strong>"Complete Link"</strong> opens filtered to
+completer titled <strong>“Complete Link”</strong> opens filtered to
 matching note titles. Choosing <strong>Ideas</strong> rewrites the
 partial link into a full <strong><code>[[Ideas]]</code></strong> and
-announces <strong>"Inserted Ideas."</strong> If you instead had a
-<code>#pro</code> fragment, the completer would be <strong>"Complete
-Tag"</strong> (prompt "Tag:") over tag names. With the caret
+announces <strong>“Inserted Ideas.”</strong> If you instead had a
+<code>#pro</code> fragment, the completer would be <strong>“Complete
+Tag”</strong> (prompt “Tag:”) over tag names. With the caret
 <strong>not</strong> on a <code>[[</code> or <code>#</code> fragment,
-QUILL says <strong>"Type [[ for a note or # for a tag, then
-complete."</strong> No matches says <strong>"No matching
-notes/tags."</strong></li>
+QUILL says <strong>“Type [[ for a note or # for a tag, then
+complete.”</strong> No matches says <strong>“No matching
+notes/tags.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -507,15 +531,15 @@ the caret <strong>inside</strong> the <code>[[Ideas]]</code> link
 <li>With the caret on <code>[[Ideas]]</code>, <strong>Ideas.md</strong>
 opens in the editor (at the target heading/block if the link named one).
 For <strong><code>[[Nowhere]]</code></strong>, a spoken confirmation
-<strong>"No note named "Nowhere". Create it?"</strong> appears (Yes/No);
-<strong>No</strong> does nothing ("No note created"),
+<strong>“No note named "Nowhere". Create it?”</strong> appears (Yes/No);
+<strong>No</strong> does nothing (“No note created”),
 <strong>Yes</strong> creates <code>Nowhere.md</code> (seeded with a
-<code># Nowhere</code> heading), opens it, and says <strong>"Created and
-opened Nowhere."</strong> If a name is ambiguous (two notes share it),
+<code># Nowhere</code> heading), opens it, and says <strong>“Created and
+opened Nowhere.”</strong> If a name is ambiguous (two notes share it),
 QUILL <strong>asks</strong> which to open — it never guesses. Caret not
-on a link → <strong>"No wikilink at the cursor."</strong> No vault open
-→ <strong>"Open a vault first (Tools &gt; Vault &gt; Open
-Vault)."</strong></li>
+on a link → <strong>“No wikilink at the cursor.”</strong> No vault open
+→ <strong>“Open a vault first (Tools &gt; Vault &gt; Open
+Vault).”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -543,14 +567,14 @@ links to it via <code>[[Ideas]]</code>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces <strong>"1 notes link here."</strong> and opens a
-list titled <strong>"Backlinks to Ideas"</strong> whose row reads
-<strong>"Welcome: …See [[Ideas]] for more…"</strong> (the linking note's
+<li>QUILL announces <strong>“1 notes link here.”</strong> and opens a
+list titled <strong>“Backlinks to Ideas”</strong> whose row reads
+<strong>“Welcome: …See [[Ideas]] for more…”</strong> (the linking note’s
 title plus the linking line). Enter opens <strong>Welcome.md</strong> at
-that link. A note nothing links to says <strong>"No backlinks: no other
-note links here yet."</strong> A note not saved inside the vault says
-<strong>"Save this note inside the vault to see its
-backlinks."</strong></li>
+that link. A note nothing links to says <strong>“No backlinks: no other
+note links here yet.”</strong> A note not saved inside the vault says
+<strong>“Save this note inside the vault to see its
+backlinks.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -561,7 +585,7 @@ backlinks."</strong></li>
 id="vault-10--note-neighborhood-vaultneighborhood-no-default-shortcut">VAULT-10
 — Note Neighborhood (<code>vault.neighborhood</code>, no default
 shortcut)</h2>
-<p><em>What &amp; why.</em> One list of this note's
+<p><em>What &amp; why.</em> One list of this note’s
 <strong>outgoing</strong> links and its <strong>incoming</strong>
 backlinks together, so you can traverse the graph by ear.</p>
 <p><strong>Before you start</strong></p>
@@ -578,12 +602,12 @@ jump to it.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces the shape, e.g. <strong>"1 out, 1 in,"</strong> and
-opens a list titled <strong>"Neighborhood of Welcome."</strong> Outgoing
-entries are prefixed <strong><code>→</code></strong> (e.g. "→ Ideas")
-and incoming ones <strong><code>←</code></strong> (e.g. "← Ideas: …").
+<li>QUILL announces the shape, e.g. <strong>“1 out, 1 in,”</strong> and
+opens a list titled <strong>“Neighborhood of Welcome.”</strong> Outgoing
+entries are prefixed <strong><code>→</code></strong> (e.g. “→ Ideas”)
+and incoming ones <strong><code>←</code></strong> (e.g. “← Ideas: …”).
 Activating any entry opens that note. A note with no links either way
-says <strong>"This note has no links in or out yet."</strong></li>
+says <strong>“This note has no links in or out yet.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -595,12 +619,12 @@ id="vault-11--unlinked-mentions-vaultunlinked_mentions-no-default-shortcut">VAUL
 — Unlinked Mentions (<code>vault.unlinked_mentions</code>, no default
 shortcut)</h2>
 <p><em>What &amp; why.</em> Find places where <strong>other notes
-mention this note's name in plain text</strong> but have not yet linked
+mention this note’s name in plain text</strong> but have not yet linked
 it — candidates to turn into <code>[[links]]</code>.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>qa-vault</code> open. Open <strong>Welcome.md</strong>
-(Ideas.md says "The <strong>Welcome</strong> note…" without linking
+(Ideas.md says “The <strong>Welcome</strong> note…” without linking
 it).</li>
 </ul>
 <p><strong>Do this</strong></p>
@@ -612,12 +636,12 @@ at that spot.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL announces <strong>"1 unlinked mention(s)"</strong> and opens a
-list titled <strong>"Unlinked mentions of Welcome"</strong> whose row
-reads <strong>"Ideas: …The Welcome note is a good starting
-point…"</strong>. Activating it opens Ideas.md at that mention. If every
-mention is already a link, QUILL says <strong>"No unlinked mentions:
-every mention of this note is already a link."</strong></li>
+<li>QUILL announces <strong>“1 unlinked mention(s)”</strong> and opens a
+list titled <strong>“Unlinked mentions of Welcome”</strong> whose row
+reads <strong>“Ideas: …The Welcome note is a good starting
+point…”</strong>. Activating it opens Ideas.md at that mention. If every
+mention is already a link, QUILL says <strong>“No unlinked mentions:
+every mention of this note is already a link.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -644,14 +668,14 @@ the caret <strong>inside</strong> its <code>![[Welcome]]</code> embed
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>QUILL speaks the embedded note's content in substance:
-<strong>"Embedded from Welcome: …This is the QA welcome note…"</strong>
+<li>QUILL speaks the embedded note’s content in substance:
+<strong>“Embedded from Welcome: …This is the QA welcome note…”</strong>
 — and your document text is <strong>unchanged</strong>. Two guard cases
 to confirm: with the caret on a plain <code>[[Welcome]]</code> (no
-<code>!</code>), QUILL says <strong>"That is a link, not an embed. To
+<code>!</code>), QUILL says <strong>“That is a link, not an embed. To
 embed the note, add an exclamation mark before it:
-![[Welcome]]"</strong>; with the caret on no embed at all, <strong>"No
-embed (![[...]]) at the cursor."</strong></li>
+![[Welcome]]”</strong>; with the caret on no embed at all, <strong>“No
+embed (![[…]]) at the cursor.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -663,7 +687,7 @@ id="vault-13--resolve-embed-inline-vaultresolve_embed-no-default-shortcut">VAULT
 — Resolve Embed Inline (<code>vault.resolve_embed</code>, no default
 shortcut)</h2>
 <p><em>What &amp; why.</em> Replace an <code>![[embed]]</code> in place
-with the embedded note's actual text, as <strong>one undoable
+with the embedded note’s actual text, as <strong>one undoable
 edit</strong> — bake the transclusion into this note.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -679,8 +703,8 @@ undo.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The <code>![[Welcome]]</code> marker is replaced by Welcome's
-content and QUILL announces <strong>"Resolved embed inline."</strong> A
+<li>The <code>![[Welcome]]</code> marker is replaced by Welcome’s
+content and QUILL announces <strong>“Resolved embed inline.”</strong> A
 single <strong>Ctrl+Z</strong> restores the <code>![[Welcome]]</code>
 marker (one undo step). The same not-an-embed / no-embed guards as
 VAULT-12 apply.</li>
@@ -695,7 +719,7 @@ id="vault-14--insert-template-vaultinsert_template-no-default-shortcut">VAULT-14
 — Insert Template (<code>vault.insert_template</code>, no default
 shortcut)</h2>
 <p><em>What &amp; why.</em> Insert a reusable note skeleton from the
-vault's <strong>Templates</strong> folder, filling in date/title and
+vault’s <strong>Templates</strong> folder, filling in date/title and
 prompting for any <code>{{placeholders}}</code>.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -708,7 +732,7 @@ go.</li>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Insert Template…</strong> (mnemonic
 <strong>T</strong>).</li>
-<li>In the list ("Insert Template"), arrow to <strong>Daily</strong> and
+<li>In the list (“Insert Template”), arrow to <strong>Daily</strong> and
 press <strong>Enter</strong>.</li>
 <li>Answer any prompt the template raises; press
 <strong>Enter</strong>.</li>
@@ -717,13 +741,13 @@ press <strong>Enter</strong>.</li>
 <ul>
 <li>A list of template names (from the <code>Templates</code> folder).
 Activating <strong>Daily</strong> inserts its rendered text at the caret
-— <code>{{date:YYYY-MM-DD}}</code> becomes today's date and
-<code>{{title}}</code> becomes the note's title — and announces
-<strong>"Template inserted."</strong> If the template contains a free
+— <code>{{date:YYYY-MM-DD}}</code> becomes today’s date and
+<code>{{title}}</code> becomes the note’s title — and announces
+<strong>“Template inserted.”</strong> If the template contains a free
 <code>{{prompt}}</code>, a labelled text box asks for it first; Cancel
-says <strong>"Template cancelled."</strong> With no templates present,
-QUILL says <strong>"No templates: add .md files to a 'Templates' folder
-in the vault."</strong></li>
+says <strong>“Template cancelled.”</strong> With no templates present,
+QUILL says <strong>“No templates: add .md files to a ‘Templates’ folder
+in the vault.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -732,8 +756,8 @@ in the vault."</strong></li>
 <hr />
 <h2
 id="vault-15--open-todays-note-vaulttoday-no-default-shortcut">VAULT-15
-— Open Today's Note (<code>vault.today</code>, no default shortcut)</h2>
-<p><em>What &amp; why.</em> Open today's <strong>daily note</strong>,
+— Open Today’s Note (<code>vault.today</code>, no default shortcut)</h2>
+<p><em>What &amp; why.</em> Open today’s <strong>daily note</strong>,
 creating it from the daily-note pattern if it does not exist. The
 backbone of a journaling / daily-log workflow.</p>
 <p><strong>Before you start</strong></p>
@@ -743,16 +767,16 @@ backbone of a journaling / daily-log workflow.</p>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li><strong>Tools ▸ Vault ▸ Open Today's Note</strong> (mnemonic
+<li><strong>Tools ▸ Vault ▸ Open Today’s Note</strong> (mnemonic
 <strong>y</strong>).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>If today's note does not exist yet, QUILL creates it (seeded with a
+<li>If today’s note does not exist yet, QUILL creates it (seeded with a
 <code># 2026-08-06</code>-style date heading), opens it, and announces
-<strong>"2026-08-06: created"</strong> (today's date). Run it again and
-it announces <strong>"…: opened"</strong> for the existing note. Focus
-lands in the editor. This also sets the "daily cursor" to today for
+<strong>“2026-08-06: created”</strong> (today’s date). Run it again and
+it announces <strong>“…: opened”</strong> for the existing note. Focus
+lands in the editor. This also sets the “daily cursor” to today for
 VAULT-16/17.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -765,7 +789,7 @@ id="vault-16--previous-daily-note-vaultprev_daily-no-default-shortcut">VAULT-16
 — Previous Daily Note (<code>vault.prev_daily</code>, no default
 shortcut)</h2>
 <p><em>What &amp; why.</em> Step the daily cursor <strong>back one
-day</strong> and open (creating if needed) that day's note — flip back
+day</strong> and open (creating if needed) that day’s note — flip back
 through your journal.</p>
 <p><strong>Before you start</strong></p>
 <ul>
@@ -779,11 +803,11 @@ is on today).</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Yesterday's daily note opens; QUILL announces its date with
-<strong>"created"</strong> (first time) or <strong>"opened"</strong> (if
+<li>Yesterday’s daily note opens; QUILL announces its date with
+<strong>“created”</strong> (first time) or <strong>“opened”</strong> (if
 it already exists). Running it again steps another day back. Focus lands
-in the editor each time. No vault open → <strong>"Open a vault first
-(Tools &gt; Vault &gt; Open Vault)."</strong></li>
+in the editor each time. No vault open → <strong>“Open a vault first
+(Tools &gt; Vault &gt; Open Vault).”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -795,7 +819,7 @@ id="vault-17--next-daily-note-vaultnext_daily-no-default-shortcut">VAULT-17
 — Next Daily Note (<code>vault.next_daily</code>, no default
 shortcut)</h2>
 <p><em>What &amp; why.</em> Step the daily cursor <strong>forward one
-day</strong> and open that day's note — the mirror of VAULT-16.</p>
+day</strong> and open that day’s note — the mirror of VAULT-16.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li><code>qa-vault</code> open; the daily cursor sitting on a past day
@@ -808,8 +832,8 @@ day</strong> and open that day's note — the mirror of VAULT-16.</p>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>The next day's daily note opens with its date announced
-("opened"/"created"); repeated presses walk forward day by day back
+<li>The next day’s daily note opens with its date announced
+(“opened”/“created”); repeated presses walk forward day by day back
 toward today. Focus lands in the editor.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -832,7 +856,7 @@ links to it as <code>[[Ideas]]</code>). New name:
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Rename Note…</strong> (mnemonic
 <strong>R</strong>).</li>
-<li>In the "New name for this note:" box, replace the text with
+<li>In the “New name for this note:” box, replace the text with
 <strong><code>Concepts</code></strong>; press
 <strong>Enter</strong>.</li>
 <li>Read the confirmation and choose <strong>Yes</strong>.</li>
@@ -840,16 +864,16 @@ links to it as <code>[[Ideas]]</code>). New name:
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li>A prompt pre-filled with the old title. On confirm, a spoken
-confirmation names the change and its blast radius: <strong>"Rename
-"Ideas" to "Concepts" and update 1 link(s) in 1 note(s)?"</strong>
+confirmation names the change and its blast radius: <strong>“Rename
+"Ideas" to "Concepts" and update 1 link(s) in 1 note(s)?”</strong>
 (Yes/No). <strong>Yes</strong> renames <code>Ideas.md</code> to
-<code>Concepts.md</code>, rewrites Welcome's <code>[[Ideas]]</code> to
+<code>Concepts.md</code>, rewrites Welcome’s <code>[[Ideas]]</code> to
 <code>[[Concepts]]</code>, retitles the heading, reopens the renamed
-note, and announces <strong>"Renamed to Concepts. Updated 1 link(s) in 1
-note(s)."</strong> <strong>No</strong> or <strong>Escape</strong> →
-<strong>"Rename cancelled."</strong> A name that collides with an
-existing note is refused clearly (<strong>"A note named "Concepts"
-already exists"</strong>), and an unusable file name is rejected.
+note, and announces <strong>“Renamed to Concepts. Updated 1 link(s) in 1
+note(s).”</strong> <strong>No</strong> or <strong>Escape</strong> →
+<strong>“Rename cancelled.”</strong> A name that collides with an
+existing note is refused clearly (<strong>“A note named "Concepts"
+already exists”</strong>), and an unusable file name is rejected.
 <em>(Optional: rename it back to <code>Ideas</code> so later re-runs
 match.)</em></li>
 </ul>
@@ -861,7 +885,7 @@ match.)</em></li>
 <h2
 id="vault-19--vault-settings-vaultsettings-no-default-shortcut">VAULT-19
 — Vault Settings (<code>vault.settings</code>, no default shortcut)</h2>
-<p><em>What &amp; why.</em> Set the vault's <strong>Templates
+<p><em>What &amp; why.</em> Set the vault’s <strong>Templates
 folder</strong> and its <strong>daily-note path pattern</strong>,
 persisted for next time.</p>
 <p><strong>Before you start</strong></p>
@@ -872,10 +896,10 @@ persisted for next time.</p>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Vault Settings…</strong> (mnemonic
 <strong>t</strong>).</li>
-<li>First prompt, "Templates folder (relative to the vault):" — leave
+<li>First prompt, “Templates folder (relative to the vault):” — leave
 <strong><code>Templates</code></strong>; press
 <strong>Enter</strong>.</li>
-<li>Second prompt, "Daily-note path pattern (use {{date:YYYY-MM-DD}}):"
+<li>Second prompt, “Daily-note path pattern (use {{date:YYYY-MM-DD}}):”
 — leave the default (or type
 <strong><code>{{date:YYYY-MM-DD}}</code></strong>); press
 <strong>Enter</strong>.</li>
@@ -884,9 +908,9 @@ persisted for next time.</p>
 <ul>
 <li>Two labelled text prompts in order (templates folder, then daily
 pattern), each pre-filled with the current value. On confirm QUILL
-announces <strong>"Vault settings saved,"</strong> and the values
+announces <strong>“Vault settings saved,”</strong> and the values
 persist (re-open the dialog to confirm). Cancelling either prompt says
-<strong>"Vault settings unchanged"</strong> and changes nothing.</li>
+<strong>“Vault settings unchanged”</strong> and changes nothing.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -909,7 +933,7 @@ folder</strong>, e.g. <code>qa-vault-site</code>.</li>
 <ol type="1">
 <li><strong>Tools ▸ Vault ▸ Export Vault as Website…</strong> (mnemonic
 <strong>E</strong>).</li>
-<li>In the folder picker ("Choose an output folder for the website"),
+<li>In the folder picker (“Choose an output folder for the website”),
 select <strong><code>qa-vault-site</code></strong>; press
 <strong>Enter</strong>.</li>
 <li>Wait for completion, then open the resulting <code>index</code>/note
@@ -917,9 +941,9 @@ pages in a browser.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A folder picker (Cancel says <strong>"Export cancelled"</strong>).
-On confirm, a background task runs ("Exporting vault as a website") and,
-on finish, announces <strong>"Exported N pages to <folder>."</strong>
+<li>A folder picker (Cancel says <strong>“Export cancelled”</strong>).
+On confirm, a background task runs (“Exporting vault as a website”) and,
+on finish, announces <strong>“Exported N pages to <folder>.”</strong>
 The output folder then contains one HTML page per note with the
 <code>[[wikilinks]]</code> turned into working <code>&lt;a&gt;</code>
 links between pages. The editor stays usable throughout.</li>
@@ -956,15 +980,15 @@ announcement or the status bar.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>A background task ("Syncing vault") that commits local changes,
+<li>A background task (“Syncing vault”) that commits local changes,
 pulls, and pushes, then announces its <strong>result message</strong>
 (what happened). If there are merge <strong>conflicts</strong>, QUILL
-opens a list titled <strong>"Sync conflicts — resolve, then sync
-again"</strong> naming the conflicting files rather than silently
+opens a list titled <strong>“Sync conflicts — resolve, then sync
+again”</strong> naming the conflicting files rather than silently
 overwriting anything. In <strong>Safe Mode</strong>, running it says
-<strong>"Vault sync is disabled in Safe Mode."</strong> No vault open →
-<strong>"Open a vault first (Tools &gt; Vault &gt; Open
-Vault)."</strong> Nothing sensitive should appear in any spoken/status
+<strong>“Vault sync is disabled in Safe Mode.”</strong> No vault open →
+<strong>“Open a vault first (Tools &gt; Vault &gt; Open
+Vault).”</strong> Nothing sensitive should appear in any spoken/status
 text.</li>
 </ul>
 <p><strong>Sign off</strong> —
@@ -977,7 +1001,7 @@ id="vault-22--publish-note-vaultpublish_note-no-default-shortcut-gated-futurepub
 — Publish Note (<code>vault.publish_note</code>, no default shortcut)
 [GATED <code>future.publishing</code>]</h2>
 <p><em>What &amp; why.</em> Prepare the current note to be published
-(the "send it out" path). This command is <strong>gated behind the
+(the “send it out” path). This command is <strong>gated behind the
 <code>future.publishing</code> flag</strong> and is <strong>locked
 off</strong> in the public 1.0 build — it is hidden from both the Vault
 menu and the Command Palette until the flag is unlocked.</p>
@@ -985,7 +1009,7 @@ menu and the Command Palette until the flag is unlocked.</p>
 <ul>
 <li><code>qa-vault</code> open, a saved note in focus.</li>
 <li><strong>Public build:</strong> this command is
-<strong>absent</strong> — there is no "Publish Note" item in
+<strong>absent</strong> — there is no “Publish Note” item in
 <strong>Tools ▸ Vault</strong> and none in the Command Palette. That
 absence is the expected result; mark <strong>N/A</strong> and confirm it
 in <code>gated-absence.md</code>.</li>
@@ -994,7 +1018,7 @@ enabled:</strong> proceed with the steps.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li>Confirm there is <strong>no</strong> "Publish Note" entry in the
+<li>Confirm there is <strong>no</strong> “Publish Note” entry in the
 Vault menu or Command Palette on a public build (this is the pass on
 public builds).</li>
 <li><em>(Gated build only)</em> Run <strong>Publish Note</strong> from
@@ -1003,14 +1027,14 @@ the Command Palette; observe the result.</li>
 <p><strong>You should see and hear</strong></p>
 <ul>
 <li><strong>Public build:</strong> the command does not appear anywhere
-— QUILL never offers to "publish" a note in 1.0. If it <em>does</em>
+— QUILL never offers to “publish” a note in 1.0. If it <em>does</em>
 appear, that is a gating failure — <strong>Fail</strong> and record it.
 <strong>N/A</strong> otherwise.</li>
 <li><strong>Gated build:</strong> with the flag on, QUILL prepares the
-note and announces <strong>"Prepared '<title>' to publish."</strong>; if
-the flag is still effectively off it says <strong>"Publishing notes is
-not enabled yet."</strong> A note not saved inside the vault →
-<strong>"Save this note inside the vault first."</strong></li>
+note and announces <strong>“Prepared ‘<title>’ to publish.”</strong>; if
+the flag is still effectively off it says <strong>“Publishing notes is
+not enabled yet.”</strong> A note not saved inside the vault →
+<strong>“Save this note inside the vault first.”</strong></li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -1029,5 +1053,6 @@ not enabled yet."</strong> A note not saved inside the vault →
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

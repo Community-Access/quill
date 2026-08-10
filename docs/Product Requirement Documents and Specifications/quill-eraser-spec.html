@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>quill-eraser-spec</title>
+  <title>Quill Eraser — Product Requirement Document</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-eraser--product-requirement-document">Quill Eraser —
 Product Requirement Document</h1>
 <p><strong>Version:</strong> 1.0<br />
@@ -277,11 +297,11 @@ engine is fully testable in isolation.</li>
 <h2 id="3-non-goals">3. Non-goals</h2>
 <ul>
 <li>Style advice (sentence length, passive voice, readability) — that is
-the AI writing layer's job.</li>
+the AI writing layer’s job.</li>
 <li>Grammar checking — deferred to AI grammar tools.</li>
 <li>Spelling — covered by the existing spell-check commands.</li>
 <li>PDF, DOCX, or other non-text formats — Quill Eraser operates on the
-editor's text buffer only.</li>
+editor’s text buffer only.</li>
 <li>Custom user-defined rules in this release — the engine exposes a
 <code>HygieneRule</code> ABC and <code>extra_rules</code> parameter for
 future extension.</li>
@@ -486,7 +506,7 @@ the user can navigate to issues in the editor while the dialog remains
 open.</p>
 <p>Controls:</p>
 <ul>
-<li><strong>Summary label</strong> — "N issues found" with optional
+<li><strong>Summary label</strong> — “N issues found” with optional
 ignored count.</li>
 <li><strong>Findings list</strong> (<code>wx.ListCtrl</code>) — columns:
 <code>#</code>, Confidence, Issue, Line.</li>
@@ -504,7 +524,7 @@ editor and announces location.</li>
 list.</li>
 <li><strong>Close</strong> — destroys the dialog.</li>
 </ul>
-<p>If the text at a finding's position has changed between scan and
+<p>If the text at a finding’s position has changed between scan and
 Apply Fix, a message box explains why the fix could not be applied and
 prompts the user to rescan.</p>
 <hr />
@@ -515,9 +535,9 @@ prompts the user to rescan.</p>
 <li>Dialog uses
 <code>apply_modal_ids(dlg, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)</code>
 for keyboard contract.</li>
-<li><code>ListCtrl</code> has an accessible name ("Findings list").</li>
+<li><code>ListCtrl</code> has an accessible name (“Findings list”).</li>
 <li>Detail <code>TextCtrl</code> is read-only and word-wrapped, named
-"Issue detail".</li>
+“Issue detail”.</li>
 <li><code>Rescan</code> fires the engine on the same scope (document or
 selection) so the announcement summarises new findings without losing
 context.</li>
@@ -554,5 +574,6 @@ text or CSV.</li>
 <li><strong>Integration with compare mode</strong> — show hygiene
 findings alongside diff markers.</li>
 </ul>
+</main>
 </body>
 </html>

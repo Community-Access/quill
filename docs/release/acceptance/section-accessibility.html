@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-accessibility</title>
+  <title>Section — Accessibility (cross-cutting, applies to every
+feature)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -170,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="section--accessibility-cross-cutting-applies-to-every-feature">Section
 — Accessibility (cross-cutting, applies to every feature)</h1>
@@ -184,11 +209,11 @@ braille</strong>. Run these scenarios against the everyday surfaces you
 already met in Part 0 and in the File section — they are the lens you
 look through, not a new feature to find.</p>
 <p>These scenarios <strong>complement, and do not replace,</strong> the
-repo's <code>../screen-reader-test-plan.md</code> (the fix-by-fix
+repo’s <code>../screen-reader-test-plan.md</code> (the fix-by-fix
 SR/keyboard cases) and the core-journey plan
 <code>../qa-core-journeys.md</code>. Where those prove a specific fix,
 this section proves the guarantee holds app-wide. The guarantees
-themselves are the master plan's cross-cutting list,
+themselves are the master plan’s cross-cutting list,
 <code>../../planning/signoff/QUILL-1.0.0-SIGNOFF.md</code> §F. Read
 §2–§3 of <code>README.md</code> first — especially <strong>§3, the
 universal keyboard contract</strong>, which every scenario below leans
@@ -210,7 +235,7 @@ braille display</strong>; for the matrix scenario, also
 <p><strong>How to run every scenario here:</strong> do it
 <strong>twice</strong> — once with the <strong>mouse physically
 unplugged</strong> (keyboard only), then again reading with your screen
-reader's review / virtual cursor. If you ever reach for the mouse to
+reader’s review / virtual cursor. If you ever reach for the mouse to
 finish a step, that alone fails <strong>Accessible</strong>.</p>
 <hr />
 <h2 id="a11y-01--do-a-whole-task-with-the-mouse-unplugged">A11Y-01 — Do
@@ -241,7 +266,7 @@ trackpad). Leave it unplugged for this whole section.</li>
 <li>Every step completes from the keyboard alone: the file opens with
 focus landing in the editor (announced as <strong>Document</strong>,
 multi-line text area); your typed word reads back; the save is confirmed
-aloud and the title bar's <strong>modified marker clears</strong>; the
+aloud and the title bar’s <strong>modified marker clears</strong>; the
 document closes and focus moves to another open document or a clean
 empty state — <strong>never to nowhere</strong>. At no point were you
 forced to click.</li>
@@ -268,7 +293,7 @@ dialog).</li>
 <ol type="1">
 <li>Open the dialog (<strong>Alt, F</strong>, then arrow to the item,
 <strong>Enter</strong>).</li>
-<li>Press <strong>Tab</strong> repeatedly and listen to each control's
+<li>Press <strong>Tab</strong> repeatedly and listen to each control’s
 name/role as focus lands.</li>
 <li>From somewhere in the middle, press <strong>Shift+Tab</strong>
 several times.</li>
@@ -279,9 +304,9 @@ several times.</li>
 logical top-to-bottom order and eventually cycles (it never lands on
 nothing and never jumps out of the dialog while it is open).
 <strong>Shift+Tab</strong> retraces the same path backward. Each stop
-announces a <strong>name and a role</strong> (e.g. "Test Header, edit";
-"OK, button"). No stop is silent or announced only as a bare role
-("edit", "button") with no name.</li>
+announces a <strong>name and a role</strong> (e.g. “Test Header, edit”;
+“OK, button”). No stop is silent or announced only as a bare role
+(“edit”, “button”) with no name.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -305,7 +330,7 @@ line 1).</li>
 <ol type="1">
 <li>Open <strong>File menu ▸ Header and Footer…</strong> (or any modal
 dialog you can reach).</li>
-<li>Type something into the first field so the dialog is "dirty".</li>
+<li>Type something into the first field so the dialog is “dirty”.</li>
 <li>Press <strong>Escape</strong>.</li>
 </ol>
 <p><strong>You should see and hear (and feel)</strong></p>
@@ -358,8 +383,8 @@ id="a11y-05--every-focusable-control-has-an-accessible-name-spotting-an-unnamed-
 — Every focusable control has an accessible name (spotting an unnamed
 one by ear)</h2>
 <p><em>What &amp; why.</em> If a control has no name, a screen reader
-can only say its <strong>role</strong> — "edit", "button", "list" — with
-nothing to tell you <em>which</em> one. QUILL's
+can only say its <strong>role</strong> — “edit”, “button”, “list” — with
+nothing to tell you <em>which</em> one. QUILL’s
 <code>accessible_name_audit</code> gate exists to prevent exactly this.
 Here you learn to hear the failure.</p>
 <p><strong>Before you start</strong></p>
@@ -376,15 +401,15 @@ works.</li>
 say out loud what you heard: does it have a <strong>human name</strong>,
 or only a role?</li>
 <li>Listen specifically for two failure sounds: a bare role with
-<strong>no name</strong> ("edit" … silence), and a <strong>snake_case /
-code name</strong> spelled or run together ("status underscore
-overview", "status overview" read as an identifier rather than
+<strong>no name</strong> (“edit” … silence), and a <strong>snake_case /
+code name</strong> spelled or run together (“status underscore
+overview”, “status overview” read as an identifier rather than
 words).</li>
 </ol>
 <p><strong>You should see and hear (and feel)</strong></p>
 <ul>
 <li>Every stop announces a <strong>readable name + role</strong>, e.g.
-"Status overview, list"; "Refresh, button"; "Search models, edit".
+“Status overview, list”; “Refresh, button”; “Search models, edit”.
 <strong>No</strong> control is nameless, and <strong>none</strong> reads
 as a raw identifier (<code>status_overview</code>, letter-for-letter or
 underscore spoken). A single unnamed or code-named focusable control is
@@ -477,7 +502,7 @@ two items.</li>
 <h2
 id="a11y-08--no-silent-state-changes-every-outcome-is-announced">A11Y-08
 — No silent state changes: every outcome is announced</h2>
-<p><em>What &amp; why.</em> QUILL's <strong>GATE-12</strong> promise is
+<p><em>What &amp; why.</em> QUILL’s <strong>GATE-12</strong> promise is
 that a user-visible change never happens in silence — a toggle, a mode
 switch, a save, a count all speak. A screen-reader user who hears
 nothing has no way to know it worked.</p>
@@ -499,11 +524,11 @@ that changes state.</li>
 <p><strong>You should see and hear (and feel)</strong></p>
 <ul>
 <li>Each action produces an <strong>immediate spoken announcement of the
-new state</strong> — e.g. "Line endings: Unix (LF)", then "Windows
-(CRLF)" on the second press; a save confirmation with the modified
+new state</strong> — e.g. “Line endings: Unix (LF)”, then “Windows
+(CRLF)” on the second press; a save confirmation with the modified
 marker clearing; the status/position spoken. A toggle that changes the
 app but says <strong>nothing</strong> is an accessibility fail even
-though it "worked" — note which action was silent.</li>
+though it “worked” — note which action was silent.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
@@ -536,8 +561,8 @@ format, e.g. a repo name with no <code>/</code>).</li>
 </ol>
 <p><strong>You should see and hear (and feel)</strong></p>
 <ul>
-<li>The rejection is <strong>spoken</strong> ("Enter a repository name…"
-/ "Repository must be in owner/repo format."), <strong>and</strong>
+<li>The rejection is <strong>spoken</strong> (“Enter a repository name…”
+/ “Repository must be in owner/repo format.”), <strong>and</strong>
 focus lands <strong>in the field to fix</strong>, not on the button you
 just pressed. You can immediately type the correction. Silence, or a
 spoken error with focus left on the button, is a fail.</li>
@@ -552,7 +577,7 @@ id="a11y-10--announcements-mirror-to-a-refreshable-braille-display-editor-radio-
 — Announcements mirror to a refreshable braille display (Editor, Radio,
 Cast)</h2>
 <p><em>What &amp; why.</em> A braille user who has speech muted must
-still receive QUILL's spoken outcomes <strong>on the braille
+still receive QUILL’s spoken outcomes <strong>on the braille
 display</strong>. The <strong>#1283</strong> path mirrors every
 announcement to braille (Settings ▸ <code>announcement_braille</code>,
 on by default) and must do so in the editor <strong>and</strong> in the
@@ -644,7 +669,7 @@ id="a11y-12--high-contrast-theme-and-reduced-motion-are-respected">A11Y-12
 — High-contrast theme and reduced-motion are respected</h2>
 <p><em>What &amp; why.</em> Low-vision users who are not on a screen
 reader rely on the OS <strong>high-contrast</strong> theme and, where
-the OS asks for it, <strong>reduced motion</strong>. QUILL's native wx
+the OS asks for it, <strong>reduced motion</strong>. QUILL’s native wx
 controls should repaint under high contrast and stay legible; any
 animation must never be the <em>only</em> signal that something
 happened.</p>
@@ -668,7 +693,7 @@ still tell it happened.</li>
 </ol>
 <p><strong>You should see and hear (and feel)</strong></p>
 <ul>
-<li>Under high contrast, text and controls repaint to the theme's
+<li>Under high contrast, text and controls repaint to the theme’s
 colours and stay <strong>readable</strong> (no invisible text on a
 same-colour background, no controls that vanish into the background).
 With reduced motion, outcomes are still conveyed by <strong>text /
@@ -742,5 +767,6 @@ documented behaviour and note it; do not fail the section for it.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>
