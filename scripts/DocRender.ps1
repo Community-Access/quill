@@ -1,6 +1,7 @@
-# Shared Pandoc resolver, dot-sourced by every standalone app's
-# scripts\render_docs.ps1. The Python equivalent lives in
-# scripts\release_readiness.py (_resolve_pandoc); keep the two in step.
+# Shared doc-rendering helpers, dot-sourced by every standalone app's
+# scripts\render_docs.ps1: Pandoc resolution and reproducible EPUB metadata.
+# The Python equivalents live in scripts\release_readiness.py; keep them in
+# step.
 #
 # Why this exists: the render scripts used to take whatever `Get-Command pandoc`
 # handed back, which is the first match on PATH -- and PATH order is not a
@@ -115,4 +116,55 @@ Or point QUILL_PANDOC at a suitable pandoc.exe.
         Write-Host "Using Pandoc $($best.Version) ($($best.Path))"
     }
     return $best.Path
+}
+
+# --- Reproducible EPUB metadata -------------------------------------------
+#
+# Pandoc stamps a fresh random UUID into dc:identifier and the current wall
+# clock into dcterms:modified on every EPUB build, so re-rendering an
+# unchanged document still produces different bytes. That made all 165
+# committed .epub files show as modified on every run, and left the docs
+# parity gate unable to distinguish a real content change from a no-op
+# rebuild. Pinning both makes the output a pure function of the source.
+
+# A fixed build epoch (2024-01-01T00:00:00Z), honoured by Pandoc via
+# SOURCE_DATE_EPOCH. This is deliberately a constant rather than a real
+# modification time: any per-run or per-checkout value reintroduces the churn.
+$script:QuillSourceDateEpoch = "1704067200"
+
+function Get-QuillEpubIdentifier {
+    <#
+    .SYNOPSIS
+        A stable, URN-safe dc:identifier derived from a document's path.
+    .DESCRIPTION
+        Must be unique per document and identical across machines and runs, so
+        it is derived from the repo-relative path rather than generated. Paths
+        can contain spaces and mixed case (e.g. "docs/user guide/userguide.md"),
+        so everything outside [a-z0-9] collapses to a single hyphen.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$RepoRelativePath
+    )
+
+    $stem = $RepoRelativePath -replace '\.[^.\/]+$', ''
+    $slug = ($stem -replace '[^A-Za-z0-9]+', '-').Trim('-').ToLowerInvariant()
+    return "urn:quill:$slug"
+}
+
+function Invoke-WithSourceDateEpoch {
+    <#
+    .SYNOPSIS
+        Runs a script block with SOURCE_DATE_EPOCH pinned, then restores it.
+    .DESCRIPTION
+        Scoped rather than set globally: render_docs.ps1 is called from
+        build_release.ps1, and other tools in that build also honour
+        SOURCE_DATE_EPOCH. Leaking it would silently change their output too.
+    #>
+    param(
+        [Parameter(Mandatory)][scriptblock]$Body
+    )
+
+    $previous = $env:SOURCE_DATE_EPOCH
+    $env:SOURCE_DATE_EPOCH = $script:QuillSourceDateEpoch
+    try { & $Body } finally { $env:SOURCE_DATE_EPOCH = $previous }
 }

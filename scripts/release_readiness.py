@@ -8,10 +8,12 @@ import sys
 from pathlib import Path
 
 
-def _run_step(title: str, command: list[str], *, cwd: Path) -> None:
+def _run_step(
+    title: str, command: list[str], *, cwd: Path, env: dict[str, str] | None = None
+) -> None:
     print(f"\n==> {title}")
     print(" ".join(command))
-    subprocess.run(command, cwd=cwd, check=True)
+    subprocess.run(command, cwd=cwd, check=True, env=env)
 
 
 def _page_title(source: Path) -> str:
@@ -109,7 +111,7 @@ def _resolve_pandoc() -> str:
     copy needs admin rights a developer may not have, so resolve by version
     instead. ``QUILL_PANDOC`` overrides the search entirely.
 
-    Mirrors scripts/Resolve-Pandoc.ps1; keep the two in step.
+    Mirrors Resolve-Pandoc in scripts/DocRender.ps1; keep the two in step.
     """
     minimum_text = ".".join(str(part) for part in MINIMUM_PANDOC)
 
@@ -161,8 +163,38 @@ def _resolve_pandoc() -> str:
     return best_path
 
 
+# Pandoc stamps a fresh random UUID into dc:identifier and the current wall
+# clock into dcterms:modified on every EPUB build, so re-rendering an unchanged
+# document still produced different bytes -- all 165 committed .epub files
+# showed as modified on every run, leaving the docs parity gate unable to tell
+# a real content change from a no-op rebuild. Pinning both makes the output a
+# pure function of the source. A fixed epoch (2024-01-01T00:00:00Z) is
+# deliberate: any per-run or per-checkout value reintroduces the churn.
+# Mirrors QuillSourceDateEpoch in scripts/DocRender.ps1.
+EPUB_SOURCE_DATE_EPOCH = "1704067200"
+
+
+def _epub_identifier(repo_relative: Path) -> str:
+    """A stable, URN-safe dc:identifier derived from a document's path.
+
+    Must be unique per document and identical across machines and runs, so it
+    is derived from the repo-relative path rather than generated. Paths can
+    contain spaces and mixed case ("docs/user guide/userguide.md"), so
+    everything outside [a-z0-9] collapses to a single hyphen.
+
+    Mirrors Get-QuillEpubIdentifier in scripts/DocRender.ps1.
+    """
+    stem = repo_relative.with_suffix("").as_posix()
+    slug = re.sub(r"[^A-Za-z0-9]+", "-", stem).strip("-").lower()
+    return f"urn:quill:{slug}"
+
+
 def _build_docs(repo_root: Path) -> None:
     pandoc_path = _resolve_pandoc()
+    # Scoped to the Pandoc calls rather than set globally: other tools in a
+    # release build also honour SOURCE_DATE_EPOCH, and leaking it would
+    # silently change their output too.
+    epub_env = {**os.environ, "SOURCE_DATE_EPOCH": EPUB_SOURCE_DATE_EPOCH}
     # The accessible template adds <html lang="en">, a skip link, and a <main>
     # landmark. Pandoc's default template has none of those, so a missing
     # template is a hard failure rather than a silent downgrade.
@@ -200,8 +232,20 @@ def _build_docs(repo_root: Path) -> None:
         )
         _run_step(
             f"Building {epub_out.name}",
-            [pandoc_path, str(source), "-f", "gfm+smart", "-t", "epub3", "-o", str(epub_out)],
+            [
+                pandoc_path,
+                str(source),
+                "-f",
+                "gfm+smart",
+                "-t",
+                "epub3",
+                "--metadata",
+                f"identifier={_epub_identifier(source.relative_to(repo_root))}",
+                "-o",
+                str(epub_out),
+            ],
             cwd=repo_root,
+            env=epub_env,
         )
 
 

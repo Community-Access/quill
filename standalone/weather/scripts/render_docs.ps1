@@ -12,9 +12,9 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $docsDir = Join-Path $repoRoot "docs"
 
 # Resolve Pandoc by version rather than by PATH order -- see the header of
-# scripts\Resolve-Pandoc.ps1 for why the first match on PATH is the wrong one
+# scripts\DocRender.ps1 for why the first match on PATH is the wrong one
 # on any machine that has more than one Pandoc installed.
-$resolverPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\..\scripts\Resolve-Pandoc.ps1"))
+$resolverPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\..\scripts\DocRender.ps1"))
 if (-not (Test-Path $resolverPath)) { throw "Pandoc resolver not found at $resolverPath." }
 . $resolverPath
 $pandocExe = Resolve-Pandoc
@@ -30,20 +30,31 @@ if (-not (Test-Path $templatePath)) {
 }
 $htmlTemplateArgs = @("--template", $templatePath)
 
-Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
-    $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")
-    $epubOut = [System.IO.Path]::ChangeExtension($_.FullName, "epub")
-    Write-Host "Rendering $($_.Name) -> $(Split-Path -Leaf $htmlOut), $(Split-Path -Leaf $epubOut)"
-    # A descriptive <title>/<h1> comes from the document's first Markdown H1
-    # (falls back to the file name), so pages are never titled by bare filename.
-    $h1 = Select-String -Path $_.FullName -Pattern '^#\s+(.+?)\s*$' | Select-Object -First 1
-    $pageTitle = if ($h1) { $h1.Matches[0].Groups[1].Value } else { $_.BaseName }
-    # +smart turns ASCII "--", "..." and straight quotes into real typography.
-    # Without it Pandoc slugifies a literal "--" straight into the heading id
-    # (quill-weather----product-requirements), changing every anchor on the page
-    # and breaking existing deep links into these docs.
-    & $pandocExe $_.FullName -f gfm+smart -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
-    if ($LASTEXITCODE -ne 0) { throw "Pandoc HTML render failed for $($_.Name)" }
-    & $pandocExe $_.FullName -f gfm+smart -t epub3 -o $epubOut
-    if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }
+# $repoRoot is standalone\<app>, so the QUILL repo root is two levels up.
+# Repo-relative paths give each EPUB a stable dc:identifier.
+$quillRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\.."))
+
+Invoke-WithSourceDateEpoch {
+    Get-ChildItem $docsDir -Filter "*.md" | ForEach-Object {
+        $htmlOut = [System.IO.Path]::ChangeExtension($_.FullName, "html")
+        $epubOut = [System.IO.Path]::ChangeExtension($_.FullName, "epub")
+        Write-Host "Rendering $($_.Name) -> $(Split-Path -Leaf $htmlOut), $(Split-Path -Leaf $epubOut)"
+        # A descriptive <title>/<h1> comes from the document's first Markdown H1
+        # (falls back to the file name), so pages are never titled by bare filename.
+        $h1 = Select-String -Path $_.FullName -Pattern '^#\s+(.+?)\s*$' | Select-Object -First 1
+        $pageTitle = if ($h1) { $h1.Matches[0].Groups[1].Value } else { $_.BaseName }
+        # +smart turns ASCII "--", "..." and straight quotes into real typography.
+        # Without it Pandoc slugifies a literal "--" straight into the heading id
+        # (quill-weather----product-requirements), changing every anchor on the page
+        # and breaking existing deep links into these docs.
+        & $pandocExe $_.FullName -f gfm+smart -t html5 -s @htmlTemplateArgs --metadata "pagetitle=$pageTitle" -o $htmlOut
+        if ($LASTEXITCODE -ne 0) { throw "Pandoc HTML render failed for $($_.Name)" }
+        # A stable identifier plus the pinned SOURCE_DATE_EPOCH make the EPUB a
+        # pure function of its source; Pandoc otherwise stamps a random UUID and
+        # the current time, so every rebuild rewrote every file.
+        $relativePath = [System.IO.Path]::GetRelativePath($quillRoot, $_.FullName).Replace([char]92, '/')
+        $epubId = Get-QuillEpubIdentifier -RepoRelativePath $relativePath
+        & $pandocExe $_.FullName -f gfm+smart -t epub3 --metadata "identifier=$epubId" -o $epubOut
+        if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }
+    }
 }
