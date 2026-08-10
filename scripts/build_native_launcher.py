@@ -180,6 +180,35 @@ def find_msvc() -> Path | None:
     return Path(path[0]) if path else None
 
 
+def _discard_relocated_cmake_cache(build_dir: Path) -> bool:
+    """Delete a CMake cache that was generated for a different path.
+
+    CMakeCache.txt records the absolute source and binary directories it was
+    configured with, and CMake hard-errors rather than reusing a cache whose
+    recorded paths differ ("the current CMakeCache.txt directory ... is
+    different than the directory ... where CMakeCache.txt was created"). That
+    is exactly what a checkout moved between drives produces: caches written
+    when this repo lived on S:\\ stopped every Radio and Weather build on D:\\,
+    and because build/ is gitignored the stale files were invisible.
+
+    The cache is a pure build artifact, so discarding it costs one reconfigure.
+    Returns True when a stale cache was removed.
+    """
+    cache = build_dir / "CMakeCache.txt"
+    if not cache.is_file():
+        return False
+    expected = f"CMAKE_HOME_DIRECTORY:INTERNAL={_LAUNCHER_SRC.as_posix()}"
+    try:
+        text = cache.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        text = ""
+    if expected.casefold() in text.casefold():
+        return False
+    print(f"Discarding CMake cache configured for another path: {build_dir}")
+    shutil.rmtree(build_dir, ignore_errors=True)
+    return True
+
+
 def find_cmake() -> str | None:
     found = shutil.which("cmake")
     if found:
@@ -252,6 +281,7 @@ def build_launcher(product: Product, out_dir: Path, *, build_root: Path | None =
 
     version = product_version(product)
     build_dir = (build_root or _REPO_ROOT / "build" / "launcher") / product.key
+    _discard_relocated_cmake_cache(build_dir)
     build_dir.mkdir(parents=True, exist_ok=True)
 
     configure = [
