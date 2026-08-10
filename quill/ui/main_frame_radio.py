@@ -30,6 +30,7 @@ from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
+from quill.ui.radio import quick_play
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.player_controller import (
@@ -1815,6 +1816,17 @@ class RadioMixin:
 
     # -- command palette registration ----------------------------------------
 
+    def _radio_play_favorite_slot(self, slot: int) -> None:
+        """Play the slot-th favorite (1-based) -- the quick-play keys. Logic is in
+        quill.ui.radio.quick_play so this module stays under the size budget."""
+        quick_play.play_favorite_slot(
+            slot,
+            favorites=self._radio_favorites,
+            history=self._radio_history,
+            controller=self._radio_controller,
+            announce=self._announce,
+        )
+
     def _register_radio_commands(self) -> None:
         for command_id, title, handler in (
             ("radio.browse", "Internet Radio: Browse Stations...", self.open_internet_radio),
@@ -1926,6 +1938,16 @@ class RadioMixin:
         ):
             self.commands.try_register(
                 command_id, title, handler, self._binding_for(command_id), feature_id="core.radio"
+            )
+        # Quick-play the first ten favorites (default Ctrl+Alt+Shift+1..0, rebindable).
+        for slot in range(1, 11):
+            cmd = f"radio.play_favorite_{slot}"
+            self.commands.try_register(
+                cmd,
+                f"Internet Radio: Play Favorite {slot}",
+                lambda s=slot: self._radio_play_favorite_slot(s),
+                self._binding_for(cmd),
+                feature_id="core.radio",
             )
         # Spotify commands live behind future.spotify (locked_off), so they are
         # registered but stay hidden until the feature is unlocked.
