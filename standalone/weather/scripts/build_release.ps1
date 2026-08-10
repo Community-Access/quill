@@ -6,10 +6,15 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile S:\token.txt]
-#                               [-Iscc <path>] [-SkipToken]
+#                               [-Iscc <path>] [-SkipToken] [-SkipSharedRuntime]
+#                               [-FfmpegDir <dir>] [-LibmpvDir <dir>]
 #
 # Quill Weather is a small app: no ffmpeg, no mpv, no media/AI stacks -- so,
-# unlike Quill Radio's build, there is nothing to stage under tools\. It is
+# unlike Quill Radio's build, there is nothing to stage under its own tools\.
+# The *shared* runtime it builds does bundle both, though, which is why
+# -FfmpegDir/-LibmpvDir exist here; omit them and the pinned, SHA-256-verified
+# packs are staged automatically. Pass -SkipSharedRuntime to reuse a runtime
+# another app already built. It is
 # versioned in lockstep with Quill Radio (2.2.0) but built and released on its
 # own. Everything is bundled; the installer and zip perform no downloads.
 
@@ -18,6 +23,13 @@
 # runnable on exactly one computer.
 param(
     [string]$Python = "",
+    # Weather's own payload bundles neither ffmpeg nor mpv, but the shared
+    # QuillVille Runtime it builds bundles both, and build_runtime.ps1 requires
+    # a vetted directory for each. Declared here so -FfmpegDir/-LibmpvDir can be
+    # passed through; without them this script silently absorbed the arguments
+    # into $args and failed inside build_runtime.ps1 with a confusing error.
+    [string]$FfmpegDir = "",
+    [string]$LibmpvDir = "",
     [string]$TokenFile = "",
     [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
     [string]$QuillRepo = "",
@@ -111,9 +123,36 @@ $sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
 if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
     Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
 } else {
+    # build_runtime.ps1 bundles ffmpeg and libmpv into the shared runtime and
+    # refuses PATH/%APPDATA% auto-discovery for both, so it needs an explicit
+    # vetted directory for each -- even though Weather's own payload ships
+    # neither. Passing only -Python made every Weather build fail unless another
+    # app had already produced the runtime, which is an ordering dependency
+    # nothing documented. Stage the pinned, SHA-256-verified packs when the
+    # caller gave none, exactly as Quill Radio does, so a fresh clone builds
+    # Weather on its own.
+    if (-not $FfmpegDir) {
+        Write-Host "Staging ffmpeg from QUILL's pinned release assets..."
+        & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
+        if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
+        $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
+    }
+    if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
+        throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'."
+    }
+    if (-not $LibmpvDir) {
+        Write-Host "Staging libmpv from QUILL's pinned release assets..."
+        & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only libmpv
+        if ($LASTEXITCODE -ne 0) { throw "Could not stage libmpv (see scripts/fetch_build_deps.py)." }
+        $LibmpvDir = Join-Path $QuillRepo "build\deps\mpv"
+    }
+    if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
+        throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
+    }
     Push-Location (Join-Path $repoRoot "..\runtime")
     try {
-        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") `
+            -Python $Python -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
         if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
     } finally {
         Pop-Location
