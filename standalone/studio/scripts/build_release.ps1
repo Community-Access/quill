@@ -6,7 +6,12 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
-#                               [-TokenFile S:\token.txt] [-Iscc <path>]
+#                               [-TokenFile <path>] [-Iscc <path>]
+#
+# Every path defaults to "" and is resolved from the checkout itself (see
+# scripts\BuildEnv.ps1), so a clone builds on any machine and any drive. These
+# used to be literal "D:\QUILL..." defaults, which made this script runnable on
+# exactly one computer.
 #
 # Everything is bundled; the installer and zip perform no downloads. The
 # bundled feedback token (Report a Bug for users with no GitHub setup) is
@@ -15,12 +20,12 @@
 # with a silently broken bug reporter.
 
 param(
-    [string]$Python = "D:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
-    [string]$TokenFile = "D:\token.txt",
-    [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "D:\QUILL",
+    [string]$TokenFile = "",
+    [string]$Iscc = "",
+    [string]$QuillRepo = "",
     [switch]$SkipToken,
     # Reuse an already-built shared runtime at ..\..\runtime\dist\QuillVilleRuntime
     # instead of rebuilding it (a full PyInstaller onedir, ~10 min). The installer
@@ -38,6 +43,17 @@ $version = "2.2.0"
 # the sign-build steps below are no-ops, so a plain build is unchanged.
 if ($Sign) { $env:QUILL_SIGN = "1" }
 
+# -- resolve the toolchain ----------------------------------------------------
+# standalone\studio -> standalone -> the QUILL checkout root.
+if (-not $QuillRepo) {
+    $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
+}
+. (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
+$QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
+$Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
+$Iscc = Resolve-QuillIscc -Preferred $Iscc
+Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
+
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
@@ -46,10 +62,8 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 # copy whose Report a Bug falls back to opening GitHub manually (same posture as
 # the Quill Radio and Quill Weather builds).
 if (-not $SkipToken) {
-    if (-not (Test-Path $TokenFile)) {
-        throw "Token file not found: $TokenFile -- a release build must embed the issues-only token (or pass -SkipToken for a private build)."
-    }
-    $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
+    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
+    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
     & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
     if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
@@ -75,10 +89,6 @@ if (-not $LibmpvDir) {
 }
 if (-not $LibmpvDir -or -not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
     throw "libmpv-2.dll not found. Pass -LibmpvDir; the mpv engine must ship bundled."
-}
-if (-not (Test-Path $Iscc)) {
-    $fallback = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-    if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
 }
 
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----

@@ -10,9 +10,14 @@
 #
 # Usage:
 #   .\build_runtime.ps1 [-Python <python.exe>] [-FfmpegDir <dir>] [-LibmpvDir <dir>]
+#
+# -Python defaults to the newest installable system Python (see
+# scripts\BuildEnv.ps1). It used to default to a literal
+# "S:\QUILL\.venv\Scripts\python.exe", so a direct invocation worked on exactly
+# one machine, on one drive letter.
 
 param(
-    [string]$Python = "S:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "",
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = ""
 )
@@ -20,6 +25,13 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = $PSScriptRoot
 $dist = Join-Path $repoRoot "dist\QuillVilleRuntime"
+
+# standalone\runtime -> standalone -> the QUILL checkout root. Derived from this
+# script's own location, so no drive letter is ever assumed.
+$quillRepo = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\.."))
+. (Join-Path $quillRepo "scripts\BuildEnv.ps1")
+$quillRepo = Resolve-QuillRepo -Preferred $quillRepo
+$Python = Resolve-QuillPython -Preferred $Python -QuillRepo $quillRepo
 
 # -- the build environment must match the declared runtime manifest -----------
 # quillville-runtime.spec builds with collect_all("quill"), so PyInstaller
@@ -29,12 +41,14 @@ $dist = Join-Path $repoRoot "dist\QuillVilleRuntime"
 # dictation and wxPython below the pin in [ui], and it was only caught by
 # unpacking the installer and diffing it against a known-good one. Check the
 # venv against pyproject's [runtime] group first -- it costs a second.
-$quillRepo = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "..\.."))
 $envCheck = Join-Path $quillRepo "scripts\check_build_env.py"
 if (Test-Path $envCheck) {
-    & $Python $envCheck --groups runtime --python $Python
+    # runtime = what the shared runtime ships; packaging = the build tools that
+    # produce it. Checking only [runtime] let a missing PyInstaller through: the
+    # gate passed, then PyInstaller failed seconds later with a bare import error.
+    & $Python $envCheck --groups runtime,packaging --python $Python
     if ($LASTEXITCODE -ne 0) {
-        throw "Build environment does not match pyproject [runtime] -- see above."
+        throw "Build environment does not match pyproject [runtime, packaging] -- see above."
     }
 } else {
     Write-Warning "Build-environment check not found at $envCheck; skipping."

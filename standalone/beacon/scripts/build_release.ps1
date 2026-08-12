@@ -15,17 +15,32 @@
 # tools\mpv so the opt-in path works offline, but its absence is only a
 # warning, never a build failure.
 
+# Every path below defaults to "" and is resolved from the checkout itself (see
+# scripts\BuildEnv.ps1), so a clone builds on any machine and any drive. These
+# used to be literal "S:\QUILL..." defaults, which made this script runnable on
+# exactly one computer.
 param(
-    [string]$Python = "S:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "",
     [string]$LibmpvDir = "",
-    [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "S:\QUILL",
+    [string]$Iscc = "",
+    [string]$QuillRepo = "",
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "0.1.0"
+
+# -- resolve the toolchain ----------------------------------------------------
+# standalone\beacon -> standalone -> the QUILL checkout root.
+if (-not $QuillRepo) {
+    $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
+}
+. (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
+$QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
+$Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
+$Iscc = Resolve-QuillIscc -Preferred $Iscc
+Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -41,11 +56,6 @@ $stageMpv = $LibmpvDir -and (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))
 if (-not $stageMpv) {
     Write-Warning "libmpv-2.dll not found -- shipping the wx.media default only (opt-in gapless/output-device playback will require an on-demand mpv download)."
 }
-if (-not (Test-Path $Iscc)) {
-    $fallback = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-    if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
-}
-
 # -- onedir build -------------------------------------------------------------
 Push-Location $repoRoot
 try {

@@ -327,6 +327,26 @@ runtime = [
   "quill[vosk]",
   "quill[kokoro]",
 ]
+# Build tools the release scripts invoke, NOT dependencies of the shipped app.
+#
+# Why this is separate from [runtime]: that group is the set the shared
+# QuillVille Runtime *ships*, so putting PyInstaller there would bundle the
+# packaging tool into every installer. This group is only ever checked, never
+# collected into an artifact.
+#
+# Why it exists at all: PyInstaller used to be declared nowhere. It was present
+# on the one machine that cut releases purely because that checkout's virtualenv
+# happened to have it, so check_build_env.py reported "Build environment
+# satisfies pyproject [runtime]" and the build then died seven seconds later on
+# "No module named PyInstaller". A gate that cannot see the single most
+# important build tool is not a gate; build_runtime.ps1 now checks
+# `--groups runtime,packaging`.
+packaging = [
+  "pyinstaller>=6.22.0",
+  # Ships the upstream hooks for third-party packages (wx, babel, huggingface);
+  # a stale copy silently drops data files from the frozen tree.
+  "pyinstaller-hooks-contrib>=2026.6",
+]
 dev = [
   "pytest>=9.1.1",
   "pytest-xdist>=3.8.0",

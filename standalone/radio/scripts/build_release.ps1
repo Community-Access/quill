@@ -6,7 +6,7 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
-#                               [-TokenFile S:\token.txt] [-Iscc <path>]
+#                               [-TokenFile <path>] [-Iscc <path>]
 #
 # Everything is bundled; the installer and zip perform no downloads. The
 # bundled feedback token (Report a Bug for users with no GitHub setup) is
@@ -22,7 +22,7 @@ param(
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
     [string]$TokenFile = "",
-    [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
+    [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipToken,
     [switch]$SkipSharedRuntime,
@@ -44,41 +44,13 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 if (-not $QuillRepo) {
     $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
 }
-if (-not (Test-Path (Join-Path $QuillRepo "quill\__init__.py"))) {
-    throw "QUILL checkout not found at '$QuillRepo' -- pass -QuillRepo."
-}
-# Existing on disk is not the same as runnable: a venv whose base interpreter has
-# been moved or uninstalled still has a python.exe that dies with "did not find
-# executable at ...". Preferring it blindly wedged the build several steps later
-# with a misleading "Bundled feedback token generation failed", so prove the
-# interpreter actually runs before committing to it.
-function Test-PythonExe([string]$exe) {
-    if (-not $exe -or -not (Test-Path $exe)) { return $false }
-    try {
-        & $exe -c "import sys" 2>&1 | Out-Null
-        return ($LASTEXITCODE -eq 0)
-    } catch {
-        return $false
-    }
-}
-
-if (-not $Python) {
-    $venvPython = Join-Path $QuillRepo ".venv\Scripts\python.exe"
-    if (Test-PythonExe $venvPython) {
-        $Python = $venvPython
-    } else {
-        if (Test-Path $venvPython) {
-            Write-Host "Ignoring $venvPython (present but not runnable); falling back to PATH."
-        }
-        $onPath = Get-Command python -ErrorAction SilentlyContinue
-        if (-not $onPath) { throw "No usable Python found -- pass -Python <python.exe>." }
-        $Python = $onPath.Source
-    }
-}
-if (-not (Test-PythonExe $Python)) {
-    throw "Python at '$Python' is not runnable -- pass a working -Python <python.exe>."
-}
-Write-Host "Using Python: $Python"
+# The interpreter/ISCC/token resolution this script used to carry privately now
+# lives in scripts\BuildEnv.ps1, shared by every standalone build script so the
+# seven copies stop drifting apart.
+. (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
+$QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
+$Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
+$Iscc = Resolve-QuillIscc -Preferred $Iscc
 
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
@@ -93,12 +65,8 @@ if (-not $SkipToken) {
     # bundled by this machine's last build). Pass it when given; otherwise let
     # the generator resolve, and let ITS --require-token error explain every
     # option rather than throwing here about the one source we happen to know.
-    if ($TokenFile) {
-        if (-not (Test-Path $TokenFile)) {
-            throw "Token file not found: $TokenFile."
-        }
-        $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
-    }
+    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
+    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
     & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
     if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
@@ -147,11 +115,6 @@ if (-not $LibmpvDir) {
 if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
     throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
 }
-if (-not (Test-Path $Iscc)) {
-    $fallback = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-    if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
-}
-
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
 # per-app installer (quill-radio.iss) installs into

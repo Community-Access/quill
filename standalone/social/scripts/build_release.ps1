@@ -5,24 +5,40 @@
 #   dist\QUILL-Social-Setup-<ver>.exe        system installer
 #
 # Usage:
-#   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile S:\token.txt]
-#                               [-Iscc <path>] [-QuillRepo S:\QUILL]
+#   .\scripts\build_release.ps1 [-Python <python.exe>] [-TokenFile <path>]
+#                               [-Iscc <path>] [-QuillRepo <path>]
+#
+# Every path defaults to "" and is resolved from the checkout itself (see
+# scripts\BuildEnv.ps1), so a clone builds on any machine and any drive. These
+# used to be literal "S:\QUILL..." defaults, which made this script runnable on
+# exactly one computer.
 #
 # Mirrors quill-radio's build_release.ps1, minus the ffmpeg/mpv staging (Social
 # is text-and-network; media playback is an optional runtime extra, not bundled).
 # Everything else is bundled; the installer and zip perform no downloads.
 
 param(
-    [string]$Python = "S:\QUILL\.venv\Scripts\python.exe",
-    [string]$TokenFile = "S:\token.txt",
-    [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "S:\QUILL",
+    [string]$Python = "",
+    [string]$TokenFile = "",
+    [string]$Iscc = "",
+    [string]$QuillRepo = "",
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "0.3.0"
+
+# -- resolve the toolchain ----------------------------------------------------
+# standalone\social -> standalone -> the QUILL checkout root.
+if (-not $QuillRepo) {
+    $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
+}
+. (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
+$QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
+$Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
+$Iscc = Resolve-QuillIscc -Preferred $Iscc
+Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -36,17 +52,13 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 # Best-effort for Social: embed the issues-only token when it is available so
 # the shared bug reporter works, but do not fail the build without it (unlike a
 # QUILL/Radio release, where it is a hard requirement).
-if (Test-Path $TokenFile) {
-    $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
-    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
-} else {
-    Write-Warning "Token file not found: $TokenFile -- building without the bundled bug-report token."
-}
-
-if (-not (Test-Path $Iscc)) {
-    $fallback = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-    if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
+$TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
+if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
+# A token file is only one of four sources the generator accepts, so run it
+# regardless and treat failure as the warning it always was for Social.
+& $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "No feedback token available -- building without the bundled bug-report token."
 }
 
 # -- onedir build -------------------------------------------------------------

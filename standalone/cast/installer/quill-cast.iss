@@ -8,7 +8,14 @@
 ; installed copy must keep using the shared %APPDATA%\Quill store.
 
 #define AppName "QUILL Cast"
-#define AppVersion "1.0.5"
+; Version is single-sourced from build_release.ps1, which passes
+; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
+; manual ISCC run and must be kept in step with build_release.ps1's $version.
+; It was an unguarded #define pinned at 1.0.5, so a 1.0.7 build shipped a
+; portable zip named 1.0.7 next to a Setup.exe that called itself 1.0.5.
+#ifndef AppVersion
+  #define AppVersion "1.0.7"
+#endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-cast"
 #define AppExeName "QUILLCast.exe"

@@ -6,7 +6,12 @@
 #
 # Usage:
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-FfmpegDir <dir>]
-#                               [-TokenFile S:\token.txt] [-Iscc <path>]
+#                               [-TokenFile <path>] [-Iscc <path>]
+#
+# Every path defaults to "" and is resolved from the checkout itself (see
+# scripts\BuildEnv.ps1), so a clone builds on any machine and any drive. These
+# used to be literal "S:\QUILL..." defaults, which made this script runnable on
+# exactly one computer.
 #
 # Everything is bundled; the installer and zip perform no downloads. The
 # bundled feedback token (Report a Bug for users with no GitHub setup) is
@@ -15,17 +20,29 @@
 # with a silently broken bug reporter.
 
 param(
-    [string]$Python = "S:\QUILL\.venv\Scripts\python.exe",
+    [string]$Python = "",
     [string]$FfmpegDir = "",
-    [string]$TokenFile = "S:\token.txt",
-    [string]$Iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
-    [string]$QuillRepo = "S:\QUILL",
+    [string]$TokenFile = "",
+    [string]$Iscc = "",
+    [string]$QuillRepo = "",
+    [switch]$SkipToken,
     [switch]$Sign
 )
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "1.0.7"
+
+# -- resolve the toolchain ----------------------------------------------------
+# standalone\cast -> standalone -> the QUILL checkout root.
+if (-not $QuillRepo) {
+    $QuillRepo = Split-Path -Parent (Split-Path -Parent $repoRoot)
+}
+. (Join-Path $QuillRepo "scripts\BuildEnv.ps1")
+$QuillRepo = Resolve-QuillRepo -Preferred $QuillRepo
+$Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
+$Iscc = Resolve-QuillIscc -Preferred $Iscc
+Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run via QUILL_SIGN, read by QUILL\scripts\code_signing.py. Without it
@@ -36,12 +53,18 @@ if ($Sign) { $env:QUILL_SIGN = "1" }
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
 # -- bundled feedback token (hard requirement for a release build) -----------
-if (-not (Test-Path $TokenFile)) {
-    throw "Token file not found: $TokenFile -- a release build must embed the issues-only token."
+# A token file is one of FOUR sources generate_feedback_token.py accepts (env
+# var, token file, Windows Credential Manager, or a token already bundled by
+# this machine's last build), so a missing file is not a missing token. This
+# used to throw on a hardcoded "S:\token.txt" being absent, failing the build on
+# every other machine even when a perfectly good token was already bundled.
+# --require-token below is still what makes the token mandatory for a release.
+if (-not $SkipToken) {
+    $TokenFile = Resolve-QuillTokenFile -Preferred $TokenFile
+    if ($TokenFile) { $env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile }
+    & $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
+    if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 }
-$env:QUILL_FEEDBACK_TOKEN_FILE = $TokenFile
-& $Python (Join-Path $QuillRepo "tools\generate_feedback_token.py") --require-token
-if ($LASTEXITCODE -ne 0) { throw "Bundled feedback token generation failed." }
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 if (-not $FfmpegDir) {
@@ -51,11 +74,6 @@ if (-not $FfmpegDir) {
 if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
     throw "ffmpeg.exe not found. Pass -FfmpegDir; audio trim/normalize must ship bundled."
 }
-if (-not (Test-Path $Iscc)) {
-    $fallback = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-    if (Test-Path $fallback) { $Iscc = $fallback } else { throw "ISCC.exe not found: $Iscc" }
-}
-
 # -- onedir build -------------------------------------------------------------
 Push-Location $repoRoot
 try {
@@ -127,7 +145,7 @@ $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-& $Iscc @innoSign (Join-Path $repoRoot "installer\quill-cast.iss") "/O$(Join-Path $repoRoot 'dist')"
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
 Write-Host ""
