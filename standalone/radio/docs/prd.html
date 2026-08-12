@@ -658,8 +658,73 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
-<li><strong>Since 2.2.0 (unreleased; upstream
-<code>core/radio/youtube.py</code>, <code>core/radio/live365.py</code>,
+<li><strong>Song History and one volume for every station (2.2.0;
+upstream <code>core/radio/song_history.py</code>,
+<code>ui/radio/song_history_dialog.py</code>,
+<code>ui/radio/song_history_commands.py</code>,
+<code>ui/radio/volume_commands.py</code>,
+<code>core/radio/favorites.py</code>,
+<code>core/commands.py</code>).</strong>
+<ul>
+<li><em>Song history (Playback &gt; Song History, Ctrl+Shift+H).</em>
+<code>core/radio/song_history.py</code> is a wx-free, strict-typed
+per-station log recorded at <code>_radio_apply_track_title</code> – the
+single choke point every route to a title (ICY, the engine, the
+station’s status endpoint) already funnels through, and where the “this
+is a new song” signal already exists, so the thirty-second poll gains a
+memory without gaining a timer. Four rules keep the log readable and are
+directly unit-tested: a repeat of the song already at the front folds
+into that entry with a <code>play_count</code> rather than appearing six
+times per track; each station is capped independently
+(<code>MAX_PER_STATION</code>) so one station left playing all day
+cannot evict another’s afternoon; stations are capped separately,
+least-recently-active dropped first; and titles that are the station’s
+own name, “Live”, or an advert marker are rejected as noise. Recording
+is wrapped so it can never raise – it runs immediately before the What’s
+Playing announcement, and anything thrown would silence it – and both
+the enabled flag and Safe Mode are read through <code>getattr</code>, so
+a host predating the preference degrades to logging rather than crashing
+the announcement path. The dialog offers Copy, Send to Clip Library (via
+the existing <code>ClipLibrary</code>/<code>Fragment</code> API), and
+<strong>Background</strong>: one provider-neutral
+<code>ProviderChatBackend</code> call off the UI thread whose answer is
+always prefixed with <code>BACKGROUND_DISCLAIMER</code>, because
+model-written text sits inches from the station’s own metadata in the
+same window. Refused in Safe Mode, and the prompt explicitly instructs
+the model to admit when it does not know the song. Persistence is
+classified <code>cache</code> in the persistence audit: an observed log
+with no default whose meaning could silently change. Off switch:
+<code>RadioHistory.song_history_enabled</code>.</li>
+<li><em>One volume for every station (Playback &gt; Use One Volume for
+All Stations).</em> <code>RadioHistory.use_global_volume</code> (default
+off, so behaviour is unchanged until switched on) makes
+<code>volume_percent</code> the single level
+<code>_radio_resolve_volume</code> returns for every station,
+deliberately outranking a favorite’s own remembered level – which is the
+entire point, since that level winning outright is what left twenty
+favorites with twenty places to turn the volume down.
+<code>_radio_track_history_and_volume</code> stops writing a per-station
+copy while it is on, or it would quietly rebuild the very levels the
+setting bypasses. Per-station levels are <strong>kept, never
+erased</strong>, so switching back off restores them exactly;
+<code>forget_station_volumes</code> is the deliberate, confirm-first way
+to be rid of them and uses the new
+<code>RadioFavoritesStore.clear_volume</code> rather than
+<code>set_volume(-1)</code> – the latter clamps to 0-100 and would set
+every station to <em>silent</em> instead of clearing it. Both behaviours
+are pinned by tests.</li>
+<li><em>Toggle state in the Command Palette (#1383).</em> The palette
+lists <code>Command.title</code> verbatim and has no checkmark, so
+“Announce Track Titles On/Off” read identically whichever way the switch
+was set. New <code>CommandRegistry.set_title</code> retitles a command
+in place (keeping handler, keybinding and feature id), and the
+track-title and global-volume toggles now carry “(currently
+On)”/“(currently Off)” and retitle themselves as they flip. The
+global-volume menu checkmark is synced the same way, since the palette
+and a rebound chord reach the handler without wx updating the item.</li>
+</ul></li>
+<li><strong>Since 2.2.0 (upstream <code>core/radio/youtube.py</code>,
+<code>core/radio/live365.py</code>,
 <code>core/radio/playlist_export.py</code>,
 <code>core/radio/bad_station_report.py</code>,
 <code>core/radio/directory_registry.py</code>,
@@ -1341,20 +1406,23 @@ its own home now that Quill Weather is a standalone app: see
 &gt; Customize Features…), and that menu offers <strong>Open the Quill
 Weather App</strong> to hand off to the standalone watcher. The two are
 separate, independently-distributed apps that run side by side.</p>
-<h2 id="10-spotify-integration-experimental-ships-dark">10. Spotify
-integration (experimental, ships dark)</h2>
+<h2 id="10-spotify-integration-experimental">10. Spotify integration
+(experimental)</h2>
 <p>Quill Radio (music) and QUILL Cast (podcasts) can play directly from
-Spotify. The capability is <strong>complete in code but ships
-dark</strong>: it is gated behind the <code>future.spotify</code>
-feature flag, which is <code>locked_off</code> in
-<code>quill/core/feature_catalog.py</code>. While locked off, its
-commands and Help-menu items are hidden and nothing reaches Spotify’s
-servers, so a default build shows no sign of it. This section is the
-design of record and the honest statement of what is left before general
-availability. As with every radio feature (R-1), all of it lives in the
-shared <code>quill</code> package – <code>quill/core/spotify/*</code>
-and <code>quill/ui/spotify/*</code> – and nothing is vendored into this
-wrapper.</p>
+Spotify. The capability is <strong>experimental and ships in the
+app</strong>. It is gated behind the <code>future.spotify</code> feature
+flag in <code>quill/core/feature_catalog.py</code> – no longer
+<code>locked_off</code>, and no longer behind an unlock code, since that
+mechanism was withdrawn. The flag remains so a listener who does not
+want Spotify can switch it off in Manage Individual Features and have
+its menu items disappear. Nothing reaches Spotify’s servers until an
+account is deliberately connected, behind a one-time network-access
+consent, and the whole feature is refused in Safe Mode. This section is
+the design of record and the honest statement of what is left before
+general availability. As with every radio feature (R-1), all of it lives
+in the shared <code>quill</code> package –
+<code>quill/core/spotify/*</code> and <code>quill/ui/spotify/*</code> –
+and nothing is vendored into this wrapper.</p>
 <h3 id="101-design">10.1 Design</h3>
 <ul>
 <li><strong>Sign-in: OAuth 2.0 Authorization Code with PKCE, no client
@@ -1431,9 +1499,8 @@ DRM CDN, which the AST egress scanner cannot see and which is therefore
 documented manually there.</li>
 </ul>
 <h3 id="102-enablement-checklist">10.2 Enablement checklist</h3>
-<p>Lighting Spotify up requires all four of the following. Missing any
-one means the Help-menu items never appear (first two conditions gate
-the menu directly) or playback never starts.</p>
+<p>Playing from Spotify requires all three of the following. Missing any
+one means playback never starts.</p>
 <table>
 <thead>
 <tr>
@@ -1442,13 +1509,6 @@ the menu directly) or playback never starts.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>Unlock <code>future.spotify</code></td>
-<td>Redeem a signed unlock code via <strong>Help &gt; Redeem Unlock
-Code…</strong> (the existing offline, verified-on-machine unlock path;
-one code covers QUILL, Quill Radio, and QUILL Cast). While locked off
-the feature is fully hidden.</td>
-</tr>
 <tr>
 <td>Spotify Premium account</td>
 <td>The Web Playback SDK only streams audio for Premium; the requested
@@ -1469,13 +1529,13 @@ already warms WebView2 at startup.</td>
 </tr>
 </tbody>
 </table>
-<p>Once unlocked and out of Safe Mode, the standalone app frames
-(<code>quill/apps/radio.py</code>, <code>quill/apps/podcasts.py</code>)
-add <strong>Connect to Spotify…</strong> and <strong>Browse
-Spotify…</strong> (Radio) / <strong>Browse Spotify Podcasts…</strong>
-(Cast) to the Help menu; the accessible dialogs are
-<code>quill/ui/spotify/connect_dialog.py</code> and
-<code>quill/ui/spotify/browse_dialog.py</code>.</p>
+<p>Whenever the feature is on and the app is out of Safe Mode, the
+standalone frames (<code>quill/apps/radio.py</code>,
+<code>quill/apps/podcasts.py</code>) add <strong>Connect to
+Spotify…</strong> and <strong>Browse Spotify…</strong> (Radio) /
+<strong>Browse Spotify Podcasts…</strong> (Cast) to the Help menu; the
+accessible dialogs are <code>quill/ui/spotify/connect_dialog.py</code>
+and <code>quill/ui/spotify/browse_dialog.py</code>.</p>
 <h3 id="103-what-remains-before-general-availability">10.3 What remains
 before general availability</h3>
 <p>The offline-testable core and the wx state machine are done and

@@ -206,12 +206,47 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased">[Unreleased]</h2>
-<p>Work landed since 2.2.0 and not yet released. Quill Radio learns two
-whole new kinds of station – YouTube and Live365 – your volume finally
-stays where you put it, and every message the app speaks now also
-reaches a braille display.</p>
+<p>Nothing yet. The next release starts here.</p>
+<h2 id="220---2026-08-12">[2.2.0] - 2026-08-12</h2>
+<p>2.2.0 was never published, so everything that had accumulated under
+“Unreleased” is part of it rather than a release after it. It is a large
+one: the app is delivered differently (a shared runtime and two light
+downloads), it learns two whole new kinds of station – YouTube and
+Live365 – it remembers the songs each station played, your volume
+finally stays where you put it, and every message the app speaks now
+also reaches a braille display.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><strong>One volume for every station (Playback &gt; Use One Volume
+for All Stations).</strong> Quill Radio remembers a volume per favorite,
+and that per-station level won outright – so with twenty favorites there
+was no way to turn them all down; you had to play each station and
+adjust it. Switch this on and a single level answers for every station,
+so Volume Up/Down turn <em>everything</em> up or down. Turning it on
+adopts whatever you are hearing right now, so nothing lurches.
+Per-station levels are kept rather than erased, so turning it back off
+restores every station’s own level exactly as it was; <strong>Forget
+Every Station’s Own Volume…</strong> clears them deliberately, after
+confirming and never as a side effect. Off by default, so nothing
+changes until you ask for it. The menu checkmark follows the setting
+however you change it – menu, Command Palette, or a rebound chord.</li>
+<li><strong>Song History: what each station played earlier (Playback
+&gt; Song History, Ctrl+Shift+H).</strong> What’s Playing speaks the
+current track and forgets it; this is the memory behind it. A
+per-station list of every title change the existing thirty-second poll
+observed, newest first, each entry reading as a whole sentence (“Your
+Song by Elton John, heard 10:04, played twice”). From a selected song:
+<strong>Copy</strong>, <strong>Send to Clip Library</strong>, and
+<strong>Background</strong> – a short note on the song from whichever AI
+provider is configured, always introduced as written by an AI model
+rather than by the station, and never available in Safe Mode. Up to 200
+songs per station, and one station’s listening never evicts another’s. A
+repeat of the song already at the front folds into that entry with a
+play count instead of filling the list, and stations that broadcast
+their own name, “Live”, or an advert marker are left out.
+<strong>Clear…</strong> empties one station or all of them, and
+<strong>Keep a song history for each station</strong> in Preferences
+turns the whole thing off.</li>
 <li><strong>Browse by network: the BBC, NPR, and broadcasters
 worldwide.</strong> Browse Stations gains a <strong>Networks</strong>
 branch that gathers well-known broadcasters into one-click lists,
@@ -262,8 +297,11 @@ isn’t Live365 is passed through exactly as you typed it.</li>
 <li><strong>Export Favorites to Playlist (Station menu).</strong> Save
 your stations to an M3U playlist you can hand to any media player,
 share, or keep as a plain-text backup outside Quill Radio. It is the
-twin of Import Stations from Playlist, and the two round-trip.
-(#1249)</li>
+twin of Import Stations from Playlist, and the two round-trip. Together
+with <strong>Remove All…</strong> in the Favorites Manager (confirmation
+plus rolling-backup recovery, #1201), this completes the requested
+“export, re-order the list elsewhere, clear it, and import it back”
+journey. (#1249, #1382)</li>
 <li><strong>Output Device on the Playback menu (Ctrl+Shift+D).</strong>
 Switch the radio to another sound card or USB headset in one keystroke
 instead of opening Preferences. It changes the device immediately and
@@ -305,13 +343,16 @@ demonstrably worked. Anything that goes wrong – a missing part, parts in
 different formats, an FFmpeg error – leaves every part exactly where it
 is. You are told either way: “Joined 3 parts into one recording”, or
 “Kept 3 separate parts” and the reason.</li>
-<li><strong>Spotify (experimental, and off unless you deliberately turn
-it on).</strong> Quill Radio can play from Spotify through Spotify’s own
-playback engine. It ships dark: on a normal install there are no Spotify
-menu items, no settings, and nothing reaching Spotify. Lighting it up
-needs an unlock code, a paid Spotify Premium account, your own Spotify
-Client ID, and the Edge WebView2 runtime. Spotify audio is
-copy-protected, so a Spotify selection cannot be recorded.</li>
+<li><strong>Spotify (experimental).</strong> Quill Radio can play from
+Spotify through Spotify’s own playback engine. It is marked experimental
+and ships in the app: no unlock code is involved any more. It still asks
+a great deal before it will do anything – a paid Spotify Premium
+account, your own Spotify Client ID, and the Edge WebView2 runtime – and
+nothing reaches Spotify until you deliberately connect an account,
+behind a one-time network-access consent and refused in Safe Mode.
+Spotify audio is copy-protected, so a Spotify selection cannot be
+recorded. Turn <strong>Spotify</strong> off in Manage Individual
+Features to hide it entirely.</li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
@@ -335,6 +376,12 @@ similar entries – or a duplicate still pointing at the original station
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li><strong>The Command Palette now says whether Announce Track Titles
+is on or off.</strong> The palette lists a command’s name and offers no
+checkmark, so the entry read “Announce Track Titles On/Off” whichever
+way the switch was actually set – the only way to find out was to throw
+it. It now reads “Announce Track Titles (currently On)” or “(currently
+Off)” and retitles itself the moment you toggle it. (#1383)</li>
 <li><strong>Quill Radio remembers your volume, and Ctrl+Up/Down works
 from anywhere.</strong> The player started every session at 100% unless
 the station was a favorite with its own remembered level, so a

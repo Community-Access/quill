@@ -294,8 +294,21 @@ disabilities</td>
 </tr>
 </tbody>
 </table>
-<h2 id="1-fmstream-should-probably-be-next">1. FMSTREAM should probably
-be next</h2>
+<h2
+id="1-one-directory-expansion-workstream-fmstream-shoutcast-icecast-and-radiodns">1.
+One directory-expansion workstream: FMSTREAM, SHOUTcast, Icecast, and
+RadioDNS</h2>
+<p>These were previously tracked as three separate initiatives –
+FMSTREAM first, SHOUTcast and Icecast second, RadioDNS third. They are
+better done as <strong>one piece of work</strong>, because they are
+three parts of the same job: two new catalogs, a third to reconcile
+them, and one merged result the listener sees. Splitting them meant
+building the same merge-and-provenance machinery three times, and
+shipping FMSTREAM alone would have produced exactly the
+duplicate-station problem RadioDNS exists to solve.</p>
+<p>The order below is the order to build in; the milestone is not
+finished until all three land behind one canonical station record.</p>
+<h3 id="1a-new-catalogs-fmstream">1a. New catalogs: FMSTREAM</h3>
 <p>FMSTREAM is one of the strongest fits for QUILL. It maintains a large
 international catalog, connects listeners directly to broadcaster
 streams rather than proxying the audio, and offers a database API for
@@ -312,18 +325,27 @@ TuneIn.</li>
 <li>Country, language, genre and location browsing.</li>
 <li>A second source for validating Radio Browser records.</li>
 </ul>
-<p>I would place <strong>FMSTREAM alongside Radio Browser</strong>, not
-underneath it. QUILL could merge both catalogs into one canonical
-station result while showing provenance such as “Radio Browser,”
-“FMSTREAM,” or both.</p>
-<h2 id="2-add-shoutcast-and-icecast-webcasters">2. Add SHOUTcast and
-Icecast webcasters</h2>
+<p>FMSTREAM belongs <strong>alongside Radio Browser</strong>, not
+underneath it. QUILL merges both catalogs into one canonical station
+result while showing provenance such as “Radio Browser,” “FMSTREAM,” or
+both.</p>
+<h3 id="1b-new-catalogs-shoutcast-and-icecast-webcasters">1b. New
+catalogs: SHOUTcast and Icecast webcasters</h3>
 <p>The <strong>SHOUTcast Directory API</strong> is explicitly intended
 for websites, applications and media players, although developers must
 apply as API partners and comply with its branding and reporting
 agreement. (<a href="https://directory.shoutcast.com/Developer" title="
 SHOUTcast - API
 ">SHOUTcast</a>)</p>
+<p>There is no application form: SHOUTcast asks for an email with your
+company details and proposed application. The submission is drafted and
+ready to send in <code>partner-outreach-shoutcast.md</code>, along with
+the two points worth raising up front (Quill Radio records streams
+locally at the user’s request, and a <code>dev_id</code> shipped in a
+desktop app is extractable). Note that SHOUTcast’s own developer wiki
+does not currently resolve, so the published endpoint reference and
+attribution rules have to be requested rather than looked up. Icecast
+below needs no such approval and should not wait on this reply.</p>
 <p>That would add a great deal of independent programming:</p>
 <ul>
 <li>Community radio.</li>
@@ -341,8 +363,7 @@ title="Listing in a YellowPage Directory - Icecast Docs">Icecast</a>)</p>
 <p>These sources are especially useful because iHeart and TuneIn tend to
 emphasize established broadcasters and commercial aggregators. SHOUTcast
 and Icecast expose the independent “long tail.”</p>
-<h2 id="3-use-radiodns-to-make-the-catalog-smarter">3. Use RadioDNS to
-make the catalog smarter</h2>
+<h3 id="1c-the-reconciler-radiodns">1c. The reconciler: RadioDNS</h3>
 <p>RadioDNS is not primarily another giant listening directory. It is an
 open standards framework connecting broadcast radio with
 internet-delivered information such as:</p>
@@ -358,14 +379,17 @@ internet-delivered information such as:</p>
 station-identity provider</strong>. (<a
 href="https://radiodns.org/introduction/features/metadata/"
 title="Service and Programme Metadata – RadioDNS">RadioDNS</a>)</p>
-<p>For example, QUILL could recognize that:</p>
+<p>It is the piece that stops the two new catalogs above from tripling
+every station in the results list. With it, QUILL can recognize
+that:</p>
 <ul>
 <li>An FM station record from the FCC,</li>
 <li>a stream from Radio Browser,</li>
 <li>a station entry from FMSTREAM, and</li>
 <li>a RadioDNS service</li>
 </ul>
-<p>all represent the same station.</p>
+<p>all represent the same station – one row, several provenances,
+several stream alternatives.</p>
 <h2 id="police-fire-and-public-safety-feeds">Police, fire and
 public-safety feeds</h2>
 <p>There is no broadly open, nationwide police-scanner catalog with
@@ -656,10 +680,11 @@ title="Featured Products">vTuner</a>)</p>
 order</h2>
 <h3 id="build-or-begin-now">Build or begin now</h3>
 <ol type="1">
-<li><strong>FMSTREAM integration</strong></li>
-<li><strong>SHOUTcast API application</strong></li>
-<li><strong>Icecast directory adapter</strong></li>
-<li><strong>RadioDNS enrichment</strong></li>
+<li><strong>The directory-expansion workstream</strong> (section 1
+above), as one milestone rather than four tickets: FMSTREAM integration,
+the SHOUTcast API application, the Icecast directory adapter, and
+RadioDNS enrichment, landing behind a single canonical station record
+with provenance.</li>
 <li><strong>NWS alerts and NOAA Weather Radio directory</strong></li>
 <li><strong>RepeaterBook partnership request</strong></li>
 <li><strong>Public SDR discovery prototype</strong></li>
@@ -725,8 +750,9 @@ and rights-attested feed.</li>
 radio call, repeater, remote receiver or generated information
 service.</li>
 </ul>
-<p>My strongest next combination would be <strong>FMSTREAM + SHOUTcast +
-NOAA/NWS + RepeaterBook metadata + an accessible public-SDR
+<p>My strongest next combination would be <strong>the
+directory-expansion workstream (FMSTREAM + SHOUTcast + Icecast +
+RadioDNS) + NOAA/NWS + RepeaterBook metadata + an accessible public-SDR
 prototype</strong>. Together, those would expand QUILL well beyond
 another conventional radio aggregator and begin turning it into a
 unified accessible listening, discovery and radio-exploration

@@ -177,6 +177,14 @@ versions used a renamed and modified copy of Python's `pythonw.exe` as the
 launcher, which some antivirus tools flagged as a false positive. That pattern
 is gone, so the Quill apps are far less likely to be flagged.
 
+## Help
+
+**Help > User Guide** opens this document, and **Help > Release Notes** opens the
+notes for the version you are running. Both ship inside Quill Weather, so they
+work with no internet connection. They open in your browser, which means you can
+read them with the screen-reader navigation you already know -- headings, links,
+and find-in-page.
+
 ## Updating
 
 **Help > Check for Updates** knows whether you run the installer or the portable

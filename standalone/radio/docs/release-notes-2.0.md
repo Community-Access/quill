@@ -6,72 +6,10 @@ It also widens the net for finding stations: **iHeart and TuneIn now join the se
 
 As always, everything below also lands in QUILL itself. Quill Radio and QUILL share one codebase and one data store, so these fixes arrive in both at once -- nothing here is vendored into the Quill Radio wrapper.
 
-## The headline: the QuillVille Runtime, and downloads that finally travel light
-
-This is the big change in how Quill Radio is delivered, and it is the headline of this release. Quill Radio, QUILL, Quill Weather, and QUILL Audio Studio now share **one** Python engine -- the **QuillVille Runtime** -- installed just once per user and reused by every app in the family. Install any one of them, and every app you add afterward starts instantly, because the engine it needs is already there. No second copy, no second long download. The runtime is reference-counted, so it is removed only when the last app that relies on it is uninstalled; uninstalling Quill Radio while Quill Weather is still around leaves the shared engine in place for Weather.
-
-That shared engine unlocks two brand-new, much smaller ways to get Quill Radio, alongside the two full downloads you already knew:
-
-- **Companion edition (new)** -- `Quill-Radio-Companion-<version>.zip`, about **3 MB**. Just the app and its docs, running on the shared runtime. The first time you launch it, if the runtime is not already installed, Quill Radio offers to download and install it once (about 230 MB) with a fully accessible progress bar. After that first time, this app and every other QuillVille app start instantly. Three megabytes instead of three hundred.
-- **Thin installer (new)** -- the small "Lite" setup. It installs the app and downloads the shared runtime only if it is not already present. If you already run another QuillVille app, there is nothing large to fetch.
-- **Full portable zip** -- `Quill-Radio-Portable-<version>.zip`, about **311 MB**. Unchanged and still the one for a USB stick: fully self-contained, runs with no installation and no internet, carrying its own genuine, unmodified copy of Python plus the bundled ffmpeg and mpv engines.
-- **Full installer** -- `Quill-Radio-Setup-Shared-<version>.exe`. The recommended path for most people: it installs the shared runtime (unless another QuillVille app already put it there) plus the app.
-
-**Accessible progress, every time.** Whenever the runtime is downloaded -- by an installer or by the Companion edition's own first launch -- Quill Radio shows a progress bar that works with NVDA, JAWS, and Narrator, announcing progress as a percentage the whole way.
-
-**Friendlier to antivirus.** Quill Radio's launcher is now a genuine, tiny native program, and the Python it runs is the official, unmodified build. Earlier versions used a renamed and modified copy of Python's own `pythonw.exe` as the launcher -- a pattern some antivirus tools flagged as a false positive. That pattern is completely gone, so the app is far less likely to be mistaken for something it is not. (Releases are still not code-signed, so SmartScreen may caution on first run; choose More info, then Run anyway. Signing is planned.)
-
-The full picture, edition by edition, is in the **Installing** chapter of the Quill Radio User Guide.
-
-## Update 2.2.0
-
-Quill Radio 2.2.0 is the release where the app grows up around you. Windows stop wandering off. Your stations learn to look after themselves -- backed up, kept in the order you left them, recoverable when a finger slips. And the Weather menu quietly becomes a guardian: something that watches the sky for you and speaks up the moment it matters, even after you have closed the app and walked away. Everything here lives in the shared `quill` package, so QUILL gains it too.
-
-### The windows finally stay where you put them
-
-For a while, opening Browse Stations, Search Stations, Manage Favorites, Schedule Recording, or the Weather Center could make the menu bar seem to vanish into thin air -- because those screens were dialogs, and a dialog cannot carry a menu bar -- and the modal ones locked you out of the main window entirely. They are proper **windows** now. Each one carries the full menu bar, so the menus are always a single **Alt** away no matter where you are, and none of them holds the main window hostage; you can keep several open at once. A new **Window** menu lists everything you have open, numbered in the order you opened it, and you move between them the way you already do everywhere else: **Ctrl+Tab** for the next, **Ctrl+Shift+Tab** for the previous, **Ctrl+1** through **Ctrl+9** to leap straight to one. Each window opens only when you ask, and closing it sets you gently back where you came from, announced as you land. The menus are there from the very first keystroke, too: pressing **Alt** right after launch used to summon the window's own Minimize/Maximize menu, because focus had not settled inside yet -- focus lands in the window immediately now, so Alt opens Radio's own menu bar the instant the app appears.
-
-### Your stations, yours to keep
-
-Here is the piece many of you asked for: a real backup you can carry to a new machine. **Station > Back Up Stations and Settings...** gathers your favorites, settings, wake timer, and recording schedule -- and, if you want them, your recorded shows -- into a single `.qrbackup` file, and **Restore from Backup...** brings it all home on a new PC, a new BrailleNote, or a fresh Windows. Made for exactly the day you switch devices.
-
-Underneath that, your favorites now protect themselves. Every change quietly snapshots the previous version aside -- the **last 20 are kept** -- so a bad edit or an accidental delete is never final; you can step back. That safety net is what makes the Favorites Manager's new **Remove All...** button safe to offer: clear every station at once (your folders stay) behind a plain confirmation, and if you change your mind, your list is still there to bring back.
-
-### Favorites, exactly the way you arranged them
-
-If you have ever hand-sorted thirty stations into the order that makes sense to *you*, this part is a love letter. Moving a favorite up or down from a sorted A-to-Z view no longer quietly overwrites that hand-built order first: Quill Radio switches to manual order (and says so -- "Switched to manual order"), then moves the station, leaving your saved arrangement intact. When a long haul of arrow presses feels absurd, **Mark and Move** does it in one gesture -- right-click (or the Applications key) a station, choose **Mark for Move**, travel to the destination, and pick **Move Marked Above** or **Move Marked Below**, and it jumps straight there, adopting that spot's folder, on the main list and in the Manager alike. The Manager's own **Move Up / Down / Above / Below** buttons work from the alphabetical view now, too (they used to sit dead unless you were already in manual order). **Ctrl+Shift+E** makes a **New Folder** from anywhere, including with your cursor in the favorites tree. Adding a **custom station** shows it in your list right away instead of looking as though nothing happened. And **TuneIn** stations -- which only work out their stream when you play them -- can finally be added to Favorites straight from Browse, stream and all.
-
-### Know what is playing, and hold onto it
-
-**Ctrl+T** does more than speak now. "What's Playing?" opens a small window with the current title and artist in a field you can arrow through character by character and copy -- to catch a spelling, or paste a song into a search -- and it still speaks the title, still falls back to speaking when a stream has not sent its track yet. Any favorite gives you the same reviewable readout through **Station Details...** on its context menu: source, stream, format, country. More stations actually have a title to show, as well: a batch of streams -- some HLS, and a handful others could read but Quill Radio could not -- tuck the current song into the player's metadata rather than the main title field, and Quill Radio now reads that too, so names and artists appear where they used to be blank. And there is a new way to reach the volume: a **Volume** slider right in the Tab order, so you can tab to it mid-song and arrow it up or down -- however you change the volume, the slider, the status bar, and Ctrl+Up/Down all stay in perfect agreement.
-
-### Finding your next favorite
-
-Browsing got kinder. Expanding a country or a genre in Browse Stations no longer flings your cursor down into the station list; it stays on the folder you opened -- you still hear its count -- so you step into the stations when *you* decide to. The search source picker now reads **Radio Browser** as two clear words (run together, a screen reader could make the option sound as though it had gone missing), and there is a new **Radio Browser (by Genre)** branch so you can wander that enormous directory by genre instead of only searching it. And after you update in place, new categories -- iHeart, Radio Reading Services -- show up right away: Browse used to keep serving the previous version's cached directory until it expired, and it now recognizes when the app itself ships a newer one, while still respecting a directory you refreshed by hand.
-
-### The View menu: a dashboard you can read
-
-A new **View** menu gathers several comforts in one place. **Show Station Details** turns the read-only details box in Browse and Search on or off, and every station screen honors your choice. **Show Status Bar** lays a strip along the bottom of the main window that always tells you what is going on -- what is playing, the volume (and whether Volume Boost is on), whether a recording is running, the sleep timer, how many favorites you have, and the time. Press **F6** to land in it, arrow left and right across the cells (**Home** and **End** jump to the ends), and press **Enter** on a cell to *act*: Enter on Now Playing opens the What's Playing window, on Volume mutes, on Recording starts or stops a capture, on the Sleep timer opens it. Right-click any cell for more -- play and pause, mute, volume up and down, Volume Boost, stop all recordings -- and **Escape** (or a second F6) hands focus straight back to your favorites. The menu also lifts **Sort Favorites** (Ascending, Descending, Unsorted) up out of Preferences, adds **Expand All** and **Collapse All Folders** to open or shut your whole tree at once, and offers **Text Size** (Normal, Large, Larger) to enlarge everything on the main window together. Every choice here is remembered between sessions.
-
-### It looks after itself now
-
-A cluster of quiet reliability wins. Quill Radio **keeps your computer awake** while a station plays or a recording runs, so Windows dozing off can no longer cut a long listen -- or a scheduled capture -- short. (Your screen may still sleep to save power; only the machine's sleep is held, and only while something is actually going, and a Preferences checkbox turns it off if you would rather Quill Radio never touch your power settings.) The **Stop button answers Alt+S** again: it used to advertise Alt+S and Alt+P, which are really the Station and Playback menu keys, so pressing them opened a menu instead of stopping the radio -- it no longer claims those, and **Ctrl+P** stops or plays from anywhere, welcome when a loud station is drowning out your screen reader. **Exit means exit**: if you close to the tray, choosing Exit -- even from the tray menu -- genuinely quits now instead of ducking back into hiding. On the pausing-and-rewinding engine, audio **stops firmly on exit** rather than lingering for a beat (closing to the tray with Ctrl+W or the X still keeps playing on purpose -- that is what the tray is for). **Install and restart** no longer hangs behind a stray, focus-stealing terminal window; it runs fully hidden and finishes. And you can **schedule a recording in hours and minutes** now -- separate Hours and Minutes boxes, so three hours is simply "3" and "0", no arithmetic (your existing schedules are unchanged).
-
-### Reach Quill Radio from anywhere -- one global hotkey
-
-A new system-wide hotkey shows or hides Quill Radio without your having to find its window first. Press **Ctrl+Alt+Shift+R** from inside any program -- your browser, your editor, wherever you happen to be working -- and Quill Radio tucks itself into the system tray, saying "hidden to the tray"; the music (or a recording in progress) never stops, and the tray icon keeps it a keystroke away. Press the same keys again and the window comes right back and takes focus, announced with "shown". It is the fastest way to glance at what is playing, or to step away and back, without leaving what you are doing. Windows only, and courteous about it: if another app has already claimed Ctrl+Alt+Shift+R, Quill Radio leaves that chord alone and never grabs it -- no error, nothing broken, and the tray icon and the Alt+F4-to-tray preference still show and hide the window exactly as before. Every app in the family gets its own chord so they never collide: QUILL is Ctrl+Alt+Shift+Q, and Quill Weather is Ctrl+Alt+Shift+W.
-
-### Weather is now its own app
-
-The weather work that grew up in this release has moved into a home of its own: **Quill Weather**, a small, standalone, tray-resident app that watches your location for official alerts, speaks each new warning the moment it is issued, can start with Windows, and will even keep watch with no window open at all. Its full story -- background alert monitoring, the customizable alert sounder, Test Alert, the hour-by-hour forecast, the moon almanac, worldwide forecasts, and the rest -- now lives in the **Quill Weather release notes and user guide**, not here.
-
-It is still right where you expect it inside Quill Radio, too. The **Weather** menu is present whenever the **Weather** feature is enabled (**View > Customize Features...**), and it now leads with an **Open the Quill Weather App** item so you can hand the watch off to the standalone app in one step. Turn Weather off in Customize Features and the menu disappears entirely -- perfect if you only want the radio. Weather and Quill Radio are separate apps that run side by side, each in its own window and tray, reachable from the other.
-
-And on the radio side, **Station > Start Quill Radio with Windows** launches Quill Radio automatically when you sign in.
-
-### Coming: play from Spotify (experimental)
-
-Groundwork has landed for playing music straight from Spotify inside Quill Radio. It is **experimental and off by default** -- it ships hidden behind a feature flag, so you will not see it on a normal install, and turning it on takes a signed unlock code, a Spotify **Premium** account, and your own Spotify Client ID (Spotify only lets an app stream its audio for Premium subscribers, and its audio can never be recorded or downloaded). The full story -- what you need, how to connect, and how to browse and play -- is in the new **"Spotify (experimental)"** section of the Quill Radio User Guide.
+> **Looking for 2.2?** The QuillVille Runtime, the Companion and Lite downloads,
+> YouTube and Live365 stations, Song History, and everything else in Quill Radio
+> 2.2.0 have their own document: **Quill Radio 2.2 Release Notes**, in the Help
+> menu. This file covers the 2.0 and 2.1 line only.
 
 ## Update 2.1.2
 

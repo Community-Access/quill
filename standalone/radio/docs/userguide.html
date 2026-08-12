@@ -793,8 +793,48 @@ copies it. Both this and the Ctrl+T window always tell you
 still opens a window naming the station, and a lookup that fails is
 reported rather than passing in silence. The confirmation names what it
 copied, so you know it worked without pasting to check.</li>
+<li><strong>Use One Volume for All Stations</strong> (check item) –
+Quill Radio normally remembers a volume for each favorite, which is
+lovely when stations are mastered at wildly different levels and
+maddening when you simply want everything quieter: with twenty
+favorites, there were twenty places to turn the volume down. Tick this
+and a single level answers for every station, so Ctrl+Up and Ctrl+Down
+turn <em>everything</em> up or down. Ticking it adopts whatever you are
+hearing at that moment, so nothing jumps. Your per-station levels are
+not thrown away – untick it and every station goes straight back to its
+own remembered volume. Off unless you turn it on.</li>
+<li><strong>Forget Every Station’s Own Volume…</strong> – the deliberate
+way to be rid of those per-station levels rather than merely bypassing
+them: it tells you how many stations have one, asks first, and leaves
+your stations, folders, and every other setting untouched.</li>
+<li><strong>Song History…</strong> (Ctrl+Shift+H) – what each station
+played earlier. What’s Playing tells you the song on right now and then
+forgets it; this is the memory behind it. Choose a station at the top,
+then arrow the list: each entry reads as a whole sentence, such as “Your
+Song by Elton John, heard 10:04, played twice”, newest first. From a
+selected song, <strong>Copy</strong> puts it on the clipboard,
+<strong>Send to Clip Library</strong> keeps it with your other saved
+snippets, and <strong>Background</strong> asks whichever AI provider you
+have set up for a short note about the song and artist. That answer
+always begins by saying it was written by an AI model rather than by the
+station – it sits inches from the station’s own information, and the two
+must never be confused – and it is never available in Safe Mode; with no
+provider set up, the window simply says so. <strong>Clear…</strong>
+empties one station’s list or every station’s. The log keeps up to 200
+songs per station, one station’s listening never pushes out another’s,
+and it never leaves your machine. A song still playing when Quill Radio
+checks again folds into the entry already there with a play count,
+rather than filling the list with the same title six times, and stations
+that broadcast their own name, “Live”, or an advert marker instead of a
+track are left out. To stop keeping the list at all, turn off
+<strong>Keep a song history for each station</strong> in Preferences;
+entries already saved stay until you clear them.</li>
 <li><strong>Announce Track Titles</strong> (check item) – when on, title
-changes are announced as they happen. Off by default.</li>
+changes are announced as they happen. Off by default. On the Command
+Palette this entry names its own state, so it reads <strong>Announce
+Track Titles (currently On)</strong> or <strong>(currently Off)</strong>
+– the palette has no checkmark, and you should not have to throw a
+switch to find out which way it is set.</li>
 <li><strong>Sleep Timer…</strong> – fade out and stop after a set time,
 restoring your volume.</li>
 <li><strong>Wake-Up Timer…</strong> – the sleep timer’s twin: pick a
@@ -1261,17 +1301,16 @@ is. A <strong>Don’t ask me again</strong> checkbox remembers your choice
 happens when nothing was in progress, and a corrupt marker is discarded
 rather than driving a bogus resume.</p>
 <h2 id="spotify-experimental">Spotify (experimental)</h2>
-<p>Quill Radio can play music straight from Spotify – but this is an
-<strong>experimental capability that is off by default and hidden until
-you deliberately turn it on</strong>. It ships “dark” behind a feature
-flag, so on a normal install there is no sign of it: no Spotify menu
-items, no settings, nothing reaching Spotify’s servers. Lighting it up
-takes four separate things, and it is honest to say up front that one of
-them is a paid <strong>Spotify Premium</strong> account – Spotify only
-lets an app stream its audio for Premium subscribers.</p>
-<h3 id="what-you-need-to-enable-it">What you need to enable it</h3>
-<p>All four of these must be in place; missing any one means the Spotify
-items never appear or never play.</p>
+<p>Quill Radio can play music straight from Spotify. This is an
+<strong>experimental</strong> capability: it ships in the app, but it
+asks a good deal of you before it will do anything, and it is honest to
+say up front that one requirement is a paid <strong>Spotify
+Premium</strong> account – Spotify only lets an app stream its audio for
+Premium subscribers. Nothing reaches Spotify until you deliberately
+connect an account.</p>
+<h3 id="what-you-need">What you need</h3>
+<p>All three of these must be in place; missing any one means Spotify
+never plays.</p>
 <table>
 <thead>
 <tr>
@@ -1280,14 +1319,6 @@ items never appear or never play.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>The Spotify feature, unlocked</td>
-<td>Spotify is a locked, pre-release feature. Unlock it with a signed
-code via <strong>Help &gt; Redeem Unlock Code…</strong> – the same
-one-time, verified-on-your-machine unlock QUILL uses for other early
-features. One code counts for QUILL, Quill Radio, and QUILL Cast
-together.</td>
-</tr>
 <tr>
 <td>A Spotify Premium account</td>
 <td>Spotify’s Web Playback engine only streams audio to Premium
@@ -1312,9 +1343,11 @@ ships with Microsoft Edge), so it is normally already present.</td>
 </tr>
 </tbody>
 </table>
-<p>Once the feature is unlocked and you are not in Safe Mode, two new
-items appear in the <strong>Help</strong> menu: <strong>Connect to
-Spotify…</strong> and <strong>Browse Spotify…</strong></p>
+<p>Unless you are in Safe Mode, two items sit in the
+<strong>Help</strong> menu: <strong>Connect to Spotify…</strong> and
+<strong>Browse Spotify…</strong> If you would rather not see them at
+all, turn <strong>Spotify</strong> off in <strong>Manage Individual
+Features</strong> and they disappear.</p>
 <h3 id="connecting-to-spotify">Connecting to Spotify</h3>
 <p>Choose <strong>Help &gt; Connect to Spotify…</strong> to open an
 accessible sign-in dialog. Enter your Client ID and start the sign-in:
@@ -1551,6 +1584,14 @@ other’s File/Weather menu and tray.</p>
 <tr>
 <td>What’s Playing?</td>
 <td>Ctrl+T</td>
+</tr>
+<tr>
+<td>Song History</td>
+<td>Ctrl+Shift+H</td>
+</tr>
+<tr>
+<td>Play favorites 1-10 directly</td>
+<td>Ctrl+Alt+Shift+1 … Ctrl+Alt+Shift+0</td>
 </tr>
 <tr>
 <td>Send to tray</td>

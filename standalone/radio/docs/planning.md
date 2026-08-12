@@ -21,7 +21,20 @@ The most important rule is that **directory access and audio playback rights are
 | **NWS and NOAA Weather Radio** | Alerts, forecasts and transmitter locations                                         | Official government APIs and data                                     | **Very high**               |
 | **IAAIS reading services**     | Accessible radio-reading services for people with print disabilities                | No general API; direct partnership and curated catalog                | **Mission-critical**        |
 
-## 1. FMSTREAM should probably be next
+## 1. One directory-expansion workstream: FMSTREAM, SHOUTcast, Icecast, and RadioDNS
+
+These were previously tracked as three separate initiatives -- FMSTREAM first,
+SHOUTcast and Icecast second, RadioDNS third. They are better done as **one
+piece of work**, because they are three parts of the same job: two new catalogs,
+a third to reconcile them, and one merged result the listener sees. Splitting
+them meant building the same merge-and-provenance machinery three times, and
+shipping FMSTREAM alone would have produced exactly the duplicate-station
+problem RadioDNS exists to solve.
+
+The order below is the order to build in; the milestone is not finished until
+all three land behind one canonical station record.
+
+### 1a. New catalogs: FMSTREAM
 
 FMSTREAM is one of the strongest fits for QUILL. It maintains a large international catalog, connects listeners directly to broadcaster streams rather than proxying the audio, and offers a database API for noncommercial use through a free API key with query limits. It also preserves broadcaster restrictions such as geoblocking. ([FMStream][1])
 
@@ -33,11 +46,21 @@ For QUILL, this could add:
 * Country, language, genre and location browsing.
 * A second source for validating Radio Browser records.
 
-I would place **FMSTREAM alongside Radio Browser**, not underneath it. QUILL could merge both catalogs into one canonical station result while showing provenance such as “Radio Browser,” “FMSTREAM,” or both.
+FMSTREAM belongs **alongside Radio Browser**, not underneath it. QUILL merges both catalogs into one canonical station result while showing provenance such as "Radio Browser," "FMSTREAM," or both.
 
-## 2. Add SHOUTcast and Icecast webcasters
+### 1b. New catalogs: SHOUTcast and Icecast webcasters
 
 The **SHOUTcast Directory API** is explicitly intended for websites, applications and media players, although developers must apply as API partners and comply with its branding and reporting agreement. ([SHOUTcast][2])
+
+There is no application form: SHOUTcast asks for an email with your company
+details and proposed application. **That request was sent on 2026-08-12**; the
+submission of record is `partner-outreach-shoutcast.md`, which also carries the
+two commitments we made in it (a spoken as well as visible source label, and
+per-source recording suppression if they ask for it). SHOUTcast's own developer
+wiki does not currently resolve, so the endpoint reference and attribution rules
+were requested rather than looked up, and no implementation can start until a
+`dev_id` arrives. **Icecast below needs no approval and should not wait on this
+reply** -- it is the part of 1b that can begin today.
 
 That would add a great deal of independent programming:
 
@@ -49,9 +72,9 @@ That would add a great deal of independent programming:
 
 The **Icecast directory**, operated through the Xiph ecosystem, is another valuable source of independently hosted streams. It is publicly browsable, although I would confirm automated reuse expectations before depending on its directory feed in production. ([Icecast][3])
 
-These sources are especially useful because iHeart and TuneIn tend to emphasize established broadcasters and commercial aggregators. SHOUTcast and Icecast expose the independent “long tail.”
+These sources are especially useful because iHeart and TuneIn tend to emphasize established broadcasters and commercial aggregators. SHOUTcast and Icecast expose the independent "long tail."
 
-## 3. Use RadioDNS to make the catalog smarter
+### 1c. The reconciler: RadioDNS
 
 RadioDNS is not primarily another giant listening directory. It is an open standards framework connecting broadcast radio with internet-delivered information such as:
 
@@ -64,14 +87,16 @@ RadioDNS is not primarily another giant listening directory. It is an open stand
 
 That makes it an excellent **metadata-enrichment and station-identity provider**. ([RadioDNS][4])
 
-For example, QUILL could recognize that:
+It is the piece that stops the two new catalogs above from tripling every
+station in the results list. With it, QUILL can recognize that:
 
 * An FM station record from the FCC,
 * a stream from Radio Browser,
 * a station entry from FMSTREAM, and
 * a RadioDNS service
 
-all represent the same station.
+all represent the same station -- one row, several provenances, several stream
+alternatives.
 
 ## Police, fire and public-safety feeds
 
@@ -306,15 +331,15 @@ Both are potential catalog partners, although their access models are oriented t
 
 ### Build or begin now
 
-1. **FMSTREAM integration**
-2. **SHOUTcast API application**
-3. **Icecast directory adapter**
-4. **RadioDNS enrichment**
-5. **NWS alerts and NOAA Weather Radio directory**
-6. **RepeaterBook partnership request**
-7. **Public SDR discovery prototype**
-8. **QUILL Community Feed manifest**
-9. **Reading-services submission directory**
+1. **The directory-expansion workstream** (section 1 above), as one milestone
+   rather than four tickets: FMSTREAM integration, the SHOUTcast API
+   application, the Icecast directory adapter, and RadioDNS enrichment, landing
+   behind a single canonical station record with provenance.
+2. **NWS alerts and NOAA Weather Radio directory**
+3. **RepeaterBook partnership request**
+4. **Public SDR discovery prototype**
+5. **QUILL Community Feed manifest**
+6. **Reading-services submission directory**
 
 ### Pursue as strategic partnerships
 
@@ -363,7 +388,7 @@ Every canonical QUILL record should retain:
 * Whether recording is permitted.
 * Whether the source is a station, mixed scanner feed, individual radio call, repeater, remote receiver or generated information service.
 
-My strongest next combination would be **FMSTREAM + SHOUTcast + NOAA/NWS + RepeaterBook metadata + an accessible public-SDR prototype**. Together, those would expand QUILL well beyond another conventional radio aggregator and begin turning it into a unified accessible listening, discovery and radio-exploration platform.
+My strongest next combination would be **the directory-expansion workstream (FMSTREAM + SHOUTcast + Icecast + RadioDNS) + NOAA/NWS + RepeaterBook metadata + an accessible public-SDR prototype**. Together, those would expand QUILL well beyond another conventional radio aggregator and begin turning it into a unified accessible listening, discovery and radio-exploration platform.
 
 [1]: https://fmstream.org/about.htm "About fmstream.org"
 [2]: https://directory.shoutcast.com/Developer "

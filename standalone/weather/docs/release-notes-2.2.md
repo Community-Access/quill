@@ -56,6 +56,63 @@ tray, resumes on its own the next time you launch, and shows a tray notification
 for every new alert. When a warning is live it quickens its pulse, checking as
 often as once a minute; when the sky clears, it eases off.
 
+## The documentation is finally reachable from inside the app
+
+A small fix with an embarrassing history: Quill Weather's installer has always
+placed this document and the user guide right next to the program, and until now
+nothing in the app could open either of them. The Help menu offered Check for
+Updates and About, and that was all.
+
+**Help > User Guide** and **Help > Release Notes** now open them in your browser,
+where you can read them with the heading, link, and find-in-page navigation your
+screen reader already gives you. They are installed alongside the app, so neither
+needs an internet connection.
+
+## Every place you have saved, watched at once
+
+This is the change most likely to matter to you. The alert watch used to cover
+your **primary** location and nothing else -- so a warning for your workplace,
+your daughter's town, or the house you were driving to that weekend went
+unheard, even though the place was sitting right there in your list.
+
+Monitoring now covers **every location you have saved**, with no extra setup and
+nothing to switch on. Each place is checked on the same schedule, and every new
+alert is spoken with its place named -- "A Tornado Warning is in effect for
+Tucson, Arizona" -- plays the alert sound, and drops its own tray notification,
+so you always know *where* as well as *what*.
+
+When monitoring starts you get one warm summary across all of them rather than a
+line per place: "3 places: Tucson, Boston, and Reno. All clear right now." The
+status line, the Start and Stop announcements, and the main window all say either
+the one place's name or "for 3 places", so the app never leaves you guessing how
+much it is actually watching.
+
+Fine-grained picking -- watch these three, skip that one -- is still to come.
+Today it is all of them.
+
+## Everything Quill Weather says now reaches braille
+
+Everything the app tells you -- a new warning, the all-clear, "monitoring on for
+3 places", a setting you just changed -- is now written to a connected braille
+display as well as spoken. Until now the standalone apps sent announcements to
+speech only, so a braille reader with speech turned down received nothing at all.
+
+Two refinements keep the display readable rather than frantic: a **burst of
+different messages settles into one write** instead of flashing past faster than
+fingers can follow (the first message writes through immediately, so nothing
+feels delayed), and an **error is held on the display** rather than being wiped
+by the next routine message. Braille is written through your screen reader, so it
+works wherever NVDA or JAWS is driving the display; Narrator has no braille call
+here because it brailles the notification Quill Weather already posts.
+
+Underneath, every spoken message now travels through the same shared
+announcement plumbing QUILL uses, so a message reaches speech, braille, the
+status line, and the accessibility test capture together. A failure on one
+channel -- a display unplugged mid-sentence, a screen reader that went away --
+takes down only that channel; you still hear the message. The related preferences
+live in QUILL's Preferences and are shared, so setting them once in QUILL is
+enough.
+
 ## Alerts even when nothing is running
 
 This is the reason Quill Weather exists as its own app. You should not have to

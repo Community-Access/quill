@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Radio — station-browsing roadmap</title>
+  <title>Quill Radio -- station-browsing roadmap</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -196,11 +196,14 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quill-radio--station-browsing-roadmap">Quill Radio —
+<h1 id="quill-radio--station-browsing-roadmap">Quill Radio –
 station-browsing roadmap</h1>
 <p>Target capabilities to make station discovery in Quill Radio
 comprehensive and fully keyboard/screen-reader native. This is our own
 roadmap; it names no other product.</p>
+<p>An item leaves “Planned” only when it is actually reachable in the
+app – wired to a menu or command, not merely present as a core
+module.</p>
 <h2 id="already-shipped">Already shipped</h2>
 <ul>
 <li><strong>Search across every directory at once</strong>
@@ -209,7 +212,7 @@ plus NOAA Weather Radio and Radio Reading Services by name / SAME code /
 call sign.</li>
 <li><strong>Browse tree</strong> with Radio Browser (by genre), TuneIn’s
 real folder tree (<strong>location drill-down to city</strong>), iHeart
-(genre → A–Z), SomaFM, Weather/NOAA (1,035 transmitters, offline), ACB
+(genre to A-Z), SomaFM, Weather/NOAA (1,035 transmitters, offline), ACB
 Media, NFB Radio, Radio Reading Services, and the Community M3U / Xiph
 catalogs.</li>
 <li><strong>Add custom station</strong> by URL, with YouTube / Live365 /
@@ -218,29 +221,51 @@ ladder.</li>
 <li>Recording (now + scheduled), sleep/wake timers, DVR (pause/rewind
 live), favorites with folders, global hotkeys, tray with favorites,
 sound-card routing with fallback, backup/restore, braille output.</li>
-</ul>
-<h2 id="planned-additions">Planned additions</h2>
-<ol type="1">
-<li><strong>Networks section</strong> — well-known broadcasters as
+<li><strong>Networks section</strong> – well-known broadcasters as
 one-click browse nodes (public broadcasters worldwide, US news/talk, US
 public radio, sports, music, plus honest affiliate-search nodes for
 syndication services). All resolved through the already-integrated Radio
 Browser directory, so no new network-egress site, no API keys, and no
 third party’s curated list is copied. See
-<code>networks-catalog.md</code>. <em>(Core module landed; browse-tree
-wiring next.)</em></li>
-<li><strong>Three-band equalizer</strong> — Bass / Mid / Treble (−12…+12
-dB) with presets (Flat, Bass Boost, Treble Boost, Loudness, Voice,
-Warm), toggled with <code>Ctrl+E</code> and switchable from anywhere
-with <code>Ctrl+Alt+Shift+E</code>, hosted on the mpv audio-filter
-chain.</li>
-<li><strong>Quick-play favorites</strong> —
-<code>Alt+1</code>…<code>Alt+0</code> play the first ten favorites
-directly, rebindable in the Keyboard Manager.</li>
-<li><strong>Browse position memory</strong> — reopening Browse Stations
+<code>networks-catalog.md</code>. Core in
+<code>core/radio/networks.py</code>, wired into the browse tree.</li>
+<li><strong>Three-band equalizer</strong> – Bass / Mid / Treble, -12 to
++12 dB each, freely adjustable, with a Quick preset shortcut (Flat, Bass
+Boost, Voice Clarity, Podcast, Small Speakers, Late Night) that sets all
+three at once. Lives in <strong>Playback &gt; Sound
+Enhancements…</strong> alongside the compressor, channel mode, night
+mode, and OptiLab broadcast polish, and previews live as you move a
+slider. Every setting is remembered per station as well as shared.
+(Shipped through the Sound Enhancements dialog rather than the
+<code>Ctrl+E</code> / <code>Ctrl+Alt+Shift+E</code> chords this roadmap
+originally sketched.)</li>
+<li><strong>Quick-play favorites</strong> – ten commands play the first
+ten favorites directly. They default to
+<code>Ctrl+Alt+Shift+1</code>…<code>Ctrl+Alt+Shift+0</code> rather than
+the <code>Alt+1</code>…<code>Alt+0</code> sketched here, because the
+plain and Alt digit combos are already bound to window navigation,
+headings, and the copy tray; rebind them in the Keyboard Manager if you
+do not use those.</li>
+<li><strong>Browse position memory</strong> – reopening Browse Stations
 returns to the node you were on, with its ancestors expanded, instead of
 a collapsed top level.</li>
-</ol>
+<li><strong>Song history</strong> – a per-station log of every track
+change, with copy, send to the Clip Library, and an optional AI
+background note on a song (labelled as model-written, never available in
+Safe Mode). Playback &gt; Song History.</li>
+<li><strong>One volume for every station</strong> – <strong>Use One
+Volume for All Stations</strong> (Playback menu) makes a single level
+answer for every station, so Volume Up/Down turn <em>everything</em> up
+or down instead of only the station you are on. Per-station levels are
+kept rather than erased, so turning it back off restores them;
+<strong>Forget Every Station’s Own Volume…</strong> clears them
+deliberately, after confirming.</li>
+</ul>
+<h2 id="planned-additions">Planned additions</h2>
+<p>Nothing outstanding on station browsing. The next radio work is
+tracked in <code>planning.md</code> (the directory-expansion workstream:
+FMSTREAM, SHOUTcast, Icecast and RadioDNS behind one canonical station
+record).</p>
 </main>
 </body>
 </html>

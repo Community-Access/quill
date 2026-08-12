@@ -92,7 +92,11 @@ macOS/Linux standalone builds (upstream QUILL covers macOS; the tray pattern doe
 
 ## 8. Since 1.0
 
-- **Since 2.2.0 (unreleased; upstream `core/radio/youtube.py`, `core/radio/live365.py`, `core/radio/playlist_export.py`, `core/radio/bad_station_report.py`, `core/radio/directory_registry.py`, `core/radio/local_clock.py`, `ui/radio/youtube_playback.py`, `ui/radio/youtube_ui.py`, `ui/radio/playlist_export_ui.py`, `ui/radio/output_device_ui.py`, `core/radio/history.py`, `ui/radio/now_playing_commands.py`, `platform/windows/braille_output.py`, `core/announce/*`).** Two new station *kinds*, a volume that persists, and the announcement surface finally reaching braille.
+- **Song History and one volume for every station (2.2.0; upstream `core/radio/song_history.py`, `ui/radio/song_history_dialog.py`, `ui/radio/song_history_commands.py`, `ui/radio/volume_commands.py`, `core/radio/favorites.py`, `core/commands.py`).**
+  - *Song history (Playback > Song History, Ctrl+Shift+H).* `core/radio/song_history.py` is a wx-free, strict-typed per-station log recorded at `_radio_apply_track_title` -- the single choke point every route to a title (ICY, the engine, the station's status endpoint) already funnels through, and where the "this is a new song" signal already exists, so the thirty-second poll gains a memory without gaining a timer. Four rules keep the log readable and are directly unit-tested: a repeat of the song already at the front folds into that entry with a `play_count` rather than appearing six times per track; each station is capped independently (`MAX_PER_STATION`) so one station left playing all day cannot evict another's afternoon; stations are capped separately, least-recently-active dropped first; and titles that are the station's own name, "Live", or an advert marker are rejected as noise. Recording is wrapped so it can never raise -- it runs immediately before the What's Playing announcement, and anything thrown would silence it -- and both the enabled flag and Safe Mode are read through `getattr`, so a host predating the preference degrades to logging rather than crashing the announcement path. The dialog offers Copy, Send to Clip Library (via the existing `ClipLibrary`/`Fragment` API), and **Background**: one provider-neutral `ProviderChatBackend` call off the UI thread whose answer is always prefixed with `BACKGROUND_DISCLAIMER`, because model-written text sits inches from the station's own metadata in the same window. Refused in Safe Mode, and the prompt explicitly instructs the model to admit when it does not know the song. Persistence is classified `cache` in the persistence audit: an observed log with no default whose meaning could silently change. Off switch: `RadioHistory.song_history_enabled`.
+  - *One volume for every station (Playback > Use One Volume for All Stations).* `RadioHistory.use_global_volume` (default off, so behaviour is unchanged until switched on) makes `volume_percent` the single level `_radio_resolve_volume` returns for every station, deliberately outranking a favorite's own remembered level -- which is the entire point, since that level winning outright is what left twenty favorites with twenty places to turn the volume down. `_radio_track_history_and_volume` stops writing a per-station copy while it is on, or it would quietly rebuild the very levels the setting bypasses. Per-station levels are **kept, never erased**, so switching back off restores them exactly; `forget_station_volumes` is the deliberate, confirm-first way to be rid of them and uses the new `RadioFavoritesStore.clear_volume` rather than `set_volume(-1)` -- the latter clamps to 0-100 and would set every station to *silent* instead of clearing it. Both behaviours are pinned by tests.
+  - *Toggle state in the Command Palette (#1383).* The palette lists `Command.title` verbatim and has no checkmark, so "Announce Track Titles On/Off" read identically whichever way the switch was set. New `CommandRegistry.set_title` retitles a command in place (keeping handler, keybinding and feature id), and the track-title and global-volume toggles now carry "(currently On)"/"(currently Off)" and retitle themselves as they flip. The global-volume menu checkmark is synced the same way, since the palette and a rebound chord reach the handler without wx updating the item.
+- **Since 2.2.0 (upstream `core/radio/youtube.py`, `core/radio/live365.py`, `core/radio/playlist_export.py`, `core/radio/bad_station_report.py`, `core/radio/directory_registry.py`, `core/radio/local_clock.py`, `ui/radio/youtube_playback.py`, `ui/radio/youtube_ui.py`, `ui/radio/playlist_export_ui.py`, `ui/radio/output_device_ui.py`, `core/radio/history.py`, `ui/radio/now_playing_commands.py`, `platform/windows/braille_output.py`, `core/announce/*`).** Two new station *kinds*, a volume that persists, and the announcement surface finally reaching braille.
   - *YouTube as a station kind (#1268).* A YouTube page URL (watch, `youtu.be`, `music.youtube.com`, `/live/`, `/shorts/`, `/embed/`) is accepted by Add Custom Station and stored **as the page URL**, never as a resolved media URL, because YouTube signs its media URLs with a few-hour expiry. `resolve_youtube_stream` re-resolves on **every** play and every recording start, which is what makes a scheduled recording survive to a later day; a resolved URL is never persisted. yt-dlp is the resolver and is **never bundled** -- it installs on demand after a one-time consent + rights notice recorded in `RadioHistory.youtube_consented`, deliberately gated at *add* time rather than play time so an unattended scheduled recording is never the first network reach. Resolution runs off the UI thread ("Connecting" first, no freeze) and a late result is discarded if the listener has since stopped or switched. Refused in Safe Mode; the single egress hand-off is in `_default_resolver` and is inventoried in the network-egress audit. The resolver is injectable, so tests never touch the network.
   - *Live365 link normalization.* `live365.normalize_live365_url` rewrites a station page (`live365.com/station/<slug>-<id>`), a player page (`player.live365.com/<id>`), a plain-http stream with a player-hint fragment, or a bare `a#####` id to the canonical `https://streaming.live365.com/<id>`. A **pure string transform**: the id is already present in every such link, so there is no network call, no scraping, no use of Live365's auth-gated directory API, and therefore nothing new to gate in Safe Mode or add to the egress audit. A bare slug with no id is left untouched (resolving it would require the auth-gated API, which is a deliberate non-goal), and a non-Live365 URL passes through byte-for-byte.
   - *SecureNet Cirrus player resolution (upstream `core/radio/securenet.py`).* SecureNet hosts the player for a large number of US broadcasters at `…securenetsystems.net/v5/<CALLSIGN>`. Unlike Triton, the real stream **is** a literal string in the page — and the scan still discarded it: the mount is a bare Icecast path (`https://ice66.securenetsystems.net/ROM`) with no extension and no `/stream`-style hint, indistinguishable by *shape* from an ordinary page link. Reported 2026-08-07 (Radio Once More returned two useless candidates; Radio Once More 2 returned none). `securenet.page_is_securenet_player` matches by host, or by an `ice<N>` mount in the body so a broadcaster embedding the player on their own domain still resolves; `stream_urls_from_page` strips per-visit `playSessionID` query strings, collapses duplicates, and skips the shared `/media` interstitial mount; `callsign_from_page` prefers the mount's casing over the pasted link's. The ice-server number is not derivable from the callsign (ROM is on `ice66`, WARL on `ice25`), so it is read, never computed, and a page carrying no mount reports nothing rather than guessing an address that will not play. `link_finder` offers these ahead of shape-matched candidates. `recovery._is_resolved_player_mount` additionally counts a lone `ice<N>` mount as an unambiguous heal — matching the existing StreamTheWorld rule — so a station saved from a player page self-repairs instead of stalling on "3 possible streams"; the match is deliberately on the `ice<N>` host and not the domain, since the player front-ends (`radio.`, `streamdb<N>web.`) share it and a player page links to itself. Parse-only: no network call of its own, so no new egress entry, and it works in Safe Mode.
@@ -170,15 +174,18 @@ Weather feature is enabled (View > Customize Features...), and that menu offers
 **Open the Quill Weather App** to hand off to the standalone watcher. The two are
 separate, independently-distributed apps that run side by side.
 
-## 10. Spotify integration (experimental, ships dark)
+## 10. Spotify integration (experimental)
 
 Quill Radio (music) and QUILL Cast (podcasts) can play directly from Spotify. The
-capability is **complete in code but ships dark**: it is gated behind the
-`future.spotify` feature flag, which is `locked_off` in
-`quill/core/feature_catalog.py`. While locked off, its commands and Help-menu
-items are hidden and nothing reaches Spotify's servers, so a default build shows
-no sign of it. This section is the design of record and the honest statement of
-what is left before general availability. As with every radio feature (R-1), all
+capability is **experimental and ships in the app**. It is gated behind the
+`future.spotify` feature flag in `quill/core/feature_catalog.py` -- no longer
+`locked_off`, and no longer behind an unlock code, since that mechanism was
+withdrawn. The flag remains so a listener who does not want Spotify can switch it
+off in Manage Individual Features and have its menu items disappear. Nothing
+reaches Spotify's servers until an account is deliberately connected, behind a
+one-time network-access consent, and the whole feature is refused in Safe Mode.
+This section is the design of record and the honest statement of what is left
+before general availability. As with every radio feature (R-1), all
 of it lives in the shared `quill` package -- `quill/core/spotify/*` and
 `quill/ui/spotify/*` -- and nothing is vendored into this wrapper.
 
@@ -238,18 +245,16 @@ of it lives in the shared `quill` package -- `quill/core/spotify/*` and
 
 ### 10.2 Enablement checklist
 
-Lighting Spotify up requires all four of the following. Missing any one means the
-Help-menu items never appear (first two conditions gate the menu directly) or
+Playing from Spotify requires all three of the following. Missing any one means
 playback never starts.
 
 | Requirement | Detail |
 | --- | --- |
-| Unlock `future.spotify` | Redeem a signed unlock code via **Help > Redeem Unlock Code...** (the existing offline, verified-on-machine unlock path; one code covers QUILL, Quill Radio, and QUILL Cast). While locked off the feature is fully hidden. |
 | Spotify Premium account | The Web Playback SDK only streams audio for Premium; the requested scopes (`streaming`, `user-read-email`, `user-read-private`) are Premium-only. A free account can browse but not play. |
 | User-supplied Spotify Client ID | Registered at the Spotify Developer Dashboard, with the redirect URI set to exactly `http://127.0.0.1:43217/callback`. No client secret -- PKCE. |
 | Windows with the Edge WebView2 runtime | The only sanctioned playback path is the WebView-hosted SDK; QUILL already warms WebView2 at startup. |
 
-Once unlocked and out of Safe Mode, the standalone app frames
+Whenever the feature is on and the app is out of Safe Mode, the standalone frames
 (`quill/apps/radio.py`, `quill/apps/podcasts.py`) add **Connect to Spotify...**
 and **Browse Spotify...** (Radio) / **Browse Spotify Podcasts...** (Cast) to the
 Help menu; the accessible dialogs are `quill/ui/spotify/connect_dialog.py` and
