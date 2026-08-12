@@ -339,6 +339,7 @@ Weather is still built into Quill Radio: the **Weather** menu appears whenever t
 | Rewind / Forward 30 seconds | Ctrl+Shift+Left / Ctrl+Shift+Right |
 | Back to Live | Ctrl+Shift+L |
 | What's Playing? | Ctrl+T |
+| Sound Enhancements (EQ, compressor, channel mode) | Ctrl+E |
 | Song History | Ctrl+Shift+H |
 | Play favorites 1-10 directly | Ctrl+Alt+Shift+1 ... Ctrl+Alt+Shift+0 |
 | Send to tray | Ctrl+W |

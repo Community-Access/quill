@@ -33,9 +33,12 @@ to a menu or command, not merely present as a core module.
   Podcast, Small Speakers, Late Night) that sets all three at once. Lives in
   **Playback > Sound Enhancements...** alongside the compressor, channel mode,
   night mode, and OptiLab broadcast polish, and previews live as you move a
-  slider. Every setting is remembered per station as well as shared. (Shipped
-  through the Sound Enhancements dialog rather than the `Ctrl+E` /
-  `Ctrl+Alt+Shift+E` chords this roadmap originally sketched.)
+  slider. Every setting is remembered per station as well as shared. Shipped in
+  **1.0.2**, which is why it appears in no later release notes. It now answers
+  `Ctrl+E` in the standalone app, closing the last gap against the sketch above;
+  inside full QUILL it stays on the Command Palette and is rebindable, because
+  the other chord sketched here, `Ctrl+Alt+Shift+E`, is the AI engine switcher
+  there.
 - **Quick-play favorites** -- ten commands play the first ten favorites
   directly. They default to `Ctrl+Alt+Shift+1`...`Ctrl+Alt+Shift+0` rather than
   the `Alt+1`...`Alt+0` sketched here, because the plain and Alt digit combos

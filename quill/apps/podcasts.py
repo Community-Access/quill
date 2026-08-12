@@ -724,7 +724,7 @@ class PodcastsAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         episode_menu.AppendSeparator()
         enhance_id = wx.NewIdRef()
-        episode_menu.Append(enhance_id, "Sound &Enhancements...")
+        episode_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
         )

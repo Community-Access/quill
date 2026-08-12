@@ -357,6 +357,15 @@ sound card or USB headset in one keystroke instead of opening Preferences. It
 changes the device immediately and remembers the choice, exactly like the
 Preferences setting it shortcuts.
 
+**Sound Enhancements answers Ctrl+E.** The three-band equalizer -- Bass, Mid and
+Treble, each freely adjustable from -12 to +12 dB, with Flat, Bass Boost, Voice
+Clarity, Podcast, Small Speakers and Late Night as starting points -- along with
+the compressor, channel mode, night mode and broadcast polish, has been in Quill
+Radio since 1.0.2. What it never had was a key of its own; you went through the
+Playback menu every time. **Ctrl+E** now opens it. Everything inside still
+previews live as you move a slider, and is still remembered per station as well
+as shared.
+
 ## Reach Quill Radio from anywhere -- one global hotkey
 
 A new system-wide hotkey shows or hides Quill Radio without your having to find
