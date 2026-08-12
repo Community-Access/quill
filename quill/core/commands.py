@@ -104,6 +104,27 @@ class CommandRegistry:
             feature_id=feature_id or feature_for_command(command_id),
         )
 
+    def set_title(self, command_id: str, title: str) -> bool:
+        """Retitle an existing command in place. False when it is not registered.
+
+        For a toggle whose *current state* belongs in its own name. The Command
+        Palette lists ``Command.title`` verbatim, so a toggle registered once as
+        "Announce Track Titles On/Off" reads identically whether it is on or off
+        -- the palette offers no checkmark and, unlike a menu, nothing else
+        carries the state (#1383). Retitling on each toggle is what lets the
+        palette say which way the switch is currently set, before it is thrown.
+
+        Keeps the handler, keybinding and feature id: this renames a command, it
+        never redefines one.
+        """
+        import dataclasses
+
+        existing = self._commands.get(command_id)
+        if existing is None:
+            return False
+        self._commands[command_id] = dataclasses.replace(existing, title=title)
+        return True
+
     def arm_repeat(self, count: int) -> None:
         """Arm the *next* :meth:`run` to execute its command ``count`` times.
 

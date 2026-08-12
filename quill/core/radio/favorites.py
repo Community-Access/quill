@@ -220,6 +220,19 @@ class RadioFavoritesStore:
         favorite.volume_percent = max(0, min(100, int(volume_percent)))
         return True
 
+    def clear_volume(self, key: str) -> bool:
+        """Forget this station's own volume so it follows the shared one again.
+
+        Not ``set_volume(key, -1)``: that clamps to 0-100 and would silence the
+        station instead of clearing it. -1 is "no preference recorded", which is
+        a different thing from "recorded as zero".
+        """
+        favorite = self.find(key)
+        if favorite is None:
+            return False
+        favorite.volume_percent = -1
+        return True
+
     def set_enhancement(
         self,
         key: str,

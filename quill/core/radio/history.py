@@ -174,6 +174,23 @@ class RadioHistory:
     #: default ``<data_dir>/logs``. Set from the Preferences "Log folder" field;
     #: applied at startup and relocated live when changed.
     log_dir: str = ""
+    #: One volume for every station. Off by default, which is the historical
+    #: behaviour: a favorite's own remembered level wins outright, so with twenty
+    #: favorites each carrying a level there was no way to turn them all down --
+    #: you had to play each station and adjust it.
+    #:
+    #: On, ``volume_percent`` becomes the single level every station plays at,
+    #: and Volume Up/Down set *it*, so turning the volume down turns everything
+    #: down. Per-station levels are deliberately kept, not erased: turning this
+    #: back off restores every station's own level exactly as it was.
+    use_global_volume: bool = False
+    #: Keep a per-station log of the songs each station plays, recorded from the
+    #: track-title poll that already runs (see quill.core.radio.song_history).
+    #: On by default -- it is what makes "what was that song earlier?"
+    #: answerable -- but a record of everything you have listened to deserves an
+    #: off switch, and turning it off stops new entries immediately. Existing
+    #: entries stay until cleared from the Song History window.
+    song_history_enabled: bool = True
     #: Whether to resume an in-progress recording found at launch (R3).
     #: ``"ask"`` shows the Resume/Skip/Always-resume dialog; ``"always"``
     #: auto-resumes without prompting; ``"never"`` silently skips. Persisted so
@@ -292,6 +309,8 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
         history.log_dir = str(raw.get("log_dir", ""))
+        history.use_global_volume = bool(raw.get("use_global_volume", False))
+        history.song_history_enabled = bool(raw.get("song_history_enabled", True))
         resume_choice = str(raw.get("recording_resume_choice", "ask"))
         history.recording_resume_choice = (
             resume_choice if resume_choice in ("ask", "always", "never") else "ask"
@@ -350,6 +369,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,
             "log_dir": history.log_dir,
+            "use_global_volume": history.use_global_volume,
+            "song_history_enabled": history.song_history_enabled,
             "recording_resume_choice": history.recording_resume_choice,
             "stations": [station.to_dict() for station in history.stations],
         },

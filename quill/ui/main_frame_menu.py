@@ -1030,6 +1030,8 @@ class MenuBuilderMixin:
         self._id_manage_snippets = wx.NewIdRef()
         self._id_expand_abbreviation = wx.NewIdRef()
         self._id_manage_abbreviations = wx.NewIdRef()
+        self._id_quick_insert = wx.NewIdRef()
+        self._id_new_abbreviation_from_clipboard = wx.NewIdRef()
         self._id_toggle_abbreviation_expansion = wx.NewIdRef()
         self._id_format_bold = wx.NewIdRef()
         self._id_format_italic = wx.NewIdRef()
@@ -1428,6 +1430,17 @@ class MenuBuilderMixin:
             insert_menu.Append(
                 self._id_expand_abbreviation,
                 self._menu_label(_("E&xpand Abbreviation"), "format.expand_abbreviation"),
+            )
+            insert_menu.Append(
+                self._id_quick_insert,
+                self._menu_label(_("&Quick Insert..."), "format.quick_insert"),
+            )
+            insert_menu.Append(
+                self._id_new_abbreviation_from_clipboard,
+                self._menu_label(
+                    _("New Abbreviation from Cli&pboard..."),
+                    "format.new_abbreviation_from_clipboard",
+                ),
             )
             insert_menu.Append(
                 self._id_manage_abbreviations,
@@ -2386,6 +2399,27 @@ class MenuBuilderMixin:
                 lambda _e: self.radio_whats_playing_details(),
                 id=id_radio_whats_playing_details,
             )
+            id_radio_song_history = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_song_history,
+                self._menu_label(_("Son&g History..."), "radio.song_history"),
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_song_history(), id=id_radio_song_history
+            )
+            self._global_volume_item_id = wx.NewIdRef()
+            media_menu.AppendCheckItem(
+                self._global_volume_item_id,
+                self._menu_label(
+                    _("Use One &Volume for All Stations"), "radio.toggle_global_volume"
+                ),
+            )
+            media_menu.Check(self._global_volume_item_id, self._radio_history.use_global_volume)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.radio_toggle_global_volume(),
+                id=self._global_volume_item_id,
+            )
             id_radio_announce_titles = wx.NewIdRef()
             media_menu.AppendCheckItem(
                 id_radio_announce_titles,
@@ -2546,6 +2580,7 @@ class MenuBuilderMixin:
             id_podcasts_export_opml = wx.NewIdRef()
             id_podcasts_play_pause = wx.NewIdRef()
             id_podcasts_stop = wx.NewIdRef()
+            id_podcasts_player_info = wx.NewIdRef()
             id_podcasts_pause_downloads = wx.NewIdRef()
             id_podcasts_resume_downloads = wx.NewIdRef()
             media_menu.Append(
@@ -2569,6 +2604,10 @@ class MenuBuilderMixin:
             )
             media_menu.Append(
                 id_podcasts_stop, self._menu_label(_("Podcast &Stop"), "podcasts.stop")
+            )
+            media_menu.Append(
+                id_podcasts_player_info,
+                self._menu_label(_("Player &Information..."), "podcasts.player_information"),
             )
             media_menu.AppendSeparator()
             media_menu.Append(
@@ -2599,6 +2638,11 @@ class MenuBuilderMixin:
                 id=id_podcasts_play_pause,
             )
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=id_podcasts_stop)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_player_information(),
+                id=id_podcasts_player_info,
+            )
             self.frame.Bind(
                 wx.EVT_MENU,
                 lambda _e: self.podcast_pause_all_downloads(),

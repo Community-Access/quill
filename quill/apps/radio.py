@@ -1030,6 +1030,26 @@ class RadioAppFrame(
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
+        # Ctrl+Shift+H is free in the standalone app; inside full QUILL the same
+        # command ships unbound because there Ctrl+Shift+H is Replace All.
+        song_history_id = wx.NewIdRef()
+        playback_menu.Append(song_history_id, "Son&g History...\tCtrl+Shift+H")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
+        self._global_volume_item_id = wx.NewIdRef()
+        playback_menu.AppendCheckItem(
+            self._global_volume_item_id, "Use One &Volume for All Stations"
+        )
+        playback_menu.Check(self._global_volume_item_id, self._radio_history.use_global_volume)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.radio_toggle_global_volume(),
+            id=self._global_volume_item_id,
+        )
+        forget_volumes_id = wx.NewIdRef()
+        playback_menu.Append(forget_volumes_id, "Forget Every Station's Own Volu&me...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_forget_station_volumes(), id=forget_volumes_id
+        )
         self._announce_titles_item_id = wx.NewIdRef()
         playback_menu.AppendCheckItem(self._announce_titles_item_id, "Announce Trac&k Titles")
         playback_menu.Check(
@@ -1127,9 +1147,9 @@ class RadioAppFrame(
         help_menu.Append(hotkeys_id, "&Global Hotkeys...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
-        # Spotify (future.spotify) ships dark: the ids are always created (so
-        # _keep_menu_ids can pin them) but the items appear only once the
-        # feature is unlocked and Safe Mode is off.
+        # Spotify (future.spotify) is experimental: the ids are always created
+        # (so _keep_menu_ids can pin them) but the items appear only while the
+        # feature is on and Safe Mode is off.
         spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
         if self.features.is_enabled("future.spotify") and not self._safe_mode:
             help_menu.Append(spotify_connect_id, "Connect to &Spotify...")
@@ -1157,7 +1177,7 @@ class RadioAppFrame(
         help_menu.Append(prd_id, "&Product Requirements...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-2.0"), id=notes_id
+            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-2.2"), id=notes_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
@@ -1279,6 +1299,9 @@ class RadioAppFrame(
             forward_id,
             live_id,
             whats_playing_id,
+            song_history_id,
+            self._global_volume_item_id,
+            forget_volumes_id,
             self._announce_titles_item_id,
             sleep_id,
             wake_id,
@@ -1310,7 +1333,7 @@ class RadioAppFrame(
     def _open_radio_doc(self, stem: str) -> None:
         titles = {
             "userguide": "Quill Radio User Guide",
-            "release-notes-2.0": "Quill Radio Release Notes",
+            "release-notes-2.2": "Quill Radio Release Notes",
             "prd": "Quill Radio Product Requirements",
         }
         self.open_app_document(

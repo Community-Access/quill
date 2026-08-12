@@ -30,7 +30,7 @@ from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
-from quill.ui.radio import quick_play
+from quill.ui.radio import quick_play, volume_commands
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.player_controller import (
@@ -738,7 +738,12 @@ class RadioMixin:
         if state.volume_percent != self._radio_history.volume_percent:
             self._radio_history.volume_percent = state.volume_percent
             radio_history.save_history(app_data_dir(), self._radio_history)
-        # A favorite additionally remembers its own per-station volume.
+        # A favorite additionally remembers its own per-station volume -- unless
+        # one volume answers for every station, in which case the level just
+        # saved above IS the answer and writing a per-station copy would quietly
+        # rebuild the very per-station levels the setting exists to bypass.
+        if getattr(self._radio_history, "use_global_volume", False):
+            return
         if favorite is not None and state.volume_percent != favorite.volume_percent:
             self._radio_favorites.set_volume(key, state.volume_percent)
             # Disk-only (not _save_radio_favorites): the tree shows no volume,
@@ -876,6 +881,13 @@ class RadioMixin:
         changed = bool(title) and title != self._radio_track_title
         if title:
             self._radio_track_title = title
+        if changed:
+            # One choke point: every route to a title (ICY, the engine, the
+            # station's status endpoint) lands here, and `changed` is already
+            # the "this is a new song" signal the announcement uses.
+            from quill.ui.radio import song_history_commands
+
+            song_history_commands.record_song(self, title)
         if on_resolved is not None:
             # A waiting command (copy / review window) speaks for itself, so the
             # generic announcement is skipped -- two messages for one keystroke is
@@ -891,6 +903,28 @@ class RadioMixin:
             return
         if changed and self._radio_history.announce_track_titles:
             self._announce(self._radio_now_playing_phrase(title))
+
+    # -- song history -----------------------------------------------------
+    # Bodies live in quill.ui.radio.song_history_commands so this module stays
+    # under its GATE-11 size budget (the same split quick_play uses).
+
+    def radio_toggle_global_volume(self) -> None:
+        """Turn "one volume for all stations" on or off."""
+        from quill.ui.radio import volume_commands
+
+        volume_commands.toggle_global_volume(self)
+
+    def radio_forget_station_volumes(self) -> None:
+        """Clear every favorite's own remembered volume, after confirming."""
+        from quill.ui.radio import volume_commands
+
+        volume_commands.forget_station_volumes(self)
+
+    def radio_song_history(self) -> None:
+        """Open the Song History window for the playing (or last) station."""
+        from quill.ui.radio import song_history_commands
+
+        song_history_commands.open_song_history(self)
 
     def radio_whats_playing(self) -> None:
         """Speak the current track title on demand."""
@@ -1027,10 +1061,19 @@ class RadioMixin:
                 "check Preferences > Playback engine."
             )
 
+    def _radio_title_announce_command_title(self) -> str:
+        """Palette label carrying the toggle's state -- it has no checkmark (#1383)."""
+        state = "On" if self._radio_history.announce_track_titles else "Off"
+        return f"Internet Radio: Announce Track Titles (currently {state})"
+
     def radio_toggle_title_announcements(self) -> None:
         history = self._radio_history
         history.announce_track_titles = not history.announce_track_titles
         radio_history.save_history(app_data_dir(), history)
+        # Keep the palette entry honest about the new state (#1383).
+        self.commands.set_title(
+            "radio.toggle_title_announcements", self._radio_title_announce_command_title()
+        )
         self._announce(
             "Track titles will be announced as they change."
             if history.announce_track_titles
@@ -1488,11 +1531,18 @@ class RadioMixin:
         """The volume (0-100) to play *station* at -- called by
         RadioPlayerController on every play_station.
 
-        A favorite with its own remembered level wins; otherwise we fall back to
-        the last volume the listener set globally, so a non-favorite station
-        plays at that level instead of snapping back to the 100% default on every
-        launch (#1263). -1 (nothing ever set) still tells the controller to leave
-        the current volume alone."""
+        With "one volume for all stations" on, that single level answers for
+        every station -- the whole point of it -- so it deliberately outranks a
+        favorite's own remembered level, which is kept and wins again the moment
+        the setting goes back off. Otherwise a favorite with its own level wins;
+        failing that we fall back to the last volume the listener set globally,
+        so a non-favorite plays at that level instead of snapping back to 100%
+        on every launch (#1263). -1 (nothing ever set) still tells the controller
+        to leave the current volume alone. getattr, because this runs on every
+        play_station: a history predating the setting must fall through, never
+        take playback down with an AttributeError."""
+        if getattr(self._radio_history, "use_global_volume", False):
+            return self._radio_history.volume_percent
         key = station.station_uuid or station.stream_url
         favorite = self._radio_favorites.find(key)
         if favorite is not None and favorite.volume_percent >= 0:
@@ -1871,8 +1921,23 @@ class RadioMixin:
                 self.radio_copy_whats_playing,
             ),
             (
+                "radio.song_history",
+                "Internet Radio: Song History...",
+                self.radio_song_history,
+            ),
+            (
+                "radio.toggle_global_volume",
+                volume_commands.command_title(self),
+                self.radio_toggle_global_volume,
+            ),
+            (
+                "radio.forget_station_volumes",
+                "Internet Radio: Forget Every Station's Own Volume...",
+                self.radio_forget_station_volumes,
+            ),
+            (
                 "radio.toggle_title_announcements",
-                "Internet Radio: Announce Track Titles On/Off",
+                self._radio_title_announce_command_title(),
                 self.radio_toggle_title_announcements,
             ),
             (
@@ -1949,8 +2014,8 @@ class RadioMixin:
                 self._binding_for(cmd),
                 feature_id="core.radio",
             )
-        # Spotify commands live behind future.spotify (locked_off), so they are
-        # registered but stay hidden until the feature is unlocked.
+        # Spotify commands live behind future.spotify (experimental), so they
+        # disappear when the listener turns that feature off.
         for command_id, title, handler in (
             ("spotify.connect", "Spotify: Connect to Spotify...", self.open_spotify_connect),
             ("spotify.browse", "Spotify: Browse Spotify...", self.open_spotify_browse),

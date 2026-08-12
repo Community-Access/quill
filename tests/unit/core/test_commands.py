@@ -109,6 +109,33 @@ def test_replace_creates_new_entry_when_absent() -> None:
     assert registry.get("test.new") is not None
 
 
+# -- set_title (a toggle whose state belongs in its palette label, #1383) ------
+
+
+def test_set_title_renames_in_place_and_keeps_the_handler() -> None:
+    registry = CommandRegistry()
+    calls: list[str] = []
+    registry.register(
+        "test.toggle", "Toggle (currently Off)", lambda: calls.append("ran"), "Ctrl+T"
+    )
+
+    assert registry.set_title("test.toggle", "Toggle (currently On)") is True
+
+    command = registry.get("test.toggle")
+    assert command is not None
+    assert command.title == "Toggle (currently On)"
+    # A rename must not redefine the command.
+    assert command.keybinding == "Ctrl+T"
+    registry.run("test.toggle")
+    assert calls == ["ran"]
+
+
+def test_set_title_reports_an_unknown_command_rather_than_creating_one() -> None:
+    registry = CommandRegistry()
+    assert registry.set_title("test.absent", "Anything") is False
+    assert registry.get("test.absent") is None
+
+
 # -- availability probe (error specificity: say WHY a command cannot run) ------
 
 

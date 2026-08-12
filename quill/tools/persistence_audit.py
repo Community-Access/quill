@@ -117,6 +117,11 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/weather/monitor.py::save_notified_ids": "cache",
     "core/radio/favorites.py::save_favorites": "content",
     "core/radio/history.py::save_history": "content",
+    # An observed log of what each station played, not user-authored config:
+    # every field is additive with a tolerant loader, there is no default whose
+    # meaning could silently change, and losing it costs only the "what was that
+    # song earlier?" record. Capped per station and rebuilt as you listen.
+    "core/radio/song_history.py::save_song_history": "cache",
     "core/radio/wake_timer.py::save_wake_setting": "content",
     "core/radio/recording.py::save_recording_settings": "content",
     "core/radio/recording_schedule.py::save_schedule": "content",
@@ -227,6 +232,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # stamp yet, so it is honestly backlogged to adopt the versioned contract
     # rather than mislabelled as content.
     "core/weather/settings.py::save_settings": "needs-versioning",
+    # Quill Inkwell's own preferences (whether system-wide expansion is on, the
+    # injection route, excluded applications, tray behaviour). Real user config
+    # with no schema stamp yet, so it is honestly backlogged alongside the other
+    # per-app preference stores. Note this is *not* where abbreviations live:
+    # those are the shared, versioned core/abbreviations.py library.
+    "core/expansion/settings.py::save_settings": "needs-versioning",
     # --- config stores now stamped per the contract (was: needs-versioning) ---
     "core/assistant_ai.py::save_assistant_connection_settings": "versioned",
     "core/assistant_ai.py::save_provider_model": "versioned",
