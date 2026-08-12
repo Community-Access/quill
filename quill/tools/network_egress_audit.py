@@ -760,7 +760,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "only from an explicit user sign-in (Connect Spotify) and the lazy token "
         "refresh that a subsequent explicit browse/play action triggers -- never "
         "a silent background poll. Gated behind the future.spotify feature flag "
-        "(locked off), a one-time network-access consent, and Safe-Mode refusal "
+        "(experimental), a one-time network-access consent, and Safe-Mode refusal "
         "(auth.refuse_in_safe_mode). No client secret exists (PKCE); the injected "
         "opener stays test-only and the default performs the real request over a "
         "verified TLS context (HTTPS enforced in code) with a bounded timeout. "
@@ -855,11 +855,11 @@ _REVIEWED_EGRESS: dict[str, str] = {
 #      Bearer token in the Authorization header, the chosen spotify: URI in the
 #      body) to point the SDK device at what to play.
 #
-# Gating: the whole feature is behind the future.spotify feature flag (locked
-# off), a one-time network-access consent (spotify_consent.json), Safe-Mode
-# refusal, and -- because the Web Playback SDK is Premium-only -- a Spotify
+# Gating: the whole feature is behind the future.spotify feature flag
+# (experimental), a one-time network-access consent (spotify_consent.json),
+# Safe-Mode refusal, and -- the Web Playback SDK being Premium-only -- a Spotify
 # Premium account. The hidden WebView is created only after the user explicitly
-# connects Spotify and starts playback; nothing here runs in a default build.
+# connects Spotify and starts playback; nothing reaches Spotify before that.
 # The access token the page uses is fetched through the reviewed
 # core/spotify/auth.py::_token_request / client.py::_request sites above.
 #

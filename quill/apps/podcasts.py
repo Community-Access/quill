@@ -786,8 +786,8 @@ class PodcastsAppFrame(
         help_menu.Append(hotkeys_id, "&Global Hotkeys...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
-        # Spotify (future.spotify) ships dark: ids always created for pinning,
-        # items shown only once the feature is unlocked and Safe Mode is off.
+        # Spotify (future.spotify) is experimental: ids always created for
+        # pinning, items shown only while the feature is on and Safe Mode is off.
         spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
         if self.features.is_enabled("future.spotify") and not self._safe_mode:
             help_menu.Append(spotify_connect_id, "Connect to &Spotify...")

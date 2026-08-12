@@ -545,16 +545,16 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "Connect a Spotify account to search and browse shows, episodes, and "
             "music and play them through QUILL's hidden Web Playback engine "
             "(Spotify Premium required). Sign-in uses OAuth PKCE; playback streams "
-            "DRM audio inside an embedded WebView. Locked off pre-release: reaches "
-            "Spotify's servers, so it is gated behind a one-time network-access "
-            "consent and Safe-Mode refusal, and undocumented in user-facing "
-            "surfaces until public launch."
+            "DRM audio inside an embedded WebView. Experimental: it needs a paid "
+            "Spotify Premium account, your own Spotify Client ID, and the Edge "
+            "WebView2 runtime, and Spotify audio is copy-protected so a Spotify "
+            "selection can never be recorded. Reaching Spotify's servers stays "
+            "behind a one-time network-access consent and is refused in Safe Mode."
         ),
         maturity="experimental",
         privacy="network after confirmation",
         category="future",
         dependencies=("core.app",),
-        locked_off=True,
     ),
     "future.ai_menu_top_level": FeatureDefinition(
         "future.ai_menu_top_level",

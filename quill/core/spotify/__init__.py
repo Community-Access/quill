@@ -15,9 +15,9 @@ Spotify account. The whole package is ``wx``-free and strict-typed; the
 hidden Web Playback engine that actually streams audio lives separately under
 ``quill/ui/spotify``.
 
-The entire feature is gated behind the ``future.spotify`` flag (locked off),
-a one-time network-access consent, Safe-Mode refusal, and -- for playback --
-a Spotify Premium account.
+The entire feature is gated behind the ``future.spotify`` flag (experimental,
+and switchable off in Manage Individual Features), a one-time network-access
+consent, Safe-Mode refusal, and -- for playback -- a Spotify Premium account.
 """
 
 from __future__ import annotations
