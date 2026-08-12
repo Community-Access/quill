@@ -151,6 +151,13 @@ Operate the app at the speed of thought:
 - **Remappable Keys**: Every single action has a keyboard shortcut, all of which can be customized to fit your workflow.
 - **Soundpacks**: Optional audio cues for different events and accounts to provide non-visual awareness.
 
+### Help and Documentation
+Everything below is installed alongside QUILL Social, so it works with no internet connection. All three open in your browser, where your screen reader already gives you heading, link, and find-in-page navigation.
+- **Help > User Guide**: this document.
+- **Help > Keyboard Reference**: the full keymap specification, every action and its default shortcut.
+- **Help > Product Requirements**: what QUILL Social is meant to be, for the curious.
+- **Help > Keyboard Guide (shortcuts)** (`F1`): the quick in-app list of the shortcuts currently in effect, including any you have remapped. This is the one that reflects *your* keymap rather than the shipped defaults.
+
 ---
 
 **QUILL Social — Every conversation within reach.**

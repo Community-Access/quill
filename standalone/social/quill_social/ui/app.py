@@ -388,7 +388,19 @@ class SocialFrame(wx.Frame):
         bar.Append(m_tools, "&Tools")
 
         m_help = wx.Menu()
-        self._menu_item(m_help, "&Help\tF1", lambda _e: self.cmd_help())
+        # "Help" used to be the only item here and it opened the keyboard guide,
+        # while the user guide the installer ships sat in docs\ with nothing to
+        # open it. Both are reachable now, and the shortcut list is named for
+        # what it actually is.
+        self._menu_item(m_help, "&User Guide", lambda _e: self.cmd_open_doc("USER_GUIDE"))
+        self._menu_item(m_help, "&Keyboard Reference", lambda _e: self.cmd_open_doc("KEYMAP_SPEC"))
+        self._menu_item(
+            m_help,
+            "&Product Requirements",
+            lambda _e: self.cmd_open_doc("QUILL_Social_PRD_Working_Draft"),
+        )
+        m_help.AppendSeparator()
+        self._menu_item(m_help, "Keyboard &Guide (shortcuts)\tF1", lambda _e: self.cmd_help())
         self._menu_item(m_help, "&About", self._on_about)
         bar.Append(m_help, "&Help")
 
@@ -1784,6 +1796,25 @@ class SocialFrame(wx.Frame):
 
     def cmd_help(self) -> None:
         HelpDialog(self, self.keymap).ShowModal()
+
+    def cmd_open_doc(self, stem: str) -> None:
+        """Open one of the bundled documents in the browser, and say so.
+
+        Announced either way: a document that opens in a *different* window is
+        otherwise indistinguishable from a menu item that did nothing, which is
+        exactly how the missing user guide went unnoticed for so long.
+        """
+        from quill_social.ui.docs import DOC_TITLES, open_doc
+
+        title = DOC_TITLES.get(stem, stem)
+        if open_doc(stem) is None:
+            message = f"{title} is not installed with this copy of QUILL Social."
+            self.announcer.say(message, "normal", interrupt=True)
+            self.SetStatusText(message)
+            return
+        message = f"Opening {title} in your browser."
+        self.announcer.say(message, "normal", interrupt=True)
+        self.SetStatusText(message)
 
     def _build_commands(self) -> list[Command]:
         has_item = self._current_item() is not None

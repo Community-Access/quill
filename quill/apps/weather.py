@@ -171,6 +171,18 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         )
 
         help_menu = wx.Menu()
+        # The build ships docs\ next to the exe, but until now nothing opened
+        # them: Quill Weather's Help menu offered only Check for Updates and
+        # About, so its user guide and release notes were installed and
+        # unreachable.
+        guide_id, notes_id = wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(guide_id, "&User Guide...")
+        help_menu.Append(notes_id, "&Release Notes...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_weather_doc("userguide"), id=guide_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._open_weather_doc("release-notes-2.2"), id=notes_id
+        )
+        help_menu.AppendSeparator()
         updates_id = wx.NewIdRef()
         help_menu.Append(updates_id, "Check for &Updates...")
         self.frame.Bind(
@@ -400,6 +412,18 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
                 "Feature settings saved. Menu changes take effect the next time "
                 "you open Quill Weather."
             )
+
+    def _open_weather_doc(self, stem: str) -> None:
+        """Open a bundled doc (docs\\ beside the exe, or a dev checkout)."""
+        titles = {
+            "userguide": "Quill Weather User Guide",
+            "release-notes-2.2": "Quill Weather Release Notes",
+        }
+        self.open_app_document(
+            self._doc_candidates("quill-weather", stem),
+            title=titles.get(stem, stem),
+            cache_name="app-docs",
+        )
 
     def _show_about(self) -> None:
         self._show_message_box(

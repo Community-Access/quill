@@ -625,19 +625,23 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
 
     def _doc_candidates(self, repo_dir_name: str, stem: str) -> list[Path]:
         """Where *stem* (``"userguide"``, ``"release-notes-1.0"``, ``"prd"``)
-        might live: a packaged build's own ``docs\\`` folder next to the exe
-        (HTML preferred, Markdown as a fallback -- see ``build_release.ps1``
-        in the app's own repo), or a dev checkout's sibling doc repo
-        (``S:\\quill-radio``/``S:\\quill-cast`` next to ``S:\\QUILL`` --
-        best-effort only, silently absent everywhere else)."""
+        might live, in order: a packaged build's own ``docs\\`` next to the exe
+        (HTML preferred, Markdown as fallback), this checkout's
+        ``standalone/<app>/docs``, then the historical sibling doc repo. The
+        in-repo path matters because the standalone apps were consolidated into
+        ``standalone/``, so the sibling layout (``D:\\quill-weather`` beside
+        ``D:\\QUILL``) no longer exists and a dev run found no docs at all.
+        Best-effort: a stem resolving nowhere is a quiet announcement."""
         candidates: list[Path] = []
         if getattr(sys, "frozen", False):
             exe_dir = Path(sys.executable).resolve().parent
             candidates.append(exe_dir / "docs" / f"{stem}.html")
             candidates.append(exe_dir / "docs" / f"{stem}.md")
-        sibling_docs = Path(__file__).resolve().parents[3] / repo_dir_name / "docs"
-        candidates.append(sibling_docs / f"{stem}.html")
-        candidates.append(sibling_docs / f"{stem}.md")
+        repo_root = Path(__file__).resolve().parents[2]
+        app = repo_dir_name.removeprefix("quill-")  # quill-weather -> weather
+        for root in (repo_root / "standalone" / app, repo_root.parent / repo_dir_name):
+            candidates.append(root / "docs" / f"{stem}.html")
+            candidates.append(root / "docs" / f"{stem}.md")
         return candidates
 
     # -- report a bug ------------------------------------------------------------

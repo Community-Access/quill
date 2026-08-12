@@ -82,7 +82,9 @@ Source: "..\dist\QuillSocial\docs\*"; DestDir: "{app}\docs"; Components: docs; F
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"
-Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\USER_GUIDE.md"; Components: docs
+; .html, not .md: a stock Windows install has no default handler for Markdown,
+; so this shortcut could open nothing at all. The build stages both.
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\USER_GUIDE.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
 

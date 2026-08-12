@@ -9,6 +9,24 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+### Added — the documentation is reachable from inside the app
+
+- **Help > User Guide**, **Help > Keyboard Reference**, and **Help >
+  Product Requirements** open the documents QUILL Social already installs
+  beside itself. Until now the Help menu offered only the in-app shortcut list
+  and About, so the user guide the installer places in `docs\` -- and puts a
+  Start-menu shortcut to -- could not be opened from the app at all. They open
+  in your browser, where a screen reader already has heading, link and
+  find-in-page navigation, and they need no internet connection.
+- The in-app shortcut list is now named **Keyboard Guide (shortcuts)** rather
+  than just "Help", because it and the User Guide are different things: it
+  lists the shortcuts *currently in effect*, including any you have remapped,
+  while the Keyboard Reference documents the shipped defaults. `F1` still opens
+  it.
+- The Start-menu **User Guide** shortcut now opens the HTML copy rather than
+  the Markdown one. A stock Windows install has no default handler for `.md`,
+  so that shortcut could open nothing at all; both formats are installed.
+
 ### Added — RSS, Atom and JSON Feed reading
 
 - A full **feed reader**, built on the same store, list, and announcer the
