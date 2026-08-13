@@ -549,11 +549,10 @@ knew what to throw away and nothing about what to fetch. Auto-download
 (0/1/3/5/10/all, per podcast) plus Auto-Queue per show plus per-show
 new-episode announcements mean subscribing to a show and pressing play
 is now one step.</p>
-<p><strong>Sharing and audio export – the desktop translation.</strong>
-Earshot answers “share this” with a share sheet; the desktop has no
-equivalent, and importing the metaphor would produce a menu item that
-opens a dialog nobody wants. The requirement is a <strong>file</strong>
-the listener can place and an <strong>address</strong> they can paste:
+<p><strong>Sharing and audio export.</strong> “Share this” has no single
+desktop gesture, and inventing one would produce a menu item that opens
+a dialog nobody wants. The requirement is a <strong>file</strong> the
+listener can place and an <strong>address</strong> they can paste:
 <strong>Save Episode Audio As…</strong>, <strong>Copy Podcast
 Link</strong>, and <strong>Show in File Explorer</strong>. All three are
 Quick Actions entries, never hard-coded menu items, so they take the
@@ -586,9 +585,9 @@ bought by speed, episodes finished, per-podcast breakdown, CSV export,
 90-day retention. The report is a read-only text field you arrow
 through, and durations are words (A-8). Time saved by Smart Speed is
 omitted rather than estimated (A-10).</p>
-<p><strong>Quick Actions.</strong> Three orderable action lists. The
-desktop translation of Earshot’s rotor ordering: a chosen default for
-Enter, a chosen menu order, and Ctrl+1..Ctrl+9 for the top nine.</p>
+<p><strong>Quick Actions.</strong> Three orderable action lists: a
+chosen default for Enter, a chosen menu order, and Ctrl+1..Ctrl+9 for
+the top nine.</p>
 <p><strong>Session control.</strong> Stop After This Episode; the
 continue-after-queue / continue-after-group pair (with both off,
 playback stops at the end of the current episode); speed as a real
@@ -608,11 +607,10 @@ Radio’s recordings player rather than reimplemented:
 <code>Z X C V B</code>, arrows to seek, <code>J</code>,
 <code>Ctrl+J</code>, <code>T</code>, <code>L</code>. On by default, one
 Preferences checkbox to turn off.</p>
-<p><strong>Two correctness fixes found by reading Earshot’s own bug
-history</strong>: finishing a mid-queue episode now continues from the
-slot after it instead of jumping back to the queue head, and chapter
-auto-skip carries a loop guard so a seek’s own position report cannot
-re-trigger the skip that caused it.</p>
+<p><strong>Two correctness fixes</strong>: finishing a mid-queue episode
+now continues from the slot after it instead of jumping back to the
+queue head, and chapter auto-skip carries a loop guard so a seek’s own
+position report cannot re-trigger the skip that caused it.</p>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
 </body>

@@ -40,7 +40,7 @@ Durations are read as language. "3 hours, 47 minutes", never `3:47:00`, because 
 
 ## The menus are yours now
 
-**Quick Actions...**, on the Subscriptions menu, is the desktop answer to something Earshot does on the phone: every content type has an action list, and the order is yours.
+**Quick Actions...**, on the Subscriptions menu, gives every content type its own action list, and the order is yours.
 
 Three lists -- episode, podcast, Play Queue -- each reorderable with Move Up, Move Down, and Make Default. Three things follow from the order:
 
@@ -52,7 +52,7 @@ Nothing changes until you change it. The shipped order puts Play first for an ep
 
 ## Getting an episode back out
 
-Until now QUILL Cast could copy an episode's link and nothing else. Earshot answers "share this" with a share sheet; the desktop has no such thing, and pretending otherwise would produce a menu item that opens a dialog nobody wants. What a desktop listener actually asks for is a **file** they can put somewhere and an **address** they can paste, so this is three ordinary commands rather than one imported metaphor.
+Until now QUILL Cast could copy an episode's link and nothing else. "Share this" has no single desktop gesture, and inventing one would produce a menu item that opens a dialog nobody wants. What a desktop listener actually asks for is a **file** they can put somewhere and an **address** they can paste, so this is three ordinary commands rather than one borrowed metaphor.
 
 **Save Episode Audio As...** is the useful half. Choose where the audio goes and it lands there. It **copies** rather than moves, and that distinction is the whole design: QUILL Cast keeps managing its own downloaded copy, so retention, the storage cap, resume and Remove Downloaded Copy all still work on it, while your saved copy is yours and outside all of it. Moving the managed file would quietly break your place in the episode. An episode you have not downloaded offers to fetch it first and says so, rather than trapping you behind a progress bar of unknown length -- run the command again when it lands. The suggested filename reads "Show - Episode", with anything Windows will not accept replaced rather than stripped (so two episodes whose titles differ only by punctuation do not collapse into one name) and the length bounded, because a Save dialog that opens pre-filled with a name the system rejects is worse than one that opens with a shorter name.
 

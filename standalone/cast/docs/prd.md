@@ -141,9 +141,8 @@ nothing about what to fetch. Auto-download (0/1/3/5/10/all, per podcast) plus
 Auto-Queue per show plus per-show new-episode announcements mean subscribing
 to a show and pressing play is now one step.
 
-**Sharing and audio export -- the desktop translation.** Earshot answers "share
-this" with a share sheet; the desktop has no equivalent, and importing the
-metaphor would produce a menu item that opens a dialog nobody wants. The
+**Sharing and audio export.** "Share this" has no single desktop gesture, and
+inventing one would produce a menu item that opens a dialog nobody wants. The
 requirement is a **file** the listener can place and an **address** they can
 paste: **Save Episode Audio As...**, **Copy Podcast Link**, and **Show in File
 Explorer**. All three are Quick Actions entries, never hard-coded menu items,
@@ -176,9 +175,8 @@ episodes finished, per-podcast breakdown, CSV export, 90-day retention. The
 report is a read-only text field you arrow through, and durations are words
 (A-8). Time saved by Smart Speed is omitted rather than estimated (A-10).
 
-**Quick Actions.** Three orderable action lists. The desktop translation of
-Earshot's rotor ordering: a chosen default for Enter, a chosen menu order,
-and Ctrl+1..Ctrl+9 for the top nine.
+**Quick Actions.** Three orderable action lists: a chosen default for Enter, a
+chosen menu order, and Ctrl+1..Ctrl+9 for the top nine.
 
 **Session control.** Stop After This Episode; the continue-after-queue /
 continue-after-group pair (with both off, playback stops at the end of the
@@ -200,7 +198,7 @@ the source file back without the feeds that no longer answer (§9).
 player rather than reimplemented: `Z X C V B`, arrows to seek, `J`, `Ctrl+J`,
 `T`, `L`. On by default, one Preferences checkbox to turn off.
 
-**Two correctness fixes found by reading Earshot's own bug history**:
+**Two correctness fixes**:
 finishing a mid-queue episode now continues from the slot after it instead of
 jumping back to the queue head, and chapter auto-skip carries a loop guard so
 a seek's own position report cannot re-trigger the skip that caused it.
