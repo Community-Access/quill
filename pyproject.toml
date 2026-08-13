@@ -40,7 +40,7 @@ dependencies = [
     # AES-GCM for Quill Beacon's encrypted sync (apps/beacon/quillsync/crypto.py)
     # and PuTTY private-key parsing (core/ssh/putty_key.py). Hard-imported by the
     # beacon sync module, so it is a base dependency, not an optional extra.
-    "cryptography>=44.0.0",
+    "cryptography>=50.0.0",
     # Windows COM. Not a UI concern despite living in the [ui] extra until now:
     # quill/core/persona_launcher.py builds persona .lnk shortcuts through
     # WScript.Shell, and quill/platform/windows (sapi5, narrator_announce,
