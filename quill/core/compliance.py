@@ -92,7 +92,11 @@ _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
 _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
     {
         "name": "OptiLab Core (Lanes Audio / dgl1984)",
-        "scope": "adapted-dsp",
+        # Two scopes now: the ffmpeg adaptation (live playback) AND the
+        # engine itself, vendored under quill/native/optilab/upstream at
+        # v1.4.0 for exact processing of saved files. Vendoring makes the
+        # licence a real obligation, so LICENSE and NOTICE ship beside it.
+        "scope": "adapted-dsp + vendored-source",
         # The mapping in core/optilab.py tracks 1.4.0; this entry said 1.2.0,
         # which mattered because the licence changed in between.
         "version": "1.4.0",
@@ -107,8 +111,13 @@ _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
         "notes": (
             "Sound Enhancements' broadcast-polish modes (Podcast Leveler, Stream "
             "Polish, Smooth Limiter) are a faithful adaptation of OptiLab Core's "
-            "DSP, reproduced as ffmpeg filter chains -- no upstream code or "
-            "binary is embedded. Upstream's NOTICE grants royalty-free "
+            "DSP, reproduced as ffmpeg filter chains for live playback. The "
+            "engine itself (native/core/OptiLabCore.h/.cpp) is additionally "
+            "vendored unmodified at v1.4.0 under quill/native/optilab/upstream "
+            "-- with its LICENSE and NOTICE -- and linked into QUILL's own "
+            "adapter (quill/native/optilab/quill_optilab.cpp, which contains no "
+            "DSP) to process saved recordings and conversions exactly. "
+            "Upstream's NOTICE grants royalty-free "
             "commercial use of OptiLab Core as a tool for producing, "
             "processing, broadcasting or streaming audio; the Commons Clause "
             "restricts selling the Software itself, which QUILL does not do. "

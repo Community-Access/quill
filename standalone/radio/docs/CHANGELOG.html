@@ -206,7 +206,26 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased">[Unreleased]</h2>
-<p>Nothing yet. The next release starts here.</p>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Exact OptiLab processing for saved recordings.</strong>
+Quill Radio’s broadcast-polish modes have always been a faithful
+<em>adaptation</em> of <strong>OptiLab Core by Lanes Audio /
+dgl1984</strong> (<a
+href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>),
+rebuilt as ffmpeg filter chains so they work everywhere – live, relayed
+and recorded – and preview the moment you move a control. That
+adaptation has one honest limit: OptiLab eases its lift and pulls back
+bass help <em>while</em> its final limiter is working hard, and a filter
+chain cannot do that, because no stage in it can see how hard a later
+stage is working. For <strong>saved recordings</strong> Quill Radio can
+now run the real OptiLab engine instead, when the optional OptiLab
+component is included in your build. Live listening keeps the built-in
+chain permanently – that is what makes every adjustment audible
+immediately, with no reconnect – and if the component is absent the
+option says so and nothing else changes. With thanks to dgl1984;
+licensed Apache-2.0 with the Commons Clause.</li>
+</ul>
 <h2 id="220---2026-08-12">[2.2.0] - 2026-08-12</h2>
 <p>2.2.0 was never published, so everything that had accumulated under
 “Unreleased” is part of it rather than a release after it. It is a large
@@ -215,7 +234,7 @@ downloads), it learns two whole new kinds of station – YouTube and
 Live365 – it remembers the songs each station played, your volume
 finally stays where you put it, and every message the app speaks now
 also reaches a braille display.</p>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li><p><strong>A play queue for the Recordings list, which unlocks the
 last three Winamp keys.</strong> <strong>R</strong> (shuffle),
@@ -673,7 +692,7 @@ an accessible runtime download, and a native launcher that no longer
 looks like repackaged Python to antivirus tools. It also gains a family
 switcher, a way to trim the app to just what you use, and a weather
 watch that speaks warnings as they are issued.</p>
-<h4 id="added-1">Added</h4>
+<h4 id="added-2">Added</h4>
 <ul>
 <li><strong>The QuillVille Runtime – shared,
 install-once-per-user.</strong> Quill Radio, QUILL, Quill Weather, and
@@ -836,7 +855,7 @@ file is read as Unsorted rather than snapped to A-Z.</li>
 regression-locked.</li>
 </ul>
 <h2 id="211">[2.1.1]</h2>
-<h3 id="added-2">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li>NOAA Weather Radio from the authoritative WeatherIndex directory: a
 State-to-Station browse tree, SAME code / call sign / “County, ST”
@@ -862,7 +881,7 @@ where you started.</li>
 directory.</li>
 </ul>
 <h2 id="210">[2.1.0]</h2>
-<h3 id="added-3">Added</h3>
+<h3 id="added-4">Added</h3>
 <ul>
 <li>A top-level Weather menu (National Weather Service, Open-Meteo,
 OpenStreetMap) reading current conditions, forecast, alerts, and an
@@ -883,7 +902,7 @@ with a screen reader. The Country and Tag lists stay put while
 arrowing.</li>
 </ul>
 <h2 id="202">[2.0.2]</h2>
-<h3 id="added-4">Added</h3>
+<h3 id="added-5">Added</h3>
 <ul>
 <li>Record as many stations at once as you want, with an optional
 Maximum simultaneous recordings cap; overlapping scheduled shows all
@@ -907,14 +926,14 @@ per-folder overrides. M3U/M3U8 playlist import.</li>
 only a genuinely terminal failure (full disk, HTTP 404/410/451) stops a
 recording.</li>
 </ul>
-<h3 id="added-5">Added</h3>
+<h3 id="added-6">Added</h3>
 <ul>
 <li>A clear “Recording started” announcement. Review-and-copy What’s
 Playing. Channel mode (Stereo, Mono, Left only, Right only). Adjust a
 recording’s playback volume with Ctrl+Up / Ctrl+Down.</li>
 </ul>
 <h2 id="200">[2.0.0]</h2>
-<h3 id="added-6">Added</h3>
+<h3 id="added-7">Added</h3>
 <ul>
 <li>Recordings you can trust: a recording in progress survives a restart
 and Quill Radio asks before resuming; scheduled recordings fire reliably
@@ -966,7 +985,7 @@ Windows High Contrast) instead of a default that could render
 near-invisibly.</li>
 </ul>
 <h2 id="110">[1.1.0]</h2>
-<h3 id="added-7">Added</h3>
+<h3 id="added-8">Added</h3>
 <ul>
 <li>The mpv playback engine, used automatically, with the classic
 Windows Media engine one Preferences setting away.</li>
@@ -981,7 +1000,7 @@ website, JavaScript-player (Triton/StreamTheWorld) resolution, and paged
 station search (up to 200 results).</li>
 </ul>
 <h2 id="102">[1.0.2]</h2>
-<h3 id="added-8">Added</h3>
+<h3 id="added-9">Added</h3>
 <ul>
 <li>A real three-band equalizer and per-station Sound Enhancements. A
 second station directory (SomaFM). Automatic Check for Updates. A

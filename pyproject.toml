@@ -122,14 +122,13 @@ mac = ["pyobjc-framework-Cocoa>=12.2.1; sys_platform == 'darwin'"]
 # 1.1.0 adds crash fingerprinting: a repeat of a crash somebody already
 # reported comments on that issue instead of filing another one.
 #
-# The floor deliberately stays at 1.0.2 until 1.1.0 is on PyPI. This extra is
-# installed by scripts/build_windows_distribution.py, so a floor pointing at an
-# unpublished version would make main un-buildable -- and it would buy nothing,
-# because the call site is version-tolerant by construction:
+# 1.1.0 was published 2026-08-13, so the floor moves with it -- this extra is
+# installed by scripts/build_windows_distribution.py, and it was deliberately
+# held at 1.0.2 until then rather than pointing a shipping build at a version
+# that did not exist. The call site stays version-tolerant either way:
 # issue_submit._submit_parameters() asks the installed signature what it
-# accepts, so an older feedback-hub simply files duplicates exactly as it
-# always did. Raise this to >=1.1.0 in the same change that publishes it.
-feedback = ["feedback-hub>=1.0.2"]
+# accepts, so an older feedback-hub still works and simply files duplicates.
+feedback = ["feedback-hub>=1.1.0"]
 # Cross-platform earcon audio via BASS (Un4seen). Enables true mixing so multiple
 # sounds can play simultaneously. Falls back to winsound (Windows) or silence without
 # this extra. Confirm Un4seen commercial license terms before paid distribution.

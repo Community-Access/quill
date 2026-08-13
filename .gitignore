@@ -134,3 +134,7 @@ docs/podcast/tools/models/
 # Compiled native extensions are per-machine build artifacts; only the C++
 # sources and CMakeLists are tracked (quill/native/*). Built locally or in CI.
 quill/native/**/*.pyd
+
+# Build output for the OptiLab adapter (quill/native/optilab). The vendored
+# upstream source and our adapter are committed; compiled artifacts are not.
+quill/native/optilab/build/

@@ -766,12 +766,12 @@ playing.</li>
 </ul>
 <h3 id="playback-altp">Playback (Alt+P)</h3>
 <ul>
-<li>A live (disabled) now-playing line at the top, so the menu itself
-tells you what is on.</li>
-<li><strong>Play / Stop</strong> (Ctrl+P) – one transport item that
+<li><p>A live (disabled) now-playing line at the top, so the menu itself
+tells you what is on.</p></li>
+<li><p><strong>Play / Stop</strong> (Ctrl+P) – one transport item that
 reads Play when idle and Stop while connecting or playing, exactly like
-the panel button.</li>
-<li><strong>Mute/Unmute</strong> (Ctrl+M), <strong>Volume Up</strong>
+the panel button.</p></li>
+<li><p><strong>Mute/Unmute</strong> (Ctrl+M), <strong>Volume Up</strong>
 (Ctrl+Up), <strong>Volume Down</strong> (Ctrl+Down). Ctrl+Up and
 Ctrl+Down work from <strong>anywhere in the window</strong> – the
 favorites tree, a button, the status bar – with one sensible exception:
@@ -783,28 +783,28 @@ have to fix that once per station. And the <strong>last level you
 set</strong> is remembered across sessions for everything else, so a
 station that is not a favorite comes back where you left it rather than
 at full volume the next time you launch. (A favorite’s own remembered
-level always wins over the general one.)</li>
-<li><strong>Output Device…</strong> (Ctrl+Shift+D) – pick which sound
+level always wins over the general one.)</p></li>
+<li><p><strong>Output Device…</strong> (Ctrl+Shift+D) – pick which sound
 card or headset the radio plays through, in one keystroke, without
 opening Preferences. Choose a device and the station moves to it
 immediately; the choice is remembered, and it is the same setting as
 <strong>Radio output device</strong> in Preferences, so the two always
 agree. Your screen reader and Quill Radio’s own announcements stay on
 the system default device. Needs the mpv playback engine (the
-default).</li>
-<li><strong>Volume Boost</strong> (Ctrl+Shift+B, check item) – amplifies
-up to 50% past full volume for stations that just broadcast quiet. Your
-0-100 volume scale, per-station volume memories, and mute all behave
-exactly as before; the boost is applied on top. Needs the mpv playback
-engine (the default – see Preferences below).</li>
-<li><strong>Rewind 30 Seconds</strong> (Ctrl+Shift+Left),
+default).</p></li>
+<li><p><strong>Volume Boost</strong> (Ctrl+Shift+B, check item) –
+amplifies up to 50% past full volume for stations that just broadcast
+quiet. Your 0-100 volume scale, per-station volume memories, and mute
+all behave exactly as before; the boost is applied on top. Needs the mpv
+playback engine (the default – see Preferences below).</p></li>
+<li><p><strong>Rewind 30 Seconds</strong> (Ctrl+Shift+Left),
 <strong>Forward 30 Seconds</strong> (Ctrl+Shift+Right), <strong>Back to
 Live</strong> (Ctrl+Shift+L) – live radio you can move around in. On the
 mpv playback engine (the default), Quill Radio keeps a rolling buffer of
 the stream (roughly 45 minutes at typical bitrates): jump back to catch
 a missed sentence, work your way forward, then leap straight back to
 live. Every move announces how far behind live you are. Needs the mpv
-playback engine.
+playback engine.</p>
 <ul>
 <li><strong>A note on pausing.</strong> Whether Play/Stop <em>holds your
 place</em> or <em>rejoins live</em> depends on the engine. On the
@@ -820,7 +820,7 @@ uses mpv); the buffer, Rewind/Forward, and Back to Live all require that
 engine. (A live stream also only rewinds as far back as the buffer has
 actually filled since you started listening.)</li>
 </ul></li>
-<li><strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next
+<li><p><strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next
 Chapter</strong> (Ctrl+Alt+Right), <strong>Previous Chapter</strong>
 (Ctrl+Alt+Left) – a finished YouTube video has a timeline, so you can
 move around it the way a live broadcast never lets you. Chapters opens
@@ -839,14 +839,14 @@ exact time, using the same accessible Hours / Minutes / Seconds dialog
 the Quill Media Player uses – three labelled spin controls, plus a
 timecode field if you would rather type <code>1:23:45</code>.
 <strong>Where Am I?</strong> (Ctrl+Shift+P) speaks your position, the
-length, and the chapter you are in.</li>
-<li><strong>Play Faster</strong> (Ctrl+Alt+Up), <strong>Play
+length, and the chapter you are in.</p></li>
+<li><p><strong>Play Faster</strong> (Ctrl+Alt+Up), <strong>Play
 Slower</strong> (Ctrl+Alt+Down), <strong>Normal Speed</strong>
 (Ctrl+Alt+0) – speed for a finished video, stepping through round,
 speakable values from 0.25x to 4x rather than drifting by a multiplier.
 The speed you choose is remembered for the next video. Live radio plays
 at normal speed; setting a speed while a station is on says so, and
-remembers it for when a video plays.
+remembers it for when a video plays.</p>
 <ul>
 <li><strong>All of these say why when they decline.</strong> Ask for
 chapters, seeking, or speed while a live stream is playing and you hear
@@ -855,20 +855,21 @@ chapters on a video whose uploader published none and it says that
 instead. A control that quietly does nothing is worse than one that is
 not offered, because you cannot tell it apart from a broken app.</li>
 </ul></li>
-<li><strong>What’s Playing?</strong> (Ctrl+T) – opens a reviewable Now
-Playing window: the current title and artist in a read-only, selectable
-field you can arrow through <strong>character by character</strong> to
-catch an exact spelling, with a <strong>Copy</strong> button. It reads
-the title straight from the stream’s own metadata (and if no title has
-arrived yet, Ctrl+T speaks and fetches it, as before). When a station
-sends messy broadcast metadata (a string of catalog codes rather than a
-clean “Artist - Title”), Quill Radio finds the title and artist in it
-and reads just those. And when a station answers with nothing at all –
-no metadata, and the playback engine’s own title channel is empty too
-(common on HLS) – Quill Radio takes one more step: it reads the current
-title from the stream server’s own public “now playing” status page (the
-Icecast or SHOUTcast status endpoint). It only ever asks the same server
-you are already listening to, and it is off in Safe Mode – so a batch of
+<li><p><strong>What’s Playing?</strong> (Ctrl+T) – opens a reviewable
+Now Playing window: the current title and artist in a read-only,
+selectable field you can arrow through <strong>character by
+character</strong> to catch an exact spelling, with a
+<strong>Copy</strong> button. It reads the title straight from the
+stream’s own metadata (and if no title has arrived yet, Ctrl+T speaks
+and fetches it, as before). When a station sends messy broadcast
+metadata (a string of catalog codes rather than a clean “Artist -
+Title”), Quill Radio finds the title and artist in it and reads just
+those. And when a station answers with nothing at all – no metadata, and
+the playback engine’s own title channel is empty too (common on HLS) –
+Quill Radio takes one more step: it reads the current title from the
+stream server’s own public “now playing” status page (the Icecast or
+SHOUTcast status endpoint). It only ever asks the same server you are
+already listening to, and it is off in Safe Mode – so a batch of
 stations that used to answer with silence now report a real title. You
 control the wording in Station &gt; Preferences (Ctrl+,) with a small
 template: <code>{title}</code> and <code>{artist}</code> tokens,
@@ -876,18 +877,18 @@ template: <code>{title}</code> and <code>{artist}</code> tokens,
 when a field is empty (the default <code>{title}[ by {artist}]</code>
 drops the “ by“ when there’s no artist), and <code>{raw}</code> for the
 stream’s exact original text. Leave it blank to restore the
-default.</li>
-<li><strong>Copy What’s Playing</strong> (Command Palette) – copies the
-current title and artist straight to the clipboard without opening the
-Now Playing window (which Ctrl+T opens, above). You no longer have to
-press What’s Playing first: if a station is on and no title has arrived
-yet, Quill Radio says “Checking what’s playing…”, fetches it, and then
-copies it. Both this and the Ctrl+T window always tell you
+default.</p></li>
+<li><p><strong>Copy What’s Playing</strong> (Command Palette) – copies
+the current title and artist straight to the clipboard without opening
+the Now Playing window (which Ctrl+T opens, above). You no longer have
+to press What’s Playing first: if a station is on and no title has
+arrived yet, Quill Radio says “Checking what’s playing…”, fetches it,
+and then copies it. Both this and the Ctrl+T window always tell you
 <em>something</em> – a stream that sends no titles at all says so and
 still opens a window naming the station, and a lookup that fails is
 reported rather than passing in silence. The confirmation names what it
-copied, so you know it worked without pasting to check.</li>
-<li><strong>Use One Volume for All Stations</strong> (check item) –
+copied, so you know it worked without pasting to check.</p></li>
+<li><p><strong>Use One Volume for All Stations</strong> (check item) –
 Quill Radio normally remembers a volume for each favorite, which is
 lovely when stations are mastered at wildly different levels and
 maddening when you simply want everything quieter: with twenty
@@ -896,12 +897,13 @@ and a single level answers for every station, so Ctrl+Up and Ctrl+Down
 turn <em>everything</em> up or down. Ticking it adopts whatever you are
 hearing at that moment, so nothing jumps. Your per-station levels are
 not thrown away – untick it and every station goes straight back to its
-own remembered volume. Off unless you turn it on.</li>
-<li><strong>Forget Every Station’s Own Volume…</strong> – the deliberate
-way to be rid of those per-station levels rather than merely bypassing
-them: it tells you how many stations have one, asks first, and leaves
-your stations, folders, and every other setting untouched.</li>
-<li><strong>Song History…</strong> (Ctrl+Shift+H) – what each station
+own remembered volume. Off unless you turn it on.</p></li>
+<li><p><strong>Forget Every Station’s Own Volume…</strong> – the
+deliberate way to be rid of those per-station levels rather than merely
+bypassing them: it tells you how many stations have one, asks first, and
+leaves your stations, folders, and every other setting
+untouched.</p></li>
+<li><p><strong>Song History…</strong> (Ctrl+Shift+H) – what each station
 played earlier. What’s Playing tells you the song on right now and then
 forgets it; this is the memory behind it. Choose a station at the top,
 then arrow the list: each entry reads as a whole sentence, such as “Your
@@ -922,20 +924,21 @@ rather than filling the list with the same title six times, and stations
 that broadcast their own name, “Live”, or an advert marker instead of a
 track are left out. To stop keeping the list at all, turn off
 <strong>Keep a song history for each station</strong> in Preferences;
-entries already saved stay until you clear them.</li>
-<li><strong>Announce Track Titles</strong> (check item) – when on, title
-changes are announced as they happen. Off by default. On the Command
-Palette this entry names its own state, so it reads <strong>Announce
-Track Titles (currently On)</strong> or <strong>(currently Off)</strong>
-– the palette has no checkmark, and you should not have to throw a
-switch to find out which way it is set.</li>
-<li><strong>Sleep Timer…</strong> – fade out and stop after a set time,
-restoring your volume.</li>
-<li><strong>Wake-Up Timer…</strong> – the sleep timer’s twin: pick a
+entries already saved stay until you clear them.</p></li>
+<li><p><strong>Announce Track Titles</strong> (check item) – when on,
+title changes are announced as they happen. Off by default. On the
+Command Palette this entry names its own state, so it reads
+<strong>Announce Track Titles (currently On)</strong> or
+<strong>(currently Off)</strong> – the palette has no checkmark, and you
+should not have to throw a switch to find out which way it is
+set.</p></li>
+<li><p><strong>Sleep Timer…</strong> – fade out and stop after a set
+time, restoring your volume.</p></li>
+<li><p><strong>Wake-Up Timer…</strong> – the sleep timer’s twin: pick a
 favorite, a time, once or every day, and the station starts playing by
-itself. Quill Radio must be running (the tray counts).</li>
-<li><strong>Sound Enhancements…</strong> – a three-band equalizer (Bass,
-Mid, Treble sliders, -12 to +12 dB each, freely adjustable), a
+itself. Quill Radio must be running (the tray counts).</p></li>
+<li><p><strong>Sound Enhancements…</strong> – a three-band equalizer
+(Bass, Mid, Treble sliders, -12 to +12 dB each, freely adjustable), a
 compressor (“Even Out Volume”, boosts quiet passages and tames loud
 ones), a <strong>Channel mode</strong> choice (Stereo, Mono, Left only,
 Right only) and <strong>Night mode</strong>. Channel mode routes the
@@ -973,10 +976,22 @@ than more processed, with no point where something audibly switches on.
 <strong>Podcast Leveler</strong> and <strong>Smooth Limiter</strong>
 respond to Auto-Adapt more simply, leaning their leveling and density
 more assertive as you raise it. It is adapted, with thanks and credit,
-from OptiLab Core by dgl1984 (<a
+from <strong>OptiLab Core by Lanes Audio / dgl1984</strong> (<a
 href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>,
-Apache-2.0); it is a faithful adaptation of that plugin’s three modes
-rather than the plugin itself.</li>
+Apache-2.0 with the Commons Clause) – a faithful adaptation of that
+plugin’s three modes as ffmpeg filter chains, rather than the plugin
+itself.</p>
+<p><strong>Exact processing for recordings.</strong> The adaptation has
+one honest limit: OptiLab eases its lift and pulls back bass help
+<em>while</em> the final limiter is working hard, and the filter chain
+Quill Radio uses for live listening cannot do that – no stage in it can
+see how hard a later stage is working. So for <strong>saved
+recordings</strong> Quill Radio can run the real OptiLab engine instead,
+when the optional OptiLab component is included in your build. Live
+listening always uses the built-in chain: that is what lets you hear
+every adjustment the moment you make it, with no reconnect. If the
+component is absent the option says so and nothing else
+changes.</p></li>
 </ul>
 <p><strong>Every control previews live.</strong> As you move a slider or
 change any setting – EQ, compressor, channel mode, night mode, or

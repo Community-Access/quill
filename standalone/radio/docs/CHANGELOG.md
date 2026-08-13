@@ -8,7 +8,9 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased]
 
-Nothing yet. The next release starts here.
+### Added
+
+- **Exact OptiLab processing for saved recordings.** Quill Radio's broadcast-polish modes have always been a faithful *adaptation* of **OptiLab Core by Lanes Audio / dgl1984** (https://github.com/dgl1984/optilab), rebuilt as ffmpeg filter chains so they work everywhere -- live, relayed and recorded -- and preview the moment you move a control. That adaptation has one honest limit: OptiLab eases its lift and pulls back bass help *while* its final limiter is working hard, and a filter chain cannot do that, because no stage in it can see how hard a later stage is working. For **saved recordings** Quill Radio can now run the real OptiLab engine instead, when the optional OptiLab component is included in your build. Live listening keeps the built-in chain permanently -- that is what makes every adjustment audible immediately, with no reconnect -- and if the component is absent the option says so and nothing else changes. With thanks to dgl1984; licensed Apache-2.0 with the Commons Clause.
 
 ## [2.2.0] - 2026-08-12
 

@@ -301,6 +301,38 @@ def test_native_uia_wrapper_falls_back_cleanly() -> None:
         assert result is None
 
 
+def test_the_committed_pyd_is_loadable_from_a_source_checkout() -> None:
+    """A checkout must exercise the native path, not silently skip it.
+
+    ``quill/native/table_uia/`` is not on ``sys.path``, so the plain
+    ``import _quill_table_uia`` failed in a source tree even after running the
+    documented ``scripts/build_table_uia.py`` -- and every grid used the MSAA
+    fallback. Shipped builds were fine (the .pyd is staged into site-packages),
+    which is what made it easy to miss: *no developer ever ran the C++*, so a
+    regression in it or in the pybind11 bridge could only be found by a release
+    build or by a user.
+
+    The .pyd is gitignored, so it is present only where somebody built it.
+    Skips when it is absent -- a machine with no compiled module is a supported
+    state; a compiled module nobody loads is not.
+    """
+    from pathlib import Path
+
+    import pytest
+
+    from quill.ui import table_studio_native as native
+
+    native_dir = Path(native.__file__).resolve().parent.parent / "native" / "table_uia"
+    if next(native_dir.glob("_quill_table_uia*.pyd"), None) is None:
+        pytest.skip("no compiled _quill_table_uia for this build")
+
+    assert native.is_available(), (
+        "A .pyd was built here but the bridge did not load it. The MSAA fallback "
+        "is for machines with no compiled module -- not for hiding the module "
+        "from the people developing it."
+    )
+
+
 def test_native_uia_sources_captured_and_build_wired() -> None:
     from pathlib import Path
 

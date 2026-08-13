@@ -17,12 +17,63 @@ from typing import Any
 
 
 def _load_module() -> Any | None:
+    """The compiled provider, from site-packages or the source tree.
+
+    A shipped build stages the ``.pyd`` into site-packages
+    (``scripts/build_windows_distribution._stage_table_uia``), so the plain
+    import finds it and users get the real provider.
+
+    A **source checkout** did not. ``scripts/build_table_uia.py`` writes the
+    ``.pyd`` into ``quill/native/table_uia/`` (it is gitignored, so it exists
+    only where somebody built it) -- and that directory is not on ``sys.path``,
+    so the import failed even *after* running the documented build step. The
+    grid silently used the MSAA fallback and nothing said otherwise.
+
+    Shipped builds were unaffected, which is what made it easy to miss: it
+    meant *nobody developing QUILL ever exercised the native path*, so a
+    regression in the C++ or in the pybind11 bridge could only be found by a
+    release build or by somebody using one. The fallback exists to cover a
+    machine with no compiled module, not to hide the module from its authors.
+
+    So a checkout now loads it directly from the source tree, which makes
+    building it actually pay off. Still entirely optional: no ``.pyd``, no
+    provider, MSAA exactly as before.
+    """
     try:
         import _quill_table_uia  # type: ignore[import-not-found]
 
         return _quill_table_uia
-    except Exception:  # noqa: BLE001 - absent/incompatible => MSAA fallback
+    except Exception:  # noqa: BLE001 - absent/incompatible => try the source tree
+        pass
+    return _load_from_source_tree()
+
+
+def _load_from_source_tree() -> Any | None:
+    """Import a locally built ``.pyd`` out of ``quill/native/table_uia``."""
+    import importlib.util
+    from pathlib import Path
+
+    native_dir = Path(__file__).resolve().parent.parent / "native" / "table_uia"
+    try:
+        candidate = next(native_dir.glob("_quill_table_uia*.pyd"), None)
+    except OSError:  # noqa: BLE001 - an unreadable tree is simply no module
         return None
+    if candidate is None:
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location("_quill_table_uia", candidate)
+        if spec is None or spec.loader is None:
+            return None
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    except Exception:  # noqa: BLE001 - a wrong-ABI .pyd => MSAA fallback
+        return None
+    # Register it so a later plain ``import _quill_table_uia`` finds the same
+    # object rather than loading a second copy of a module that owns COM state.
+    import sys
+
+    sys.modules.setdefault("_quill_table_uia", module)
+    return module
 
 
 _MODULE = _load_module()

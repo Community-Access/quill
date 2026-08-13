@@ -1443,6 +1443,39 @@ carried by
 and resolved per stream by <code>ResolvedEnhancement</code>. A faithful
 adaptation, not a bit-for-bit port; credited in release notes, the About
 box, and the third-party notices.</li>
+<li><strong>Exact OptiLab processing for saved files (2026-08-13;
+upstream <code>quill/native/optilab/</code>,
+<code>core/optilab_adapter.py</code>).</strong> The three
+broadcast-polish modes are a faithful <em>adaptation</em> of
+<strong>OptiLab Core by Lanes Audio / dgl1984</strong> (<a
+href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>),
+rebuilt as ffmpeg filter chains – and the docstring that justified that
+choice was <strong>factually wrong</strong>: it claimed OptiLab had “no
+library to call and a Windows-64-only binary”, while upstream’s
+<code>native/API.md</code> documents <code>optilab-core</code>, a
+framework-independent C++17 <strong>static library</strong> shipped
+since v1.2.0 and described as “the same processing engine used by the
+CLAP and StationPlaylist/Winamp plug-in wrappers”. Corrected, and acted
+on: the engine is now vendored unmodified at v1.4.0 under
+<code>quill/native/optilab/upstream/</code> (with its LICENSE and
+NOTICE) and linked into QUILL’s own adapter executable – upstream is
+explicit that its C++ API is “not a stable C ABI” and that consumers
+should “wrap this C++ class in a small adapter owned by your project”,
+so QUILL owns one and it contains no DSP. <strong>Saved files
+only.</strong> Recordings and conversion already shell out to ffmpeg
+offline, so an adapter subprocess costs nothing there; live playback
+keeps the filter chain permanently, because mpv applies enhancement
+natively from a filter string and nothing on that path holds a PCM
+sample – piping live audio through a subprocess would reintroduce a
+relay everywhere and cost the live preview. The one real gain is
+upstream’s limiter feedback loop (easing the lift while final limiting
+runs heavy), which a feed-forward graph cannot express at all. Entirely
+optional: no adapter built, <code>available()</code> is False and every
+caller stays on the chain. Licence is <strong>Apache-2.0 with the
+Commons Clause v1.0</strong>, not plain Apache-2.0 as
+<code>core/compliance.py</code> previously recorded; upstream’s NOTICE
+separately grants royalty-free commercial use of OptiLab Core as a tool
+for processing or broadcasting audio.</li>
 <li><strong>Live Sound Enhancements preview + fully per-station (2.0.2,
 upstream <code>ui/sound_enhance_dialog.py</code>,
 <code>ui/radio/player_controller.py</code>).</strong> Every control in

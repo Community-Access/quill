@@ -232,6 +232,38 @@ already fixed in code nobody could run yet.
   classified as content now, which also means it will never be a candidate for
   a prune-the-caches sweep.
 
+- **Sound Enhancements can now run the *real* OptiLab DSP on saved files.**
+  QUILL's three broadcast-polish modes (Podcast Leveler, Stream Polish, Smooth
+  Limiter) have always been a faithful *adaptation* of **OptiLab Core by Lanes
+  Audio / dgl1984** ([github.com/dgl1984/optilab](https://github.com/dgl1984/optilab)),
+  rebuilt as ffmpeg filter chains. That adaptation has one documented
+  limitation: upstream eases its lift and withdraws bass assistance *while*
+  final limiting runs heavy, and an ffmpeg graph is feed-forward, so no stage
+  can see how hard a later one is working. The loop simply cannot be expressed
+  there.
+  QUILL now vendors upstream's engine unmodified at v1.4.0 and links it into a
+  small adapter of our own, so recordings and conversions can be processed by
+  the actual DSP. **Saved files only** -- live playback stays on the ffmpeg
+  chain permanently, because mpv applies enhancement natively from a filter
+  string and nothing on that path ever holds a sample; piping live audio
+  through a subprocess would reintroduce a relay everywhere and cost the live
+  preview. Entirely optional: no adapter built, no change to anything.
+  With thanks to **dgl1984** ([github.com/dgl1984](https://github.com/dgl1984)).
+  Licensed Apache-2.0 with the Commons Clause v1.0; `LICENSE` and `NOTICE` ship
+  beside the vendored source. (`quill/native/optilab/`, `quill/core/optilab_adapter.py`)
+- **Crash fingerprinting is live: feedback-hub 1.1.0 is published.** A repeat of
+  a crash somebody already reported now comments on that issue instead of
+  filing a new one. The floor moves to `>=1.1.0` now that it is on PyPI --
+  it was deliberately held at 1.0.2 rather than pointing a shipping build at a
+  version that did not exist.
+- **The native Table Studio provider works in a source checkout.** Building it
+  with `scripts/build_table_uia.py` wrote the module into a directory that was
+  not on `sys.path`, so the import failed even after the documented build step
+  and the grid quietly used the MSAA fallback. Shipped builds were always fine,
+  which is what made it easy to miss -- it meant nobody developing QUILL ever
+  exercised the C++ provider, so a regression in it could only surface at a
+  release build or at a user. (`quill/ui/table_studio_native.py`)
+
 ### Fixed in passing
 
 - **Player Information reported "0 notes" for every episode.** The count was
