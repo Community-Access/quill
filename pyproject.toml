@@ -28,7 +28,7 @@ dependencies = [
     # namespaces) for a hand-rolled ElementTree walk to handle reliably; this is
     # the standard Python choice. Pure Python, no C extension, tiny -- a normal
     # dependency, not an on-demand optional component like Pandoc/speech engines.
-    "feedparser>=6.0.12",
+    "feedparser>=6.0.14",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
     "platform_utils>=1.6.3",
@@ -40,7 +40,7 @@ dependencies = [
     # AES-GCM for Quill Beacon's encrypted sync (apps/beacon/quillsync/crypto.py)
     # and PuTTY private-key parsing (core/ssh/putty_key.py). Hard-imported by the
     # beacon sync module, so it is a base dependency, not an optional extra.
-    "cryptography>=44.0.0",
+    "cryptography>=50.0.0",
     # Windows COM. Not a UI concern despite living in the [ui] extra until now:
     # quill/core/persona_launcher.py builds persona .lnk shortcuts through
     # WScript.Shell, and quill/platform/windows (sapi5, narrator_announce,
@@ -77,7 +77,7 @@ ui = [
     # quill/_vendor/autoupdate/autoupdate.py (win32api.ShellExecute, to hand
     # off to the update bootstrapper). Both are UI-reachable only, so it sits
     # in this extra rather than in the base set.
-    "pywin32>=306; sys_platform == 'win32'",
+    "pywin32>=312; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
     "certifi>=2026.7.22",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
@@ -155,7 +155,7 @@ speech = ["sounddevice>=0.5.5"]
 # fetches its CTranslate2 model repositories. Users opt in via AI > Speech >
 # Manage Speech Models > Speech Engine; the bundled whisper.cpp engine remains
 # the default and needs none of this.
-fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.25.1"]
+fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.27.0"]
 # Optional very-low-resource offline English engine: Vosk (Kaldi) (#669). Tiny
 # CPU-only models (~40 MB) for old/constrained machines. Models download from
 # alphacephei.com via Manage Speech Models; no GPU needed.
@@ -164,7 +164,7 @@ vosk = ["vosk>=0.3.45"]
 # sherpa-onnx (#669 follow-up). 600M Cache-Aware FastConformer-RNNT run int8 on
 # the CPU — no torch/CUDA (sherpa-onnx bundles its own native onnxruntime). The
 # model downloads from QUILL's assets-v1 release via Manage Speech Models.
-nemotron = ["sherpa-onnx>=1.10.0", "numpy>=1.24.0"]
+nemotron = ["sherpa-onnx>=1.10.0", "numpy>=2.5.2"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
 mp3 = ["mutagen>=1.48.1"]
@@ -229,9 +229,9 @@ pages = ["keynote-parser>=1.14.4.0"]
 # Optional Components (quill/core/pdf_ocr_install.py). Shipped builds bundle the
 # lean `office-text` extra below instead of this one -- see the note there.
 pdf-ocr = [
-    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
+    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7",
     "pdfplumber>=0.11.10",
-    "pypdf>=6.14.2",
+    "pypdf>=6.15.0",
 ]
 # The lean half of pdf-ocr, and the half that actually ships (#1279). MarkItDown
 # is the better reader, but its dependency chain is not lean: magika (its stream
@@ -245,7 +245,7 @@ pdf-ocr = [
 # one-click download for anyone who wants it (Help > Download Optional Components).
 office-text = [
     "pdfplumber>=0.11.10",
-    "pypdf>=6.14.2",
+    "pypdf>=6.15.0",
     "openpyxl>=3.1.5",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
@@ -385,7 +385,7 @@ dev = [
   # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
   # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
   "pytest-randomly>=4.1.0",
-  "ruff>=0.15.21",
+  "ruff>=0.16.2",
   "mypy>=2.3.0",
   # I18N: string extraction, .po update, .mo compile
   "Babel>=2.18.0",
