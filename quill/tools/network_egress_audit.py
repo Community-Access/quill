@@ -23,6 +23,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from quill.tools.platform_guard import build_parent_map, platform_for_node
+from quill.tools.source_cache import read as source_text
 
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
@@ -1084,7 +1085,7 @@ def _scan_egress() -> dict[str, EgressSite]:
     """
     sites: dict[str, EgressSite] = {}
     for path in sorted(_PACKAGE_ROOT.rglob("*.py")):
-        source = path.read_text(encoding="utf-8")
+        source = source_text(path)  # 60% of this scan is disk I/O
         tree = ast.parse(source, filename=str(path))
         parents = build_parent_map(tree)
         for node in ast.walk(tree):

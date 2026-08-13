@@ -193,6 +193,8 @@ A thousand-show library is not a hypothetical, so:
 - **Export My Data...** writes your subscriptions, folders, queue, playlists, episode notes, listening statistics, and recently-played list to one readable JSON file. OPML covers subscriptions and nothing else.
 - **Delete All Podcast Data...** starts you over, confirmed twice, with downloaded files as a separate question -- "start over" and "reclaim the disk" are not the same wish.
 
+- **Every app in the family has its own icon now.** QUILL Cast's was always its own -- a microphone capsule under waves, which is what tells it apart from Quill Radio at a glance -- but three of its siblings were shipping byte-identical copies of Radio's icon and two more had none at all. They now come from one shared design system, so no two Quill apps can wear the same face. Cast's own picture is unchanged; its waves were redrawn a touch heavier to match Radio's exactly, because the two apps are the closest pair in the family.
+
 ## What has not changed
 
 QUILL Cast still collects no telemetry of any kind, still shares one library with QUILL and the rest of the family, still works entirely from the keyboard, and still says what it did. Everything in this release that acts on its own -- an expiry, a trim, an eviction, an automatic download -- announces itself, and every one of them can be turned off.

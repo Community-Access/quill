@@ -45,6 +45,13 @@ Quill Weather is built to keep running.
 
 ## The system tray menu
 
+Quill Weather's icon is a gold sun behind a white cloud, on a sky-blue tile. If
+you have used an earlier build, this is new: Quill Weather used to share Quill
+Radio's broadcast-wave icon, so on a desktop with both installed the two looked
+identical in the tray and in the taskbar. Every app in the family now has its
+own - the same rounded tile shape and the same gold accent throughout, but its
+own colour and its own picture each.
+
 Right-click the tray icon (or use the Applications key) for: the current
 monitoring status, **Open Weather Center**, **Quick Weather**, **Start/Stop
 Monitoring**, **Open Quill Radio**, **Open QUILL**, **Show**, and **Exit**.

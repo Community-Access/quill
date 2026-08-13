@@ -9,6 +9,17 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+### Added — QUILL Social has an application icon
+
+- **An icon of its own, for the app and the installer.** QUILL Social shipped
+  with none at all, so the build wore PyInstaller's generic default -- the same
+  generic default as any other unbranded Python app, which in a taskbar or an
+  Alt+Tab list is indistinguishable from software the listener never installed.
+  Its icon is now two overlapping speech bubbles on a plum tile, sharing the
+  QuillVille family's rounded tile shape and amber accent. The overlap is the
+  point: QUILL Social is feeds and conversations from several places at once,
+  and a single bubble would have said "messaging". `Setup.exe` carries it too.
+
 ### Added — the documentation is reachable from inside the app
 
 - **Help > User Guide**, **Help > Keyboard Reference**, and **Help >

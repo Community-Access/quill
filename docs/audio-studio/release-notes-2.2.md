@@ -65,6 +65,14 @@ The Studio used to be assembled from a copy of QUILL's audio code kept in a sepa
 
 Two smaller results of the same work: Piper voices now download from the project's own signed mirror rather than a third-party model host, so a voice download no longer depends on an outside service being reachable from your network; and the shared components each app needs (ffmpeg, for the Studio) are counted, so uninstalling one Quill app can never take away something another app still needs. The build also leaves out the large libraries the Studio never loads, making both the installer and the portable zip meaningfully lighter.
 
+## An icon of its own
+
+Until now QUILL Audio Studio shipped a **byte-identical copy** of Quill Radio's blue broadcast-wave icon -- not a similar drawing, the same file. So did Quill Inkwell and Quill Weather. On a desktop with more than one Quill app installed, four different products wore one face in the taskbar, in Alt+Tab, in the Start menu and in the notification area, which for a tray-resident app is where it lives its whole life. Nobody chose that; each new app was built from the last one's template, and an icon is easy not to notice.
+
+Every app in the family now has its own. They are still recognisably a set -- one rounded tile shape, one gold accent -- but each has its own colour and its own picture. The Studio's is a three-bar waveform on a dark slate tile: editing audio rather than broadcasting it, and the only glyph in the family built from repetition.
+
+The drawing was made for the size that actually matters. At 16 by 16 pixels -- the notification area, and the small icons in a file list -- a first attempt with five bars merged into a solid slab. There are three, with real gaps between them, because gaps are what make a waveform read as bars rather than as a block.
+
 ## Fixed
 
 **Kokoro narration no longer stops mid-run on a portable copy.** A long, dense passage could overrun the neural model's input window; the Studio then fell back to a heavyweight code path a portable copy does not carry, and announced "Kokoro voices need one more component" - for a component you had already installed, 29 chapters into a run. The Studio now re-splits that one passage at safe boundaries and carries on, so a portable narration completes. The per-passage size limit is capped below the model's window everywhere it is used, translated editions included, and when a passage genuinely cannot be synthesized the message names the real cause and where the report is, instead of pointing at a download you do not need.

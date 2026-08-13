@@ -54,7 +54,6 @@ def test_standalone_project_files_present() -> None:
         "quill_converter/__init__.py",
         "quill_converter/__main__.py",
         "assets/quill-converter.ico",
-        "assets/make_quill_converter_icon.py",
     ):
         assert (_CONVERTER / rel).is_file(), rel
 

@@ -7,6 +7,23 @@ library with QUILL.
 
 ### Added
 
+- **An application icon of its own.** This was the single hard blocker on
+  cutting the 1.0.0 build, which is why it is recorded here rather than as a
+  fix after the fact. The icon the app was scaffolded with was a byte-identical
+  copy of Quill Weather's -- which was itself a copy of Quill Radio's -- so a
+  listener with more than one QuillVille app installed would have seen the same
+  face for several different products in the taskbar, in Alt+Tab and in the
+  tray. For a tray-resident app like Inkwell, the tray is where it lives its
+  whole life.
+
+  Inkwell's icon is a gold nib dipped into a white inkwell, on a terracotta
+  tile: the app is named for the well, and the pot is a silhouette nothing else
+  in the family has. It shares the family's rounded tile shape and gold accent,
+  and differs from every sibling in picture and in colour. Two alternatives were
+  drawn and rejected for failing at 16x16, which is the size that actually
+  matters -- expanding text lines blurred to a grey block, and a bare fountain
+  nib read as a flame.
+
 - **System-wide expansion.** A low-level keyboard hook recognises an
   abbreviation as you finish typing it and replaces it in whatever application
   has focus. Expansions are typed as synthesised keystrokes and never touch the

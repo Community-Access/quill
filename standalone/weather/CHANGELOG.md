@@ -12,6 +12,15 @@ release is 2.2.0.
 
 ### New
 
+- **Quill Weather has its own icon.** Until now it shipped a byte-identical copy
+  of Quill Radio's broadcast-wave icon, carried over when the app was
+  scaffolded -- so on a desktop with both installed, two different products wore
+  the same face in the taskbar, in Alt+Tab and in the tray, where a
+  tray-resident app lives its whole life. Quill Weather's icon is now a sun
+  behind a cloud on a sky-blue tile: the same rounded shape and amber accent as
+  the rest of the family, its own silhouette and its own colour. It is the one
+  glyph in the family that is a picture of a thing rather than a diagram,
+  because weather is the one app whose subject is a thing.
 - **Weather Guardian watches every place you have saved, not just one.** The
   alert watch used to cover your primary location only, so a warning for work,
   for family, or for where you were travelling went unheard. Now it covers every

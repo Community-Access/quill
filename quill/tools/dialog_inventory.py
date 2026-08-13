@@ -44,6 +44,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.tools.platform_guard import build_parent_map, platform_for_node
+from quill.tools.source_cache import parsed, scope
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _PACKAGE_ROOT = _REPO_ROOT / "quill"
@@ -196,18 +197,23 @@ class _DialogVisitor(ast.NodeVisitor):
 def scan_module(path: Path) -> list[DialogSurface]:
     """Scan one module for dialog surfaces."""
     module = path.relative_to(_REPO_ROOT).as_posix()
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    tree = parsed(path)
     visitor = _DialogVisitor(module, build_parent_map(tree))
     visitor.visit(tree)
     return visitor.surfaces
 
 
 def scan_dialog_surfaces(root: Path = _PACKAGE_ROOT) -> list[DialogSurface]:
-    """Return every dialog surface in the package, sorted by stable key."""
-    surfaces: list[DialogSurface] = []
-    for path in sorted(root.rglob("*.py")):
-        surfaces.extend(scan_module(path))
-    return sorted(surfaces)
+    """Return every dialog surface in the package, sorted by stable key.
+
+    The scope is re-entrant, so this shares one parse with the banned-pattern
+    gate when called from there, and releases its own when called directly.
+    """
+    with scope():
+        surfaces: list[DialogSurface] = []
+        for path in sorted(root.rglob("*.py")):
+            surfaces.extend(scan_module(path))
+        return sorted(surfaces)
 
 
 def surface_map(surfaces: Iterable[DialogSurface]) -> dict[str, str]:

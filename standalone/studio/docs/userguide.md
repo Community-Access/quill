@@ -364,6 +364,8 @@ These preferences are stored in a small app-local file, so the shared settings Q
 
 ## The system tray
 
+QUILL Audio Studio's icon is three white-and-gold waveform bars on a dark slate tile. If you have used an earlier build, this is new: the Studio used to share Quill Radio's blue broadcast-wave icon, so on a desktop with more than one QuillVille app installed several of them looked identical. Every app in the family now has its own - the same rounded tile shape and the same gold accent throughout, but its own colour and its own picture each.
+
 While minimized to the tray the Studio keeps running - a long narration continues with the window tucked away. Right-click (or keyboard-invoke) the tray icon for:
 
 - **Open Audio Studio...** - restore the window and open the wizard.

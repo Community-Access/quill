@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- QuillBeacon has an application icon. It had none: the spec carried a
+  "drop a real assets/quill-beacon.ico in once it exists" comment, and until
+  then the build wore PyInstaller's generic default -- the same generic default
+  as any other unbranded Python app on the machine, which in a taskbar or an
+  Alt+Tab list is indistinguishable from software the listener never installed.
+  QuillBeacon's icon is now a place-marker pin on a crimson tile, sharing the
+  QuillVille family's rounded tile shape and amber accent. The pin is the one
+  shape in the family with a point, so it cannot be confused with any sibling
+  even as a blur -- fitting for an app whose whole subject is saving *places
+  within things*. The installer uses it too.
 - QuillBeacon now speaks (#1283, #1300). Every announcement went to the
   status bar (or, failing that, the window title) and nowhere else, and
   screen readers announce neither on their own -- so "QuillBeacon ready",

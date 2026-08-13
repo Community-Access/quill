@@ -249,6 +249,43 @@ optional spoken/typed note, a navigable **bookmark list** (jump on Enter), renam
 delete, and **export**. Built over `quill/core/bookmarks.py` and the Beacon
 time-point model. Auto-bookmark on sleep-timer stop so you never lose your place.
 
+### 7.9a Note cues: hearing a note when you reach it (shipped)
+A note anchored to 14:32 is only half a feature if the only way to meet it again
+is to open a list. When playback crosses a bookmark that **has a note**, the note
+is spoken. On by default under **Playback > Read My Notes Aloud as I Reach Them**;
+writing the note is the opt-in.
+
+The rule lives in `quill/core/media/note_cues.py` (wx-free) and the wiring in
+`quill/ui/media/note_cue_actions.py` (`NoteCuesMixin`, riding the Player's
+existing one-second status tick rather than adding a timer of its own).
+
+What makes it a feature rather than an irritation is everything it refuses to
+say. A naive "any mark between the last position and this one" is correct during
+playback and wrong everywhere else, so three rules are explicit and tested:
+
+- **A seek is not listening.** A jump larger than 2 seconds between position
+  reports is a scrubber drag, not playback; dragging across an hour must not read
+  out every note it passed. (The player reports about once a second, so 2 seconds
+  absorbs a dropped tick without ever mistaking a seek for listening.)
+- **Backwards and stationary announce nothing**, which covers skipping back over
+  a note you just heard, and pausing -- where position reports keep arriving and
+  a range check would announce the same note forever.
+- **The interval is half-open at the start and closed at the end**
+  (`previous < position <= current`), so each note fires exactly once and one
+  landing on the tick is not missed.
+
+Bookmarks with no note are skipped: a plain bookmark is a place to jump to.
+Labels are spoken first when present; otherwise the note is prefixed "Note:", so
+a sentence spoken over an audiobook is never heard as part of the book. No
+timestamp is spoken -- the listener is at that moment, and a spoken `14:32` is
+ambiguous where the written form is not (rule A-8).
+
+The anchor -- where playback was a tick ago -- is *reset* rather than updated
+whenever it would otherwise mislead: when a book opens, when there is no book,
+and when the toggle is switched back on mid-book. Every failure mode of this
+feature is a stale anchor, and they all sound identical from the listener's
+side: a note read out for audio they never listened through.
+
 ### 7.10 Resume / listening position
 Every book remembers its exact position via `listening_positions.py` (keyed by
 `path|size`), restored on load. "Mark as finished" and progress percentage per book

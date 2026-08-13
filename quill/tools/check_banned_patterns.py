@@ -82,6 +82,7 @@ from quill.tools.dialog_inventory import (
     load_snapshot,
     scan_dialog_surfaces,
 )
+from quill.tools.source_cache import parsed_source, scope
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _MAIN_FRAME = _REPO_ROOT / "quill" / "ui" / "main_frame.py"
@@ -191,7 +192,7 @@ class _BareWxVisitor(ast.NodeVisitor):
 
 
 def _check_bare_wx(path: Path) -> list[Violation]:
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    _, tree = parsed_source(path)
     visitor = _BareWxVisitor()
     visitor.visit(tree)
     return [Violation(path, line, message) for line, message in visitor.violations]
@@ -202,7 +203,7 @@ def _check_raw_xml(paths: Iterable[Path]) -> list[Violation]:
     for path in paths:
         if path == _SAFE_XML:
             continue
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        _, tree = parsed_source(path)
         for node in ast.walk(tree):
             if (
                 isinstance(node, ast.Attribute)
@@ -241,7 +242,7 @@ def _check_dialog_contract(paths: Iterable[Path]) -> list[Violation]:
     """
     violations: list[Violation] = []
     for path in paths:
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        _, tree = parsed_source(path)
 
         # Collect the wx.Dialog calls that are the context expression of a
         # ``with`` statement; those auto-destroy and are exempt from the
@@ -303,8 +304,7 @@ def _check_checklistbox(paths: Iterable[Path]) -> list[Violation]:
     """
     violations: list[Violation] = []
     for path in paths:
-        source_lines = path.read_text(encoding="utf-8").splitlines()
-        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        source_lines, tree = parsed_source(path)
         for node in ast.walk(tree):
             if (
                 isinstance(node, ast.Attribute)
@@ -375,8 +375,7 @@ def _check_threading_thread(paths: Iterable[Path]) -> list[Violation]:
             # Tests are free to spin up threads to exercise the code under
             # test; the invariant targets production UI code only.
             continue
-        source_lines = path.read_text(encoding="utf-8").splitlines()
-        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        source_lines, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not _is_threading_thread_call(node):
                 continue
@@ -461,8 +460,7 @@ def _check_show_modal_wrapper(paths: Iterable[Path]) -> list[Violation]:
     for path in paths:
         if path.stem not in _GATE_42_TARGET_STEMS:
             continue
-        source_lines = path.read_text(encoding="utf-8").splitlines()
-        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        source_lines, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not (
                 isinstance(node, ast.Attribute)
@@ -523,8 +521,7 @@ def _check_wx_message_box(paths: Iterable[Path]) -> list[Violation]:
         # Only enforce on the governed directories (quill/ui, quill/devtools).
         if not any(_is_under(path, root) for root in _GATE_41_DIRECTORIES):
             continue
-        source_lines = path.read_text(encoding="utf-8").splitlines()
-        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        source_lines, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not _is_wx_message_box_call(node):
                 continue
@@ -647,7 +644,7 @@ def _check_dead_region_attrs(paths: Iterable[Path]) -> list[Violation]:
     """
     violations: list[Violation] = []
     for path in paths:
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        _, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not (
                 isinstance(node, ast.Attribute)
@@ -677,7 +674,7 @@ def _check_non_daemon_thread(paths: Iterable[Path]) -> list[Violation]:
     """
     violations: list[Violation] = []
     for path in paths:
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        _, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not (
                 isinstance(node, ast.Call)
@@ -719,8 +716,7 @@ def _check_wx_messagebox(paths: Iterable[Path]) -> list[Violation]:
     for path in paths:
         if path == _DIALOG_CONTRACT:
             continue
-        source_lines = path.read_text(encoding="utf-8").splitlines()
-        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        source_lines, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not (
                 isinstance(node, ast.Call)
@@ -764,8 +760,7 @@ def _check_accept_focus_from_keyboard(paths: Iterable[Path]) -> list[Violation]:
     """
     violations: list[Violation] = []
     for path in paths:
-        source_lines = path.read_text(encoding="utf-8").splitlines()
-        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        source_lines, tree = parsed_source(path)
         for node in ast.walk(tree):
             if not (isinstance(node, ast.FunctionDef) and node.name == "AcceptsFocusFromKeyboard"):
                 continue
@@ -800,19 +795,23 @@ def _check_accept_focus_from_keyboard(paths: Iterable[Path]) -> list[Violation]:
 
 
 def find_violations() -> list[Violation]:
+    """Every violation in the tree. The scope is load-bearing -- see
+    :mod:`quill.tools.source_cache` for what it shares and what it releases."""
     ui_files = sorted(_UI_ROOT.rglob("*.py"))
+    package_files = sorted(_PACKAGE_ROOT.rglob("*.py"))
     violations: list[Violation] = []
-    violations.extend(_check_bare_wx(_MAIN_FRAME))
-    violations.extend(_check_raw_xml(sorted(_PACKAGE_ROOT.rglob("*.py"))))
-    violations.extend(_check_dialog_contract(ui_files))
-    violations.extend(_check_checklistbox(ui_files))
-    violations.extend(_check_dead_region_attrs(ui_files))
-    violations.extend(_check_non_daemon_thread(ui_files))
-    violations.extend(_check_wx_messagebox(sorted(_PACKAGE_ROOT.rglob("*.py"))))
-    violations.extend(_check_show_modal_wrapper(ui_files))
-    violations.extend(_check_accept_focus_from_keyboard(ui_files))
-    violations.extend(_check_dialog_registry())
-    violations.extend(_check_ruff_config())
+    with scope():
+        violations.extend(_check_bare_wx(_MAIN_FRAME))
+        violations.extend(_check_raw_xml(package_files))
+        violations.extend(_check_dialog_contract(ui_files))
+        violations.extend(_check_checklistbox(ui_files))
+        violations.extend(_check_dead_region_attrs(ui_files))
+        violations.extend(_check_non_daemon_thread(ui_files))
+        violations.extend(_check_wx_messagebox(package_files))
+        violations.extend(_check_show_modal_wrapper(ui_files))
+        violations.extend(_check_accept_focus_from_keyboard(ui_files))
+        violations.extend(_check_dialog_registry())
+        violations.extend(_check_ruff_config())
     return violations
 
 

@@ -309,7 +309,6 @@ from quill.core.tagging import (
 from quill.core.token_nav import classify_token, next_token_position, prev_token_position
 from quill.core.transforms import to_lower, to_sentence_case, to_title, to_toggle_case, to_upper
 from quill.core.trust import is_trusted_location, load_trusted_locations, save_trusted_locations
-from quill.core.undo_store import load_undo_history, save_undo_history
 from quill.core.url_ops import format_content_length
 from quill.core.watch_actions import WatchActionOutcome
 from quill.core.watch_profiles import (
@@ -467,6 +466,7 @@ from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_table_nav import TableNavMixin
 from quill.ui.main_frame_typing import TypingPathMixin
+from quill.ui.main_frame_undo import PersistentUndoMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
 from quill.ui.main_frame_vault import VaultMixin
@@ -814,6 +814,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    PersistentUndoMixin,
     AnnounceCommandsMixin,
     SrWatchdogMixin,
     MetadataAiMixin,
@@ -7634,74 +7635,6 @@ class MainFrame(
         else:
             style = style | wx.TE_DONTWRAP
         editor.SetWindowStyleFlag(style)
-
-    def _load_persistent_undo_state(self, path: Path, text: str) -> None:
-        history = load_undo_history(path)
-        if not history:
-            history = [text]
-        elif history[-1] != text:
-            history.append(text)
-        self._persistent_undo_history = history[-100:]
-        self._persistent_undo_index = len(self._persistent_undo_history) - 1
-        if self.settings.persistent_undo:
-            save_undo_history(path, self._persistent_undo_history)
-
-    def _record_persistent_undo_state(self, text: str) -> None:
-        if not self.settings.persistent_undo or self.document.path is None:
-            return
-        if (
-            self._persistent_undo_history
-            and self._persistent_undo_history[self._persistent_undo_index] == text
-        ):
-            return
-        if self._persistent_undo_index < len(self._persistent_undo_history) - 1:
-            self._persistent_undo_history = self._persistent_undo_history[
-                : self._persistent_undo_index + 1
-            ]
-        self._persistent_undo_history.append(text)
-        self._persistent_undo_history = self._persistent_undo_history[-100:]
-        self._persistent_undo_index = len(self._persistent_undo_history) - 1
-        # Persisting the full history JSON on every keystroke is wasteful (and
-        # can write many MB per second on large documents). Throttle disk
-        # writes; flush_persistent_undo() forces a write on save/close.
-        self._persistent_undo_dirty = True
-        self._maybe_flush_persistent_undo()
-
-    def _maybe_flush_persistent_undo(self, force: bool = False) -> None:
-        if not getattr(self, "_persistent_undo_dirty", False):
-            return
-        if self.document.path is None:
-            return
-        now = datetime.now(UTC)
-        last = getattr(self, "_last_persistent_undo_write_at", None)
-        interval = timedelta(seconds=3)
-        if not force and last is not None and now - last < interval:
-            return
-        save_undo_history(self.document.path, self._persistent_undo_history)
-        self._last_persistent_undo_write_at = now
-        self._persistent_undo_dirty = False
-
-    def flush_persistent_undo(self) -> None:
-        self._maybe_flush_persistent_undo(force=True)
-
-    def _step_persistent_undo(self, direction: int) -> None:
-        if not self._persistent_undo_history:
-            self._set_status("Nothing to undo")
-            return
-        target = self._persistent_undo_index + direction
-        if target < 0 or target >= len(self._persistent_undo_history):
-            self._set_status("Nothing to redo" if direction > 0 else "Nothing to undo")
-            return
-        text = self._persistent_undo_history[target]
-        self._persistent_undo_index = target
-        self._suspend_persistent_undo = True
-        try:
-            self.editor.ChangeValue(text)
-        finally:
-            self._suspend_persistent_undo = False
-        self.document.set_text(text)
-        self._refresh_title()
-        self._set_status("Redo" if direction > 0 else "Undo")
 
     def _restore_from_tray(self) -> None:
         self.frame.Show(True)

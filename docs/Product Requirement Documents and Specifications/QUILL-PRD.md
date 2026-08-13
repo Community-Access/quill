@@ -10292,6 +10292,76 @@ not add an unguarded module-level mutable cache to `quill/core`.
 
 <!-- Source: docs/engineering/docs-artifacts-pipeline.md -->
 
+### §35.7 Visual identity: one design system, one face per app
+
+Every app in the family carries a **distinct application icon drawn from a
+single shared system**. This is a product requirement, not a styling
+preference, because the icon is the app's identity everywhere a listener
+navigates by it: the taskbar, Alt+Tab, the Start menu, the desktop, the
+installer's `Setup.exe`, the Add/Remove Programs entry, and -- for the
+tray-resident apps -- the notification area, where several of these products
+spend their entire runtime.
+
+**The defect this requirement exists to prevent has already happened.** As of
+2026-08-13, four apps shipped a byte-identical `.ico` (Inkwell, Audio Studio
+and Weather all carried Quill Radio's broadcast wave, same SHA-256), and two
+more shipped installers with no icon at all and so wore PyInstaller's generic
+default. Nobody chose either outcome; both followed from scaffolding each new
+app from the last one, which is exactly the sharing model §35.2 prescribes.
+Build-time sharing is right for code and wrong for identity, and the family
+needs an explicit rule at that seam.
+
+**The system.** One tile shape (rounded square, corner radius 22% of the edge,
+full bleed) so the apps read as siblings. One accent, the family amber
+established by Radio and Cast. One bold white glyph of two or three shapes --
+detail that cannot survive 16x16 is detail that only exists in a screenshot.
+
+**Two separators, both required.**
+
+1. **Distinct silhouette.** The test is squinting: if two icons blur to the
+   same shape, colour is doing all the work.
+2. **Distinct hue *and* lightness.** Not hue alone. A set separated only by hue
+   is a set some colour-blind users cannot tell apart, and colour is the first
+   thing to go at small sizes and for low-vision users.
+
+**The 16x16 rule.** Every glyph is judged at tray size, not at 256px. Three of
+the eight were re-cut for failing it: Radio's three thin arcs merged into a
+single smear (now two, thicker, further apart), Studio's five waveform bars
+merged into a solid slab (now three, with real gaps), and Inkwell's chosen
+glyph beat two alternatives that failed -- expanding text lines blurred to a
+grey block, and a bare fountain nib read as a flame.
+
+**The register.** [scripts/build_app_icons.py](../../scripts/build_app_icons.py)
+holds the design system and every glyph, with each glyph's *intent* recorded
+beside it so the next person changing one knows what it was trying to say.
+`--check` fails when a committed `.ico` has drifted from source; `--preview`
+writes 256px and magnified-16px PNGs for eyeballing before shipping.
+`tests/unit/scripts/test_app_icons.py` enforces the requirements above as
+assertions -- no two apps may render the same face, no two may share a
+background colour, the tiles must differ in lightness and not only in hue,
+every `.ico` must carry all seven sizes Windows asks for (16/24/32/48/64/128/256),
+and **any app that gains a Windows installer without an icon entry fails by
+name**. That last one is what closes the scaffolding seam: a new app cannot
+inherit somebody else's face by accident, because it cannot ship without
+declaring one.
+
+Icons are **generated, never hand-edited.** An `.ico` edited by hand would be
+silently reverted by the next person who runs the script, and a generator
+nobody trusts is worse than no generator. Quill Converter's private one-app
+generator was retired into the family one for the same reason: two generators
+are two design systems.
+
+| App | Glyph | Tile |
+| --- | --- | --- |
+| Quill Radio | waves leaving a source | indigo |
+| QUILL Cast | a microphone capsule under waves | teal |
+| Quill Converter | two arrows passing in opposite directions | violet |
+| Quill Inkwell | a nib dipped into an inkwell | terracotta |
+| QUILL Audio Studio | a three-bar waveform | slate |
+| Quill Weather | sun behind cloud | sky |
+| QuillBeacon | a place-marker pin | crimson |
+| QUILL Social | two overlapping speech bubbles | plum |
+
 # Docs-artifact regeneration pipeline
 
 This note documents how Quill keeps each `docs/**/*.md` source in sync with its

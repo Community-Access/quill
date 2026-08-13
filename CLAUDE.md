@@ -35,6 +35,9 @@ python -m quill.tools.quillin_lint <dir> --strict
 
 # Agent standards lint (default: bundled agents dir; pass a path to lint one)
 python -m quill.tools.agent_lint quill/core/ai/agents --strict
+
+# App icons (regenerate all; --check fails on drift, --preview writes 256/16 PNGs)
+python scripts/build_app_icons.py
 ```
 
 The `tests/conftest.py` fixture sets `quill.core.paths._DEV_BUILD = True` for the whole test session. Any test that sets `QUILL_DATA_DIR` for isolation depends on this; do not remove it.
@@ -72,6 +75,8 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 **Windows code signing (Authenticode):** `scripts/code_signing.py` is the single tool for OS code signing via Azure Trusted Signing (`metadata.json` at repo root; auth is the ambient `az login` / workload-identity credential, no PFX). It locates `signtool`, stages+SHA-256-verifies the signing dlib into gitignored `build/deps/trusted-signing/`, and invokes `signtool` with an argv list — never through an MSYS/Git-Bash shell, which mangles `/fd`-style switches. It is **opt-in** (`QUILL_SIGN=1`) and **fail-open** (a failure aborts only under `QUILL_SIGN_REQUIRED=1`), so plain builds are unchanged. Wired into all seven installers — `build_windows_distribution.py` (main app) and every `standalone/*/scripts/build_release.ps1` (`-Sign`): payload `.exe`/`.dll` signed before packaging; each `Setup.exe` and its uninstaller signed by Inno's native `SignTool` + `SignedUninstaller` during compile, gated behind an `#ifdef Sign` block (ISCC gets `/DSign` + a `/Squilltrusted=` mapping) so unsigned builds compile unchanged. This is distinct from `quill/tools/signing.py` (Ed25519 artifact provenance) and the update-feed key. Runbook: `docs/code-signing.md`.
 
 **`QUILL_DATA_DIR`:** Respected only when `_DEV_BUILD=True` (i.e., `QUILL_DEV_BUILD=1`). In release builds the env var is ignored; dev overrides must also stay under `Path.home()`.
+
+**App icons:** every app in `standalone/` that ships a Windows installer must have an entry in `scripts/build_app_icons.py`, which owns the family design system (one rounded tile, one amber accent, a distinct silhouette *and* a distinct hue+lightness per app). Icons are generated, never hand-edited. `tests/unit/scripts/test_app_icons.py` fails if two apps render the same face, if a committed `.ico` has drifted from source, or if a new installer appears with no icon entry — the seam that let four apps ship byte-identical copies of Quill Radio's icon.
 
 ### Module size budget
 

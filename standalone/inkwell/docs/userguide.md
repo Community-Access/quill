@@ -70,6 +70,14 @@ Expansion is a background service. Closing the window keeps it running and tucks
 Inkwell into the notification area; the tray icon's menu reopens it, offers Quick
 Insert, and can turn expansion off.
 
+**What to look for.** Quill Inkwell's icon is a gold nib dipped into a white
+inkwell, on a terracotta-orange tile. If you have used an earlier build, this is
+new: Inkwell used to share Quill Radio's blue broadcast-wave icon, so on a
+desktop with more than one QuillVille app installed several of them looked
+identical. Every app in the family now has its own: they all share the same
+rounded tile shape and the same gold accent, but each has its own colour and its
+own picture.
+
 Turn off **Options > Close button keeps expanding** if you would rather the close
 button really exit. **Options > Start Quill Inkwell with Windows** starts it
 hidden at login, which is how most people run it.

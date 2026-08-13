@@ -8,6 +8,19 @@ Quill Converter is the product wrapper; the application code lives in the
 `quill/apps/converter.py`, the shared conversion engine under
 `quill/core/audio/`, the shared Convert Audio dialog, and this folder.
 
+## Unreleased
+
+- **The tile icon moved to the family generator.** Quill Converter's icon was
+  already generated rather than hand-drawn -- it had its own
+  `assets/make_quill_converter_icon.py` -- which made it the only app in the
+  family whose icon could be reviewed in source. That idea was right and has
+  been generalised: `scripts/build_app_icons.py` at the repository root now
+  draws every app's icon from one design system, and Converter's private
+  generator has been retired. The drawing is unchanged in concept (two arrows
+  passing in opposite directions, on a violet tile); what changed is that no two
+  apps can now drift apart, or collide, because a test asserts that no two
+  render the same face.
+
 ## 1.0.0 - 2026-07-31
 
 The first release: the Universal Audio Converter as its own tray-resident

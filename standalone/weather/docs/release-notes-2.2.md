@@ -183,6 +183,14 @@ themselves. And the apps stay within reach of one another: **Open Quill Radio**
 and **Open QUILL** sit in the File menu and the tray, each opening in its own
 window.
 
+## An icon of its own
+
+Quill Weather used to ship a **byte-identical copy** of Quill Radio's broadcast-wave icon -- not a similar drawing, the same file, carried over when the app was scaffolded. So did Quill Inkwell and QUILL Audio Studio. On a desktop with both Quill Weather and Quill Radio installed, the two were indistinguishable in the taskbar, in Alt+Tab, in the Start menu and in the notification area, which for an app that lives in the tray is where it spends its whole life.
+
+Quill Weather's icon is now a gold sun behind a white cloud, on a sky-blue tile. Every app in the family has its own now: they still read as a set -- one rounded tile shape, one gold accent -- but each has a distinct picture and a distinct colour, chosen to differ in lightness as well as hue, because a set separated only by hue is one that some colour-blind users cannot tell apart.
+
+Weather's is the one glyph in the family that is a picture of a thing rather than a diagram, because weather is the one app whose subject is a thing.
+
 ## Not a fork -- a guarantee
 
 Quill Weather runs the exact same weather feature code as QUILL and Quill Radio,

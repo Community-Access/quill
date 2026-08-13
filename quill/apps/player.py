@@ -32,6 +32,7 @@ from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import apply_listbox_activation
 from quill.ui.media.go_to_position_dialog import GoToPositionDialog
 from quill.ui.media.listen_mixin import MediaListenMixin
+from quill.ui.media.note_cue_actions import NoteCuesMixin
 from quill.ui.media.winamp_mixin import MediaWinampKeysMixin
 
 _TITLE = "Quill Media Player"
@@ -45,7 +46,7 @@ _OPEN_WILDCARD = (
 )
 
 
-class QuillMediaPlayerFrame(MediaListenMixin, MediaWinampKeysMixin, AppShellFrame):
+class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixin, AppShellFrame):
     """A standalone, tray-resident media player window."""
 
     _STATUS_LABELS = ("State", "Position", "Chapter", "Sleep", "Backend")
@@ -162,6 +163,7 @@ class QuillMediaPlayerFrame(MediaListenMixin, MediaWinampKeysMixin, AppShellFram
             self._sleep_minutes_by_id[int(sid)] = minutes
             self.frame.Bind(wx.EVT_MENU, self._on_set_sleep, id=sid)
         playback_menu.AppendSubMenu(sleep_menu, "&Sleep Timer")
+        self._keep_menu_ids(self._add_note_cue_menu_item(playback_menu, wx))
         summarize_id, recap_id, voice_id, listen_id = (wx.NewIdRef() for _ in range(4))
         playback_menu.Append(summarize_id, "Summarize This &Chapter (AI)")
         playback_menu.Append(recap_id, "AI &Recap of Where I Am")
@@ -428,6 +430,7 @@ class QuillMediaPlayerFrame(MediaListenMixin, MediaWinampKeysMixin, AppShellFram
             if status is not None:
                 for index, (_label, value) in enumerate(self._status_values()):
                     status.SetStatusText(value, index)
+            self._announce_reached_notes()
             # End-of-chapter sleep: pause when we cross into the next chapter.
             if self._sleep_eoc and self._chapters:
                 current = self._player.current_chapter_index()

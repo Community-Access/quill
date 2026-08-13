@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -217,7 +216,17 @@ offered in the QuillVille menu, and there is no 2.2.0 download page.
 Everything below is in the build.</p>
 <h3 id="added">Added</h3>
 <ul>
-<li><strong>The QuillVille Runtime – install Python once, and every
+<li><p><strong>QUILL Audio Studio has its own icon.</strong> It used to
+ship a byte-identical copy of Quill Radio’s broadcast-wave icon, carried
+over when the standalone shell was scaffolded, so two products wore one
+face in the taskbar, in Alt+Tab and in the tray. Audio Studio’s icon is
+now a three-bar waveform on a slate tile – the same rounded shape and
+amber accent as the rest of the QuillVille family, with its own
+silhouette and its own colour. The waveform was re-cut once before
+shipping: at 16x16 five bars merged into a solid slab, so there are
+three, with real gaps between them, which is what makes a waveform read
+as bars rather than as a block.</p></li>
+<li><p><strong>The QuillVille Runtime – install Python once, and every
 Quill app starts instantly.</strong> Every QuillVille app (QUILL, Quill
 Radio, Quill Weather, and QUILL Audio Studio) now shares one Python
 runtime, the QuillVille Runtime, installed once per user and reused by
@@ -225,7 +234,7 @@ all of them. Install it a single time and every app you add afterward
 launches immediately. The runtime is reference-counted: it is removed
 only when the last app that needs it is uninstalled. Alongside the
 existing full portable and full installer builds, two new lightweight
-editions arrive that ride the shared runtime:
+editions arrive that ride the shared runtime:</p>
 <ul>
 <li><strong>Companion edition</strong>
 (<code>QUILL-Audio-Studio-Companion-&lt;version&gt;.zip</code>, about 2
@@ -248,20 +257,20 @@ installer</strong>
 installs the shared runtime, if it is not already present, plus the
 app.</li>
 </ul></li>
-<li><strong>Accessible runtime downloads.</strong> Whenever the
+<li><p><strong>Accessible runtime downloads.</strong> Whenever the
 QuillVille Runtime is downloaded – by an installer or by an app’s own
 first launch – it shows a fully accessible progress bar that works with
-NVDA, JAWS, and Narrator, announcing progress as a percentage.</li>
-<li><strong>Update in one click – Audio Studio installs it and restarts
-itself.</strong> When an update is available, choose Download, then
-<strong>Install and restart now</strong>: Audio Studio applies the
+NVDA, JAWS, and Narrator, announcing progress as a percentage.</p></li>
+<li><p><strong>Update in one click – Audio Studio installs it and
+restarts itself.</strong> When an update is available, choose Download,
+then <strong>Install and restart now</strong>: Audio Studio applies the
 update (extracting the new portable files over your folder, or running
 the installer silently) and relaunches automatically, keeping all your
 settings and data. No more closing the app, unzipping, and swapping
-folders by hand. Shared across every Quill app.</li>
-<li><strong>A status bar you can read, and a running job you can follow
-from the tray.</strong> The status bar is now arrow-navigable: press
-<strong>F6</strong> to move focus into it, Left and Right to move
+folders by hand. Shared across every Quill app.</p></li>
+<li><p><strong>A status bar you can read, and a running job you can
+follow from the tray.</strong> The status bar is now arrow-navigable:
+press <strong>F6</strong> to move focus into it, Left and Right to move
 between cells, Enter to act on one, Escape or a second F6 to leave. Its
 cells are Activity, Progress, Sleep timer, Your books, and Time, so
 “what is going on right now” is always one key away instead of something
@@ -269,33 +278,34 @@ you have to guess at. The Progress cell carries a live narration or
 build run – percentage, files, and the current step – and the same text
 is written to the system-tray tooltip, so a long run stays reviewable
 with the window minimized. <strong>View &gt; Show Status Bar</strong>
-turns it on or off, and the choice is remembered.</li>
-<li><strong>Convert Audio, right in the Studio.</strong> <strong>Voices
-&gt; Convert Audio…</strong> builds a queue of files and folders and
-converts them between formats – MP3, M4A/M4B, Opus, Ogg, FLAC, WAV, AAC
-and more – pulling the audio track out of video files (MP4, MKV, MOV,
-WebM and the rest) along the way. It uses the ffmpeg the Studio already
-bundles, so nothing new to install, nothing leaves your machine, and it
-works in Safe Mode. Ten presets cover the usual jobs (Just convert, MP3
-at three bitrates, Podcast, Audiobook M4B, Voice memo, Web voice Opus,
-Archival FLAC, and Hearing-aid mono); the queue only ever offers formats
-your ffmpeg can actually encode, so a batch cannot die half way for a
-missing encoder; conversion runs off the UI thread with several workers,
-a real Cancel, and a spoken summary that <strong>names the files that
-failed</strong> instead of quietly claiming success.</li>
-<li><strong>Advanced processing for a conversion.</strong> The
+turns it on or off, and the choice is remembered.</p></li>
+<li><p><strong>Convert Audio, right in the Studio.</strong>
+<strong>Voices &gt; Convert Audio…</strong> builds a queue of files and
+folders and converts them between formats – MP3, M4A/M4B, Opus, Ogg,
+FLAC, WAV, AAC and more – pulling the audio track out of video files
+(MP4, MKV, MOV, WebM and the rest) along the way. It uses the ffmpeg the
+Studio already bundles, so nothing new to install, nothing leaves your
+machine, and it works in Safe Mode. Ten presets cover the usual jobs
+(Just convert, MP3 at three bitrates, Podcast, Audiobook M4B, Voice
+memo, Web voice Opus, Archival FLAC, and Hearing-aid mono); the queue
+only ever offers formats your ffmpeg can actually encode, so a batch
+cannot die half way for a missing encoder; conversion runs off the UI
+thread with several workers, a real Cancel, and a spoken summary that
+<strong>names the files that failed</strong> instead of quietly claiming
+success.</p></li>
+<li><p><strong>Advanced processing for a conversion.</strong> The
 converter’s Advanced panel adds loudness normalization (Audiobook/ACX at
 -20 LUFS or Podcast/streaming at -16 LUFS), gain, a high-pass filter,
 silence trimming, pitch-preserving tempo, a compressor, a night-mode
 leveler, fade in and fade out, and a safety limiter. Everything is off
 or neutral by default, so a plain conversion stays a plain
-conversion.</li>
-<li><strong>Convert from a link.</strong> <strong>Voices &gt; Convert
+conversion.</p></li>
+<li><p><strong>Convert from a link.</strong> <strong>Voices &gt; Convert
 from URL…</strong> takes a YouTube link (and the many other sites yt-dlp
 supports), downloads the audio, and drops it straight into the
 converter. The downloader is never bundled: it installs on demand after
-a one-time consent and rights notice. Unavailable in Safe Mode.</li>
-<li><strong>Announcements now reach your braille display.</strong>
+a one-time consent and rights notice. Unavailable in Safe Mode.</p></li>
+<li><p><strong>Announcements now reach your braille display.</strong>
 Reported by a braille user: messages the Studio speaks never appeared in
 braille. The diagnosis was blunter than the report – nothing had ever
 been sent to a braille display at all. Braille is now routed at the same
@@ -310,8 +320,8 @@ of different messages no longer flickers past faster than cell one can
 be read – the first message of a quiet period writes instantly, and
 anything landing within the next 150 milliseconds settles to the newest
 rather than each shoving the last aside, with errors exempt and always
-written through at once.</li>
-<li><strong>Every announcement channel in one place.</strong> Speech,
+written through at once.</p></li>
+<li><p><strong>Every announcement channel in one place.</strong> Speech,
 braille, sound, and the status line are now delivered by one shared
 announcement service, the same one QUILL uses, so a message the Studio
 makes reaches every channel you rely on instead of only the ones that
@@ -324,7 +334,7 @@ instead of flashing past, whether the companion apps play sound cues,
 whether a cue stands in for speech while Quiet Mode is on, and which
 severities interrupt speech. They live in the store the Studio shares
 with QUILL, so setting them in QUILL’s Preferences applies here
-too.</li>
+too.</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>

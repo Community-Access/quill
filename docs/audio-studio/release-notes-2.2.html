@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Audio Studio 2.2.0 - Release Notes</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -364,6 +363,25 @@ the Studio) are counted, so uninstalling one Quill app can never take
 away something another app still needs. The build also leaves out the
 large libraries the Studio never loads, making both the installer and
 the portable zip meaningfully lighter.</p>
+<h2 id="an-icon-of-its-own">An icon of its own</h2>
+<p>Until now QUILL Audio Studio shipped a <strong>byte-identical
+copy</strong> of Quill Radio’s blue broadcast-wave icon – not a similar
+drawing, the same file. So did Quill Inkwell and Quill Weather. On a
+desktop with more than one Quill app installed, four different products
+wore one face in the taskbar, in Alt+Tab, in the Start menu and in the
+notification area, which for a tray-resident app is where it lives its
+whole life. Nobody chose that; each new app was built from the last
+one’s template, and an icon is easy not to notice.</p>
+<p>Every app in the family now has its own. They are still recognisably
+a set – one rounded tile shape, one gold accent – but each has its own
+colour and its own picture. The Studio’s is a three-bar waveform on a
+dark slate tile: editing audio rather than broadcasting it, and the only
+glyph in the family built from repetition.</p>
+<p>The drawing was made for the size that actually matters. At 16 by 16
+pixels – the notification area, and the small icons in a file list – a
+first attempt with five bars merged into a solid slab. There are three,
+with real gaps between them, because gaps are what make a waveform read
+as bars rather than as a block.</p>
 <h2 id="fixed">Fixed</h2>
 <p><strong>Kokoro narration no longer stops mid-run on a portable
 copy.</strong> A long, dense passage could overrun the neural model’s

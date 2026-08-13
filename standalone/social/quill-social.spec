@@ -70,6 +70,8 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
+# The icon is generated, not hand-drawn -- see scripts/build_app_icons.py, which
+# owns the whole family's design system. Do not edit the .ico directly.
 exe = EXE(
     pyz,
     a.scripts,
@@ -78,6 +80,7 @@ exe = EXE(
     console=False,
     upx=False,
     disable_windowed_traceback=False,
+    icon="assets/quill-social.ico",
 )
 
 coll = COLLECT(

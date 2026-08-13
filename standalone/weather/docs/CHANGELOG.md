@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-Nothing yet. The next release starts here.
+### Fixed
+
+- **Quill Weather has its own icon.** It used to ship a byte-identical copy of Quill Radio's broadcast-wave icon, carried over when the app was scaffolded, so two different products wore one face in the taskbar, in Alt+Tab and in the tray. Quill Weather's icon is now a sun behind a cloud on a sky-blue tile -- the same rounded shape and amber accent as the rest of the QuillVille family, with its own silhouette and its own colour.
 
 ## [2.2.0] - 2026-08-12
 

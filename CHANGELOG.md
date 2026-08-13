@@ -133,6 +133,17 @@ already fixed in code nobody could run yet.
 
 ### Improved
 
+- **The two Italian Piper voices can be previewed before you download them.**
+  Paola and Riccardo were in the voice list but were the only two Piper voices
+  with no preview clip, so the one way to hear them was to download ~60 MB and
+  hope. Both now have a preview like the other 37. The reason they were missing
+  is worth naming: generating previews needed a Piper engine staged by hand,
+  which nobody could reproduce -- so `scripts/fetch_build_deps.py --only piper`
+  now stages the exact SHA-256-pinned engine QUILL itself installs, and
+  `gen_voice_previews.py --fetch-missing-voices` fetches any voice model it is
+  missing through the same verified path as the in-app download. A preview run
+  no longer depends on what happens to be on the builder's machine.
+  (`scripts/fetch_build_deps.py`, `scripts/gen_voice_previews.py`)
 - **The Command Palette says which way every toggle is currently set (#1383).**
   The palette lists commands by name and has no checkmark column, so "Toggle
   Soft Wrap" read identically whether soft wrap was on or off -- the one thing
@@ -277,6 +288,121 @@ already fixed in code nobody could run yet.
   would misrepresent your own history with it), and one you **queued** (you
   already decided when to hear it). An episode you filed into an Inbox folder by
   hand is also left where you put it. (`quill/core/podcasts/inbox.py`)
+
+### The Media Player reads your notes back as you reach them
+
+- **A note you left at 14:32 is spoken when playback gets there.** Bookmarks
+  have carried an optional note for a while, but the only way to meet one again
+  was to stop and open a list -- which is the wrong shape for a thing you make
+  *while listening*. On by default (**Playback > Read My Notes Aloud as I Reach
+  Them**); writing the note is the opt-in, since somebody who left one meant to
+  hear it. Only bookmarks that actually have a note speak: a plain bookmark is a
+  place to jump to, and announcing one with nothing to say is noise. A labelled
+  bookmark speaks its label first; an unlabelled one is prefixed "Note:", so a
+  sentence spoken over an audiobook is never heard as part of the book. No
+  timestamp -- you are at that moment, and a spoken "14:32" is ambiguous where
+  the written form is not (rule A-8).
+
+  The work is almost entirely in what it **refuses** to say, because the naive
+  version ("any mark between the last position and this one") is right during
+  playback and wrong everywhere else. Dragging the scrubber across an hour does
+  not read out every note it passed; skipping back does not repeat one you just
+  heard; pausing does not announce the same note forever. Switching the option
+  back on mid-book does not replay what you passed while it was off. Each of
+  those is a rule in `quill/core/media/note_cues.py` with a test beside it.
+
+### Gates that no longer time out on a loaded machine
+
+- **The whole-tree gates were re-reading the same 1,300 files up to a dozen
+  times per run.** `check_banned_patterns` runs nine checks over overlapping
+  file sets and each did its own read-and-parse, so `main_frame.py` -- around
+  27,000 lines -- was parsed twelve times in a single pass. The gate was never
+  wrong, only slow, and slow had a real cost: it grew until it brushed pytest's
+  per-test timeout on a loaded machine and began failing intermittently. A gate
+  that times out sometimes is one people learn to re-run rather than believe.
+  Measured, the gate now takes **13 seconds instead of 35**.
+
+- **The shared cache is two tiers, and the split is the point.** Over `quill/`,
+  reading is 60% of the cost and the source text is **14 MB**, while the ASTs
+  built from it are **480 MB**. So `quill/tools/source_cache.py` holds the text
+  for the whole session -- which is what spares every later gate the disk read,
+  the part that degrades worst under load -- and holds parsed trees only for the
+  duration of one gate run, released through a re-entrant scope. A first attempt
+  that cached both for the session made things *worse*: it split every file into
+  lines nobody read and retained half a gigabyte behind every later test.
+
+- **`main_frame.py` shrank by 67 lines.** GATE-11 says extract rather than raise
+  the budget, and it had exactly one line of headroom, so the persistent-undo
+  cluster moved to `quill/ui/main_frame_undo.py`. Its budget is ratcheted down
+  from 19,620 to 19,552 accordingly.
+
+### Undo history that does not grow with your document
+
+- **Persistent undo held up to a hundred full copies of the document, and
+  rewrote all of them every few seconds while you typed.** A hundred snapshots
+  of a shopping list is nothing; a hundred snapshots of a 1 MB manuscript is
+  100 MB, in memory *and* on disk, because the whole history is one JSON file --
+  so the cost of every keystroke grew with the length of the piece you were
+  writing, which is exactly backwards. History is now bounded by total size as
+  well as by count, keeping the newest steps; anything up to about 80 KB still
+  keeps the full hundred. The in-memory copy and the undo cursor are kept in
+  step with what actually survived, without which the cap would have bounded the
+  file and not the memory, and Ctrl+Z would have quietly restored the wrong
+  snapshot.
+
+  *(The original suggestion was to make the equality check length-then-hash.
+  Measured, that is a pessimization: Python's string `==` already compares
+  length first and returns in ~0 microseconds when they differ -- which is what
+  a keystroke produces -- while sha256 of a 1 MB document costs ~243
+  microseconds against memcmp's ~34. The comparison was never the expensive
+  part; the retained copies were.)*
+
+### Every app in the family has its own face
+
+- **Four apps were shipping the same icon.** Quill Inkwell, Quill Audio Studio
+  and Quill Weather all carried a **byte-identical** copy of Quill Radio's
+  broadcast-wave `.ico` -- the same SHA-256, not merely a similar drawing -- and
+  two more, QuillBeacon and QUILL Social, shipped installers with no icon at
+  all, so they wore PyInstaller's generic default. Nobody chose any of that: each
+  new app was scaffolded from the last one, and an icon is easy not to notice.
+  The cost is not cosmetic. Three products impersonating a fourth in the taskbar,
+  in Alt+Tab, and in the tray is a real navigation problem, and the tray is
+  exactly where a tray-resident app lives its whole life.
+
+  All eight apps now have a purpose-drawn icon, and they are a **set**: one tile
+  shape (rounded square, 22% corner radius), one amber accent already established
+  by Radio and Cast, one bold white glyph of two or three shapes. What separates
+  them is deliberate on two axes at once --
+  - **Silhouette.** Radio's waves leaving a source, Cast's microphone capsule
+    under an arch, Converter's two arrows passing in opposite directions,
+    Inkwell's nib dipped into a pot, Studio's three waveform bars, Weather's sun
+    behind a cloud, Beacon's place-marker pin, Social's two overlapping speech
+    bubbles. No two blur to the same shape.
+  - **Hue *and* lightness.** Not hue alone -- a set separated only by hue is a
+    set some colour-blind users cannot tell apart, and colour is the first thing
+    to go at small sizes. The eight backgrounds span indigo, teal, violet,
+    terracotta, slate, sky, crimson and plum, and also span a wide range of
+    perceived lightness.
+
+  Every glyph was drawn against the size that actually matters, not the one that
+  looks good in a screenshot. Three were re-cut after failing at 16×16: Radio's
+  three thin arcs merged into a single smear (now two, thicker, further apart),
+  Studio's five waveform bars merged into a solid slab (now three, with real
+  gaps), and Inkwell was chosen over two rejected alternatives -- expanding text
+  lines blurred to a grey block, and a bare fountain nib read as a flame.
+
+- **The icons are generated, not hand-drawn**, by
+  `scripts/build_app_icons.py` -- one file that holds the whole design system,
+  with each glyph's *intent* recorded next to it so the next person changing one
+  knows what it was trying to say. `--check` fails if a committed `.ico` has
+  drifted from source, and `--preview` writes 256px and magnified-16px PNGs for
+  eyeballing legibility before shipping. `tests/unit/scripts/test_app_icons.py`
+  turns the original defect into an assertion: no two apps may render the same
+  face, no two may share a background colour, the tiles must differ in lightness
+  and not only in hue, every `.ico` must carry all seven sizes Windows asks for,
+  and any app that gains a Windows installer without an icon entry fails by
+  name. Quill Converter's private one-app generator was retired in favour of the
+  family one, so no two apps can drift apart -- or collide -- again.
 
 ### Fixed in passing
 

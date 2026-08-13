@@ -226,6 +226,30 @@ Bookmarks mark a moment you want to return to, with an optional label and note.
 
 Bookmarks are saved per book and survive between sessions.
 
+### Hearing your notes as you reach them
+
+A note you left at 14:32 is read to you when playback gets there, so a note is
+something you can make *while listening* and be reminded of while listening --
+rather than something you have to stop and open a list to find.
+
+- It is **on by default**, under **Playback > Read My Notes Aloud as I Reach
+  Them**. Writing the note is the opt-in: if you took the trouble to leave one,
+  you meant to hear it.
+- Only bookmarks that **have a note** speak. A plain bookmark is a place to jump
+  to, so announcing it with nothing to say would be noise.
+- A bookmark with a label speaks the label first -- "Chapter 4: the argument
+  starts here" -- and one without says "Note:" so a sentence spoken over an
+  audiobook is never mistaken for part of the book.
+- **Seeking never triggers it.** Dragging the scrubber across an hour does not
+  read out every note it passed, skipping back does not repeat one you just
+  heard, and pausing does not announce the same note over and over. You only
+  hear a note when you genuinely listen through it.
+- Switching it back on part-way through a book does not replay the notes you
+  passed while it was off.
+
+No timestamp is spoken with the note: you are at that moment already, and a
+spoken "14:32" is ambiguous in a way the written form is not.
+
 ---
 
 ## 8. Sound, speed, and the equalizer

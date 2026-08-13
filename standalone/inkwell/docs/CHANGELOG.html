@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Inkwell changelog</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -203,48 +202,68 @@
 sharing one library with QUILL.</p>
 <h3 id="added">Added</h3>
 <ul>
-<li><strong>System-wide expansion.</strong> A low-level keyboard hook
+<li><p><strong>An application icon of its own.</strong> This was the
+single hard blocker on cutting the 1.0.0 build, which is why it is
+recorded here rather than as a fix after the fact. The icon the app was
+scaffolded with was a byte-identical copy of Quill Weather’s – which was
+itself a copy of Quill Radio’s – so a listener with more than one
+QuillVille app installed would have seen the same face for several
+different products in the taskbar, in Alt+Tab and in the tray. For a
+tray-resident app like Inkwell, the tray is where it lives its whole
+life.</p>
+<p>Inkwell’s icon is a gold nib dipped into a white inkwell, on a
+terracotta tile: the app is named for the well, and the pot is a
+silhouette nothing else in the family has. It shares the family’s
+rounded tile shape and gold accent, and differs from every sibling in
+picture and in colour. Two alternatives were drawn and rejected for
+failing at 16x16, which is the size that actually matters – expanding
+text lines blurred to a grey block, and a bare fountain nib read as a
+flame.</p></li>
+<li><p><strong>System-wide expansion.</strong> A low-level keyboard hook
 recognises an abbreviation as you finish typing it and replaces it in
 whatever application has focus. Expansions are typed as synthesised
-keystrokes and never touch the clipboard.</li>
-<li><strong>One shared library.</strong> Inkwell and QUILL read and
+keystrokes and never touch the clipboard.</p></li>
+<li><p><strong>One shared library.</strong> Inkwell and QUILL read and
 write the same <code>abbreviations.json</code>. An abbreviation added in
 either app works in both, with no import or sync; the file is re-read
-whenever it changes on disk.</li>
-<li><strong>Per-abbreviation settings.</strong> Each entry carries its
-own category, trigger mode (a space or punctuation, a space only,
+whenever it changes on disk.</p></li>
+<li><p><strong>Per-abbreviation settings.</strong> Each entry carries
+its own category, trigger mode (a space or punctuation, a space only,
 punctuation only, or never), speech mode, sound override, trailing-space
 behaviour, and case sensitivity. Schema version 2, backward and forward
-compatible.</li>
-<li><strong>Quick Insert.</strong> A type-to-filter picker over every
+compatible.</p></li>
+<li><p><strong>Quick Insert.</strong> A type-to-filter picker over every
 enabled abbreviation, ordered by how often each is used, reachable from
 the window (Ctrl+K) or from anywhere (Ctrl+Alt+Shift+K). The only way to
-reach an entry whose trigger mode is Never.</li>
-<li><strong>New from Clipboard.</strong> Ctrl+Shift+N turns whatever is
-on the clipboard into a new abbreviation, pre-filled.</li>
-<li><strong>Fill-in fields.</strong> <code>${field:Label}</code> and
+reach an entry whose trigger mode is Never.</p></li>
+<li><p><strong>New from Clipboard.</strong> Ctrl+Shift+N turns whatever
+is on the clipboard into a new abbreviation, pre-filled.</p></li>
+<li><p><strong>Fill-in fields.</strong> <code>${field:Label}</code> and
 <code>${field:Label=default}</code> make an expansion ask before it
 finishes; a label used twice is asked once and filled everywhere. The
 form is the same one QUILL’s editor uses, so a template behaves
-identically in both.</li>
-<li><strong>Categories</strong> with a filter in the manager, and a
-category column in both lists.</li>
-<li><strong>Variables</strong> in expansions: <code>${date}</code>,
+identically in both.</p></li>
+<li><p><strong>Categories</strong> with a filter in the manager, and a
+category column in both lists.</p></li>
+<li><p><strong>Variables</strong> in expansions: <code>${date}</code>,
 <code>${time}</code>, <code>${datetime}</code>, <code>${day}</code>,
 <code>${month}</code>, <code>${year}</code>, <code>${username}</code>,
-<code>${clipboard}</code>, <code>${cursor}</code>.</li>
-<li><strong>Case preservation.</strong> <code>Btw</code> capitalises and
-<code>BTW</code> shouts, for entries that are not case sensitive.</li>
-<li><strong>Exclusions.</strong> Password managers, the Windows sign-in
-and lock surfaces, the credential prompt, and the UAC dialog are
-permanently excluded, plus any applications the user adds.</li>
-<li><strong>Paste fallback</strong> for the few applications that drop
-synthetic keystrokes; the previous clipboard contents are always
-restored.</li>
-<li><strong>Tray residence</strong>, start-with-Windows,
-start-minimized, and a close button that keeps expansion running.</li>
-<li><strong>Safe Mode support.</strong> <code>QUILL_SAFE_MODE=1</code>
-prevents the keyboard hook from being installed at all.</li>
+<code>${clipboard}</code>, <code>${cursor}</code>.</p></li>
+<li><p><strong>Case preservation.</strong> <code>Btw</code> capitalises
+and <code>BTW</code> shouts, for entries that are not case
+sensitive.</p></li>
+<li><p><strong>Exclusions.</strong> Password managers, the Windows
+sign-in and lock surfaces, the credential prompt, and the UAC dialog are
+permanently excluded, plus any applications the user adds.</p></li>
+<li><p><strong>Paste fallback</strong> for the few applications that
+drop synthetic keystrokes; the previous clipboard contents are always
+restored.</p></li>
+<li><p><strong>Tray residence</strong>, start-with-Windows,
+start-minimized, and a close button that keeps expansion
+running.</p></li>
+<li><p><strong>Safe Mode support.</strong>
+<code>QUILL_SAFE_MODE=1</code> prevents the keyboard hook from being
+installed at all.</p></li>
 </ul>
 <h3 id="working-everywhere-you-can-type">Working everywhere you can
 type</h3>

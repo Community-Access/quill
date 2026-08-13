@@ -2,6 +2,10 @@
 
 All notable changes to QUILL Cast are documented here. See `docs/release-notes-1.1.md` for the fuller narrative version.
 
+## Unreleased
+
+- **Every app in the family has its own face now.** QUILL Cast's icon was always its own -- a microphone capsule under waves, which is what separates it from Quill Radio at a glance -- but three of its siblings were shipping byte-identical copies of Radio's icon and two more had no icon at all. All eight now come from one generator (`scripts/build_app_icons.py`) that owns the shared tile shape and the amber accent Cast and Radio established. Cast's own glyph was redrawn only slightly: its arcs now carry the same stroke weight as Radio's, because the two apps are the closest pair in the family and a thinner line read as a different idea rather than a sibling one.
+
 ## 1.1.0
 
 ### Getting episodes without asking

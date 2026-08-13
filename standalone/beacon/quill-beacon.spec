@@ -75,9 +75,8 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
-# No app icon yet -- drop a real assets/quill-beacon.ico in and add
-# icon="assets/quill-beacon.ico" here (and SetupIconFile in the .iss) once it
-# exists. PyInstaller uses its default icon until then.
+# The icon is generated, not hand-drawn -- see scripts/build_app_icons.py, which
+# owns the whole family's design system. Do not edit the .ico directly.
 exe = EXE(
     pyz,
     a.scripts,
@@ -86,6 +85,7 @@ exe = EXE(
     console=False,
     upx=False,
     disable_windowed_traceback=False,
+    icon="assets/quill-beacon.ico",
 )
 
 coll = COLLECT(

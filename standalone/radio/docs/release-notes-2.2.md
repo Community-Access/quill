@@ -857,6 +857,14 @@ Nothing reaches Spotify until you deliberately connect an account, and the whole
 feature is refused in Safe Mode. If you would rather not see it at all, turn
 **Spotify** off in Manage Individual Features and its menu items disappear.
 
+## An icon of its own -- and one for every app in the family
+
+Quill Radio's icon was never the problem. The problem was that it was also **Quill Inkwell's icon, Quill Weather's icon, and QUILL Audio Studio's icon** -- byte-identical copies of the same file, not similar drawings. On a desktop with more than one Quill app installed, four different products wore one face in the taskbar, in Alt+Tab, in the Start menu and in the notification area. Nobody chose that; each new app was built from the last one's template, and an icon is easy not to notice.
+
+Every app in the family now has its own, and they are still recognisably a set: one rounded tile shape, one gold accent, one bold picture. What separates them is deliberate on two axes at once -- a distinct silhouette *and* a distinct colour that differs in lightness as well as hue, because a set separated only by hue is a set that some colour-blind users cannot tell apart, and colour is the first thing to go at small sizes.
+
+Radio keeps the design it always had -- a source with waves leaving it, on a deep indigo tile -- redrawn for the size that actually matters. At 16 by 16 pixels, which is the notification area and the small icons in a file list, the old three thin arcs merged into a single smear. There are now two, thicker and further apart.
+
 ## Fixes
 
 - **Quill Radio remembers your volume, and Ctrl+Up/Down works from anywhere.**
