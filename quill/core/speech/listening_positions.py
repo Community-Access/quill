@@ -1,59 +1,44 @@
 """Remember where the user stopped listening in each audiobook.
 
-A tiny app-data store mapping a book file (path + size, so a rebuilt file
-starts fresh) to the last playhead position. The Workbench player resumes
-there on open and records on close. Atomic writes; wx-free, strict-typed.
+The two functions here are the long-standing API the Workbench player and the
+standalone Media Player call. The store behind them now lives in
+:mod:`quill.core.media.positions`, which keys a position by the file's
+**contents** rather than its absolute path -- so a position survives moving the
+file, and can cross to another machine or operating system, which a path key
+never could.
+
+Kept as a wrapper rather than rewritten at the call sites: the signature was
+already the right one, and the portability is not something a caller should
+have to know about. Positions saved by earlier versions are read under their
+old path key and re-filed portably on the next save, so nobody loses their
+place on upgrade.
 """
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-_FILE_NAME = "listening_positions.json"
-_MAX_ENTRIES = 200
-
-
-def _store_path(data_dir: Path) -> Path:
-    return data_dir / _FILE_NAME
-
-
-def _key(book: Path) -> str:
-    try:
-        size = book.stat().st_size
-    except OSError:
-        size = 0
-    return f"{book.resolve()}|{size}"
+from quill.core.media.positions import PositionStore
 
 
 def load_position_ms(data_dir: Path, book: Path) -> int:
     """The saved position for *book*, or 0 (start) when unknown/stale."""
-    try:
-        raw = json.loads(_store_path(data_dir).read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return 0
-    value = raw.get(_key(book)) if isinstance(raw, dict) else None
-    try:
-        return max(0, int(value))  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return 0
+    return PositionStore(data_dir).position_for(book)
 
 
 def save_position_ms(data_dir: Path, book: Path, position_ms: int) -> None:
-    """Record *position_ms* for *book* (oldest entries pruned; best-effort)."""
-    from quill.core.storage import write_json_atomic
+    """Record *position_ms* for *book* (oldest entries pruned; best-effort).
 
-    path = _store_path(data_dir)
-    try:
-        raw = json.loads(path.read_text(encoding="utf-8"))
-        entries: dict[str, int] = raw if isinstance(raw, dict) else {}
-    except (OSError, ValueError):
-        entries = {}
-    entries.pop(_key(book), None)
-    entries[_key(book)] = max(0, int(position_ms))
-    while len(entries) > _MAX_ENTRIES:
-        entries.pop(next(iter(entries)))
-    try:
-        write_json_atomic(path, entries)
-    except OSError:
-        pass
+    A position at the very start clears the entry rather than storing it --
+    "three seconds in" is the beginning, and offering to resume there is a
+    prompt the listener has to dismiss for no benefit.
+    """
+    PositionStore(data_dir).remember(book, position_ms)
+
+
+def clear_position(data_dir: Path, book: Path) -> None:
+    """Forget *book*'s position -- it finished, or playback restarted."""
+    PositionStore(data_dir).forget(book)
+
+
+__all__ = ["clear_position", "load_position_ms", "save_position_ms"]

@@ -79,6 +79,8 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-1
 
 ## Unreleased
 
+- **Your place is kept even if QUILL Cast never gets to shut down properly.** The resume position was only written when *you* did something -- pause, stop, change episode, or quit cleanly. Every other ending took it with you: a crash, a power cut, Task Manager, a forced restart. You came back to your last pause, which after an uninterrupted hour is an hour ago. It now saves every fifteen seconds while an episode plays, so the worst an unclean exit can cost is a sentence.
+
 - **Your episode notes are reachable from the player.** A note is something you make *while listening*, so needing to leave the player, find the episode in the library tree and open its context menu to read your notes back was the wrong shape. **My Notes in This Episode...** now acts on whatever is playing, and selecting a note jumps to it.
 - **Copy Note** shares one bookmark as text somebody else can act on: the episode, the podcast, the timestamp, your note, and the audio link together. The note's own words pasted alone are a fragment with no way back to the moment they mark. A note whose podcast you have since unsubscribed from still copies -- the parts that are gone are simply left out.
 - **Fixed: Player Information said "0 notes" for every episode.** The count was gathered by a call with the wrong number of arguments, and the error it raised every single time was swallowed -- so an episode with fifty notes read as having none. A confident wrong number is worse than an absent one.

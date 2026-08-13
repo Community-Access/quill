@@ -145,7 +145,13 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # loses history nothing else holds.
     "core/podcasts/stats.py::save_sessions": "content",
     "core/unlock_codes.py::save": "content",
-    "core/speech/listening_positions.py::save_position_ms": "cache",
+    # A listening position is the LEAST reproducible thing in the media
+    # stack: lose it and there is no way to recompute where somebody was in
+    # a thirty-hour book. It was classified "cache" (regenerable) here,
+    # which is exactly wrong -- and would have made it a candidate for any
+    # future prune-the-caches sweep. The store now lives in
+    # core/media/positions.py, keyed portably so it can also sync.
+    "core/media/positions.py::_write": "content",
     "core/speech/synth_cache.py::save_cache": "cache",
     "core/palette.py::save_palette_usage": "cache",
     "core/recent.py::save_recent_files": "cache",

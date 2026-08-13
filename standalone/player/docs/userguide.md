@@ -183,6 +183,26 @@ Press **Ctrl+G** to jump to an exact time.
 
 ---
 
+## 6a. Picking up where you left off
+
+Open a book you have listened to before and Quill Media Player takes you back
+to where you stopped, announcing it as a "welcome back" rather than silently
+jumping. Your position is saved every fifteen seconds while you listen, and
+again when you close the player, so an unexpected shutdown costs you seconds
+rather than the session.
+
+Your place is tied to the **audio itself**, not to where the file happens to
+sit. Move the book to another drive, rename it, or reorganise your whole
+library, and your position follows it. That also means the same recording on
+two different computers is recognised as the same book — the groundwork for
+carrying your place between machines. Two *different* recordings of the same
+title stay separate, which is what you want: your place in one narrator's
+reading says nothing about another's.
+
+A position right at the start is not remembered. "Three seconds in" is the
+beginning, and being asked whether to resume there is a question with no useful
+answer.
+
 ## 7. Bookmarks
 
 Bookmarks mark a moment you want to return to, with an optional label and note.

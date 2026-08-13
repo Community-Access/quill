@@ -50,6 +50,10 @@ if TYPE_CHECKING:
 
 _log = logging.getLogger(__name__)
 
+#: How often the resume position is written while an episode plays, bounding
+#: what an unclean exit can cost. Matches the Media Player's own interval.
+_CHECKPOINT_EVERY_S = 15
+
 
 class PodcastPlayerState(Enum):
     STOPPED = auto()
@@ -178,6 +182,7 @@ class PodcastPlayerController:
         #: _on_finished has already reset state for this episode.
         self._auto_skip_outro_ms = 0
         self._outro_fired = False
+        self._last_checkpoint_ms = 0  # see _checkpoint_periodically
         self._outro_poll_timer = wx.Timer(parent)
         parent.Bind(wx.EVT_TIMER, self._on_outro_poll, self._outro_poll_timer)
         self._outro_poll_timer.Start(1000)
@@ -516,6 +521,23 @@ class PodcastPlayerController:
             _log.exception("podcast enhancement relay shutdown failed")
         self._outro_poll_timer.Stop()
 
+    def _checkpoint_periodically(self) -> None:
+        """Save the resume position while playing, not only when stopping.
+
+        The checkpoint otherwise fires only on paths that run *because the
+        listener acted* (pause/stop/switch/shutdown), so a crash, a power cut
+        or a forced quit took the position with it -- returning you to the last
+        pause, which after an uninterrupted hour is an hour ago. Rides the poll
+        that already exists; throttled because it persists the whole library.
+        """
+        if self._state.state is not PodcastPlayerState.PLAYING:
+            return
+        position = self.position_ms()
+        if abs(position - self._last_checkpoint_ms) < _CHECKPOINT_EVERY_S * 1000:
+            return
+        self._last_checkpoint_ms = position
+        self._checkpoint_current()
+
     def _checkpoint_current(self) -> None:
         """Report the current episode's position to the checkpoint callback
         (no-op when nothing is loaded or nothing listens)."""
@@ -536,6 +558,7 @@ class PodcastPlayerController:
                 self._on_second_tick()
             except Exception:  # noqa: BLE001 - a stats tick must never stop playback
                 _log.exception("podcast second tick failed")
+        self._checkpoint_periodically()
         if self._outro_fired or self._auto_skip_outro_ms <= 0:
             return
         if self._state.state is not PodcastPlayerState.PLAYING:

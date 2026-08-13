@@ -206,6 +206,32 @@ already fixed in code nobody could run yet.
   Recordings list, and Cast's new Show in File Explorer.
   (`quill/core/file_manager.py`)
 
+- **You can always pick up where you left off, and your place is now portable.**
+  Two things were wrong with resume. First, QUILL Cast only wrote the position
+  when *you* did something -- pause, stop, switch episode, quit properly. Any
+  other ending took it with you: a crash, a power cut, Task Manager, a forced
+  restart. Come back and you were at your last pause, which after an
+  uninterrupted hour is an hour ago. It now saves every fifteen seconds while
+  playing, riding a timer that already ran, so an unclean exit costs a
+  sentence. Second, positions for local audiobooks and media files were keyed
+  by their **absolute path**, which is a key that can only ever mean something
+  on the machine that wrote it -- move the file, rename it, or open the same
+  book on another computer, and your place was gone. Identity now comes from
+  the file's *contents* (its size plus a digest of its first and last 64 KB, so
+  identifying a 500 MB audiobook is two reads rather than a full scan), which
+  survives moving, renaming, and a different operating system's idea of a path.
+  Positions saved by earlier versions are read under their old key and re-filed
+  portably, so nobody loses their place on upgrade. One small deliberate
+  change: a position in the first ten seconds is no longer remembered, because
+  "five seconds in" is the beginning and being asked whether to resume there is
+  a question with no useful answer. (`quill/core/media/positions.py`)
+- **Listening positions are no longer classified as a cache.** The persistence
+  audit had them down as "regenerable", which is exactly backwards: a listening
+  position is the *least* reproducible thing in the media stack -- lose it and
+  there is no way to recompute where somebody was in a thirty-hour book. It is
+  classified as content now, which also means it will never be a candidate for
+  a prune-the-caches sweep.
+
 ### Fixed in passing
 
 - **Player Information reported "0 notes" for every episode.** The count was

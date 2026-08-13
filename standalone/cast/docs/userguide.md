@@ -221,6 +221,19 @@ Three commands, all of them **Quick Actions** entries -- so they can be reordere
 
 **Show in File Explorer** opens the folder holding a downloaded episode with the file selected. An episode you are streaming has no file to show, and says that instead of opening some other folder.
 
+## Picking up where you left off
+
+Every episode remembers where you stopped, and playing it again resumes there.
+
+The position is written every fifteen seconds while you listen, not only when
+you pause or quit — so if QUILL Cast is closed the hard way, or the machine
+loses power, the most you lose is a sentence. **Resume Last Episode on Launch**
+(Subscriptions > Preferences) goes one step further and picks the last episode
+back up the moment the app opens.
+
+An episode you finish is marked played and its position cleared, so it starts
+from the beginning if you ever play it again.
+
 ## Your notes on an episode
 
 Episode notes mark a moment and jump back to it. Two ways in:

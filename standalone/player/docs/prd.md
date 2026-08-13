@@ -255,6 +255,27 @@ Every book remembers its exact position via `listening_positions.py` (keyed by
 (reuse library `record_play`). Optional server-side position sync for BARD titles
 when the API supports it (`bard.md` A.6).
 
+### 7.10a Position identity and sync-readiness (shipped)
+A listening position is keyed by the media's **contents** -- size plus a digest of
+its first and last 64 KB -- never by its absolute path. A path key is only
+meaningful on the machine that wrote it, so it cannot survive a move, a rename, or
+a second computer; the content key survives all three and is identical across
+operating systems. Cost is two seeks, not a full scan.
+
+The record carries `position_ms`, `updated_at` (UTC), `duration_ms` and a
+human-readable `label`. **Merging is last-write-wins on `updated_at`, never
+"keep the furthest position"**: a listener who deliberately jumped back to
+re-hear something must not have that undone by a sync from a device that stopped
+later in the file. A disagreement beyond five minutes is surfaced as a
+reviewable conflict rather than silently resolved.
+
+`PositionStore` satisfies the QuillSync `RecordStore` protocol and
+`merge_positions` its `MergeFn`, and both act on the same file the players read --
+so a position arriving from another device is immediately the one that resumes.
+The transport itself is not yet wired; this is the data being ready for it.
+Positions are classified **content**, not cache: they are the least reproducible
+data in the media stack (`quill/core/media/positions.py`).
+
 ### 7.11 Sleep timer
 Duration-based or **end-of-chapter** sleep, with a **fade-out** and an auto-bookmark
 at stop. Reuse `SleepTimerWatcher`; host marshals the fire callback via `wx.CallAfter`.
