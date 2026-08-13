@@ -193,6 +193,38 @@ class PodcastSettingsDialog:
         )
         grid.Add(self._storage_cap_ctrl, 0)
 
+        # Worded as reliability, not disk management, because that is what it
+        # is for: a streamed episode you can seek, bookmark, find chapters in,
+        # and keep listening to when the connection drops.
+        grid.Add(
+            wx.StaticText(self.dialog, label="&Streamed episodes:"), 0, wx.ALIGN_CENTER_VERTICAL
+        )
+        self._playback_cache_ctrl = wx.CheckBox(
+            self.dialog, label="Keep streamed episodes ready while they play"
+        )
+        self._playback_cache_ctrl.SetValue(settings.playback_cache)
+        self._playback_cache_ctrl.SetName(
+            "Save a streamed episode's audio as it plays, so playback continues "
+            "through a dropped connection, chapters can be found in it, and "
+            "keeping it costs no second download. The audio is removed "
+            "automatically; nothing you are listening to is ever removed."
+        )
+        grid.Add(self._playback_cache_ctrl, 0)
+
+        grid.Add(
+            wx.StaticText(self.dialog, label="Space for streamed episodes (MB, 0 = no limit):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        self._playback_cache_cap_ctrl = wx.SpinCtrl(self.dialog, min=0, max=1_000_000)
+        self._playback_cache_cap_ctrl.SetValue(settings.playback_cache_cap_mb)
+        self._playback_cache_cap_ctrl.SetName(
+            "How much room streamed episodes may use between them. The "
+            "least-recently-played is removed first, and the episode playing "
+            "now is never removed."
+        )
+        grid.Add(self._playback_cache_cap_ctrl, 0)
+
         grid.Add(
             wx.StaticText(self.dialog, label="Start on this &view:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
@@ -439,6 +471,8 @@ class PodcastSettingsDialog:
             inbox_max_episodes=self._inbox_max_ctrl.GetValue(),
             download_retention_days=self._retention_days_ctrl.GetValue(),
             storage_cap_mb=self._storage_cap_ctrl.GetValue(),
+            playback_cache=self._playback_cache_ctrl.GetValue(),
+            playback_cache_cap_mb=self._playback_cache_cap_ctrl.GetValue(),
             continue_after_queue=self._continue_queue_check.GetValue(),
             continue_after_group=self._continue_group_check.GetValue(),
             announce_show_name_first=self._name_first_check.GetValue(),

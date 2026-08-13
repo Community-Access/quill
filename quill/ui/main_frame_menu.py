@@ -2582,6 +2582,7 @@ class MenuBuilderMixin:
             id_podcasts_stop = wx.NewIdRef()
             id_podcasts_player_info = wx.NewIdRef()
             id_podcasts_episode_notes = wx.NewIdRef()
+            id_podcasts_keep_episode = wx.NewIdRef()
             id_media_sound_enhance = wx.NewIdRef()
             id_podcasts_pause_downloads = wx.NewIdRef()
             id_podcasts_resume_downloads = wx.NewIdRef()
@@ -2614,6 +2615,10 @@ class MenuBuilderMixin:
             media_menu.Append(
                 id_podcasts_episode_notes,
                 self._menu_label(_("My &Notes in This Episode..."), "podcasts.episode_notes"),
+            )
+            media_menu.Append(
+                id_podcasts_keep_episode,
+                self._menu_label(_("&Keep This Episode"), "podcasts.keep_episode"),
             )
             media_menu.Append(
                 id_media_sound_enhance,
@@ -2657,6 +2662,11 @@ class MenuBuilderMixin:
                 wx.EVT_MENU,
                 lambda _e: self.open_podcast_episode_notes(),
                 id=id_podcasts_episode_notes,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_keep_episode(),
+                id=id_podcasts_keep_episode,
             )
             self.frame.Bind(
                 wx.EVT_MENU,

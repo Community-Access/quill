@@ -44,6 +44,8 @@ from quill.core.audio_enhance import (
 )
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
+from quill.ui.podcasts.player_spotify import PodcastSpotifyEngineMixin
+from quill.ui.podcasts.player_volume import PodcastPlayerVolumeMixin
 
 if TYPE_CHECKING:
     from quill.ui.spotify.web_player import SpotifyWebEngine
@@ -86,7 +88,7 @@ class PodcastPlaybackState:
         return "Podcasts"
 
 
-class PodcastPlayerController:
+class PodcastPlayerController(PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixin):
     """Play/pause/stop one podcast episode at a time."""
 
     def __init__(
@@ -100,7 +102,15 @@ class PodcastPlayerController:
         on_enhance_error: Callable[[str], None] | None = None,
         spotify_token_provider: Callable[[], str] | None = None,
         on_second_tick: Callable[[], None] | None = None,
+        local_fallback: Callable[[int], str] | None = None,
     ) -> None:
+        #: A dropped stream stops being an interruption. Asked, when playback
+        #: errors out, whether a local file covers the position we were at
+        #: (the playback cache usually runs well ahead of realtime); returns
+        #: that path, or "" for "nothing here, report the error". See
+        #: core/podcasts/playback_cache.py.
+        self._local_fallback = local_fallback
+        self._recovered_from = ""
         self._on_state_changed = on_state_changed
         #: Fired once a second for the whole life of the controller, riding
         #: the outro poll that already exists rather than adding a second
@@ -247,6 +257,7 @@ class PodcastPlayerController:
         self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
         self._auto_skip_outro_ms = max(0, int(auto_skip_outro_ms))
         self._outro_fired = False
+        self._recovered_from = ""
         start_ms = max(0, int(resume_ms))
         if start_ms <= 0 and auto_skip_intro_ms > 0:
             start_ms = int(auto_skip_intro_ms)
@@ -272,37 +283,6 @@ class PodcastPlayerController:
         url = self._resolve_playback_url(source, start_ms=start_ms)
         if self._engine is None or not self._engine.load(url):
             self._set_state(PodcastPlayerState.ERROR, message="That episode could not be opened.")
-
-    def _ensure_spotify_engine(self) -> SpotifyWebEngine | None:
-        """Lazily create the Spotify engine, or None if no token source (not
-        signed in to Spotify)."""
-        if self._spotify_engine is not None:
-            return self._spotify_engine
-        if self._spotify_token_provider is None:
-            return None
-        from quill.ui.spotify.web_player import SpotifyWebEngine
-
-        self._spotify_engine = SpotifyWebEngine(
-            self._parent,
-            token_provider=self._spotify_token_provider,
-            on_error=self._on_error,
-        )
-        return self._spotify_engine
-
-    def _select_spotify_engine(self) -> SpotifyWebEngine | None:
-        """Make the Spotify engine the active engine (stream engine stays alive
-        for the next non-Spotify episode)."""
-        spotify = self._ensure_spotify_engine()
-        if spotify is not None:
-            self._engine = spotify
-        return spotify
-
-    def _select_stream_engine(self) -> None:
-        """Restore the mpv/wx stream engine as the active engine when leaving a
-        Spotify episode. Only swaps back *from* the Spotify engine, so any other
-        active engine (including a test-injected fake) is left in place."""
-        if self._spotify_engine is not None and self._engine is self._spotify_engine:
-            self._engine = self._stream_engine
 
     def _is_enhanced(self) -> bool:
         return is_enhancement_active(
@@ -437,43 +417,6 @@ class PodcastPlayerController:
         if self._engine is not None:
             self._engine.set_rate(rate)
 
-    def set_volume(self, percent: int) -> None:
-        self._muted = False
-        self._volume_percent = max(0, min(100, percent))
-        self._apply_engine_volume()
-
-    def toggle_mute(self) -> None:
-        """Mirrors ``RadioPlayerController.toggle_mute``: silence without
-        losing the level, restored exactly on the next toggle."""
-        if self._muted:
-            self._muted = False
-            self._volume_percent = self._pre_mute_volume
-        else:
-            self._pre_mute_volume = self._volume_percent
-            self._muted = True
-            self._volume_percent = 0
-        self._apply_engine_volume()
-
-    @property
-    def muted(self) -> bool:
-        return self._muted
-
-    def set_volume_boost(self, factor: float) -> None:
-        """Live playback gain (0.5x - 3.0x, clamped) for quiet audio; scales
-        the engine volume only. ``volume_percent`` keeps reporting the
-        unboosted value so the sleep timer's restore stays honest."""
-        self._volume_boost = max(0.5, min(3.0, float(factor)))
-        self._apply_engine_volume()
-
-    def _apply_engine_volume(self) -> None:
-        if self._engine is not None:
-            boosted = round(self._volume_percent * self._volume_boost)
-            self._engine.set_volume(min(100, boosted))
-
-    @property
-    def volume_percent(self) -> int:
-        return self._volume_percent
-
     def position_ms(self) -> int:
         if self._engine is None:
             return 0
@@ -607,7 +550,37 @@ class PodcastPlayerController:
             self._on_episode_finished(show_id, episode_guid)
 
     def _on_error(self, message: str) -> None:
+        if self._recover_locally():
+            return
         self._set_state(PodcastPlayerState.ERROR, message=message)
+
+    def _recover_locally(self) -> bool:
+        """Keep playing from the bytes already here after a stream drops.
+
+        A streamed episode is being written to the playback cache while it
+        plays, and that fetch runs far ahead of realtime -- so when the
+        connection goes, the audio the listener was about to hear is almost
+        always already on disk. Reloading from it is the difference between
+        "the episode continues" and silence followed by a re-buffer.
+
+        Recovers once per source: if the local file fails too, the error is
+        reported rather than looping.
+        """
+        if self._local_fallback is None or not self._enhanced_source:
+            return False
+        position = self.position_ms()
+        try:
+            local = self._local_fallback(position)
+        except Exception:  # noqa: BLE001 - a failed lookup is simply "no fallback"
+            return False
+        if not local or local == self._recovered_from or local == self._enhanced_source:
+            return False
+        self._recovered_from = local
+        self._enhanced_source = local
+        self._pending_play_after_load = True
+        self._set_state(PodcastPlayerState.LOADING)
+        self._start_load(local, start_ms=position)
+        return True
 
     # -- internal -----------------------------------------------------------
 

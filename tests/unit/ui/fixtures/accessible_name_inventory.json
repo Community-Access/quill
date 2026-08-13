@@ -557,6 +557,7 @@
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl#4": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl#5": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl#6": "named",
+  "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl#7": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrlDouble": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/podcasts/quick_actions_dialog.py::QuickActionsDialog.__init__::wx.Choice": "named",

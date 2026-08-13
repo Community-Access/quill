@@ -141,6 +141,9 @@ class CastMenuBarMixin:
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(mark_all_id, "Mark All as Play&ed...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mark_all_played(), id=mark_all_id)
+        keep_id = wx.NewIdRef()
+        episode_menu.Append(keep_id, "&Keep This Episode")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_keep_episode(), id=keep_id)
         stats_id = wx.NewIdRef()
         episode_menu.Append(stats_id, "Listening Stat&istics...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_statistics(), id=stats_id)
@@ -303,6 +306,7 @@ class CastMenuBarMixin:
             speed_reset_id,
             stop_after_id,
             mark_all_id,
+            keep_id,
             stats_id,
             sleep_episode_id,
             sleep_extend_id,

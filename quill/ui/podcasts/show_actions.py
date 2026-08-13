@@ -197,13 +197,24 @@ def start_episode_playback(
     settings and an authenticated source (private feeds embed same-host
     credentials for streaming). The one implementation behind every Play
     call site, so speed/EQ/skip settings and feed auth can never drift
-    apart between surfaces. Returns False when there is nothing to play."""
-    from quill.core.podcasts import feed_auth
+    apart between surfaces. Returns False when there is nothing to play.
 
-    source = feed_auth.playback_source(show, episode)
+    A streamed episode whose audio is already sitting in the playback cache is
+    played from that file rather than fetched again -- the same bytes, minus
+    the network. See ``core/podcasts/playback_cache.py``."""
+    from quill.core.podcasts import feed_auth, playback_cache
+
+    settings = library.effective_settings(show)
+    source = ""
+    if not episode.downloaded_path and settings.playback_cache:
+        cached = playback_cache.cached_audio(show.id, episode.guid, episode.audio_url)
+        if cached is not None:
+            playback_cache.touch(cached)
+            source = str(cached)
+    if not source:
+        source = feed_auth.playback_source(show, episode)
     if not source:
         return False
-    settings = library.effective_settings(show)
     controller.play_episode(
         show_id=show.id,
         episode_guid=episode.guid,
@@ -246,6 +257,43 @@ def enqueue_episode_download(
         destination=destination,
         auth_header=feed_auth.auth_header_for_url(show, episode.audio_url),
     )
+
+
+def start_playback_cache(
+    cache_queue: PodcastDownloadQueue,
+    show: PodcastShow,
+    episode: PodcastEpisode,
+) -> str:
+    """Begin filling the playback cache for a streamed episode.
+
+    Returns the queue item id, or "" when there is nothing to do -- the episode
+    is downloaded, already fully cached, or has no https enclosure to fetch.
+
+    Runs on a queue of its own (see ``main_frame_podcasts``) rather than the
+    download queue, for two reasons: a forty-episode download batch must never
+    leave the episode you are *listening to* waiting behind it for its bytes,
+    and a cache fill is not a download and has no business appearing in the
+    Downloads list.
+    """
+    from quill.core.podcasts import feed_auth, playback_cache
+
+    if episode.downloaded_path or not episode.audio_url:
+        return ""
+    if playback_cache.cached_audio(show.id, episode.guid, episode.audio_url) is not None:
+        return ""
+    if not episode.audio_url.startswith("https://"):
+        return ""
+    destination = playback_cache.partial_path(show.id, episode.guid, episode.audio_url)
+    item_id = f"cache:{show.id}:{episode.guid}"
+    cache_queue.enqueue(
+        item_id,
+        show_id=show.id,
+        episode_guid=episode.guid,
+        url=episode.audio_url,
+        destination=destination,
+        auth_header=feed_auth.auth_header_for_url(show, episode.audio_url),
+    )
+    return item_id
 
 
 def announce_if_feed_auth_failure(

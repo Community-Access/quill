@@ -205,6 +205,16 @@ class ShowSettingsDialog:
         self._route_inbox.SetValue(show.route_to_inbox)
         root.Add(self._route_inbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        self._playback_cache = wx.CheckBox(
+            self.dialog, label="&Keep streamed episodes of this podcast ready while they play"
+        )
+        self._playback_cache.SetValue(settings.playback_cache)
+        self._playback_cache.SetName(
+            "Save this podcast's streamed audio as it plays, so playback continues "
+            "through a dropped connection and chapters can be found in it"
+        )
+        root.Add(self._playback_cache, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         self._favorite = wx.CheckBox(self.dialog, label="A &favorite podcast")
         self._favorite.SetValue(show.is_favorite)
         root.Add(self._favorite, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -275,6 +285,7 @@ class ShowSettingsDialog:
             "inbox_max_episodes": self._inbox_max.GetValue(),
             "inbox_age_limit_hours": _INBOX_AGE_VALUES[max(0, self._inbox_age.GetSelection())],
             "download_retention_days": self._retention_days.GetValue(),
+            "playback_cache": self._playback_cache.GetValue(),
         }
         if auto_value is not None:
             # -1 is "the whole catalog", which is what always_sync_full_catalog

@@ -85,6 +85,16 @@ Your position within an episode is saved automatically, so returning to it later
 
 A **Speed** control on the Podcasts dialog's player row sets playback rate for the selected podcast, from 0.75x to 2.0x, remembered the next time you open that show.
 
+#### Streaming an episode, and keeping one
+
+A streamed episode is a fully capable episode. While one plays, Quill Cast also saves its audio, which is what makes three things work that used to need a download first:
+
+- **A dropped connection is no longer an interruption.** The audio you were about to hear has almost always already arrived, so playback simply continues from it instead of going silent and re-buffering.
+- **Chapters can be found in it.** **Find Chapters in This Episode** scans the audio, which it can only do when there is audio to scan.
+- **Keeping it costs nothing.** **Episode > Keep This Episode** turns what you are streaming into a permanent download. If the audio is already here, that is a move, not a second download of the same bytes — nothing is fetched and it is instant. If it isn't (you pressed play a moment ago, or you turned this off for this show), it falls back to an ordinary download.
+
+None of this is announced while it happens, and none of it appears in Downloads: it is not a download, it is removed automatically, and the episode you are listening to is never the one removed. **Podcast Settings...** offers **Keep streamed episodes ready while they play** (on by default) and the space it may use between them (1024 MB by default, 0 for no limit); a single podcast can turn it off from **Settings for This Podcast**. The Downloads dialog says how much streamed audio is currently held, separately from your downloads, so the two figures can never be confused.
+
 #### Chapters
 
 If an episode carries Podcasting 2.0 chapter data, its **Chapters...** button is enabled. Press it to see a list of chapter markers by name and timestamp; select one and press **Jump To Chapter** to go straight there — this works whether or not that episode is already playing. **Podcasts: Next Chapter** and **Podcasts: Previous Chapter**, in the Command Palette, jump between chapter boundaries in whatever episode is currently playing, from anywhere in QUILL.
@@ -658,6 +668,70 @@ Filters and curated Playlists.
 - Episode context menu gained "Add to Playlist..." (a native
   ``wx.SingleChoiceDialog`` among existing manual playlists, or create one
   inline).
+
+##### 5.84g.7 The playback cache -- a streamed episode is a fully capable episode
+
+**The problem, stated as what it costs the listener.** Through 1.1.0 Cast had
+two classes of episode and a listener had to know which one they were holding
+before they knew which features they had. Chapters found in the audio, exact
+bookmarks, dependable resume, precise seeking and any kind of analysis were all
+downloaded-only, because every one of them needs a *file* and a stream is a
+socket. This is not a file-management feature; it is the removal of that tier
+split.
+
+**The mechanism, which is the boring part.** While a streamed episode plays,
+its bytes are also written to a managed cache
+(``core/podcasts/playback_cache.py``), so the episode becomes byte-backed
+without anybody asking for a download. The cache is keyed by show id and
+episode guid (never by URL -- a feed that moves its enclosures must not orphan
+every file), hashed rather than named after publisher-supplied text, and writes
+to a ``.part`` file that is promoted to the real name with one ``os.replace``,
+so no reader can ever see a half-written file under the complete name.
+
+**What the bytes buy, which is the point.**
+
+1. **A dropped connection stops being an interruption.** The player asks, on
+   error, whether a local file already covers the position it was at
+   (``PodcastPlayerController._recover_locally``) and reloads from it if so.
+   The fetch runs far ahead of realtime, so it usually does. It recovers once
+   per source: if the local file also fails, the error is reported rather than
+   looped on.
+2. **"Keep this one" costs nothing.** ``playback_cache.promote`` moves the file
+   into the download folder -- a rename on the same volume -- rather than
+   downloading the same bytes a second time. **Keep This Episode**
+   (``podcasts.keep_episode``) falls back to an ordinary download when there is
+   no complete entry, which is exactly what the listener would have done.
+3. **The analysis tiers get something to analyse.** ``local_audio_path`` is the
+   single resolver -- download first, then cache -- that ``chapter_sources``
+   and ``chapter_inference_ui`` now ask, so the file tiers cannot tell a
+   streamed episode from a downloaded one.
+
+**Cache, never content.** Bounded (``playback_cache_cap_mb``, 1024 MB by
+default), evicted least-recently-used, and losing all of it costs nothing but
+bandwidth. **The episode you are listening to is never evicted** --
+``evict_to_cap`` and ``clear`` both take the in-use paths and skip them, the
+same instinct as ``retention.is_protected``. An unreachable cap is simply not
+reached; nothing protected is taken to satisfy it.
+
+**Its own queue.** Cache fills run on a second ``PodcastDownloadQueue`` with
+``max_concurrent=1`` and no status callback. Separate from the download queue
+because the episode being listened to must never wait behind a forty-episode
+download batch for the bytes that make it drop-proof; silent because a cache
+fill is not a download -- it never earcons, never reaches the status bar, and
+never appears in the Downloads list. Starting a different episode cancels the
+fill for the one you left (the ``.part`` file stays, so replaying that episode
+resumes by Range rather than starting over).
+
+**Naming.** The setting reads as reliability, not disk management: *Keep
+streamed episodes ready while they play*. "Playback cache" is the internal
+name, and is deliberately unremarkable -- this is something the listener should
+never have to think about.
+
+**Found while wiring this.** ``chapter_inference_ui`` read ``show.show_id``,
+but ``PodcastShow`` names the field ``id`` (``show_id`` is what a *download
+queue item* calls it), so Find Chapters answered "this episode cannot be
+identified" for every episode and had never run. ``chapter_sources.
+show_identity`` is now the one place that resolves either spelling.
 
 ## PRD 5.89e The Quill Cast standalone app
 

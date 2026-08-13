@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import feed_auth, retention
 from quill.core.podcasts import history as podcast_history
-from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
+from quill.core.podcasts.download_queue import DownloadItem
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
@@ -29,6 +29,7 @@ from quill.ui.main_frame_podcast_acquisition import PodcastAcquisitionMixin
 from quill.ui.main_frame_podcast_dialogs import PodcastDialogsMixin
 from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
+from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.player_controller import PodcastPlaybackState, PodcastPlayerController
 
@@ -44,6 +45,7 @@ class PodcastsMixin(
     PodcastAcquisitionMixin,
     PodcastLibrarySaveMixin,
     PodcastDialogsMixin,
+    PodcastTransfersMixin,
 ):
     """Adds Podcasts to ``MainFrame``.
 
@@ -80,6 +82,7 @@ class PodcastsMixin(
             on_enhance_error=self._on_podcast_enhance_error,
             spotify_token_provider=self._spotify_session.access_token,
             on_second_tick=self._podcast_second_tick,
+            local_fallback=self._podcast_local_fallback,
         )
         settings = self._podcast_library.settings
         self._podcast_controller.set_enhancement(
@@ -90,14 +93,7 @@ class PodcastsMixin(
             smart_speed_enabled=settings.smart_speed_enabled,
             channel_mode=settings.channel_mode,
         )
-        self._podcast_download_queue = PodcastDownloadQueue(
-            on_status_changed=self._on_podcast_download_status_changed,
-            on_completed=self._on_podcast_download_completed,
-            on_reconnect=self._on_podcast_download_reconnect,
-            reconnect_enabled=settings.reconnect_enabled,
-            reconnect_max_attempts=settings.reconnect_max_attempts,
-            reconnect_wait_seconds=settings.reconnect_wait_seconds,
-        )
+        self._init_podcast_transfers()
         # The background new-episode check, under the shared ambient-monitor
         # policy (cadence / audible tick / interrupt speech). Off unless the
         # user turned podcast_check_enabled on, so this costs one object.
@@ -117,18 +113,6 @@ class PodcastsMixin(
         # window appears would talk over the screen reader announcing it.
         self.podcast_run_maintenance(announce=False)
 
-    def _podcast_download_root(self) -> Path:
-        override = self._podcast_library.settings.download_root
-        return Path(override) if override else app_data_dir() / "podcasts"
-
-    def _on_podcast_download_reconnect(
-        self, item: DownloadItem, attempt: int, max_attempts: int
-    ) -> None:
-        self._wx.CallAfter(
-            self._announce,
-            f"Download connection dropped; reconnecting (attempt {attempt} of {max_attempts})...",
-        )
-
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
     # / audio engine's own contract of UI-thread callbacks) -----------------
 
@@ -143,6 +127,7 @@ class PodcastsMixin(
     def _on_podcast_state_changed(self, state: PodcastPlaybackState) -> None:
         self._maybe_surface_podcast_status_cell(bool(state.title))
         self._podcast_track_history(state)
+        self._podcast_manage_playback_cache(state)
         self._refresh_statusbar()
         self._refresh_podcast_tray_tooltip()
         self._maybe_reload_podcast_chapters(state)
@@ -310,58 +295,6 @@ class PodcastsMixin(
                     self._podcast_controller, self._podcast_library, finished_show, following
                 )
                 self._announce(f"Up next from {finished_show.title}: {following.title}")
-
-    # -- download queue callbacks (fire on the download worker thread --
-    # everything here must be wx.CallAfter-safe) ----------------------------
-
-    def _on_podcast_download_status_changed(self, item: DownloadItem) -> None:
-        self._wx.CallAfter(self._apply_podcast_download_status, item)
-
-    def _on_podcast_download_completed(self, item: DownloadItem) -> None:
-        self._wx.CallAfter(self._apply_podcast_download_completed, item)
-
-    def _apply_podcast_download_status(self, item: DownloadItem) -> None:
-        self._refresh_statusbar()
-        self._podcast_cue_download_started(item)
-        if self._podcast_manager_dialog is not None:
-            self._podcast_manager_dialog.on_download_status_changed(item)
-
-    def _podcast_cue_download_started(self, item: DownloadItem) -> None:
-        """Earcon the moment downloading actually begins (#1302).
-
-        This callback also carries every progress chunk of every item, so it
-        must never cue per call. The queue going from idle to busy is the state
-        worth hearing: a forty-episode batch says "downloading" once, and the
-        cue is armed again only after the queue has drained.
-        """
-        queue = getattr(self, "_podcast_download_queue", None)
-        active = int(queue.active_count()) if queue is not None else 0
-        if active < 1:
-            self._podcast_download_cued = False
-            return
-        if str(getattr(item, "status", "")) != "downloading":
-            return
-        if getattr(self, "_podcast_download_cued", False):
-            return
-        self._podcast_download_cued = True
-        post_cue(SoundEvent.CAST_DOWNLOAD_STARTED)
-
-    def _apply_podcast_download_completed(self, item: DownloadItem) -> None:
-        # The queue calls this exactly once per finished download, so one
-        # episode landing on disk makes exactly one sound (#1302).
-        post_cue(SoundEvent.CAST_DOWNLOAD_COMPLETE)
-        show = self._podcast_library.find_show(item.show_id)
-        if show is not None:
-            episode = show.find_episode(item.episode_guid)
-            if episode is not None:
-                episode.downloaded_path = str(item.destination)
-                self._maybe_process_downloaded_audio(show, item)
-            settings = self._podcast_library.effective_settings(show)
-            retention.apply_keep_last_n(show, settings)
-        self._save_podcast_library()
-        self._refresh_statusbar()
-        if self._podcast_manager_dialog is not None:
-            self._podcast_manager_dialog.on_download_completed(item)
 
     def _refresh_podcast_tray_tooltip(self) -> None:
         tray_icon = getattr(self, "_tray_icon", None)
@@ -842,8 +775,6 @@ class PodcastsMixin(
         if not wants_trim and not wants_normalize:
             return
 
-        from pathlib import Path
-
         from quill.core.podcasts import audio_processing
 
         destination = Path(item.destination)
@@ -880,7 +811,6 @@ class PodcastsMixin(
             )
             return
         wx = self._wx
-        from pathlib import Path
 
         from quill.core.podcasts.local_import import (
             SUPPORTED_AUDIO_EXTENSIONS,
@@ -1070,6 +1000,11 @@ class PodcastsMixin(
                 "podcasts.previous_chapter",
                 "Podcasts: Previous Chapter",
                 self.podcast_previous_chapter,
+            ),
+            (
+                "podcasts.keep_episode",
+                "Podcasts: Keep This Episode",
+                self.podcast_keep_episode,
             ),
             ("podcasts.skip_forward", "Podcasts: Skip Forward", self.podcast_skip_forward),
             ("podcasts.skip_back", "Podcasts: Skip Back", self.podcast_skip_back),

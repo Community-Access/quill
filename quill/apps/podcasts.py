@@ -903,7 +903,7 @@ class PodcastsAppFrame(
             pass
         for action in (
             getattr(self._podcast_controller, "shutdown", None),
-            getattr(self._podcast_download_queue, "shutdown", None),
+            getattr(self, "_shutdown_podcast_transfers", None),
         ):
             if action is None:
                 continue

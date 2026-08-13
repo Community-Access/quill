@@ -523,6 +523,7 @@
   "podcast_delete_all_data",
   "podcast_export_data",
   "podcast_free_up_space",
+  "podcast_keep_episode",
   "podcast_mark_all_played",
   "podcast_mute_toggle",
   "podcast_next_chapter",

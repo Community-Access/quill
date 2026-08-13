@@ -7,8 +7,46 @@ by what people reported: a full disk that could lose a document, an editor that
 was doing too much work between keystrokes, and three smaller things that were
 already fixed in code nobody could run yet.
 
+### A streamed podcast episode is now a fully capable episode
+
+Quill Cast quietly had two classes of episode. A downloaded one could have its
+chapters found, its position resumed exactly, and its audio analysed; a streamed
+one could not, and you had to know which kind you were holding before you knew
+which features you had. That split is gone.
+
+While a streamed episode plays, Cast now also saves its audio. Nothing is
+announced, nothing appears in Downloads, and there is no progress to watch --
+what changes is what becomes possible:
+
+- **A dropped connection is no longer an interruption.** The audio you were
+  about to hear has almost always already arrived, so playback continues from
+  it instead of going silent and re-buffering. *Your screen reader says nothing
+  at all, which is the point -- the episode simply keeps playing.*
+- **Chapters can be found in a streamed episode.** *Find Chapters in This
+  Episode* scans the audio, and there is now audio to scan.
+- **Episode > Keep This Episode** turns what you are streaming into a permanent
+  download. When the audio is already here that is a move, not a second
+  download of the same bytes: *"Keeping this episode. It was already here, so
+  nothing was downloaded."* When it isn't, it falls back to an ordinary
+  download and says so.
+
+The saved audio is not a download and is never treated as one: it is bounded
+(1024 MB by default), the least-recently-played is removed first, **and the
+episode you are listening to is never the one removed**. *Podcast Settings...*
+offers **Keep streamed episodes ready while they play** and the space it may
+use; a single podcast can turn it off in *Settings for This Podcast*. The
+Downloads dialog reports streamed audio as its own separate sentence, so it can
+never be confused with the downloads you chose to keep.
+
 ### Fixes
 
+- **Find Chapters had never worked.** *Find Chapters in This Episode* answered
+  "This episode cannot be identified." for every episode, on every surface. The
+  cause was one word: the code read a show's `show_id`, which is what a
+  *download queue item* calls that value, while a show itself calls it `id` --
+  so the lookup silently produced an empty string and the command bailed before
+  doing anything. Both spellings now resolve through one helper, so they cannot
+  disagree again.
 - **A full disk can no longer close QUILL with your document unsaved (#1390).**
   This is the serious one. Choosing **Save** on the close prompt, on a disk with
   no space left, closed QUILL *without saving*. The cause was an ordering

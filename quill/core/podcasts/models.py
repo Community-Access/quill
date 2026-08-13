@@ -336,6 +336,14 @@ class PodcastSettings:
     #: in-progress episode is never evicted.
     download_retention_days: int = 0
     storage_cap_mb: int = 0
+    #: Streamed episodes are fully capable episodes: while one plays its bytes
+    #: are also written to a bounded, self-evicting cache (playback_cache.py),
+    #: which is what lets a dropped connection keep playing, "Keep This
+    #: Episode" be a move not a second download, and chapter inference run on a
+    #: streamed episode at all. Per-show overridable;
+    #: ``playback_cache_cap_mb`` is the global cache ceiling (0 = no cap).
+    playback_cache: bool = True
+    playback_cache_cap_mb: int = 1024
     #: Playback session (1.1.0). ``continue_after_queue``: when an episode
     #: finishes, start the Play Queue's next item -- on, because that is what
     #: auto-advance has always done. ``continue_after_group``: when the queue
@@ -390,6 +398,8 @@ class PodcastSettings:
             "inbox_age_limit_hours": self.inbox_age_limit_hours,
             "download_retention_days": self.download_retention_days,
             "storage_cap_mb": self.storage_cap_mb,
+            "playback_cache": self.playback_cache,
+            "playback_cache_cap_mb": self.playback_cache_cap_mb,
             "continue_after_queue": self.continue_after_queue,
             "continue_after_group": self.continue_after_group,
             "announce_show_name_first": self.announce_show_name_first,
@@ -438,6 +448,8 @@ class PodcastSettings:
             inbox_age_limit_hours=max(0, _coerce_int(data.get("inbox_age_limit_hours"), 0)),
             download_retention_days=max(0, _coerce_int(data.get("download_retention_days"), 0)),
             storage_cap_mb=max(0, _coerce_int(data.get("storage_cap_mb"), 0)),
+            playback_cache=bool(data.get("playback_cache", True)),
+            playback_cache_cap_mb=max(0, _coerce_int(data.get("playback_cache_cap_mb"), 1024)),
             continue_after_queue=bool(data.get("continue_after_queue", True)),
             continue_after_group=bool(data.get("continue_after_group", False)),
             announce_show_name_first=bool(data.get("announce_show_name_first", False)),

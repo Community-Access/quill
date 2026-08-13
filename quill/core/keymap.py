@@ -209,6 +209,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # My Notes in This Episode: your notes for whatever is playing. Unbound by
     # default (no free chord), but registered so it can be given one.
     "podcasts.episode_notes": "",
+    # Keep This Episode: streaming -> kept. Unbound (a deliberate, occasional
+    # act, not a transport control), registered so it can be given a chord.
+    "podcasts.keep_episode": "",
     "radio.record_toggle": "Ctrl+Shift+Grave, 6",  # Internet Radio (Record Now / Stop Recording)
     "podcasts.skip_forward": "Ctrl+Shift+Grave, 5",  # Podcasts
     "podcasts.skip_back": "Ctrl+Shift+Grave, 4",  # Podcasts

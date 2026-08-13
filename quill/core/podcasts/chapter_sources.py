@@ -144,6 +144,20 @@ def parse_show_notes_chapters(notes: str, *, total_ms: int = 0) -> list[PodcastC
     return [PodcastChapter(start_ms=start, title=title) for start, title in marks]
 
 
+def show_identity(show: PodcastShow | None) -> str:
+    """A show's stable id, whichever name the caller reached for.
+
+    ``PodcastShow`` calls the field ``id``; a download-queue item calls the
+    same value ``show_id``, and code that crossed between the two quietly got
+    an empty string -- which is how Find Chapters came to answer "this episode
+    cannot be identified" for every episode. One helper, so the two spellings
+    cannot disagree again.
+    """
+    if show is None:
+        return ""
+    return str(getattr(show, "id", "") or getattr(show, "show_id", "") or "")
+
+
 def read_file_chapters(path: Path) -> list[PodcastChapter]:
     """Chapters embedded in a downloaded episode's own tags, or []."""
     try:
@@ -240,8 +254,11 @@ def build_episode_chapters(
             chapters_url, safe_mode=safe_mode, auth_header=auth_header
         )
 
-    downloaded = str(getattr(episode, "downloaded_path", ""))
-    audio_path = Path(downloaded) if downloaded else None
+    # Downloaded file, or the playback cache entry a streamed episode fills as
+    # it plays -- both are bytes, and the file tiers cannot tell them apart.
+    from quill.core.podcasts.playback_cache import local_audio_path
+
+    audio_path = local_audio_path(show, episode)
     duration_seconds = int(getattr(episode, "duration_seconds", 0) or 0)
     found = chapter_cascade(
         published=_published,
@@ -260,7 +277,7 @@ def build_episode_chapters(
     from quill.core.podcasts.chapter_inference import load_cached_inference
 
     cached, source = load_cached_inference(
-        str(getattr(show, "show_id", "") if show is not None else ""),
+        show_identity(show),
         str(getattr(episode, "guid", "")),
         audio_path=audio_path,
     )
