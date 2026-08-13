@@ -859,6 +859,111 @@ applied to alerts. If either provider says there is a warning, there is
 a warning. Safety information is a union, never an intersection or an
 average.</li>
 </ul>
+<h3 id="65-weatherkit-cost-quota-and-the-decisions-they-drive">6.5
+WeatherKit cost, quota, and the decisions they drive</h3>
+<p>WeatherKit is a first-class provider (F-22), but it is metered, and a
+weather app with widgets, a badge, and background refresh multiplies
+calls per user. This section is the cost model the fusion strategy
+(§6.2) is tuned against.</p>
+<blockquote>
+<p><strong>Verify before committing budget.</strong> The figures below
+reflect Apple’s published WeatherKit pricing as of <strong>August
+2026</strong> and can change. Confirm the current numbers on Apple’s
+WeatherKit pricing page and in the Apple Developer account’s WeatherKit
+usage dashboard before making a business decision.</p>
+</blockquote>
+<p><strong>The free allotment.</strong> WeatherKit is included with the
+<strong>Apple Developer Program membership</strong> ($99/year):
+<strong>500,000 calls per month</strong>, shared across <em>both</em>
+the native Swift WeatherKit framework and the WeatherKit REST API on the
+same account. Overage is billed monthly by tier:</p>
+<table>
+<thead>
+<tr>
+<th>Monthly calls</th>
+<th>Price (USD/month)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Up to 500,000</td>
+<td>Included with membership</td>
+</tr>
+<tr>
+<td>1 million</td>
+<td>$49.99</td>
+</tr>
+<tr>
+<td>2 million</td>
+<td>$99.99</td>
+</tr>
+<tr>
+<td>5 million</td>
+<td>$249.99</td>
+</tr>
+<tr>
+<td>10 million</td>
+<td>$499.99</td>
+</tr>
+<tr>
+<td>20 million</td>
+<td>$999.99</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How a “call” is counted.</strong> A call is counted
+<strong>per data set requested</strong>, not per
+<code>weather(for:)</code>. Asking a single <code>weather(for:)</code>
+for current + hourly + daily</p>
+<ul>
+<li>alerts can count as <em>four</em> calls. <strong>Decision
+(C-1):</strong> every WeatherKit request asks for only the data sets the
+surface needs — the Lock Screen temperature widget (W-1) requests
+<code>.current</code> alone, not the full report.</li>
+</ul>
+<p><strong>What multiplies calls.</strong> Roughly:</p>
+<pre><code>monthly calls  ≈  users × locations × datasets × refreshes-per-month</code></pre>
+<p>At scale this dominates. Example: 10,000 users × 1 primary location ×
+2 datasets × (widget + background refresh ≈ 24/day × 30) ≈ <strong>14.4
+million calls/month</strong> — the $499.99 tier — and that is before
+anyone opens the app. The glance surfaces, not the app screens, are the
+cost center.</p>
+<p><strong>The mitigations, and the decisions they encode:</strong></p>
+<ul>
+<li><strong>C-2. Cache is the default source.</strong> Widgets, the
+badge, and Quick Weather read the App Group cache first
+(<code>SharedStore</code>) and only fetch when it is stale. A cold
+widget render costs zero calls.</li>
+<li><strong>C-3. Bounded refresh cadence.</strong> Background refresh is
+capped at ~1/hour (§8.1) and widget timelines request ~30-minute
+reloads; the app never force-reloads timelines on every foregrounding.
+WidgetKit’s own budget is a ceiling, not a target.</li>
+<li><strong>C-4. Spend WeatherKit where it is uniquely good; use free
+providers elsewhere.</strong> NWS (US, free, unmetered — fair-use with a
+descriptive <code>User-Agent</code>) answers US current/hourly/alerts,
+and <strong>Open-Meteo</strong> answers high-frequency and worldwide
+glance surfaces. WeatherKit is reserved for the full on-demand report
+and for global alerts. This is exactly the §6.2 routing, chosen partly
+for cost.</li>
+<li><strong>C-5. Prefer a server for fan-out.</strong> If the QuillPush
+alert relay (§8.3) is built, alert polling moves to <strong>one</strong>
+server using the WeatherKit REST API instead of every device spending
+its own calls — one shared budget rather than N device budgets.</li>
+<li><strong>C-6. Watch the meter.</strong> Ship with an internal usage
+checkpoint against the Apple Developer WeatherKit dashboard so
+approaching a tier boundary is a known event, not a surprise
+invoice.</li>
+</ul>
+<p><strong>The free fallback is not unlimited either.</strong>
+Open-Meteo is free for <strong>non-commercial</strong> use (soft ~10,000
+calls/day); commercial use at scale expects a paid Open-Meteo API
+subscription. So “keyless fallback” removes the WeatherKit entitlement
+requirement, not the cost question — it shifts it to a cheaper vendor.
+NWS remains genuinely free but US-only.</p>
+<p><strong>Attribution is mandatory (see D-5).</strong> Wherever
+WeatherKit data appears, the Apple Weather attribution and the
+legal-attribution link must show. This is a licensing condition, not a
+UI preference, and applies to widgets too.</p>
 <hr />
 <h2 id="7-location-the-greenfield">7. Location: the greenfield</h2>
 <ul>
