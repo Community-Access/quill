@@ -163,6 +163,27 @@ Only the seven-day sweep removes a downloaded copy, and only for something you c
 
 **Upgrading from 1.0.x:** a queue saved before 1.1 has no timestamps to age against. QUILL Cast reads an unstamped episode as "added just now", so the first launch after updating cannot empty your queue.
 
+## When a podcast re-publishes an episode
+
+Publishers sometimes re-issue an episode: a corrected file, a re-cut, one pulled
+and put back. QUILL Cast notices, and if the episode had already been trimmed
+out of your Inbox it comes back, announced as what it is -- "Episode 42 was
+re-published by The Daily, so it is back in your Inbox" -- rather than as a new
+episode, which it is not.
+
+Three kinds of episode are deliberately left alone, and they are the same three
+the Inbox limits already exempt:
+
+- one you have **played** -- you are finished with it, and a re-cut does not
+  un-finish it;
+- one you have **started** -- having it reappear as though it were new would
+  misrepresent your own history with it;
+- one you have **queued** -- you already decided when to hear it, and the Inbox
+  is for episodes still waiting on that decision.
+
+An episode you filed into an Inbox folder by hand stays where you put it too. A
+refresh should not argue with decisions you have already made.
+
 ## Inbox limits
 
 An Inbox holding every unplayed episode of every routed show forever is a second library, not a triage surface. Any podcast can now cap it: **keep at most N episodes**, and **drop episodes older than** 6 hours up to 2 weeks. A global default for the count lives in Podcast Settings.

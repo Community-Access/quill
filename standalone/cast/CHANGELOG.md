@@ -79,6 +79,8 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-1
 
 ## Unreleased
 
+- **A re-published episode comes back to your Inbox.** Publishers do re-issue episodes -- a corrected file, a re-cut, one pulled and put back -- and QUILL Cast used to refresh the details in place and leave it where it was. If the Inbox had already trimmed it, the corrected version sat in the show's own list where you were never going to look. It now returns, announced in words that do not call it new: "Episode 42 was re-published by The Daily, so it is back in your Inbox." Three kinds of episode are left alone, and they are the same three the Inbox caps already exempt -- one you **played**, one you **started**, and one you **queued** -- plus anything you filed into an Inbox folder yourself. A refresh should not argue with decisions you have already made.
+
 - **Your place is kept even if QUILL Cast never gets to shut down properly.** The resume position was only written when *you* did something -- pause, stop, change episode, or quit cleanly. Every other ending took it with you: a crash, a power cut, Task Manager, a forced restart. You came back to your last pause, which after an uninterrupted hour is an hour ago. It now saves every fifteen seconds while an episode plays, so the worst an unclean exit can cost is a sentence.
 
 - **Your episode notes are reachable from the player.** A note is something you make *while listening*, so needing to leave the player, find the episode in the library tree and open its context menu to read your notes back was the wrong shape. **My Notes in This Episode...** now acts on whatever is playing, and selecting a note jumps to it.

@@ -759,9 +759,11 @@ class PodcastsMixin(
 
         def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
             known = {episode.guid for episode in show.episodes}
-            new_count = merge_episodes(show, info.episodes)
+            republished: list[str] = []
+            new_count = merge_episodes(show, info.episodes, republished=republished)
             fresh = [episode for episode in show.episodes if episode.guid not in known]
             queued = self._podcast_route_new_episodes(show, fresh)
+            self._podcast_resurface_republished(show, republished)
             self._save_podcast_library()
             if self._podcast_manager_dialog is not None:
                 self._podcast_manager_dialog.refresh_tree()

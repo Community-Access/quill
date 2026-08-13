@@ -43,6 +43,44 @@ class PodcastAcquisitionMixin:
             message += f"; {queued} added to the Play Queue"
         return message
 
+    def _podcast_resurface_republished(
+        self, show: PodcastShow, republished: list[str]
+    ) -> list[PodcastEpisode]:
+        """Bring re-issued episodes back to the Inbox, and say so.
+
+        Runs *before* the Inbox trim that follows a refresh, so an episode that
+        returns is judged against that show's caps like everything else rather
+        than surviving the refresh on a technicality.
+
+        The rules live in :func:`quill.core.podcasts.inbox.resurface_republished`
+        -- played, started, queued and hand-filed episodes are all left alone.
+        """
+        from quill.core.podcasts import inbox
+
+        returned = inbox.resurface_republished(self._podcast_library, show, republished)
+        if returned:
+            self._announce(self._podcast_republished_message(show, returned))
+        return returned
+
+    def _podcast_republished_message(
+        self, show: PodcastShow, returned: list[PodcastEpisode]
+    ) -> str:
+        """What to say when a re-issued episode comes back to the Inbox.
+
+        Deliberately not phrased as "new episodes". The publisher re-issued
+        something you already had -- a corrected file, a re-cut -- and calling
+        that new would misdescribe what happened. Names the episode when there
+        is one, because a name is more use than a count.
+        """
+        title = show.title or "this podcast"
+        if len(returned) == 1:
+            name = returned[0].title or "An episode"
+            return f"{name} was re-published by {title}, so it is back in your Inbox."
+        return (
+            f"{len(returned)} episodes were re-published by {title}, "
+            "so they are back in your Inbox."
+        )
+
     def _podcast_notify_new_episodes(self, show: PodcastShow, fresh: list[PodcastEpisode]) -> None:
         """Per-show notification: name the episodes for a show that asked.
 

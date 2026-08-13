@@ -210,13 +210,29 @@ class PodcastLibrary:
         return True
 
 
-def merge_episodes(show: PodcastShow, fetched: list[PodcastEpisode]) -> int:
+def merge_episodes(
+    show: PodcastShow,
+    fetched: list[PodcastEpisode],
+    *,
+    republished: list[str] | None = None,
+) -> int:
     """Merge freshly-fetched episodes into *show* in place; returns the
     count of genuinely new episodes. Existing episodes (matched by guid) get
     their feed-supplied metadata refreshed but keep their local state
     (played, position, downloaded_path, mode_override) untouched -- a feed
     republishing an old guid with new text must not reset what you already
-    did with that episode."""
+    did with that episode.
+
+    *republished*, when given, collects the guids of episodes the publisher
+    **re-published**: the feed now carries a later ``published`` stamp for a
+    guid already in the library. That is a deliberate act by the publisher --
+    a corrected file, a re-cut, an episode pulled and reissued -- and it is
+    the signal :func:`quill.core.podcasts.inbox.resurface_republished` uses to
+    bring an episode back to the Inbox.
+
+    Collected here rather than computed by the caller because this is the only
+    moment both stamps exist: the line below overwrites the old one.
+    """
     existing_by_guid = {e.guid: e for e in show.episodes}
     new_count = 0
     for fetched_episode in fetched:
@@ -225,6 +241,13 @@ def merge_episodes(show: PodcastShow, fetched: list[PodcastEpisode]) -> int:
             show.episodes.append(fetched_episode)
             new_count += 1
             continue
+        if (
+            republished is not None
+            and fetched_episode.published
+            and current.published
+            and fetched_episode.published > current.published
+        ):
+            republished.append(current.guid)
         current.title = fetched_episode.title
         current.audio_url = fetched_episode.audio_url
         current.published = fetched_episode.published

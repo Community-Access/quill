@@ -264,6 +264,20 @@ already fixed in code nobody could run yet.
   exercised the C++ provider, so a regression in it could only surface at a
   release build or at a user. (`quill/ui/table_studio_native.py`)
 
+- **A re-published episode comes back to your Inbox.** When a publisher
+  re-issues an episode -- a corrected file, a re-cut, one pulled and put back --
+  QUILL Cast used to refresh its details in place and leave it exactly where it
+  was. If the Inbox had already trimmed it, the corrected version sat in the
+  show's own list where nobody was looking. It now returns to the Inbox, and
+  says so in words that do not call it new, because it isn't: "Episode 42 was
+  re-published by The Daily, so it is back in your Inbox."
+  Three episodes are deliberately left alone, and they are the same three the
+  Inbox caps already exempt: one you **played** (you are finished with it; a
+  re-cut does not un-finish it), one you **started** (having it reappear as new
+  would misrepresent your own history with it), and one you **queued** (you
+  already decided when to hear it). An episode you filed into an Inbox folder by
+  hand is also left where you put it. (`quill/core/podcasts/inbox.py`)
+
 ### Fixed in passing
 
 - **Player Information reported "0 notes" for every episode.** The count was

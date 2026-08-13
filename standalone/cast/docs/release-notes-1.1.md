@@ -105,6 +105,27 @@ And a real bug, fixed: **finishing an episode from the middle of your queue no l
 
 The **sleep timer** gained the two things it was missing. **"End of this episode"** is now a choice, and it tracks the episode rather than a clock -- seek forward and the timer moves with you instead of cutting you off early or leaving you in silence. **Extend 5 Minutes** appears on the timer while it counts down and on the Episode menu, and extending also undoes any fade already in progress, because the point of extending is that you are still listening.
 
+## When a podcast re-publishes an episode
+
+This is small and it is the kind of thing you only notice when it bites.
+
+Publishers re-issue episodes -- a corrected file, a re-cut, one pulled and put
+back up. QUILL Cast would refresh the details in place and leave the episode
+exactly where it was. If the Inbox had already trimmed it, that meant the
+corrected version was sitting in the show's own episode list, where you were
+never going to look for it.
+
+It now comes back to the Inbox, and says so in words that do not call it new,
+because it is not new: *"Episode 42 was re-published by The Daily, so it is back
+in your Inbox."*
+
+What does **not** come back is the interesting part. An episode you have
+**played**, one you have **started**, and one you have **queued** all stay where
+they are -- as does anything you filed into an Inbox folder yourself. Those are
+the same three exemptions the Inbox limits already use, and the reason is the
+same: a refresh should not argue with a decision you have already made. Being
+finished with something is a decision. So is being halfway through it.
+
 ## The Inbox stops growing forever
 
 An Inbox holding every unplayed episode of every routed show, for all time, is not a triage surface. It is a second library.

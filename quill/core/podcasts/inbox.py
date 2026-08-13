@@ -212,6 +212,58 @@ def inbox_caps(library: PodcastLibrary, show: PodcastShow) -> tuple[int, int]:
     )
 
 
+def resurface_republished(
+    library: PodcastLibrary,
+    show: PodcastShow,
+    republished_guids: list[str],
+) -> list[PodcastEpisode]:
+    """Bring re-published episodes back to the Inbox. Returns what returned.
+
+    When a publisher re-issues an episode -- a corrected file, a re-cut, one
+    pulled and reissued -- an episode the Inbox had already trimmed is, as far
+    as the listener is concerned, new again. It used to stay gone: the trim
+    marker was permanent and a refresh only ever refreshed metadata in place,
+    so the corrected version sat in the show's list where nobody was looking.
+
+    **The three exemptions are the same three everything else in this module
+    uses**, and they are what keep this from being annoying:
+
+    * **played** -- you are finished with it; a re-cut does not un-finish it;
+    * **started** (``position_ms > 0``) -- you are in the middle of it, and
+      having it reappear as though it were new would misrepresent your own
+      history with it;
+    * **queued** -- you already decided when to hear it, and the Inbox is for
+      episodes awaiting that decision.
+
+    A **manually filed** episode is also left alone: an assignment that is not
+    the trim marker is the listener's own filing, and a publisher's re-issue is
+    not a reason to overrule it.
+
+    Only the trim marker is cleared. Nothing is moved, marked, or re-ordered,
+    and an episode that was never trimmed is already in the Inbox and needs no
+    help.
+    """
+    if not republished_guids or not show.route_to_inbox:
+        return []
+
+    queued = {(item.show_id, item.episode_guid) for item in library.queue}
+    wanted = set(republished_guids)
+    returned: list[PodcastEpisode] = []
+    for episode in show.episodes:
+        if episode.guid not in wanted:
+            continue
+        if episode.played or episode.position_ms > 0:
+            continue
+        if (show.id, episode.guid) in queued:
+            continue
+        key = inbox_key(show.id, episode.guid)
+        if library.inbox_assignments.get(key) != TRIMMED_MARKER:
+            continue  # never trimmed, or filed by hand -- either way, leave it
+        del library.inbox_assignments[key]
+        returned.append(episode)
+    return returned
+
+
 def trim_inbox(
     library: PodcastLibrary, *, now: datetime | None = None
 ) -> list[tuple[PodcastShow, PodcastEpisode]]:

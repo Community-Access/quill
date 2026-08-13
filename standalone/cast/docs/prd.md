@@ -165,6 +165,16 @@ their wording cannot drift. **Copy Note** carries the episode, the podcast, the
 timestamp, the note and the audio link together -- a note's own text alone is a
 fragment with no way back to the moment it marks.
 
+**Re-published episodes resurface.** A publisher re-issuing an episode (a
+corrected file, a re-cut, one pulled and reissued) moves its `published` stamp
+forward; `merge_episodes` collects those guids at the only moment both stamps
+exist, and `inbox.resurface_republished` clears the trim marker so the episode
+returns to the Inbox. **The exemptions are normative and are the same three
+`trim_inbox` applies** -- played, started (`position_ms > 0`), and queued -- plus
+any hand-filed assignment, which is the listener's own and is never overruled by
+a publisher. Announced as a re-publication rather than as a new episode: calling
+it new would misdescribe what the publisher did.
+
 **Queue Expiration + Recently Expired.** Per-podcast, off by default, with a
 seven-day restorable hold. The one migration risk in the release -- a queue
 saved before 1.1.0 has no timestamps -- is handled by reading an unstamped
