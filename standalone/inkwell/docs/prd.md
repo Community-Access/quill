@@ -2,6 +2,18 @@
 
 Version 1.0.0. Status: implemented.
 
+## 0. Open blocker: the application icon
+
+`standalone/inkwell/assets/quill-inkwell.ico` is **a copy of Quill Weather's**,
+carried over when the app was scaffolded. Quill Inkwell is in `RELEASED_APPS`
+and is documented as part of the 1.0.0 family, so shipping it would put a
+second product on a listener's desktop wearing another product's face --
+confusing in the taskbar, in Alt+Tab, and in the tray, which is exactly where a
+tray-resident app lives.
+
+This is the single hard blocker before an Inkwell build should be cut. It needs
+a real icon asset, not a code change.
+
 ## 1. Why this exists
 
 QUILL has expanded abbreviations inside its own editor for a long time. The

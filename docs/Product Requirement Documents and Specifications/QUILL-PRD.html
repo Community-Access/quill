@@ -4912,6 +4912,18 @@ resolver still checks it), so upgrades never lose offline speech. Only
 components QUILL is licensed to redistribute are hosted this way
 (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines are not
 re-hosted, and ffmpeg is never re-hosted (it stays user-installed).</p>
+<p><strong>Family-wide non-goals, recorded so they are not relitigated
+without new information.</strong> <strong>Telemetry of any kind</strong>
+– no Sentry, no PostHog, no counters. A crash-report bundle is a local
+file the user reads and chooses to send, which is a different thing and
+stays. <strong>System-wide clipboard anything</strong> – QUILL keeps the
+clips it was <em>given</em> and helps assemble them; it does not watch
+the system clipboard and keeps no clipboard history, because a writing
+tool that silently records everything you copy is not one people should
+have to trust. <strong>Competitor data files</strong> – study a
+competitor’s ideas, never their data; interop is via open standards only
+(OPML, M3U, EPUB, VTT), never by reading another product’s private
+store.</p>
 <p><strong>Sound Enhancements: two engines, one of them upstream’s own
 (<code>quill/core/optilab.py</code>,
 <code>quill/core/optilab_adapter.py</code>,

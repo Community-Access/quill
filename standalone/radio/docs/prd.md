@@ -90,6 +90,10 @@ Out of scope by decision: QUILL's editor, AI, speech transcription, braille, and
 
 macOS/Linux standalone builds (upstream QUILL covers macOS; the tray pattern does not exist there), auto-updating in place, telemetry. A full DSP effects rack (reverb, tempo/pitch, spatial audio) -- Sound Enhancements (§8) is a small, purpose-built three-band EQ and compressor, not a general effects rack.
 
+**YouTube search and browse (decided 2026-08-12).** yt-dlp's `ytsearch:` works, needs no key, and is **against YouTube's Terms of Service**. The sanctioned route is the Data API v3, which needs a key and carries a quota. Radio's other directories (RadioBrowser, SomaFM) are open APIs built to be consumed this way; YouTube is not, and the difference is the whole argument. **No search branch** -- paste a link or a playlist. Revisit only via the Data API with the *listener's own* key, which is the shape the Spotify integration already uses.
+
+**A watch link carrying `&list=` is not a playlist.** The listener asked for that video. Quietly expanding it into fifty stations would be a nasty surprise, and "it was technically in the URL" is not consent. Add-from-playlist is its own explicit command.
+
 ## 8. Since 1.0
 
 - **YouTube metadata and playlists (2.2.0; upstream `core/radio/youtube.py`, `tools/network_egress_audit.py`).**

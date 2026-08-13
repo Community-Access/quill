@@ -80,6 +80,8 @@ Out of scope, by decision (D-1, "basic level of functionality"):
 
 macOS/Linux standalone builds (upstream QUILL covers macOS; the tray-icon pattern does not exist there), silent or unattended background updating (an update is always offered and accepted before it is applied -- see U-4), telemetry of any kind. Downloading Spotify audio, which is DRM-protected and play-only by design. A full DSP effects rack (reverb, tempo/pitch, spatial audio) -- Sound Enhancements (§9) is a small, purpose-built three-band EQ, compressor, and Smart Speed, not a general effects rack. For private feeds: no OAuth/token/cookie auth schemes, no per-episode credentials, no cross-machine credential sync -- one username/password per show, HTTP Basic only.
 
+Also deliberately not built, and not to be relitigated without new information: **CarPlay / Android Auto / AirPlay / lock-screen / Control Center** -- the tray plus global hotkeys plus media keys *is* the desktop answer, and it is complete. **Paid tiers of any shape** -- subscription plus-tiers, a free-podcast-count limit, paywalls, StoreKit. **Cloud sync, gpodder, or a hosted account** -- QUILL Sync is the family's own answer and a separate programme (see the QUILL PRD). **Dynamic Type, touch-target sizing, Reduce Motion, Material You** -- their desktop equivalents are the shell's job, not this app's. **Cloud transcript generation** -- §3 puts audio-to-text in full QUILL, on the listener's own machine.
+
 ## 8. Security requirements
 
 - S-1. Feed passwords are stored only in a platform secret store: Windows Credential Manager on installed copies, a DPAPI-encrypted file inside the portable `data` folder in portable mode. Never in `podcasts.json`, settings files, logs, or crash reports.

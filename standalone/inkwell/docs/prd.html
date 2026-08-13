@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Inkwell -- Product Requirements</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -200,6 +199,17 @@
 <h1 id="quill-inkwell--product-requirements">Quill Inkwell – Product
 Requirements</h1>
 <p>Version 1.0.0. Status: implemented.</p>
+<h2 id="0-open-blocker-the-application-icon">0. Open blocker: the
+application icon</h2>
+<p><code>standalone/inkwell/assets/quill-inkwell.ico</code> is <strong>a
+copy of Quill Weather’s</strong>, carried over when the app was
+scaffolded. Quill Inkwell is in <code>RELEASED_APPS</code> and is
+documented as part of the 1.0.0 family, so shipping it would put a
+second product on a listener’s desktop wearing another product’s face –
+confusing in the taskbar, in Alt+Tab, and in the tray, which is exactly
+where a tray-resident app lives.</p>
+<p>This is the single hard blocker before an Inkwell build should be
+cut. It needs a real icon asset, not a code change.</p>
 <h2 id="1-why-this-exists">1. Why this exists</h2>
 <p>QUILL has expanded abbreviations inside its own editor for a long
 time. The limitation was obvious to anyone who used it: the moment you

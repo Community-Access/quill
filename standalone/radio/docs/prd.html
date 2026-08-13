@@ -656,6 +656,20 @@ pattern does not exist there), auto-updating in place, telemetry. A full
 DSP effects rack (reverb, tempo/pitch, spatial audio) – Sound
 Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
+<p><strong>YouTube search and browse (decided 2026-08-12).</strong>
+yt-dlp’s <code>ytsearch:</code> works, needs no key, and is
+<strong>against YouTube’s Terms of Service</strong>. The sanctioned
+route is the Data API v3, which needs a key and carries a quota. Radio’s
+other directories (RadioBrowser, SomaFM) are open APIs built to be
+consumed this way; YouTube is not, and the difference is the whole
+argument. <strong>No search branch</strong> – paste a link or a
+playlist. Revisit only via the Data API with the <em>listener’s own</em>
+key, which is the shape the Spotify integration already uses.</p>
+<p><strong>A watch link carrying <code>&amp;list=</code> is not a
+playlist.</strong> The listener asked for that video. Quietly expanding
+it into fifty stations would be a nasty surprise, and “it was
+technically in the URL” is not consent. Add-from-playlist is its own
+explicit command.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
 <li><strong>YouTube metadata and playlists (2.2.0; upstream
