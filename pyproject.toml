@@ -164,7 +164,7 @@ vosk = ["vosk>=0.3.45"]
 # sherpa-onnx (#669 follow-up). 600M Cache-Aware FastConformer-RNNT run int8 on
 # the CPU — no torch/CUDA (sherpa-onnx bundles its own native onnxruntime). The
 # model downloads from QUILL's assets-v1 release via Manage Speech Models.
-nemotron = ["sherpa-onnx>=1.10.0", "numpy>=1.24.0"]
+nemotron = ["sherpa-onnx>=1.10.0", "numpy>=2.5.2"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
 mp3 = ["mutagen>=1.48.1"]
