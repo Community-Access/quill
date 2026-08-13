@@ -19,7 +19,15 @@ from quill.core.app_launcher import APP_NAMES, RELEASED_APPS, is_app_released
 
 #: The order siblings are listed in the QuillVille menu (the current app is
 #: skipped via ``exclude``).
-QUILLVILLE_APP_ORDER: tuple[str, ...] = ("quill", "radio", "weather", "cast", "studio", "converter")
+QUILLVILLE_APP_ORDER: tuple[str, ...] = (
+    "quill",
+    "radio",
+    "weather",
+    "cast",
+    "studio",
+    "converter",
+    "inkwell",
+)
 
 #: ``RELEASED_APPS`` is re-exported from ``quill.core.app_launcher`` (the single
 #: source of truth). Gating uses :func:`is_app_released`, which also honors a

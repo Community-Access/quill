@@ -9,7 +9,14 @@ from dataclasses import dataclass
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
-EPISODE_FILTER_MODES = ("all", "unplayed", "played", "downloaded", "not_downloaded")
+EPISODE_FILTER_MODES = (
+    "all",
+    "unplayed",
+    "in_progress",
+    "played",
+    "downloaded",
+    "not_downloaded",
+)
 SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")
 
 
@@ -18,6 +25,11 @@ def filter_episodes(episodes: list[PodcastEpisode], mode: str) -> list[PodcastEp
     like ``"all"``)."""
     if mode == "unplayed":
         return [e for e in episodes if not e.played]
+    if mode == "in_progress":
+        # Started but not finished: there is a saved resume position and the
+        # episode has not been marked played. This is the list most people
+        # actually want -- "what am I in the middle of?"
+        return [e for e in episodes if e.position_ms > 0 and not e.played]
     if mode == "played":
         return [e for e in episodes if e.played]
     if mode == "downloaded":

@@ -862,6 +862,10 @@ class AISetupWizard:
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: model check.
 
     def _on_model_verified(self, ok: bool, detail: str) -> None:
+        # #1353: the only background callback in this wizard that was missing
+        # the liveness check its three siblings already had.
+        if not self._alive():
+            return
         self._busy = False
         if not ok:
             self._set_status(

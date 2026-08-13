@@ -83,11 +83,17 @@ class NotebookUIMixin:
             if self._show_modal_dialog(dlg, "New Notebook from Folder") != wx.ID_OK:
                 return
             name = dlg.GetValue().strip() or name
+        # #1345: the folder's name goes to a *native* save panel here. On macOS
+        # an emoji-leading name was implicated in a crash inside that panel's
+        # activation, so the suggestion is sanitized; the notebook keeps the
+        # name the user typed.
+        from quill.core.paths import safe_dialog_filename
+
         with wx.FileDialog(
             self.frame,
             "Save notebook as",
             wildcard="QUILL Notebooks (*.quillnotebook)|*.quillnotebook",
-            defaultFile=f"{name}.quillnotebook",
+            defaultFile=safe_dialog_filename(name, suffix=".quillnotebook", fallback="Notebook"),
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dlg:
             if self._show_modal_dialog(dlg, "Save Notebook As") != wx.ID_OK:

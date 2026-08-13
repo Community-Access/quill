@@ -427,17 +427,25 @@ def _developer_build(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("QUILL_DEV_BUILD", "1")
 
 
-def test_unreleased_editor_features_are_podcasts_radio_and_book_library() -> None:
+def test_unreleased_features_are_the_ones_deliberately_held_back() -> None:
     from quill.core.feature_catalog import FEATURE_DEFINITIONS, UNRELEASED_FEATURE_IDS
 
     # Three editor features are held back from the public build, reachable only in
     # a developer build: the podcast manager (waits on the Quill Cast app), the
     # embedded Internet Radio (moved to the standalone Quill Radio app), and the
-    # Book Library (moving to QUILL Social).
-    assert UNRELEASED_FEATURE_IDS == frozenset({"core.podcasts", "core.radio", "core.library"})
+    # Book Library (moving to QUILL Social). The fourth is the companion apps'
+    # top-level Quillins menu, hidden until the extension story is public --
+    # the host still runs, so this hides a menu, not a capability.
+    assert UNRELEASED_FEATURE_IDS == frozenset({
+        "core.podcasts",
+        "core.radio",
+        "core.library",
+        "future.quillins_menu",
+    })
     assert FEATURE_DEFINITIONS["core.podcasts"].released is False
     assert FEATURE_DEFINITIONS["core.radio"].released is False
     assert FEATURE_DEFINITIONS["core.library"].released is False
+    assert FEATURE_DEFINITIONS["future.quillins_menu"].released is False
 
 
 def test_podcasts_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:

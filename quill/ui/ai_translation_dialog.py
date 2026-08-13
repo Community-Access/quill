@@ -14,7 +14,7 @@ import threading
 from collections.abc import Callable
 
 from quill.core.ai.translation import LANGUAGE_NAMES, SUPPORTED_LANGUAGES
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
 
 _DEFAULT_LIBRETRANSLATE_URL = "http://localhost:5000"
 
@@ -228,6 +228,11 @@ class AITranslationDialog:
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
 
     def _on_done(self, translated: str, detected: str, lang_name: str) -> None:
+        # #1353: the translation thread can land after the user closed the
+        # dialog; touching its StaticText then raises "wrapped C/C++ object
+        # ... has been deleted". The result is irrelevant once it is gone.
+        if not dialog_alive(self.dialog):
+            return
         self._result_text = translated
         self._detected_source = detected
         self._result_text_ctrl.SetValue(translated)
@@ -246,6 +251,8 @@ class AITranslationDialog:
         self._wx.CallAfter(self._result_text_ctrl.SetFocus)
 
     def _on_error(self, message: str) -> None:
+        if not dialog_alive(self.dialog):  # #1353
+            return
         self._status_label.SetLabel(f"Error: {message}")
         self._working = False
         self._translate_btn.Enable(True)

@@ -32,6 +32,7 @@ _APPS: dict[str, tuple[str, tuple[str, ...]]] = {
         ("QuillConverter.exe", "Quill Converter.exe"),
     ),
     "player": ("quill.apps.player", ("QuillMediaPlayer.exe", "Quill Media Player.exe")),
+    "inkwell": ("quill.apps.inkwell", ("QuillInkwell.exe", "Quill Inkwell.exe")),
 }
 
 #: app key -> the folder name each app's portable bundle unpacks to. Portable
@@ -47,6 +48,7 @@ _PORTABLE_DIRNAMES: dict[str, str] = {
     "studio": "QuillStudio",
     "converter": "QuillConverter",
     "player": "QuillMediaPlayer",
+    "inkwell": "QuillInkwell",
 }
 
 
@@ -64,6 +66,7 @@ APP_NAMES: dict[str, str] = {
     "studio": "Audio Studio",
     "converter": "Quill Converter",
     "player": "Quill Media Player",
+    "inkwell": "Quill Inkwell",
 }
 
 
@@ -75,7 +78,10 @@ def app_name(app_key: str) -> str:
 #: Cast, Audio Studio, Quill Converter, the Media Player, and QuillBeacon are built
 #: but gated for now -- add a key here when it ships publicly. This is the single
 #: source of truth every launcher/menu should gate on (via :func:`is_app_released`).
-RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather"})
+#: Quill Inkwell ships in 1.0.0: it is the system-wide half of the editor's own
+#: abbreviation expansion, sharing one library with it, so gating it would leave
+#: that feature visibly half-present.
+RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather", "inkwell"})
 
 
 def is_dev_build() -> bool:

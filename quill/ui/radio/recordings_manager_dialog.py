@@ -55,6 +55,7 @@ class RecordingsManagerDialog:
         scheduler: object,
         controller: object,
         announce_cb: Callable[[str], None] | None = None,
+        history: object | None = None,
     ) -> None:
         import wx
 
@@ -63,8 +64,11 @@ class RecordingsManagerDialog:
         self._settings = settings
         self._scheduler = scheduler
         self._controller = controller
+        self._history = history
         self._announce = announce_cb or (lambda _m: None)
         self._entries: list[RecordingEntry] = []
+        #: #1344: whether T reads out time remaining rather than time elapsed.
+        self._speak_remaining = False
 
         self.dialog = wx.Dialog(
             parent,
@@ -84,7 +88,8 @@ class RecordingsManagerDialog:
         self._list.SetName(
             "Recordings; the row's status column reads Recording, Recorded, "
             "Scheduled, or Completed. Enter plays a finished recording, Delete "
-            "removes it"
+            "removes it. Winamp keys: X play, C pause, V stop, B next, Z "
+            "previous, arrows seek, J jump to file"
         )
         self._list.InsertColumn(0, "Name", width=280)
         self._list.InsertColumn(1, "Status", width=100)
@@ -344,20 +349,244 @@ class RecordingsManagerDialog:
         self._stop_all_btn.Show(active >= 2)
         self._stop_all_btn.Enable(active >= 2)
 
-    def _on_char_hook(self, event: object) -> None:
-        """Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the dialog, so a
-        recording being played back can be turned down like a live stream;
-        everything else passes through untouched."""
+    # -- Winamp classic-skin playback keys (#1344) --------------------------------
+
+    def _winamp_keys_enabled(self) -> bool:
+        """Whether the classic-skin letter keys are live (Preferences, default on).
+
+        Everything the map binds is otherwise unused in this dialog, so on is
+        the right default; the checkbox exists for anyone who wants the letters
+        back for list typeahead.
+        """
+        return bool(getattr(getattr(self, "_history", None), "winamp_playback_keys", True))
+
+    def _focus_is_text_entry(self) -> bool:
+        """True when a text field has focus, so a letter key must not be eaten.
+
+        The trap #1263 hit: a global letter binding that swallows what the user
+        is typing. This dialog has no text field today, but a future one (or a
+        child control that reports as an entry) must not be broken by a key map.
+        """
         wx = self._wx
-        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
-            code = event.GetKeyCode()
-            if code == wx.WXK_UP:
-                self._adjust_volume(up=True)
+        try:
+            focused = wx.Window.FindFocus()
+        except Exception:  # noqa: BLE001 - no focus is not a text entry
+            return False
+        if focused is None:
+            return False
+        for name in ("TextCtrl", "ComboBox", "SearchCtrl", "SpinCtrl"):
+            control = getattr(wx, name, None)
+            if control is not None and isinstance(focused, control):
+                return True
+        return False
+
+    def _on_char_hook(self, event: object) -> None:
+        """The Winamp classic transport keys, plus Ctrl+Up/Ctrl+Down for volume.
+
+        A played recording runs through the same controller/engine as live
+        radio, so it can be driven -- and turned down -- like a live stream (the
+        modal otherwise hides the Playback menu's shortcuts). Anything the map
+        does not claim passes through untouched.
+        """
+        from quill.ui.radio.winamp_keys import normalize_key_code, resolve_winamp_action
+
+        wx = self._wx
+        code = event.GetKeyCode()
+        ctrl = bool(event.ControlDown())
+        shift = bool(event.ShiftDown())
+        alt = bool(event.AltDown())
+        key = normalize_key_code(code, wx)
+        # Volume is not part of the opt-out: it predates #1344 and Ctrl+arrow can
+        # never collide with typing.
+        if ctrl and not shift and not alt and key in ("UP", "DOWN"):
+            self._adjust_volume(up=key == "UP")
+            return
+        if not key or not self._winamp_keys_enabled() or self._focus_is_text_entry():
+            event.Skip()
+            return
+        action = resolve_winamp_action(key, ctrl=ctrl, shift=shift, alt=alt)
+        if action is None:
+            event.Skip()
+            return
+        self._run_winamp_action(action)
+
+    def _run_winamp_action(self, action: str) -> None:
+        from quill.ui.radio import winamp_keys as wk
+
+        handlers: dict[str, Callable[[], None]] = {
+            wk.ACTION_PLAY: self._winamp_play,
+            wk.ACTION_PAUSE: self._winamp_pause,
+            wk.ACTION_STOP: lambda: self._winamp_stop("Stopped"),
+            wk.ACTION_STOP_FADE: lambda: self._winamp_stop("Stopped"),
+            wk.ACTION_NEXT: lambda: self._winamp_step(1),
+            wk.ACTION_PREVIOUS: lambda: self._winamp_step(-1),
+            wk.ACTION_BACK_5: lambda: self._winamp_seek(-5_000),
+            wk.ACTION_FORWARD_5: lambda: self._winamp_seek(5_000),
+            wk.ACTION_BACK_30: lambda: self._winamp_seek(-30_000),
+            wk.ACTION_FORWARD_30: lambda: self._winamp_seek(30_000),
+            wk.ACTION_TOGGLE_TIME: self._winamp_toggle_time,
+            wk.ACTION_JUMP_TO_TIME: self._winamp_jump_to_time,
+            wk.ACTION_JUMP_TO_FILE: self._winamp_jump_to_file,
+            wk.ACTION_OPEN: self._on_play,
+        }
+        handler = handlers.get(action)
+        if handler is not None:
+            handler()
+
+    def _playable_rows(self) -> list[int]:
+        """Row indexes of finished recordings -- what B and Z move between."""
+        return [
+            row
+            for row, entry in enumerate(self._entries)
+            if entry.status == STATUS_RECORDED and entry.path is not None
+        ]
+
+    def _winamp_play(self) -> None:
+        """X: play the selected recording, or resume a paused one."""
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        state = getattr(self._controller, "state", None)
+        if state is not None and state.state is RadioPlayerState.PAUSED:
+            self._controller.toggle_play_pause()
+            self._announce("Playing")
+            return
+        entry = self._selected()
+        if entry is None or entry.path is None or entry.status != STATUS_RECORDED:
+            self._announce("Select a finished recording to play.")
+            return
+        if self._is_entry_playing(entry):
+            self._announce(f"Already playing {entry.name}")
+            return
+        self._on_play()
+
+    def _winamp_pause(self) -> None:
+        """C: pause or unpause, and say which it was."""
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        state = getattr(self._controller, "state", None)
+        if state is None or state.state not in (RadioPlayerState.PLAYING, RadioPlayerState.PAUSED):
+            self._announce("Nothing is playing.")
+            return
+        was_playing = state.state is RadioPlayerState.PLAYING
+        self._controller.toggle_play_pause()
+        self._announce("Paused" if was_playing else "Playing")
+
+    def _winamp_stop(self, message: str) -> None:
+        """V (and Shift+V): stop playback. The engine has no fade, so Shift+V
+        stops cleanly rather than pretending to fade."""
+        self._controller.stop()
+        self._announce(message)
+        self._on_selection_changed()
+
+    def _winamp_step(self, direction: int) -> None:
+        """B / Z: move to the next or previous finished recording and play it."""
+        rows = self._playable_rows()
+        if not rows:
+            self._announce("There are no finished recordings to play.")
+            return
+        current = self._list.GetFirstSelected()
+        if current in rows:
+            index = rows.index(current) + direction
+        else:
+            index = 0 if direction > 0 else len(rows) - 1
+        if index < 0 or index >= len(rows):
+            self._announce(
+                "This is the last recording." if direction > 0 else "This is the first recording."
+            )
+            return
+        row = rows[index]
+        self._list.Select(row)
+        self._list.Focus(row)
+        entry = self._entries[row]
+        station = RadioStation(name=entry.name, stream_url=str(entry.path))
+        self._controller.play_station(station)
+        self._announce(f"Playing recording {entry.name}")
+        self._on_selection_changed()
+
+    def _winamp_seek(self, delta_ms: int) -> None:
+        """Arrows: move along the recording's timeline, and say where we landed."""
+        from quill.ui.radio.bounded_playback_ui import spoken_duration
+
+        if not self._controller.is_seekable():
+            self._announce("There is nothing to seek through right now.")
+            return
+        self._controller.skip_by(delta_ms)
+        self._announce(spoken_duration(self._controller.position_ms()))
+
+    def _spoken_position(self) -> str:
+        """Elapsed or remaining, whichever T last selected."""
+        from quill.ui.radio.bounded_playback_ui import spoken_duration
+
+        position = self._controller.position_ms()
+        total = self._controller.duration_ms()
+        if self._speak_remaining and total:
+            return f"{spoken_duration(max(0, total - position))} remaining"
+        return f"{spoken_duration(position)} elapsed"
+
+    def _winamp_toggle_time(self) -> None:
+        """T: elapsed <-> remaining.
+
+        Winamp puts this on Ctrl+T, which Quill Radio already uses for What's
+        Playing -- the more valuable meaning, so it keeps the key and the time
+        toggle moves to plain T (documented in CONTROL_REFERENCE.md).
+        """
+        if not self._controller.is_seekable():
+            self._announce("There is no timeline to read right now.")
+            return
+        self._speak_remaining = not self._speak_remaining
+        self._announce(self._spoken_position())
+
+    def _winamp_jump_to_time(self) -> None:
+        """Ctrl+J: type a position (90, 1:30, or 1:02:03) and go there."""
+        from quill.ui.radio.winamp_keys import parse_time_to_ms
+
+        wx = self._wx
+        if not self._controller.is_seekable():
+            self._announce("There is nothing to seek through right now.")
+            return
+        with wx.TextEntryDialog(
+            self.dialog,
+            "Jump to which position? Type seconds, or minutes and seconds "
+            "separated by a colon (for example 1:30).",
+            "Jump to Time",
+        ) as dialog:
+            apply_modal_ids(dialog)
+            if show_modal_dialog(dialog, "Jump to Time", announce=self._announce) != wx.ID_OK:
                 return
-            if code == wx.WXK_DOWN:
-                self._adjust_volume(up=False)
+            typed = dialog.GetValue()
+        target = parse_time_to_ms(typed)
+        if target is None:
+            self._announce("That is not a time. Try 90, or 1:30.")
+            return
+        self._controller.seek_to(target)
+        self._announce(self._spoken_position())
+
+    def _winamp_jump_to_file(self) -> None:
+        """J: type part of a name and land on the first recording that matches."""
+        wx = self._wx
+        if not self._entries:
+            self._announce("There are no recordings to jump to.")
+            return
+        with wx.TextEntryDialog(
+            self.dialog,
+            "Jump to which recording? Type any part of its name.",
+            "Jump to File",
+        ) as dialog:
+            apply_modal_ids(dialog)
+            if show_modal_dialog(dialog, "Jump to File", announce=self._announce) != wx.ID_OK:
                 return
-        event.Skip()
+            needle = dialog.GetValue().strip().lower()
+        if not needle:
+            return
+        for row, entry in enumerate(self._entries):
+            if needle in entry.name.lower():
+                self._list.Select(row)
+                self._list.Focus(row)
+                self._list.EnsureVisible(row)
+                self._announce(f"{entry.name}, {entry.status}")
+                self._on_selection_changed()
+                return
+        self._announce(f"No recording matches {needle}.")
 
     def _adjust_volume(self, *, up: bool) -> None:
         """Step the shared radio volume (recording playback runs through the same

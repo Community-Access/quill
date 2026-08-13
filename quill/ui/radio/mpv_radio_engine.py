@@ -261,6 +261,12 @@ class MpvRadioEngine:
         self._buffering = False
         self._volume = 100
         self._current_url = ""
+        #: Whether what is loaded is a *finished* recording rather than a live
+        #: broadcast -- a YouTube video that has ended, for instance. It is set
+        #: by the controller after the source resolves, because that is the
+        #: first moment anyone knows: a YouTube link looks identical either way
+        #: until yt-dlp answers. See :meth:`set_bounded`.
+        self._bounded = False
         self.set_audio_device(audio_device)
         self._parent = parent
         self._timer = wx.Timer(parent)
@@ -350,12 +356,20 @@ class MpvRadioEngine:
         self._finish_fired = False
         self._buffering = False
         self._current_url = path
+        # Every load starts live-shaped. The caller re-declares a bounded
+        # source for this load; without the reset, tuning to an ordinary
+        # station after a YouTube video would leave the station claiming a
+        # timeline it does not have.
+        self._bounded = False
         try:
             # Live radio starts playing as soon as it can -- no pause-then-
             # play handshake (that is the audiobook engine's shape). Volume
             # is applied before the URL so the first audible sample is
             # already at the user's level.
             self._mpv.set_str("volume", str(self._volume))
+            # mpv's speed is a client-wide setting, so a video left at 2x
+            # would otherwise carry that speed into the next live station.
+            self._mpv.set_str("speed", "1.00")
             self._mpv.set_str("pause", "no")
             self._mpv.command("loadfile", path, "replace")
         except Exception:  # noqa: BLE001 - a bad URL must not crash the app
@@ -409,8 +423,42 @@ class MpvRadioEngine:
     def stop(self) -> None:
         self.close()
 
+    # -- bounded sources (a finished video, not a broadcast) --------------------
+
+    def set_bounded(self, bounded: bool) -> None:
+        """Declare whether the loaded source has a fixed length.
+
+        This is the whole of the "YouTube can seek now" change, and it is a
+        setter rather than a second engine class for one reason: *when* the
+        answer is known. The engine has to be chosen before playback starts,
+        but whether a YouTube link is a finished video or a live broadcast is
+        only known after yt-dlp resolves it -- so the engine learns what it is
+        holding a moment after it is built, instead of the play path being
+        restructured to decide later.
+
+        Live remains the default and remains untouched: every call below
+        returns to its old no-op behaviour whenever this is False, which is
+        what an ordinary radio station always is.
+        """
+        self._bounded = bool(bounded)
+
+    def is_bounded(self) -> bool:
+        """Whether the loaded source has a timeline to seek along."""
+        return self._bounded and self._loaded
+
     def seek(self, ms: int, *, resume: bool | None = None) -> None:
-        """A live stream has no timeline; seeking is meaningless."""
+        """Jump to an absolute position. A live stream has no timeline, so
+        for a broadcast this stays the no-op it has always been."""
+        if not self._loaded or not self._bounded:
+            return
+        was_playing = self.is_playing()
+        try:
+            self._mpv.command("seek", f"{max(0, int(ms)) / 1000.0:.3f}", "absolute+exact")
+        except Exception:  # noqa: BLE001 - a failed seek must not crash playback
+            _log.exception("mpv absolute seek failed")
+            return
+        should_play = was_playing if resume is None else resume
+        self._mpv.set_str("pause", "no" if should_play else "yes")
 
     def position_ms(self) -> int:
         if not self._loaded:
@@ -419,7 +467,15 @@ class MpvRadioEngine:
         return int(value * 1000) if value is not None and value > 0 else 0
 
     def length_ms(self) -> int:
-        return 0
+        """The source's length, or 0 for a live stream (which has none).
+
+        Read from mpv rather than from the resolver's metadata so the number
+        describes what is actually loaded and playing.
+        """
+        if not self._loaded or not self._bounded:
+            return 0
+        value = self._mpv.get_double("duration")
+        return int(value * 1000) if value is not None and value > 0 else 0
 
     def is_playing(self) -> bool:
         if not self._loaded:
@@ -433,7 +489,11 @@ class MpvRadioEngine:
         self._mpv.set_str("volume", str(self._volume))
 
     def set_rate(self, rate: float) -> None:
-        """Live radio plays at broadcast speed."""
+        """Playback speed, for a finished video. Live radio plays at
+        broadcast speed, so this stays a no-op for a broadcast."""
+        if not self._bounded:
+            return
+        self._mpv.set_str("speed", f"{max(0.25, min(4.0, float(rate))):.2f}")
 
     # -- polling -----------------------------------------------------------------
 

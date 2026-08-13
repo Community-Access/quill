@@ -1888,6 +1888,7 @@ This is a centrepiece of v0.2. See [section 7](#7-command-palette-deep-dive) for
   - `=` open a setting.
 - Fuzzy matching with subsequence scoring, recency boost, and frequency boost (most-recently-used commands float to the top).
 - **Search shape (shipped 1.0.0):** multi-word queries are order-independent AND matches over title + id + shortcut + aliases (`url open` and `open url` both find *Open From URL...*); a curated intent-alias table (`core/palette.py` `COMMAND_ALIASES`) maps the words users actually think of (`settings`, `quit`, `theme`) to the commands they mean; and the shortcut text itself is searchable. Result navigation **speaks the command's shortcut with its title** — the palette teaches the keystroke while it dispatches, for screen-reader users exactly as the visual `Title [binding]` label does for sighted users.
+- **Toggle state rides in the title (shipped 1.0.1, #1383).** The palette lists `Command.title` verbatim and has no checkmark column, so a toggle registered once reads identically whichever way it is currently set — the one fact the user opened the palette to learn. Every boolean command therefore carries `(currently On)` / `(currently Off)`, stamped by `_refresh_palette_toggle_titles` immediately before the palette is built (`quill/ui/main_frame_palette_labels.py`), so no individual handler has to remember to retitle itself. Reported for Internet Radio's *Announce Track Titles*; generalised to soft wrap, dark mode, find wrap, the tab control, persistent undo, spell check as you type, word prediction, overwrite mode, extend-selection mode, tab insert mode, and abbreviation expansion.
 - Each row shows: command title, current keybinding, source (core or plugin), and a short hint.
 - Right-arrow on a command edits its keybinding inline (see [section 8](#8-keymap-and-keystroke-reassignment)).
 - Fully keyboard driven. Standard `wx.ListBox` underneath, with a `wx.SearchCtrl` on top. All accessible via stock screen-reader behaviour.
@@ -1898,6 +1899,10 @@ This is a centrepiece of v0.2. See [section 7](#7-command-palette-deep-dive) for
 - `File > Restore Document Backup` lists backups for the current document, newest first.
 - Restore prompts for confirmation. Before overwriting the editor, the current buffer is backed up too.
 - Restored text is marked modified; user saves with `Ctrl+S`.
+- **Write contract (shipped 1.0.1, #1390).** A backup is written atomically (temp file + `os.replace`) and always as UTF-8, matching the autosave-snapshot contract in `core/autosave.py`: an interrupted backup must never be what a user restores, and a document opened in a narrower encoding (a BRF read as ASCII, say) must not make the backup raise the moment the buffer gains an out-of-range character. `core.backups.read_backup_text` decodes UTF-8 first and falls back to the document's encoding, so backups written by earlier builds still restore.
+- **A backup can never abort a save.** `backup_document` is called inside its own guard (`_backup_before_save`); an `OSError` degrades to a spoken status line and the save proceeds. This is a correctness requirement, not a nicety: before #1390 the backup call sat *outside* the save path's `try/except OSError`, so a full disk raised out of `save_file` before the real file was ever touched, the close path's #210 safety net swallowed it, and QUILL exited with the document unsaved.
+- **A failed save is never consent to close.** `_prompt_to_save_active_document` catches a raising `save_file` and returns False; `_on_close` vetoes once via `_veto_close_after_failed_save` when a document is still modified, with a message naming the remedy. The veto is one-shot, so #210's "the window must always close" guarantee still holds even if this path itself has a bug.
+- **Failure wording (#1390).** `_report_save_failure` gives `ENOSPC` and the read-only family (`EACCES`/`EPERM`/`EROFS`) their own sentences naming what to do; everything else keeps the errno text. Raw errno strings are not an acceptable user-facing message for a save failure.
 - Retention: default keep last 50 per document, prune older than 90 days, never delete the most recent 5.
 - Crash recovery: autosave snapshot every 30 seconds while a document is dirty; on launch, Quill offers to recover any orphan snapshots.
 
@@ -2990,6 +2995,8 @@ A small family of related commands that make working with links comfortable for 
 - **Autosave** is on by default at 30-second intervals. The status bar gains an **Autosave** cell showing `Autosave: 30 s` or `Autosave: off`. Enter cycles 15 s, 30 s, 60 s, 5 min, off. Settings dialog exposes the same plus a custom interval.
 - **Persistent undo** keeps each document's undo stack alongside its autosave snapshots. Reopening a recently closed document restores up to 100 undo steps. Off by default for plain-text files larger than 5 MB. Stored in `%APPDATA%\Quill\undo\<hash>.undo`, atomically written, auto-pruned at 30 days.
 - **Crash-safe autosave**: snapshots write to `…snap.tmp` and rename to `…snap` on flush so a power loss mid-write cannot corrupt the recovery store.
+- **Autosave never breaks editing, and never fails silently (shipped 1.0.1, #1386).** An `OSError` from the snapshot write is swallowed so typing continues — but silence would mean the user's crash-recovery net is gone with nothing said. After two consecutive failures the frame announces once per failure streak: *"Autosave paused — the disk is full. Your work is not being snapshotted."* The counter resets on the first success.
+- **Autosave writes off the UI thread (shipped 1.0.1, #1346).** Everything the writers need — a detached `Document` snapshot, the rich-mode RTF payload, the caret position — is captured on the UI thread; the three writes (text snapshot, `.rtfsnap`, cursor position) then run on `QuillTaskManager`, with the failure notice marshalled back through `call_ui_safely`. A synchronous multi-hundred-millisecond write was a recurring mid-sentence hitch on a large document. A synchronous fallback covers the case where no task manager exists (early startup, headless tests), so a snapshot is never simply skipped.
 
 ### 5.39a Restore points — per-save document history (shipped 0.9.0 Beta 1)
 
@@ -3600,6 +3607,56 @@ Abbreviation Expansion replaces short trigger words with longer text automatical
 | Expand abbreviation at cursor (manual) | `Ctrl+Shift+Grave, A` |
 | Manage Abbreviations... | `Ctrl+Shift+Grave, Shift+A` |
 | Toggle expansion on/off | `Ctrl+Shift+Grave, E` |
+| Quick Insert... | unbound by default (`format.quick_insert`) |
+| New Abbreviation from Clipboard... | unbound by default |
+
+**Per-abbreviation settings (schema v2).** Every entry decides its own behaviour
+rather than inheriting one global policy. `abbreviations.json` is stamped
+version 2; each new field has a default, so a v1 library loads unchanged and a
+v2 library opened by an older build simply ignores the extra keys and still
+expands.
+
+| Field | Values | Default | Effect |
+| --- | --- | --- | --- |
+| `category` | free text | `""` (Uncategorised) | Groups the manager list and Quick Insert. |
+| `triggers` | `both`, `space`, `punctuation`, `manual` | `both` | Which trigger characters fire this entry. `manual` never auto-expands and is reachable only from Quick Insert -- the safe home for long or destructive expansions. |
+| `speak_mode` | `silent`, `name`, `expansion` | `silent` | What is announced on expansion. |
+| `sound` | `inherit`, `on`, `off` | `inherit` | Per-entry override of the global expansion sound. |
+| `trailing_space` | bool | `false` | Adds one space *after* the trigger punctuation ("Ltd., " not "Ltd ,"). Never applies to a space trigger, which already leaves one. |
+| `usage_count`, `last_used` | int, ISO timestamp | `0`, `""` | Order Quick Insert; written in batches of ten, never per expansion, so no disk write lands in the middle of typing. |
+
+Unknown values in a hand-edited file degrade to the safe default rather than
+failing the load. `Abbreviation.accepts_trigger(char)` is the single place the
+trigger rule is decided, used by both the editor matcher and the system-wide one.
+
+**Fill-in fields.** `${field:Label}` and `${field:Label=default}` make an
+expansion ask before it finishes; a label used twice is asked once and filled
+everywhere (matched case- and whitespace-insensitively). The rules are one
+wx-free module (`core/expansion/fields.py`) and the form one shared dialog
+(`ui/fill_in_dialog.py`, entry point `prompt_for_fields`), so a template behaves
+identically in the editor, in Quick Insert, and in Quill Inkwell. The expansion
+is re-resolved from the filled template rather than patched afterwards, so
+`${cursor}` still lands correctly once the answers have changed the text's
+length; a cancelled form leaves the typed text untouched.
+
+**Quick Insert.** `quill/ui/quick_insert_dialog.py` -- a type-to-filter picker
+over every enabled abbreviation, ordered most-used first, with a live preview of
+the full expansion. Inserts at the caret, resolving variables and honouring
+`${cursor}`. Shared verbatim with Quill Inkwell (§5.86), which is the point: one
+library, one picker, two hosts.
+
+**System-wide expansion.** Abbreviations also expand outside QUILL, through
+Quill Inkwell -- see §5.89f. Both read and write the same `abbreviations.json`;
+neither imports from the other.
+
+**Only one expander per window.** QUILL's editor expansion always wins inside
+QUILL: it edits the document directly, so it is instant, keeps the editor's own
+undo, fires `abbreviation.expanded` for Quillins, can run handler-based
+contributed abbreviations, and works in Safe Mode where no keyboard hook exists.
+`AbbreviationsMixin._claim_own_expansion` marks the frame with the
+`QuillHandlesOwnExpansion` window property at startup and a running Inkwell
+refuses that window outright. Without the marker a single keystroke would fire
+both paths and mangle the text.
 
 **Settings.** Four settings in `Editing` preferences:
 
@@ -4690,6 +4747,49 @@ none vendored into QUILL-AS):
   the job handle after `process.wait()` returns (child already dead) so a
   long session leaks no handles.
 
+**Winamp classic-skin playback keys in the Recordings player (#1344,
+shipped).** The Recordings Manager plays through the same controller as live
+radio but bound only Ctrl+Up/Ctrl+Down; there was no play, pause, stop, seek, or
+way to move between recordings. A user with a Winamp background asked for the
+classic-skin main-window keys, which is muscle memory a great many blind
+listeners still carry.
+
+- **The map is data, and it is wx-free** (`quill/ui/radio/winamp_keys.py`):
+  `resolve_winamp_action(key, ctrl=, shift=, alt=)` takes a normalized token
+  (`"X"`, `"LEFT"`, …) and returns an action name, so the meaning of every key is
+  unit-testable without a display and the standalone Media Player
+  (`main_frame_media_player.py`) and Cast can adopt exactly these keys rather
+  than growing a second, subtly different set. `normalize_key_code` is the only
+  wx-aware helper; `parse_time_to_ms` handles the Jump To Time entry (`90`,
+  `1:30`, `1:02:03`).
+- **Bound:** `X` play, `C` pause/unpause, `V` stop, `Shift+V` stop (Winamp's
+  fade; the engine has none, so it stops cleanly rather than pretending),
+  `B`/`Z` next/previous finished recording (selects the row and plays it),
+  `Left`/`Right` ∓5 s, `Shift+Left`/`Shift+Right` ∓30 s, `T` elapsed/remaining,
+  `J` jump-to-file (name substring), `Ctrl+J` jump-to-time, `L` open,
+  `Ctrl+Up`/`Ctrl+Down` volume.
+- **Two documented divergences.** `Ctrl+T` stays **What's Playing** — Quill
+  Radio's meaning is the more valuable one and is documented in the 2.2 notes —
+  so the elapsed/remaining toggle moves to plain `T`. And `Up`/`Down` stay list
+  navigation, which is what Winamp itself does in the Playlist Editor; the
+  Recordings list *is* a playlist editor by that analogy, so this is fidelity,
+  not compromise.
+- **Constraints.** Every action announces through `self._announce` (which reaches
+  braille as of #1283) — a transport key whose result cannot be heard is not a
+  working transport key. A letter is never swallowed while a text entry has focus
+  (the trap #1263 hit). Seeking requires `controller.is_seekable()`; a live
+  stream says why it cannot move rather than doing nothing. The letter keys are
+  governed by `RadioHistory.winamp_playback_keys` (default **on** — every key
+  they claim was otherwise unused in this dialog) with a Preferences checkbox;
+  Ctrl+arrow volume is outside the opt-out, since it predates #1344 and cannot
+  collide with typing.
+- **Deliberately not bound:** shuffle (`R`), repeat (`S`), and stop-after-current
+  (`Ctrl+V`). All three describe a play queue the recordings list does not have;
+  binding them to something that only looked like it worked would be worse than
+  leaving them out. They are follow-up work, gated on giving the list a queue.
+- `RadioPlayerController.position_ms()` was added as the public form of what the
+  transport surfaces were reaching into `self._engine` for.
+
 **The mpv playback engine (`quill/ui/radio/mpv_radio_engine.py` +
 `player_controller.py`, #1076).** Radio has two backends.
 `MpvRadioEngine` — a radio-specific, live-stream-aware libmpv engine — is
@@ -5240,6 +5340,89 @@ rest of the family, including the apps gated out of 1.0.0, lives in
 `docs/planning/apps.md`.
 
 ---
+
+### 5.89f Standalone companion app -- Quill Inkwell (system-wide abbreviation expansion)
+
+**Goal.** The abbreviations QUILL expands in its own editor should expand
+everywhere else too. Quill Inkwell is a small, free, tray-resident app that does
+exactly that, reusing QUILL's code rather than forking it.
+
+**The one-library rule.** Inkwell and QUILL read and write the *same*
+`abbreviations.json` in the same data directory. There is no import, no export,
+and no synchronisation, because there is nothing to synchronise. Inkwell re-reads
+the file when its timestamp changes, so an abbreviation added in QUILL is usable
+system-wide within moments and vice versa. An installed Inkwell therefore keeps
+its data in `%APPDATA%\Quill` deliberately; only a portable build (a `data`
+folder beside the executable) moves the library onto the stick.
+
+**Architecture.** Engine in `quill/core/expansion/` (wx-free, strict-typed):
+`ring_buffer.py` (the bounded memory of recent keys), `matcher.py` (the same
+library, matched against that buffer), `targets.py` (where expansion must never
+fire), `settings.py` (the app's own preferences). Platform in
+`quill/platform/windows/`: `expansion_hook.py` (a `WH_KEYBOARD_LL` hook on its
+own thread with its own message pump), `text_injector.py` (SendInput, plus a
+clipboard-paste fallback that always restores), `foreground.py`,
+`inkwell_startup.py`. App shell in `quill/apps/inkwell.py` on `AppShellFrame`,
+with the expansion service extracted to `quill/ui/inkwell_expansion.py`. The
+manager and Quick Insert dialogs are shared with QUILL unchanged.
+
+**Threading.** The hook procedure decodes one key, appends it to the buffer, and
+queues any match -- nothing more. Windows silently removes a low-level hook whose
+procedure is slow (`LowLevelHooksTimeout`), which would end expansion for the
+session with no error anywhere, so the injection happens on a worker thread and
+every UI touch goes through `wx.CallAfter`.
+
+**Ignoring its own output.** Synthesised keystrokes return through the same
+hook, so every key Inkwell sends carries a signature in `dwExtraInfo` and those
+are skipped. Deliberately *not* implemented as "ignore all injected keys":
+dictation software and on-screen keyboards inject too, and their users must get
+expansion like everyone else.
+
+**Keyboard layouts.** Characters are decoded with `ToUnicodeEx` against the
+foreground window's own layout, with shift and caps read from live key state. A
+dead key yields nothing and is replayed into the layout, so composing an accent
+still works. AltGr counts as typing, not as a command: Windows reports it as
+Ctrl+Alt, so the naive rule discards real characters on every layout that uses
+it.
+
+**Reaching every editable surface.** Three rules, all biased towards expanding
+rather than refusing (the one rule that fails closed is the credential
+deny-list): the focused element must accept text -- decided once when a match
+fires, never per keystroke, from a real caret, a known text window class, or UI
+Automation, with "no opinion" meaning yes; a window belonging to an elevated
+process is detected and reported once, because a normal-privilege process never
+sees its keys; and delivery resolves per application, so the clipboard-paste
+route can be enabled for one stubborn program without every other program having
+its clipboard borrowed.
+
+**Undo, on-demand expansion, and survival.** Backspace immediately after an
+expansion restores the abbreviation (expiring after a few seconds, any other
+keystroke, or a change of window). A system-wide chord expands the word before
+the cursor without a trigger character, which is how a `manual` entry is reached
+and how mid-word expansion works. A watchdog re-installs the hook every few
+minutes, because Windows silently removes a hook that exceeds
+`LowLevelHooksTimeout` and offers no way to ask whether one is still live.
+
+**Security and privacy contract** (enforced in code, covered by tests):
+
+1. The keystroke buffer holds at most 64 characters, in memory only.
+2. Nothing typed is written to disk, logged, or transmitted; there is no network
+   call anywhere in the expansion path.
+3. The buffer is cleared after every expansion, on Escape, on any navigation or
+   editing key, on any Ctrl or Alt combination, on a change of foreground
+   window, and on pause.
+4. No decision is made from the *content* of typed characters. The suppression
+   rule reads the foreground window's process, class, and title only.
+5. Password managers, the Windows credential and lock surfaces, and the UAC
+   prompt are permanently excluded; users may add their own applications.
+6. `QUILL_SAFE_MODE=1` prevents the hook from being installed at all.
+7. The clipboard is read only to resolve `${clipboard}`, and the paste fallback
+   always restores the previous contents. Inkwell keeps no clipboard history.
+
+**Distribution.** Windows installer and portable zip from
+`standalone/inkwell/scripts/build_release.ps1`, sharing the QuillVille Runtime;
+updates through the shared release repository. MIT licensed, free permanently.
+Product docs live with the product in `standalone/inkwell/docs/`.
 
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
@@ -7200,6 +7383,22 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 
 All performance targets in §11 are enforced by `tests/perf/`. Each test asserts against a budget; regressions over 15% fail the build. Microbenchmarks live next to the code they measure. Real-world startup time is measured by a stopwatch fixture that uses Windows' high-resolution timer.
 
+### 10.14a Background callbacks and dialog liveness (#1067, #1353)
+
+Any callback a worker thread posts back with `wx.CallAfter` **must** check that
+its window still exists before touching a widget. A dialog closed while its work
+is in flight otherwise raises `RuntimeError: wrapped C/C++ object of type
+StaticText has been deleted` — the shape of both #1067 and #1353.
+
+- The check is `dialog_alive(self.dialog)` from `quill/ui/dialog_contract.py` (or
+  a surface's own `_alive()` helper), and it must be the callback's **first**
+  statement: a guard after the first widget access is not a guard.
+- The result is discarded, not deferred. Once the dialog is gone the answer is
+  irrelevant by definition.
+- `tests/unit/ui/test_background_callback_guards.py` holds the list of guarded
+  callbacks and asserts both properties by AST, so a new background callback in
+  an existing dialog cannot quietly ship without one.
+
 ### 10.15 Coding standards and review
 
 - **Style**: ruff format (PEP 8 with relaxed line length 100).
@@ -7243,6 +7442,9 @@ The engineering choices above add up to the user-visible magic the product promi
 - Command palette open + first results visible: under 50 ms.
 - Memory at idle with one empty document: under 150 MB.
 - Autosave write: under 50 ms, non-blocking.
+- **Per-keystroke work budget (#1346).** Exactly **one** `GetValue()` per `EVT_TEXT`, whatever the settings. On a multiline `wx.TextCtrl` that call marshals the whole buffer across the wx/native boundary, so each additional caller costs a complete copy of the document per character. Only three operations may run synchronously on the change path — `document.set_text`, the dirty-title refresh, and the quiet status line; everything else coalesces behind a single restarting `wx.CallLater` (`_DEFERRED_EDIT_DELAY_MS`, 120 ms). Enforced by `tests/unit/ui/test_keystroke_work_budget.py`, which fails the build both on a second buffer read and on any of the deferred consumers reappearing in `_sync_editor_change`.
+
+  This is an **accessibility** budget, not merely a performance one. The text-change notification NVDA and JAWS wait on is delivered by the same thread, so work between keystrokes is heard as a delay before the spoken character, and a long enough queue coalesces keystrokes — the reported symptom was "long pauses between text entry and reporting from either NVDA and JAWS. Sometimes certain keys are not intercepted, such as the space, so that words run together." Before the fix a default configuration performed three to four full buffer marshals plus a full-text comparison and a menu-state refresh per character: roughly a megabyte of copying per keystroke on a 200 KB document.
 
 ---
 

@@ -123,6 +123,35 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Re-resolved on every play because YouTube's stream addresses expire; the "
         "resolved URL is never persisted. Refused when QUILL_SAFE_MODE=1."
     ),
+    "core/radio/youtube.py::_default_search_resolver": (
+        "Quill Radio's YouTube search source in Find Stations: runs a "
+        "'ytsearchN:<query>' through yt-dlp so YouTube videos appear alongside "
+        "the radio directories. Triggered ONLY by the listener typing a search "
+        "and only while the YouTube source is switched on -- Search Sources... "
+        "gates the fan-out itself, so a listener who turns YouTube off stops "
+        "this request happening at all rather than having its results discarded. "
+        "Refused in Safe Mode. Flat (extract_flat='in_playlist'), so the whole "
+        "result set is one request and no video's audio is resolved until it is "
+        "actually played. download=False: nothing is written to disk, and only "
+        "the query text is sent -- no account, credential, or identifier. Uses "
+        "yt-dlp's keyless extraction rather than the YouTube Data API, which "
+        "would require every listener to create a Google Cloud project and paste "
+        "an API key in front of a search box."
+    ),
+    "core/radio/youtube.py::_default_playlist_resolver": (
+        "Quill Radio's YouTube playlists: lists the videos in a playlist link the "
+        "listener pasted, so the playlist can be browsed. Deliberately a FLAT "
+        "listing (extract_flat='in_playlist'): it returns each entry's id and "
+        "title without visiting any video's page, so opening a fifty-video "
+        "playlist is one request rather than fifty -- far less traffic than the "
+        "listener implied by asking for a list -- and no video's audio is resolved "
+        "until it is actually played (that goes through _default_resolver above, "
+        "with its own re-resolve-on-every-play rule). download=False, so nothing "
+        "is written to disk. Reached only from an explicit paste of a playlist "
+        "link, after the same one-time consent + rights notice YouTube stations "
+        "already require, and only once yt-dlp has been installed on demand "
+        "(never bundled). Refused when QUILL_SAFE_MODE=1."
+    ),
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "

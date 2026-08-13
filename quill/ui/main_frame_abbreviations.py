@@ -18,6 +18,24 @@ class AbbreviationsMixin:
         self._abbreviation_expansion_guard = False
         # (post_expansion_text, caret_after, token_start, original_abbr) or None
         self._pending_undo: tuple[str, int, int, str] | None = None
+        self._claim_own_expansion()
+
+    def _claim_own_expansion(self) -> None:
+        """Tell a running system-wide expander to keep out of this window.
+
+        QUILL expands from the document itself: instantly, with real undo, with
+        Quillin events, and without synthesising a single keystroke. If Quill
+        Inkwell also expanded here, one keystroke would fire both paths and
+        mangle the text. The marker is a window property, so it identifies this
+        actual window rather than an executable name -- a development run and a
+        renamed build are covered alike.
+        """
+        try:
+            from quill.platform.windows.text_target import claim_own_expansion
+
+            claim_own_expansion(int(self.frame.GetHandle()))
+        except Exception:  # noqa: BLE001 - not Windows, or no native handle yet
+            pass
 
     def _try_expand_contributed(self, text: str, caret: int, clipboard_text: str = ""):
         """Try to expand against the Quillin-contributed abbreviation library.
@@ -35,17 +53,22 @@ class AbbreviationsMixin:
 
     # -- automatic expansion hook (called from _on_text_changed) --
 
-    def _expand_abbreviation_if_match(self) -> bool:
+    def _expand_abbreviation_if_match(self, text: str | None = None) -> bool:
         """Try to expand an abbreviation at the current cursor position.
 
         Returns True if an expansion was applied (caller skips _sync_editor_change).
         Also intercepts a backspace immediately after an expansion.
+
+        *text* is the caller's already-read buffer (#1346): the typing path reads
+        the control once per keystroke and hands the same string to everything
+        that needs it.
         """
         if self._pending_undo is not None and self._try_undo_expansion():
             return True
         if self.editor.GetSelection()[0] != self.editor.GetSelection()[1]:
             return False
-        text = self.editor.GetValue()
+        if text is None:
+            text = self.editor.GetValue()
         caret = self.editor.GetInsertionPoint()
         clipboard_text = self._get_clipboard_text_for_abbreviation()
         from quill.core.abbreviations import try_expand
@@ -55,12 +78,19 @@ class AbbreviationsMixin:
             match = self._try_expand_contributed(text, caret, clipboard_text)
         if match is None:
             return False
+        if not self._resolve_fields_into(match, clipboard_text):
+            # The form was cancelled: leave what they typed exactly as it is.
+            return False
         before = text[: match.token_start]
         after = text[match.token_end :]  # includes the trigger char
+        if match.trailing_space:
+            # The entry asked for a trailing space and punctuation is what fired,
+            # so the space belongs *after* that punctuation ("Ltd., " not "Ltd ,").
+            after = after[:1] + " " + after[1:]
         new_text = before + match.resolved_text + after
         new_caret = match.token_start + match.cursor_offset
         if not match.has_cursor:
-            new_caret += 1  # step past the trigger char
+            new_caret += 2 if match.trailing_space else 1  # step past the trigger char
         new_caret = max(0, min(new_caret, len(new_text)))
         self._abbreviation_expansion_guard = True
         try:
@@ -72,12 +102,52 @@ class AbbreviationsMixin:
         self.document.set_text(new_text)
         original_abbr = text[match.token_start : match.token_end]
         self._pending_undo = (new_text, new_caret, match.token_start, original_abbr)
-        self._play_abbreviation_sound()
+        # Per-entry sound and speech (v2 settings); an entry that says nothing
+        # about them inherits the global behaviour, which is what it always was.
+        entry = match.abbreviation
+        if entry is None or entry.sound != "off":
+            self._play_abbreviation_sound()
         preview = match.resolved_text[:40] + ("..." if len(match.resolved_text) > 40 else "")
-        self._announce(f"Expanded: {preview}")
+        if entry is not None and entry.speak_mode == "name":
+            self._announce(entry.abbreviation)
+        elif entry is not None and entry.speak_mode == "expansion":
+            self._announce(match.resolved_text)
+        else:
+            self._announce(f"Expanded: {preview}")
+        if entry is not None:
+            self._record_abbreviation_use(entry.id)
         fire = getattr(self, "_fire_quillin_event", None)
         if callable(fire):
             fire("abbreviation.expanded", {"trigger": original_abbr})
+        return True
+
+    def _resolve_fields_into(self, match: object, clipboard_text: str) -> bool:
+        """Ask for any fill-in fields and rewrite *match* with the answers.
+
+        Returns False when the user cancels. The expansion is re-resolved from
+        the filled template rather than patched afterwards, so a ``${cursor}``
+        marker still lands where the template put it once the answers have
+        changed the text's length.
+        """
+        entry = getattr(match, "abbreviation", None)
+        if entry is None:
+            return True
+        from quill.core.expansion.fields import has_fields
+
+        if not has_fields(entry.expansion):
+            return True
+        from quill.core.abbreviations import resolve_expansion
+        from quill.ui.fill_in_dialog import prompt_for_fields
+
+        filled = prompt_for_fields(
+            self.frame, entry.expansion, self._show_modal_dialog, title=entry.abbreviation
+        )
+        if filled is None:
+            return False
+        text, cursor_offset, has_cursor = resolve_expansion(filled, clipboard_text)
+        match.resolved_text = text
+        match.cursor_offset = cursor_offset
+        match.has_cursor = has_cursor
         return True
 
     def _try_undo_expansion(self) -> bool:
@@ -122,6 +192,32 @@ class AbbreviationsMixin:
         post_sound(SoundEvent.ABBREVIATION_DELETED)
         self._announce(label)
         return True
+
+    #: Usage counts feed Quick Insert's ordering, so they only need to be
+    #: roughly right. Writing the file on every expansion would put a disk write
+    #: in the middle of typing; batching keeps that off the hot path while still
+    #: surviving a crash with at most a few uses lost.
+    _USAGE_SAVE_EVERY = 10
+
+    def _record_abbreviation_use(self, abbreviation_id: str) -> None:
+        from quill.core.abbreviations import record_use
+
+        record_use(self._abbreviation_library, abbreviation_id)
+        pending = getattr(self, "_abbreviation_uses_pending", 0) + 1
+        if pending < self._USAGE_SAVE_EVERY:
+            self._abbreviation_uses_pending = pending
+            return
+        self._abbreviation_uses_pending = 0
+        self.save_abbreviation_usage()
+
+    def save_abbreviation_usage(self) -> None:
+        """Flush pending usage counts (also called on shutdown)."""
+        from quill.core.abbreviations import save_abbreviation_library
+
+        try:
+            save_abbreviation_library(self._abbreviation_library)
+        except Exception:  # noqa: BLE001 - a counter must never break typing
+            pass
 
     def _get_clipboard_text_for_abbreviation(self) -> str:
         try:

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Inkwell User Guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-inkwell-user-guide">Quill Inkwell User Guide</h1>
+<p>Quill Inkwell expands abbreviations in every Windows application.
+Type a short word, press space, and Inkwell replaces it with whatever
+you saved: a phrase, an email address, a signature, a paragraph of
+boilerplate, a template with the caret already in the right place.</p>
+<p>It is part of the QUILL family and free, and its abbreviations are
+the same abbreviations QUILL’s editor expands. There is one library,
+shared.</p>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol type="1">
+<li><a href="#1-how-expansion-works">How expansion works</a></li>
+<li><a href="#2-first-launch">First launch</a></li>
+<li><a href="#3-the-tray-and-why-the-window-closes-to-it">The tray, and
+why the window closes to it</a></li>
+<li><a href="#4-creating-abbreviations">Creating abbreviations</a></li>
+<li><a href="#5-per-abbreviation-settings">Per-abbreviation
+settings</a></li>
+<li><a href="#6-variables">Variables</a> 6a. <a
+href="#6a-fields-expansions-that-ask-you-something">Fields: expansions
+that ask you something</a></li>
+<li><a href="#7-case-follows-your-typing">Case follows your
+typing</a></li>
+<li><a href="#8-categories">Categories</a></li>
+<li><a href="#9-quick-insert-and-expanding-on-demand">Quick Insert, and
+expanding on demand</a></li>
+<li><a href="#10-sharing-one-library-with-quill">Sharing one library
+with QUILL</a> 10a. <a href="#10a-where-it-works">Where it works</a>
+10b. <a href="#10b-inside-quill-itself">Inside QUILL itself</a></li>
+<li><a href="#11-where-expansion-refuses-to-run">Where expansion refuses
+to run</a></li>
+<li><a href="#12-typing-versus-pasting">Typing versus pasting</a></li>
+<li><a href="#13-import-and-export">Import and export</a></li>
+<li><a href="#14-settings-reference">Settings reference</a></li>
+<li><a href="#15-keyboard-reference">Keyboard reference</a></li>
+<li><a href="#16-portable-mode">Portable mode</a></li>
+<li><a href="#17-safe-mode">Safe Mode</a></li>
+<li><a href="#18-privacy">Privacy</a></li>
+<li><a href="#19-troubleshooting">Troubleshooting</a></li>
+</ol>
+<h2 id="1-how-expansion-works">1. How expansion works</h2>
+<p>While Inkwell is running it watches for typing so that it can
+recognise the end of a word. It keeps a short rolling window of recent
+characters – at most 64 – and nothing else.</p>
+<p>When you type a character that ends a word (a space, Enter, Tab, or
+one of <code>. , ; : ! ? ) ] } " '</code>), Inkwell checks the word you
+just finished against your abbreviations. If one matches, and that entry
+accepts the character you typed, Inkwell:</p>
+<ol type="1">
+<li>Sends backspaces to erase the abbreviation.</li>
+<li>Types the expansion.</li>
+<li>Moves the caret, if the expansion contains a <code>${cursor}</code>
+marker.</li>
+<li>Speaks or plays a sound, if that entry asks for it.</li>
+</ol>
+<p>The character you typed stays where it is. <code>btw </code> keeps
+the space; <code>btw.</code> keeps the full stop.</p>
+<p>Nothing goes near the clipboard during an ordinary expansion.</p>
+<h2 id="2-first-launch">2. First launch</h2>
+<p>Inkwell opens its window, shows the abbreviations you already have –
+including everything QUILL knows about – and starts watching for typing.
+A handful of common shorthand entries (<code>btw</code>,
+<code>imo</code>, <code>asap</code>, and so on) come built in so there
+is something to try immediately.</p>
+<p>If Windows refuses the keyboard hook, Inkwell says so in a dialog
+rather than sitting there looking like it works. See <a
+href="#19-troubleshooting">Troubleshooting</a>.</p>
+<h2 id="3-the-tray-and-why-the-window-closes-to-it">3. The tray, and why
+the window closes to it</h2>
+<p>Expansion is a background service. Closing the window keeps it
+running and tucks Inkwell into the notification area; the tray icon’s
+menu reopens it, offers Quick Insert, and can turn expansion off.</p>
+<p>Turn off <strong>Options &gt; Close button keeps expanding</strong>
+if you would rather the close button really exit. <strong>Options &gt;
+Start Quill Inkwell with Windows</strong> starts it hidden at login,
+which is how most people run it.</p>
+<h2 id="4-creating-abbreviations">4. Creating abbreviations</h2>
+<p><strong>Abbreviations &gt; Manage Abbreviations…</strong> (Ctrl+M) is
+the full list: search it, filter it by category, and add, edit, enable,
+disable, or delete entries.</p>
+<p><strong>Abbreviations &gt; New from Clipboard…</strong>
+(Ctrl+Shift+N) is the fast path. Copy a block of text anywhere, press
+Ctrl+Shift+N, and Inkwell opens a new entry with that text already
+filled in as the expansion – you only supply the trigger.</p>
+<p>An abbreviation can be anything you can type without a space:
+<code>addr</code>, <code>sig</code>, <code>@@</code>,
+<code>;;date</code>. Longer abbreviations always win over shorter ones,
+so <code>addr</code> cannot be swallowed by <code>ad</code>.</p>
+<h2 id="5-per-abbreviation-settings">5. Per-abbreviation settings</h2>
+<p>Every entry decides these for itself, in the edit dialog:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enabled</td>
+<td>Off keeps the entry without expanding it.</td>
+</tr>
+<tr>
+<td>Case sensitive</td>
+<td>On means only the exact spelling matches.</td>
+</tr>
+<tr>
+<td>Category</td>
+<td>Free text; groups the list and Quick Insert.</td>
+</tr>
+<tr>
+<td>Expand after</td>
+<td>A space or punctuation, a space only, punctuation only, or
+never.</td>
+</tr>
+<tr>
+<td>Speak</td>
+<td>Nothing, the abbreviation, or the expanded text.</td>
+</tr>
+<tr>
+<td>Sound</td>
+<td>Follow the global setting, always play, or never play.</td>
+</tr>
+<tr>
+<td>Add a trailing space after punctuation</td>
+<td>Adds one space after the punctuation that fired it.</td>
+</tr>
+</tbody>
+</table>
+<p>Two of these are worth explaining properly.</p>
+<p><strong>Expand after = Never</strong> means the entry never fires on
+its own; it is reachable only from Quick Insert. That is the right home
+for a long expansion, or for one you would not want appearing by
+accident.</p>
+<p><strong>Add a trailing space after punctuation</strong> only applies
+to punctuation triggers, because a space trigger already leaves a space
+and doubling it reads badly. With it on, <code>co.</code> becomes
+<code>Company, </code> rather than <code>Company ,</code>.</p>
+<h2 id="6-variables">6. Variables</h2>
+<p>Anywhere in an expansion:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Becomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>${date}</code></td>
+<td>The date, long form (June 15, 2026)</td>
+</tr>
+<tr>
+<td><code>${time}</code></td>
+<td>The time (2:45 PM)</td>
+</tr>
+<tr>
+<td><code>${datetime}</code></td>
+<td>Both</td>
+</tr>
+<tr>
+<td><code>${day}</code></td>
+<td>Day of the month</td>
+</tr>
+<tr>
+<td><code>${month}</code></td>
+<td>Month name</td>
+</tr>
+<tr>
+<td><code>${year}</code></td>
+<td>Four-digit year</td>
+</tr>
+<tr>
+<td><code>${username}</code></td>
+<td>Your Windows user name</td>
+</tr>
+<tr>
+<td><code>${clipboard}</code></td>
+<td>Whatever text is on the clipboard right now</td>
+</tr>
+<tr>
+<td><code>${cursor}</code></td>
+<td>Nothing – but the caret lands here afterwards</td>
+</tr>
+</tbody>
+</table>
+<p><code>${clipboard}</code> is read at the moment the expansion fires
+and is never stored.</p>
+<h2 id="6a-fields-expansions-that-ask-you-something">6a. Fields:
+expansions that ask you something</h2>
+<p>A signature is the same every time. A letter opening, a bug report, a
+booking confirmation is not – it is the same except for a name, a date,
+a reference. Put a field in the expansion and Inkwell asks for it before
+typing:</p>
+<pre><code>Dear ${field:Name},
+
+Thank you for your message about ${field:Subject}. I will reply by
+${field:Reply by=the end of the week}.
+
+Kind regards to ${field:Name}.</code></pre>
+<ul>
+<li><code>${field:Label}</code> asks for a value with that label.</li>
+<li><code>${field:Label=something}</code> offers a starting value you
+can accept or replace.</li>
+<li>The <strong>same label used twice is asked once</strong> and filled
+everywhere, so the name in the greeting also lands in the sign-off.</li>
+</ul>
+<p>A small form appears with one labelled box per field, in the order
+the template asks for them. Tab moves between them, Enter moves to the
+next one, Enter on the last accepts, and Escape cancels – and cancelling
+leaves whatever you typed exactly as it was, because nothing is erased
+until you accept.</p>
+<p><code>${cursor}</code> still works alongside fields: the caret lands
+where the template put it, after the answers are in.</p>
+<h2 id="7-case-follows-your-typing">7. Case follows your typing</h2>
+<p>For an entry that is not case sensitive, the case you type carries
+over:</p>
+<ul>
+<li><code>btw</code> gives the expansion exactly as you wrote it.</li>
+<li><code>Btw</code> capitalises each word.</li>
+<li><code>BTW</code> shouts the whole thing.</li>
+</ul>
+<h2 id="8-categories">8. Categories</h2>
+<p>A category is free text – Work, Personal, Email, Forms, whatever
+suits. The manager’s category filter narrows the list to one at a time,
+and entries with no category are listed under Uncategorised. Nothing
+about a category changes how an entry expands; it exists to keep a long
+list navigable.</p>
+<h2 id="9-quick-insert-and-expanding-on-demand">9. Quick Insert, and
+expanding on demand</h2>
+<p><strong>Ctrl+K</strong> in the window, or
+<strong>Ctrl+Alt+Shift+K</strong> from anywhere, opens a type-to-filter
+picker over every enabled abbreviation, ordered with the ones you use
+most at the top. Type a few letters, arrow down, press Enter, and the
+expansion is typed into whatever window you were working in.</p>
+<p>Quick Insert is the only way to reach an entry whose trigger mode is
+Never, and the easiest way to use an abbreviation you have not memorised
+yet.</p>
+<p><strong>Expand the word I just typed</strong> –
+<strong>Ctrl+Alt+Shift+X</strong> from anywhere, or the Abbreviations
+menu – expands the word before the cursor without waiting for a space or
+punctuation. Use it mid-word, at the end of a line where you do not want
+a trailing space, or for an abbreviation you have set never to expand on
+its own.</p>
+<p><strong>Taking one back.</strong> If an abbreviation expands when you
+did not want it, press <strong>Backspace immediately afterwards</strong>
+and Inkwell puts your original abbreviation back. The offer lasts a few
+seconds and only in the window where it expanded – after that, or after
+any other keystroke, Backspace does what it always does.</p>
+<h2 id="10-sharing-one-library-with-quill">10. Sharing one library with
+QUILL</h2>
+<p>Inkwell and QUILL use the same <code>abbreviations.json</code> in the
+same data folder. Add an abbreviation in QUILL’s own Abbreviation
+Manager and it expands system-wide within moments; add one here and
+QUILL’s editor knows it. Inkwell re-reads the file whenever it changes
+on disk, so neither app needs restarting.</p>
+<p>This is also why an installed Inkwell keeps its data in
+<code>%APPDATA%\Quill</code> rather than a folder of its own.</p>
+<h2 id="10a-where-it-works">10a. Where it works</h2>
+<p>Expansion runs wherever you can type or edit: browsers, mail, chat,
+forms, office applications, code editors, terminals, and dialog boxes.
+Two limits are worth knowing about, because both look like faults and
+neither is one.</p>
+<p><strong>Somewhere you cannot type.</strong> Before replacing
+anything, Inkwell checks that the thing with focus actually accepts
+text. Typing into a list that is doing type-ahead, or a page where
+Backspace means “go back”, would be worse than not expanding at all.
+Where it cannot tell, it goes ahead – a missed expansion is the more
+annoying failure.</p>
+<p><strong>An application running as administrator.</strong> Windows
+does not let a normal program see keys typed into an elevated one, so
+nothing expands there. Inkwell says so the first time focus lands in
+such a window. If you need expansion in it, start Inkwell as
+administrator too.</p>
+<h2 id="10b-inside-quill-itself">10b. Inside QUILL itself</h2>
+<p>QUILL expands your abbreviations in its own editor, from the
+document, without synthesising a single keystroke – which is faster and
+safer than anything a system-wide expander can do. So Inkwell
+deliberately keeps out of QUILL’s editor window and lets it do the work.
+Same abbreviations, same settings, same results; only the mechanism
+differs, and you should never be able to tell.</p>
+<h2 id="11-where-expansion-refuses-to-run">11. Where expansion refuses
+to run</h2>
+<p>Typing into the wrong window is worse than not expanding at all, so
+Inkwell refuses outright in:</p>
+<ul>
+<li>Password managers (1Password, Bitwarden, KeePass and KeePassXC,
+LastPass, Dashlane, Keeper, NordPass, RoboForm, Enpass).</li>
+<li>The Windows sign-in and lock screens, the credential prompt, and the
+UAC dialog.</li>
+<li>Any window whose title suggests a credential prompt – sign in, log
+on, password, passcode, authenticate, unlock, Windows Security.</li>
+</ul>
+<p><strong>Options &gt; Excluded Applications…</strong> adds your own,
+one program file name per line (<code>notepad.exe</code>). The decision
+is made from the foreground window alone – its program, its class, and
+its title. Nothing is ever decided from what you typed.</p>
+<h2 id="12-typing-versus-pasting">12. Typing versus pasting</h2>
+<p>By default an expansion is typed, as synthesised keystrokes. That is
+the right default: it never touches your clipboard.</p>
+<p>A few applications – some rich editors, some terminals – drop fast
+synthetic keystrokes. For those, turn on <strong>Options &gt; Insert by
+pasting</strong>. Inkwell then puts the expansion on the clipboard,
+pastes it, and puts your previous clipboard contents back. It is a
+fallback precisely because borrowing the clipboard is rude, and it
+always restores.</p>
+<p>This can also be set <strong>per application</strong>, which is
+usually what you want: one stubborn program should not mean every other
+program has its clipboard borrowed. List the program’s file name under
+<code>paste_processes</code> in <code>inkwell.json</code> beside the
+abbreviation library, and only that program uses the clipboard
+route.</p>
+<h2 id="13-import-and-export">13. Import and export</h2>
+<p>The manager’s <strong>Import…</strong> and <strong>Export…</strong>
+buttons read and write the shared library as JSON. Export is the honest
+backup of everything, including every per-entry setting; import merges
+entries in.</p>
+<h2 id="14-settings-reference">14. Settings reference</h2>
+<p>Inkwell’s own preferences live in <code>inkwell.json</code> beside
+the library:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expand in other applications</td>
+<td>On</td>
+<td>The master switch (Ctrl+Shift+E).</td>
+</tr>
+<tr>
+<td>Insert by pasting</td>
+<td>Off</td>
+<td>Use the clipboard route (section 12).</td>
+</tr>
+<tr>
+<td>Announce every expansion</td>
+<td>Off</td>
+<td>A spoken confirmation on top of per-entry speech.</td>
+</tr>
+<tr>
+<td>Excluded applications</td>
+<td>Empty</td>
+<td>Your additions to the permanent list.</td>
+</tr>
+<tr>
+<td>Start with Windows</td>
+<td>Off</td>
+<td>Starts hidden in the tray at login.</td>
+</tr>
+<tr>
+<td>Start minimized to the tray</td>
+<td>Off</td>
+<td>Opens hidden.</td>
+</tr>
+<tr>
+<td>Close button keeps expanding</td>
+<td>On</td>
+<td>Close hides to the tray instead of exiting.</td>
+</tr>
+</tbody>
+</table>
+<p>Abbreviations themselves are not listed here: they are shared, and
+they live in QUILL’s <code>abbreviations.json</code>.</p>
+<h2 id="15-keyboard-reference">15. Keyboard reference</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Keys</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Show or hide Inkwell</td>
+<td>Ctrl+Alt+Shift+I</td>
+</tr>
+<tr>
+<td>Quick Insert from anywhere</td>
+<td>Ctrl+Alt+Shift+K</td>
+</tr>
+<tr>
+<td>Expand the word I just typed</td>
+<td>Ctrl+Alt+Shift+X</td>
+</tr>
+<tr>
+<td>Take back the expansion that just fired</td>
+<td>Backspace, immediately</td>
+</tr>
+<tr>
+<td>Manage abbreviations</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Quick Insert</td>
+<td>Ctrl+K</td>
+</tr>
+<tr>
+<td>New abbreviation from the clipboard</td>
+<td>Ctrl+Shift+N</td>
+</tr>
+<tr>
+<td>Turn expansion on or off</td>
+<td>Ctrl+Shift+E</td>
+</tr>
+<tr>
+<td>Minimize to the tray</td>
+<td>Ctrl+W</td>
+</tr>
+</tbody>
+</table>
+<p>Every dialog follows QUILL’s dialog conventions: Escape cancels,
+Enter activates the default button, every control has a name your screen
+reader announces, and focus starts where the work does.</p>
+<h2 id="16-portable-mode">16. Portable mode</h2>
+<p>The portable zip carries a <code>data</code> folder next to
+<code>QuillInkwell.exe</code>. When that folder is present, the
+abbreviation library and settings live on the stick, and a portable
+QUILL sitting beside it shares them. Remove the stick and nothing is
+left behind on the machine.</p>
+<h2 id="17-safe-mode">17. Safe Mode</h2>
+<p>With <code>QUILL_SAFE_MODE=1</code> set, Inkwell starts without
+installing the keyboard hook at all and says so. The manager still
+works, so you can edit abbreviations; nothing is watched and nothing is
+typed.</p>
+<h2 id="18-privacy">18. Privacy</h2>
+<p>Inkwell has to notice typing to recognise an abbreviation. Here is
+exactly what that means:</p>
+<ul>
+<li><strong>Bounded.</strong> At most 64 characters are held at once, in
+memory only.</li>
+<li><strong>Never stored.</strong> Nothing is written to disk, added to
+a log, or sent anywhere. There is no network code in the expansion
+path.</li>
+<li><strong>Cleared constantly.</strong> The buffer empties after every
+expansion, on Escape, on any arrow key, Home, End, Page Up or Down,
+Insert, Delete, or function key, on any Ctrl or Alt combination,
+whenever focus moves to another window, and whenever expansion is
+paused.</li>
+<li><strong>Content-blind.</strong> No rule anywhere looks at what you
+typed to decide whether to keep it. The check that suppresses expansion
+looks only at which window has focus, which is why it cannot be fooled
+by an unusual password field.</li>
+<li><strong>Its own output is ignored.</strong> Inkwell marks the
+keystrokes it synthesises and skips them, so an expansion can never feed
+itself. Keystrokes from dictation software and on-screen keyboards are
+<em>not</em> skipped – those users get expansion like everyone
+else.</li>
+<li><strong>Switchable.</strong> Ctrl+Shift+E stops it, the tray menu
+stops it, and Safe Mode never starts it.</li>
+<li><strong>Self-repairing, not self-extending.</strong> Windows
+silently removes a keyboard hook that responds too slowly, so Inkwell
+quietly re-installs its own every few minutes. That refresh changes
+nothing about what is watched or kept.</li>
+</ul>
+<h2 id="19-troubleshooting">19. Troubleshooting</h2>
+<p><strong>Nothing expands anywhere.</strong> Check Ctrl+Shift+E is on,
+and that the window in front is not one of the excluded ones (section
+11). If Inkwell warned at startup that Windows refused the keyboard
+hook, see the next item.</p>
+<p><strong>Nothing expands in one particular application.</strong> If
+Inkwell announced that the application runs as administrator, that is
+the reason (section 10a). Otherwise the application may not report
+itself as editable, or may be dropping the typed keystrokes – press
+Ctrl+Alt+Shift+X there to expand on demand, and if that works but
+ordinary typing does not, add the program to the per-application paste
+list (section 12).</p>
+<p><strong>“Expansion unavailable” at startup.</strong> Windows refused
+the low-level keyboard hook. Almost always this means the application
+you are typing into runs at a higher privilege level than Inkwell –
+Windows does not let a normal program see keys sent to an elevated one.
+Start Inkwell the same way you start that application.</p>
+<p><strong>It expands in QUILL but not elsewhere, or the
+reverse.</strong> They share a library but not a switch: QUILL’s editor
+expansion has its own setting, and Inkwell’s Ctrl+Shift+E governs
+everywhere else.</p>
+<p><strong>A new abbreviation is not recognised.</strong> Both apps
+re-read the file when it changes; if one was mid-edit when the other
+saved, close the manager and try again.</p>
+<p><strong>Some text arrives scrambled or truncated in one particular
+app.</strong> Turn on Options &gt; Insert by pasting (section 12).</p>
+<p><strong>An abbreviation fires when I do not want it.</strong> Set
+that entry’s <em>Expand after</em> to Never; Quick Insert can still
+reach it.</p>
+</main>
+</body>
+</html>

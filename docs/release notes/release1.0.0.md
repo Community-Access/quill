@@ -45,7 +45,12 @@ switcher.
 Service for watches, warnings, and advisories at the places you care about, and speaks
 them to you the moment they are issued, whether or not anything else is running.
 
-All three are free. All three are keyboard-first. All three speak through the same
+**Quill Inkwell** is a standalone tray application that expands your abbreviations in
+*every* Windows program -- your browser, your mail, a form, a spreadsheet -- using the
+same abbreviations QUILL expands in its own editor. Not a copy of them: the same ones,
+in the same file.
+
+All four are free. All four are keyboard-first. All four speak through the same
 announcement service, so QUILL sounds like QUILL wherever you are in it.
 
 ### Platforms
@@ -421,7 +426,23 @@ sums, averages, medians, and more over selected data, a table column, or a row.
 - The **Snippet Gallery** adds parameterized templates contributed by extensions,
   each with its own prompt sequence, including a set of ready-made math formulas.
 - **Abbreviations** expand short triggers into boilerplate, signatures, notes, code,
-  or markup, and can be toggled off entirely.
+  or markup, and can be toggled off entirely. Each one carries its own settings: a
+  category to group it by, which characters expand it (a space or punctuation, a
+  space only, punctuation only, or never), whether it adds a trailing space after
+  punctuation, what your screen reader says when it fires, and whether it plays a
+  sound. Capitalisation follows what you type, so `btw` expands as written, `Btw`
+  capitalises, and `BTW` shouts.
+- **Fill-in fields** make an expansion ask before it finishes. Write
+  `${field:Name}` -- or `${field:Reply by=Friday}` to offer a starting value -- and
+  a small form appears with one labelled box per field. A field used twice is asked
+  once and filled in both places, so a name in a greeting also lands in the sign-off.
+  Cancelling leaves what you typed exactly as it was.
+- **Quick Insert** (**Insert > Quick Insert...**) finds an abbreviation by name when
+  you cannot remember its trigger, most-used first, with the full expansion shown as
+  you arrow through. It is also the only way to reach an abbreviation you have set
+  never to expand on its own -- the safe home for a long or destructive one.
+- **New Abbreviation from Clipboard** turns whatever you have just copied into an
+  abbreviation with the expansion already filled in; you supply only the trigger.
 - **Emmet-style expansion** brings the HTML and CSS shorthand grammar (children,
   siblings, climb-up, grouping, multiplication) to QUILL, along with accessible
   built-ins such as `!a11y`, `skiplink`, and `form:a11y`.
@@ -442,7 +463,15 @@ sums, averages, medians, and more over selected data, a table column, or a row.
 The **Copy Tray** holds twelve numbered slots. Copy to a slot, paste from a slot, and
 search within slots. Beneath it, the **Clip Library** keeps a rolling, searchable
 history of up to two hundred copied selections, any of which can be favorited or
-promoted into a tray slot.
+promoted into a tray slot. A clip can be renamed to something you will actually
+recognise later, corrected in place if you copied slightly the wrong thing, or saved
+as an abbreviation -- which then works everywhere, not just here. Mark several clips
+and **Combine Marked...** joins them in the order they appear, with a separator you
+choose: a space, comma, full stop, vertical bar, new line, or blank line.
+
+QUILL remembers what you deliberately keep or copy *inside QUILL*. It does not watch
+the system clipboard and keeps no history of what you copy in other programs. If you
+want that, use a clipboard manager alongside QUILL; the two do different jobs.
 
 Every tray slot and every quick bookmark plays its own note on a shared musical scale:
 the Copy Tray as soft marimba taps, bookmarks as brighter chirps. After a little use,
@@ -1797,6 +1826,86 @@ checking happens with no process running at all, delivering a Windows toast your
 announces. **Ctrl+Alt+Shift+W** shows and hides it from anywhere.
 
 ---
+
+## Quill Inkwell
+
+QUILL has always expanded abbreviations in its own editor. The limit was obvious to
+anyone who used it: leave QUILL for a browser, a mail client, or a form, and the
+abbreviations you had built up stopped existing.
+
+Quill Inkwell removes that boundary. It sits in the system tray, watches for the
+abbreviations you already have, and expands them wherever you can type. Type `addr`
+and a space in a web form and your address appears; type `sig.` at the end of an
+email and your signature appears with the full stop still in place.
+
+### One library, not two
+
+This is the part worth understanding, because it is what makes Inkwell different from
+a text expander you would install separately. Inkwell and QUILL read and write **the
+same file**. Add an abbreviation in QUILL's Abbreviation Manager and it works in your
+browser moments later. Add one in Inkwell and QUILL's editor knows it. There is no
+import, no export, and nothing to keep in step, because there is only one library.
+Every per-abbreviation setting -- category, what expands it, what is spoken, whether
+it plays a sound -- travels with it.
+
+Inside QUILL's own editor, QUILL does the expanding and Inkwell stays out of the way.
+QUILL edits the document directly, which is faster and safer than any program typing
+into another program can be. You should not be able to tell the difference; the point
+is that the abbreviations, the settings, and the results are identical either way.
+
+### Using it
+
+**Ctrl+Alt+Shift+I** shows or hides the window from anywhere. **Ctrl+Alt+Shift+K**
+opens Quick Insert from anywhere, so an abbreviation you have not memorised is always
+two keystrokes away. **Ctrl+Alt+Shift+X** expands the word just before the cursor
+without waiting for a space -- useful mid-word, at the end of a line, and for an
+abbreviation you have set never to expand on its own.
+
+If an abbreviation expands when you did not want it, press **Backspace immediately
+afterwards** and your original abbreviation comes back. The offer lasts a few seconds
+and only in the window where it happened; after that, Backspace does what it always
+does.
+
+Expansions that ask for values work here too. The same fill-in form appears, focus
+returns to whatever you were typing in, and cancelling costs nothing because nothing
+is erased until you accept.
+
+### Where it will not type
+
+Some places it refuses on purpose, and it is worth knowing which.
+
+Password managers -- 1Password, Bitwarden, KeePass and KeePassXC, LastPass, Dashlane,
+Keeper, NordPass, RoboForm, Enpass -- along with the Windows sign-in and lock screens,
+the credential prompt, and the UAC dialog. You can add programs of your own to that
+list. The decision is made from which window has focus, never from what you typed.
+
+It also checks that the thing with focus actually accepts text before replacing
+anything, so backspaces never land in a list doing type-ahead or on a page where
+Backspace means "go back".
+
+And there is one limit Windows imposes rather than Inkwell: a normal program cannot
+see keys typed into a program running as administrator. Nothing expands there. Inkwell
+says so the first time it happens rather than appearing broken; if you need expansion
+in such a program, start Inkwell as administrator too.
+
+### What it does not do
+
+Inkwell keeps **no clipboard history**. It reads the clipboard only at the moment an
+expansion containing `${clipboard}` fires, and never stores what it finds. Your
+clipboard is yours, and whichever clipboard manager you have chosen keeps its job.
+
+### What it remembers while you type
+
+Inkwell has to notice typing in order to recognise the end of a word, so here is
+exactly what that means. It holds at most 64 characters, in memory only. Nothing is
+written to disk, added to a log, or sent anywhere -- there is no network code in the
+expansion path at all. The memory is emptied after every expansion, on Escape, on any
+arrow or editing key, on any Ctrl or Alt combination, whenever focus moves to another
+window, and whenever you pause expansion. Nothing anywhere decides what to keep based
+on *what* you typed, which is why the rule that stops it typing into a password
+manager looks at the window and not at the text. **Ctrl+Shift+E** stops it, the tray
+menu stops it, and Safe Mode never starts it.
+
 
 ## Quillins: extending QUILL
 

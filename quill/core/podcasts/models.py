@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from quill.core.audio.channel_mode import normalize as normalize_channel_mode
 from quill.core.audio_enhance import clamp_eq_gain
 
 
@@ -204,6 +205,12 @@ class PodcastSettings:
     eq_treble_db: float = 0.0
     compressor_enabled: bool = False
     smart_speed_enabled: bool = False
+    #: Where the audio comes out: stereo / mono / left / right. An
+    #: accessibility setting before a sound one -- mono keeps hard-panned
+    #: content audible to someone listening with one ear, and the single-ear
+    #: modes leave the other ear free for a screen reader. Shared vocabulary
+    #: with Quill Radio (quill.core.audio.channel_mode).
+    channel_mode: str = "stereo"
     #: Skip Forward/Back (Episode menu): how far each command jumps.
     #: Per-show overridable the same way speed is.
     skip_forward_seconds: int = 30
@@ -240,6 +247,7 @@ class PodcastSettings:
             "eq_treble_db": self.eq_treble_db,
             "compressor_enabled": self.compressor_enabled,
             "smart_speed_enabled": self.smart_speed_enabled,
+            "channel_mode": self.channel_mode,
             "skip_forward_seconds": self.skip_forward_seconds,
             "skip_back_seconds": self.skip_back_seconds,
             "auto_skip_intro_seconds": self.auto_skip_intro_seconds,
@@ -275,6 +283,7 @@ class PodcastSettings:
             eq_treble_db=clamp_eq_gain(_coerce_float(data.get("eq_treble_db"), 0.0)),
             compressor_enabled=bool(data.get("compressor_enabled", False)),
             smart_speed_enabled=bool(data.get("smart_speed_enabled", False)),
+            channel_mode=normalize_channel_mode(str(data.get("channel_mode", "stereo"))),
             skip_forward_seconds=max(1, _coerce_int(data.get("skip_forward_seconds"), 30)),
             skip_back_seconds=max(1, _coerce_int(data.get("skip_back_seconds"), 15)),
             auto_skip_intro_seconds=max(0, _coerce_int(data.get("auto_skip_intro_seconds"), 0)),

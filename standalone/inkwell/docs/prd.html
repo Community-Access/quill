@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Inkwell -- Product Requirements</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-inkwell--product-requirements">Quill Inkwell – Product
+Requirements</h1>
+<p>Version 1.0.0. Status: implemented.</p>
+<h2 id="1-why-this-exists">1. Why this exists</h2>
+<p>QUILL has expanded abbreviations inside its own editor for a long
+time. The limitation was obvious to anyone who used it: the moment you
+leave QUILL – into a browser, a mail client, a form, a spreadsheet – the
+abbreviations you built up stop existing.</p>
+<p>Quill Inkwell removes that boundary. The same abbreviations, in every
+application, from one shared library, free.</p>
+<h2 id="2-goals">2. Goals</h2>
+<ol type="1">
+<li><strong>System-wide expansion</strong> that is fast, reliable, and
+screen-reader-first.</li>
+<li><strong>One library, genuinely shared.</strong> Not an import, not a
+sync, not a read-only mirror – the same file, read and written by both
+apps.</li>
+<li><strong>Per-entry control.</strong> Case, trigger characters,
+speech, sound, trailing space, and category all belong to the individual
+abbreviation.</li>
+<li><strong>Trustworthy by construction.</strong> A program that watches
+typing has to be able to explain itself in a paragraph, and the code has
+to match the paragraph.</li>
+<li><strong>A family member, not a fork.</strong> Same dialog
+conventions, same announcement service, same sound events, same tray and
+update mechanics as the sibling apps.</li>
+</ol>
+<h2 id="3-non-goals">3. Non-goals</h2>
+<ul>
+<li><strong>Clipboard management.</strong> Inkwell reads the clipboard
+only to resolve <code>${clipboard}</code> at the moment an expansion
+fires, and stores nothing. Clipboard history is a different product’s
+job and stays that way.</li>
+<li><strong>Macros, scripting, and file automation.</strong> Out of
+scope for 1.0. A second automation surface would be a second security
+surface.</li>
+<li><strong>A second extension system.</strong> QUILL already has
+Quillins, which can contribute abbreviations. Inkwell uses those; it
+does not define its own.</li>
+<li><strong>Cross-platform.</strong> The expansion path is
+Windows-specific by nature. The library and matcher are platform-free,
+so a future port has somewhere to start, but macOS is not in 1.0.</li>
+</ul>
+<h2 id="4-architecture">4. Architecture</h2>
+<p>Everything lives in the <code>quill</code> package. The standalone
+shell under <code>standalone/inkwell/</code> only packages it.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Module</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data</td>
+<td><code>quill/core/abbreviations.py</code></td>
+<td>The shared library and its schema (v2), matching for the editor,
+variables.</td>
+</tr>
+<tr>
+<td>Engine</td>
+<td><code>quill/core/expansion/ring_buffer.py</code></td>
+<td>The bounded memory of recent keys.</td>
+</tr>
+<tr>
+<td>Engine</td>
+<td><code>quill/core/expansion/matcher.py</code></td>
+<td>Matching that buffer against the library.</td>
+</tr>
+<tr>
+<td>Policy</td>
+<td><code>quill/core/expansion/targets.py</code></td>
+<td>Where expansion must never fire.</td>
+</tr>
+<tr>
+<td>Settings</td>
+<td><code>quill/core/expansion/settings.py</code></td>
+<td>Inkwell’s own preferences.</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td><code>quill/platform/windows/expansion_hook.py</code></td>
+<td>The <code>WH_KEYBOARD_LL</code> hook and its threads.</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td><code>quill/platform/windows/text_injector.py</code></td>
+<td>SendInput typing, and the clipboard fallback.</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td><code>quill/platform/windows/foreground.py</code></td>
+<td>What has focus right now.</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td><code>quill/platform/windows/inkwell_startup.py</code></td>
+<td>The per-user Run-key entry.</td>
+</tr>
+<tr>
+<td>UI</td>
+<td><code>quill/apps/inkwell.py</code></td>
+<td>The tray app.</td>
+</tr>
+<tr>
+<td>UI</td>
+<td><code>quill/ui/abbreviation_manager_dialog.py</code></td>
+<td>Shared with QUILL.</td>
+</tr>
+<tr>
+<td>UI</td>
+<td><code>quill/ui/quick_insert_dialog.py</code></td>
+<td>Shared with QUILL.</td>
+</tr>
+</tbody>
+</table>
+<p>The core and engine layers are wx-free and strict-typed, so the
+matching rules are testable without a display and without Windows.</p>
+<h3 id="41-threading">4.1 Threading</h3>
+<p>Three threads, with one rule each:</p>
+<ul>
+<li><strong>The hook thread</strong> runs the
+<code>WH_KEYBOARD_LL</code> procedure and its message pump. It decodes a
+key, appends it to the buffer, and queues any match. It must never do
+more, because Windows silently removes a hook whose procedure is slow
+(<code>LowLevelHooksTimeout</code>) – which would end expansion for the
+session with no error anywhere.</li>
+<li><strong>The worker thread</strong> performs the injection.</li>
+<li><strong>The UI thread</strong> owns every widget, every
+announcement, and every save, reached only through
+<code>wx.CallAfter</code>.</li>
+</ul>
+<h3 id="42-why-the-hook-ignores-its-own-output">4.2 Why the hook ignores
+its own output</h3>
+<p>Synthesised keystrokes come back through the same hook. Inkwell
+stamps a signature into <code>dwExtraInfo</code> on every key it sends
+and skips exactly those.</p>
+<p>The obvious alternative – ignoring all injected keys – would have
+been wrong for this audience: dictation software and on-screen keyboards
+inject too, and their users must get expansion like everyone else.</p>
+<h3 id="43-keyboard-layouts">4.3 Keyboard layouts</h3>
+<p>Characters are decoded with <code>ToUnicodeEx</code> against the
+<em>foreground window’s</em> keyboard layout, with shift and caps read
+from the live key state rather than the hook thread’s stale view. A dead
+key returns nothing and is replayed into the layout, so composing an
+accent still works.</p>
+<p>AltGr is recognised as typing rather than as a command. Windows
+reports it as Ctrl+Alt, so the naive rule (“any Ctrl or Alt means a
+command”) discards real characters on every layout that uses AltGr –
+German, Polish, Spanish, Portuguese, the Nordic layouts. The test is to
+ask the layout itself: right Alt held <em>and</em> the key still
+resolves to a printable character means typing.</p>
+<h3 id="44-reaching-every-editable-surface">4.4 Reaching every editable
+surface</h3>
+<p>Three rules, all of which fail towards expanding rather than
+refusing, because a missed expansion is the more annoying failure – and
+the one rule that must fail closed, the credential deny-list, is
+separate:</p>
+<ol type="1">
+<li><strong>Is this editable?</strong> Checked once, at the moment a
+match fires, never per keystroke – putting COM calls on the hot path of
+everything typed would be indefensible. A real caret
+(<code>GetGUIThreadInfo</code>) or a known text window class is an
+immediate yes; otherwise UI Automation’s focused element decides; and if
+it has no opinion, the answer is yes.</li>
+<li><strong>Can we see this window at all?</strong> A normal-privilege
+process receives no keys from an elevated one. That is detected and
+reported once per window, so an administrator application reads as a
+known limit rather than a fault.</li>
+<li><strong>How is the text delivered?</strong> Typed keystrokes by
+default; the clipboard-paste route resolves <strong>per
+application</strong>, so one stubborn program does not cost every other
+program its clipboard.</li>
+</ol>
+<h3 id="44a-one-expander-per-window">4.4a One expander per window</h3>
+<p>QUILL’s in-editor expansion and Inkwell’s system-wide expansion are
+both correct alone and catastrophic together: one keystroke would fire
+both, erasing and retyping the same word twice. QUILL therefore sets a
+window property (<code>QuillHandlesOwnExpansion</code>) on its own
+frame, and the hook refuses that window before it even buffers the
+key.</p>
+<p>A window property, not a list of executable names: it identifies the
+actual window, so <code>python -m quill</code>, a portable build, and a
+renamed executable are all covered. Any future surface with its own
+expansion can claim it the same way.</p>
+<h3 id="44b-fill-in-fields">4.4b Fill-in fields</h3>
+<p><code>${field:Label}</code> and <code>${field:Label=default}</code>
+make an expansion ask before it finishes. The rules live in one wx-free
+module (<code>quill/core/expansion/fields.py</code>) and the form in one
+shared dialog (<code>quill/ui/fill_in_dialog.py</code>), so a template
+behaves identically in QUILL’s editor and here – which matters, because
+the same library is used from both.</p>
+<p>System-wide there is an ordering constraint the editor does not have:
+the form takes focus away from the window being typed into. So nothing
+is erased until the form is accepted, focus is restored to the original
+window first, and a cancelled form costs exactly nothing. The expansion
+is re-resolved from the filled template rather than patched afterwards,
+so <code>${cursor}</code> still lands where the template put it once the
+answers have changed the text’s length.</p>
+<h3 id="45-taking-an-expansion-back">4.5 Taking an expansion back</h3>
+<p>Backspace immediately after an expansion restores the abbreviation.
+System-wide there is no document to read, so the tracker remembers what
+was typed and types the reverse. The offer expires after a few seconds,
+on any other keystroke, and on a change of window – an undo that fired
+later would delete text the user has since written.</p>
+<h3 id="46-expanding-on-demand">4.6 Expanding on demand</h3>
+<p>A system-wide chord expands the word before the cursor without a
+trigger character: the counterpart of QUILL’s Expand Abbreviation
+command, and the way to reach a <code>manual</code> entry or to expand
+mid-word.</p>
+<h3 id="47-surviving">4.7 Surviving</h3>
+<p>Windows silently removes a low-level hook whose procedure exceeds
+<code>LowLevelHooksTimeout</code>, and offers no way to ask whether a
+hook is still live. A watchdog re-installs the hook every few minutes,
+so the worst case is a short gap rather than the rest of the
+session.</p>
+<h2 id="5-data-model">5. Data model</h2>
+<p>Schema version 2 of <code>abbreviations.json</code>, extending v1
+with per-entry settings. Every new field has a default, so:</p>
+<ul>
+<li>a v1 file loads unchanged, and</li>
+<li>a v2 file opened by an older build simply ignores the extra keys and
+still expands.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Values</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>abbreviation</code>, <code>expansion</code>,
+<code>description</code></td>
+<td>text</td>
+<td>–</td>
+</tr>
+<tr>
+<td><code>enabled</code>, <code>case_sensitive</code></td>
+<td>boolean</td>
+<td>true, false</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td>text (““ = Uncategorised)</td>
+<td>““</td>
+</tr>
+<tr>
+<td><code>triggers</code></td>
+<td>both, space, punctuation, manual</td>
+<td>both</td>
+</tr>
+<tr>
+<td><code>speak_mode</code></td>
+<td>silent, name, expansion</td>
+<td>silent</td>
+</tr>
+<tr>
+<td><code>sound</code></td>
+<td>inherit, on, off</td>
+<td>inherit</td>
+</tr>
+<tr>
+<td><code>trailing_space</code></td>
+<td>boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>usage_count</code>, <code>last_used</code></td>
+<td>integer, ISO timestamp</td>
+<td>0, ““</td>
+</tr>
+</tbody>
+</table>
+<p>Unknown values in a hand-edited file degrade to the safe default
+rather than failing the load.</p>
+<p>Usage counters are written in batches of ten, never per expansion: a
+disk write belongs nowhere near typing.</p>
+<h2 id="6-security-and-privacy-contract">6. Security and privacy
+contract</h2>
+<p>This is a requirement, not a description. Each line is enforced in
+code and covered by tests.</p>
+<ol type="1">
+<li>The keystroke buffer holds at most 64 characters, in memory
+only.</li>
+<li>Nothing typed is written to disk, logged, or transmitted. There is
+no network call anywhere in the expansion path.</li>
+<li>The buffer is cleared after every expansion, on Escape, on any
+navigation or editing key, on any Ctrl or Alt combination, on a change
+of foreground window, and on pause.</li>
+<li>No decision anywhere is made from the <em>content</em> of typed
+characters. The suppression rule reads the foreground window’s process,
+class, and title only.</li>
+<li>Password managers, the Windows credential and lock surfaces, and the
+UAC prompt are permanently excluded; users may add their own.</li>
+<li><code>QUILL_SAFE_MODE=1</code> prevents the hook from being
+installed at all.</li>
+<li>The clipboard is read only when an expansion contains
+<code>${clipboard}</code>, and the paste fallback always restores what
+was there.</li>
+</ol>
+<h2 id="7-accessibility-requirements">7. Accessibility requirements</h2>
+<ul>
+<li>Every control is labelled and reachable by keyboard; no mouse-only
+path.</li>
+<li>Dialogs go through QUILL’s <code>_show_modal_dialog</code> and
+<code>apply_modal_ids</code>, so Escape and Enter behave identically
+everywhere in the family.</li>
+<li>Expansion confirmation is per-entry: silent, the abbreviation, or
+the full text – because a screen reader has usually already spoken the
+result, and a second announcement is noise for some users and essential
+for others.</li>
+<li>Failures speak. A refused keyboard hook produces a dialog explaining
+the likely cause, never silence.</li>
+</ul>
+<h2 id="8-distribution">8. Distribution</h2>
+<ul>
+<li>Windows installer and portable zip, built by
+<code>standalone/inkwell/scripts/build_release.ps1</code>.</li>
+<li>Shares the QuillVille Runtime with the sibling apps.</li>
+<li>Updates through the shared release repository, resolving its own
+asset.</li>
+<li>MIT licensed. Free permanently, for everyone.</li>
+</ul>
+<h2 id="9-future-work">9. Future work</h2>
+<p>Not committed, in rough order of value:</p>
+<ol type="1">
+<li><strong>Rich expansions.</strong> Formatted text where the target
+accepts it.</li>
+<li><strong>Per-application abbreviations.</strong> Entries that only
+fire in a named app.</li>
+<li><strong>Quillin-contributed abbreviations system-wide.</strong>
+QUILL’s editor already expands them; Inkwell should too.</li>
+<li><strong>macOS.</strong> The library and matcher are already
+platform-free.</li>
+</ol>
+</main>
+</body>
+</html>

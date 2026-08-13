@@ -36,7 +36,7 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from enum import Enum, auto
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import wx
 
@@ -53,6 +53,12 @@ if TYPE_CHECKING:
     from quill.ui.spotify.web_player import SpotifyWebEngine
 
 _log = logging.getLogger(__name__)
+
+#: How far into a chapter "previous chapter" restarts it instead of stepping
+#: back. Every other player behaves this way, and the alternative -- skipping
+#: to the previous chapter from ten minutes into this one -- is never what
+#: someone pressing it twice actually wants.
+_CHAPTER_RESTART_MS = 3000
 
 
 class ResolvedEnhancement(NamedTuple):
@@ -141,7 +147,7 @@ class RadioPlayerController:
         playback_engine: str = "auto",
         on_buffering: Callable[[], None] | None = None,
         spotify_token_provider: Callable[[], str] | None = None,
-        resolve_youtube: Callable[[str], str] | None = None,
+        resolve_youtube: Callable[[str], Any] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -205,6 +211,15 @@ class RadioPlayerController:
         #: error is declared (WMP cannot decode Ogg/Opus/HLS; a broken mpv
         #: falls back to WMP). Reset by every play_station.
         self._fallback_attempted = False
+        #: The resolved YouTube stream for the current play, when the station
+        #: was a YouTube link and the resolver handed back its metadata. This
+        #: is what carries the video's length and its published chapters.
+        #: None for every ordinary station, and for a live YouTube stream it
+        #: reports no duration -- which is the honest answer.
+        self._youtube_stream: Any = None
+        #: Playback speed for bounded sources (1.0 = normal). Live radio
+        #: ignores it: a broadcast plays at broadcast speed.
+        self._playback_rate = 1.0
         self._parent = parent
         self._wx_engine = WxMediaEngine(
             parent,
@@ -265,6 +280,9 @@ class RadioPlayerController:
         """
         self._play_token += 1
         self._playback_url_override = ""
+        # Last play's video facts must not describe this one: a station tuned
+        # after a video would otherwise look seekable and carry its chapters.
+        self._youtube_stream = None
         if is_youtube_station(station):
             begin_youtube_play(self, station, token=self._play_token)
             return
@@ -318,6 +336,143 @@ class RadioPlayerController:
             return
         if not self._engine.load(url) and not self._attempt_engine_fallback():
             self._set_state(RadioPlayerState.ERROR, message="That stream could not be opened.")
+            return
+        self._declare_source_shape()
+
+    def _declare_source_shape(self) -> None:
+        """Tell the engine whether what it just loaded has a timeline.
+
+        A finished YouTube video can be scrubbed, sped up, and navigated by
+        chapter; a live broadcast cannot, because it has no end to measure
+        against. Which one a YouTube link is only becomes known when yt-dlp
+        answers -- after the engine has been chosen -- so the engine is told
+        here, immediately after the load, rather than the play path being
+        rebuilt to choose an engine later.
+
+        Everything that is not a resolved, finished video is left exactly as
+        it was: engines without the capability are skipped, and an ordinary
+        station never reaches the bounded branch at all.
+        """
+        declare = getattr(self._engine, "set_bounded", None)
+        if declare is None:
+            return
+        stream = self._youtube_stream
+        bounded = bool(stream is not None and getattr(stream, "duration_ms", 0) > 0)
+        declare(bounded)
+        if bounded and self._playback_rate != 1.0:
+            # Re-apply the chosen speed: load() resets mpv's speed so a video
+            # left at 2x cannot carry that into the next live station.
+            self._engine.set_rate(self._playback_rate)
+
+    # -- bounded playback: seeking, speed, and chapters --------------------------
+
+    def is_seekable(self) -> bool:
+        """Whether what is playing has a timeline to move along.
+
+        True only for a finished video. Every ordinary radio station and every
+        live YouTube stream is False, which is what keeps the transport honest
+        rather than offering a slider that cannot move.
+        """
+        probe = getattr(self._engine, "is_bounded", None)
+        return bool(probe()) if probe is not None else False
+
+    def duration_ms(self) -> int:
+        """Length of what is playing, or 0 when it has none (live)."""
+        return int(self._engine.length_ms()) if self.is_seekable() else 0
+
+    def position_ms(self) -> int:
+        """Where playback is now, in milliseconds (0 when the engine can't say).
+
+        The public form of what the transport surfaces used to reach into the
+        engine for directly (#1344).
+        """
+        probe = getattr(self._engine, "position_ms", None)
+        if not callable(probe):
+            return 0
+        try:
+            return max(0, int(probe()))
+        except Exception:  # noqa: BLE001 - a position is never worth an exception
+            return 0
+
+    def seek_to(self, ms: int) -> bool:
+        """Jump to an absolute position. False when there is nothing to seek."""
+        if not self.is_seekable():
+            return False
+        total = self.duration_ms()
+        self._engine.seek(max(0, min(int(ms), total)) if total else max(0, int(ms)))
+        return True
+
+    def skip_by(self, ms: int) -> bool:
+        """Jump *ms* forward (negative rewinds), clamped to the timeline."""
+        if not self.is_seekable():
+            return False
+        return self.seek_to(int(self._engine.position_ms()) + int(ms))
+
+    def playback_rate(self) -> float:
+        """The current speed for bounded sources (1.0 = normal)."""
+        return self._playback_rate
+
+    def set_playback_rate(self, rate: float) -> float:
+        """Set playback speed, clamped to mpv's usable 0.25x-4x. Returns it.
+
+        Remembered across stations so a listener who prefers 1.5x keeps it,
+        and re-applied after each bounded load.
+        """
+        self._playback_rate = max(0.25, min(4.0, float(rate)))
+        if self.is_seekable():
+            self._engine.set_rate(self._playback_rate)
+        return self._playback_rate
+
+    def chapters(self) -> list[Any]:
+        """The published chapters of what is playing, or an empty list.
+
+        These are the uploader's own markers, captured during the resolve at
+        no extra cost -- never guessed.
+        """
+        stream = self._youtube_stream
+        if stream is None or not self.is_seekable():
+            return []
+        return list(getattr(stream, "chapters", ()) or ())
+
+    def current_chapter_index(self) -> int:
+        """Index of the chapter the playhead sits in, or -1 if none applies."""
+        chapters = self.chapters()
+        if not chapters:
+            return -1
+        position = int(self._engine.position_ms())
+        current = -1
+        for index, chapter in enumerate(chapters):
+            if int(getattr(chapter, "start_ms", 0)) <= position:
+                current = index
+            else:
+                break
+        return current
+
+    def go_to_chapter(self, index: int) -> bool:
+        """Jump to a chapter by index. False when the index does not exist."""
+        chapters = self.chapters()
+        if not 0 <= index < len(chapters):
+            return False
+        return self.seek_to(int(getattr(chapters[index], "start_ms", 0)))
+
+    def go_to_adjacent_chapter(self, delta: int) -> int:
+        """Move *delta* chapters from the current one; returns the new index.
+
+        Returns -1 when there is nowhere to go. Previous-chapter deliberately
+        restarts the current chapter when the playhead is already well inside
+        it, which is what a listener means by "previous" on any other player.
+        """
+        chapters = self.chapters()
+        if not chapters:
+            return -1
+        current = self.current_chapter_index()
+        if delta < 0 and current >= 0:
+            start = int(getattr(chapters[current], "start_ms", 0))
+            if int(self._engine.position_ms()) - start > _CHAPTER_RESTART_MS:
+                return current if self.go_to_chapter(current) else -1
+        target = (0 if current < 0 else current) + delta
+        target = max(0, min(target, len(chapters) - 1))
+        return target if self.go_to_chapter(target) else -1
 
     def current_playback_url(self) -> str:
         """The URL actually being played -- resolved, if the station needed it.

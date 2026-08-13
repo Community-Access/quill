@@ -43,6 +43,7 @@ from pathlib import Path
 
 from quill.core.error_codes import CodedError
 from quill.core.speech import models
+from quill.core.speech.engine_pack_imports import prefer_pack_module
 
 ProgressCallback = Callable[[float, str], None]
 
@@ -187,6 +188,16 @@ def activate_engine_packs() -> None:
             changed = True
     if changed:
         importlib.invalidate_caches()
+    prefer_engine_pack_yt_dlp()
+
+
+def prefer_engine_pack_yt_dlp() -> bool:
+    """Make an updated engine-pack yt-dlp shadow the bundled copy (idempotent).
+
+    Needs a meta-path finder, not a ``sys.path`` entry, once the app is frozen:
+    see :mod:`quill.core.speech.engine_pack_imports`.
+    """
+    return prefer_pack_module(yt_dlp_pack_dir(), _YT_DLP_MODULE)
 
 
 def faster_whisper_install_supported() -> bool:
@@ -569,6 +580,9 @@ def install_yt_dlp(
     if str(dest) not in sys.path:
         sys.path.insert(0, str(dest))
     importlib.invalidate_caches()
+    # yt-dlp is bundled, so a sys.path entry alone would still lose to the
+    # built-in copy in a frozen build. This is what makes an update take.
+    prefer_engine_pack_yt_dlp()
     if not is_yt_dlp_available():
         _LOG.error("yt-dlp installed into %s but the module is not importable", dest)
         raise EngineInstallError(

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from quill.core.paths import app_data_dir
 from quill.core.radio import favorites as radio_favorites
@@ -920,6 +921,18 @@ class RadioMixin:
 
         volume_commands.forget_station_volumes(self)
 
+    def radio_add_youtube_playlist(self) -> None:
+        """List a YouTube playlist and add the videos you choose."""
+        from quill.ui.radio.youtube_ui import add_youtube_playlist
+
+        add_youtube_playlist(self)
+
+    def radio_update_youtube_support(self) -> None:
+        """Fetch a newer yt-dlp than the one bundled, when YouTube changes."""
+        from quill.ui.radio.youtube_ui import update_youtube_support
+
+        update_youtube_support(self)
+
     def radio_song_history(self) -> None:
         """Open the Song History window for the playing (or last) station."""
         from quill.ui.radio import song_history_commands
@@ -1557,8 +1570,11 @@ class RadioMixin:
 
         return ask_youtube_consent(self)
 
-    def _radio_resolve_youtube(self, page_url: str) -> str:
-        """Resolve a saved YouTube link to a playable stream (worker thread)."""
+    def _radio_resolve_youtube(self, page_url: str) -> Any:
+        """Resolve a saved YouTube link to a playable stream (worker thread).
+
+        Returns the whole YouTubeStream so the controller can tell a finished
+        video (seekable, chaptered) from a live broadcast (neither)."""
         from quill.ui.radio.youtube_ui import resolve_youtube_for_host
 
         return resolve_youtube_for_host(self, page_url)
@@ -1768,6 +1784,7 @@ class RadioMixin:
             scheduler=self._radio_scheduler,
             controller=self._radio_controller,
             announce_cb=self._announce,
+            history=self._radio_history,
         )
         dlg.show()
         self._refresh_statusbar()
@@ -1793,6 +1810,10 @@ class RadioMixin:
             on_report_bad_station=getattr(self, "report_bad_station", None),
             show_details=self._radio_history.show_station_details,
             windows=getattr(self, "_windows", None),
+            spotify_client_provider=self._spotify_search_client,
+            enabled_sources=self._radio_history.search_sources_enabled,
+            source_facet=self._radio_history.search_source_facet,
+            on_search_prefs_changed=self._radio_save_search_prefs,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
@@ -1921,6 +1942,11 @@ class RadioMixin:
                 self.radio_copy_whats_playing,
             ),
             (
+                "radio.add_youtube_playlist",
+                "Internet Radio: Add from YouTube Playlist...",
+                self.radio_add_youtube_playlist,
+            ),
+            (
                 "radio.song_history",
                 "Internet Radio: Song History...",
                 self.radio_song_history,
@@ -2046,6 +2072,58 @@ class RadioMixin:
             safe_mode=self._safe_mode,
         )
         self._show_modal_dialog(dialog, "Connect to Spotify")
+
+    def _save_radio_history(self) -> None:
+        """Persist RadioHistory. A failed save must never block the UI."""
+        try:
+            from quill.core.paths import app_data_dir
+            from quill.core.radio import history as radio_history
+
+            radio_history.save_history(app_data_dir(), self._radio_history)
+        except Exception:  # noqa: BLE001 - a setting that did not persist is not fatal
+            pass
+
+    def radio_search_sources(self) -> None:
+        """Choose which directories Find Stations searches (remembered)."""
+        from quill.core.radio import search_sources
+        from quill.ui.radio.search_sources_dialog import SearchSourcesDialog
+
+        dialog = SearchSourcesDialog(
+            self.frame,
+            enabled=self._radio_history.search_sources_enabled,
+            show_modal_dialog=self._show_modal_dialog,
+            announce=self._announce,
+        )
+        self._radio_history.search_sources_enabled = dialog.show()
+        self._save_radio_history()
+        self._announce(
+            search_sources.describe_selection(self._radio_history.search_sources_enabled)
+        )
+
+    def _radio_save_search_prefs(self, enabled: tuple[str, ...], facet: str) -> None:
+        """Remember the source selection and the Source facet across sessions."""
+        self._radio_history.search_sources_enabled = enabled
+        self._radio_history.search_source_facet = facet
+        self._save_radio_history()
+
+    def _spotify_search_client(self) -> object | None:
+        """A signed-in Spotify client for blending Spotify into Find Stations.
+
+        ``None`` -- so the source is simply absent -- in Safe Mode, when nobody
+        has connected Spotify, or when no Client ID is configured. Called from
+        the browser's off-thread search worker, so it touches no wx: it only
+        reads the stored token bundle.
+        """
+        if self._safe_mode:
+            return None
+        from quill.core.spotify import token_store
+        from quill.core.spotify.client import SpotifyClient
+
+        tokens = token_store.load_tokens()
+        client_id = token_store.load_client_id()
+        if tokens.is_empty or not client_id:
+            return None
+        return SpotifyClient(tokens, client_id, on_tokens_refreshed=token_store.save_tokens)
 
     def open_spotify_browse(self) -> None:
         """Open the accessible Spotify browse dialog and play the chosen track (Radio)."""

@@ -28,6 +28,7 @@ class ChaptersDialog:
         episode_title: str,
         chapters: list[PodcastChapter],
         announce_cb: Callable[[str], None] | None = None,
+        source_label: str = "",
     ) -> None:
         import wx
 
@@ -44,9 +45,17 @@ class ChaptersDialog:
         self.dialog.SetMinSize((480, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        root.Add(wx.StaticText(self.dialog, label="&Chapters"), 0, wx.LEFT | wx.TOP, 10)
+        # Where the chapters came from is part of the label, not a footnote:
+        # marks read out of the show notes must never be mistaken for the
+        # publisher's own.
+        heading = f"&Chapters -- {source_label}" if source_label else "&Chapters"
+        root.Add(wx.StaticText(self.dialog, label=heading), 0, wx.LEFT | wx.TOP, 10)
         self._list = wx.ListBox(self.dialog)
-        self._list.SetName("Chapters for this episode; select one and press Jump to go there")
+        self._list.SetName(
+            f"Chapters for this episode ({source_label}); select one and press Jump to go there"
+            if source_label
+            else "Chapters for this episode; select one and press Jump to go there"
+        )
         for chapter in chapters:
             self._list.Append(f"{_format_timestamp(chapter.start_ms)} -- {chapter.title}")
         if chapters:

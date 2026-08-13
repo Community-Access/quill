@@ -728,6 +728,13 @@ class PodcastsAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
         )
+        # Where the audio comes out. One key cycles stereo / mono / left ear /
+        # right ear, matching Quill Radio exactly (quill.core.audio.channel_mode)
+        # -- someone listening with one ear, or sharing their ears with a screen
+        # reader, needs this in every app and should not learn it twice.
+        channel_id = wx.NewIdRef()
+        episode_menu.Append(channel_id, "Audio &Output Mode\tCtrl+Shift+M")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_cycle_channel_mode(), id=channel_id)
         skip_settings_id = wx.NewIdRef()
         episode_menu.Append(skip_settings_id, "S&kip Settings...")
         self.frame.Bind(
@@ -837,6 +844,7 @@ class PodcastsAppFrame(
         self.frame.SetMenuBar(menu_bar)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
+            channel_id,
             spotify_connect_id,
             spotify_browse_id,
             manager_id,

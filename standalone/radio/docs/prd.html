@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -658,6 +659,64 @@ Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>YouTube metadata and playlists (2.2.0; upstream
+<code>core/radio/youtube.py</code>,
+<code>tools/network_egress_audit.py</code>).</strong>
+<ul>
+<li><em>The metadata was already being paid for.</em>
+<code>_default_resolver</code> called <code>extract_info</code> and kept
+four fields – <code>stream_url</code>, <code>page_url</code>,
+<code>title</code>, <code>is_live</code> – out of a response that also
+carried duration, the uploader’s own chapter markers, subtitle and
+automatic-caption tracks, uploader, and description. All of it is now
+captured on the same request, so the cost is zero: no extra fetch, no
+extra latency. The parsing is split into pure functions
+(<code>stream_from_info</code>, <code>parse_chapters</code>,
+<code>pick_caption_track</code>,
+<code>playlist_entries_from_info</code>) so every field is testable
+against a fixture dict without touching YouTube; 22 tests do exactly
+that, and the pipeline was additionally verified end-to-end against a
+real 12-chapter video. Caption selection prefers a human-written track
+over an automatic one, accepts only <em>timed</em> formats (a plain-text
+dump carries no positions, making it useless for both seeking and the
+podcast chapter segmenter), and refuses a non-HTTPS URL.
+<code>duration_ms</code> is 0 for a live broadcast, which is not a
+failure but the honest answer: a broadcast has no timeline.</li>
+<li><em>Playlists, listed flat.</em>
+<code>resolve_youtube_playlist</code> uses
+<code>extract_flat="in_playlist"</code>, so a fifty-video playlist costs
+one request rather than fifty, and no entry’s audio is resolved until
+that entry is played – which then goes through the normal resolver with
+its re-resolve-on-every-play rule, because YouTube’s stream addresses
+expire. A new reviewed egress site. A watch link carrying
+<code>&amp;list=</code> is deliberately <strong>not</strong> treated as
+a playlist: the listener asked for that video, and silently expanding it
+into fifty stations would be a surprise, so only a genuine
+<code>/playlist</code> address expands.</li>
+<li><em>Deliberately not built: search and browse.</em> yt-dlp’s
+<code>ytsearch:</code> works without a key and is against YouTube’s
+Terms of Service; the sanctioned route is the Data API v3, which needs a
+key and carries a quota. Radio’s other directories (RadioBrowser,
+SomaFM, Xiph) are open APIs built to be consumed this way – YouTube is
+not, and the same rights posture that keeps the Live365 rewrite a pure
+string transform applies here. Decision 2026-08-12: no search branch;
+paste a link or a playlist. If it is revisited, it should be through the
+Data API with the listener’s own client credentials, the shape Spotify
+already uses.</li>
+<li><em>Known next step: a finished video is not a station.</em> Seek, a
+scrub slider, and 0.25-4x speed already exist in
+<code>ui/audio/mpv_engine.py</code> (<code>seek</code> absolute+exact,
+real <code>length_ms</code>, <code>set_rate</code> with scaletempo);
+<code>MpvRadioEngine</code> stubs all three deliberately, because live
+radio has no timeline. Routing a non-live YouTube video to the bounded
+engine is therefore a behaviour the codebase can already perform – the
+obstacle is ordering, not capability: <code>_select_engine()</code> runs
+before <code>_resolve_playback_url()</code>, while live-versus-finished
+is only known after the resolve. Doing it means letting the play path
+choose its engine once the resolve lands, inside the existing
+one-play-token discipline so a late resolve cannot hijack playback the
+listener has moved on from.</li>
+</ul></li>
 <li><strong>Song History and one volume for every station (2.2.0;
 upstream <code>core/radio/song_history.py</code>,
 <code>ui/radio/song_history_dialog.py</code>,

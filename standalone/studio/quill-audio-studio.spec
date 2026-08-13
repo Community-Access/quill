@@ -23,13 +23,18 @@ quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
 # quill.tools.signing, so collect it explicitly rather than trusting the
 # tracer -- the wheel's _sodium extension must land in binaries too.
 nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
+# yt-dlp: the URL-import path resolves a media page link to a playable
+# stream. Bundled rather than downloaded on demand (~3 MB wheel), and
+# collected explicitly because yt-dlp loads its ~940 site extractors
+# through a lazy registry the import tracer cannot follow.
+ytdlp_datas, ytdlp_binaries, ytdlp_hiddenimports = collect_all("yt_dlp")
 
 a = Analysis(
     ["launcher.py"],
     pathex=[],
-    binaries=quill_binaries + nacl_binaries,
-    datas=quill_datas + nacl_datas,
-    hiddenimports=quill_hiddenimports + nacl_hiddenimports,
+    binaries=quill_binaries + nacl_binaries + ytdlp_binaries,
+    datas=quill_datas + nacl_datas + ytdlp_datas,
+    hiddenimports=quill_hiddenimports + nacl_hiddenimports + ytdlp_hiddenimports,
     hookspath=[],
     runtime_hooks=[],
     excludes=[

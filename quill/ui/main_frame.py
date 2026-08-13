@@ -34,8 +34,7 @@ from quill.core.ai import Assistant
 from quill.core.ai.agent import allowed_tools
 from quill.core.announce import Channel as AnnounceChannel
 from quill.core.autoformat import EM_DASH, is_dash_merge, smart_quote_for
-from quill.core.autosave import autosave_document
-from quill.core.backups import backup_document, list_backups
+from quill.core.backups import list_backups
 from quill.core.bookmark_anchor import BookmarkAnchor, capture_anchor, resolve_anchor
 from quill.core.bookmarks import (  # N-13: keep the module as the supported home for these helpers
     DocumentMemory,
@@ -438,6 +437,7 @@ from quill.ui.main_frame_menu_editor import (
 )
 from quill.ui.main_frame_metadata_ai import MetadataAiMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
+from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
@@ -445,6 +445,7 @@ from quill.ui.main_frame_preferences import PreferencesMixin
 from quill.ui.main_frame_print import PrintMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
 from quill.ui.main_frame_publishing import PublishingCommandsMixin
+from quill.ui.main_frame_quick_insert import QuickInsertMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
 from quill.ui.main_frame_radio import RadioMixin
@@ -465,6 +466,7 @@ from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_table_nav import TableNavMixin
+from quill.ui.main_frame_typing import TypingPathMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
 from quill.ui.main_frame_vault import VaultMixin
@@ -472,6 +474,7 @@ from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
+from quill.ui.main_frame_write_safety import WriteSafetyMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.sound_manager import post_sound
 from quill.ui.word_view import WordDocumentSurface
@@ -815,6 +818,7 @@ class MainFrame(
     SrWatchdogMixin,
     MetadataAiMixin,
     AbbreviationsMixin,
+    QuickInsertMixin,
     EquationsMixin,
     AiActionsMixin,
     ReadingOrderMixin,
@@ -858,6 +862,9 @@ class MainFrame(
     GitSyncMixin,
     LocalGitMixin,
     WorktreesMixin,
+    WriteSafetyMixin,
+    TypingPathMixin,
+    PaletteToggleLabelsMixin,
     MediaPlayerMixin,
     GlowFileMixin,
     DocConvertMixin,
@@ -2400,51 +2407,11 @@ class MainFrame(
                 return
         self.open_file(path, line=candidate.line, column=candidate.column)
 
-    def _on_text_changed(self, _event: object) -> None:
-        if (
-            not self._abbreviation_expansion_guard
-            and getattr(self.settings, "abbreviation_expansion", True)
-            and self._expand_abbreviation_if_match()
-        ):
-            return
-        if (
-            not self._snippet_expansion_guard
-            and self.settings.snippet_trigger_expansion
-            and self._expand_snippet_trigger_if_match()
-        ):
-            return
-        self._sync_editor_change("Modified")
-
-    def _sync_editor_change(self, status: str = "Modified") -> None:
-        # `status` defaults so this doubles as the WordDocumentSurface on_change
-        # callback, which invokes it with no arguments (#1198). The plain-editor
-        # callers pass "Modified" explicitly; the default matches them.
-        self._browse_navigation_cache = None
-        self.document.set_text(self.editor.GetValue())
-        self._schedule_browse_prewarm()
-        if not self._suspend_persistent_undo:
-            self._record_persistent_undo_state(self.document.text)
-        if self.settings.spellcheck_as_you_type:
-            self._announce_spellcheck_hint()
-        self._refresh_intellisense_popup()
-        self._refresh_side_preview()
-        self._refresh_browser_preview()
-        self._maybe_autosave()
-        self._refresh_title()
-        self._refresh_contextual_menu_items()
-        # #181: debounced auto language detection (no-op unless enabled in Settings).
-        self._schedule_language_detection()
-        # Quiet: this fires on every keystroke; speaking "Modified" each time is
-        # noise for a screen reader (it already echoes the typed character).
-        self._set_status_quiet(status)
-
-    def _on_csv_surface_changed(self) -> None:
-        self._sync_editor_change("Modified")
-
-    def _expand_snippet_trigger_if_match(self) -> bool:
+    def _expand_snippet_trigger_if_match(self, text: str | None = None) -> bool:
         if self.editor.GetSelection()[0] != self.editor.GetSelection()[1]:
             return False
-        text = self.editor.GetValue()
+        if text is None:  # #1346: reuse the caller's buffer read when it has one.
+            text = self.editor.GetValue()
         caret = self.editor.GetInsertionPoint()
         if caret <= 0 or caret > len(text):
             return False
@@ -3912,6 +3879,14 @@ class MainFrame(
                 return
         except Exception:  # noqa: BLE001 - never trap the window open on a prompt bug
             log.warning("Save-on-close prompt failed; closing anyway (#210)", exc_info=True)
+            # #1390: #210's "always close" rule must not become "close on a
+            # failed save". When the prompt raised and a document is still
+            # unsaved, veto *once* and say so, so the user can free disk space
+            # or Save As. A second close attempt proceeds regardless, which is
+            # what keeps #210's guarantee -- the window can never be trapped.
+            if self._veto_close_after_failed_save():
+                event.Veto()
+                return
 
         # Warn before silently abandoning real, hard-to-redo background work (an
         # Audio Studio export in progress, for example) -- only tasks that opted
@@ -6634,7 +6609,24 @@ class MainFrame(
         if result == wx.ID_CANCEL:
             return False
         if result == wx.ID_YES:
-            self.save_file()
+            # #1390: the user asked for the document to be saved. A save that
+            # raises (a full disk reaching a writer that is not guarded, a
+            # format writer blowing up) must cancel the close, never be read as
+            # consent to discard -- closing on a failed save *is* the data loss.
+            try:
+                self.save_file()
+            except Exception as error:  # noqa: BLE001 - never close on a failed save
+                import logging
+
+                logging.getLogger(__name__).warning(
+                    "Save-on-close failed; cancelling the close (#1390)", exc_info=True
+                )
+                self._report_save_failure(
+                    self.document.name,
+                    error if isinstance(error, OSError) else OSError(str(error)),
+                    "Save",
+                )
+                return False
             return not self.document.modified
         if result == wx.ID_NO:
             return True
@@ -7858,16 +7850,11 @@ class MainFrame(
         if getattr(self.settings, "spell_check_before_save", False):
             self.open_spell_check_dialog()
         if self.document.modified:
-            backup_document(self.document)
+            self._backup_before_save(self.document)
         try:
             self._write_document_to_disk(self.document)
         except OSError as error:
-            self._show_message_box(
-                f"Could not save {self.document.name}: {error}",
-                "Save",
-                wx.ICON_ERROR | wx.OK,
-            )
-            self._set_status(f"Could not save {self.document.name}")
+            self._report_save_failure(self.document.name, error, "Save")
             return
         # Persist this document's bookmarks + cursor position under its path now that
         # it is saved (also migrates an untitled document's in-memory bookmarks).
@@ -7943,7 +7930,11 @@ class MainFrame(
                 return
             selection = dialog.GetSelection()
         backup_path = backups[selection]
-        restored_text = backup_path.read_text(encoding=self.document.encoding)
+        # Backups are UTF-8 as of 1.0.1 (#1390); older ones used the document's
+        # own encoding, so read_backup_text decodes UTF-8 first and falls back.
+        from quill.core.backups import read_backup_text
+
+        restored_text = read_backup_text(backup_path, self.document.encoding)
         self.document.set_text(restored_text)
         self._replace_document_text(restored_text)
         self._refresh_title()
@@ -8051,16 +8042,11 @@ class MainFrame(
             self.open_spell_check_dialog()
         self.document.set_text(self.editor.GetValue())
         if self.document.modified and self.document.path is not None:
-            backup_document(self.document)
+            self._backup_before_save(self.document)
         try:
             self._write_document_to_disk(self.document, target)
         except OSError as error:
-            self._show_message_box(
-                f"Could not save {target.name}: {error}",
-                "Save file as",
-                wx.ICON_ERROR | wx.OK,
-            )
-            self._set_status(f"Could not save {target.name}")
+            self._report_save_failure(target.name, error, "Save file as")
             return
         # FEAT-19: restart the watcher on the new path so our save is the baseline.
         self._stop_external_change_watcher()
@@ -8611,32 +8597,21 @@ class MainFrame(
         if last_revision == revision:
             self._last_autosave_at = now
             return
-        try:
-            autosave_document(self.document, self.session_id)
-        except Exception:  # noqa: BLE001 - autosave must never break editing
-            pass
+        # Everything the writers need is captured here, on the UI thread, and
+        # nothing below this line touches wx (#1346): a multi-hundred-millisecond
+        # disk write mid-sentence was a periodic typing hitch on a large file.
         # Rich tabs also snapshot the RTF bytes: TOM formatting never changes
         # the plain text, so a text-only snapshot would lose formatting in a
         # crash. Best-effort by the same contract as the text snapshot.
+        snapshot = replace(self.document)
         rich_payload = self._rich_autosave_payload()
-        if rich_payload is not None:
-            try:
-                from quill.core.autosave import autosave_rich_document
-
-                autosave_rich_document(self.document, self.session_id, rich_payload)
-            except Exception:  # noqa: BLE001 - autosave must never break editing
-                pass
+        try:
+            caret = self.editor.GetInsertionPoint() if self.editor is not None else None
+        except Exception:  # noqa: BLE001 - a surface without a caret just skips it
+            caret = None
         self._last_autosave_at = now
         self._last_autosave_revision = revision
-        # §8.4 "Resume from where I left off": persist cursor position alongside
-        # every autosave so the next session can restore it.
-        try:
-            from quill.core.recovery import save_cursor_position
-
-            if self.editor is not None:
-                save_cursor_position(self.session_id, self.editor.GetInsertionPoint())
-        except Exception:  # noqa: BLE001
-            pass
+        self._write_autosave_snapshot(snapshot, rich_payload, caret)
 
     def open_palette(self) -> None:
         """Open Command Palette (single press) or re-run last command (double press)."""
@@ -8675,6 +8650,11 @@ class MainFrame(
     def _open_palette_dialog(self) -> None:
         from quill.ui.palette import CommandPaletteDialog
 
+        # #1383: the palette has no checkmark column, so a toggle's own label is
+        # the only place its current state can live. Refreshing here -- once,
+        # just before the list is built -- keeps every toggle honest without
+        # each handler having to remember to retitle itself.
+        self._refresh_palette_toggle_titles()
         dialog = CommandPaletteDialog(
             self.frame,
             self.commands,
@@ -14555,7 +14535,7 @@ class MainFrame(
             self._set_active_region("Editor")
             self._set_status("Back in the editor")
 
-    def _refresh_side_preview(self) -> None:
+    def _refresh_side_preview(self, text: str | None = None) -> None:
         tab = self._active_tab()
         if tab is None:
             return
@@ -14564,7 +14544,10 @@ class MainFrame(
             return
         if not splitter.IsSplit():
             if getattr(self.settings, "auto_side_preview", True):
-                text = tab.editor.GetValue()
+                # #1346: the typing path already read the buffer; only fetch it
+                # here when some other caller came in without one.
+                if text is None:
+                    text = tab.editor.GetValue()
                 if guess_preview_kind(tab.document.path, text) != "plain":
                     self._show_side_preview_for(tab)
             return

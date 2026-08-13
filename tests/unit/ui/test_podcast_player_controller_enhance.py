@@ -90,6 +90,7 @@ class _FakeRelay:
         treble_db: float,
         compressor_enabled: bool,
         smart_speed_enabled: bool = False,
+        channel_mode: str = "stereo",
         start_seconds: float = 0.0,
     ) -> str:
         self.started_with.append((

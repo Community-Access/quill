@@ -20,6 +20,10 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.podcasts import feed_auth
+from quill.core.podcasts.chapter_sources import (
+    build_episode_chapters,
+    episode_has_possible_chapters,
+)
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.sorting import (
@@ -845,7 +849,9 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         else:
             self._pause_btn.SetLabel("&Pause Download")
         self._remove_download_btn.Enable(already_downloaded)
-        self._chapters_btn.Enable(bool(episode.chapters_url))
+        # Chapters are no longer only a published-feed feature: the free
+        # cascade can also read them from the file's tags or the show notes.
+        self._chapters_btn.Enable(episode_has_possible_chapters(episode))
 
     def _on_episode_activate(self, _event: object) -> None:
         self._play_selected()
@@ -853,21 +859,15 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
     def _on_chapters_click(self, _event: object) -> None:
         show = self._current_show
         episode = self._selected_episode()
-        if show is None or episode is None or not episode.chapters_url:
+        if show is None or episode is None:
             return
         if self._task_manager is None:
             return
 
-        from quill.core.podcasts import chapters as chapters_module
-
         def _do_fetch(**_kwargs: object):
-            return chapters_module.fetch_and_parse_chapters(
-                episode.chapters_url,
-                safe_mode=self._safe_mode,
-                auth_header=feed_auth.auth_header_for_url(show, episode.chapters_url),
-            )
+            return build_episode_chapters(episode, show, safe_mode=self._safe_mode)
 
-        def _on_success(_op: str, result: list) -> None:
+        def _on_success(_op: str, result: object) -> None:
             self._open_chapters_dialog(show, episode, result)
 
         def _on_failure(_op: str, error: Exception) -> None:
@@ -879,15 +879,20 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         )
 
     def _open_chapters_dialog(
-        self, show: PodcastShow, episode: PodcastEpisode, chapters: list
+        self, show: PodcastShow, episode: PodcastEpisode, chapter_set: object
     ) -> None:
         from quill.ui.podcasts.chapters_dialog import ChaptersDialog
 
+        chapters = list(getattr(chapter_set, "chapters", []) or [])
         if not chapters:
             self._announce("This episode has no chapters.")
             return
         dialog = ChaptersDialog(
-            self.dialog, episode_title=episode.title, chapters=chapters, announce_cb=self._announce
+            self.dialog,
+            episode_title=episode.title,
+            chapters=chapters,
+            announce_cb=self._announce,
+            source_label=str(getattr(chapter_set, "label", "")),
         )
         start_ms = dialog.show()
         if start_ms is None:

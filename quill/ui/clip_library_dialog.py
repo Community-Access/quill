@@ -51,8 +51,13 @@ class ClipLibraryDialog:
         body = wx.BoxSizer(wx.HORIZONTAL)
         left = wx.BoxSizer(wx.VERTICAL)
         left.Add(wx.StaticText(self.dialog, label="&Clips"), 0, wx.BOTTOM, 2)
-        self._listbox = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
-        self._listbox.SetName("Clip Library entries")
+        # Extended selection, not single: marking several clips and joining
+        # them is the one assembly job this dialog does. Ordinary arrow-key use
+        # is unchanged -- a plain move still selects exactly one.
+        self._listbox = wx.ListBox(self.dialog, style=wx.LB_EXTENDED)
+        self._listbox.SetName(
+            "Clip Library entries; mark several with Ctrl or Shift to combine them"
+        )
         left.Add(self._listbox, 1, wx.EXPAND)
         body.Add(left, 1, wx.EXPAND | wx.RIGHT, 8)
 
@@ -75,8 +80,19 @@ class ClipLibraryDialog:
         self._btn_favorite = wx.Button(self.dialog, label="&Favorite")
         self._btn_promote = wx.Button(self.dialog, label="&Promote to Copy Tray...")
         self._btn_remove = wx.Button(self.dialog, label="&Remove")
+        self._btn_rename = wx.Button(self.dialog, label="Re&name...")
+        self._btn_combine = wx.Button(self.dialog, label="Com&bine Marked...")
+        self._btn_abbreviation = wx.Button(self.dialog, label="Save as &Abbreviation...")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="&Close")
-        for btn in (self._btn_copy, self._btn_favorite, self._btn_promote, self._btn_remove):
+        for btn in (
+            self._btn_copy,
+            self._btn_favorite,
+            self._btn_promote,
+            self._btn_rename,
+            self._btn_combine,
+            self._btn_abbreviation,
+            self._btn_remove,
+        ):
             btn_row.Add(btn, 0, wx.RIGHT, 4)
         btn_row.AddStretchSpacer(1)
         btn_row.Add(close_btn, 0)
@@ -96,6 +112,9 @@ class ClipLibraryDialog:
         self._btn_favorite.Bind(wx.EVT_BUTTON, self._on_favorite)
         self._btn_promote.Bind(wx.EVT_BUTTON, self._on_promote)
         self._btn_remove.Bind(wx.EVT_BUTTON, self._on_remove)
+        self._btn_rename.Bind(wx.EVT_BUTTON, self._on_rename)
+        self._btn_combine.Bind(wx.EVT_BUTTON, self._on_combine)
+        self._btn_abbreviation.Bind(wx.EVT_BUTTON, self._on_save_as_abbreviation)
 
         self._rebuild_list()
         self._listbox.SetFocus()
@@ -113,10 +132,16 @@ class ClipLibraryDialog:
     # -- internal helpers --
 
     def _selected_index(self) -> int | None:
-        sel = self._listbox.GetSelection()
-        if sel == wx.NOT_FOUND or sel >= len(self._indices):
-            return None
-        return self._indices[sel]
+        marked = self._marked_indexes()
+        return marked[0] if marked else None
+
+    def _marked_indexes(self) -> list[int]:
+        """Library indexes for every marked row, in the order they appear."""
+        return [
+            self._indices[row]
+            for row in self._listbox.GetSelections()
+            if 0 <= row < len(self._indices)
+        ]
 
     def _set_status(self, message: str) -> None:
         self._status.SetLabel(message)
@@ -149,6 +174,10 @@ class ClipLibraryDialog:
         self._btn_promote.Enable(has_selection)
         self._btn_remove.Enable(has_selection)
         self._btn_favorite.Enable(has_selection)
+        self._btn_rename.Enable(has_selection)
+        self._btn_abbreviation.Enable(has_selection)
+        # Combining one clip with itself is not a thing; require two.
+        self._btn_combine.Enable(len(self._marked_indexes()) > 1)
         if has_selection:
             entry = self._library.entry(index)  # type: ignore[arg-type]
             self._btn_favorite.SetLabel("Un&favorite" if entry.favorite else "&Favorite")
@@ -182,6 +211,82 @@ class ClipLibraryDialog:
         self._rebuild_list(query=self._search.GetValue())
         message = "Marked as a favorite." if now_favorite else "Removed from favorites."
         self._set_status(message)
+
+    def _on_rename(self, _event: object) -> None:
+        """Give a clip a short name -- easier to find later than its contents."""
+        index = self._selected_index()
+        if index is None:
+            return
+        entry = self._library.entry(index)
+        dialog = wx.TextEntryDialog(
+            self.dialog,
+            "A short name for this clip (leave it empty to go back to a preview of the text):",
+            "Rename Clip",
+            entry.fragment.title,
+        )
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        if show_modal_dialog(dialog, "Rename Clip") == wx.ID_OK:
+            self._library.rename(index, dialog.GetValue())
+            self._rebuild_list(query=self._search.GetValue())
+            self._set_status("Renamed.")
+        dialog.Destroy()
+
+    def _on_combine(self, _event: object) -> None:
+        """Join the marked clips, in the order they appear, onto the clipboard."""
+        from quill.core.clip_library import COMBINE_SEPARATORS
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        indexes = self._marked_indexes()
+        if len(indexes) < 2:
+            return
+        labels = list(COMBINE_SEPARATORS)
+        dialog = wx.SingleChoiceDialog(
+            self.dialog,
+            f"Join the {len(indexes)} marked clips with:",
+            "Combine Clips",
+            labels,
+        )
+        if show_modal_dialog(dialog, "Combine Clips") == wx.ID_OK:
+            separator = COMBINE_SEPARATORS[labels[dialog.GetSelection()]]
+            text = self._library.combine(indexes, separator)
+            if wx.TheClipboard.Open():
+                wx.TheClipboard.SetData(wx.TextDataObject(text))
+                wx.TheClipboard.Close()
+            self._set_status(f"Combined {len(indexes)} clips onto the clipboard.")
+        dialog.Destroy()
+
+    def _on_save_as_abbreviation(self, _event: object) -> None:
+        """Turn a clip into an abbreviation -- which then works everywhere,
+        here and in Quill Inkwell, because both read the same library."""
+        import uuid
+
+        from quill.core.abbreviations import (
+            Abbreviation,
+            load_abbreviation_library,
+            save_abbreviation_library,
+        )
+        from quill.ui.abbreviation_manager_dialog import _AbbreviationEditDialog
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        index = self._selected_index()
+        if index is None:
+            return
+        text = render_fragment(self._library.entry(index).fragment, FragmentFormat.TEXT)
+        library = load_abbreviation_library()
+        entry = Abbreviation(id=str(uuid.uuid4()), abbreviation="", expansion=text)
+        dialog = _AbbreviationEditDialog(
+            self.dialog,
+            entry,
+            categories=sorted({a.category for a in library.abbreviations if a.category}),
+        )
+        if show_modal_dialog(dialog.dialog, "New Abbreviation") == wx.ID_OK and dialog.trigger_text:
+            dialog.apply_to(entry)
+            library.abbreviations.append(entry)
+            library.abbreviations.sort(key=lambda a: a.abbreviation.lower())
+            save_abbreviation_library(library)
+            self._set_status(f"Saved as the abbreviation {entry.abbreviation}.")
+        dialog.close()
 
     def _on_promote(self, _event: object) -> None:
         index = self._selected_index()

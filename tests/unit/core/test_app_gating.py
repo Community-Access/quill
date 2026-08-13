@@ -1,8 +1,12 @@
 """Gated companion apps must be absent from public surfaces (release sign-off §G).
 
-Only QUILL, Quill Radio, and Quill Weather are public for 1.0.0; the Media Player,
-Quill Cast, Audio Studio, Quill Converter, and QuillBeacon are gated behind
+QUILL, Quill Radio, Quill Weather, and Quill Inkwell are public for 1.0.0; the Media
+Player, Quill Cast, Audio Studio, Quill Converter, and QuillBeacon are gated behind
 ``RELEASED_APPS`` / ``QUILL_DEV_BUILD``.
+
+Inkwell is public because it is the system-wide half of the editor's own abbreviation
+expansion and shares one library with it -- gating it would leave that feature visibly
+half-present, with abbreviations that work in QUILL and nowhere else.
 """
 
 from __future__ import annotations
@@ -11,12 +15,12 @@ import pytest
 
 from quill.core.app_launcher import RELEASED_APPS, is_app_released
 
-PUBLIC = ("quill", "radio", "weather")
+PUBLIC = ("quill", "radio", "weather", "inkwell")
 GATED = ("player", "cast", "studio", "converter", "beacon")
 
 
-def test_released_apps_are_only_the_public_three() -> None:
-    assert RELEASED_APPS == frozenset({"quill", "radio", "weather"})
+def test_released_apps_are_only_the_public_set() -> None:
+    assert RELEASED_APPS == frozenset({"quill", "radio", "weather", "inkwell"})
 
 
 def test_public_apps_are_always_released(monkeypatch: pytest.MonkeyPatch) -> None:

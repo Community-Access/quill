@@ -17,9 +17,32 @@ def backup_document(document: Document) -> Path:
     while backup_path.exists():
         backup_path = backup_root / f"{stamp}-{suffix}.bak"
         suffix += 1
-    with backup_path.open("w", encoding=document.encoding, newline="") as file_handle:
-        file_handle.write(document.text)
+    # Atomic, and always UTF-8 -- the same contract as core.autosave (#1390).
+    # A .bak is a recovery-only artifact with no round-trip-fidelity
+    # requirement, so writing it in the document's own (possibly narrow)
+    # encoding only bought a UnicodeEncodeError the moment the buffer gained a
+    # character outside that range -- and that error aborted the *save*, not
+    # just the backup. Atomicity matters for the same reason it does for the
+    # autosave snapshot: a truncated .bak must never become what a user
+    # restores. read_backup_text decodes UTF-8 first and falls back for files
+    # written by older builds.
+    from quill.core.storage import write_text_atomic
+
+    write_text_atomic(backup_path, document.text, encoding="utf-8", newline="")
     return backup_path
+
+
+def read_backup_text(backup_path: Path, fallback_encoding: str = "utf-8") -> str:
+    """Read a ``.bak`` written by any QUILL build.
+
+    Backups are UTF-8 as of 1.0.1; older ones used the document's encoding, so
+    a decode failure retries in *fallback_encoding* rather than stranding a
+    user in front of a backup they cannot restore.
+    """
+    try:
+        return backup_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return backup_path.read_text(encoding=fallback_encoding, errors="replace")
 
 
 def list_backups(document_path: Path) -> list[Path]:

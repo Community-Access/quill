@@ -1389,6 +1389,16 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.open_quick_insert(),
+            id=self._id_quick_insert,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.new_abbreviation_from_clipboard(),
+            id=self._id_new_abbreviation_from_clipboard,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.toggle_abbreviation_expansion(),
             id=self._id_toggle_abbreviation_expansion,
         )

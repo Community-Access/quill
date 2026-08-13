@@ -39,10 +39,17 @@ def test_every_download_site_routes_through_the_helper() -> None:
 
 
 def test_chapters_and_transcripts_pass_auth_header() -> None:
-    assert "auth_header_for_url(show, episode.chapters_url)" in _read(
-        "ui/podcasts/manager_dialog.py"
-    )
-    assert "auth_header_for_url(show, episode.chapters_url)" in _read("ui/main_frame_podcasts.py")
+    # Chapters now come from the free cascade (published feed -> the file's own
+    # tags -> timestamps in the show notes), so the authenticated fetch moved
+    # into that one core helper. Both UI sites must route through it rather than
+    # fetching for themselves, which is the same "one helper" rule the download
+    # sites follow above.
+    cascade = _read("core/podcasts/chapter_sources.py")
+    assert "auth_header_for_url(show, chapters_url)" in cascade
+    for rel in ("ui/podcasts/manager_dialog.py", "ui/main_frame_podcasts.py"):
+        src = _read(rel)
+        assert "build_episode_chapters(" in src, rel
+        assert "fetch_and_parse_chapters(" not in src, rel
     assert "auth_header_for_url(show, episode.transcript_url)" in _read(
         "ui/podcasts/manager_phase4.py"
     )

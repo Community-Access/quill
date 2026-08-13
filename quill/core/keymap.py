@@ -197,6 +197,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "radio.play_favorite_10": "Ctrl+Alt+Shift+0",
     "podcasts.play_pause": "Ctrl+Shift+Grave, 8",  # Podcasts
     "podcasts.stop": "Ctrl+Shift+Grave, 7",  # Podcasts
+    # Player Information: reviewable status for what is playing. No default
+    # chord -- it is a read-only report, not a transport control -- but it is
+    # registered so it reaches the Command Palette and can be bound.
+    "podcasts.player_information": "",
     "radio.record_toggle": "Ctrl+Shift+Grave, 6",  # Internet Radio (Record Now / Stop Recording)
     "podcasts.skip_forward": "Ctrl+Shift+Grave, 5",  # Podcasts
     "podcasts.skip_back": "Ctrl+Shift+Grave, 4",  # Podcasts
@@ -389,6 +393,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.manage_snippets": "Ctrl+Shift+Grave, Shift+S",
     "format.expand_abbreviation": "Ctrl+Shift+Grave, A",
     "format.manage_abbreviations": "Ctrl+Shift+Grave, Shift+A",
+    # No default chord: the Ctrl+Shift+Grave leader space is fully allocated,
+    # and taking a used one would silently break an existing habit. Registered
+    # so it reaches the Command Palette and can be bound by anyone who wants it.
+    "format.quick_insert": "",
+    "format.new_abbreviation_from_clipboard": "",
     "format.toggle_abbreviation_expansion": "Ctrl+Shift+Grave, E",
     # Structured List Studio takes the primary F2 slot (its PRD names F2 the
     # primary command); Insert Special Character moves to the adjacent Shift+F2.
@@ -857,6 +866,8 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         "format.manage_snippets": ("CTRL+ALT+SHIFT+SPACE", "Ctrl+Shift+Grave, Shift+S"),
         "format.expand_abbreviation": ("", "Ctrl+Shift+Grave, A"),
         "format.manage_abbreviations": ("", "Ctrl+Shift+Grave, Shift+A"),
+        "format.quick_insert": ("", ""),
+        "format.new_abbreviation_from_clipboard": ("", ""),
         "format.toggle_abbreviation_expansion": ("", "Ctrl+Shift+Grave, E"),
         # PR1 (EdSharp port): users from any pre-0.7.0 build who had the old
         # Alt+Shift+Up/Down expand/shrink selection bindings saved in their

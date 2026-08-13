@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill User Guide</title>
   <style>
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -604,6 +605,15 @@ understood as aliases — <code>settings</code> finds
 command’s shortcut along with its name — the palette teaches the
 keystroke while it dispatches, so you graduate off the palette instead
 of depending on it.</p>
+<p>Every on/off command in the palette says which way it is currently
+set: <strong>Toggle Soft Wrap (currently On)</strong>, <strong>Toggle
+Dark Mode (currently Off)</strong>, and so on for find wrap, the tab
+control, persistent undo, spell check as you type, word prediction,
+overwrite mode, extend-selection mode, tab insert mode, abbreviation
+expansion, and Internet Radio’s Announce Track Titles. A menu can show a
+checkmark; a palette list cannot, so the state lives in the name
+instead. You should never have to throw a switch to discover which way
+it was set.</p>
 <p>When a command cannot run right now, the palette says why, not just
 that it can’t: a command disabled by a safety advisory reads and speaks
 as “(unavailable: Turned off by a safety update: …)”, and trying to run
@@ -26995,6 +27005,25 @@ Library”</strong> (off by default) and every copy you make inside QUILL
 separate Keep step. It only ever sees copies made from within QUILL,
 never the system clipboard at large, and never anything copied before
 you turn it on.</li>
+<li><strong>Rename…</strong> gives a clip a short name — far easier to
+find later than its first few words. Leave the name empty to go back to
+a preview of the text.</li>
+<li><strong>Combine Marked…</strong> joins several clips into one piece
+of text. Mark them with Ctrl or Shift (ordinary arrow movement still
+selects just one), choose a separator — space, comma, full stop,
+vertical bar, new line, or blank line — and the joined text goes on the
+clipboard, in the order the clips appear.</li>
+<li><strong>Save as Abbreviation…</strong> turns a clip into an
+abbreviation. Because QUILL and Quill Inkwell share one abbreviation
+library, a clip saved this way is then typeable in every application,
+not only here.</li>
+</ul>
+<p><strong>What the Clip Library is not.</strong> It remembers what you
+deliberately keep or copy <em>inside QUILL</em>. It does not watch the
+system clipboard, and it keeps no history of what you copy in other
+programs. If you want a full clipboard history across everything you do,
+use a clipboard manager alongside QUILL; the two do different jobs.</p>
+<ul>
 <li><strong>Format.</strong> What “Copy to Clipboard” puts on the
 clipboard, and what Send/Copy as Email sends, both follow the same
 <strong>Preferences &gt; Editing &gt; “Kept and sent content
@@ -27640,6 +27669,26 @@ reference.</li>
 trigger matches; otherwise any capitalisation of the trigger fires.</li>
 <li><strong>Enabled</strong> — toggle individual abbreviations without
 deleting them.</li>
+<li><strong>Category</strong> — free text (Work, Personal, Email,
+whatever suits) that groups the list. The manager has a category filter
+beside the search field; abbreviations with no category are listed under
+Uncategorised.</li>
+<li><strong>Expand after</strong> — which characters fire this
+abbreviation: a space or punctuation (the default), a space only,
+punctuation only, or never. <strong>Never</strong> means it only ever
+expands from Quick Insert, which is the right home for a long or
+destructive expansion you would not want appearing by accident.</li>
+<li><strong>Speak</strong> — what your screen reader says when this one
+expands: nothing, the abbreviation, or the expanded text. Set per
+abbreviation, because a short one usually needs no announcement and a
+long template sometimes does.</li>
+<li><strong>Sound</strong> — follow the global sound setting, always
+play, or never play.</li>
+<li><strong>Add a trailing space after punctuation</strong> — adds one
+space after the punctuation that fired the expansion, so
+<code>co.</code> gives <code>Company, </code> rather than
+<code>Company ,</code>. It has no effect on a space trigger, which
+already leaves a space.</li>
 </ul>
 <p>The manager dialog includes a <strong>Search</strong> field at the
 top. Type any part of a trigger word or expansion text to filter the
@@ -27655,6 +27704,30 @@ were added on import.</p>
 <code>Insert &gt; Expand Abbreviation</code>) to expand the word
 immediately before the cursor without typing a delimiter character.
 Useful when you want expansion mid-word or at end-of-document.</p>
+<p><strong>Quick Insert.</strong>
+<code>Insert &gt; Quick Insert...</code> opens a type-to-filter picker
+over every enabled abbreviation, with the ones you use most at the top
+and a preview of the full expansion. Type a few letters, arrow down,
+press Enter, and the expansion is inserted at the cursor. This is how
+you use an abbreviation you have not memorised, and the only way to
+reach one whose <strong>Expand after</strong> is set to Never. It has no
+default keystroke — the QUILL key chords are fully allocated — but you
+can bind one in the keyboard settings, and it is in the Command
+Palette.</p>
+<p><strong>New Abbreviation from Clipboard.</strong>
+<code>Insert &gt; New Abbreviation from Clipboard...</code> takes
+whatever text is on the clipboard and opens a new abbreviation with it
+already filled in as the expansion; you only supply the trigger. The
+fast way to turn a signature, an address, or a block of boilerplate into
+an abbreviation.</p>
+<p><strong>Expanding everywhere, not just in QUILL.</strong> Your
+abbreviations also work in other applications through <strong>Quill
+Inkwell</strong>, a small free companion app that lives in the system
+tray. It is not a copy of your library — it is the same library, the
+same file, read and written by both. Add an abbreviation here and it
+works in your browser; add one there and it works here. Open it from the
+QuillVille menu, and see Quill Inkwell’s own user guide for how it
+decides where it may and may not type.</p>
 <p><strong>Variables in expansions.</strong> Expansions support these
 placeholders:</p>
 <table>
@@ -27681,8 +27754,46 @@ placeholders:</p>
 <td><code>${clipboard}</code></td>
 <td>Current system clipboard text</td>
 </tr>
+<tr>
+<td><code>${datetime}</code></td>
+<td>Current date and time together</td>
+</tr>
+<tr>
+<td><code>${day}</code></td>
+<td>Day of the month</td>
+</tr>
+<tr>
+<td><code>${month}</code></td>
+<td>Month name</td>
+</tr>
+<tr>
+<td><code>${year}</code></td>
+<td>Four-digit year</td>
+</tr>
+<tr>
+<td><code>${username}</code></td>
+<td>Your Windows user name</td>
+</tr>
 </tbody>
 </table>
+<p><strong>Fields: expansions that ask you something.</strong> A
+signature is the same every time; a letter opening or a bug report is
+the same <em>except</em> for a name, a date, or a reference. Put a field
+in the expansion and QUILL asks for it before inserting:</p>
+<ul>
+<li><code>${field:Label}</code> asks for a value with that label.</li>
+<li><code>${field:Label=something}</code> offers a starting value you
+can accept or replace.</li>
+<li>The same label used twice is asked once and filled everywhere, so a
+name in the greeting also lands in the sign-off.</li>
+</ul>
+<p>A small form appears with one labelled box per field, in the order
+the template asks for them. Tab moves between them, Enter moves to the
+next, Enter on the last accepts, and Escape cancels — and cancelling
+leaves what you typed exactly as it was. <code>${cursor}</code> still
+works alongside fields: the caret lands where the template put it, after
+the answers are in. The same form appears in Quill Inkwell, so a
+template behaves identically wherever you use it.</p>
 <p><strong>Multi-press window.</strong> The double/triple press
 detection window is configurable in
 <code>Tools &gt; Customize &amp; Support &gt; Preferences &gt; Editing</code>
@@ -28013,6 +28124,24 @@ selection.</li>
 <code>Ctrl+Enter</code> follows the link under the caret. In Markdown
 and HTML, this makes citation and cross-referencing much less
 tedious.</p>
+<h3 id="typing-stays-ahead-of-you">Typing stays ahead of you</h3>
+<p>Everything QUILL does while you type is arranged around one
+requirement: the next keystroke must never wait. Only three things
+happen between one character and the next — your text is updated, the
+modified marker is refreshed, and the status line is set quietly.
+Everything else QUILL could usefully do — the side preview, the
+spell-check hint, word prediction, browse-mode preparation, language
+detection, the enabling and disabling of menu items, the autosave —
+waits for a short pause in your typing and then happens once, however
+long the burst was.</p>
+<p>This matters most with a screen reader. The notification NVDA and
+JAWS wait on to speak the character you just typed is delivered by the
+same thread that does that work, so work done between keystrokes is
+heard as a delay before the character — and, when the queue gets long
+enough, as keystrokes running together (a missing space between words is
+the usual first symptom). If you ever see that in a very large document,
+it is worth reporting rather than adjusting your screen reader: it means
+something has crept back onto the typing path.</p>
 <h2 id="search-replace-and-deep-navigation">Search, Replace, and Deep
 Navigation</h2>
 <p>Quill’s search tools are both straightforward and layered.</p>
@@ -30844,7 +30973,45 @@ traversing and reshaping text.</p>
 <h3 id="autosave-and-backups">Autosave and backups</h3>
 <p>Quill autosaves at a timed interval and keeps backup snapshots. It
 avoids unnecessary duplicate autosave writes and keeps state management
-efficient.</p>
+efficient. The autosave write happens off the editing thread, so a large
+document is not snapshotted at the cost of a pause in your typing.</p>
+<h3 id="when-the-disk-is-full">When the disk is full</h3>
+<p>This deserves its own explanation, because getting it wrong once cost
+somebody a document.</p>
+<p>QUILL writes your text in three places: the <strong>file
+itself</strong> when you save, a <strong>backup copy</strong> taken just
+before that save, and an <strong>autosave snapshot</strong> on a timer.
+Only the first of those is your document. The rule is therefore simple,
+and QUILL now follows it:</p>
+<ul>
+<li><strong>A backup can never stop a save.</strong> The backup exists
+to protect you <em>from</em> a bad save, so letting a failed backup
+abort the save inverts its whole purpose. If the backup cannot be
+written, QUILL says “Could not write a backup; saving anyway” and gets
+on with saving your file.</li>
+<li><strong>A failed save is explained in words you can act on.</strong>
+Not “[Errno 28] No space left on device”, but “The disk is full. QUILL
+could not save notes.md. Free some space and try again — your text is
+still open and unsaved.” A file or folder that is read-only, or held
+open by another program, gets its own message pointing you at
+<strong>File &gt; Save As</strong>.</li>
+<li><strong>A failed save never closes the window.</strong> If you
+choose <strong>Save</strong> on the closing prompt and the save fails,
+the close is cancelled and QUILL tells you why, so you can free some
+space or save somewhere else. Closing a second time goes ahead — the
+window can never be trapped open — but you will have been told
+first.</li>
+<li><strong>Autosave says when it has stopped.</strong> Autosave failing
+quietly would mean your crash-recovery net was gone with nothing to tell
+you. After two failures in a row, QUILL says once: “Autosave paused —
+the disk is full. Your work is not being snapshotted.” It goes quiet
+again as soon as autosave works.</li>
+</ul>
+<p>Backups are written the same way autosave snapshots are: completely
+or not at all, so an interrupted backup can never be the thing you
+restore, and always as UTF-8, so a document QUILL opened in a narrower
+encoding cannot fail to back up the moment you type an accented
+character. Backups made by earlier versions still restore normally.</p>
 <h3 id="restore-points--bring-back-any-earlier-save">Restore points —
 bring back any earlier save</h3>
 <p>Every time you save, QUILL quietly keeps a snapshot of the document.
@@ -32143,6 +32310,94 @@ rebuilding under you. The active row shows a live elapsed time,
 scheduled entries show their zone-labeled times, and the
 <strong>Refresh</strong> button updates on demand.</li>
 </ul>
+<h3 id="winamp-keys-in-the-recordings-list">Winamp keys in the
+Recordings list</h3>
+<p>If your listening habits were formed on Winamp, its classic-skin
+main-window keys work in the <strong>Recordings…</strong> window on the
+letter keys you already know — no modifier, no menu:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X</td>
+<td>Play the selected recording, or resume a paused one</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Pause / unpause</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Stop</td>
+</tr>
+<tr>
+<td>Shift+V</td>
+<td>Stop (Winamp’s fade-out; this player has no fade, so it stops
+cleanly)</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Next recording — moves down the list and plays it</td>
+</tr>
+<tr>
+<td>Z</td>
+<td>Previous recording</td>
+</tr>
+<tr>
+<td>Left / Right</td>
+<td>Back / forward 5 seconds</td>
+</tr>
+<tr>
+<td>Shift+Left / Shift+Right</td>
+<td>Back / forward 30 seconds</td>
+</tr>
+<tr>
+<td>T</td>
+<td>Elapsed time, or time remaining — press again to swap</td>
+</tr>
+<tr>
+<td>J</td>
+<td>Jump to a recording: type any part of its name</td>
+</tr>
+<tr>
+<td>Ctrl+J</td>
+<td>Jump to a time: type <code>90</code>, <code>1:30</code>, or
+<code>1:02:03</code></td>
+</tr>
+<tr>
+<td>L</td>
+<td>Open (the same as Play)</td>
+</tr>
+<tr>
+<td>Ctrl+Up / Ctrl+Down</td>
+<td>Volume up / down</td>
+</tr>
+</tbody>
+</table>
+<p>Every one of them announces what it did, so a key that did not land
+is never mistaken for one that did.</p>
+<p>Two deliberate differences from Winamp, both worth knowing:
+<strong>Ctrl+T stays What’s Playing</strong>, which is the more useful
+thing to have on that key in a radio app, so Winamp’s elapsed/remaining
+toggle sits on plain <strong>T</strong>; and <strong>Up and Down arrow
+keep moving through the list</strong> rather than changing the volume —
+which is exactly what Winamp itself does in its Playlist Editor, and
+this list is a playlist editor by any other name.</p>
+<p>Seeking needs a recording with a timeline, which means the mpv
+playback engine; on a live stream, or with the classic Windows Media
+engine, the seek keys say why they cannot move instead of doing nothing.
+Letters typed into a text field are never swallowed. Turn the letter
+keys off with <strong>Winamp-style playback keys in the Recordings
+player</strong> in Preferences if you would rather use them to type
+through the list; Ctrl+Up and Ctrl+Down are unaffected either way.</p>
+<p>Shuffle, repeat, and stop-after-current are deliberately absent: all
+three describe a play queue this list does not have yet, and a key that
+only looks like it worked is worse than no key at all.</p>
 <h3 id="if-a-recording-was-in-progress-when-quill-quit-or-crashed">If a
 recording was in progress when QUILL quit or crashed</h3>
 <p>A recording used to be lost the moment QUILL (or the standalone Quill

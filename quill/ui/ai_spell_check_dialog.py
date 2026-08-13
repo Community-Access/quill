@@ -10,7 +10,7 @@ import threading
 from collections.abc import Callable
 
 from quill.core.ai.spell_check import SpellCorrection, apply_corrections
-from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, set_accessible_name
 
 
 class AISpellCheckDialog:
@@ -368,13 +368,10 @@ class AISpellCheckInteractiveDialog:
         para = self._paragraphs[idx]
         label = para[:60].replace("\n", " ")
         wx = self._wx
-        wx.CallAfter(
-            self._progress_label.SetLabel, f"Paragraph {idx + 1} of {self._total}: {label}..."
-        )
-        wx.CallAfter(self._gauge.SetValue, idx)
-        wx.CallAfter(self._status.SetLabel, f"Checking paragraph {idx + 1}...")
-        wx.CallAfter(self._list.DeleteAllItems)
-        wx.CallAfter(self._next_btn.Enable, False)
+        # #1353: every queued callback below touches a widget, so each one goes
+        # through a method that checks the dialog is still there first -- the
+        # user can close this dialog while a paragraph is still in flight.
+        wx.CallAfter(self._begin_paragraph_ui, idx, label)
 
         def _fetch():
             from quill.core.ai.spell_check import SpellCheckError, ai_spell_check
@@ -382,14 +379,32 @@ class AISpellCheckInteractiveDialog:
             try:
                 corrections = ai_spell_check(para, self._connection, self._api_key)
             except SpellCheckError as exc:
-                wx.CallAfter(self._status.SetLabel, f"Error: {exc}")
+                wx.CallAfter(self._set_status_safely, f"Error: {exc}")
                 corrections = []
             wx.CallAfter(self._on_paragraph_done, idx, corrections)
 
         t = __import__("threading").Thread(target=_fetch, daemon=True)
         t.start()
 
+    def _begin_paragraph_ui(self, idx: int, label: str) -> None:
+        """Reset the dialog's controls for the paragraph now being checked (#1353)."""
+        if not dialog_alive(self.dialog):
+            return
+        self._progress_label.SetLabel(f"Paragraph {idx + 1} of {self._total}: {label}...")
+        self._gauge.SetValue(idx)
+        self._status.SetLabel(f"Checking paragraph {idx + 1}...")
+        self._list.DeleteAllItems()
+        self._next_btn.Enable(False)
+
+    def _set_status_safely(self, message: str) -> None:
+        """Set the status label only while the dialog is still alive (#1353)."""
+        if not dialog_alive(self.dialog):
+            return
+        self._status.SetLabel(message)
+
     def _on_paragraph_done(self, idx: int, corrections: list[SpellCorrection]) -> None:
+        if not dialog_alive(self.dialog):  # #1353
+            return
         self._pending_corrections = corrections
         n = len(corrections)
         if n == 0:

@@ -585,6 +585,24 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         dependencies=("core.app",),
         locked_off=True,
     ),
+    "future.quillins_menu": FeatureDefinition(
+        "future.quillins_menu",
+        "Quillins Menu",
+        aliases=("quillins menu", "extensions menu"),
+        description=(
+            "The top-level Quillins menu in the companion apps (Quill Radio, "
+            "QUILL Cast). Held back from the public build for now: it shows only "
+            "in a developer build (QUILL_DEV_BUILD=1). This hides the menu only "
+            "-- the Quillin host is untouched, bundled Quillins still load, and "
+            "anything they contribute to other menus still works, so nothing "
+            "stops functioning when it is hidden."
+        ),
+        maturity="advanced",
+        privacy="local only",
+        category="future",
+        dependencies=("core.app",),
+        released=False,
+    ),
     "core.bundled_quillins": FeatureDefinition(
         "core.bundled_quillins",
         "Bundled Quillins",

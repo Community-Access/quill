@@ -74,6 +74,7 @@ class PodcastsMixin:
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            channel_mode=settings.channel_mode,
         )
         self._podcast_download_queue = PodcastDownloadQueue(
             on_status_changed=self._on_podcast_download_status_changed,
@@ -166,21 +167,26 @@ class PodcastsMixin:
         self._podcast_current_chapters = []
         show = self._podcast_library.find_show(state.show_id)
         episode = show.find_episode(state.episode_guid) if show is not None else None
-        if episode is None or not episode.chapters_url:
+        if episode is None:
             return
 
-        from quill.core.podcasts import chapters as chapters_module
+        from quill.core.podcasts.chapter_sources import (
+            build_episode_chapters,
+            episode_has_possible_chapters,
+        )
+
+        if not episode_has_possible_chapters(episode):
+            return
 
         def _do_fetch(**_kwargs: object):
-            return chapters_module.fetch_and_parse_chapters(
-                episode.chapters_url,
-                safe_mode=self._safe_mode,
-                auth_header=feed_auth.auth_header_for_url(show, episode.chapters_url),
-            )
+            # The free cascade: the feed's own chapters, then the file's tags,
+            # then timestamps in the show notes.
+            return build_episode_chapters(episode, show, safe_mode=self._safe_mode)
 
-        def _on_success(_op: str, result: list) -> None:
+        def _on_success(_op: str, result: object) -> None:
             if self._podcast_chapters_key == key:
-                self._podcast_current_chapters = result
+                self._podcast_current_chapters = list(getattr(result, "chapters", []) or [])
+                self._podcast_chapters_source = str(getattr(result, "label", ""))
 
         self._task_manager.submit(
             "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=lambda *_a: None
@@ -444,6 +450,56 @@ class PodcastsMixin:
         self._podcast_controller.stop()
         self._announce("Podcasts stopped")
 
+    def podcast_player_information(self) -> None:
+        """Open the reviewable Player Information report for what is playing."""
+        from quill.ui.media.player_info_dialog import PlayerInfoDialog
+
+        info = self._podcast_player_info()
+        dialog = PlayerInfoDialog(self.frame, info)
+        self._show_modal_dialog(dialog.dialog, "Player Information")
+        dialog.close()
+
+    def _podcast_player_info(self):
+        """Gather what the report needs from the controller and the library."""
+        from quill.core.media.player_info import PlayerInfo
+        from quill.core.podcasts.episode_notes import notes_for_episode
+
+        controller = self._podcast_controller
+        state = controller.state
+        show = self._podcast_library.find_show(state.show_id) if state.show_id is not None else None
+        episode = (
+            show.find_episode(state.episode_guid)
+            if show is not None and state.episode_guid is not None
+            else None
+        )
+        downloaded = str(getattr(episode, "downloaded_path", "")) if episode else ""
+        chapters = list(getattr(self, "_podcast_current_chapters", []) or [])
+        position_ms = controller.position_ms()
+        extras: list[str] = []
+        if chapters:
+            source = str(getattr(self, "_podcast_chapters_source", ""))
+            current = sum(1 for c in chapters if c.start_ms <= position_ms)
+            extras.append(
+                f"Chapter: {max(1, current)} of {len(chapters)}"
+                + (f" ({source})" if source else "")
+            )
+        try:
+            note_count = len(notes_for_episode(state.show_id or "", state.episode_guid or ""))
+        except Exception:  # noqa: BLE001 - a missing notes file is simply none
+            note_count = 0
+        return PlayerInfo(
+            title=state.title,
+            collection=getattr(show, "title", ""),
+            position_ms=position_ms,
+            duration_ms=controller.length_ms(),
+            speed=controller.rate,
+            streaming=not downloaded,
+            saved_permanently=bool(downloaded),
+            note_count=note_count,
+            resume_ms=int(getattr(episode, "position_ms", 0) or 0),
+            extras=tuple(extras),
+        )
+
     def podcast_mute_toggle(self) -> None:
         self._podcast_controller.toggle_mute()
         self._announce("Podcasts muted" if self._podcast_controller.muted else "Podcasts unmuted")
@@ -578,6 +634,15 @@ class PodcastsMixin:
         self._announce(
             f"Skip Settings for {target}: forward {forward_seconds}s, back {back_seconds}s"
         )
+
+    def find_podcast_chapters(self) -> None:
+        """Work chapters out from the transcript or the audio (explicit)."""
+        from quill.ui.podcasts.chapter_inference_ui import find_chapters_for_episode
+
+        state = self._podcast_controller.state
+        show = self._podcast_library.find_show(state.show_id or "")
+        episode = show.find_episode(state.episode_guid or "") if show is not None else None
+        find_chapters_for_episode(self, show, episode)
 
     def podcast_next_chapter(self) -> None:
         from quill.core.podcasts.chapters import next_chapter
@@ -1023,6 +1088,11 @@ class PodcastsMixin:
                 self.subscribe_acb_media_podcasts,
             ),
             ("podcasts.add_note", "Podcasts: Add Episode Note...", self.add_podcast_note),
+            (
+                "podcasts.find_chapters",
+                "Podcasts: Find Chapters in This Episode...",
+                self.find_podcast_chapters,
+            ),
             ("podcasts.next_chapter", "Podcasts: Next Chapter", self.podcast_next_chapter),
             (
                 "podcasts.previous_chapter",
@@ -1044,8 +1114,8 @@ class PodcastsMixin:
                 self._binding_for(command_id),
                 feature_id="core.podcasts",
             )
-        # Spotify podcast commands live behind future.spotify (locked_off), so
-        # they register but stay hidden until the feature is unlocked.
+        # Spotify podcast commands live behind future.spotify (experimental), so
+        # they disappear when the listener turns that feature off.
         for command_id, title, handler in (
             ("spotify.connect", "Spotify: Connect to Spotify...", self.open_spotify_connect),
             ("spotify.browse", "Spotify: Browse Spotify Podcasts...", self.open_spotify_browse),
@@ -1076,6 +1146,21 @@ class PodcastsMixin:
             safe_mode=self._safe_mode,
         )
         self._show_modal_dialog(dialog, "Connect to Spotify")
+
+    def podcast_cycle_channel_mode(self) -> None:
+        """Cycle stereo -> mono -> left ear -> right ear, keeping your place.
+
+        The same command, the same order, and the same words as Quill Radio
+        (quill.core.audio.channel_mode): someone who listens with one ear
+        needs this in every app, and should not have to learn it twice.
+        """
+        from quill.core.audio.channel_mode import announce, next_mode
+
+        settings = self._podcast_library.settings
+        target = next_mode(settings.channel_mode)
+        settings.channel_mode = self._podcast_controller.set_channel_mode(target)
+        self._save_podcast_library()
+        self._announce(announce(settings.channel_mode))
 
     def open_spotify_browse(self) -> None:
         """Browse Spotify podcasts and play the chosen episode (Cast)."""

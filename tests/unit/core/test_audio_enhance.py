@@ -472,6 +472,145 @@ def test_optilab_auto_adapt_changes_the_chain() -> None:
     assert neutral != adapted  # adapt leans the leveling/density more assertive
 
 
+# -- OptiLab Core 1.4.0: how Stream Polish blends across Auto-Adapt ------------
+
+
+def _stream_chain(adapt: int) -> list[str]:
+    from quill.core.optilab import optilab_filters
+
+    return optilab_filters("stream", 0.0, adapt)
+
+
+def _filter_value(chain: list[str], name: str, key: str) -> float:
+    """Pull a numeric option out of the named filter in a chain."""
+    import re
+
+    for entry in chain:
+        if entry.startswith(f"{name}="):
+            # The first option follows the filter name after "=", the rest
+            # after ":" -- alimiter=limit=0.99:attack=1.5 has both shapes.
+            match = re.search(rf"[:=]{re.escape(key)}=(-?[\d.]+)", entry)
+            if match:
+                return float(match.group(1))
+    raise AssertionError(f"{name}:{key} not found in {chain}")
+
+
+def test_core_stage_is_a_smoothstep_between_its_two_positions() -> None:
+    from quill.core.optilab import _core_stage
+
+    assert _core_stage(0.2, 0.35, 0.88) == 0.0  # below the window
+    assert _core_stage(0.35, 0.35, 0.88) == 0.0  # at the start
+    assert _core_stage(0.95, 0.35, 0.88) == 1.0  # past the end
+    assert _core_stage(0.615, 0.35, 0.88) == pytest.approx(0.5, abs=0.01)  # midpoint
+
+
+def test_core_stage_flattens_at_both_ends_unlike_a_linear_ramp() -> None:
+    """The whole point of the curve: no corner where a stage starts or stops.
+
+    A linear ramp changes at a constant rate, so the instant it engages there is
+    a step in slope -- audible as a jump when the slider moves during playback.
+    """
+    from quill.core.optilab import _core_stage
+
+    just_inside = _core_stage(0.36, 0.35, 0.88) - _core_stage(0.35, 0.35, 0.88)
+    mid = _core_stage(0.62, 0.35, 0.88) - _core_stage(0.61, 0.35, 0.88)
+    just_before_end = _core_stage(0.88, 0.35, 0.88) - _core_stage(0.87, 0.35, 0.88)
+    assert just_inside < mid / 10
+    assert just_before_end < mid / 10
+
+
+def test_core_stage_never_leaves_zero_to_one() -> None:
+    from quill.core.optilab import _core_stage
+
+    for x in (-5.0, 0.0, 0.5, 1.0, 5.0):
+        assert 0.0 <= _core_stage(x, 0.35, 0.88) <= 1.0
+
+
+def test_stream_leveler_eases_off_as_auto_adapt_rises() -> None:
+    """1.4.0's inversion: turning it up must not drive every stage harder.
+
+    Upstream reduces its AGC amount (56 -> 50) and hands loudness to a separate
+    slow lift, because pushing leveler + compressor + limiter together is what
+    produced the edge-case volume jumps.
+    """
+    low = _filter_value(_stream_chain(0), "dynaudnorm", "maxgain")
+    high = _filter_value(_stream_chain(100), "dynaudnorm", "maxgain")
+    assert high < low
+
+
+def test_stream_leveler_gates_so_silence_does_not_build_gain() -> None:
+    """ "The slow loudness lift responds only to qualifying program material."" """
+    assert _filter_value(_stream_chain(100), "dynaudnorm", "t") > 0
+
+
+def test_stream_sustained_lift_engages_only_in_the_upper_half() -> None:
+    def lift_db(adapt: int) -> float:
+        return sum(
+            float(entry.removeprefix("volume=").removesuffix("dB"))
+            for entry in _stream_chain(adapt)
+            if entry.startswith("volume=")
+        )
+
+    assert lift_db(0) == 0.0
+    assert lift_db(40) == 0.0  # below upstream's 0.50 window start
+    assert lift_db(100) == pytest.approx(3.0, abs=0.01)  # upstream's 3 dB target
+    assert lift_db(75) < lift_db(100)
+
+
+def test_stream_limiter_targets_upstreams_ceiling_with_auto_level_off() -> None:
+    chain = _stream_chain(100)
+    limiter = next(e for e in chain if e.startswith("alimiter="))
+    # -0.1 dBFS is upstream's stated delivery target.
+    assert _filter_value(chain, "alimiter", "limit") == pytest.approx(10 ** (-0.1 / 20), abs=0.0005)
+    # Auto level would renormalise every passage to the ceiling, which is the
+    # blanket loudness the gated lift replaces.
+    assert "level=disabled" in limiter
+
+
+def test_stream_limiter_lookahead_extends_toward_the_top_of_the_range() -> None:
+    low = _filter_value(_stream_chain(0), "alimiter", "attack")
+    high = _filter_value(_stream_chain(100), "alimiter", "attack")
+    assert low == pytest.approx(0.54, abs=0.01)
+    assert high == pytest.approx(1.50, abs=0.01)
+
+
+def test_stream_high_frequencies_are_controlled_not_boosted_at_the_top() -> None:
+    """The old chain lifted 12 kHz by a flat 1.5 dB at every setting."""
+    top = _stream_chain(100)
+    assert not any(e.startswith("equalizer=f=12000") for e in top)
+    assert any(e.startswith("treble=") and "g=-" in e for e in top)
+    # At the bottom the presence lift is still there.
+    assert any(e.startswith("equalizer=f=12000") for e in _stream_chain(0))
+
+
+def test_stream_chain_has_no_abrupt_step_across_the_slider() -> None:
+    """No single 1% move may lurch the chain -- the reported failure mode."""
+    previous = None
+    for pct in range(0, 101):
+        chain = _stream_chain(pct)
+        lift = sum(
+            float(e.removeprefix("volume=").removesuffix("dB"))
+            for e in chain
+            if e.startswith("volume=")
+        )
+        if previous is not None:
+            assert abs(lift - previous) < 0.25, f"lift jumps at {pct}%"
+        previous = lift
+
+
+def test_podcast_and_limiter_modes_are_untouched_by_the_1_4_0_restage() -> None:
+    """1.4.0's Auto-Adapt work is specific to Stream Polish."""
+    from quill.core.optilab import optilab_filters
+
+    podcast = optilab_filters("podcast", 0.0, 100)
+    assert any(e.startswith("speechnorm=") for e in podcast)
+    assert any("equalizer=f=65" in e for e in podcast)
+    limiter = optilab_filters("limiter", 0.0, 100)
+    assert len(limiter) == 2
+    assert limiter[0].startswith("acompressor=")
+    assert limiter[1].startswith("alimiter=")
+
+
 def test_optilab_chain_comes_after_night_mode() -> None:
     from quill.core.audio_enhance import build_filter_graph
 

@@ -31,6 +31,12 @@ a = Analysis(
     hookspath=[],
     runtime_hooks=[],
     excludes=[
+        # yt-dlp (~3 MB) is bundled only in the apps with a YouTube or
+        # URL-import path (Radio, Studio, Converter). collect_all("quill")
+        # force-includes quill.core.radio.youtube here too, so without this
+        # exclude the tracer would follow its import and ship the whole
+        # extractor set into an app that can never call it.
+        "yt_dlp",
         # QuillBeacon never touches the neural-speech / science stacks QUILL
         # fetches on demand for other features.
         "faster_whisper",
