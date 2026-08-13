@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import difflib
 
-from quill.apps.beacon.quillsync.protocol import Conflict
+from quill.core.sync.protocol import Conflict
 
 
 def union_lists(a: list[str], b: list[str]) -> list[str]:

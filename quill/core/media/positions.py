@@ -24,7 +24,7 @@ precisely the wrong answer. The most *recent* one is what you meant, so
 :func:`merge_positions` is last-write-wins on ``updated_at`` -- and says so
 when the two disagreed, rather than silently discarding a position.
 
-This is shaped for :mod:`quill.apps.beacon.quillsync`: :class:`PositionStore`
+This is shaped for :mod:`quill.core.sync`: :class:`PositionStore`
 satisfies its ``RecordStore`` protocol and :func:`merge_positions` satisfies
 its ``MergeFn``, so wiring a transport later is adapter work rather than a
 rewrite. Nothing here touches the network.
@@ -161,7 +161,7 @@ def merge_positions(local: dict | None, remote: dict) -> tuple[dict, list[object
     Ties, and records with no timestamp at all, resolve to the remote, matching
     ``default_merge`` so behaviour is predictable when data is incomplete.
     """
-    from quill.apps.beacon.quillsync.protocol import Conflict
+    from quill.core.sync.protocol import Conflict
 
     if local is None:
         return remote, []

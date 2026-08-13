@@ -189,7 +189,7 @@ class SyncController:
             return FolderTransport(cfg.folder)
         if cfg.transport == "server":
             client = self._make_server_client(cfg)
-            from quill.apps.beacon.quillsync.transports import ServerTransport
+            from quill.core.sync.transports import ServerTransport
 
             return ServerTransport(client)
         raise RuntimeError("Sync is off; nothing to transport")
@@ -362,7 +362,7 @@ class SyncController:
         log_path = self.data_dir / "sync" / "log.jsonl"
         if not log_path.exists():
             return []
-        from quill.apps.beacon.quillsync.protocol import Commit
+        from quill.core.sync.protocol import Commit
 
         out = []
         for line in log_path.read_text(encoding="utf-8").splitlines():

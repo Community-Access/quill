@@ -18,8 +18,8 @@ import os
 import time
 from pathlib import Path
 
-from quill.apps.beacon.quillsync import crypto
-from quill.apps.beacon.quillsync.protocol import (
+from quill.core.sync import crypto
+from quill.core.sync.protocol import (
     Commit,
     Conflict,
     ManifestEntry,
@@ -27,7 +27,7 @@ from quill.apps.beacon.quillsync.protocol import (
     RecordStore,
     default_merge,
 )
-from quill.apps.beacon.quillsync.transports import Transport
+from quill.core.sync.transports import Transport
 
 
 class SyncEngine:

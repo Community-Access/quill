@@ -14,8 +14,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
-from quill.apps.beacon.quillsync.protocol import Commit
+from quill.core.sync.protocol import Commit
 
 
 class Transport:
@@ -99,7 +100,7 @@ class ServerTransport(Transport):
     in the application's client.
     """
 
-    def __init__(self, client) -> None:
+    def __init__(self, client: Any) -> None:
         self.client = client
         self._commits: dict[str, Commit] = {}
         self._objects: dict[str, bytes] = {}

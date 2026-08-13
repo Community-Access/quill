@@ -17,13 +17,13 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from quill.apps.beacon.quillsync import (
+from quill.core.sync import (
     FolderTransport,
     ServerTransport,
     SyncEngine,
     derive_vault_key,
 )
-from quill.apps.beacon.quillsync.merge import union_lists
+from quill.core.sync.merge import union_lists
 
 
 class _SettingsStore:
