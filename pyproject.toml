@@ -385,7 +385,7 @@ dev = [
   # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
   # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
   "pytest-randomly>=4.1.0",
-  "ruff>=0.15.21",
+  "ruff>=0.16.2",
   "mypy>=2.3.0",
   # I18N: string extraction, .po update, .mo compile
   "Babel>=2.18.0",
