@@ -77,7 +77,7 @@ ui = [
     # quill/_vendor/autoupdate/autoupdate.py (win32api.ShellExecute, to hand
     # off to the update bootstrapper). Both are UI-reachable only, so it sits
     # in this extra rather than in the base set.
-    "pywin32>=306; sys_platform == 'win32'",
+    "pywin32>=312; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
     "certifi>=2026.7.22",
     # Prism screen-reader speech bridge (Windows) — routes announcements to

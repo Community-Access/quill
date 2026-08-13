@@ -26,7 +26,7 @@ wx-accessible-webview>=0.2.0
 # win32api.ShellExecute for the update bootstrapper hand-off. Previously
 # undeclared and present only transitively, even though the Windows build script
 # prunes its unused extras on purpose.
-pywin32>=306; sys_platform == "win32"
+pywin32>=312; sys_platform == "win32"
 
 # CA bundle for verified HTTPS (update checks) — Python on macOS otherwise has
 # no trusted roots wired into urllib (CERTIFICATE_VERIFY_FAILED).
