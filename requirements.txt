@@ -86,4 +86,4 @@ PyNaCl>=1.6.2
 # Azure Document Intelligence / Content Understanding SDKs, none of which Quill
 # uses — excluding them keeps the installed surface small.
 keynote-parser>=1.14.4.0
-markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6
+markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7

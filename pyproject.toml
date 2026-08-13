@@ -229,7 +229,7 @@ pages = ["keynote-parser>=1.14.4.0"]
 # Optional Components (quill/core/pdf_ocr_install.py). Shipped builds bundle the
 # lean `office-text` extra below instead of this one -- see the note there.
 pdf-ocr = [
-    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
+    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7",
     "pdfplumber>=0.11.10",
     "pypdf>=6.14.2",
 ]
