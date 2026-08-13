@@ -67,7 +67,7 @@ def _frame(text: str) -> tuple[MainFrame, _Editor, list[str]]:
     frame._snippet_expansion_guard = False
     frame._suspend_persistent_undo = False
     frame._browse_navigation_cache = object()
-    frame._refresh_title = lambda: None  # type: ignore[method-assign]
+    frame._refresh_title_bar = lambda: None  # type: ignore[method-assign]
     frame._set_status_quiet = lambda _m: None  # type: ignore[method-assign]
     frame._schedule_deferred_edit_work = lambda: deferred.append("scheduled")  # type: ignore[method-assign]
     frame._expand_snippet_trigger_if_match = lambda _text=None: False  # type: ignore[method-assign]
@@ -242,3 +242,123 @@ def test_without_wx_the_work_runs_inline() -> None:
     frame._run_deferred_edit_work = lambda: runs.append(1)  # type: ignore[method-assign]
     frame._schedule_deferred_edit_work()
     assert runs == [1]
+
+
+# --------------------------------------------------------------------------- #
+# Round 2 (re-examination): costs the first budget missed
+# --------------------------------------------------------------------------- #
+
+
+def test_typing_a_letter_never_opens_the_clipboard() -> None:
+    """The abbreviation hook fetched the clipboard on EVERY keystroke.
+
+    Opening the Windows clipboard is a cross-process synchronization point --
+    a clipboard manager or a screen reader polling the clipboard contends for
+    the same lock, and clipboard_retry can hold the UI thread up to ~200 ms.
+    It must now be fetched lazily: only once an abbreviation has matched and
+    its expansion actually references ${clipboard}.
+    """
+    frame = MainFrame.__new__(MainFrame)
+    editor = _Editor("hello worl")
+    fetches: list[int] = []
+    frame.editor = editor  # type: ignore[assignment]
+    frame._pending_undo = None
+    frame._abbreviation_library = type("L", (), {"abbreviations": []})()
+    frame._get_clipboard_text_for_abbreviation = lambda: fetches.append(1) or ""  # type: ignore[method-assign]
+    # An ordinary letter: not a trigger character, nothing can match.
+    assert frame._expand_abbreviation_if_match("hello worl") is False
+    assert fetches == [], "a plain letter keystroke must not touch the clipboard"
+    # A trigger character with no matching abbreviation: still no fetch.
+    editor2 = _Editor("hello ")
+    frame.editor = editor2  # type: ignore[assignment]
+    assert frame._expand_abbreviation_if_match("hello ") is False
+    assert fetches == [], "a non-matching trigger must not touch the clipboard"
+
+
+def test_clipboard_is_fetched_only_for_matches_that_want_it() -> None:
+    from quill.core.abbreviations import Abbreviation, AbbreviationLibrary, try_expand
+
+    fetches: list[int] = []
+
+    def provider() -> str:
+        fetches.append(1)
+        return "PASTED"
+
+    plain = AbbreviationLibrary(
+        version=1,
+        abbreviations=[Abbreviation(id="a1", abbreviation="sig", expansion="Best regards")],
+    )
+    match = try_expand("sig ", 4, plain, clipboard_provider=provider)
+    assert match is not None and match.resolved_text == "Best regards"
+    assert fetches == [], "an expansion without ${clipboard} must not fetch it"
+
+    clippy = AbbreviationLibrary(
+        version=1,
+        abbreviations=[Abbreviation(id="a2", abbreviation="pc", expansion="see: ${clipboard}")],
+    )
+    match = try_expand("pc ", 3, clippy, clipboard_provider=provider)
+    assert match is not None and match.resolved_text == "see: PASTED"
+    assert fetches == [1], "a ${clipboard} expansion fetches exactly once"
+
+
+def test_typing_path_refreshes_the_title_bar_without_the_statusbar() -> None:
+    """_refresh_title drags a full statusbar refresh -- several O(n) buffer
+    reads -- along with it. The synchronous typing path must use the title-only
+    variant; the statusbar catches up in the deferred pass."""
+    source = inspect.getsource(MainFrame._sync_editor_change)
+    assert "_refresh_title_bar()" in source
+    assert "_refresh_title()" not in source
+    title_bar = inspect.getsource(MainFrame._refresh_title_bar)
+    assert "_refresh_statusbar" not in title_bar
+    # And the deferred pass is where the statusbar catches up.
+    assert "_refresh_statusbar()" in inspect.getsource(MainFrame._run_deferred_edit_work)
+
+
+def test_caret_activity_coalesces_its_statusbar_refresh() -> None:
+    """EVT_KEY_UP fires per keystroke; a synchronous refresh there was a second
+    full set of O(n) statusbar reads per character."""
+    source = inspect.getsource(MainFrame._on_editor_caret_activity)
+    assert "_schedule_statusbar_refresh()" in source
+    assert "self._refresh_statusbar()" not in source
+
+
+def test_statusbar_cells_read_the_document_not_the_control() -> None:
+    """Display cells must use the document's own string (zero marshals), not
+    another GetValue() round trip per cell."""
+    frame = MainFrame.__new__(MainFrame)
+    editor = _Editor("one two three")
+    frame.editor = editor  # type: ignore[assignment]
+    frame.document = type("D", (), {"text": "one two three"})()
+    stats = frame._statusbar_document_stats()
+    assert stats is not None and stats.words == 3
+    assert editor.get_value_calls == 0, (
+        "statusbar stats must come from document.text, not a buffer marshal"
+    )
+    # Stub frames without a document still work, via the editor fallback.
+    frame.document = None  # type: ignore[assignment]
+    assert frame._document_text_for_display() == "one two three"
+    assert editor.get_value_calls == 1
+
+
+def test_title_bar_native_calls_are_skipped_when_unchanged() -> None:
+    """SetTitle fires MSAA/UIA name-change events; retitling the frame to the
+    same string on every keystroke is announcement noise and native churn."""
+
+    class _Frame:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+        def SetTitle(self, title: str) -> None:  # noqa: N802 - wx casing
+            self.calls.append(title)
+
+    frame = MainFrame.__new__(MainFrame)
+    frame.frame = _Frame()  # type: ignore[assignment]
+    frame.document = type("D", (), {"text": "x", "name": "notes.md", "path": None})()
+    frame.settings = type("S", (), {"title_bar_path_mode": "name"})()
+    frame._active_tab_index = -1
+    frame._dirty_title_suffix = lambda: " *"  # type: ignore[method-assign]
+    frame._title_subject = lambda: "notes.md"  # type: ignore[method-assign]
+    frame._refresh_title_bar()
+    frame._refresh_title_bar()
+    frame._refresh_title_bar()
+    assert len(frame.frame.calls) == 1, "an unchanged title must not be re-set"

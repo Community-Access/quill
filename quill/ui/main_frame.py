@@ -2464,7 +2464,10 @@ class MainFrame(
         return True
 
     def _on_editor_caret_activity(self, event: object) -> None:
-        self._refresh_statusbar()
+        # Coalesced, not immediate (#1346 follow-up): this fires on every
+        # key-up, so a synchronous refresh here was a second full set of
+        # O(n) statusbar reads per keystroke, on top of the typing path's.
+        self._schedule_statusbar_refresh()
         try:
             self._maybe_announce_indent()
             self._maybe_play_indent_tone()
@@ -2482,7 +2485,9 @@ class MainFrame(
         if editor is None:
             return
         try:
-            text = editor.GetValue()
+            # Display-only read: document.text is the same string GetValue
+            # would marshal, at zero cost (#1346 follow-up).
+            text = self._document_text_for_display()
             caret = editor.GetInsertionPoint()
         except Exception:  # noqa: BLE001 - a non-text surface has no tables
             return
@@ -5182,6 +5187,19 @@ class MainFrame(
         self.open_file(path)
 
     def _refresh_title(self) -> None:
+        self._refresh_title_bar()
+        self._refresh_statusbar()
+
+    def _refresh_title_bar(self) -> None:
+        """Window title and tab label only -- no statusbar (#1346 follow-up).
+
+        The typing path calls this instead of :meth:`_refresh_title`: the title
+        genuinely must track the dirty marker before the next keystroke, but
+        dragging the whole statusbar refresh -- several full-buffer reads and a
+        document-stats pass -- along with it put O(n) work back on the path the
+        budget test guards. The statusbar catches up from the deferred edit
+        pass and the coalesced caret refresh instead.
+
         # #615: Surface the QUILL version in the window title so screen
         # readers announcing the focused window (JAWS Insert+T, NVDA+T,
         # Narrator Caps+H) read the version along with the document
@@ -5191,13 +5209,24 @@ class MainFrame(
         # "Version" with no number. The window title is the only
         # in-process channel we control, and it is reachable from
         # every screen reader.
+
+        Both native calls are skipped when the strings are unchanged, which is
+        every keystroke after the first: retitling the frame fires
+        EVT_OBJECT_NAMECHANGE through MSAA/UIA, and a screen reader has no use
+        for hearing about a rename to the same name.
+        """
         modified_suffix = self._dirty_title_suffix()
         version = _APP_TITLE_VERSION
-        self.frame.SetTitle(f"{self._title_subject()}{modified_suffix} - {version}")
+        title = f"{self._title_subject()}{modified_suffix} - {version}"
+        if title != getattr(self, "_last_frame_title", None):
+            self._last_frame_title = title
+            self.frame.SetTitle(title)
         if self._active_tab_index >= 0 and self._active_tab_index < self.notebook.GetPageCount():
             page_title = f"{self.document.name}{self._remote_title_suffix()}{modified_suffix}"
-            self._set_tab_page_text(self._active_tab_index, page_title)
-        self._refresh_statusbar()
+            cache_key = (self._active_tab_index, page_title)
+            if cache_key != getattr(self, "_last_tab_page_title", None):
+                self._last_tab_page_title = cache_key
+                self._set_tab_page_text(self._active_tab_index, page_title)
 
     def _remote_title_suffix(self) -> str:
         tab = self._active_tab()

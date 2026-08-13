@@ -7444,6 +7444,20 @@ The engineering choices above add up to the user-visible magic the product promi
 - Autosave write: under 50 ms, non-blocking.
 - **Per-keystroke work budget (#1346).** Exactly **one** `GetValue()` per `EVT_TEXT`, whatever the settings. On a multiline `wx.TextCtrl` that call marshals the whole buffer across the wx/native boundary, so each additional caller costs a complete copy of the document per character. Only three operations may run synchronously on the change path — `document.set_text`, the dirty-title refresh, and the quiet status line; everything else coalesces behind a single restarting `wx.CallLater` (`_DEFERRED_EDIT_DELAY_MS`, 120 ms). Enforced by `tests/unit/ui/test_keystroke_work_budget.py`, which fails the build both on a second buffer read and on any of the deferred consumers reappearing in `_sync_editor_change`.
 
+  Round 2 of the same budget (2026-08-13) extends the rule beyond `GetValue`:
+  the synchronous keystroke path may not refresh the status bar (its cells cost
+  several full-buffer reads and a document-stats pass; they catch up in the
+  deferred pass, and caret movement coalesces its refresh via
+  `_schedule_statusbar_refresh`), may not open the **Windows clipboard** (the
+  abbreviation expander now fetches it lazily, only for a matched expansion that
+  uses `${clipboard}` -- the clipboard is a cross-process lock whose retry can
+  hold the UI thread ~200 ms), and display-only reads (status-bar cells, the
+  table-transition check) use `_document_text_for_display()` -- the document's
+  own string, zero marshals -- never a fresh `GetValue`. The title bar skips its
+  native `SetTitle`/tab-label calls when the strings are unchanged, since
+  retitling fires MSAA/UIA name-change events. All enforced by
+  `tests/unit/ui/test_keystroke_work_budget.py`.
+
   This is an **accessibility** budget, not merely a performance one. The text-change notification NVDA and JAWS wait on is delivered by the same thread, so work between keystrokes is heard as a delay before the spoken character, and a long enough queue coalesces keystrokes — the reported symptom was "long pauses between text entry and reporting from either NVDA and JAWS. Sometimes certain keys are not intercepted, such as the space, so that words run together." Before the fix a default configuration performed three to four full buffer marshals plus a full-text comparison and a menu-state refresh per character: roughly a megabyte of copying per keystroke on a 200 KB document.
 
 ---

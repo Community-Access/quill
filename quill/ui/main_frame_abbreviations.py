@@ -37,7 +37,14 @@ class AbbreviationsMixin:
         except Exception:  # noqa: BLE001 - not Windows, or no native handle yet
             pass
 
-    def _try_expand_contributed(self, text: str, caret: int, clipboard_text: str = ""):
+    def _try_expand_contributed(
+        self,
+        text: str,
+        caret: int,
+        clipboard_text: str = "",
+        *,
+        clipboard_provider=None,
+    ):
         """Try to expand against the Quillin-contributed abbreviation library.
 
         This library (built at Quillin load, never persisted) is checked only
@@ -49,7 +56,9 @@ class AbbreviationsMixin:
             return None
         from quill.core.abbreviations import try_expand
 
-        return try_expand(text, caret, library, clipboard_text)
+        return try_expand(
+            text, caret, library, clipboard_text, clipboard_provider=clipboard_provider
+        )
 
     # -- automatic expansion hook (called from _on_text_changed) --
 
@@ -70,15 +79,30 @@ class AbbreviationsMixin:
         if text is None:
             text = self.editor.GetValue()
         caret = self.editor.GetInsertionPoint()
-        clipboard_text = self._get_clipboard_text_for_abbreviation()
+        # #1346 follow-up: the clipboard is fetched lazily, once, and only when
+        # an abbreviation actually matched and wants it. Opening the Windows
+        # clipboard is a cross-process synchronization point -- a clipboard
+        # manager or a screen reader polling the clipboard contends for the
+        # same lock, and the retry loop in clipboard_retry can hold the UI
+        # thread up to ~200 ms. Doing that on *every keystroke*, which is what
+        # fetching it up front here meant, was per-keystroke work of exactly
+        # the kind the typing-path budget exists to keep out.
+        clipboard_cache: str | None = None
+
+        def _clipboard() -> str:
+            nonlocal clipboard_cache
+            if clipboard_cache is None:
+                clipboard_cache = self._get_clipboard_text_for_abbreviation()
+            return clipboard_cache
+
         from quill.core.abbreviations import try_expand
 
-        match = try_expand(text, caret, self._abbreviation_library, clipboard_text)
+        match = try_expand(text, caret, self._abbreviation_library, clipboard_provider=_clipboard)
         if match is None:
-            match = self._try_expand_contributed(text, caret, clipboard_text)
+            match = self._try_expand_contributed(text, caret, clipboard_provider=_clipboard)
         if match is None:
             return False
-        if not self._resolve_fields_into(match, clipboard_text):
+        if not self._resolve_fields_into(match, _clipboard):
             # The form was cancelled: leave what they typed exactly as it is.
             return False
         before = text[: match.token_start]
@@ -121,13 +145,18 @@ class AbbreviationsMixin:
             fire("abbreviation.expanded", {"trigger": original_abbr})
         return True
 
-    def _resolve_fields_into(self, match: object, clipboard_text: str) -> bool:
+    def _resolve_fields_into(self, match: object, clipboard) -> bool:
         """Ask for any fill-in fields and rewrite *match* with the answers.
 
         Returns False when the user cancels. The expansion is re-resolved from
         the filled template rather than patched afterwards, so a ``${cursor}``
         marker still lands where the template put it once the answers have
         changed the text's length.
+
+        *clipboard* is either the clipboard text itself or a zero-argument
+        callable returning it (#1346 follow-up: the typing path passes a lazy,
+        memoized fetch so the clipboard is only ever opened when an expansion
+        that reached this point actually references ``${clipboard}``).
         """
         entry = getattr(match, "abbreviation", None)
         if entry is None:
@@ -144,6 +173,9 @@ class AbbreviationsMixin:
         )
         if filled is None:
             return False
+        clipboard_text = ""
+        if "${clipboard}" in filled:
+            clipboard_text = clipboard() if callable(clipboard) else str(clipboard or "")
         text, cursor_offset, has_cursor = resolve_expansion(filled, clipboard_text)
         match.resolved_text = text
         match.cursor_offset = cursor_offset

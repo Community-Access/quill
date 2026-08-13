@@ -130,9 +130,36 @@ class StatusBarMixin:
         if editor is None:
             return None
         try:
-            return compute_document_stats(editor.GetValue())
+            # The insertion-point probe keeps the #269 dead-widget contract:
+            # document.text would happily produce stats for a destroyed tab,
+            # but a queued caret event on a dead editor must stay empty.
+            editor.GetInsertionPoint()
+            return compute_document_stats(self._document_text_for_display())
         except RuntimeError:
             return None
+
+    def _document_text_for_display(self) -> str:
+        """The document's text for read-only display work, without a marshal.
+
+        ``editor.GetValue()`` on a multiline ``wx.TextCtrl`` copies the whole
+        buffer across the wx/native boundary -- the very cost #1346 budgets.
+        Every text change already lands in ``document.set_text`` synchronously,
+        so for display purposes (statusbar cells, transition checks) the
+        document's own Python string *is* the current text, at zero marshals.
+        Falls back to the editor for stub frames without a document, and to ""
+        for a dead TextCtrl. Display-only by contract: anything that edits or
+        saves must keep reading the control itself.
+        """
+        text = getattr(getattr(self, "document", None), "text", None)
+        if isinstance(text, str):
+            return text
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return ""
+        try:
+            return editor.GetValue()
+        except RuntimeError:
+            return ""
 
     def _statusbar_text_for_item(self, item: str) -> str:
         feature_id = self._STATUS_BAR_FEATURES.get(item)
@@ -175,7 +202,7 @@ class StatusBarMixin:
             # so a queued caret event does not crash the statusbar refresh.
             try:
                 line, column = line_column_for_position(
-                    editor.GetValue(),
+                    self._document_text_for_display(),
                     editor.GetInsertionPoint(),
                 )
             except RuntimeError:
@@ -201,7 +228,7 @@ class StatusBarMixin:
             if editor is None:
                 return ""
             try:
-                total = len(editor.GetValue())
+                total = len(self._document_text_for_display())
                 caret = editor.GetInsertionPoint()
             except RuntimeError:
                 return ""
@@ -370,7 +397,7 @@ class StatusBarMixin:
         if surface not in {"markdown", "html"}:
             return ""
         try:
-            text = editor.GetValue()
+            text = self._document_text_for_display()
             caret = editor.GetInsertionPoint()
         except RuntimeError:
             return ""
@@ -435,7 +462,7 @@ class StatusBarMixin:
         if editor is None:
             return ""
         try:
-            text = editor.GetValue()
+            text = self._document_text_for_display()
             position = editor.GetInsertionPoint()
         except RuntimeError:
             return ""
@@ -611,6 +638,32 @@ class StatusBarMixin:
                 len(self._statusbar_cells) - 1,
             )
             self._refresh_statusbar()
+
+    #: How long caret movement may leave the statusbar stale (#1346 follow-up).
+    #: The visual line/column cell trailing an arrow-key run by a tenth of a
+    #: second is imperceptible; refreshing it synchronously on every caret
+    #: event was several full-buffer scans per keystroke.
+    _STATUSBAR_COALESCE_MS = 90
+
+    def _schedule_statusbar_refresh(self) -> None:
+        """Refresh the statusbar soon, coalescing a burst of caret activity.
+
+        The restarting-timer pattern of ``_schedule_deferred_edit_work``: each
+        call cancels the pending refresh, so a held arrow key costs one refresh
+        after the caret stops instead of one per repeat. Falls back to an
+        immediate refresh when there is no ``wx.CallLater`` (headless tests).
+        """
+        call_later = getattr(getattr(self, "_wx", None), "CallLater", None)
+        if not callable(call_later):
+            self._refresh_statusbar()
+            return
+        timer = getattr(self, "_statusbar_refresh_timer", None)
+        stop = getattr(timer, "Stop", None)
+        if callable(stop):
+            stop()
+        self._statusbar_refresh_timer = call_later(
+            self._STATUSBAR_COALESCE_MS, self._refresh_statusbar
+        )
 
     def _refresh_statusbar(self) -> None:
         if not hasattr(self, "_statusbar_cells") or not hasattr(self, "_wx"):

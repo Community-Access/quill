@@ -14238,6 +14238,23 @@ ms). Enforced by
 <code>tests/unit/ui/test_keystroke_work_budget.py</code>, which fails
 the build both on a second buffer read and on any of the deferred
 consumers reappearing in <code>_sync_editor_change</code>.</p>
+<p>Round 2 of the same budget (2026-08-13) extends the rule beyond
+<code>GetValue</code>: the synchronous keystroke path may not refresh
+the status bar (its cells cost several full-buffer reads and a
+document-stats pass; they catch up in the deferred pass, and caret
+movement coalesces its refresh via
+<code>_schedule_statusbar_refresh</code>), may not open the
+<strong>Windows clipboard</strong> (the abbreviation expander now
+fetches it lazily, only for a matched expansion that uses
+<code>${clipboard}</code> – the clipboard is a cross-process lock whose
+retry can hold the UI thread ~200 ms), and display-only reads
+(status-bar cells, the table-transition check) use
+<code>_document_text_for_display()</code> – the document’s own string,
+zero marshals – never a fresh <code>GetValue</code>. The title bar skips
+its native <code>SetTitle</code>/tab-label calls when the strings are
+unchanged, since retitling fires MSAA/UIA name-change events. All
+enforced by
+<code>tests/unit/ui/test_keystroke_work_budget.py</code>.</p>
 <p>This is an <strong>accessibility</strong> budget, not merely a
 performance one. The text-change notification NVDA and JAWS wait on is
 delivered by the same thread, so work between keystrokes is heard as a

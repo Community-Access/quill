@@ -168,7 +168,10 @@ class _Menu:
 
 def _build_frame(text: str, insertion_point: int = 0) -> MainFrame:
     frame = MainFrame.__new__(MainFrame)
-    frame.document = Document(path=Path("note.md"))
+    # text= keeps the stub document in sync with the stub editor, as the
+    # real app does on every EVT_TEXT -- the statusbar reads document.text
+    # for display since #1346 round 2 (zero buffer marshals).
+    frame.document = Document(path=Path("note.md"), text=text)
     frame.editor = _Editor(text=text, insertion_point=insertion_point)
     frame.statusbar = _StatusBar()
     frame.frame = _Frame()
